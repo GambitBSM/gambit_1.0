@@ -41,7 +41,10 @@ namespace Gambit
     };
     // Needed by std::map for comparison of keys of type VBIDpair
     inline bool operator<(const VBIDpair& l, const VBIDpair& r) {
-      return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index));
+       //debugging:
+       //std::cout<<"r: "<<r.vertexID<<", "<<r.index<<std::endl;
+       //std::cout<<"l: "<<l.vertexID<<", "<<l.index<<std::endl;
+       return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index));
     }
 
     /// pointID / process number pair
@@ -58,6 +61,9 @@ namespace Gambit
     };
     // Needed by std::map for comparison of keys of type VBIDpair
     inline bool operator<(const PPIDpair& l, const PPIDpair& r) {
+      //debugging:
+      //std::cout<<"rP: "<<r.pointID<<", "<<r.rank<<std::endl;
+      //std::cout<<"lP: "<<l.pointID<<", "<<l.rank<<std::endl;
       return (l.pointID<r.pointID || (l.pointID==r.pointID && l.rank<r.rank));
     }
     

@@ -354,7 +354,7 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::RA_flush(const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
       {
-         if(not this->is_silenced()) {
+        if(not this->is_silenced()) {
             #ifdef WITH_MPI
             // Prepate to send buffer data to master node
             const int masterRank = 0;
@@ -389,7 +389,6 @@ namespace Gambit {
                this->printerComm.Isend(&send_buffer_RA_q_len,     1,            masterRank, this->myTags.RA_length, &req_RA_q_len);
                this->printerComm.Isend(&null_message,             1,            masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
                RA_send_buffer_ready = false;
-
             }
             #else
             RA_write_to_disk(PPID_to_dsetindex);
@@ -402,15 +401,22 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::RA_write(const T& value, const PPIDpair pID, const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
       {
+         uint i = RA_queue_length;
+         if(i>L)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error! Attempted to do RA_write beyond end of RA buffer ("<<i<<" > "<<L<<")! (buffer name="<<this->get_label()<<")";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
          if(not this->is_silenced()) {
-            uint i = RA_queue_length;
             RA_write_queue[i]     = value;
             RA_write_locations[i] = pID;
             RA_queue_length += 1;
             if(RA_queue_length==L)
             {
-              RA_flush(PPID_to_dsetindex);
-              RA_queue_length=0;
+               RA_flush(PPID_to_dsetindex);
+               RA_queue_length = 0;
             }
          }
       }

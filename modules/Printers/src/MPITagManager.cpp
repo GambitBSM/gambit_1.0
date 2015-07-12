@@ -88,6 +88,12 @@ namespace Gambit
     /// constructor to get the rest (e.g. "BuffTags sometags(first_tag);")
     int MPITagManager::get_tags(const VBIDpair bufID)
     {
+       /// debugging...
+       //std::cout << "bufID: " << bufID.vertexID << ", " << bufID.index<<std::endl; 
+
+       std::map<VBIDpair, int>::iterator it2 = tags_from_VBID.begin();
+       std::cout << "test: " << it2->first.vertexID << "," << it2->first.index << std::endl;
+
        std::map<VBIDpair, int>::iterator it = tags_from_VBID.find(bufID);
        if(it==tags_from_VBID.end())
        {

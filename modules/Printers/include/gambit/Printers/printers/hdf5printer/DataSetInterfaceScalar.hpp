@@ -132,6 +132,19 @@ namespace Gambit {
       template<class T, std::size_t CHUNKLENGTH>
       void DataSetInterfaceScalar<T,CHUNKLENGTH>::RA_write(const T (&values)[CHUNKLENGTH], const hsize_t (&coords)[CHUNKLENGTH], std::size_t npoints) 
       {
+         if(npoints>CHUNKLENGTH)
+         {
+             std::ostringstream errmsg;
+             errmsg << "Error! Received npoints ("<<npoints<<") greater than CHUNKLENGTH ("<<CHUNKLENGTH<<") while tring to perform RA_write for dataset (name="<<this->get_myname()<<"). The input to this function is therefore invalid."; 
+             printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+         if(npoints==0)
+         {
+             std::ostringstream errmsg;
+             errmsg << "Error! Received npoints=0! This will cause an error when trying to select element for writing, and there is no point calling this function with no points to write anyway. Please review the input to this function (error occurred while tring to perform RA_write for dataset (name="<<this->get_myname()<<"))"; 
+             printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
          bool error_occurred = false; // simple error flag
 
          // Extend the dataset if needed

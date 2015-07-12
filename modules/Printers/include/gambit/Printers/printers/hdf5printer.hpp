@@ -191,14 +191,14 @@ namespace Gambit
 
         /// Check for tag requests from worker nodes
         //void check_for_bufftag_requests();
-
-        // Check if the buffers are full and waiting to be emptied
-        // (this will trigger MPI sends if needed)
-        void empty_sync_buffers_if_full();
  
         /// Check for buffers waiting to be delivered from other processes 
         bool collect_mpi_buffers();
         #endif  
+
+        // Check if the buffers are full and waiting to be emptied
+        // (this will trigger MPI sends if needed)
+        void empty_sync_buffers_if_full();
 
         /// Check whether printing to a new parameter space point is about to occur
         // and perform adjustments needed to prepare the printer.
