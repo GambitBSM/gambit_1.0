@@ -46,7 +46,7 @@ namespace Gambit
     /// ********************************************
 
     /// Event labels
-    enum specialEvents {INIT = -1, START_SUBPROCESS = -2, END_SUBPROCESS = -3, FINALIZE = -4};
+    enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
     /// Analysis stuff
     HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
     std::vector<std::string> analysisNames;
@@ -71,6 +71,14 @@ namespace Gambit
       int nEvents = 0;
       globalAnalyses->clear();
 
+      // Do the base-level initialisation	 
+      Loop::exectuteIteration(BASE_INIT);
+      if (*Loop::done)
+      {
+	Loop::executeIteration(FINALIZE); 
+        return;
+      }
+
       #pragma omp critical (runOptions)
       {
         /// Retrieve runOptions from the YAML file safely...
@@ -80,25 +88,31 @@ namespace Gambit
       }
 
       /// For every collider requested in the yaml file:
-      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) {
+      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) 
+      {
         pythiaNumber = 0;
-        /// Defaults to 1 if option unspecified
         #pragma omp critical (runOptions)
         {
+          /// Defaults to 1 if option unspecified
           pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
         }
 
-        while (pythiaNumber < pythiaConfigurations) {
+        while (pythiaNumber < pythiaConfigurations and not *Loop::done)
+        {
           ++pythiaNumber;
           Loop::executeIteration(INIT);
-          #pragma omp parallel shared(SHARED_OVER_OMP)
-          {
-            Loop::executeIteration(START_SUBPROCESS);
-            #pragma omp for
-            for (int i = 1; i <= nEvents; ++i) {
-              Loop::executeIteration(i);
+          if (*Loop::done) break
+	  {
+            #pragma omp parallel shared(SHARED_OVER_OMP)
+            {
+              Loop::executeIteration(START_SUBPROCESS);
+              if (not *Loop::done)
+	      {
+                #pragma omp for
+                for (int i = 1; i <= nEvents; ++i) if (not *Loop::done) Loop::executeIteration(i);
+                if (not *Loop::done) Loop::executeIteration(END_SUBPROCESS);
+              }
             }
-            Loop::executeIteration(END_SUBPROCESS);
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
                     << " number " << std::to_string(pythiaNumber) << " has finished." << std::endl;
@@ -106,7 +120,9 @@ namespace Gambit
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
           #endif
+          if (*Loop::done) break
         }
+        if (*Loop::done) break
       }
       Loop::executeIteration(FINALIZE);
     }
@@ -115,43 +131,65 @@ namespace Gambit
 
     /// *** Hard Scattering Collider Simulators ***
 
-    void getPythia(Gambit::ColliderBit::SpecializablePythia &result) {
+    void getPythia(Gambit::ColliderBit::SpecializablePythia &result)
+    {
       using namespace Pipes::getPythia;
 
-      if (*Loop::iteration == START_SUBPROCESS) {
-        /// TODO Surely, I must call result.clear()?
-        /// Each thread gets its own Pythia instance.
-        /// Thus, the initialization is *after* INIT, within omp parallel.
-        std::vector<std::string> pythiaOptions;
-        std::vector<std::string> filenames;
-        bool debug_SLHA_filenames;
-        std::string pythiaConfigName;
+      static bool SLHA_debug_mode = false;      
+      static std::vector<std::string> filenames;
+      static unsigned int counter = -1;				       
 
+      if (*Loop::iteration == BASE_INIT)
+      {      
+        // If there are no debug filenames set, look for them.
+        if (filenames.empty())							
+        {													
+          #pragma omp_critical (runOptions)
+          {
+            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");					
+            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");	
+          }
+        }
+        // Increment the counter if there are debug SLHA files and this is the first thread.
+        if (SLHA_debug_mode)
+	{ 
+          if (omp_get_thread_num() == 0) counter++;
+          cout << "incrementing counter. " << counter << endl;
+          logger() << "counter is: " << counter << EOM; 
+          if (filenames.size() == counter) invalid_point().raise("No more SLHA files. My work is done.");
+        }
+      }
+
+      else if (*Loop::iteration == START_SUBPROCESS)
+      {
+        /// TODO Surely, I must call result.clear()?
+
+        /// Each thread gets its own Pythia instance.
+        /// Thus, the actual Pythia initialization is 
+        /// *after* INIT, within omp parallel.
+        std::vector<std::string> pythiaOptions;
+        std::string pythiaConfigName;
+        
         /// Setup new Pythia
-        pythiaConfigName = "pythiaOptions";
-        pythiaConfigName += "_";
-        pythiaConfigName += std::to_string(pythiaNumber);
+        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+
         /// If the SpecializablePythia specialization is hard-coded, okay with no options.
         #pragma omp critical (runOptions)
         {
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-          if (runOptions->hasKey("debug_SLHA_filenames")) {
-            debug_SLHA_filenames = true;
-            filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
-          }
         }
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
-        if (debug_SLHA_filenames)
+        if (SLHA_debug_mode)
         {
           // Run Pythia reading an SLHA file.
-          static unsigned int counter = 0;
-          logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
-          pythiaOptions.push_back("SLHA:file = " + filenames[counter]);
-          counter++;
+          cout << "counter: " << counter << endl;
+          cout << "Reading SLHA file: " << filenames.at(counter) << std::endl;
+          logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
+          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
           result.init(pythiaOptions);
         }
         else
@@ -183,7 +221,8 @@ namespace Gambit
     void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT)
+      {
         result.clear();
         #pragma omp critical (Delphes)
         {
@@ -195,10 +234,12 @@ namespace Gambit
     }
 
 
-    void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result) {
+    void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result)
+    {
       using namespace Pipes::getBuckFast;
       std::string buckFastOption;
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT)
+      {
         result.clear();
         #pragma omp critical (BuckFast)
         {
@@ -215,7 +256,8 @@ namespace Gambit
 
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT)
+      {
         #pragma omp critical (runOptions)
         {
           GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
@@ -230,7 +272,8 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == START_SUBPROCESS) {
+      if (*Loop::iteration == START_SUBPROCESS)
+      {
         /// Each thread gets its own Analysis container.
         /// Thus, their initialization is *after* INIT, within omp parallel.
         /// @TODO Can we test for xsec veto here? Might be analysis dependent...
@@ -238,7 +281,8 @@ namespace Gambit
         return;
       }
       
-      if (*Loop::iteration == END_SUBPROCESS) {
+      if (*Loop::iteration == END_SUBPROCESS)
+      {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
         result.add_xsec(xs, xserr);
@@ -254,7 +298,8 @@ namespace Gambit
 
     /// *** Hard Scattering Event Generators ***
 
-    void generatePythia8Event(Pythia8::Event& result) {
+    void generatePythia8Event(Pythia8::Event& result)
+    {
       using namespace Pipes::generatePythia8Event;
       if (*Loop::iteration <= INIT) return;
       result.clear();
@@ -267,7 +312,8 @@ namespace Gambit
 
     /// Convert a hadron-level Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
-    void convertPythia8ParticleEvent(HEPUtils::Event& result) {
+    void convertPythia8ParticleEvent(HEPUtils::Event& result)
+    {
       using namespace Pipes::convertPythia8ParticleEvent;
       if (*Loop::iteration <= INIT) return;
       result.clear();
