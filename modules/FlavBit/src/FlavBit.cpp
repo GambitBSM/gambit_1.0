@@ -53,6 +53,16 @@ namespace Gambit
       namespace myPipe = Pipes::SI_FlavBit_fill;
       using namespace  myPipe;
       using namespace std;
+<<<<<<< HEAD
+=======
+	  	  
+      char name[]="FlavBit/example.lha";
+
+      SLHAstruct spectrum;
+      std::ifstream ifs(name);
+      ifs >> spectrum;
+      ifs.close();
+>>>>>>> d0f4449caae93b6b6cf661ffe08fff7a1513b793
       
       // Bulding spectrum object
       const Spectrum* fullspectrum = *myPipe::Dep::MSSM_spectrum;

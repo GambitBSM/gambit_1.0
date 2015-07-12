@@ -12,7 +12,7 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct
-///  \date 2015 Jan, Feb
+///  \date 2015 Jan, Feb, June
 ///  
 ///  \author Jonathan Cornell
 ///          (jcornell@ucsc.edu)
@@ -34,7 +34,7 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized DarkSUSY.
     */
-    void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_DarkSUSY(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_DarkSUSY;
 
@@ -84,7 +84,6 @@ namespace Gambit {
       logger() << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
 
       if (*Dep::DarkSUSY_PointInit) {
-        result.M_DM = (*BEreq::mspctm).mass(42);        
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
@@ -94,19 +93,16 @@ namespace Gambit {
         result.gns *= factor;
         result.gpa *= factor;
         result.gna *= factor;
-        logger() << "M_DM = " << result.M_DM << std::endl;
         logger() << "DarkSUSY dsddgpgn gives:" << std::endl;
         logger() << " gps = " << result.gps << std::endl;
         logger() << " gns = " << result.gns << std::endl;
         logger() << " gpa = " << result.gpa << std::endl;
         logger() << " gna = " << result.gna << std::endl;
       } else {
-        result.M_DM = (*BEreq::mspctm).mass(42);        
         // Set couplings to zero if DarkSUSY point initialization
         // was not successful
         result.gps = 0.0; result.gns = 0.0;
         result.gpa = 0.0; result.gna = 0.0;
-        logger() << "M_DM = " << result.M_DM << std::endl;
         logger() << "DarkSUSY point initialization failed:" << std::endl;
         logger() << " couplings set to zero." << std::endl;
       }
@@ -114,7 +110,7 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized MicrOmegas.
     */
-    void DD_couplings_MicrOmegas(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_MicrOmegas(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_MicrOmegas;
 
@@ -170,14 +166,12 @@ namespace Gambit {
       result.gpa = p2[0]*2;
       result.gns = p3[0]*2;
       result.gna = p4[0]*2;
-      result.M_DM = (*BEreq::MOcommon).par[1];
 
       logger() << "micrOMEGAs nucleonAmplitudes gives:" << endl;
       logger() << " gps: " << result.gps << endl;
       logger() << " gns: " << result.gns << endl;
       logger() << " gpa: " << result.gpa << endl;
       logger() << " gna: " << result.gna << endl;
-      logger() << " M_DM = " << result.M_DM << endl;
     }
 
     /// Simple calculator of the spin-independent WIMP-proton cross-section 
@@ -227,7 +221,8 @@ namespace Gambit {
     // TODO: Move halo settings from backend to here?
     void SetWIMP_DDCalc0(bool &result) {
       using namespace Pipes::SetWIMP_DDCalc0;
-      double M    = (*Dep::DD_couplings).M_DM;
+      double M = 
+        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
       double GpSI = (*Dep::DD_couplings).gps;
       double GnSI = (*Dep::DD_couplings).gns;
       double GpSD = (*Dep::DD_couplings).gpa;
@@ -245,24 +240,38 @@ namespace Gambit {
       logger() << "  sigmanSD = " << sigmanSD << std::endl;
     }
 
-    /// Triggers DDCalc0 internal rate calculations for the XENON100 2012.
+    /// Performs DDCalc0 internal rate calculations for the XENON100 2012 result.
     void CalcRates_XENON100_2012_DDCalc0(bool &result) {
       using namespace Pipes::CalcRates_XENON100_2012_DDCalc0;
       BEreq::DDCalc0_XENON100_2012_CalcRates();
       result = true;
     }
 
-    /// Triggers DDCalc0 internal rate calculations for the LUX 2013.
+    /// Performs DDCalc0 internal rate calculations for the LUX 2013 result.
     void CalcRates_LUX_2013_DDCalc0(bool &result) {
       using namespace Pipes::CalcRates_LUX_2013_DDCalc0;
       BEreq::DDCalc0_LUX_2013_CalcRates();
       result = true;
     }
 
-    /*! \brief Triggers DDCalc0 internal rate calculations for the future
-     *         argon-based DARWIN experiment .
+    /// Performs DDCalc0 internal rate calculations for the SuperCDMS 2014 result.
+    void CalcRates_SuperCDMS_2014_DDCalc0(bool &result) {
+      using namespace Pipes::CalcRates_SuperCDMS_2014_DDCalc0;
+      BEreq::DDCalc0_SuperCDMS_2014_CalcRates();
+      result = true;
+    }
+
+    /// Performs DDCalc0 internal rate calculations for the SIMPLE 2014 result.
+    void CalcRates_SIMPLE_2014_DDCalc0(bool &result) {
+      using namespace Pipes::CalcRates_SIMPLE_2014_DDCalc0;
+      BEreq::DDCalc0_SIMPLE_2014_CalcRates();
+      result = true;
+    }
+
+    /*! \brief Performs DDCalc0 internal rate calculations for the future
+     *         argon-based DARWIN experiment.
      *
-     * Estimated sensitivity, as of 2015) at the current model point.
+     * Estimated sensitivity (as of 2015) at the current model point.
      */
     void CalcRates_DARWIN_Ar_2015_DDCalc0(bool &result) {
       using namespace Pipes::CalcRates_DARWIN_Ar_2015_DDCalc0;
@@ -270,10 +279,10 @@ namespace Gambit {
       result = true;
     }
 
-    /*! \brief Triggers DDCalc0 internal rate calculations for the future
+    /*! \brief Performs DDCalc0 internal rate calculations for the future
      *         xenon-based DARWIN experiment.  
      *
-     * Estimated sensitivity, as of 2015) at the current model point.
+     * Estimated sensitivity (as of 2015) at the current model point.
      */
     void CalcRates_DARWIN_Xe_2015_DDCalc0(bool &result) {
       using namespace Pipes::CalcRates_DARWIN_Xe_2015_DDCalc0;
@@ -377,6 +386,98 @@ namespace Gambit {
       using namespace Pipes::LUX_2013_SignalSD_DDCalc0;
       result = BEreq::DDCalc0_LUX_2013_SignalSD();
       logger() << "LUX 2013 signal (SD): " << result << std::endl;
+    }
+
+
+    // SuperCDMS 2014 ----------------------------------------------------
+    // Agnese et al., PRL 112, 241302 (2014) [arxiv:1402.7137]
+
+    /// Log-likelihood - SuperCDMS 2014
+    void SuperCDMS_2014_LogLikelihood_DDCalc0(double &result) {
+      using namespace Pipes::SuperCDMS_2014_LogLikelihood_DDCalc0;
+      result = BEreq::DDCalc0_SuperCDMS_2014_LogLikelihood();
+      logger() << "SuperCDMS 2014 log-likelihood: " << result << std::endl;
+    }
+
+    /// Observed events (integer) - SuperCDMS 2014
+    void SuperCDMS_2014_Events_DDCalc0(int &result) {
+      using namespace Pipes::SuperCDMS_2014_Events_DDCalc0;
+      result = BEreq::DDCalc0_SuperCDMS_2014_Events();
+      logger() << "SuperCDMS 2014 events: " << result << std::endl;
+    }
+
+    /// Background expectation - SuperCDMS 2014
+    void SuperCDMS_2014_Background_DDCalc0(double &result) {
+      using namespace Pipes::SuperCDMS_2014_Background_DDCalc0;
+      result = BEreq::DDCalc0_SuperCDMS_2014_Background();
+      logger() << "SuperCDMS 2014 background: " << result << std::endl;
+    }
+
+    /// Signal expectation - SuperCDMS 2014
+    void SuperCDMS_2014_Signal_DDCalc0(double &result) {
+      using namespace Pipes::SuperCDMS_2014_Signal_DDCalc0;
+      result = BEreq::DDCalc0_SuperCDMS_2014_Signal();
+      logger() << "SuperCDMS 2014 signal: " << result << std::endl;
+    }
+
+    /// Signal expectation (spin-independent) - SuperCDMS 2014
+    void SuperCDMS_2014_SignalSI_DDCalc0(double &result) {
+      using namespace Pipes::SuperCDMS_2014_SignalSI_DDCalc0;
+      result = BEreq::DDCalc0_SuperCDMS_2014_SignalSI();
+      logger() << "SuperCDMS 2014 signal (SI): " << result << std::endl;
+    }
+
+    /// Signal expectation (spin-dependent) - SuperCDMS 2014
+    void SuperCDMS_2014_SignalSD_DDCalc0(double &result) {
+      using namespace Pipes::SuperCDMS_2014_SignalSD_DDCalc0;
+      result = BEreq::DDCalc0_SuperCDMS_2014_SignalSD();
+      logger() << "SuperCDMS 2014 signal (SD): " << result << std::endl;
+    }
+
+
+    // SIMPLE 2014 -------------------------------------------------------
+    // Felizardo et al., PRD 89, 072013 (2014) [arxiv:1404.4309]
+
+    /// Log-likelihood - SIMPLE 2014
+    void SIMPLE_2014_LogLikelihood_DDCalc0(double &result) {
+      using namespace Pipes::SIMPLE_2014_LogLikelihood_DDCalc0;
+      result = BEreq::DDCalc0_SIMPLE_2014_LogLikelihood();
+      logger() << "SIMPLE 2014 log-likelihood: " << result << std::endl;
+    }
+
+    /// Observed events (integer) - SIMPLE 2014
+    void SIMPLE_2014_Events_DDCalc0(int &result) {
+      using namespace Pipes::SIMPLE_2014_Events_DDCalc0;
+      result = BEreq::DDCalc0_SIMPLE_2014_Events();
+      logger() << "SIMPLE 2014 events: " << result << std::endl;
+    }
+
+    /// Background expectation - SIMPLE 2014
+    void SIMPLE_2014_Background_DDCalc0(double &result) {
+      using namespace Pipes::SIMPLE_2014_Background_DDCalc0;
+      result = BEreq::DDCalc0_SIMPLE_2014_Background();
+      logger() << "SIMPLE 2014 background: " << result << std::endl;
+    }
+
+    /// Signal expectation - SIMPLE 2014
+    void SIMPLE_2014_Signal_DDCalc0(double &result) {
+      using namespace Pipes::SIMPLE_2014_Signal_DDCalc0;
+      result = BEreq::DDCalc0_SIMPLE_2014_Signal();
+      logger() << "SIMPLE 2014 signal: " << result << std::endl;
+    }
+
+    /// Signal expectation (spin-independent) - SIMPLE 2014
+    void SIMPLE_2014_SignalSI_DDCalc0(double &result) {
+      using namespace Pipes::SIMPLE_2014_SignalSI_DDCalc0;
+      result = BEreq::DDCalc0_SIMPLE_2014_SignalSI();
+      logger() << "SIMPLE 2014 signal (SI): " << result << std::endl;
+    }
+
+    /// Signal expectation (spin-dependent) - SIMPLE 2014
+    void SIMPLE_2014_SignalSD_DDCalc0(double &result) {
+      using namespace Pipes::SIMPLE_2014_SignalSD_DDCalc0;
+      result = BEreq::DDCalc0_SIMPLE_2014_SignalSD();
+      logger() << "SIMPLE 2014 signal (SD): " << result << std::endl;
     }
 
 

@@ -10,7 +10,7 @@
 
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
+  MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
 
 Priors:
     # none: all parameters fixed in this example.
@@ -52,9 +52,12 @@ Rules:
   - capability: Hplus_decay_rates
     function: Hplus_decays
       
+  - capability: decay_rates
+    function: all_decays
+
 #  - function: SUSY_HIT_1_5_init
 #    options:
-#     debug_SLHA_filenames:
+#      debug_SLHA_filenames:
 #        - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
       
       

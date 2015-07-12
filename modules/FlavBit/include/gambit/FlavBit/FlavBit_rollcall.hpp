@@ -375,7 +375,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY 
 
 
 

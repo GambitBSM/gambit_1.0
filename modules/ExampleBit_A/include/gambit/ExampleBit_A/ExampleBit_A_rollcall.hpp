@@ -13,8 +13,9 @@
 ///
 ///  Don't put typedefs or other type definitions
 ///  in this file; see
-///  Core/include/types_rollcall.hpp for further
-///  instructions on how to add new types.
+///  Elements/include/gambit/Elements/types_rollcall.hpp
+///  for further instructions on how to add new 
+///  types.
 ///
 ///  *********************************************
 ///
@@ -217,6 +218,16 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Tester for C/C++ backend array interfaces
+  #define CAPABILITY BE_Array_tester
+  START_CAPABILITY
+    #define FUNCTION Backend_array_test
+    START_FUNCTION(double)   
+    BACKEND_REQ(example_be_array_1D, (), double, (double*))
+    BACKEND_REQ(example_be_array_2D, (), double, (double(*)[10]))
+    BACKEND_REQ(example_be_array_3D, (), double, (double(*)[10][10]))
+    #undef FUNCTION
+  #undef CAPABILITY
 
 #undef MODULE
 

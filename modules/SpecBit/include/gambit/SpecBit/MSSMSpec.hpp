@@ -27,7 +27,7 @@
 
 #include <memory>
 
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/SpecBit/MSSMSpec_head.hpp"   // "Header" declarations for MSSMSpec class
 

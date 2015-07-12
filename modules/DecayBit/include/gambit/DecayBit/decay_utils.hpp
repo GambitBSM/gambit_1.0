@@ -23,6 +23,7 @@ namespace Gambit
   namespace DecayBit
   {
       
+    /// Construct a decay table entry for a particle from the entry for its antiparticle
     DecayTable::Entry CP_conjugate(const DecayTable::Entry&);
     
   }

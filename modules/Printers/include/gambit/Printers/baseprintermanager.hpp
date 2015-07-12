@@ -40,6 +40,14 @@ namespace Gambit
 
         /// Getter for auxiliary printer objects
         virtual BaseBasePrinter* get_stream(const std::string& = "") = 0;
+
+        /// Instruct printers that scan has finished and to perform cleanup
+        virtual void finalise() = 0;
+
+        /// For debugging: check up on mpi
+        #ifdef WITH_MPI
+        virtual bool Is_MPI_initialized() = 0;
+        #endif
     };
 
 

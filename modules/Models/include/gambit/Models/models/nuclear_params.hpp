@@ -32,6 +32,7 @@
   DEFINEPARS(sigma0, SigmaPiN)
   DEFINEPARS(deltad, deltau, deltas)
   INTERPRET_AS_PARENT__FUNCTION(sigma0_SigmaPiN_to_fnq)
+  INTERPRET_AS_PARENT__DEPENDENCY(SMINPUTS, SMInputs)
 #undef PARENT
 #undef MODEL
 
@@ -42,6 +43,7 @@
   DEFINEPARS(sigmas, SigmaPiN)
   DEFINEPARS(deltad, deltau, deltas)
   INTERPRET_AS_PARENT__FUNCTION(sigmas_to_sigma0)
+  INTERPRET_AS_PARENT__DEPENDENCY(SMINPUTS, SMInputs)
 #undef PARENT
 #undef MODEL
 

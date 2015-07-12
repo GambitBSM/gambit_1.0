@@ -17,7 +17,7 @@
 #ifndef __SMskeleton_hpp__
 #define __SMskeleton_hpp__
 
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/SpecBit/SLHAskeleton.hpp"
 
 namespace Gambit {

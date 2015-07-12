@@ -71,12 +71,14 @@ namespace Gambit
                                 std::vector<std::string> ini_incs_not_found;
                                 ///list of all files that were found:  {file_name: include_path_to_file}
                                 std::multimap<std::string, std::string> found_incs;
+                                ///flag list
+                                mutable YAML::Node flags;
                                 
                                 Plugin_Details(){}
                                 
                                 Plugin_Details(const std::string &str);
                                 
-                                void get_status(const YAML::Node &, const YAML::Node &);
+                                void get_status(const YAML::Node &, const YAML::Node &, const YAML::Node &);
                                 
                                 std::string printMin() const;
                                 

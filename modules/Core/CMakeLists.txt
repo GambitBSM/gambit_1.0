@@ -41,7 +41,6 @@ set(header_files include/gambit/Core/container_factory.hpp
                  include/gambit/Core/ini_functions.hpp
                  include/gambit/Core/likelihood_container.hpp
                  include/gambit/Core/modelgraph.hpp
-                 include/gambit/Core/version.hpp
                  include/gambit/Core/yaml_description_database.hpp
                  include/gambit/Core/yaml_parser.hpp
 )

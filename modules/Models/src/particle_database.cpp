@@ -43,7 +43,7 @@ namespace Gambit
     void define_particles(partmap* particles)
     {
  
-      // ---- Standard Model gauge bosons (context = 0) ----
+      // ---- Standard Model gauge/Higgs bosons (context = 0) ----
 
       add_particle("g",     ( 21, 0) )
       add_particle("gamma", ( 22, 0) )
@@ -51,6 +51,7 @@ namespace Gambit
       add_particle("W+",    ( 24, 0) )
       add_particle("W-",    (-24, 0) )
       add_particle("G",     ( 39, 0) )
+      //  particle("h0_1"   ( 25, 0) ) is added in MSSM section below.
 
       // ---- Standard Model mass eigenstates (context = 0) ----
 
@@ -115,8 +116,8 @@ namespace Gambit
       add_particle("~G", (1000039,0) )
 
       // Mass-ordered neutral, pseudoscalar, and charged Higgs bosons
+      // PDG 25 is also the SM Higgs boson, but in the MSSM it is not always the most SM-like.
       add_particle_set("h0", ((25, 0), (35, 0)) )
-      // I think PDG 25 doubles as the SM Higgs boson, though in the MSSM it is not always the most SM-like
       add_particle("A0", ( 36, 0) )
       add_particle("H+", ( 37, 0) )
       add_particle("H-", (-37, 0) )
