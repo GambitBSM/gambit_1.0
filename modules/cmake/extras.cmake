@@ -53,11 +53,11 @@ set(nl "___totally_unlikely_to_occur_naturally___")
 set(true_nl \"\\n\")
 
 # Define the module location switch differently depending on compiler
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(FMODULE "module")
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(FMODULE "J")
-endif()
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")	
+  set(FMODULE "module")					
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")	
+  set(FMODULE "J")					
+endif()                                                 
 
 
 ########### Scanners #########################
@@ -214,13 +214,15 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmi
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
 endif()
-
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
-
-# - Suppress warnings from -Wextra when building Pythia. 
-set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
-
+# - Suppress warnings from -Wextra when building Pythia with gcc
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")	
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra")
+endif()                                                 
+# - Set include directories
+set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
+# - Actual configure and compile commands
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
@@ -229,7 +231,7 @@ ExternalProject_Add(pythia
   COMMAND echo "OSX DEBUG: pythia_CXXFLAGS = ${pythia_CXXFLAGS}"
   COMMAND echo "OSX DEBUG: pythia_CONFIGURE_EXTRAS = ${pythia_CONFIGURE_EXTRAS}"
   COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
-  BUILD_COMMAND make
+  BUILD_COMMAND make CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
 )
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/lib/libpythia8.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so")
