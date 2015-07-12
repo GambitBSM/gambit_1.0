@@ -57,7 +57,7 @@ namespace Gambit
       /// Map of parameter names to values
       std::unordered_map<str, double> parameterMap;
 
-      /// Map of scanned model names to primiary model functors
+      /// Map of scanned model names to primary model functors
       std::map<str, primary_model_functor *> functorMap;
 			
       /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).

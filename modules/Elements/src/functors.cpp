@@ -36,7 +36,6 @@
 #include <chrono>
 
 #include "gambit/Elements/functors.hpp"
-//#include "gambit/Elements/all_functor_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
@@ -61,15 +60,11 @@ namespace Gambit
      myType          (Utils::fix_type(result_type)),
      myOrigin        (origin_name),
      myClaw          (&claw),
-     myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
+     myLabel         ("#"+func_capability+" @"+origin_name+"::"+func_name),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false)     // For debugging.
-    {
-       std::stringstream ss;
-       ss<<"#"<<capability()<<" @"<<origin()<<"::"<<name();
-       setLabel(ss.str());
-    }
+    {}
 
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
@@ -101,9 +96,6 @@ namespace Gambit
       myStatus = stat;
       setInUse(myStatus == 2);
     }
-
-    /// Setter for label (used in printer system)
-    void functor::setLabel(str label) { if (this == NULL) failBigTime("setLabel"); myLabel = label; }
 
     /// Getter for the wrapped function's name
     str functor::name()        const { if (this == NULL) failBigTime("name"); return myName; }

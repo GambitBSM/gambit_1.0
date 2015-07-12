@@ -47,12 +47,22 @@ namespace Gambit
   {
     const str default_path("no path in config/backend_locations.yaml"); 
     str p;
-    try
+    auto be_it = bepathoverrides.find(be);
+    bool override_present = (be_it != bepathoverrides.end()); 
+    if (override_present)
     {
-      p = bepathoverrides.at(be).at(ver);
-      if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
-    }
-    catch (std::exception& e)
+      auto ver_it = be_it->second.find(ver);
+      if (ver_it != be_it->second.end())
+      {
+        p = ver_it->second;
+        if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
+      }
+      else 
+      {
+        override_present = false;
+      }
+    }  
+    if (not override_present)
     {
       if (bepathfile[be][ver])
       {
