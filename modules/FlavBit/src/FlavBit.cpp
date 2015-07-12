@@ -34,7 +34,7 @@
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
 
 #include "SLHAea/slhaea.h"
-#include "gambit/Elements/Spectrum.hpp"
+#include "gambit/Elements/spectrum.hpp"
 
 #define Nobs_BKsll 21
 
@@ -53,20 +53,18 @@ namespace Gambit
       namespace myPipe = Pipes::SI_FlavBit_fill;
       using namespace  myPipe;
       using namespace std;
-<<<<<<< HEAD
-=======
-	  	  
+      /*
       char name[]="FlavBit/example.lha";
 
       SLHAstruct spectrum;
       std::ifstream ifs(name);
       ifs >> spectrum;
       ifs.close();
->>>>>>> d0f4449caae93b6b6cf661ffe08fff7a1513b793
+      */
       
       // Bulding spectrum object
       const Spectrum* fullspectrum = *myPipe::Dep::MSSM_spectrum;
-      eaSLHA spectrum = fullspectrum->getSLHAea(); 
+      SLHAstruct spectrum;      //eaSLHA spectrum = fullspectrum->getSLHAea(); 
       // saving slha for futher examinations
       std::ofstream out1;               
       out1.open("Read_FlavBit.slha");   
