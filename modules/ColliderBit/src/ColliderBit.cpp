@@ -72,7 +72,7 @@ namespace Gambit
       globalAnalyses->clear();
 
       // Do the base-level initialisation	 
-      Loop::exectuteIteration(BASE_INIT);
+      Loop::executeIteration(BASE_INIT);
       if (*Loop::done)
       {
 	Loop::executeIteration(FINALIZE); 
@@ -101,17 +101,15 @@ namespace Gambit
         {
           ++pythiaNumber;
           Loop::executeIteration(INIT);
-          if (*Loop::done) break
-	  {
-            #pragma omp parallel shared(SHARED_OVER_OMP)
+          if (*Loop::done) break;
+          #pragma omp parallel shared(SHARED_OVER_OMP)
+          {
+            Loop::executeIteration(START_SUBPROCESS);
+            if (not *Loop::done)
             {
-              Loop::executeIteration(START_SUBPROCESS);
-              if (not *Loop::done)
-	      {
-                #pragma omp for
-                for (int i = 1; i <= nEvents; ++i) if (not *Loop::done) Loop::executeIteration(i);
-                if (not *Loop::done) Loop::executeIteration(END_SUBPROCESS);
-              }
+              #pragma omp for
+              for (int i = 1; i <= nEvents; ++i) if (not *Loop::done) Loop::executeIteration(i);
+              if (not *Loop::done) Loop::executeIteration(END_SUBPROCESS);
             }
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
@@ -120,9 +118,9 @@ namespace Gambit
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
           #endif
-          if (*Loop::done) break
+          if (*Loop::done) break;
         }
-        if (*Loop::done) break
+        if (*Loop::done) break;
       }
       Loop::executeIteration(FINALIZE);
     }
@@ -141,6 +139,7 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {      
+        SLHA_debug_mode = false;
         // If there are no debug filenames set, look for them.
         if (filenames.empty())							
         {													
@@ -153,9 +152,11 @@ namespace Gambit
         // Increment the counter if there are debug SLHA files and this is the first thread.
         if (SLHA_debug_mode)
 	{ 
-          if (omp_get_thread_num() == 0) counter++;
-          cout << "incrementing counter. " << counter << endl;
-          logger() << "counter is: " << counter << EOM; 
+          if (omp_get_thread_num() == 0) {
+            counter++;
+            cout << "incrementing counter. " << counter << endl;
+            logger() << "counter is: " << counter << EOM; 
+          }
           if (filenames.size() == counter) invalid_point().raise("No more SLHA files. My work is done.");
         }
       }
@@ -301,7 +302,7 @@ namespace Gambit
     void generatePythia8Event(Pythia8::Event& result)
     {
       using namespace Pipes::generatePythia8Event;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
@@ -315,7 +316,7 @@ namespace Gambit
     void convertPythia8ParticleEvent(HEPUtils::Event& result)
     {
       using namespace Pipes::convertPythia8ParticleEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
@@ -463,7 +464,7 @@ namespace Gambit
     /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
     void convertPythia8PartonEvent(HEPUtils::Event& result) {
       using namespace Pipes::convertPythia8PartonEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
@@ -589,7 +590,7 @@ namespace Gambit
 
     void reconstructDelphesEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructDelphesEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       #pragma omp critical (Delphes)
@@ -600,7 +601,7 @@ namespace Gambit
 
     void reconstructBuckFastEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructBuckFastEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
@@ -613,46 +614,21 @@ namespace Gambit
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-// Pat: merge conflict resolved here by accepting from ColliderBit_development.  Abram please check. <<<<<<< HEAD
       if (*Loop::iteration == FINALIZE) {
-//=======
-
-      //if (*Loop::iteration == INIT) {
-
-        //// for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
-        ////   (*anaPtr)->set_xsec(-1, -1);
-        //// }
-
-      //} else if (*Loop::iteration == END_SUBPROCESS) {
-
-        //for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-        //{
-          ///// @TODO Clean this crap up... xsecArrays should be more Gambity.
-          ///// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
-          ///// @todo Shouldn't add_xsec really be set_xsec in this context? (It's not analysis combination)
-          //(*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
-        //}
-
-      //} else if (*Loop::iteration == FINALIZE) {
-
-//>>>>>>> master
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
-// Pat: merge conflict resolved here by accepting from ColliderBit_development.  Abram please check. <<<<<<< HEAD
           // Finalize is currently only used to report a cut flow.... rename?
           (*anaPtr)->finalize();
-//=======
-//>>>>>>> master
           result.push_back((*anaPtr)->get_results());
         }
         return;
       }
 
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
 
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
       Dep::AnalysisContainer->analyze(*Dep::ReconstructedEvent);
