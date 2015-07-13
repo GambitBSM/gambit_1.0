@@ -142,7 +142,7 @@ namespace Gambit
         if (SLHA_debug_mode)
         { 
           if (omp_get_thread_num() == 0) counter++;
-          if (filenames.size() == counter) invalid_point().raise("No more SLHA files. My work is done.");
+          if (filenames.size() >= counter) invalid_point().raise("No more SLHA files. My work is done.");
         }
       }
 
