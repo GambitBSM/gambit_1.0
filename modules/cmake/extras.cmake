@@ -142,7 +142,8 @@ endif()
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
 
 # - Add include paths required by the Pythia SLHAea interface
-set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include -I${Boost_INCLUDE_DIR}")
+# - Add -Wno-extra flag
+set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include -I${Boost_INCLUDE_DIR}")
 
 # - Set correct standard c++ library on OSX
 set(pythia_CXX_SHARED_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}")
