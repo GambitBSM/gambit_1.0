@@ -166,8 +166,10 @@ namespace Gambit
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
+          cout << LOCAL_INFO << endl;
 
         result.resetSpecialization(*iter);
+          cout << LOCAL_INFO << endl;
 
         if (SLHA_debug_mode)
         {
@@ -179,22 +181,32 @@ namespace Gambit
         else
         {
           // Run Pythia using an SLHAea object constructed from dependencies on the spectrum and decays.
+          cout << LOCAL_INFO << endl;
           SLHAstruct slha = Dep::decay_rates->as_slhaea();
           if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
           {
             // MSSM-specific
-            SLHAstruct spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
-            spectrum["MODSEL"][1] = 0;  // Model selection
-            cout << spectrum;
+            SLHAstruct spectrum;
+            #pragma omp critical (spectrum_as_slhaea)
+            {
+              spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+            }
+            SLHAea::Block block("MODSEL");
+            block.push_back("BLOCK MODSEL              # Model selection");
+            SLHAea::Line line;
+            line << 1 << 0 << "# General MSSM";
+            block.push_back(line);
             slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
+            slha.push_front(block);
           }
           else
           {
             ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
           }
-          //cout << slha << endl;
+          cout << slha << endl;
           pythiaOptions.push_back("SLHA:file = slhaea");
           result.init(pythiaOptions, &slha);
+          cout << LOCAL_INFO << endl;
         }
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
