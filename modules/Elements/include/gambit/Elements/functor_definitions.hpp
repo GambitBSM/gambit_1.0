@@ -1471,7 +1471,6 @@ namespace Gambit
           if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
           {
             this->finishTiming(thread_num);        //Stop timing function evaluation
-            logger().leaving_module();
             throw(e);
           } 
         }
@@ -1564,7 +1563,6 @@ namespace Gambit
           if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
           {
             this->finishTiming(thread_num);
-            logger().leaving_module();
             throw(e);
           } 
         }
