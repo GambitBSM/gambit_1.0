@@ -66,18 +66,14 @@ namespace Gambit
     /// *************************************************
     /// *** Loop Managers ***
 
-    void operatePythia() {
+    void operatePythia()
+    {
       using namespace Pipes::operatePythia;
       int nEvents = 0;
       globalAnalyses->clear();
 
-      // Do the base-level initialisation	 
+      // Do the base-level initialisation   
       Loop::executeIteration(BASE_INIT);
-      if (*Loop::done)
-      {
-	Loop::executeIteration(FINALIZE); 
-        return;
-      }
 
       #pragma omp critical (runOptions)
       {
@@ -87,30 +83,26 @@ namespace Gambit
         GET_COLLIDER_RUNOPTION(nEvents, int);
       }
 
-      /// For every collider requested in the yaml file:
+      // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) 
       {
         pythiaNumber = 0;
         #pragma omp critical (runOptions)
         {
-          /// Defaults to 1 if option unspecified
+          // Defaults to 1 if option unspecified
           pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
         }
 
-        while (pythiaNumber < pythiaConfigurations and not *Loop::done)
+        while (pythiaNumber < pythiaConfigurations)
         {
           ++pythiaNumber;
           Loop::executeIteration(INIT);
-          if (*Loop::done) break;
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             Loop::executeIteration(START_SUBPROCESS);
-            if (not *Loop::done)
-            {
-              #pragma omp for
-              for (int i = 1; i <= nEvents; ++i) if (not *Loop::done) Loop::executeIteration(i);
-              if (not *Loop::done) Loop::executeIteration(END_SUBPROCESS);
-            }
+            #pragma omp for
+            for (int i = 1; i <= nEvents; ++i) Loop::executeIteration(i);
+            Loop::executeIteration(END_SUBPROCESS);
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
                     << " number " << std::to_string(pythiaNumber) << " has finished." << std::endl;
@@ -118,9 +110,7 @@ namespace Gambit
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
           #endif
-          if (*Loop::done) break;
         }
-        if (*Loop::done) break;
       }
       Loop::executeIteration(FINALIZE);
     }
@@ -135,46 +125,42 @@ namespace Gambit
 
       static bool SLHA_debug_mode = false;      
       static std::vector<std::string> filenames;
-      static unsigned int counter = -1;				       
+      static unsigned int counter = -1;               
 
       if (*Loop::iteration == BASE_INIT)
       {      
         SLHA_debug_mode = false;
         // If there are no debug filenames set, look for them.
-        if (filenames.empty())							
-        {													
+        if (filenames.empty())              
+        {                          
           #pragma omp_critical (runOptions)
           {
-            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");					
-            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");	
+            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");          
+            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");  
           }
         }
         // Increment the counter if there are debug SLHA files and this is the first thread.
         if (SLHA_debug_mode)
-	{ 
-          if (omp_get_thread_num() == 0) {
-            counter++;
-            cout << "incrementing counter. " << counter << endl;
-            logger() << "counter is: " << counter << EOM; 
-          }
+        { 
+          if (omp_get_thread_num() == 0) counter++;
           if (filenames.size() == counter) invalid_point().raise("No more SLHA files. My work is done.");
         }
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
       {
-        /// TODO Surely, I must call result.clear()?
+        // TODO Surely, I must call result.clear()?
 
-        /// Each thread gets its own Pythia instance.
-        /// Thus, the actual Pythia initialization is 
-        /// *after* INIT, within omp parallel.
+        // Each thread gets its own Pythia instance.
+        // Thus, the actual Pythia initialization is 
+        // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
         
-        /// Setup new Pythia
+        // Setup new Pythia
         pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
 
-        /// If the SpecializablePythia specialization is hard-coded, okay with no options.
+        // If the SpecializablePythia specialization is hard-coded, okay with no options.
         #pragma omp critical (runOptions)
         {
           if (runOptions->hasKey(*iter, pythiaConfigName))
@@ -187,8 +173,6 @@ namespace Gambit
         if (SLHA_debug_mode)
         {
           // Run Pythia reading an SLHA file.
-          cout << "counter: " << counter << endl;
-          cout << "Reading SLHA file: " << filenames.at(counter) << std::endl;
           logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
           pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
           result.init(pythiaOptions);
@@ -201,6 +185,8 @@ namespace Gambit
           {
             // MSSM-specific
             SLHAstruct spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+            spectrum["MODSEL"][1] = 0;  // Model selection
+            cout << spectrum;
             slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
           }
           else
@@ -908,7 +894,7 @@ namespace Gambit
         result.BR_hjmumu[i] = Hneut_decays[i]->BF("mu+", "mu-");
         result.BR_hjtautau[i] = Hneut_decays[i]->BF("tau+", "tau-");
         result.BR_hjWW[i] = Hneut_decays[i]->BF("W+", "W-");
-        result.BR_hjZZ[i] = Hneut_decays[i]->BF("Z0", "Z0");	       
+        result.BR_hjZZ[i] = Hneut_decays[i]->BF("Z0", "Z0");         
         result.BR_hjZga[i] = Hneut_decays[i]->BF("gamma", "Z0");
         result.BR_hjgaga[i] = Hneut_decays[i]->BF("gamma", "gamma"); 
         result.BR_hjgg[i] = Hneut_decays[i]->BF("g", "g");
@@ -1110,27 +1096,27 @@ namespace Gambit
       }
       
       BEreq::HiggsBounds_neutral_input_part(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0], 
-					    &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
-					    &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
-					    &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
-					    &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
-					    &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
-					    &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
-					    &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
-					    &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
-					    &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
-					    &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
-					    &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
-					    &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
-					    &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
-					    &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
-					    &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
-					    &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
-					    &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
+              &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
+              &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
+              &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
+              &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
+              &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
+              &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
+              &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
+              &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
+              &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
+              &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
+              &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
+              &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
+              &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
+              &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
+              &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
+              &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
+              &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
 
       BEreq::HiggsBounds_charged_input(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-				       &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
-				       &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
+               &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
       
       BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus);
       
@@ -1163,30 +1149,30 @@ namespace Gambit
       {
         CS_lep_hjhi_ratio(i+1,j+1) = ModelParam.CS_lep_hjhi_ratio[i][j];
         BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
-    	}
+      }
       
       BEreq::HiggsBounds_neutral_input_part_HS(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0], 
-					       &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
-					       &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
-					       &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
-					       &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
-					       &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
-					       &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
-					       &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
-					       &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
-					       &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
-					       &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
-					       &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
-					       &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
-					       &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
-					       &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
-					       &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
-					       &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
-					       &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
+                 &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
+                 &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
+                 &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
+                 &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
+                 &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
+                 &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
+                 &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
+                 &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
+                 &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
+                 &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
+                 &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
+                 &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
+                 &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
+                 &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
+                 &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
+                 &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
+                 &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
       
       BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-					  &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
-					  &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
+            &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
       
       BEreq::HiggsSignals_neutral_input_MassUncertainty(&ModelParam.deltaMh[0]);
 

@@ -43,7 +43,7 @@ START_MODULE
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
     NEEDS_CLASSES_FROM(Pythia, default)
-    // FIXME this should not be needed if the dep resolver orders things correctly.
+    // FIXME this should not be needed once the dep resolver orders things correctly.
     MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, const Spectrum*, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION
   #undef CAPABILITY
