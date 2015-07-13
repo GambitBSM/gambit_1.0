@@ -129,7 +129,6 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {      
-        SLHA_debug_mode = false;
         // If there are no debug filenames set, look for them.
         if (filenames.empty())              
         {                          
@@ -167,10 +166,8 @@ namespace Gambit
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
-          cout << LOCAL_INFO << endl;
 
         result.resetSpecialization(*iter);
-          cout << LOCAL_INFO << endl;
 
         if (SLHA_debug_mode)
         {
@@ -182,7 +179,6 @@ namespace Gambit
         else
         {
           // Run Pythia using an SLHAea object constructed from dependencies on the spectrum and decays.
-          cout << LOCAL_INFO << endl;
           SLHAstruct slha = Dep::decay_rates->as_slhaea();
           if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
           {
@@ -207,7 +203,6 @@ namespace Gambit
           cout << slha << endl;
           pythiaOptions.push_back("SLHA:file = slhaea");
           result.init(pythiaOptions, &slha);
-          cout << LOCAL_INFO << endl;
         }
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
