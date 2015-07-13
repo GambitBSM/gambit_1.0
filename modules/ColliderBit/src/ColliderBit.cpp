@@ -129,6 +129,7 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {      
+        SLHA_debug_mode = false;
         // If there are no debug filenames set, look for them.
         if (filenames.empty())              
         {                          
@@ -611,40 +612,15 @@ namespace Gambit
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-// Pat: merge conflict resolved here by accepting from ColliderBit_development.  Abram please check. <<<<<<< HEAD
       if (*Loop::iteration == FINALIZE) {
-//=======
-
-      //if (*Loop::iteration == INIT) {
-
-        //// for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
-        ////   (*anaPtr)->set_xsec(-1, -1);
-        //// }
-
-      //} else if (*Loop::iteration == END_SUBPROCESS) {
-
-        //for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-        //{
-          ///// @TODO Clean this crap up... xsecArrays should be more Gambity.
-          ///// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
-          ///// @todo Shouldn't add_xsec really be set_xsec in this context? (It's not analysis combination)
-          //(*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
-        //}
-
-      //} else if (*Loop::iteration == FINALIZE) {
-
-//>>>>>>> master
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
-// Pat: merge conflict resolved here by accepting from ColliderBit_development.  Abram please check. <<<<<<< HEAD
           // Finalize is currently only used to report a cut flow.... rename?
           (*anaPtr)->finalize();
-//=======
-//>>>>>>> master
           result.push_back((*anaPtr)->get_results());
         }
         return;
