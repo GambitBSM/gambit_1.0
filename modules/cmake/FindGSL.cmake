@@ -43,7 +43,7 @@ if( WIN32 AND NOT CYGWIN AND NOT MSYS )
       set( GSL_FOUND ON )
     endif( GSL_LIBRARY )
 
-		# look for gsl cblas library
+    # look for gsl cblas library
     find_library( GSL_CBLAS_LIBRARY
         NAMES gslcblas
       )
@@ -107,33 +107,60 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
       # run the gsl-config program to get the libs
       execute_process(
         COMMAND sh "${GSL_CONFIG_EXECUTABLE}" --libs
-        OUTPUT_VARIABLE GSL_LIBRARIES
+        OUTPUT_VARIABLE GSL_LIBRARIES_RAW
         RESULT_VARIABLE RET
         ERROR_QUIET
         )
       if( RET EQUAL 0 )
-        string(STRIP "${GSL_LIBRARIES}" GSL_LIBRARIES )
-        separate_arguments( GSL_LIBRARIES )
+        string(STRIP "${GSL_LIBRARIES_RAW}" GSL_LIBRARIES_RAW )
+        separate_arguments( GSL_LIBRARIES_RAW )
 
         # extract linkdirs (-L) for rpath (i.e., LINK_DIRECTORIES)
         string( REGEX MATCHALL "-L[^;]+"
-          GSL_LIBRARY_DIRS "${GSL_LIBRARIES}" )
+          GSL_LIBRARY_DIRS "${GSL_LIBRARIES_RAW}" )
         string( REPLACE "-L" ""
           GSL_LIBRARY_DIRS "${GSL_LIBRARY_DIRS}" )
+        
+        # work out the absolute paths of the required libs
+        set(CURRENT_LINK_DIR "")
+        foreach(entry ${GSL_LIBRARIES_RAW})
+          string( REGEX MATCH "-L[^;]+" IS_DIR "${entry}" )
+          if (IS_DIR)
+            string( REPLACE "-L" "" CURRENT_LINK_DIR "${IS_DIR}")
+          else()
+            string (REPLACE "-l" "" entry "${entry}")
+            find_library(GSL_${entry}_LIBRARY NAMES ${entry} lib${entry} HINTS ${CURRENT_LINK_DIR}) 
+            if(GSL_${entry}_LIBRARY)
+              set(TEMP "GSL_${entry}_LIBRARY")
+              set(GSL_LIBRARIES "${GSL_LIBRARIES} ${${TEMP}}")
+            else()
+              message(FATAL_ERROR "Could not locate library needed for GSL: ${entry}")
+            endif()
+          endif()
+        endforeach()
+        string (STRIP "${GSL_LIBRARIES}" ${GSL_LIBRARIES})
+        separate_arguments( GSL_LIBRARIES )
+       
       else( RET EQUAL 0 )
+
         set( GSL_FOUND FALSE )
+
       endif( RET EQUAL 0 )
 
-			MARK_AS_ADVANCED(GSL_CFLAGS)
+      MARK_AS_ADVANCED(GSL_CFLAGS)
 
       if(VERBOSE)
-  			message( STATUS "   Using GSL from ${GSL_PREFIX}" )
+        message( STATUS "   Using GSL from ${GSL_PREFIX}" )
       endif()
 
-		else( GSL_CONFIG_EXECUTABLE )
-			message( STATUS "   FindGSL: gsl-config not found.")
-		endif( GSL_CONFIG_EXECUTABLE )
-	endif( UNIX OR MSYS )
+    else( GSL_CONFIG_EXECUTABLE )
+
+      message( STATUS "   FindGSL: gsl-config not found.")
+
+    endif( GSL_CONFIG_EXECUTABLE )
+
+  endif( UNIX OR MSYS )
+
 endif( WIN32 AND NOT CYGWIN AND NOT MSYS )
 
 if( GSL_FOUND )
