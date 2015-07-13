@@ -87,7 +87,7 @@ namespace Gambit
     }
   
     /// Strips all whitespaces from a string, but re-inserts a single regular space after "const".
-    str strip_whitespace_except_after_const(str s)
+    void strip_whitespace_except_after_const(str &s)
     {
       str tempstr("__TEMP__"), empty(""), constdec2("const ");
       #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D
@@ -108,7 +108,6 @@ namespace Gambit
         }
         boost::replace_all(s, tempstr, constdec2);
       #endif
-      return s;
     }
   
     /// Strips leading and/or trailing parentheses from a string.

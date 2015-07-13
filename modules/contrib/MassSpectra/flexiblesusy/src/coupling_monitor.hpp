@@ -81,7 +81,7 @@ public:
    /// delete all saved couplings
    void clear();
    /// write couplings to file
-   void write_to_file(const std::string&) const;
+   void write_to_file(const std::string&, bool overwrite = true) const;
 
 private:
    typedef std::vector<TTouple> TData; ///< container for the scales and couplings
@@ -96,6 +96,8 @@ private:
    DataGetter data_getter; ///< hepler class which extracts the model parameters
    unsigned width;         ///< width of columns in output table
 
+   /// write line with parameter names
+   void write_parameter_names_line(std::ofstream&) const;
    /// write a comment line
    void write_comment_line(std::ofstream&) const;
 };
@@ -140,12 +142,12 @@ void Coupling_monitor<Model,DataGetter>::clear()
 }
 
 /**
- * write help line which describes the written data
+ * write line with parameter names
  *
  * @param fout output stream
  */
 template <class Model, class DataGetter>
-void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout) const
+void Coupling_monitor<Model,DataGetter>::write_parameter_names_line(std::ofstream& fout) const
 {
    if (!fout.good() || couplings.empty())
       return;
@@ -166,17 +168,51 @@ void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout)
 }
 
 /**
+ * write help line which describes the written data
+ *
+ * @param fout output stream
+ */
+template <class Model, class DataGetter>
+void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout) const
+{
+   if (!fout.good() || couplings.empty())
+      return;
+
+   const std::size_t number_of_couplings = couplings.front().second.size();
+   const std::vector<std::string> parameter_names(data_getter.get_parameter_names(model));
+
+   if (number_of_couplings != parameter_names.size()) {
+      ERROR("number of couplings != length of list of parameter names");
+   }
+
+   fout << std::left << std::setw(width) << "# [1] scale";
+
+   for (std::size_t i = 0; i < number_of_couplings; ++i) {
+      std::ostringstream parameter;
+      parameter << '[' << (i+2) << "] " << parameter_names[i];
+
+      fout << std::left << std::setw(width) << parameter.str();
+   }
+
+   fout << '\n';
+}
+
+/**
  * Write all couplings to a text file.
  *
  * @param file_name name of file to write the data to
+ * @param overwrite if true, file is overwritten, otherwise content is appended
  */
 template <class Model, class DataGetter>
-void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_name) const
+void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_name, bool overwrite) const
 {
    if (couplings.empty())
       return;
 
-   std::ofstream filestr(file_name.c_str(), std::ios::out);
+   const std::ios_base::openmode openmode
+      = (overwrite ? std::ios::out : std::ios::app);
+
+   std::ofstream filestr(file_name.c_str(), openmode);
    VERBOSE_MSG("Coupling_monitor<>::write_to_file: opening file: "
                << file_name.c_str());
    if (filestr.fail()) {
@@ -186,6 +222,7 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
    }
 
    write_comment_line(filestr);
+   write_parameter_names_line(filestr);
 
    // write data
    for (TData::const_iterator it = couplings.begin();

@@ -47,11 +47,13 @@ public:
    void set_number_of_parameters(unsigned pars) { num_pars = pars; }
    void set_loops(unsigned l) { loops = l; }
    void set_thresholds(unsigned t) { thresholds = t; }
+   void set_zero_threshold(double t) { zero_threshold = t; }
 
    double get_scale() const { return scale; }
    unsigned get_number_of_parameters() const { return num_pars; }
    unsigned get_loops() const { return loops; }
    unsigned get_thresholds() const { return thresholds; }
+   double get_zero_threshold() const { return zero_threshold; }
 
    void reset();
 
@@ -69,6 +71,7 @@ private:
    double scale;         ///< current renormalization scale
    double tolerance;     ///< running tolerance
    double min_tolerance; ///< minimum tolerance allowed
+   double zero_threshold;///< threshold for treating values as zero
 
    void call_rk(double, double, Eigen::ArrayXd&,
                 runge_kutta::Derivs, double eps = -1.0);

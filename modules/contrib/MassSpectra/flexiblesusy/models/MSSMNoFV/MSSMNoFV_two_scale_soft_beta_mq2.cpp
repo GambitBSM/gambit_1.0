@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:51:07
+// File generated at Mon 1 Jun 2015 13:04:44
 
 #include "MSSMNoFV_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -38,13 +38,13 @@ Eigen::Matrix<double,3,3> MSSMNoFV_soft_parameters::calc_beta_mq2_one_loop(const
 
    Eigen::Matrix<double,3,3> beta_mq2;
 
-   beta_mq2 = oneOver16PiSqr*(2*mHd2*(Yd.adjoint()*Yd) + 2*mHu2*(
+   beta_mq2 = (oneOver16PiSqr*(2*mHd2*(Yd.adjoint()*Yd) + 2*mHu2*(
       Yu.adjoint()*Yu) + 2*((TYd).adjoint()*TYd) + 2*((TYu).adjoint()*TYu) +
       mq2*Yd.adjoint()*Yd + mq2*Yu.adjoint()*Yu + 2*(Yd.adjoint()*md2*Yd) +
       Yd.adjoint()*Yd*mq2 + 2*(Yu.adjoint()*mu2*Yu) + Yu.adjoint()*Yu*mq2 +
       0.2581988897471611*g1*Tr11*UNITMATRIX(3) - 0.13333333333333333*AbsSqr(
       MassB)*Sqr(g1)*UNITMATRIX(3) - 6*AbsSqr(MassWB)*Sqr(g2)*UNITMATRIX(3) -
-      10.666666666666666*AbsSqr(MassG)*Sqr(g3)*UNITMATRIX(3));
+      10.666666666666666*AbsSqr(MassG)*Sqr(g3)*UNITMATRIX(3))).real();
 
 
    return beta_mq2;
@@ -83,7 +83,7 @@ Eigen::Matrix<double,3,3> MSSMNoFV_soft_parameters::calc_beta_mq2_two_loop(const
 
    Eigen::Matrix<double,3,3> beta_mq2;
 
-   beta_mq2 = twoLoop*(-6*traceconjTYdTpTYd*(Yd.adjoint()*Yd) - 2*
+   beta_mq2 = (twoLoop*(-6*traceconjTYdTpTYd*(Yd.adjoint()*Yd) - 2*
       traceconjTYeTpTYe*(Yd.adjoint()*Yd) - 6*tracemd2YdAdjYd*(Yd.adjoint()*Yd)
       - 2*traceme2YeAdjYe*(Yd.adjoint()*Yd) - 2*traceml2AdjYeYe*(Yd.adjoint()*
       Yd) - 6*tracemq2AdjYdYd*(Yd.adjoint()*Yd) - 12*mHd2*traceYdAdjYd*(
@@ -130,7 +130,7 @@ Eigen::Matrix<double,3,3> MSSMNoFV_soft_parameters::calc_beta_mq2_two_loop(const
       MassB)*Sqr(g1)*(180*(2*MassB*(Yd.adjoint()*Yd) - Yd.adjoint()*TYd + 4*
       MassB*(Yu.adjoint()*Yu) - 2*(Yu.adjoint()*TYu)) + (597*MassB*Sqr(g1) + 5*
       (9*(2*MassB + MassWB)*Sqr(g2) + 16*(2*MassB + MassG)*Sqr(g3)))*UNITMATRIX
-      (3)));
+      (3)))).real();
 
 
    return beta_mq2;

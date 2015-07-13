@@ -13,8 +13,9 @@
 ///
 ///  Don't put typedefs or other type definitions
 ///  in this file; see 
-///  Core/include/types_rollcall.hpp for further
-///  instructions on how to add new types.
+///  Elements/include/gambit/Elements/types_rollcall.hpp
+///  for further instructions on how to add new 
+///  types.
 ///
 ///  *********************************************
 ///

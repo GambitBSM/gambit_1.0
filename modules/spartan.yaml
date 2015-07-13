@@ -151,6 +151,10 @@ ObsLikes:
     capability:   test_vector
     type:         std::vector<double>
 
+  # Test passing of arrays to backends
+  - purpose:      Observable
+    capability:   BE_Array_tester
+
 
 #########################
 # Auxiliary entries
@@ -163,6 +167,7 @@ Rules:
     - {capability: "nevents", module: "ExampleBit_A"}  
 
   - capability:    "nevents_postcuts"
+    type: "int*"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
@@ -226,6 +231,7 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: true
+    log_runtime: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6

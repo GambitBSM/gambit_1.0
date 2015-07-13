@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:03:21
+// File generated at Mon 1 Jun 2015 13:22:23
 
 #ifndef MSSMatMGUT_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
 #define MSSMatMGUT_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
@@ -36,7 +36,7 @@ template<>
 class MSSMatMGUT_high_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    MSSMatMGUT_high_scale_constraint();
-   MSSMatMGUT_high_scale_constraint(MSSMatMGUT<Two_scale>*, const MSSMatMGUT_input_parameters&);
+   MSSMatMGUT_high_scale_constraint(MSSMatMGUT<Two_scale>*);
    virtual ~MSSMatMGUT_high_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -44,17 +44,18 @@ public:
 
    void clear();
    double get_initial_scale_guess() const;
+   const MSSMatMGUT_input_parameters& get_input_parameters() const;
+   MSSMatMGUT<Two_scale>* get_model() const;
    void initialize();
-   void set_input_parameters(const MSSMatMGUT_input_parameters&);
    void set_scale(double); ///< fix unification scale (0 = unfixed)
+
+protected:
+   void update_scale();
 
 private:
    double scale;
    double initial_scale_guess;
    MSSMatMGUT<Two_scale>* model;
-   MSSMatMGUT_input_parameters inputPars;
-
-   void update_scale();
 };
 
 } // namespace flexiblesusy

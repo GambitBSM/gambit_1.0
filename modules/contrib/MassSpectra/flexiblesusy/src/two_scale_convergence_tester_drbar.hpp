@@ -38,9 +38,11 @@ public:
    virtual bool accuracy_goal_reached();
    virtual double get_accuracy_goal() const;
    virtual unsigned int max_iterations() const;
+   double get_current_accuracy() const;
    void set_max_iterations(unsigned);           ///< set maximum number of iterations
 
 protected:
+   unsigned get_iteration() const;              ///< get current iteration number
    const Model<Two_scale>& get_model() const;                ///< get model
    const Model<Two_scale>& get_last_iteration_model() const; ///< get model state during last iteration
    virtual double max_rel_diff() const = 0;     ///< maximum relative difference to last iteration
@@ -54,6 +56,7 @@ private:
    unsigned int it_count;  ///< iteration
    unsigned int max_it;    ///< maximum number of iterations
    double accuracy_goal;   ///< accuracy goal
+   double current_accuracy; ///< current accuracy
 };
 
 template <template<class Method> class Model>
@@ -65,6 +68,7 @@ Convergence_tester_DRbar<Model<Two_scale> >::Convergence_tester_DRbar
    , it_count(0)
    , max_it(static_cast<int>(-log(accuracy_goal_) / log(10.0) * 10))
    , accuracy_goal(accuracy_goal_)
+   , current_accuracy(std::numeric_limits<double>::infinity())
 {
    assert(model && "Error: Convergence_tester_DRbar<Model<Two_scale>>: "
           "model pointer must not be zero!");
@@ -86,7 +90,7 @@ bool Convergence_tester_DRbar<Model<Two_scale> >::accuracy_goal_reached()
    } else {
       const double scale_accuracy_goal = accuracy_goal * 16*M_PI*M_PI;
       if (rel_scale_difference() < scale_accuracy_goal) {
-	 const double current_accuracy = max_rel_diff();
+	 current_accuracy = max_rel_diff();
 	 precision_reached = current_accuracy < accuracy_goal;
 	 VERBOSE_MSG("Convergence_tester_DRbar: current accuracy = "
 		     << current_accuracy
@@ -113,6 +117,18 @@ double Convergence_tester_DRbar<Model<Two_scale> >::get_accuracy_goal() const
 }
 
 template <template<class Method> class Model>
+double Convergence_tester_DRbar<Model<Two_scale> >::get_current_accuracy() const
+{
+   return current_accuracy;
+}
+
+template <template<class Method> class Model>
+unsigned Convergence_tester_DRbar<Model<Two_scale> >::get_iteration() const
+{
+   return it_count;
+}
+
+template <template<class Method> class Model>
 const Model<Two_scale>&
 Convergence_tester_DRbar<Model<Two_scale> >::get_model() const
 {
@@ -130,8 +146,7 @@ template <template<class Method> class Model>
 void Convergence_tester_DRbar<Model<Two_scale> >::set_max_iterations
 (unsigned max_it_)
 {
-   if (max_it_ > 0)
-      max_it = max_it_;
+   max_it = max_it_;
 }
 
 template <template<class Method> class Model>

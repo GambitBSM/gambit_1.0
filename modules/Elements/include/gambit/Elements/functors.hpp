@@ -112,8 +112,6 @@ namespace Gambit
       void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
       void setVertexID(int);
-      /// Setter for label (used in printer system)
-      void setLabel(str);  
  
       /// Getter for the wrapped function's name
       str name() const;
@@ -261,8 +259,8 @@ namespace Gambit
       /// Bound model functor claw, for checking relationships between models
       const Models::ModelFunctorClaw* myClaw;
 
-      /// String label, used to label functor results in printer system
-      str myLabel;
+      /// String label, used to label functor results for printer system
+      const str myLabel;
       /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
@@ -442,7 +440,7 @@ namespace Gambit
       void makeBackendMatchingRule(str tag);
 
       /// Add a rule indicating that classes from a given backend must be available
-      void setRequiredClassloader(str, str);
+      void setRequiredClassloader(str, str, str);
 
       /// Indicate to the functor which backends are actually loaded and working
       void notifyOfBackends(std::map<str, std::set<str> >);
@@ -453,7 +451,7 @@ namespace Gambit
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor);
 
-      // Set this functor's loop manager (if it has one)
+      /// Set this functor's loop manager (if it has one)
       virtual void resolveLoopManager (functor*);
 
       /// Resolve a backend requirement using a pointer to another functor object

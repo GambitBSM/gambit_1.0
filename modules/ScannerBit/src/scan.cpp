@@ -172,11 +172,10 @@ namespace Gambit
                 
                 int Scan_Manager::Run()
                 {
-                        Plugins::Plugin_Details plugin;
-                        std::string pluginName;
+                        std::vector<std::string> pluginNames;
                         if (options.hasKey("use_scanner") && options.getNode("use_scanner").IsScalar())
                         {
-                                pluginName = options.getValue<std::string>("use_scanner");
+                                pluginNames = get_infile_values(options.getNode("use_scanner"));
                         }
                         else
                         {
@@ -185,9 +184,26 @@ namespace Gambit
 
                         unsigned int dim = prior->size();
                         
-                        Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
-                        plugin_interface();
-                        
+                        scan_for(pluginName, pluginNames)
+                        {
+                                Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
+                                
+                                if(plugin_interface["initialize_mpi"] && plugin_interface["initialize_mpi"].as<bool>())
+                                {
+                                        std::cout << "do mpi stuff ..." << std::endl;
+                                }
+                                
+                                plugin_interface();
+                        }
+ 
+                        /// From Ben: To Greg: This is a command I added to the 
+                        /// printer base class which instructs the printers
+                        /// to perform final output tasks (emptying buffers
+                        /// to file and so on). It just needs to happen
+                        /// when the scan is done; feel free to move it to
+                        /// wherever you like.
+                        printerInterface->finalise();
+
                         return 0;
                 }
                 

@@ -18,20 +18,44 @@
 ///  *********************************************
 
 #include <dlfcn.h>
+#ifdef HAVE_LINK_H
+  #include <link.h>
+#endif
 
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
-#include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 
 namespace Gambit
 {
-    
+
+  /// Get back the "::" from things that use NS_SEP instead
+  str fixns(str s)
+  {
+    str ns = STRINGIFY(NS_SEP);
+    const str cc = "::";
+    #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D
+      regex rgx1(ns), rgx2("my_ns"+cc), rgx3(cc+"\\("), rgx4(cc+"$");
+      s = regex_replace(s, rgx1, cc);
+      s = regex_replace(s, rgx2, "");
+      s = regex_replace(s, rgx3, "(");
+      s = regex_replace(s, rgx4, "");
+    #else                                // Using lame-o methods >:(
+      boost::replace_all(s, ns, cc);
+      boost::replace_all(s, "my_ns"+cc, "");
+      boost::replace_all(s, cc+"(", "(");
+      const int cclen = cc.length();
+      const int slen = s.length();
+      if (cclen > slen) return s;
+      if (s.substr(slen-cclen,cclen) == cc) s.replace(slen-cclen,cclen,"");
+    #endif
+    return s;
+  }
+
   /// Catch initialisation exceptions
   void ini_catch(std::exception& e)
   {
     std::cout << "GAMBIT has failed to initialise due to fatal exception: " << e.what() << std::endl;
-    //std::cout << "raised from ini_code_struct declared at: " << location << std::endl;
     throw(e);
   }
     
@@ -139,6 +163,7 @@ namespace Gambit
     return 0;
   }
      
+  /// Load a backend library
   int loadLibrary(str be, str ver, str sv, void*& pHandle, bool& present, bool with_BOSS)
   {
     try
@@ -146,7 +171,7 @@ namespace Gambit
       const str path = Backends::backendInfo().corrected_path(be,ver);
       Backends::backendInfo().link_versions(be, ver, sv);
       pHandle = dlopen(path.c_str(), RTLD_LAZY);
-      if(not pHandle)
+      if (not pHandle)
       {
         std::ostringstream err;
         str error = dlerror();
@@ -159,8 +184,26 @@ namespace Gambit
         present = false;
       }
       else
-      {
-        logger() << "Succeeded in loading " << path << std::endl 
+      {       
+        // If dlinfo is available, use it to verify the path of the backend that was just loaded.
+        #ifdef HAVE_LINK_H
+          link_map *map;
+          dlinfo(pHandle, RTLD_DI_LINKMAP, &map);
+          if (not map)
+          {
+            std::ostringstream err;
+            err << "Problem retrieving library path.  The sought lib is " << path << "." << endl
+                << "The path to this library has not been fully verified.";
+            backend_warning().raise(LOCAL_INFO,err.str());
+          }
+          else
+          {
+            attempt_backend_path_override(be, ver, map->l_name);
+          }
+        #else
+          Backends::backendInfo().override_path(be, ver, "system lacks dlinfo(); path unverifiable");
+        #endif
+        logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) << std::endl 
                  << LogTags::backends << LogTags::info << EOM;
         present = true;
       }
@@ -171,7 +214,24 @@ namespace Gambit
     catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
-  
+
+  /// Try to resolve a pointer to a partial path to a shared library and use it to override the stored backend path.  
+  void attempt_backend_path_override(str& be, str& ver, const char* name)
+  {
+    char *fullname = realpath(name, NULL);
+    if (not fullname)
+    {
+      std::ostringstream err;
+      err << "Problem retrieving absolute library path for " << be << " v" << ver << "." << endl
+          << "The path to this library has not been fully determined.";
+      backend_warning().raise(LOCAL_INFO,err.str());
+    }
+    else
+    {
+      Backends::backendInfo().override_path(be, ver, fullname);
+    }
+  }
+
   /// Register a backend with the logging system
   int register_backend_with_log(str s) 
   {
@@ -190,7 +250,7 @@ namespace Gambit
   {
     try
     {  
-      classname = Utils::strip_whitespace_except_after_const(classname);
+      Utils::strip_whitespace_except_after_const(classname);
       Backends::backendInfo().classes[bever].insert(classname);
     }
     catch (std::exception& e) { ini_catch(e); }
@@ -255,27 +315,70 @@ namespace Gambit
     return 0;
   }
 
-  /// Get back the "::" from things that use NS_SEP instead
-  str fixns(str s)
+  /// Create a log tag for a new module.
+  int register_module_with_log(str module)
   {
-    str ns = STRINGIFY(NS_SEP);
-    const str cc = "::";
-    #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D
-      regex rgx1(ns), rgx2("my_ns"+cc), rgx3(cc+"\\("), rgx4(cc+"$");
-      s = regex_replace(s, rgx1, cc);
-      s = regex_replace(s, rgx2, "");
-      s = regex_replace(s, rgx3, "(");
-      s = regex_replace(s, rgx4, "");
-    #else                                // Using lame-o methods >:(
-      boost::replace_all(s, ns, cc);
-      boost::replace_all(s, "my_ns"+cc, "");
-      boost::replace_all(s, cc+"(", "(");
-      const int cclen = cc.length();
-      const int slen = s.length();
-      if (cclen > slen) return s;
-      if (s.substr(slen-cclen,cclen) == cc) s.replace(slen-cclen,cclen,"");
-    #endif
-    return s;
+    int mytag;
+    try
+    {
+      mytag = Logging::getfreetag();
+      Logging::tag2str()[mytag] = module;
+      Logging::components().insert(mytag);
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return mytag;
+  }
+  
+  /// Register a function with a module.
+  int register_function(module_functor_common& f, bool can_manage, safe_ptr<bool>* done,
+   std::map<str,str>& iCanDo, std::map<str, bool(*)()>& map, bool(&provides)(), safe_ptr<Options>& opts)
+  {
+    try
+    {
+      if (can_manage)
+      {
+        f.setCanBeLoopManager(true);
+        *done = f.loopIsDone();
+      }
+      map[f.capability()] = &provides;
+      iCanDo[f.name()] = f.type();
+      opts = f.getOptions();
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;
+  }
+
+  /// Set a backend rule for one or more models.
+  int set_backend_rule_for_model(module_functor_common& f, str models, str tags)
+  {
+    try
+    {
+      f.makeBackendRuleForModel(models, tags);
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;
+  }
+  
+  /// Set the classloading requirements of a given functor.
+  int set_classload_requirements(module_functor_common& f, str be, str verstr, str default_ver)
+  {                                                                        
+    try
+    {
+      // Split up the passed version string into individual versions
+      std::vector<str> versions = Utils::delimiterSplit(verstr, ",");
+      // Add each version individually as required for classloading
+      for (auto it = versions.begin() ; it != versions.end(); ++it)
+      {
+        // Retrieve the version corresponding to the default if needed
+        if (*it == "default") *it = Backends::backendInfo().version_from_safe_version(be, default_ver);
+        // Retrieve the safe version corresponding to this version
+        str sv = Backends::backendInfo().safe_version_from_version(be, *it);
+        // Set the requirement in the functor
+        f.setRequiredClassloader(be,*it,sv);
+      }
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;
   }
 
 }

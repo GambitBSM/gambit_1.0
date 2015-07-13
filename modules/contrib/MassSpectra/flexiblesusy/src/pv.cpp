@@ -249,18 +249,18 @@ enum BFuncType { b0, b1, b00 };
 template<BFuncType ft>
 complex<double> B(double p2, double m2a, double m2b, double scl2)
 {
-    double mudim = scl2;
-    double delta = 0;
+    const double mudim = scl2;
+    const double delta = 0;
 
     complex<double> x1, x2, y1, y2, r;
     complex<double> mu, f1, f2, g1, g2, a0;
 
     complex<double> B_bb0_, B_bb1_, B_bb00_;
 
-    double m1 = m2a;
-    double m2 = m2b;
-    double p = p2;
-    double dm = m1 - m2;
+    const double m1 = m2a;
+    const double m2 = m2b;
+    const double p = p2;
+    const double dm = m1 - m2;
 
     // general case
     if ( abs(p) > eps*(m1 + m2) ) {

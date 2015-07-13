@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <limits>
 #include <gsl/gsl_sys.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_vector.h>
@@ -149,6 +150,9 @@ public:
 
          if (rel_diff > precision)
             return GSL_CONTINUE;
+
+         if (rel_diff < std::numeric_limits<double>::epsilon())
+            return GSL_SUCCESS;
       }
 
       const int status = check_tadpoles(a, parameters);
@@ -386,11 +390,11 @@ void Fixed_point_iterator<dimension,Convergence_tester>::print_state(std::size_t
 {
    std::cout << "\tIteration n = " << iteration << ": x_{n} =";
    for (std::size_t i = 0; i < dimension; ++i) {
-      std::cout << " " << gsl_vector_get(xn, i);
+      std::cout << ' ' << gsl_vector_get(xn, i);
    }
    std::cout << ", x_{n+1} =";
    for (std::size_t i = 0; i < dimension; ++i) {
-      std::cout << " " << gsl_vector_get(fixed_point, i);
+      std::cout << ' ' << gsl_vector_get(fixed_point, i);
    }
    std::cout << '\n';
 }

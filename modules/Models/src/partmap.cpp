@@ -55,7 +55,6 @@ namespace Gambit
     /// Add a new particle to the database with a short name and an index
     void partmap::add_with_short_pair(str long_name, std::pair<int, int> pdgpr, std::pair<str, int> shortpr)
     {
-      // debug:
       add(long_name, pdgpr);
       short_name_pair_to_pdg_pair[shortpr] = pdgpr;
       short_name_pair_to_long_name[shortpr] = long_name;
@@ -71,6 +70,12 @@ namespace Gambit
         model_error().raise(LOCAL_INFO,"Particle long name "+long_name+" is not in the particle database.");
       }
       return long_name_to_pdg_pair.at(long_name);
+    }
+
+    /// Retrieve the PDG code and context integer, from the short name and index pair
+    std::pair<int, int> partmap::pdg_pair(std::pair<str,int> shortpr)
+    {
+      return pdg_pair(shortpr.first,shortpr.second);
     }
 
     /// Retrieve the PDG code and context integer, from the short name and index
@@ -185,6 +190,75 @@ namespace Gambit
       return (pdg_pair_to_short_name_pair.find(pdgpr) != pdg_pair_to_short_name_pair.end());
     }
 
+    /// Get the matching anti-particle long name for a particle in the database, using the long name 
+    str partmap::get_antiparticle(str lname)
+    {
+      return long_name(get_antiparticle(pdg_pair(lname)));
+    }
+
+    /// Get the matching anti-particle short name and index for a particle in the database, using the short name and index 
+    /// @{
+    std::pair<str, int> partmap::get_antiparticle(std::pair<str, int> shortpr)
+    {
+      return short_name_pair(get_antiparticle(pdg_pair(shortpr)));
+    }
+    std::pair<str, int> partmap::get_antiparticle(str name, int index)
+    {
+      return get_antiparticle(std::make_pair(name,index));
+    }
+    /// @}
+
+    /// Get the matching anti-particle PDG code and index for a particle in the database, using the PDG code and index 
+    /// @{
+    std::pair<int, int> partmap::get_antiparticle(std::pair<int, int> pdgpr)
+    {
+      if (has_antiparticle(pdgpr))
+      {
+        /// Antiparticles are identified by having the opposite sign PDG code to a particle
+        pdgpr.first = -pdgpr.first;
+      }
+      /// Else assume particle is its own antiparticle 
+      /// (if this may not be true, use has_anti_particle to check explicitly for match)
+      return pdgpr;
+    }
+    std::pair<int, int> partmap::get_antiparticle(int pdgcode, int context)
+    {
+      return get_antiparticle(std::make_pair(pdgcode,context));
+    }
+    /// @}
+
+    /// Check if a particle has a matching anti-particle in the database, using the long name 
+    bool partmap::has_antiparticle(str long_name)
+    {
+      return has_antiparticle(pdg_pair(long_name)); 
+    }
+
+    /// Check if a particle has a matching anti-particle in the database, using the short name and index
+    /// @{
+    bool partmap::has_antiparticle(std::pair<str, int> shortpr)
+    {
+      return has_antiparticle(pdg_pair(shortpr)); 
+    }
+    bool partmap::has_antiparticle(str name, int index)
+    {
+      return has_antiparticle(std::make_pair(name,index));
+    }
+    /// @}
+
+    /// Check if a particle has a matching anti-particle in the database, using the PDG code and context integer 
+    /// @{
+    bool partmap::has_antiparticle(std::pair<int, int> pdgpr)
+    {
+      /// Antiparticles are identified by having the opposite sign PDG code to a particle
+      pdgpr.first = -pdgpr.first;
+      return has_particle(pdgpr);
+    } 
+    bool partmap::has_antiparticle(int pdgcode, int context)
+    {
+      return has_antiparticle(std::make_pair(pdgcode,context));
+    }
+    /// @}
+
     /// For debugging: use to check the contents of the particle database
     void partmap::check_contents()
     {
@@ -197,28 +271,23 @@ namespace Gambit
        typedef std::map<std::pair<str, int>, str>::iterator                  it_short_name_pair_to_long_name;
 
        cout << "PDB: long name as key" << endl;
-       #define IT_OBJ long_name_to_pdg_pair
-       for(it_long_name_to_pdg_pair it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+       for(it_long_name_to_pdg_pair it = long_name_to_pdg_pair.begin(); it != long_name_to_pdg_pair.end(); it++) {
            cout   << "  long_name_to_pdg_pair       [" << it->first << "] => " << it->second << endl;
            if(has_short_name(it->first))
            { cout << "  long_name_to_short_name_pair[" << it->first << "] => " << long_name_to_short_name_pair[it->first] << endl; }
            else
            { cout << "  long_name_to_short_name_pair[" << it->first << "] => " << "Has no short name!" << endl; }
        }
-       #undef IT_OBJ
-       #define IT_OBJ pdg_pair_to_long_name
        cout << endl << "PDB: pdg_pair as key" << endl;
-       for(it_pdg_pair_to_long_name it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+       for(it_pdg_pair_to_long_name it = pdg_pair_to_long_name.begin(); it != pdg_pair_to_long_name.end(); it++) {
            cout   << "  pdg_pair_to_long_name [" << it->first << "] => " << it->second << endl;
            if(has_short_name(it->second))
            { cout << "  pdg_pair_to_short_name[" << it->first << "] => " << pdg_pair_to_short_name_pair[it->first] << endl; }
            else
            { cout << "  pdg_pair_to_short_name[" << it->first << "] => " << "Has no short name!" << endl; }
        }
-       #undef IT_OBJ
-       #define IT_OBJ short_name_pair_to_long_name
        cout << endl << "PDB: short name pair as key" << endl;
-       for(it_short_name_pair_to_long_name it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+       for(it_short_name_pair_to_long_name it = short_name_pair_to_long_name.begin(); it != short_name_pair_to_long_name.end(); it++) {
            cout << "  short_name_pair_to_long_name[" << it->first << "] => " << it->second << endl;
            cout << "  short_name_pair_to_pdg_pair [" << it->first << "] => " << short_name_pair_to_pdg_pair[it->first] << endl;
        }

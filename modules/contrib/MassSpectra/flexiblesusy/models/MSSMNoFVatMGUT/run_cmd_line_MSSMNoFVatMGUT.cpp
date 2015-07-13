@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:40:25
+// File generated at Mon 1 Jun 2015 12:51:47
 
 #include "MSSMNoFVatMGUT_input_parameters.hpp"
 #include "MSSMNoFVatMGUT_spectrum_generator.hpp"
@@ -199,6 +199,7 @@ int main(int argc, char* argv[])
 
    MSSMNoFVatMGUT_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
+   spectrum_generator.set_beta_zero_threshold(1e-11);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale

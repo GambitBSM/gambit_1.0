@@ -98,14 +98,11 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   include_directories("${EIGEN3_DIR}")
 
   # The flexiblesusy configure script doesn't always find all the lapack libs, so use CMake to find them instead
-  include(FindLAPACK)
-  foreach(_LIB ${LAPACK_LIBRARIES})
-    set(LAPACK_LIBS "${LAPACK_LIBS} -L${_LIB}")
-  endforeach(_LIB)
-  message("${BoldYellow}-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LIBS}${ColourReset}")
+  message("${BoldYellow}-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LINKLIBS}${ColourReset}")
 
   # FlexibleSUSY configure options
-  set(FS_OPTIONS ${FS_OPTIONS} --with-cxx=${CMAKE_CXX_COMPILER}
+  set(FS_OPTIONS ${FS_OPTIONS} 
+       --with-cxx=${CMAKE_CXX_COMPILER}
        --with-cxx-dep-gen=${CMAKE_CXX_COMPILER}
        --with-cxxflags=${CMAKE_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
@@ -114,6 +111,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}
+       #--with-blas-libdir=${BLAS_LAPACK_LOCATION}
+       #--with-lapack-libdir=${BLAS_LAPACK_LOCATION}
      )
   #--enable-verbose flag causes verbose output at runtime as well. Set it dynamically somehow.
 
@@ -139,7 +138,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   ExternalProject_Add(flexiblesusy
     SOURCE_DIR ${MASS_SPECTRA_DIR}/flexiblesusy
     BUILD_IN_SOURCE 1
-    BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LIBS}
+    BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LINKLIBS}
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
   )

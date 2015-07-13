@@ -53,11 +53,14 @@ using Gambit::type_index;
 #define reqd_libraries(...) void reqd_libraries()
 /// Tells ScannerBit that these include files must exist
 #define reqd_headers(...) void reqd_headers()
+/// Tells ScannerBit to set a flag
+#define set_flag(...) void set_flag()
 /// @}
 
 #define REQD_INIFILE_ENTRIES(...)
 #define REQD_LIRBARIES(...)
 #define REQD_HEADERS(...)
+#define SET_FLAG(...)
 
 #define _ARG_N_(_1_, _2_, _3_, _4_, ret, ...) ret
 #define __ARG_N__(...) _ARG_N_(__VA_ARGS__ , 4, 3, 2, 1, 0)
@@ -192,7 +195,7 @@ namespace __gambit_plugin_namespace__                                           
                 interface <void (void)> reg_init <void (void)>::reg(myData);                                            \
         }                                                                                                               \
 }                                                                                                                       \
-void __gambit_plugin_deconstructor__()                                                                                  \
+void PLUGIN_DECONSTRUCTOR()                                                                                  \
 
 #define __PLUGIN_MAIN_RET_VAL__(...)                                                                                    \
 decltype(__plugin_main_ret_val__(typename Gambit::Scanner::func_ptr_type<void (__VA_ARGS__)>::type()))                  \

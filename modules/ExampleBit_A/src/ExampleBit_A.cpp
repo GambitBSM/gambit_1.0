@@ -248,7 +248,7 @@ namespace Gambit
     }
 
     /// Produces a random floating-point 'event count' between 0 and 5.
-    void exampleEventGen(singleprec &result)
+    void exampleEventGen(float &result)
     {
       using namespace Pipes::exampleEventGen;
       result = Random::draw()*5.0;                 // Generate and return the random number
@@ -349,7 +349,7 @@ namespace Gambit
       // Example on how to pass an farray to a Fortran function that is declared to take Fdouble* instead of Farray< Fdouble,1,3>&
       // This should only be necessary in very special cases, where you need to pass arrays with different index ranges than those specified in the function.
       cout << "Calling doubleFuncArray2 with commonblock element b as argument..." << endl;
-      tmp = BEreq::libFarrayTest_doubleFuncArray2(commonBlock->b.array);
+      tmp = BEreq::libFarrayTest_doubleFuncArray2(&(commonBlock->b.array[0]));
       cout << "Returned value: " << tmp << endl;
       
       cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
@@ -474,16 +474,28 @@ namespace Gambit
     }
 
 
-    /// \name SLHA Examples
-    /// Some example functions for getting and manipulating SLHA-style information
-    /// @{
+    /// Tester for C/C++ backend array interfaces
+    void Backend_array_test(double &result)
+    {
+      using namespace Pipes::Backend_array_test;
+      double arr1D[10], arr2D[10][10], arr3D[10][10][10];
+      arr1D[0] = 5;
+      arr1D[9] = 2;
+      arr2D[0][0] = 5;
+      arr2D[9][0] = 2;
+      arr2D[9][9] = 3;
+      arr3D[0][0][0] = 5;
+      arr3D[9][0][0] = 2;
+      arr3D[9][9][9] = 8;
+      double test1 = BEreq::example_be_array_1D(&arr1D[0]);
+      cout << "TEST 1 in array_test: " << test1 << endl;
+      double test2 = BEreq::example_be_array_2D(&arr2D[0]);
+      cout << "TEST 2 in array_test: " << test2 << endl;
+      double test3 = BEreq::example_be_array_3D(&arr3D[0]);
+      cout << "TEST 3 in array_test: " << test3 << endl;
+      result = test3;
+    } 
 
-    /// Calculate some random thing which requires a low energy MSSM spectrum
-    // void BRstopneutralino(int &result)
-    // {
-    //   using namespace Pipes::BRstopneutralino;
-
-    // }
 
     /// @}
   }

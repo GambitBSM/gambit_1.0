@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:00:26
+// File generated at Mon 1 Jun 2015 13:19:15
 
 #include "lowMSSM_input_parameters.hpp"
 #include "lowMSSM_slha_io.hpp"
@@ -85,10 +85,12 @@ int main(int argc, const char* argv[])
       spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order));
    spectrum_generator.set_beta_loop_order(
       spectrum_generator_settings.get(Spectrum_generator_settings::beta_loop_order));
+   spectrum_generator.set_beta_zero_threshold(
+      spectrum_generator_settings.get(Spectrum_generator_settings::beta_zero_threshold));
    spectrum_generator.set_threshold_corrections_loop_order(
       spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
-   spectrum_generator.set_higgs_2loop_corrections(
-      spectrum_generator_settings.get_higgs_2loop_corrections());
+   spectrum_generator.set_two_loop_corrections(
+      spectrum_generator_settings.get_two_loop_corrections());
 
    spectrum_generator.run(oneset, input);
 

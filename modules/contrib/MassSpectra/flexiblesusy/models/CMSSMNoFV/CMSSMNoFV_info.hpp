@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:44:57
+// File generated at Mon 1 Jun 2015 12:56:29
 
 #ifndef CMSSMNoFV_INFO_H
 #define CMSSMNoFV_INFO_H
@@ -41,6 +41,10 @@ namespace CMSSMNoFV_info {
       mu200, mu201, mu202, mu210, mu211, mu212, mu220, mu221, mu222, me200, me201
       , me202, me210, me211, me212, me220, me221, me222, MassB, MassWB, MassG,
       NUMBER_OF_PARAMETERS};
+
+   extern const double normalization_g1;
+   extern const double normalization_g2;
+   extern const double normalization_g3;
 
    extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
    extern const char* particle_names[NUMBER_OF_PARTICLES];

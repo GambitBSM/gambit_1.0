@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 13:16:09
+// File generated at Mon 1 Jun 2015 13:00:16
 
 #include "CMSSMNoFV_input_parameters.hpp"
 #include "CMSSMNoFV_spectrum_generator.hpp"
@@ -27,6 +27,7 @@
 #include "logger.hpp"
 
 #include <iostream>
+#include <cstring>
 
 namespace flexiblesusy {
 
@@ -49,7 +50,7 @@ void set_command_line_parameters(int argc, char* argv[],
                                  CMSSMNoFV_input_parameters& input)
 {
    for (int i = 1; i < argc; ++i) {
-      const std::string option(argv[i]);
+      const char* option = argv[i];
 
       if(Command_line_options::get_parameter_value(option, "--m0=", input.m0))
          continue;
@@ -67,7 +68,7 @@ void set_command_line_parameters(int argc, char* argv[],
          continue;
 
       
-      if (option == "--help" || option == "-h") {
+      if (strcmp(option,"--help") == 0 || strcmp(option,"-h") == 0) {
          print_usage();
          exit(EXIT_SUCCESS);
       }
@@ -94,6 +95,7 @@ int main(int argc, char* argv[])
 
    CMSSMNoFV_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
+   spectrum_generator.set_beta_zero_threshold(1e-11);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
@@ -107,8 +109,13 @@ int main(int argc, char* argv[])
    const int exit_code = spectrum_generator.get_exit_code();
    const CMSSMNoFV_slha<algorithm_type> model(spectrum_generator.get_model());
 
+   CMSSMNoFV_scales scales;
+   scales.HighScale = spectrum_generator.get_high_scale();
+   scales.SUSYScale = spectrum_generator.get_susy_scale();
+   scales.LowScale  = spectrum_generator.get_low_scale();
+
    // SLHA output
-   SLHAea::Coll slhaea(CMSSMNoFV_slha_io::fill_slhaea(model, oneset));
+   SLHAea::Coll slhaea(CMSSMNoFV_slha_io::fill_slhaea(model, oneset, scales));
 
    std::cout << slhaea;
 
