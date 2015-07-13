@@ -123,6 +123,7 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
         
         # work out the absolute paths of the required libs
         set(CURRENT_LINK_DIR "")
+        set(GSL_LIBRARIES "")
         foreach(entry ${GSL_LIBRARIES_RAW})
           string( REGEX MATCH "-L[^;]+" IS_DIR "${entry}" )
           if (IS_DIR)
@@ -138,8 +139,8 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
             endif()
           endif()
         endforeach()
-        string (STRIP "${GSL_LIBRARIES}" ${GSL_LIBRARIES})
-        separate_arguments( GSL_LIBRARIES )
+        string(STRIP "${GSL_LIBRARIES}" ${GSL_LIBRARIES})
+        separate_arguments(GSL_LIBRARIES)
        
       else( RET EQUAL 0 )
 
