@@ -69,6 +69,13 @@ def readlines_nocomments(f):
 def neatsplit(regex,string):
     return [x for x in re.split(regex,string) if x != '']
 
+# Nice sorting function (from http://stackoverflow.com/a/2669120/1447953)
+def sorted_nicely( l ): 
+    """ Sort the given iterable in the way that humans expect.""" 
+    convert = lambda text: int(text) if text.isdigit() else text 
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    return sorted(l, key = alphanum_key)
+
 # Parse a string to see if it has a class, struct or typedef declaration
 def check_for_declaration(input_snippet,module,local_namespace,candidate_type):
     splitline = neatsplit('\s|\(|\)|\*|\&|\;',input_snippet)
@@ -120,6 +127,32 @@ def update_module(line,module):
             return splitline[2]
     return module
 
+# Check for an existing or type equivalent entry. Preferentially return
+#  1. the existing equivalent entry
+#  2. the first equivalent entry
+#  3. the original type
+def first_type_equivalent(candidate_in, equivs, existing):
+    if candidate_in in existing: return candidate_in
+    candidate = candidate_in
+    candidate.strip()
+    # Exists in the equivalency classes
+    if candidate in equivs:
+        candidate_suffix = ""
+    # Pointer or reference to something that exists in the equivalency classes
+    elif candidate[:-1] in equivs:
+        candidate_suffix = candidate[-1:]
+        candidate = candidate[:-1]
+    # Just not there
+    else:
+        return candidate
+    equivalency_class = equivs[candidate]
+    common_elements = set.intersection(set(equivalency_class), existing)
+    if not common_elements: return equivalency_class[0]+candidate_suffix
+    if len(common_elements) != 1: 
+        print "Error: existing types and equivalency class have more than one element in common!"
+        sys.exit(1)
+    return common_elements.pop()+candidate_suffix
+
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
 def addiffunctormacro(line,module,typedict,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
 
@@ -157,7 +190,7 @@ def addiffunctormacro(line,module,typedict,typeheaders,intrinsic_types,exclude_t
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in new_candidate_types:
-            if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
+            candidate_type = first_type_equivalent(candidate_type,equiv_classes,typeset)
             #Skip out now if the type is already found.
             if (candidate_type in typeset or
                 module+"::"+candidate_type in typeset or
@@ -211,9 +244,11 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
 
         if splitline[0] == "BACKEND_REQ":
             args = re.sub("\s*BACKEND_REQ\s*\(.*?,\s*\(.*?\)\s*,\s*", "", re.sub("\s*\)\s*$", "", line) )
+            args = args.strip()
             if re.search("\)\s*\)\s*$", line): 
                 #This is a backend function requirement
                 leading_type = re.sub("\s*,\s*\(.*?\)\s*$", "", args)
+                leading_type = first_type_equivalent(leading_type,equiv_classes,be_typeset)
                 functor_template_types = list([leading_type])
                 args = re.sub(".*?,\s*\(\s*", "", re.sub("\s*\)\s*$", "", args) )
                 for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
@@ -222,13 +257,16 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
                         if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
+                        arg = first_type_equivalent(arg,equiv_classes,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #This is a backend variable requirement
-                functor_template_types = list([args.strip()+"*"])
+                args = first_type_equivalent(args,equiv_classes,be_typeset)
+                functor_template_types = list([args+"*"])
 
         else:
             functor_template_types = list([splitline[command_index[splitline[0]]]])
+            functor_template_types[0] = first_type_equivalent(functor_template_types[0],equiv_classes,be_typeset)
             if splitline[0].endswith("FUNCTION"):
                 #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
                 args = re.sub("\s*BE_(CONV_)?FUNCTION\s*\(.*?,.*?,\s*?\(", "", line)
@@ -243,6 +281,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
                         if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
+                        arg = first_type_equivalent(arg,equiv_classes,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
@@ -256,7 +295,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in new_candidate_types:
-            if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
+            candidate_type = first_type_equivalent(candidate_type,equiv_classes,be_typeset)
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.
             if ("Gambit::"+candidate_type in be_typeset):
@@ -359,6 +398,17 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
                     rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))
                     type_headers+=[rel_name]
     return type_headers
+
+#Get all files in a directory tree with one of a given set of extensions
+def get_all_files_with_ext(verbose,starting_dir,ext_set,kind):
+    results=[]
+    for root,dirs,files in os.walk(starting_dir):
+        for name in files:
+            for ext in ext_set:
+                if name.endswith(ext):
+                    if verbose: print "  Located "+kind+" file '{0}' at path '{1}'".format(name,os.path.join(root,name))
+                    results+=[os.path.join(root, name)]
+    return results
 
 #Search a directory for headers that are not excluded.
 def retrieve_generic_headers(verbose,starting_dir,kind,excludes):

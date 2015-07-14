@@ -53,11 +53,14 @@ using Gambit::type_index;
 #define reqd_libraries(...) void reqd_libraries()
 /// Tells ScannerBit that these include files must exist
 #define reqd_headers(...) void reqd_headers()
+/// Tells ScannerBit to set a flag
+#define set_flag(...) void set_flag()
 /// @}
 
 #define REQD_INIFILE_ENTRIES(...)
 #define REQD_LIRBARIES(...)
 #define REQD_HEADERS(...)
+#define SET_FLAG(...)
 
 #define _ARG_N_(_1_, _2_, _3_, _4_, ret, ...) ret
 #define __ARG_N__(...) _ARG_N_(__VA_ARGS__ , 4, 3, 2, 1, 0)

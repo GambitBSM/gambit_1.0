@@ -88,18 +88,20 @@ namespace Gambit
                                         
                                         loadExcluded(GAMBIT_DIR "/scratch/scanbit_excluded_libs.yaml");
                                         
-                                        process(GAMBIT_DIR "/scratch/scanbit_linked_libs.yaml", GAMBIT_DIR "/scratch/scanbit_reqd_entries.yaml");
+                                        flags_node = YAML::LoadFile(GAMBIT_DIR "/scratch/scanbit_flags.yaml");
+                                        process(GAMBIT_DIR "/scratch/scanbit_linked_libs.yaml", GAMBIT_DIR "/scratch/scanbit_reqd_entries.yaml", GAMBIT_DIR "/scratch/scanbit_flags.yaml");
                                 }
                         }
 
-                        void Plugin_Loader::process(const std::string &libFile, const std::string &plugFile)
+                        void Plugin_Loader::process(const std::string &libFile, const std::string &plugFile, const std::string &flagFile)
                         {
                                 YAML::Node libNode = YAML::LoadFile(libFile);
                                 YAML::Node plugNode = YAML::LoadFile(plugFile);
+                                YAML::Node flagNode = YAML::LoadFile(flagFile);
                                 
                                 for (auto it = plugins.begin(), end = plugins.end(); it != end; it++)
                                 {
-                                        it->get_status(libNode, plugNode);
+                                        it->get_status(libNode, plugNode, flags_node);
                                         plugin_map[it->type][it->plugin].push_back(*it);
                                         total_plugin_map[it->type][it->plugin].push_back(*it);
                                         //std::cout << it->printFull() << std::endl;
@@ -107,7 +109,7 @@ namespace Gambit
                                 
                                 for (auto it = excluded_plugins.begin(), end = excluded_plugins.end(); it != end; it++)
                                 {
-                                        it->get_status(libNode, plugNode);
+                                        it->get_status(libNode, plugNode, flagNode);
                                         excluded_plugin_map[it->type][it->plugin].push_back(*it);
                                         total_plugin_map[it->type][it->plugin].push_back(*it);
                                         //std::cout << it->printFull() << std::endl;

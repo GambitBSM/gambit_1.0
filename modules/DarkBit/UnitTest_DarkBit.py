@@ -4,12 +4,12 @@ from __future__ import division
 from numpy import *
 import pylab as plt
 import yaml
-from kitbag import DSspectra
+#from kitbag import DSspectra
 
 Colors = iter(['k', 'b', 'g', 'y', 'm', 'r'])
 
-for i in range(4, 10):
-    with open('../UnitTest_MSSMbenchmarks_DarkSUSY_%s.yml'%i) as f:
+for i in range(5, 11):
+    with open('./UnitTest_MSSM/UnitTest_MSSMbenchmarks_DarkSUSY_file%s.yml'%i) as f:
         data = yaml.load(f)
 
     mass = data['ParticleMasses']['Mchi']

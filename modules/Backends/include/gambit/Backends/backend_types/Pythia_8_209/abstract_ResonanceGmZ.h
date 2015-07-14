@@ -22,14 +22,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_ResonanceGmZ : virtual public AbstractBase, virtual public Pythia8::Abstract_ResonanceWidths
         {
             private:
-                // IGNORED: Field  -- Name: gmZmode  -- XML id: _28390
-                // IGNORED: Field  -- Name: thetaWRat  -- XML id: _28391
-                // IGNORED: Field  -- Name: ei2  -- XML id: _28392
-                // IGNORED: Field  -- Name: eivi  -- XML id: _28393
-                // IGNORED: Field  -- Name: vi2ai2  -- XML id: _28394
-                // IGNORED: Field  -- Name: gamNorm  -- XML id: _28395
-                // IGNORED: Field  -- Name: intNorm  -- XML id: _28396
-                // IGNORED: Field  -- Name: resNorm  -- XML id: _28397
+                // IGNORED: Field  -- Name: gmZmode  -- XML id: _28323
+                // IGNORED: Field  -- Name: thetaWRat  -- XML id: _28324
+                // IGNORED: Field  -- Name: ei2  -- XML id: _28325
+                // IGNORED: Field  -- Name: eivi  -- XML id: _28326
+                // IGNORED: Field  -- Name: vi2ai2  -- XML id: _28327
+                // IGNORED: Field  -- Name: gamNorm  -- XML id: _28328
+                // IGNORED: Field  -- Name: intNorm  -- XML id: _28329
+                // IGNORED: Field  -- Name: resNorm  -- XML id: _28330
             public:
             private:
     

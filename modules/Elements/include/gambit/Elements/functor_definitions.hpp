@@ -61,15 +61,11 @@ namespace Gambit
      myType          (Utils::fix_type(result_type)),
      myOrigin        (origin_name),
      myClaw          (&claw),
-     myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
+     myLabel         ("#"+func_capability+" @"+origin_name+"::"+func_name),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
      verbose         (false)     // For debugging.
-    {
-       std::stringstream ss;
-       ss<<"#"<<capability()<<" @"<<origin()<<"::"<<name();
-       setLabel(ss.str());
-    }
+    {}
 
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
@@ -101,9 +97,6 @@ namespace Gambit
       myStatus = stat;
       setInUse(myStatus == 2);
     }
-
-    /// Setter for label (used in printer system)
-    void functor::setLabel(str label) { if (this == NULL) failBigTime("setLabel"); myLabel = label; }
 
     /// Getter for the wrapped function's name
     str functor::name()        const { if (this == NULL) failBigTime("name"); return myName; }
@@ -1474,9 +1467,10 @@ namespace Gambit
         }
         catch (invalid_point_exception& e)
         {
-          if (omp_get_level()==0) // If not in an OpenMP parallel block, inform of invalidation and throw onwards
+          if (raised_point_exception == NULL) acknowledgeInvalidation(e);
+          if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
           {
-            if (raised_point_exception == NULL) acknowledgeInvalidation(e);
+            this->finishTiming(thread_num);        //Stop timing function evaluation
             throw(e);
           } 
         }
@@ -1565,9 +1559,10 @@ namespace Gambit
         }
         catch (invalid_point_exception& e)
         {
-          if (omp_get_level()==0) // If not in an OpenMP parallel block, inform of invalidation and throw onwards
+          if (raised_point_exception == NULL) acknowledgeInvalidation(e);
+          if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
           {
-            if (raised_point_exception == NULL) acknowledgeInvalidation(e);
+            this->finishTiming(thread_num);
             throw(e);
           } 
         }

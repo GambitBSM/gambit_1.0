@@ -30,14 +30,13 @@ BOSS:
 
 ScannerBit:
 * Give full info on scanners with ./gambit <scannername> (Greg)
-* Connect Diver (Pat)
 * Plugins need the option to link standard GAMBIT/ScannerBit libraries: etc (Greg)
 * Get rid of 'optional options:' entries in yaml options object. (Greg)
 
 Repo/cmake:
 * Split repo into public (code) bit and private extras, Collab doc etc, using git filter-branch (Pat)
 * Add check and check-ignore switch for graphviz (Antje)
-* Implement proper scanner ditching (Pat)
+* Implement proper scanner ditching (Ben)
 
 
 For first release:
@@ -160,6 +159,7 @@ Core done:
 * Implement NaN check for likelihood in scanner
 * Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file
 * Make bossed-type-requirements trigger a dependency on the providing backend's ini function.
+* Connect Diver
 
 Models done:
 * Remove automatic declaration of "little guys"
@@ -227,7 +227,6 @@ Scanner
 
 Ongoing:
 * Interface to GREAT (Antje's MCMC code)
-* Interface to differential evolution (Pat)
 * Interface to k-walk (Greg)
 * Interface to genetic algorithms (Abram)
 * Organise grouping of parameters into fast and slow subsets (useful for some scanners), possibly via the ini file.
@@ -249,6 +248,7 @@ Done:
 * switch to using Random::draw()
 * interface external scanner lib depedencies properly with cmake
 * Organise dedicated scanner section in yaml .ini file structure
+* Interface to differential evolution
 
 
 DarkBit

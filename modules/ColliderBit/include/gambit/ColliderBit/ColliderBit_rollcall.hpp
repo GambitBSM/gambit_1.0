@@ -17,6 +17,10 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015 Jul
+///
 ///  *********************************************
 
 #ifndef __ColliderBit_rollcall_hpp__
@@ -39,6 +43,8 @@ START_MODULE
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
     NEEDS_CLASSES_FROM(Pythia, default)
+    // FIXME this should not be needed once the dep resolver orders things correctly.
+    MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, const Spectrum*, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -50,6 +56,8 @@ START_MODULE
     START_FUNCTION(Gambit::ColliderBit::SpecializablePythia)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(decay_rates, DecayTable)
+    MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, const Spectrum*, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -196,7 +204,6 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION runAnalyses
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
-    ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
@@ -212,7 +219,6 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION calcLogLike
     START_FUNCTION(double)
-    ALLOW_MODELS(NormalDist)
     DEPENDENCY(AnalysisNumbers, ColliderLogLikes)
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
@@ -227,7 +233,6 @@ START_MODULE
     /// \todo Make a group of analyses rather than a simple counter.
     #define FUNCTION simpleCounter
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
-    ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     #undef FUNCTION

@@ -18,6 +18,10 @@
 ///  \date 2014 Aug
 ///  \date 2015 May
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015 Jul
+///
 ///  *********************************************
 
 #include <string>
@@ -42,7 +46,7 @@ namespace Gambit
     /// ********************************************
 
     /// Event labels
-    enum specialEvents {INIT = -1, START_SUBPROCESS = -2, END_SUBPROCESS = -3, FINALIZE = -4};
+    enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
     /// Analysis stuff
     HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
     std::vector<std::string> analysisNames;
@@ -52,11 +56,9 @@ namespace Gambit
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
-    std::string slhaFilename;
-    const SLHAea::Coll* slhaea = nullptr;
     int pythiaConfigurations, pythiaNumber;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses,slhaea
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses
 
 
     /// *************************************************
@@ -64,10 +66,14 @@ namespace Gambit
     /// *************************************************
     /// *** Loop Managers ***
 
-    void operatePythia() {
+    void operatePythia()
+    {
       using namespace Pipes::operatePythia;
       int nEvents = 0;
       globalAnalyses->clear();
+
+      // Do the base-level initialisation   
+      Loop::executeIteration(BASE_INIT);
 
       #pragma omp critical (runOptions)
       {
@@ -75,33 +81,27 @@ namespace Gambit
         GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
         /// @todo Subprocess specific nEvents
         GET_COLLIDER_RUNOPTION(nEvents, int);
-        /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
-        GET_COLLIDER_RUNOPTION(slhaFilename, std::string);
-        std::ifstream ifs(slhaFilename);
-        delete slhaea;
-        slhaea = new SLHAea::Coll(ifs);
-        ifs.close();
       }
 
-      /// For every collider requested in the yaml file:
-      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) {
+      // For every collider requested in the yaml file:
+      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) 
+      {
         pythiaNumber = 0;
-        /// Defaults to 1 if option unspecified
         #pragma omp critical (runOptions)
         {
+          // Defaults to 1 if option unspecified
           pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
         }
 
-        while (pythiaNumber < pythiaConfigurations) {
+        while (pythiaNumber < pythiaConfigurations)
+        {
           ++pythiaNumber;
           Loop::executeIteration(INIT);
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             Loop::executeIteration(START_SUBPROCESS);
             #pragma omp for
-            for (int i = 1; i <= nEvents; ++i) {
-              Loop::executeIteration(i);
-            }
+            for (int i = 1; i <= nEvents; ++i) Loop::executeIteration(i);
             Loop::executeIteration(END_SUBPROCESS);
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
@@ -119,36 +119,91 @@ namespace Gambit
 
     /// *** Hard Scattering Collider Simulators ***
 
-    void getPythia(Gambit::ColliderBit::SpecializablePythia &result) {
+    void getPythia(Gambit::ColliderBit::SpecializablePythia &result)
+    {
       using namespace Pipes::getPythia;
 
-      if (*Loop::iteration == START_SUBPROCESS) {
-        /// TODO Surely, I must call result.clear()?
-        /// Each thread gets its own Pythia instance.
-        /// Thus, the initialization is *after* INIT, within omp parallel.
+      static bool SLHA_debug_mode = false;      
+      static std::vector<std::string> filenames;
+      static unsigned int counter = -1;               
+
+      if (*Loop::iteration == BASE_INIT)
+      {      
+        // If there are no debug filenames set, look for them.
+        if (filenames.empty())              
+        {                          
+          #pragma omp_critical (runOptions)
+          {
+            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");          
+            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");  
+          }
+        }
+        // Increment the counter if there are debug SLHA files and this is the first thread.
+        if (SLHA_debug_mode)
+        { 
+          if (omp_get_thread_num() == 0) counter++;
+          if (filenames.size() <= counter) invalid_point().raise("No more SLHA files. My work is done.");
+        }
+      }
+
+      else if (*Loop::iteration == START_SUBPROCESS)
+      {
+        // TODO Surely, I must call result.clear()?
+
+        // Each thread gets its own Pythia instance.
+        // Thus, the actual Pythia initialization is 
+        // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
+        
+        // Setup new Pythia
+        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
 
-        /// Setup new Pythia
-        pythiaConfigName = "pythiaOptions";
-        pythiaConfigName += "_";
-        pythiaConfigName += std::to_string(pythiaNumber);
-        /// If the SpecializablePythia specialization is hard-coded, okay with no options.
+        // If the SpecializablePythia specialization is hard-coded, okay with no options.
         #pragma omp critical (runOptions)
         {
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
-        /// @note Pythia still needs to know the filename in order to call readSLHA
-        pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
-        //const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
-// The following line runs Pythia which reads the SLHA file normally.
-        // result.init(pythiaOptions);
-// The following line runs Pythia which reads the SLHAea::Coll instance.
-        result.init(pythiaOptions, slhaea);
+
+        if (SLHA_debug_mode)
+        {
+          // Run Pythia reading an SLHA file.
+          logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
+          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
+          result.init(pythiaOptions);
+        }
+        else
+        {
+          // Run Pythia using an SLHAea object constructed from dependencies on the spectrum and decays.
+          SLHAstruct slha = Dep::decay_rates->as_slhaea();
+          if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+          {
+            // MSSM-specific
+            SLHAstruct spectrum;
+            #pragma omp critical (spectrum_as_slhaea)
+            {
+              spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+            }
+            SLHAea::Block block("MODSEL");
+            block.push_back("BLOCK MODSEL              # Model selection");
+            SLHAea::Line line;
+            line << 1 << 0 << "# General MSSM";
+            block.push_back(line);
+            slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
+            slha.push_front(block);
+          }
+          else
+          {
+            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
+          }
+          cout << slha << endl;
+          pythiaOptions.push_back("SLHA:file = slhaea");
+          result.init(pythiaOptions, &slha);
+        }
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
     }
@@ -160,7 +215,8 @@ namespace Gambit
     void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT)
+      {
         result.clear();
         #pragma omp critical (Delphes)
         {
@@ -172,10 +228,12 @@ namespace Gambit
     }
 
 
-    void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result) {
+    void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result)
+    {
       using namespace Pipes::getBuckFast;
       std::string buckFastOption;
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT)
+      {
         result.clear();
         #pragma omp critical (BuckFast)
         {
@@ -192,7 +250,8 @@ namespace Gambit
 
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
-      if (*Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT)
+      {
         #pragma omp critical (runOptions)
         {
           GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
@@ -207,7 +266,8 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == START_SUBPROCESS) {
+      if (*Loop::iteration == START_SUBPROCESS)
+      {
         /// Each thread gets its own Analysis container.
         /// Thus, their initialization is *after* INIT, within omp parallel.
         /// @TODO Can we test for xsec veto here? Might be analysis dependent...
@@ -215,7 +275,8 @@ namespace Gambit
         return;
       }
       
-      if (*Loop::iteration == END_SUBPROCESS) {
+      if (*Loop::iteration == END_SUBPROCESS)
+      {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
         result.add_xsec(xs, xserr);
@@ -231,9 +292,10 @@ namespace Gambit
 
     /// *** Hard Scattering Event Generators ***
 
-    void generatePythia8Event(Pythia8::Event& result) {
+    void generatePythia8Event(Pythia8::Event& result)
+    {
       using namespace Pipes::generatePythia8Event;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
@@ -244,9 +306,10 @@ namespace Gambit
 
     /// Convert a hadron-level Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
-    void convertPythia8ParticleEvent(HEPUtils::Event& result) {
+    void convertPythia8ParticleEvent(HEPUtils::Event& result)
+    {
       using namespace Pipes::convertPythia8ParticleEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
@@ -394,7 +457,7 @@ namespace Gambit
     /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
     void convertPythia8PartonEvent(HEPUtils::Event& result) {
       using namespace Pipes::convertPythia8PartonEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
@@ -520,7 +583,7 @@ namespace Gambit
 
     void reconstructDelphesEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructDelphesEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       #pragma omp critical (Delphes)
@@ -531,7 +594,7 @@ namespace Gambit
 
     void reconstructBuckFastEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructBuckFastEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
@@ -544,46 +607,21 @@ namespace Gambit
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-// Pat: merge conflict resolved here by accepting from ColliderBit_development.  Abram please check. <<<<<<< HEAD
       if (*Loop::iteration == FINALIZE) {
-//=======
-
-      //if (*Loop::iteration == INIT) {
-
-        //// for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
-        ////   (*anaPtr)->set_xsec(-1, -1);
-        //// }
-
-      //} else if (*Loop::iteration == END_SUBPROCESS) {
-
-        //for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-        //{
-          ///// @TODO Clean this crap up... xsecArrays should be more Gambity.
-          ///// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
-          ///// @todo Shouldn't add_xsec really be set_xsec in this context? (It's not analysis combination)
-          //(*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
-        //}
-
-      //} else if (*Loop::iteration == FINALIZE) {
-
-//>>>>>>> master
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
-// Pat: merge conflict resolved here by accepting from ColliderBit_development.  Abram please check. <<<<<<< HEAD
           // Finalize is currently only used to report a cut flow.... rename?
           (*anaPtr)->finalize();
-//=======
-//>>>>>>> master
           result.push_back((*anaPtr)->get_results());
         }
         return;
       }
 
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
 
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
       Dep::AnalysisContainer->analyze(*Dep::ReconstructedEvent);
@@ -863,7 +901,7 @@ namespace Gambit
         result.BR_hjmumu[i] = Hneut_decays[i]->BF("mu+", "mu-");
         result.BR_hjtautau[i] = Hneut_decays[i]->BF("tau+", "tau-");
         result.BR_hjWW[i] = Hneut_decays[i]->BF("W+", "W-");
-        result.BR_hjZZ[i] = Hneut_decays[i]->BF("Z0", "Z0");	       
+        result.BR_hjZZ[i] = Hneut_decays[i]->BF("Z0", "Z0");         
         result.BR_hjZga[i] = Hneut_decays[i]->BF("gamma", "Z0");
         result.BR_hjgaga[i] = Hneut_decays[i]->BF("gamma", "gamma"); 
         result.BR_hjgg[i] = Hneut_decays[i]->BF("g", "g");
@@ -1065,27 +1103,27 @@ namespace Gambit
       }
       
       BEreq::HiggsBounds_neutral_input_part(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0], 
-					    &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
-					    &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
-					    &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
-					    &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
-					    &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
-					    &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
-					    &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
-					    &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
-					    &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
-					    &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
-					    &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
-					    &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
-					    &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
-					    &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
-					    &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
-					    &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
-					    &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
+              &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
+              &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
+              &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
+              &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
+              &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
+              &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
+              &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
+              &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
+              &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
+              &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
+              &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
+              &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
+              &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
+              &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
+              &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
+              &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
+              &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
 
       BEreq::HiggsBounds_charged_input(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-				       &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
-				       &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
+               &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
       
       BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus);
       
@@ -1118,30 +1156,30 @@ namespace Gambit
       {
         CS_lep_hjhi_ratio(i+1,j+1) = ModelParam.CS_lep_hjhi_ratio[i][j];
         BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
-    	}
+      }
       
       BEreq::HiggsBounds_neutral_input_part_HS(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0], 
-					       &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
-					       &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
-					       &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
-					       &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
-					       &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
-					       &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
-					       &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
-					       &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
-					       &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
-					       &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
-					       &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
-					       &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
-					       &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
-					       &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
-					       &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
-					       &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
-					       &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
+                 &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
+                 &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
+                 &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
+                 &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
+                 &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
+                 &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
+                 &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
+                 &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
+                 &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
+                 &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
+                 &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
+                 &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
+                 &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
+                 &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
+                 &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
+                 &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
+                 &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
       
       BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-					  &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
-					  &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
+            &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
       
       BEreq::HiggsSignals_neutral_input_MassUncertainty(&ModelParam.deltaMh[0]);
 
