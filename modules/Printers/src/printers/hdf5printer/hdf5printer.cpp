@@ -978,9 +978,6 @@ namespace Gambit
     #endif
 
     /// Empty all the buffers to disk
-    /// TODO: This is not currently completely safe. If it gets called during a scan on one
-    /// of the primary buffers, then the chunk-writer will get desynchronised and crash. 
-    /// Need to make this work, or die gracefully.
     /// Note: Empty sync buffers will not get flushed, to avoid writing extra
     /// buffer-lengths at the end of scan.
     void HDF5Printer::flush()
