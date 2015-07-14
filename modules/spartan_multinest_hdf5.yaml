@@ -30,14 +30,15 @@ Printer:
 
 #======== Scanner setup ========
 Scanner:
-  use_scanner: multinest
+  use_scanner: de 
+#multinest
 
   scanners:
     multinest:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 1000
+        nlive: 100
         tol: 0.1
         # write native MultiNest ascii output files?
         outfile: 0
@@ -48,7 +49,16 @@ Scanner:
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
- 
+    de:
+      plugin: Diver
+      like: Likelihood
+      NP: 100
+      path: "runs/spartan_diver/diver_native"
+      verbosity: 1
+      aux_printer_txt_options:
+        output_file: "runs/spartan_diver/samples/gambit_output.txt"
+        info_file: "runs/spartan_diver/samples/gambit_output.txt_info"
+
 #======== Observables of interest ========
 ObsLikes:
   - purpose:      Likelihood

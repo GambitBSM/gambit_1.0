@@ -166,6 +166,17 @@ namespace Gambit {
              #ifdef WITH_MPI
              myRank = pComm.Get_rank();
              #endif
+
+             //Debugging
+             #ifdef BUF_DEBUG
+             std::cout<<this->get_label()<<": My tags are: "
+                <<tags.SYNC_data  <<", "
+                <<tags.SYNC_valid <<", "
+                <<tags.RA_queue   <<", "
+                <<tags.RA_loc     <<", "
+                <<tags.RA_length  <<", "
+                <<std::endl; 
+             #endif
           }
 
           /// Destructor
@@ -204,18 +215,18 @@ namespace Gambit {
 
           #ifdef WITH_MPI
           // Probe for a sync buffer MPI message from a process
-          virtual bool probe_sync_mpi_message(int);
+          virtual bool probe_sync_mpi_message(uint,int*);
 
           // Probe for a RA buffer MPI message from a process
-          virtual bool probe_RA_mpi_message(int);
+          virtual bool probe_RA_mpi_message(uint);
 
           // Retrieve sync buffer data from an MPI message from a known process rank
           // Should only be triggered if a valid message is known to exist to be retrieved!
-          virtual void get_sync_mpi_message(int);
+          virtual void get_sync_mpi_message(uint,int);
 
           // Retrieve RA buffer data from an MPI message from a known process rank
           // Should only be triggered if a valid message is known to exist to be retrieved!
-          virtual void get_RA_mpi_message(int, const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
+          virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
           #endif
 
           /// Extract (copy) a record
@@ -325,8 +336,13 @@ namespace Gambit {
                   MPI_Wait(&req_entries, &stat_entries);
                   send_buffer_ready = true;
                }
+               /// Compute how many points are to be sent to the master
+               /// (should be a full buffers worth, except at the end of the
+               /// run)
+               std::size_t n_points_to_send = this->get_head_position(); //head should point to the index of the next empty buffer slot (or just past the end of the buffer), which is the number of slots preceding it, which are the ones we want to send. Should be equal to 'bufferlength' most of the time.
+
                /// Copy buffer data into the send buffer 
-               for(uint i=0; i<bufferlength; i++)
+               for(uint i=0; i<n_points_to_send; i++)
                {
                   send_buffer_valid[i]   = buffer_valid[i];
                   send_buffer_entries[i] = buffer_entries[i];
@@ -335,8 +351,8 @@ namespace Gambit {
                #ifdef MPI_DEBUG
                std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Isend-ing buffers to master"<<std::endl;
                #endif
-               this->printerComm.Isend(send_buffer_valid,   bufferlength, masterRank, this->myTags.SYNC_valid, &req_valid);
-               this->printerComm.Isend(send_buffer_entries, bufferlength, masterRank, this->myTags.SYNC_data,  &req_entries);
+               this->printerComm.Isend(send_buffer_valid,   n_points_to_send, masterRank, this->myTags.SYNC_valid, &req_valid);
+               this->printerComm.Isend(send_buffer_entries, n_points_to_send, masterRank, this->myTags.SYNC_data,  &req_entries);
                send_buffer_ready = false;
             }
             else
@@ -424,16 +440,28 @@ namespace Gambit {
       #ifdef WITH_MPI
       // Probe for a sync buffer MPI message from a process
       template<class T, std::size_t L>
-      bool VertexBufferNumeric1D<T,L>::probe_sync_mpi_message(int source)
+      bool VertexBufferNumeric1D<T,L>::probe_sync_mpi_message(uint source, int* msgsize)
       {
-         bool is_data_msg  = printerComm.Iprobe(source, myTags.SYNC_data);
-         bool is_valid_msg = printerComm.Iprobe(source, myTags.SYNC_valid);
+         MPI_Status status;
+         bool is_data_msg  = printerComm.Iprobe(source, myTags.SYNC_data, &status);
+         int msgsize_data  = GMPI::Get_count<T>(&status);
+         bool is_valid_msg = printerComm.Iprobe(source, myTags.SYNC_valid, &status);
+         int msgsize_valid = GMPI::Get_count<bool>(&status);
+      
+         if(msgsize_data != msgsize_valid)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error in buffer "<<this->get_label()<<" during probe_sync_mpi_message! Length of 'data' message ("<<msgsize_data<<") does not match length of 'validity' message ("<<msgsize_valid<<").";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+         *msgsize = msgsize_data;
+
          return (is_data_msg or is_valid_msg);
       }
 
       // Probe for a random-access buffer MPI message from a process
       template<class T, std::size_t L>
-      bool VertexBufferNumeric1D<T,L>::probe_RA_mpi_message(int source)
+      bool VertexBufferNumeric1D<T,L>::probe_RA_mpi_message(uint source)
       {
          bool is_q_msg   = printerComm.Iprobe(source, myTags.RA_queue);
          bool is_loc_msg = printerComm.Iprobe(source, myTags.RA_loc);
@@ -444,8 +472,23 @@ namespace Gambit {
       // Retrieve sync buffer data from an MPI message
       // Should only be triggered if a valid message is known to exist to be retrieved from the input source!
       template<class T, std::size_t LENGTH>
-      void VertexBufferNumeric1D<T,LENGTH>::get_sync_mpi_message(int source)
+      void VertexBufferNumeric1D<T,LENGTH>::get_sync_mpi_message(uint source, int exp_length)
       {
+        if(exp_length < 0)
+        {
+          std::ostringstream errmsg;
+          errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Invalid expected message length supplied ("<<exp_length<<" < 0)";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        uint uexp_length = exp_length;
+
+        if(uexp_length > LENGTH)
+        {
+          std::ostringstream errmsg;
+          errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Expected message length ("<<uexp_length<<") is larger than the allocated buffer size (LENGTH="<<LENGTH<<")";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+
         // An MPI_Iprobe should have been done prior to calling this function, 
         // in order to trigger delivery of the message to the correct buffer. 
         // So now we trust that this buffer is indeed supposed to receive the 
@@ -456,7 +499,7 @@ namespace Gambit {
         bool  recv_buffer_valid[LENGTH];
         T     recv_buffer_entries[LENGTH];
 
-        #ifdef MPI_DEBUG
+        //#ifdef MPI_DEBUG
         // Double check that a message is actually waiting to be sent
         // There is a code bug if this is not the case
         MPI_Status status;
@@ -467,17 +510,26 @@ namespace Gambit {
           errmsg << "Error! get_sync_mpi_message called with source="<<source<<", but there is no appropriately tagged message waiting to be delivered from that process! This is a bug, please report it.";
           printer_error().raise(LOCAL_INFO, errmsg.str());
         }
-        #endif
+        // Double check that the message has the expected number of elements
+        // (this must match across all the buffers we are retrieving together)
+        int msgsize = GMPI::Get_count<T>(&status);
+        if(msgsize != exp_length)
+        {
+          std::ostringstream errmsg;
+          errmsg << "Error retrieving sync message in buffer "<<this->get_label()<<"! Message length ("<<msgsize<<") does not match expected length ("<<exp_length<<").";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        //#endif
 
         #ifdef MPI_DEBUG
         std::cout<<"rank "<<myRank<<": Collecting sync buffer ("<<this->get_label()<<") from process "<<source<<std::endl;
         #endif
 
-        printerComm.Recv(&recv_buffer_valid,   LENGTH, source, myTags.SYNC_valid);
-        printerComm.Recv(&recv_buffer_entries, LENGTH, source, myTags.SYNC_data);
+        printerComm.Recv(&recv_buffer_valid,   msgsize, source, myTags.SYNC_valid);
+        printerComm.Recv(&recv_buffer_entries, msgsize, source, myTags.SYNC_data);
 
         #ifdef MPI_DEBUG
-        std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<". Appending received data to my sync buffers."<<std::endl;
+        std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<" (size="<<msgsize<<"). Appending received data to my sync buffers."<<std::endl;
         #endif
 
         // Write the buffers to disk
@@ -486,7 +538,7 @@ namespace Gambit {
         // Rather than do external write, I think it is cleaner to just feed
         // everything through the normal "append" system.
 
-        for(uint i=0; i<LENGTH; i++)
+        for(int i=0; i<msgsize; i++)
         {          
           // Push an element of the received data into the buffer
           if(recv_buffer_valid[i])
@@ -512,24 +564,12 @@ namespace Gambit {
             flush();
           } 
         }
-
-        // Update sync information (outside class?)
-
-
-        // TODO: - Need to identify whether message is synchronous or RA data
-        //       - Need to update absolute dataset indices to reflect the newly added
-        //         chunk.
-        //       - Regarding the above, may need to send an additional message containing
-        //         the pointID and rank for each entry, and then insert these into the
-        //         master process map. Also means buffers will need to be passed this
-        //         information, rather than just having the hdf5printer give them an
-        //         absolute index...
       }
 
       // Retrieve RA buffer data from an MPI message
       // Should only be triggered if a valid message is known to exist to be retrieved from the input source!
       template<class T, std::size_t LENGTH>
-      void VertexBufferNumeric1D<T,LENGTH>::get_RA_mpi_message(int source, const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
+      void VertexBufferNumeric1D<T,LENGTH>::get_RA_mpi_message(uint source, const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
       {
         // An MPI_Iprobe should have been done prior to calling this function, 
         // in order to trigger delivery of the message to the correct buffer. 

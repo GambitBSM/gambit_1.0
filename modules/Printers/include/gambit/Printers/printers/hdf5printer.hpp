@@ -163,7 +163,7 @@ namespace Gambit
 
         #ifdef WITH_MPI
         /// Send PPID lists to the master and clear them (master process should never do this!)
-        void send_PPID_lists();
+        void send_PPID_lists(bool finalsend=false);
 
         /// Update the master node PPID lists with IDs from a worker node
         void receive_PPID_list(uint source);
@@ -198,7 +198,9 @@ namespace Gambit
 
         // Check if the buffers are full and waiting to be emptied
         // (this will trigger MPI sends if needed)
-        void empty_sync_buffers_if_full();
+        // By default this only empties buffers if they are full. Use
+        // flag to force the flush for the finalise buffer dumps.
+        void empty_sync_buffers(bool force=false);
 
         /// Check whether printing to a new parameter space point is about to occur
         // and perform adjustments needed to prepare the printer.

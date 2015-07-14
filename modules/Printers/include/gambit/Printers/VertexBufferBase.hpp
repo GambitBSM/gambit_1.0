@@ -113,6 +113,9 @@ namespace Gambit {
             // know where in the output datasets they are supposed to write.
             virtual void RA_flush(const std::map<PPIDpair, ulong>& PPID_to_dsetindex) = 0;
 
+            // For debugging purposes only
+            virtual std::size_t postponed_RA_queue_length() = 0;
+
             // // Perform write to disk of sync buffer 
             // virtual void write_to_disk() = 0;            
 
@@ -126,20 +129,23 @@ namespace Gambit {
             // Needed to externally inform buffer of a skipped iteration (when no data to write)
             virtual void skip_append() = 0;           
 
+            // Needed for checking that dataset sizes on disk are consistent
+            virtual ulong get_dataset_length() = 0;
+
             #ifdef WITH_MPI
             // Probe for a sync buffer MPI message from a process
-            virtual bool probe_sync_mpi_message(int) = 0;
+            virtual bool probe_sync_mpi_message(uint,int*) = 0;
 
             // Probe for a RA buffer MPI message from a process
-            virtual bool probe_RA_mpi_message(int) = 0;
+            virtual bool probe_RA_mpi_message(uint) = 0;
 
             // Retrieve sync buffer data from an MPI message from a known process rank
             // Should only be triggered if a valid message is known to exist to be retrieved!
-            virtual void get_sync_mpi_message(int) = 0;
+            virtual void get_sync_mpi_message(uint,int) = 0;
   
             // Retrieve RA buffer data from an MPI message from a known process rank
             // Should only be triggered if a valid message is known to exist to be retrieved!
-            virtual void get_RA_mpi_message(int, const std::map<PPIDpair, ulong>&) = 0;
+            virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>&) = 0;
             #endif
 
             // getter for donethispoint
