@@ -107,6 +107,10 @@ namespace Gambit
    
    /// @}
    
+   /// Overloads for PDG types
+   /// These just convert the types and then call the properly defined functions
+   DEFINE_PDG_GETTERS(Spectrum,Pole_Mass)
+
    /// Linked running
    /// Only possible with non-const object
    void Spectrum::RunBothToScale(double scale)

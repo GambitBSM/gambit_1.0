@@ -15,7 +15,7 @@
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2014, 2015 Jan - May 
+///  \date 2014, 2015 Jan - Jul
 ///
 ///  *********************************************
 
@@ -165,37 +165,41 @@ namespace Gambit {
       virtual void CAT(set_,FUNC)(const double, const std::string&, int) = 0; \
       virtual void CAT(set_,FUNC)(const double, const std::string&, int, int) = 0; \
       /* The parameter overrides are handled entirely by this base class, so
-         they are not virtual */ \
-      /* TODO: Implement this system! */ \
-      void CAT(set_override_,FUNC)(const double, const std::string&) {}; \
-      void CAT(set_override_,FUNC)(const double, const std::string&, int) {}; \
-      void CAT(set_override_,FUNC)(const double, const std::string&, int, int) {}; \
-      /* TODO: Do we want PDG versions of these too? I guess maybe... */
-
+         they are not virtual.  */ \
+      void CAT(set_override_,FUNC)(const double, const std::string&, bool safety = true); \
+      void CAT(set_override_,FUNC)(const double, const std::string&, int, bool safety = true); \
+      void CAT(set_override_,FUNC)(const double, const std::string&, int, int, bool safety = true); \
+      /* For each override setter, we need a map to hold the override values */ \
+      std::map<std::string,double>                             CAT_3(override_,FUNC,_map); \
+      std::map<std::string,std::map<int,double>>               CAT_3(override_,FUNC,_map1); \
+      std::map<std::string,std::map<int,std::map<int,double>>> CAT_3(override_,FUNC,_map2); \
+      /* Retrieve like this: contents = map[name][i][j]; */ \
+      /* TODO: Do we want PDG versions of these too? I guess so. */
+   
    #define DEFINE_PDG_GETTERS(CLASS,FUNC)                                          \
-      inline bool   CLASS::CAT(has_,FUNC)(const std::pair<str,int> shortpr) const  \
+      bool   CLASS::CAT(has_,FUNC)(const std::pair<str,int> shortpr) const  \
       {                                                                            \
         return CAT(has_,FUNC)(shortpr.first, shortpr.second);                      \
       }                                                                            \
-      inline double CLASS::CAT(get_,FUNC)(const std::pair<str,int> shortpr) const  \
+      double CLASS::CAT(get_,FUNC)(const std::pair<str,int> shortpr) const  \
       {                                                                            \
         return CAT(get_,FUNC)(shortpr.first, shortpr.second);                      \
       }                                                                            \
                                                                                    \
-      inline bool   CLASS::CAT(has_,FUNC)(const int pdg_code, const int context) const \
+      bool   CLASS::CAT(has_,FUNC)(const int pdg_code, const int context) const \
       {                                                                            \
-         /* PDB context integer must be zero for pole mass retrieval               \
+         /* PDB context integer must be zero for pole mass retrieval
             (this is the context integer for mass eigenstate) */                   \
          return CAT(has_,FUNC)( std::make_pair(pdg_code,context) );                \
       }                                                                            \
-      inline double CLASS::CAT(get_,FUNC)(const int pdg_code, const int context) const \
+      double CLASS::CAT(get_,FUNC)(const int pdg_code, const int context) const \
       {                                                                            \
-         /* PDB context integer must be zero for pole mass retrieval               \
+         /* PDB context integer must be zero for pole mass retrieval
             (this is the context integer for mass eigenstate) */                   \
          return CAT(get_,FUNC)( std::make_pair(pdg_code,context) );                \
       }                                                                            \
                                                                                     \
-      inline bool   CLASS::CAT(has_,FUNC)(const std::pair<int,int> pdgpr) const    \
+      bool   CLASS::CAT(has_,FUNC)(const std::pair<int,int> pdgpr) const    \
       {                                                                            \
          /* If there is a short name, then retrieve that plus the index */         \
          if( Models::ParticleDB().has_short_name(pdgpr) )                          \
@@ -207,7 +211,7 @@ namespace Gambit {
            return CAT(has_,FUNC)( Models::ParticleDB().long_name(pdgpr) );         \
          }                                                                         \
       }                                                                            \
-      inline double CLASS::CAT(get_,FUNC)(const std::pair<int,int> pdgpr) const    \
+      double CLASS::CAT(get_,FUNC)(const std::pair<int,int> pdgpr) const    \
       {                                                                            \
          /* If there is a short name, then retrieve that plus the index */         \
          if( Models::ParticleDB().has_short_name(pdgpr) )                          \
@@ -218,8 +222,7 @@ namespace Gambit {
          {                                                                         \
            return CAT(get_,FUNC)( Models::ParticleDB().long_name(pdgpr) );         \
          }                                                                         \
-      }
-    
+      } 
    /// @}
    
    class RunningPars 
@@ -241,50 +244,8 @@ namespace Gambit {
          // behave = 1  -- If running beyond soft limit requested, throw warning
          //                  "           "   hard limit     "    , throw error
          // behave = anything else -- Ignore limits and attempt running to requested scale 
-         void RunToScale(double scale, int behave=0)
-         {
-            if(behave==0 or behave==1) 
-            {
-               if(scale < hard_lower() or scale > hard_upper()) {
-                  if(behave==1) {
-                     std::ostringstream msg;
-                     msg << "RGE running requested outside hard limits! This is forbidden with behave=1. Set behave=0 (default) to automatically stop running at soft limits, or behave=2 to force running to requested scale (may trigger errors from underlying RGE code!)." << std::endl;
-                     msg << "  Requested : "<< scale << std::endl;
-                     msg << "  hard_upper: "<< hard_upper() << std::endl;
-                     msg << "  hard_lower: "<< hard_lower() << std::endl;
-                     utils_error().raise(LOCAL_INFO, msg.str());
-                  } else { // behave==0
-                     if     (scale < soft_lower()) { scale=soft_lower(); } 
-                     else if(scale > soft_upper()) { scale=soft_upper(); }
-                     else {
-                       // Hard limits must be outside soft limits; this is a bug in the derived Spectum object
-                       std::ostringstream msg;
-                       msg << "RGE running requested outside hard limits, but within soft limits! The soft limits should always be within the hard limits, so this is a bug in the derived SubSpectrum object being accessed. I cannot tell you which class this is though; check the dependency graph to see which ones are being created, and if necessary consult your debugger." << std::endl;
-                       msg << "  Requested : "<< scale << std::endl;
-                       msg << "  hard_upper: "<< hard_upper() << std::endl;
-                       msg << "  soft_upper: "<< soft_upper() << std::endl;
-                       msg << "  soft_lower: "<< soft_lower() << std::endl;
-                       msg << "  hard_lower: "<< hard_lower() << std::endl;
-                       utils_error().raise(LOCAL_INFO, msg.str());
-                     } 
-                  }
-               } else if(scale < soft_lower() or scale > soft_upper()) {
-                  if(behave==1) {
-                     std::ostringstream msg;
-                     msg << "RGE running requested outside soft limits! Accuracy may be low. Note: Set behave=2 to suppress this warning, or behave=0 (default) to automatically stop running when soft limit is hit." << std::endl;
-                     msg << "  Requested : "<< scale << std::endl;
-                     msg << "  soft_upper: "<< soft_upper() << std::endl;
-                     msg << "  soft_lower: "<< soft_lower() << std::endl;
-                     utils_warning().raise(LOCAL_INFO, msg.str());
-                  } else { // behave==0
-                     if(scale < soft_lower()) scale=soft_lower();
-                     if(scale > soft_upper()) scale=soft_upper();
-                  }
-               }
-            }
-            RunToScaleOverride(scale);
-         }
-   
+         void RunToScale(double scale, int behave=0);
+  
          /// returns the renormalisation scale of parameters
          virtual double GetScale() const = 0; 
          /// Sets the renormalisation scale of parameters 
@@ -314,12 +275,6 @@ namespace Gambit {
          DECLARE_SETTERS(dimensionless_parameter)
          DECLARE_SETTERS(mass_eigenstate)
    };
-   DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
    
    class Phys 
    {
@@ -352,22 +307,31 @@ namespace Gambit {
          virtual void set_Pole_Mixing(const double, const std::string&, int) = 0;
          virtual void set_Pole_Mixing(const double, const std::string&, int, int) = 0;
 
-         /* The parameter overrides are handled entirely by this base class, so
+         /* The parameter overrides are handled entirely by the base classes, so
             they are not virtual */
-         /* TODO: Implement this system! */
-         void set_override_Pole_Mass(const double, const std::string&) {};
-         void set_override_Pole_Mass(const double, const std::string&, int) {};
-         void set_override_Pole_Mixing(const double, const std::string&) {};
-         void set_override_Pole_Mixing(const double, const std::string&, int) {};
-         void set_override_Pole_Mixing(const double, const std::string&, int, int) {};
- 
+         /// NOTE: The two index Pole_Mass override setter is pointless since there
+         /// is no two-index Pole_Mass getter, but for the convenience of the structure
+         /// in some other systems I have just left it here for now.
+         void set_override_Pole_Mass(const double, const std::string&, bool safety = true);
+         void set_override_Pole_Mass(const double, const std::string&, int, bool safety = true);
+         void set_override_Pole_Mass(const double, const std::string&, int, int, bool safety = true);
+         void set_override_Pole_Mixing(const double, const std::string&, bool safety = true);
+         void set_override_Pole_Mixing(const double, const std::string&, int, bool safety = true);
+         void set_override_Pole_Mixing(const double, const std::string&, int, int, bool safety = true);
+
+         /* For each override setter, we need a map to hold the override values */
+         std::map<std::string,double>                             override_Pole_Mass_map;
+         std::map<std::string,std::map<int,double>>               override_Pole_Mass_map1;
+         std::map<std::string,std::map<int,std::map<int,double>>> override_Pole_Mass_map2;
+         std::map<std::string,double>                             override_Pole_Mixing_map;
+         std::map<std::string,std::map<int,double>>               override_Pole_Mixing_map1;
+         std::map<std::string,std::map<int,std::map<int,double>>> override_Pole_Mixing_map2;
+  
          /// @}
 
          DECLARE_PDG_GETTERS(Pole_Mass)
          DECLARE_PDG_GETTERS(Pole_Mixing)
    };
-   DEFINE_PDG_GETTERS(Phys,Pole_Mass)
-   DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
    
    /// =====================================================
    
@@ -927,23 +891,37 @@ namespace Gambit {
           , mapI_(NULL)
           , map1_(NULL)
           , map2_(NULL)
+          , omap_(NULL)
+          , omap1_(NULL)
+          , omap2_(NULL)
          {}
+         /// derived class maps
          SetMaps& map (const typename MapTypes<DT,MTag>::fmap&        map) { map_=&map;   return *this; }
          SetMaps& mapM(const typename MapTypes<DT,MTag>::fmap_extraM& mapM){ mapM_=&mapM; return *this; }
          SetMaps& mapI(const typename MapTypes<DT,MTag>::fmap_extraI& mapI){ mapI_=&mapI; return *this; }
          SetMaps& map1(const typename MapTypes<DT,MTag>::fmap1&       map1){ map1_=&map1; return *this; }
          SetMaps& map2(const typename MapTypes<DT,MTag>::fmap2&       map2){ map2_=&map2; return *this; }
+         /// base class override maps
+         SetMaps& omap (const std::map<std::string,double>& om)               { omap_= &om;  return *this;}
+         SetMaps& omap1(const std::map<std::string,std::map<int,double>>& om1){ omap1_=&om1; return *this;}
+         SetMaps& omap2(const std::map<std::string,std::map<int,std::map<int,double>>>& om2){ omap2_=&om2; return *this;}
 
       private:
          friend class FptrFinder<DT,This,MTag>; 
          const std::string label_;
          const This* const fakethis_;
+
+         /// Maps from derived class
          const typename MapTypes<DT,MTag>::fmap*        map_;
          const typename MapTypes<DT,MTag>::fmap_extraM* mapM_; 
          const typename MapTypes<DT,MTag>::fmap_extraI* mapI_; 
          const typename MapTypes<DT,MTag>::fmap1*       map1_; 
          const typename MapTypes<DT,MTag>::fmap2*       map2_; 
           
+         /// Maps from base class (override maps, only used in getter case)
+         const std::map<std::string,double>*                             omap_;
+         const std::map<std::string,std::map<int,double>>*               omap1_;
+         const std::map<std::string,std::map<int,std::map<int,double>>>* omap2_;
    }; 
  
    /// Helper class for calling function pointers found by FptrFinder
@@ -968,21 +946,34 @@ namespace Gambit {
          const This* const fakethis;
 
          /// Pointers to const maps to use for search
+         /// Maps from base class (override maps, should only be used in getter case)
+         const std::map<std::string,double>*                             omap_;
+         const std::map<std::string,std::map<int,double>>*               omap1_;
+         const std::map<std::string,std::map<int,std::map<int,double>>>* omap2_;
+         /// Maps filled by derived (wrapper) classes
          const typename MapTypes<DT,MTag>::fmap*        map_;
          const typename MapTypes<DT,MTag>::fmap_extraM* mapM_; 
          const typename MapTypes<DT,MTag>::fmap_extraI* mapI_; 
          const typename MapTypes<DT,MTag>::fmap1*       map1_; 
          const typename MapTypes<DT,MTag>::fmap2*       map2_; 
 
-         /// Iterators needed for to locate search result
-         typename MapTypes<DT,MTag>::fmap::const_iterator        it;  // 0
-         typename MapTypes<DT,MTag>::fmap_extraM::const_iterator itM; // 1
-         typename MapTypes<DT,MTag>::fmap_extraI::const_iterator itI; // 2
-         typename MapTypes<DT,MTag>::fmap1::const_iterator       it1; // 3
-         typename MapTypes<DT,MTag>::fmap2::const_iterator       it2; // 4
+         /// Iterators needed for storing locatation of search result
+         /// ...for override values
+         std::map<std::string,double>::const_iterator                ito; // 0
+         std::map<std::string,std::map<int,double>>::const_iterator  ito1; // 1
+         std::map<std::string,std::map<int,std::map<int,double>>>::const_iterator ito2; // 2
+         /// ...for derived class values
+         typename MapTypes<DT,MTag>::fmap::const_iterator        it;  // 3
+         typename MapTypes<DT,MTag>::fmap_extraM::const_iterator itM; // 4
+         typename MapTypes<DT,MTag>::fmap_extraI::const_iterator itI; // 5
+         typename MapTypes<DT,MTag>::fmap1::const_iterator       it1; // 6
+         typename MapTypes<DT,MTag>::fmap2::const_iterator       it2; // 7
 
          /// Booleans to indicate whether or not it is safe to dereference
          /// the above iterators
+         bool ito_safe;
+         bool ito1_safe;
+         bool ito2_safe;
          bool it_safe;
          bool itM_safe;
          bool itI_safe;
@@ -1021,16 +1012,25 @@ namespace Gambit {
            : label(params.label_)
            , lastname("NONE")
            , fakethis(params.fakethis_)
+           , omap_ (params.omap_)   
+           , omap1_(params.omap1_)   
+           , omap2_(params.omap2_)   
            , map_ (params.map_)   
            , mapM_(params.mapM_)
            , mapI_(params.mapI_)
            , map1_(params.map1_)
            , map2_(params.map2_)
+           , ito()
+           , ito1()
+           , ito2()
            , it ()
            , itM()
            , itI()
            , it1()
            , it2()
+           , ito_safe (false)
+           , ito1_safe(false)
+           , ito2_safe(false)
            , it_safe (false)
            , itM_safe(false)
            , itI_safe(false)
@@ -1108,23 +1108,56 @@ namespace Gambit {
          /// Search function for 0-index maps
          bool find(const std::string& name, bool doublecheck=true)
          {
+            bool override_found = false;
             bool found = true;   
             error_code = 0;
+
             //  Search maps for function; if found then store it
-            if     ( search_map(name,map_,it)   ){ it_safe=true; whichiter=1; }
-            else if( search_map(name,mapM_,itM) ){ itM_safe=true; whichiter=2; }
-            else if( search_map(name,mapI_,itI) ){ itI_safe=true; whichiter=3; }
-            else if( doublecheck and PDB.has_short_name(name) )
+            //std::cout << "Searching 0-index maps for "<<name<<std::endl;
+
+            //  Search override maps first
+            if(doublecheck)
             {
-               // Didn't find it in 0-index maps; translate using PDB entry and try 1-index maps
-               std::pair<str, int> p = PDB.short_name_pair(name);
-               //std::cout << "running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
-               found = find(p.first, p.second, false);
-            }
-            else { 
-              found = false;
-              lastname = name;
-              error_code = 1; 
+               if( omap_!=NULL and search_map(name,omap_,ito) )
+               { 
+                  ito_safe=true; 
+                  override_found=true; 
+                  whichiter=0; 
+               }
+               else if( omap1_!=NULL and PDB.has_short_name(name) )
+               {
+                  // Didn't find it in 0-index override map; translate using PDB entry and try
+                  // 1-index override map
+                  std::pair<str, int> p = PDB.short_name_pair(name);
+                  if  ( search_map(p.first,omap1_,ito1) )
+                  { 
+                     ito1_safe=true; 
+                     override_found=true; 
+                     index1=p.second;
+                     whichiter=1; 
+                  }
+               }
+               //std::cout << "No overrride found for "<<name<<std::endl;
+            }        
+ 
+            // If no override, search the wrapper class maps
+            if(not override_found)
+            {
+               if( search_map(name,map_,it)   ){ it_safe=true; whichiter=3; }
+               else if( search_map(name,mapM_,itM) ){ itM_safe=true; whichiter=4; }
+               else if( search_map(name,mapI_,itI) ){ itI_safe=true; whichiter=5; }
+               else if( doublecheck and PDB.has_short_name(name) )
+               {
+                  // Didn't find it in 0-index maps; translate using PDB entry and try 1-index maps
+                  std::pair<str, int> p = PDB.short_name_pair(name);
+                  //std::cout << "running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
+                  found = find(p.first, p.second, false);
+               }
+               else { 
+                 found = false;
+                 lastname = name;
+                 error_code = 1; 
+               }
             }
             return found;
          }
@@ -1132,38 +1165,70 @@ namespace Gambit {
          /// Search function for 1-index maps
          bool find(const std::string& name, int i, bool doublecheck=true)
          {
+            bool override_found = false;
             bool found = true;
             error_code = 0;
+
             //  Search maps for function; if found then store it
-            if( search_map(name,map1_,it1) )
+
+            //  Search override maps first
+            if(doublecheck)
             {
-               it1_safe=true; 
-               /// Switch index convention
-               int offset = fakethis->parent.get_index_offset();
-               index1 = i + offset; // set for later use
-               /// Check that index is in the permitted set
-               if( not within_bounds(index1, it1->second.iset1) )
-               {
-                  // index1 out of bounds
-                  found = false;
-                  lastname = name;
-                  error_code = 2;
+               if( omap1_!=NULL and search_map(name,omap1_,ito1) )
+               {  
+                  // Check that index (key) exists in inner map
+                  std::map<int,double>::const_iterator it = ito1->second.find(i);
+                  if( it != ito1->second.end() )
+                  { 
+                     ito1_safe=true; 
+                     override_found=true; 
+                     index1=i;
+                     whichiter=1; 
+                  }
+                  else if( omap_!=NULL and search_map(PDB.long_name(name,i),omap_,ito) )
+                  {
+                     // Didn't find it in 1-index override map; translate using PDB entry and try
+                     // 0-index override map
+                     ito_safe=true; 
+                     override_found=true; 
+                     whichiter=0;
+                  }
                }
-               else {
-                  // everything cool. 
-                  whichiter=4;
-               } 
             }
-            else if( doublecheck and PDB.has_particle(std::make_pair(name,i)) )
+
+            // If no override, search the wrapper class maps
+            if(not override_found)
             {
-               // Didn't find it in 1-index maps; translate using PDB entry and try 0-index maps
-               //std::cout << "running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
-               found = find(PDB.long_name(name,i), false);
-            }
-            else { 
-              found = false;
-              lastname = name;
-              error_code = 1;
+               if( search_map(name,map1_,it1) )
+               {
+                  it1_safe=true; 
+                  /// Switch index convention
+                  int offset = fakethis->parent.get_index_offset();
+                  index1 = i + offset; // set for later use
+                  /// Check that index is in the permitted set
+                  if( not within_bounds(index1, it1->second.iset1) )
+                  {
+                     // index1 out of bounds
+                     found = false;
+                     lastname = name;
+                     error_code = 2;
+                  }
+                  else {
+                     // everything cool. 
+                     whichiter=6;
+                  } 
+               }
+               else if( doublecheck and PDB.has_particle(std::make_pair(name,i)) )
+               {
+                  // Didn't find it in 1-index maps; translate using PDB entry and try 0-index maps
+                  //std::cout << "running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
+                  found = find(PDB.long_name(name,i), false);
+               }
+               else { 
+                 found = false;
+                 lastname = name;
+                 error_code = 1;
+               }
             }
             return found;
          }
@@ -1171,40 +1236,67 @@ namespace Gambit {
          /// Search function for 2-index maps
          bool find(const std::string& name, int i, int j)
          {
+            bool override_found = false;
             bool found = true;   
             error_code = 0;
+
             //  Search maps for function; if found then store it
-            if( search_map(name,map2_,it2) )
-            {
-               it2_safe=true; 
-               /// Switch index convention
-               int offset = fakethis->parent.get_index_offset();
-               index1 = i + offset; // set for later use
-               index2 = j + offset; // set for later use
-               /// Check that index is in the permitted set
-               if( not within_bounds(index1, it2->second.iset1) )
-               {
-                  // index1 out of bounds
-                  found = false;
-                  lastname = name;
-                  error_code = 2;
+
+            //  Search override maps first
+            if( omap2_!=NULL and search_map(name,omap2_,ito2) )
+            {  
+               // Check that first index (key) exists in inner map
+               std::map<int,std::map<int,double>>::const_iterator jt = ito2->second.find(i);
+               if( jt != ito2->second.end() )
+               { 
+                  // Check that second index (key) exists in second-inner map
+                  std::map<int,double>::const_iterator jt2 = jt->second.find(j);
+                  if( jt2 != jt->second.end() )
+                  { 
+                     ito2_safe=true; 
+                     override_found=true; 
+                     index1=i;
+                     index2=j;
+                     whichiter=2; 
+                  }
                }
-               else if( not within_bounds(index2, it2->second.iset2) )
-               {
-                  // index2 out of bounds
-                  found = false;
-                  lastname = name;
-                  error_code = 3;
-               }
-               else {
-                  // everything cool. 
-                  whichiter=5;
-               } 
             }
-            else { 
-              found = false;
-              lastname = name;
-              error_code = 1;
+ 
+            // If no override, search the wrapper class maps
+            if(not override_found)
+            {
+               if( search_map(name,map2_,it2) )
+               {
+                  it2_safe=true; 
+                  /// Switch index convention
+                  int offset = fakethis->parent.get_index_offset();
+                  index1 = i + offset; // set for later use
+                  index2 = j + offset; // set for later use
+                  /// Check that index is in the permitted set
+                  if( not within_bounds(index1, it2->second.iset1) )
+                  {
+                     // index1 out of bounds
+                     found = false;
+                     lastname = name;
+                     error_code = 2;
+                  }
+                  else if( not within_bounds(index2, it2->second.iset2) )
+                  {
+                     // index2 out of bounds
+                     found = false;
+                     lastname = name;
+                     error_code = 3;
+                  }
+                  else {
+                     // everything cool. 
+                     whichiter=7;
+                  } 
+               }
+               else { 
+                 found = false;
+                 lastname = name;
+                 error_code = 1;
+               }
             }
             return found;
          }
@@ -1233,27 +1325,41 @@ namespace Gambit {
             typename DT::Input* input = ff->fakethis->parent.get_Input();
             switch( ff->whichiter )
             {
+               // Override retrieval cases
+               case 0: {
+                 ff->check(ff->ito_safe);
+                 result = ff->ito->second;
+                 break;}
                case 1: {
+                 ff->check(ff->ito1_safe);
+                 result = (ff->ito1->second).at(ff->index1);
+                 break;}
+               case 2: {
+                 ff->check(ff->ito2_safe);
+                 result = (ff->ito2->second).at(ff->index1).at(ff->index2);
+                 break;}
+               // Wrapper class function call cases
+               case 3: {
                  ff->check(ff->it_safe);
                  typename MT::FSptr f = ff->it->second;
                  result = (model->*f)();
                  break;}
-               case 2: {
+               case 4: {
                  ff->check(ff->itM_safe);
                  typename MT::plainfptrM f = ff->itM->second;
                  result = (*f)(*model);
                  break;}
-               case 3: {
+               case 5: {
                  ff->check(ff->itI_safe);
                  typename MT::plainfptrI f = ff->itI->second;
                  result = (*f)(*input);
                  break;}
-               case 4: {
+               case 6: {
                  ff->check(ff->it1_safe);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
                  result = (model->*f)(ff->index1);
                  break;}
-               case 5: {
+               case 7: {
                  ff->check(ff->it2_safe);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
                  result = (model->*f)(ff->index1,ff->index2);
@@ -1299,27 +1405,27 @@ namespace Gambit {
             typename DT::Input* input = ff->fakethis->parent.get_Input();
             switch( ff->whichiter )
             {
-               case 1: {
+               case 3: {
                  ff->check(ff->it_safe);
                  typename MT::FSptr f = ff->it->second;
                  (model->*f)(set_value);
                  break;}
-               case 2: {
+               case 4: {
                  ff->check(ff->itM_safe);
                  typename MT::plainfptrM f = ff->itM->second;
                  (*f)(*model,set_value);
                  break;}
-               case 3: {
+               case 5: {
                  ff->check(ff->itI_safe);
                  typename MT::plainfptrI f = ff->itI->second;
                  (*f)(*input,set_value);
                  break;}
-               case 4: {
+               case 6: {
                  ff->check(ff->it1_safe);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
                  (model->*f)(ff->index1, set_value);
                  break;}
-               case 5: {
+               case 7: {
                  ff->check(ff->it2_safe);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
                  (model->*f)(ff->index1,ff->index2,set_value);
@@ -1355,6 +1461,8 @@ namespace Gambit {
          /* Create finder object, tell it what maps to search, and do the search */\
          FptrFinder<DT,CLASS,MapTag::Get> finder =                                \
                           SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this)              \
+                                 .omap(  this->CAT_3(override_,FLABEL,_map) )               \
+                                 .omap1( this->CAT_3(override_,FLABEL,_map1) )               \
                                  .map(  CAT_3(get_,MLABEL,_map_Get)() )               \
                                  .mapM( CAT_3(get_,MLABEL,_map_extraM_Get)() )        \
                                  .mapI( CAT_3(get_,MLABEL,_map_extraI_Get)() )        \
@@ -1369,6 +1477,8 @@ namespace Gambit {
          /* Create finder object, tell it what maps to search, and do the search */\
          FptrFinder<DT,CLASS,MapTag::Get> finder =                                \
                           SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this)               \
+                                 .omap(  this->CAT_3(override_,FLABEL,_map) )               \
+                                 .omap1( this->CAT_3(override_,FLABEL,_map1) )               \
                                  .map(  CAT_3(get_,MLABEL,_map_Get)() )               \
                                  .mapM( CAT_3(get_,MLABEL,_map_extraM_Get)() )        \
                                  .mapI( CAT_3(get_,MLABEL,_map_extraI_Get)() )        \
@@ -1399,6 +1509,8 @@ namespace Gambit {
          /* Create finder object, tell it what maps to search, and do the search */\
          FptrFinder<DT,CLASS,MapTag::Get> finder =                               \
                           SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this)              \
+                                 .omap(  this->CAT_3(override_,FLABEL,_map) )               \
+                                 .omap1( this->CAT_3(override_,FLABEL,_map1) )               \
                                  .map(  CAT_3(get_,MLABEL,_map_Get)() )               \
                                  .mapM( CAT_3(get_,MLABEL,_map_extraM_Get)() )        \
                                  .mapI( CAT_3(get_,MLABEL,_map_extraI_Get)() )        \
@@ -1413,6 +1525,8 @@ namespace Gambit {
          /* Create finder object, tell it what maps to search, and do the search */\
          FptrFinder<DT,CLASS,MapTag::Get> finder = \
                           SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this) \
+                                 .omap(  this->CAT_3(override_,FLABEL,_map) )               \
+                                 .omap1( this->CAT_3(override_,FLABEL,_map1) )               \
                                  .map(  CAT_3(get_,MLABEL,_map_Get)() )               \
                                  .mapM( CAT_3(get_,MLABEL,_map_extraM_Get)() )        \
                                  .mapI( CAT_3(get_,MLABEL,_map_extraI_Get)() )        \
@@ -1443,6 +1557,7 @@ namespace Gambit {
          /* Create finder object, tell it what maps to search, and do the search */\
          FptrFinder<DT,CLASS,MapTag::Get> finder =  \
                           SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this) \
+                                 .omap2( this->CAT_3(override_,FLABEL,_map2) )               \
                                  .map2( CAT_3(get_,MLABEL,_map2_Get)() );             \
          return finder.find(name,i,j);                                           \
       }                                                                          \
@@ -1454,6 +1569,7 @@ namespace Gambit {
          /* Create finder object, tell it what maps to search, and do the search */\
          FptrFinder<DT,CLASS,MapTag::Get> finder =  \
                           SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this)  \
+                                 .omap2( this->CAT_3(override_,FLABEL,_map2) )               \
                                  .map2( CAT_3(get_,MLABEL,_map2_Get)() );             \
          if( finder.find(name,i,j) ){ result = finder.callfcn(); }               \
          else { finder.raise_error(LOCAL_INFO); }                                \
@@ -1465,12 +1581,9 @@ namespace Gambit {
       {                                                                          \
          /* Create finder object, tell it what maps to search, and do the search */\
          FptrFinder<DT,CLASS,MapTag::Set> finder =                               \
-                          SetMaps<DT,CLASS,MapTag::Set>(STRINGIFY(FLABEL),this)               \
-                                 .map(  CAT_3(get_,MLABEL,_map_Set)() )               \
-                                 .mapM( CAT_3(get_,MLABEL,_map_extraM_Set)() )        \
-                                 .mapI( CAT_3(get_,MLABEL,_map_extraI_Set)() )        \
-                                 .map1( CAT_3(get_,MLABEL,_map1_Set)() );             \
-         if( finder.find(name,i,j) ){ finder.callfcn(set_value); }                   \
+                          SetMaps<DT,CLASS,MapTag::Set>(STRINGIFY(FLABEL),this)  \
+                                 .map2( CAT_3(get_,MLABEL,_map2_Set)() );        \
+         if( finder.find(name,i,j) ){ finder.callfcn(set_value); }               \
          else { finder.raise_error(LOCAL_INFO); }                                \
       }                                                                              
 
