@@ -35,8 +35,11 @@
 
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
+
+   namespace SpecBit
+   {
 
       // Needed for typename aliases in Spec and MapTypes classes
       struct QedQcdWrapperTraits
