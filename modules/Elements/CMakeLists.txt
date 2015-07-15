@@ -14,8 +14,7 @@
 #
 #************************************************
 
-set(source_files src/functors.cpp
-                 src/decay_table.cpp
+set(source_files src/decay_table.cpp
                  src/ini_functions.cpp
                  src/sminputs.cpp
                  src/spectrum.cpp
@@ -26,6 +25,7 @@ set(source_files src/functors.cpp
 
 set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/functors.hpp
+                 include/gambit/Elements/functor_definitions.hpp
                  include/gambit/Elements/funktions.hpp
                  include/gambit/Elements/gambit_module_headers.hpp
                  include/gambit/Elements/ini_code_struct.hpp

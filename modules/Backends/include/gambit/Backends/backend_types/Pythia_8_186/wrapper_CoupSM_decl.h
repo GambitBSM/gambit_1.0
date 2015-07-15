@@ -6,6 +6,8 @@
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_CoupSM.h"
 #include "wrapper_Rndm_decl.h"
+#include "wrapper_AlphaStrong_decl.h"
+#include "wrapper_AlphaEM_decl.h"
 #include "wrapper_Settings_decl.h"
 
 #include "identification.hpp"

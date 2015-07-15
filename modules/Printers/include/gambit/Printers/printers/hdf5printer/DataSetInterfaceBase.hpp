@@ -98,6 +98,7 @@ namespace Gambit {
          /// Constructors
          DataSetInterfaceBase(); 
          DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]);
+         virtual ~DataSetInterfaceBase() {} 
 
          /// Create a (chunked) dataset 
          H5::DataSet createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]);

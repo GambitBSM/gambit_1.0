@@ -37,17 +37,15 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
-// Macros
-
+// Printable types
 #ifndef STANDALONE
    // If we are in a main gambit executable, we need to know all the potentially printable types.
-   #include "gambit/Elements/all_functor_types.hpp"
-   // Defines the macro PRINTABLE_TYPES which is a PP sequence of the types we need.
+   #define PRINTING_TYPES "gambit/Elements/all_functor_types.hpp"
 #else
    // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
-   // See BaseBasePrinter.hpp for the list
-   #define PRINTABLE_TYPES SCANNER_PRINTABLE_TYPES
+   #define PRINTING_TYPES "gambit/ScannerBit/printable_types.hpp"
 #endif
+#include PRINTING_TYPES
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
 #define LOAD_PRINTER(tag, ...) REGISTER(printer_creators, tag, __VA_ARGS__)

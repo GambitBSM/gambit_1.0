@@ -25,7 +25,7 @@ HiggsSignals:
   1.2:         ./Backends/lib/libhiggssignals.so
 
 FeynHiggs:
-  2.10.4:      ./Backends/lib/libFH.so
+  2.10:        ./Backends/lib/libFH.so
 
 LibFarrayTest:
   1.0:         ./Backends/lib/libFarrayTest.so
@@ -42,6 +42,7 @@ LibFortran:
 
 Pythia:
   8.186:       ./Backends/lib/libpythia8.so
+  8.209:       ./Backends/lib/libpythia8.so
 
 SuperIso:
   3.4:         ./Backends/lib/libsuperiso.so

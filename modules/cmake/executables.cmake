@@ -59,6 +59,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
   endif()
   add_gambit_executable(ExampleBit_A_standalone "${ExampleBit_A_XTRA}"
                         SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp 
+                                ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/standalone_functors.cpp 
                                 $<TARGET_OBJECTS:ExampleBit_A>
                                 ${GAMBIT_ALL_COMMON_OBJECTS}
   )

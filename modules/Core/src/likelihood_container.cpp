@@ -141,8 +141,9 @@ namespace Gambit
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
       catch(invalid_point_exception& e)
       {
-        lnlike = min_valid_lnlike;
         logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
+        logger().leaving_module();
+        lnlike = min_valid_lnlike;
         compute_aux = false;
         break;
       }

@@ -2,6 +2,8 @@
 #define __wrapper_CoupSM_def_Pythia_8_186_h__
 
 #include "wrapper_Rndm_decl.h"
+#include "wrapper_AlphaStrong_decl.h"
+#include "wrapper_AlphaEM_decl.h"
 #include "wrapper_Settings_decl.h"
 
 #include "identification.hpp"

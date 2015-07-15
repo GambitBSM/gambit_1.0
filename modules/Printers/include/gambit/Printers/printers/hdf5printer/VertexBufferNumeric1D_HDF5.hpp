@@ -56,6 +56,11 @@ namespace Gambit {
            DataSetInterfaceScalar<bool,CHUNKLENGTH>& dsetvalid(); // validity bools
            DataSetInterfaceScalar<T,CHUNKLENGTH>&    dsetdata();  // actual data             
 
+           /// Extendible backup buffers for RA writes that need to be
+           /// postponed due to the original sync writes not having been
+           /// performed yet.
+           std::vector<std::pair<T,PPIDpair>> postpone_write_queue_and_locs;             
+
            /// Dimension-0 index of the next empty hyperslab in the output datasets
            unsigned long nextemptyslab = 0;
 
@@ -275,7 +280,7 @@ namespace Gambit {
             std::cout<<"rank "<<this->myRank<<": Extended RA dset '"<<this->get_label()<<"' to size "<<target_sync_pos<<std::endl; 
             #endif
 
-            if (this->RA_queue_length!=0) 
+            if (this->RA_queue_length!=0 or postpone_write_queue_and_locs.size()!=0) 
             {
                bool valid[CHUNKLENGTH];
       
@@ -286,15 +291,93 @@ namespace Gambit {
 
                /// Use the provided PPIDpair-->dset_location map to locate the target
                /// parameter points in the output dataset. 
-               hsize_t abs_write_locations[CHUNKLENGTH];
+               /// (Temp RA buffers for immediate writes)
+               T        now_write_queue[CHUNKLENGTH];             
+               hsize_t  now_abs_write_locations[CHUNKLENGTH];
+               uint     now_i=0; // queue_length
+
+               /// First, go through the postponed list and try again to
+               /// write those to disk.
+               /// (erasing elements from a vector involves copying all
+               /// the subsequent elements, so to avoid doing this 
+               /// potentially many times we'll just copy everything twice)
+               std::vector<std::pair<T,PPIDpair>> tmp_postpone;
+
+               for(typename std::vector<std::pair<T,PPIDpair>>::iterator 
+                    itpp = postpone_write_queue_and_locs.begin();
+                    itpp!= postpone_write_queue_and_locs.end(); ++itpp)
+               {
+                  T&        val = itpp->first;
+                  PPIDpair& loc = itpp->second;
+
+                  // Convert loc to abs dataset index (if possible)
+                  std::map<PPIDpair, ulong>::const_iterator it 
+                      = PPID_to_dsetindex.find(loc);
+
+                  if(it==PPID_to_dsetindex.end())
+                  {
+                     // No PPID found; add to tmp_postpone
+                     tmp_postpone.push_back(*itpp);
+                  }
+                  else
+                  {
+                     // PPID found; convert to absolute dataset index and add to "now" queue
+                     now_write_queue[now_i]         = val;
+                     now_abs_write_locations[now_i] = it->second;
+                     now_i++;
+                  }
+               }
+               // Write "now" buffers to disk, if they aren't empty
+               if(now_i != 0)
+               {
+                  std::fill_n(valid, now_i, true); 
+                  dsetvalid().RA_write(valid,           now_abs_write_locations, now_i); 
+                  dsetdata().RA_write (now_write_queue, now_abs_write_locations, now_i);
+                  std::cout<<"Wrote "<<now_i<<" postponed RA items to disk"<<std::endl;
+               }
+               // Reset the "now" buffer for the actual scheduled write
+               now_i = 0;
+               // Copy any unwritten postponed RA_writes back into the postpone buffer
+               // (also resets the postpone buffer if there are no unwritten writes)
+               postpone_write_queue_and_locs = tmp_postpone;
+
+
+               // Now go through the current RA_queue and try to write them to disk
                for(ulong i=0; i<this->RA_queue_length; i++)
                {
-                 abs_write_locations[i] = PPID_to_dsetindex.at(this->RA_write_locations[i]);
+                 // Some write locations may not be known yet due to the original
+                 // data not yet having been written to disk from its sync buffer.
+                 // We will have to postpone writing these until the next RA_write
+                 // attempt.
+                 std::map<PPIDpair, ulong>::const_iterator it 
+                     = PPID_to_dsetindex.find(this->RA_write_locations[i]);
+                 if(it==PPID_to_dsetindex.end())
+                 {
+                    // No PPID found; add to "postpone" queue
+                    postpone_write_queue_and_locs.push_back(
+                                  std::make_pair(this->RA_write_queue[i],
+                                                 this->RA_write_locations[i])
+                                  );
+                 }
+                 else
+                 {
+                    // PPID found; convert to absolute dataset index and add to "now" queue
+                    now_write_queue[now_i]         = this->RA_write_queue[i];
+                    now_abs_write_locations[now_i] = it->second;
+                    now_i++;
+                 }
                }               
 
-               std::fill_n(valid, this->RA_queue_length, true); 
-               dsetvalid().RA_write(valid,               abs_write_locations,this->RA_queue_length); 
-               dsetdata().RA_write (this->RA_write_queue,abs_write_locations,this->RA_queue_length);
+               // Write "now" buffers to disk, if they aren't empty
+               if(now_i != 0)
+               {
+                  std::fill_n(valid, now_i, true); 
+                  dsetvalid().RA_write(valid,           now_abs_write_locations, now_i); 
+                  dsetdata().RA_write (now_write_queue, now_abs_write_locations, now_i);
+               }
+
+               // TODO: Need some check at the end of the run to ensure postpone buffer is emptied?
+               //       Also need to make sure it gets emptied when printer->reset gets called.
             }
          }
       }
