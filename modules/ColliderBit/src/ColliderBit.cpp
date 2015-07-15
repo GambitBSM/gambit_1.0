@@ -692,6 +692,15 @@ namespace Gambit
     }
     
     
+    /// *** Limits from e+e- colliders ***
+    
+    /// ee-->slepton production cross-sections    
+    
+    /// ee-->neutralino production cross-sections    
+
+    /// ee-->chargino production cross-sections    
+
+    
     /// *** Higgs physics ***
 
     /// FeynHiggs Higgs production cross-sections

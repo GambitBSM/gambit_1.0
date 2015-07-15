@@ -28,6 +28,11 @@
 #include "boost/make_shared.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 
+//FIXME these should not be set here, and must come from the spectrum object instead
+const double m_Zboson = 91.1876;                              // Z-boson mass (GeV/c^2)
+const double m_Wboson = 80.385;                               // W-boson mass (GeV/c^2)
+
+
 namespace Gambit
 {
   
