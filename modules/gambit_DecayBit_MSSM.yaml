@@ -33,6 +33,14 @@ ObsLikes:
     capability:   decay_rates
     type:         DecayTable
 
+  # Test LEP xsecs
+  - purpose:      Test
+    capability:   LEP_xsec_selselbar
+  - purpose:      Test
+    capability:   LEP_xsec_chi00_11
+  - purpose:      Test
+    capability:   LEP_xsec_chipm_11
+
 Rules:
 
   - capability: MSSM_spectrum 

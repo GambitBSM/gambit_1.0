@@ -506,7 +506,7 @@ namespace Gambit
          str full_context = LOCAL_INFO + " called from " + context;
          if((max_mixing*max_mixing) <= 1-tol){
             utils_error().raise(full_context, "mass_es from gauge requested "
-            "when mxing away from closest gauge_es is greater than tol"); 
+            "when mixing away from closest gauge_es is greater than tol"); 
           }
          return mass_es; 
       }
@@ -772,8 +772,9 @@ namespace Gambit
                                                  off_family_mixing, mssm);
          double sqr_sum_mix = gauge_composition[0] * gauge_composition[0];
          sqr_sum_mix += gauge_composition[1] * gauge_composition[1];
-         str full_context = LOCAL_INFO + " called from " + context;
-         if(sqr_sum_mix <= 1-tol){
+         if(sqr_sum_mix <= 1-tol)
+         {
+            str full_context = LOCAL_INFO + " called from " + context;
             utils_error().raise(full_context, " mass_es_closest_to_family requested "
             "when family mixing away from closest mass_es is greater than tol"); 
          }
@@ -782,6 +783,18 @@ namespace Gambit
 
       }
 
+      /// Get the family mixing matrix and corresponding mass eigenstates, then check for interfamily mixing.
+      std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e"*/, int generation,
+                                                  str & mass_es1, str & mass_es2, const SubSpectrum* mssm,
+                                                  double tol, str context)
+      {
+        std::vector<double> m = family_state_mix_matrix(type, generation, mass_es1, mass_es2, mssm);
+        str full_context = LOCAL_INFO + " called from " + context;
+        if (m[0]*m[0] + m[1]*m[1] < 1-tol || m[2]*m[2] + m[3]*m[3] < 1-tol)
+          utils_error().raise(full_context, "Too much interfamily mixing to safely determine intrafamily mixing matrix."); 
+        return m;
+      }  
+ 
       /// identifies the two mass_es which best matches specified family state
       /// storing them in strings and then returns 
       /// the 2by2 mixing matrix for that family state in the form
@@ -873,7 +886,7 @@ namespace Gambit
       /// returns family state that best matches the given mass_es
       /// fills a double with the sum of the square mixings to gauge_es
       /// of the matching family
-      /// and fills the mixing of the matching mass_es into gauge eigenstates 
+      /// and fills the mixing of the matching gauge_es into mass eigenstates 
       str family_state_closest_to_mass_es(str mass_es, double & sum_sq_mix,
                                           std::vector<double> & mass_comp,
                                           const SubSpectrum* mssm)

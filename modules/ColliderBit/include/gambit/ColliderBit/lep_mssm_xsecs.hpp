@@ -44,25 +44,39 @@
 
 #include <vector>
 
+
 namespace Gambit
 {
     
   namespace ColliderBit
   {
     
-    typedef vector< vector<double> > MixMatrix;
+    typedef std::vector< std::vector<double> > MixMatrix;
     
-    /// Cross section routines.
+    /// High-level cross section routines.
+    /// @{
+    /// Retrieve the production cross-section at an e+e- collider for slepton pairs
+    void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
+                         const int lbar_chirality, const double tol, const Spectrum* spec, const double gammaZ);
+    /// Retrieve the production cross-section at an e+e- collider for neutralino pairs
+    void get_sigma_ee_chi00(triplet<double>& result, const double sqrts, const int chi_first, const int chi_second,
+                            const double tol, const Spectrum* spec, const double gammaZ);
+    /// Retrieve the production cross-section at an e+e- collider for chargino pairs
+    void get_sigma_ee_chipm(triplet<double>& result, const double sqrts, const int chi_plus, const int chi_minus,
+                            const double tol, const Spectrum* spec, const double gammaZ);    
+    /// @}
+
+    /// Low-level cross section routines.
     /// @{
     /// Cross section [pb] for e^+e^- -> \tilde l_i \tilde l_j^*
     /// To use, call SLHA2BFM first on SLHA mixing matrices constructed as a vector of vectors
     double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix F, 
-                         MixMatrix N, double mN[4], double alpha, double mZ, double gZ, double sin2thetaW);
+                         MixMatrix N, const double mN[4], double alpha, double mZ, double gZ, double sin2thetaW);
     /// Cross section [pb] for e^+e^- -> \tilde\chi^0_i \tilde\chi^0_j
     /// Masses mi and mj for the neutralinos are signed. mS are the selectron masses (left = 0, right = 1).
     /// Warning! BFM uses inverted \tan\beta! Use tanb = 1 / tanb in converting from SLHA.
     double xsec_neuineuj(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix N,
-                         double mS[2], double tanb, double alpha, double mZ, double gZ, double sin2thetaW);
+                         const double mS[2], double tanb, double alpha, double mZ, double gZ, double sin2thetaW);
     /// Cross section [pb] for e^+e^- -> \tilde\chi^+_i \tilde\chi^-_j
     /// Masses mi and mj for the charginos are signed. msn is electron sneutrino mass.
     double xsec_chaichaj(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix V, 
@@ -71,9 +85,9 @@ namespace Gambit
     
     /// Conversion between SLHA and BFM conventions. \tan\beta is as per SLHA.
     /// @{
-    void SLHA2BFM_NN(MixMatrix &NN, double tanb);
+    void SLHA2BFM_NN(MixMatrix &NN, double tanb, double sin2thetaW);
     void SLHA2BFM_VV(MixMatrix &VV);
-    void BFM2SLHA_NN(MixMatrix &NN, double tanb);
+    void BFM2SLHA_NN(MixMatrix &NN, double tanb, double sin2thetaW);
     void BFM2SLHA_VV(MixMatrix &VV);
     MixMatrix multiply(MixMatrix A, MixMatrix B);
     MixMatrix transpose(MixMatrix A);

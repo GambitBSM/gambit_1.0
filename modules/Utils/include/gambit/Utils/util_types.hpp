@@ -57,13 +57,31 @@ namespace Gambit
   template<typename TYPE>
   struct triplet
   {
+    TYPE central, upper, lower;
+    /// Default constructor
+    triplet()
+     : central(0.),
+       upper(0.),
+       lower(0.)
+    {}
+    /// One-value constructor
+    triplet(TYPE centralval)
+     : central(centralval),
+       upper(0.),
+       lower(0.)
+    {}
+    /// Three-value constructor
     triplet(TYPE centralval, TYPE upperval, TYPE lowerval)
      : central(centralval),
        upper(upperval),
-       lower(loweverval),
+       lower(lowerval)
     {}
-    void check_and_swap() { if (upper < lower) std::swap(upper, lower); }
-    TYPE central, upper, lower;
+    /// Copy constructor
+    triplet(const triplet<TYPE>& in)
+     : central(in.central),
+       upper(in.upper),
+       lower(in.lower)
+    {}    
   }; 
 
   /// A safe pointer that throws an informative error if you try to dereference

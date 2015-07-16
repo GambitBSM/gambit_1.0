@@ -28,13 +28,12 @@
 #include <math.h>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/numerical_constants.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 
 
 #define pow2(a) ((a)*(a)) // Get speedy
-using namespace std;      // Get lazy
 
 namespace Gambit
 {
@@ -42,17 +41,215 @@ namespace Gambit
   namespace ColliderBit
   {
       
+    /// Retrieve the production cross-section at an e+e- collider for slepton pairs
+    void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
+                         const int lbar_chirality, const double tol, const Spectrum* spec, const double gammaZ)
+    {
+      // Subspectrum
+      const SubSpectrum* mssm = spec->get_UV();
+
+      // PDG codes
+      const int id1 = 1000000*l_chirality + 10 +2*(generation-1);
+      const int id2 = -(1000000*lbar_chirality + 10 +2*(generation-1));
+
+      // SM parameters
+      const double mZ = spec->get_Pole_Mass(23,0);
+      // FIXME should these be in terms of DRbar parameters at Q_SUSY, DRbar at q = sqrts, or just in terms of MSbar at Q=mZ?
+      // Should we use the precision sin2theta_W?  Is it at the right scale?
+      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
+      const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
+      const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
+      const double alpha = 0.25*sin2thetaW*g1*g1/pi; 
+
+      // MSSM parameters
+      const double tanb = mssm->runningpars.get_dimensionless_parameter("tanbeta");
+      // Get the mass eigenstate string and 2x2 slepton mixing matrix for this family
+      str mass_es1, mass_es2;
+      std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e", generation, mass_es1, mass_es2, mssm, tol, LOCAL_INFO);
+      MixMatrix sleptonmix(2,std::vector<double>(2));
+      sleptonmix[0][0] = slepton4vec[0]; 
+      sleptonmix[0][1] = slepton4vec[1]; 
+      sleptonmix[1][0] = slepton4vec[2]; 
+      sleptonmix[1][1] = slepton4vec[3]; 
+      // Get the slepton masses and uncertainties
+      const double m1 = spec->get_Pole_Mass(mass_es1);
+      const double m2 = spec->get_Pole_Mass(mass_es2);
+      // FIXME when mass uncertainties are available from the spectrum objects
+      //std::pair<double,double> m1_uncerts = spec->get_pole_mass_uncert(mass_es1); 
+      //std::pair<double,double> m2_uncerts = spec->get_pole_mass_uncert(mass_es2); 
+      // Until then
+      const std::pair<double,double> m1_uncerts(0.05, 0.05);
+      const std::pair<double,double> m2_uncerts = m1_uncerts;
+      // Get the neutralino masses
+      const double neutmass[4] = { spec->get_Pole_Mass(1000022,0), spec->get_Pole_Mass(1000023,0), 
+                                   spec->get_Pole_Mass(1000025,0), spec->get_Pole_Mass(1000035,0) };
+      // Get the 4x4 neutralino mixing matrix
+      MixMatrix neutmix(4,std::vector<double>(4));
+      //FIXME use PDG code instead of "~chi0" once the spectrum object supports such an interface
+      for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->phys.get_Pole_Mixing("~chi0",i+1,j+1);
+
+      // Convert neutralino mixing matrix to BFM convention
+      SLHA2BFM_NN(neutmix, tanb, sin2thetaW);
+      
+      // Calculate the cross-section
+      result.central = xsec_sleislej(id1, id2, sqrts, m1, m2, sleptonmix, neutmix, neutmass, alpha, mZ, gammaZ, sin2thetaW);
+
+      // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
+      std::vector<double> xsecs;
+      xsecs.push_back(result.central);
+      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first), sleptonmix, neutmix,
+                                   neutmass, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.first), sleptonmix, neutmix,
+                                   neutmass, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.second), sleptonmix, neutmix,
+                                   neutmass, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.second), sleptonmix, neutmix,
+                                   neutmass, alpha, mZ, gammaZ, sin2thetaW));
+      result.upper = *std::max_element(xsecs.begin(), xsecs.end());
+      result.lower = *std::min_element(xsecs.begin(), xsecs.end());
+    }
+
+
+    /// Retrieve the production cross-section at an e+e- collider for neutralino pairs
+    void get_sigma_ee_chi00(triplet<double>& result, const double sqrts, const int chi_first, const int chi_second,
+                            const double tol, const Spectrum* spec, const double gammaZ)
+    {
+      // Subspectrum
+      const SubSpectrum* mssm = spec->get_UV();
+
+      // PDG codes
+      const int id1 = 1000021 + chi_first  + (chi_first  > 2 ? chi_first  - 1 + (chi_first -3)*10 : 0);
+      const int id2 = 1000021 + chi_second + (chi_second > 2 ? chi_second - 1 + (chi_second-3)*10 : 0);
+
+      // SM parameters
+      const double mZ = spec->get_Pole_Mass(23,0);
+      // FIXME should these be in terms of DRbar parameters at Q_SUSY, DRbar at q = sqrts, or just in terms of MSbar at Q=mZ?
+      // Should we use the precision sin2theta_W?  Is it at the right scale?
+      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
+      const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
+      const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
+      const double alpha = 0.25*sin2thetaW*g1*g1/pi; 
+
+      // MSSM parameters
+      const double tanb = mssm->runningpars.get_dimensionless_parameter("tanbeta");
+      // Get the mass eigenstates best corresponding to ~eL and ~eR.
+      const str mass_esL = slhahelp::mass_es_from_gauge_es("~e_L", mssm, tol, LOCAL_INFO);
+      const str mass_esR = slhahelp::mass_es_from_gauge_es("~e_R", mssm, tol, LOCAL_INFO);
+      // Get the slepton masses
+      const double mS[2] = {spec->get_Pole_Mass(mass_esL), spec->get_Pole_Mass(mass_esR)};
+      // Get the neutralino masses
+      const double m1 = spec->get_Pole_Mass(id1,0); 
+      const double m2 = spec->get_Pole_Mass(id2,0); 
+      // FIXME when mass uncertainties are available from the spectrum objects
+      //std::pair<double,double> m1_uncerts = spec->get_pole_mass_uncert(id1,0); 
+      //std::pair<double,double> m2_uncerts = spec->get_pole_mass_uncert(id2,0); 
+      // Until then
+      const std::pair<double,double> m1_uncerts(0.05, 0.05);
+      const std::pair<double,double> m2_uncerts = m1_uncerts;
+      // Get the 4x4 neutralino mixing matrix
+      MixMatrix neutmix(4,std::vector<double>(4));
+      //FIXME use PDG code instead of "~chi0" once the spectrum object supports such an interface
+      for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->phys.get_Pole_Mixing("~chi0",i+1,j+1);
+
+      // Convert neutralino mixing matrix to BFM convention
+      SLHA2BFM_NN(neutmix, tanb, sin2thetaW);
+      
+      // Calculate the cross-section
+      result.central = xsec_neuineuj(id1, id2, sqrts, m1, m2, neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW);
+
+      // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
+      std::vector<double> xsecs;
+      xsecs.push_back(result.central);
+      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first),
+                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.second),
+                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.first),
+                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.second),
+                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
+      result.upper = *std::max_element(xsecs.begin(), xsecs.end());
+      result.lower = *std::min_element(xsecs.begin(), xsecs.end());
+    }
+
+    /// Retrieve the production cross-section at an e+e- collider for chargino pairs
+    void get_sigma_ee_chipm(triplet<double>& result, const double sqrts, const int chi_plus, const int chi_minus,
+                            const double tol, const Spectrum* spec, const double gammaZ)
+    {
+      // Subspectrum
+      const SubSpectrum* mssm = spec->get_UV();
+
+      // PDG codes
+      const int id1 = 1000023 + chi_plus + (chi_plus - 1)*14;
+      const int id2 = -(1000023 + chi_minus + (chi_minus - 1)*14);
+
+      // SM parameters
+      const double mZ = spec->get_Pole_Mass(23,0);
+      // FIXME should these be in terms of DRbar parameters at Q_SUSY, DRbar at q = sqrts, or just in terms of MSbar at Q=mZ?
+      // Should we use the precision sin2theta_W?  Is it at the right scale?
+      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
+      const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
+      const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
+      const double alpha = 0.25*sin2thetaW*g1*g1/pi; 
+
+      // MSSM parameters
+      // Get the mass eigenstates best corresponding to ~nu_e_L.
+      const str mass_snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO);
+      // Get the electron sneutrino masses
+      const double msn = spec->get_Pole_Mass(mass_snue);
+      // Get the chargino masses
+      const double m1 = spec->get_Pole_Mass(id1,0); 
+      const double m2 = spec->get_Pole_Mass(id2,0); 
+      // FIXME when mass uncertainties are available from the spectrum objects
+      //std::pair<double,double> m1_uncerts = spec->get_pole_mass_uncert(id1,0); 
+      //std::pair<double,double> m2_uncerts = spec->get_pole_mass_uncert(id2,0); 
+      // Until then
+      const std::pair<double,double> m1_uncerts(0.05, 0.05);
+      const std::pair<double,double> m2_uncerts = m1_uncerts;
+      // Get the 2x2 chargino mixing matrices
+      MixMatrix charginomixV(2,std::vector<double>(2));
+      MixMatrix charginomixU(2,std::vector<double>(2));
+      //FIXME use PDG code instead of "~chi+/-" once the spectrum object supports such an interface
+      for (int i=0; i<2; i++) for (int j=0; j<2; j++)
+      { 
+        charginomixV[i][j] = mssm->phys.get_Pole_Mixing("~chi+",i+1,j+1);
+        charginomixU[i][j] = mssm->phys.get_Pole_Mixing("~chi-",i+1,j+1);
+      }
+
+      // Convert chargino mixing matrices to BFM convention
+      SLHA2BFM_VV(charginomixV);
+      SLHA2BFM_VV(charginomixU);
+      
+      // Calculate the cross-section
+      result.central = xsec_chaichaj(id1, id2, sqrts, m1, m2, charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW);
+
+      // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
+      std::vector<double> xsecs;
+      xsecs.push_back(result.central);
+      result.central = xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first), charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW);
+      result.central = xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.second), charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW);
+      result.central = xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.first), charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW);
+      result.central = xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.second), charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW);
+      result.upper = *std::max_element(xsecs.begin(), xsecs.end());
+      result.lower = *std::min_element(xsecs.begin(), xsecs.end());
+    }
+
     /// Integrals for t-channel neutralino diagrams
     /// m1 and m2 are masses of final state sleptons
     /// mk and ml are neutralino masses
     /// @{
     double I1(double s, double m1, double m2, double mk, double ml)
     {
-      double S = sqrt(s-pow(m1+m2,2))*sqrt(s-pow(m1-m2,2));
-      double m1sq = pow(m1,2);
-      double m2sq = pow(m2,2);
-      double mksq = pow(mk,2);
-      double mlsq = pow(ml,2);
+      double S = sqrt(s-pow2(m1+m2))*sqrt(s-pow2(m1-m2));
+      double m1sq = pow2(m1);
+      double m2sq = pow2(m2);
+      double mksq = pow2(mk);
+      double mlsq = pow2(ml);
       
       double I1 = 0;
       // Careful with degenerate masses!
@@ -68,11 +265,11 @@ namespace Gambit
     }
     double I2(double s, double m1, double m2, double mk, double ml)
     {
-      double S = sqrt(s-pow(m1+m2,2))*sqrt(s-pow(m1-m2,2));
-      double m1sq = pow(m1,2);
-      double m2sq = pow(m2,2);
-      double mksq = pow(mk,2);
-      double mlsq = pow(ml,2);
+      double S = sqrt(s-pow2(m1+m2))*sqrt(s-pow2(m1-m2));
+      double m1sq = pow2(m1);
+      double m2sq = pow2(m2);
+      double mksq = pow2(mk);
+      double mlsq = pow2(ml);
     
       double I2 = 0;
       // Careful with degenerate masses!
@@ -90,10 +287,10 @@ namespace Gambit
     }
     double I3(double s, double m1, double m2, double mk)
     {
-      double S = sqrt(s-pow(m1+m2,2))*sqrt(s-pow(m1-m2,2));
-      double m1sq = pow(m1,2);
-      double m2sq = pow(m2,2);
-      double mksq = pow(mk,2);
+      double S = sqrt(s-pow2(m1+m2))*sqrt(s-pow2(m1-m2));
+      double m1sq = pow2(m1);
+      double m2sq = pow2(m2);
+      double mksq = pow2(mk);
       
       double I3 = 0;
       I3 = log((m1sq+m2sq-2.*mksq-(s+S))/(m1sq+m2sq-2.*mksq-(s-S)));
@@ -107,7 +304,7 @@ namespace Gambit
     /// Cross section [pb] for e^+e^- -> \tilde l_i \tilde l_j^*
     /// To use, call SLHA2BFM first on SLHA mixing matrices constructed as a vector of vectors
     double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix F, 
-                         MixMatrix N, double mN[4], double alpha, double mZ, double gZ, double sin2thetaW)
+                         MixMatrix N, const double mN[4], double alpha, double mZ, double gZ, double sin2thetaW)
     {
     
       // Slepton mixing
@@ -189,8 +386,8 @@ namespace Gambit
       double Le = T3l+sin2thetaW;
       double Re = sin2thetaW;
       // Left-right mixing
-      double cos2phi = pow(cosphi,2);
-      double sin2phi = pow(sinphi,2);
+      double cos2phi = pow2(cosphi);
+      double sin2phi = pow2(sinphi);
     
       double fL[4], fR[4];
       for(int k = 0; k < 4; k++){
@@ -200,21 +397,21 @@ namespace Gambit
     
       // Kinematics
       double s, S, DZ2, ReDZ;
-      s = pow(sqrts,2);
-      S = sqrt(s-pow(m1+m2,2))*sqrt(s-pow(m1-m2,2));
-      DZ2 = 1./(pow(s-pow(mZ,2),2)+pow(mZ*gZ,2)); // Breit-Wigner for Z
-      ReDZ = (s-pow(mZ,2))*DZ2;
+      s = pow2(sqrts);
+      S = sqrt(s-pow2(m1+m2))*sqrt(s-pow2(m1-m2));
+      DZ2 = 1./(pow2(s-pow2(mZ))+pow2(mZ*gZ)); // Breit-Wigner for Z
+      ReDZ = (s-pow2(mZ))*DZ2;
     
       // Cross sections per diagram and interference terms
       double sigma, sigma_Z, sigma_Z_mix, sigma_g, sigma_gZ, sigma_N, sigma_N_mix, sigma_gN, sigma_ZN, sigma_ZN_mix;
       // gamma
-      sigma_g = 2.*pi*pow(alpha,2)/pow(s,4) * pow(S,3)/6.;
+      sigma_g = 2.*pi*pow2(alpha)/pow(s,4) * pow(S,3)/6.;
       // Z
-      sigma_Z = pi*pow(alpha,2)/pow(s,2)/pow(sin2thetaW,2)/pow(1.-sin2thetaW,2) *  DZ2 * pow(S,3)/6.;
+      sigma_Z = pi*pow2(alpha)/pow2(s)/pow2(sin2thetaW)/pow2(1.-sin2thetaW) *  DZ2 * pow(S,3)/6.;
       sigma_Z *= (pow2(Le)+pow2(Re))*pow2(Le*cos2phi+Re*sin2phi);
-      sigma_Z_mix = sigma_Z/pow(Le*cos2phi+Re*sin2phi,2)*pow(Le-Re,2)*cos2phi*sin2phi;
+      sigma_Z_mix = sigma_Z/pow2(Le*cos2phi+Re*sin2phi)*pow2(Le-Re)*cos2phi*sin2phi;
       // Interference
-      sigma_gZ = 2*pi*pow(alpha,2)/pow(s,3)/sin2thetaW/(1.-sin2thetaW) * ReDZ;
+      sigma_gZ = 2*pi*pow2(alpha)/pow(s,3)/sin2thetaW/(1.-sin2thetaW) * ReDZ;
       sigma_gZ *= (Le+Re)*(Le*cos2phi+Re*sin2phi) * pow(S,3)/6.;
       // Neutralino
       // Loop over neutralinos
@@ -226,7 +423,7 @@ namespace Gambit
           sigma_N += 2.*cos2phi*sin2phi*s*mN[k]*mN[l]*I2(s,m1,m2,mN[k],mN[l])*fL[k]*fL[l]*fR[k]*fR[l];
         }
       }
-      sigma_N *= pi*pow(alpha,2)/4./pow(sin2thetaW,2)/pow(s,2);
+      sigma_N *= pi*pow2(alpha)/4./pow2(sin2thetaW)/pow2(s);
       sigma_N_mix = 0;
       for(int k = 0; k < 4; k++){
         for(int l = 0; l < 4; l++){
@@ -238,23 +435,23 @@ namespace Gambit
           }
         }
       }
-      sigma_N_mix *= pi*pow(alpha,2)/4./pow(sin2thetaW,2)/pow(s,2);
+      sigma_N_mix *= pi*pow2(alpha)/4./pow2(sin2thetaW)/pow2(s);
       // Neutralino interference terms
       sigma_gN = 0;
       for(int k = 0; k < 4; k++){
-        sigma_gN += I3(s,m1,m2,mN[k])*(cos2phi*pow(fL[k],2)+sin2phi*pow(fR[k],2));
+        sigma_gN += I3(s,m1,m2,mN[k])*(cos2phi*pow2(fL[k])+sin2phi*pow2(fR[k]));
       }
-      sigma_gN *= pi*pow(alpha,2)/sin2thetaW/pow(s,3);
+      sigma_gN *= pi*pow2(alpha)/sin2thetaW/pow(s,3);
       sigma_ZN = 0;
       for(int k = 0; k < 4; k++){
-        sigma_ZN += I3(s,m1,m2,mN[k])*(Le*cos2phi*pow(fL[k],2)+Re*sin2phi*pow(fR[k],2));
+        sigma_ZN += I3(s,m1,m2,mN[k])*(Le*cos2phi*pow2(fL[k])+Re*sin2phi*pow2(fR[k]));
       }
-      sigma_ZN *= pi*pow(alpha,2)/pow(sin2thetaW,2)/(1.-sin2thetaW)/pow(s,2)*(Le*cos2phi+Re*sin2phi)*ReDZ;
+      sigma_ZN *= pi*pow2(alpha)/pow2(sin2thetaW)/(1.-sin2thetaW)/pow2(s)*(Le*cos2phi+Re*sin2phi)*ReDZ;
       sigma_ZN_mix = 0;
       for(int k = 0; k < 4; k++){
-        sigma_ZN_mix += I3(s,m1,m2,mN[k])*(Le*pow(fL[k],2)-Re*pow(fR[k],2));
+        sigma_ZN_mix += I3(s,m1,m2,mN[k])*(Le*pow2(fL[k])-Re*pow2(fR[k]));
       }
-      sigma_ZN_mix *= pi*pow(alpha,2)/pow(sin2thetaW,2)/(1.-sin2thetaW)/pow(s,2)*sin2phi*cos2phi*(Le-Re)*ReDZ;
+      sigma_ZN_mix *= pi*pow2(alpha)/pow2(sin2thetaW)/(1.-sin2thetaW)/pow2(s)*sin2phi*cos2phi*(Le-Re)*ReDZ;
       
       // Total cross section
       if( bMixed ) { sigma = sigma_Z_mix; }
@@ -272,7 +469,7 @@ namespace Gambit
     /// Masses mi and mj for the neutralinos are signed. mS are the selectron masses (left = 0, right = 1).
     /// Warning! BFM uses inverted \tan\beta! Use tanb = 1 / tanb in converting from SLHA.
     double xsec_neuineuj(int pid1, int pid2, double sqrts, double mi, double mj, MixMatrix N, 
-                         double mS[2], double tanb, double alpha, double mZ, double gZ, double sin2thetaW)
+                         const double mS[2], double tanb, double alpha, double mZ, double gZ, double sin2thetaW)
     {
       
       // Translate from PDG codes to neutralino indices (starting at zero)
@@ -302,11 +499,10 @@ namespace Gambit
       double T3l = -0.5;
       double Le = T3l+sin2thetaW;
       double Re = sin2thetaW;
-      double OL[4][4], OR[4][4];
+      double OL[4][4];
       for(int k = 0; k < 4; k++){
         for(int l = 0; l < 4; l++){
           OL[k][l] = 0.5*(N[k][2]*N[l][2]-N[k][3]*N[l][3])*cos2b-0.5*(N[k][2]*N[l][3]+N[k][3]*N[l][2])*sin2b;
-          OR[k][l] = -OL[k][l];
         }
       }
       double fL[4], fR[4];
@@ -317,12 +513,12 @@ namespace Gambit
       
       // Kinematics
       double s, q, Ei, Ej, DZ2, ReDZ;
-      s = pow(sqrts,2);
+      s = pow2(sqrts);
       DZ2 = 1./(pow2(s-pow2(mZ))+pow2(mZ*gZ)); // Breit-Wigner for Z
       ReDZ = (s-pow2(mZ))*DZ2;
-      Ei = (s+pow(mi,2)-pow(mj,2))/2./sqrts;  // Energy of \tilde\chi^0_i in e+e- CoM system
-      q = sqrt(pow(Ei,2)-pow(mi,2));          // Momentum of \tilde\chi^0_i in e+e- CoM system
-      Ej = sqrt(pow(q,2)+pow(mj,2));
+      Ei = (s+pow2(mi)-pow2(mj))/2./sqrts;  // Energy of \tilde\chi^0_i in e+e- CoM system
+      q = sqrt(pow2(Ei)-pow2(mi));          // Momentum of \tilde\chi^0_i in e+e- CoM system
+      Ej = sqrt(pow2(q)+pow2(mj));
     
       double dL, dR;
       dL = 0.5/s * (s + 2*pow2(msL) - pow2(mi) - pow2(mj));
@@ -332,7 +528,7 @@ namespace Gambit
       double sigma, sigma_Z, sigma_s, sigma_Zs;
       // Z
       sigma_Z = 4.*pi*pow2(alpha)/pow2(sin2thetaW)/pow2(1.-sin2thetaW) * DZ2 * q/sqrts * pow2(OL[i][j]) * (pow2(Le)+pow2(Re));
-      sigma_Z *=  Ei*Ej + 1/3.*pow(q,2)-mi*mj;
+      sigma_Z *=  Ei*Ej + 1/3.*pow2(q)-mi*mj;
       // selectrons
       sigma_s  = pow2(fL[i]*fL[j]) * ((Ei*Ej-s*dL+pow2(q))/(s*pow2(dL)-pow2(q)) + 2. + 0.5*sqrts/q*(1.-2.*dL-mi*mj/s/dL)*log(fabs((dL+q/sqrts)/(dL-q/sqrts))));
       sigma_s += pow2(fR[i]*fR[j]) * ((Ei*Ej-s*dR+pow2(q))/(s*pow2(dR)-pow2(q)) + 2. + 0.5*sqrts/q*(1.-2.*dR-mi*mj/s/dR)*log(fabs((dR+q/sqrts)/(dR-q/sqrts))));
@@ -433,85 +629,50 @@ namespace Gambit
     /// @{
     
     /// Converts a neutralino mixing matrix in SLHA conventions to BFM conventions, \tan\beta is as defined in SLHA
-    void SLHA2BFM_NN(MixMatrix &NN, double tanb)
+    void SLHA2BFM_NN(MixMatrix &NN, double tanb, double sin2thetaW)
     {
-      // Print matrix
-      print(NN);
-      // Test unitarity
-      print(multiply(transpose(NN),NN));
-      
       // Define conversion matrix
-      double sin2thetaW = 0.23126;    // MSbar at mZ
       double sinthetaW = sqrt(sin2thetaW);
       double costhetaW = sqrt(1.-sin2thetaW);
       double tanv = 1./tanb;       // Needed because of convention difference
       double sinv = sin(atan(tanv));
       double cosv = cos(atan(tanv));
-      MixMatrix T(4,vector<double>(4));
+      MixMatrix T(4,std::vector<double>(4));
       T[0][0] = costhetaW; T[0][1] = -sinthetaW;
       T[1][0] = sinthetaW; T[1][1] = costhetaW;
       T[2][2] = sinv;   T[2][3] = cosv;
-      T[3][2] = -cosv;  T[3][3] = sinv;
-      
+      T[3][2] = -cosv;  T[3][3] = sinv;      
       // Multiply N_{BFM} = N_{SLHA} T
-      NN = multiply(NN,T);
-      
-      // Print matrix
-      print(NN);
-      // Test unitarity
-      print(multiply(transpose(NN),NN));
+      NN = multiply(NN,T);      
     }
     
     /// Converts the chargino mixing matrix V in SLHA conventions to BFM conventions
     void SLHA2BFM_VV(MixMatrix &VV)
     {
-      // Print matrix
-      print(VV);
-      // Test unitarity
-      print(multiply(transpose(VV),VV));
-      
       // Define conversion matrix (\sigma_3)
-      MixMatrix T(2,vector<double>(2));
+      MixMatrix T(2,std::vector<double>(2));
       T[0][0] = 1; T[0][1] =  0;
-      T[1][0] = 0; T[1][1] = -1;
-      
+      T[1][0] = 0; T[1][1] = -1;      
       // Multiply V_{BFM} = \sigma_3 V_{SLHA}
       VV = multiply(T,VV);
-      
-      // Print matrix
-      print(VV);
-      // Test unitarity
-      print(multiply(transpose(VV),VV));
     }
     
     /// Converts a neutralino mixing matrix in BFM conventions to SLHA conventions, tanbeta is as defined in SLHA
-    void BFM2SLHA_NN(MixMatrix &NN, double tanb)
+    void BFM2SLHA_NN(MixMatrix &NN, double tanb, double sin2thetaW)
     {
-      // Print matrix
-      print(NN);
-      // Test unitarity
-      print(multiply(transpose(NN),NN));
-      
       // Define conversion matrix
-      double sin2thetaW = 0.23126;    // MSbar at mZ
       double sinthetaW = sqrt(sin2thetaW);
       double costhetaW = sqrt(1.-sin2thetaW);
       double tanv = 1./tanb;       // Needed because of convention difference
       double sinv = sin(atan(tanv));
       double cosv = cos(atan(tanv));
-      MixMatrix T(4,vector<double>(4));
+      MixMatrix T(4,std::vector<double>(4));
       T[0][0] = costhetaW; T[0][1] = -sinthetaW;
       T[1][0] = sinthetaW; T[1][1] = costhetaW;
       T[2][2] = sinv;   T[2][3] = cosv;
-      T[3][2] = -cosv;  T[3][3] = sinv;
-      
+      T[3][2] = -cosv;  T[3][3] = sinv;     
       // Multiply N_{SLHA} = N_{BFM} T^T
       NN = multiply(NN,transpose(T));
-      
-      // Print matrix
-      print(NN);
-      // Test unitarity
-      print(multiply(transpose(NN),NN));
     }
     
     /// Converts the chargino mixing matrix V in BFM conventions to SLHA conventions
@@ -524,7 +685,7 @@ namespace Gambit
     MixMatrix multiply(MixMatrix A, MixMatrix B)
     {
       int dim = A.size();
-      MixMatrix C(dim,vector<double>(dim));
+      MixMatrix C(dim,std::vector<double>(dim));
       for(int i = 0; i < dim; i++){
         for(int j = 0; j < dim; j++){
           for(int k = 0; k < dim; k++){
