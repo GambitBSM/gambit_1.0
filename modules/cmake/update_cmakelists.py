@@ -39,16 +39,20 @@ def same(f1,f2):
     file1 = open(f1,"r")
     file2 = open(f2,"r")
     for l1,l2 in itertools.izip_longest(file1,file2,fillvalue=''): 
-        if l1 != l2 and not l1.startswith("#  \\date "): return False
+        if l1 != l2 \
+              and not l1.startswith("#  \\date ") \
+              and not l1.startswith("///  \\date "): 
+           return False
     return True
 
 # Compare a candidate file to an existing file, replacing only if they differ.
 def update_only_if_different(existing, candidate):
-    if os.path.isfile(existing) and same(existing, candidate): 
+   if os.path.isfile(existing) and same(existing, candidate): 
         os.remove(candidate)
-    else:
+        print "\033[1;33m   Existing "+re.sub("\\.\\/","",existing)+" is identical to candidate; leaving it untouched\033[0m"
+   else:
         os.rename(candidate,existing)
-    print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
+        print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
 
 def hidden(filename):
     return (filename.endswith("~") or filename.startswith("."))

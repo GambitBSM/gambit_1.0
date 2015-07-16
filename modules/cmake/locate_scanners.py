@@ -215,7 +215,7 @@ def main(argv):
                             splitline = neatsplit(r'\(|\)|,|\s|\{',find[2])
                             if len(splitline) != 0:
                                 plugin_name = splitline[1]
-                                mod_version = ["0","0","0",""]
+                                mod_version = ["0","","",""]
                                 plugin_type = plug_type[find[1]];
                                 if splitline[2] == "version": mod_version[0:len(splitline[3:])] = splitline[3:]
                                 token = plugin_name+"__t__"+plugin_type+"__v__"+"_".join([x for x in mod_version])
@@ -223,15 +223,16 @@ def main(argv):
                                 for x in exclude_plugins:
                                     if (plugin_name+"_"+"_".join([y for y in mod_version])).startswith(x):
                                         status = "excluded"
+
                                 last_plugin_file=[plugin_name, plugin_type, mod_version, status, token, [], directory, plug_type[i]]
+                                scanbit_plugins[plug_type[i]][directory] += [last_plugin_file]
 
                                 last_plugin = plugin_name
-                                last_version = mod_version[0] + "." + mod_version[1] + "." + mod_version[2]
 
-                                if mod_version[3] != "":
-                                    last_version += "-" + mod_version[3]
-
-                                scanbit_plugins[plug_type[i]][directory] += [last_plugin_file]
+                                last_version = mod_version[0]
+                                if mod_version[1] != "": last_version += "." + mod_version[1]
+                                if mod_version[2] != "": last_version += "." + mod_version[2]
+                                if mod_version[3] != "": last_version += "-" + mod_version[3]
 
                         elif find[1] == -1:
                             if not scanbit_reqs[plug_type[i]].has_key(last_plugin):
@@ -345,9 +346,7 @@ def main(argv):
                         ini_version = maj_version
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
-                    else:
-                        print "no version thingy"
-                        print yaml_file[plugin_name]
+                        
                     if ini_version != "":
                         options_list = yaml_file[plugin_name][ini_version]
                         if type(options_list) is dict: #not list:
@@ -728,11 +727,11 @@ set( exclude_lib_output )                        \n\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
             if sys.platform == "darwin":
                 towrite += " "*23 + "LINK_FLAGS \"-dynamiclib\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-                towrite += " "*23 + "INSTALL_NAME_DIR \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+                towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
             else:
                 towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
                 towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-                
+              
             if sys.platform == "darwin":
                 cflags = "-dynamiclib"
             else:

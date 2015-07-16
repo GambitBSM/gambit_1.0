@@ -1,0 +1,344 @@
+digraph G {
+	graph [rankdir=LR];
+	0	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">nuclear_params_fnq_parameters</font><br/>Type: ModelParameters<br/>Function: primary_parameters<br/>Module: nuclear_params_fnq>,
+		shape=box,
+		style="rounded,filled"];
+	97	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DD_couplings</font><br/>Type: DarkBit::DD_couplings<br/>Function: DD_couplings_SingletDM<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	0 -> 97;
+	102	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SetWIMP_DDCalc0</font><br/>Type: bool<br/>Function: SetWIMP_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	97 -> 102;
+	98	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sigma_SI_p</font><br/>Type: double<br/>Function: sigma_SI_p_simple<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	97 -> 98;
+	100	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sigma_SD_p</font><br/>Type: double<br/>Function: sigma_SD_p_simple<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	97 -> 100;
+	103	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">CalcRates_XENON100_2012_DDCalc0</font><br/>Type: bool<br/>Function: CalcRates_XENON100_2012_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	102 -> 103;
+	104	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">CalcRates_LUX_2013_DDCalc0</font><br/>Type: bool<br/>Function: CalcRates_LUX_2013_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	102 -> 104;
+	105	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">CalcRates_DARWIN_Ar_2015_DDCalc0</font><br/>Type: bool<br/>Function: CalcRates_DARWIN_Ar_2015_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	102 -> 105;
+	106	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">CalcRates_DARWIN_Xe_2015_DDCalc0</font><br/>Type: bool<br/>Function: CalcRates_DARWIN_Xe_2015_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	102 -> 106;
+	134	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">nuyield_ptr</font><br/>Type: nuyield_functype<br/>Function: nuyield_from_DS<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	98 -> 134;
+	131	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">capture_rate_Sun</font><br/>Type: double<br/>Function: capture_rate_Sun_constant_xsec<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	98 -> 131;
+	100 -> 134;
+	100 -> 131;
+	107	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_XENON100_2012</font><br/>Type: double<br/>Function: XENON100_2012_LogLikelihood_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	103 -> 107;
+	113	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_LUX_2013</font><br/>Type: double<br/>Function: LUX_2013_LogLikelihood_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	104 -> 113;
+	119	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_DARWIN_Ar_2015</font><br/>Type: double<br/>Function: DARWIN_Ar_2015_LogLikelihood_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	105 -> 119;
+	125	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_DARWIN_Xe_2015</font><br/>Type: double<br/>Function: DARWIN_Xe_2015_LogLikelihood_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	106 -> 125;
+	141	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79WH_data</font><br/>Type: nudata<br/>Function: IC79WH_full<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	134 -> 141;
+	147	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79WL_data</font><br/>Type: nudata<br/>Function: IC79WL_full<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	134 -> 147;
+	153	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79SL_data</font><br/>Type: nudata<br/>Function: IC79SL_full<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	134 -> 153;
+	132	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">equilibration_time_Sun</font><br/>Type: double<br/>Function: equilibration_time_Sun<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	131 -> 132;
+	133	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">annihilation_rate_Sun</font><br/>Type: double<br/>Function: annihilation_rate_Sun<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	131 -> 133;
+	144	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79WH_loglike</font><br/>Type: double<br/>Function: IC79WH_loglike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	141 -> 144;
+	150	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79WL_loglike</font><br/>Type: double<br/>Function: IC79WL_loglike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	147 -> 150;
+	156	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79SL_loglike</font><br/>Type: double<br/>Function: IC79SL_loglike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	153 -> 156;
+	132 -> 133;
+	133 -> 141;
+	133 -> 147;
+	133 -> 153;
+	159	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IceCube_likelihood</font><br/>Type: double<br/>Function: IC79_loglike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	144 -> 159;
+	150 -> 159;
+	156 -> 159;
+	1	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">StandardModel_SLHA2_parameters</font><br/>Type: ModelParameters<br/>Function: primary_parameters<br/>Module: StandardModel_SLHA2>,
+		shape=box,
+		style="rounded,filled"];
+	167	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SMINPUTS</font><br/>Type: SMInputs<br/>Function: get_SMINPUTS<br/>Module: SpecBit>,
+		shape=box,
+		style="rounded,filled"];
+	1 -> 167;
+	86	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">TH_ProcessCatalog</font><br/>Type: DarkBit::TH_ProcessCatalog<br/>Function: TH_ProcessCatalog_SingletDM<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	167 -> 86;
+	176	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SM_spectrum</font><br/>Type: const SubSpectrum*<br/>Function: get_QedQcd_spectrum<br/>Module: SpecBit>,
+		shape=box,
+		style="rounded,filled"];
+	167 -> 176;
+	86 -> 97;
+	86 -> 134;
+	63	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">RD_spectrum</font><br/>Type: DarkBit::RD_spectrum_type<br/>Function: RD_spectrum_from_ProcessCatalog<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 63;
+	67	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">RD_eff_annrate</font><br/>Type: fptr_dd<br/>Function: RD_eff_annrate_from_ProcessCatalog<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 67;
+	78	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_Histograms</font><br/>Type: DarkBit::simpleHistContainter<br/>Function: cascadeMC_Histograms<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 78;
+	88	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_FermiLATdwarfs</font><br/>Type: double<br/>Function: lnL_FermiLATdwarfs_gamLike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 88;
+	89	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_FermiGC</font><br/>Type: double<br/>Function: lnL_FermiGC_gamLike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 89;
+	73	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_DecayTable</font><br/>Type: DarkBit::DecayChain::DecayTable<br/>Function: cascadeMC_DecayTable<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 73;
+	74	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_LoopManagement</font><br/>Type: void<br/>Function: cascadeMC_LoopManager<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 74;
+	84	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">GA_AnnYield</font><br/>Type: Funk::Funk<br/>Function: GA_AnnYield_General<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 84;
+	83	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">GA_missingFinalStates</font><br/>Type: std::vector&lt;std::string&gt;<br/>Function: GA_missingFinalStates<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 83;
+	94	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sigmav</font><br/>Type: double<br/>Function: sigmav_late_universe<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 94;
+	176 -> 86;
+	65	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">RD_eff_annrate_DSprep</font><br/>Type: int<br/>Function: RD_eff_annrate_DSprep_func<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	63 -> 65;
+	64	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">RD_thresholds_resonances</font><br/>Type: DarkBit::TH_resonances_thresholds<br/>Function: RD_thresholds_resonances_from_spectrum<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	63 -> 64;
+	68	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">RD_oh2</font><br/>Type: double<br/>Function: RD_oh2_general<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	67 -> 68;
+	79	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_gammaSpectra</font><br/>Type: DarkBit::stringFunkMap<br/>Function: cascadeMC_gammaSpectra<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	78 -> 79;
+	73 -> 74;
+	77	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_ChainEvent</font><br/>Type: DarkBit::DecayChain::ChainContainer<br/>Function: cascadeMC_GenerateChain<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	73 -> 77;
+	74 -> 78;
+	74 -> 77;
+	75	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_InitialState</font><br/>Type: std::string<br/>Function: cascadeMC_InitialState<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	74 -> 75;
+	76	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_EventCount</font><br/>Type: DarkBit::stringIntMap<br/>Function: cascadeMC_EventCount<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	74 -> 76;
+	84 -> 88;
+	84 -> 89;
+	83 -> 74;
+	83 -> 79;
+	83 -> 75;
+	94 -> 134;
+	94 -> 132;
+	65 -> 67;
+	64 -> 68;
+	91	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_oh2</font><br/>Type: double<br/>Function: lnL_oh2_Simple<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	68 -> 91;
+	79 -> 84;
+	77 -> 78;
+	75 -> 78;
+	75 -> 77;
+	75 -> 76;
+	76 -> 79;
+	2	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SingletDM_parameters</font><br/>Type: ModelParameters<br/>Function: primary_parameters<br/>Module: SingletDM>,
+		shape=box,
+		style="rounded,filled"];
+	2 -> 97;
+	2 -> 86;
+	2 -> 63;
+	2 -> 67;
+	93	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">mwimp</font><br/>Type: double<br/>Function: mwimp_SingletDM<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	2 -> 93;
+	165	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DarkMatter_ID</font><br/>Type: DarkMatter_ID_type<br/>Function: DarkMatter_ID_SingletDM<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	2 -> 165;
+	93 -> 98;
+	93 -> 100;
+	93 -> 134;
+	93 -> 131;
+	93 -> 141;
+	93 -> 147;
+	93 -> 153;
+	93 -> 132;
+	165 -> 134;
+	165 -> 63;
+	165 -> 67;
+	165 -> 89;
+	165 -> 84;
+	165 -> 83;
+	165 -> 94;
+	13	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">nulike_1_0_0_init</font><br/>Type: void<br/>Function: nulike_1_0_0_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	13 -> 141;
+	13 -> 147;
+	13 -> 153;
+	15	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DarkSUSY_5_1_1_init</font><br/>Type: void<br/>Function: DarkSUSY_5_1_1_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	15 -> 134;
+	15 -> 131;
+	15 -> 78;
+	15 -> 65;
+	15 -> 68;
+	162	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SimYieldTable</font><br/>Type: DarkBit::SimYieldTable<br/>Function: SimYieldTable_DarkSusy<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	15 -> 162;
+	162 -> 78;
+	162 -> 73;
+	162 -> 74;
+	162 -> 84;
+	162 -> 83;
+	17	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DDCalc0_0_0_init</font><br/>Type: void<br/>Function: DDCalc0_0_0_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	17 -> 102;
+	17 -> 103;
+	17 -> 104;
+	17 -> 105;
+	17 -> 106;
+	17 -> 107;
+	17 -> 113;
+	17 -> 119;
+	17 -> 125;
+	18	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">gamLike_1_0_0_init</font><br/>Type: void<br/>Function: gamLike_1_0_0_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	18 -> 88;
+	18 -> 89;
+	71	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_FinalStates</font><br/>Type: std::vector&lt;std::string&gt;<br/>Function: cascadeMC_FinalStates<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	71 -> 78;
+	71 -> 79;
+}

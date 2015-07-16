@@ -26,7 +26,7 @@
 #include <sstream>
 
 #include "gambit/Elements/virtual_higgs.hpp"
-#include "gambit/Utils/ASCIItableReader.hpp"
+#include "gambit/Utils/ascii_table_reader.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
 namespace Gambit

@@ -195,7 +195,15 @@ namespace Gambit
                                 
                                 plugin_interface();
                         }
-                        
+ 
+                        /// From Ben: To Greg: This is a command I added to the 
+                        /// printer base class which instructs the printers
+                        /// to perform final output tasks (emptying buffers
+                        /// to file and so on). It just needs to happen
+                        /// when the scan is done; feel free to move it to
+                        /// wherever you like.
+                        printerInterface->finalise();
+
                         return 0;
                 }
                 

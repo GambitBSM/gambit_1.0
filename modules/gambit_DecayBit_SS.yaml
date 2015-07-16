@@ -9,18 +9,25 @@
 ###################################
 
 Parameters:
-  #StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
+
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+  StandardModel_Higgs:
+    mH:
+      fixed_value: 125.9
+    vev:
+      fixed_value: 246.0
+
   SingletDM:
-      mass:
-          range: [45, 100]
-          prior_type: log
-      lambda:
-          range: [0.005, 0.5]
-          prior_type: log
+    mass:
+      range: [45, 100]
+      prior_type: log
+    lambda:
+      range: [0.005, 0.5]
+      prior_type: log
 
 Priors:
-    # none: all parameters fixed in this example.
+    # set in parameters section
 
 Scanner:
 
@@ -42,16 +49,11 @@ ObsLikes:
 
 Rules:
 
-#  - capability: MSSM_spectrum 
-#    function: get_MSSMatQ_spectrum  
-#    options:
-#      invalid_point_fatal: true
+  - capability: decay_rates
+    function: all_decays
+
       
-#  - function: SUSY_HIT_1_5_init
-#    options:
-#      debug_SLHA_filenames:
-#        - slha1.exampleout
-      
+            
 ##############################
 # Printer setup
 ##############################

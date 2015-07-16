@@ -19,7 +19,7 @@
 #ifndef __SMHiggsContainer_hpp__
 #define __SMHiggsContainer_hpp__
 
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 
 namespace Gambit {
    namespace SpecBit {

@@ -66,6 +66,7 @@ ObsLikes:
 
 Rules:
   - capability: MSSM_spectrum 
+    type: const Spectrum*
     function: get_MSSMatMGUT_spectrum  # Use this function to compute this capability
     options:
       # Set to match benchmark point specified in
@@ -84,7 +85,8 @@ Rules:
       invalid_point_fatal: false
 
   # For testing out "SM-only" construction of QedQcdWrapper
-  - capability: SM_spectrum 
+  - capability: SM_spectrum
+    type: const SubSpectrum*
     function: get_QedQcd_spectrum  # Use this function to compute this capability
 
 

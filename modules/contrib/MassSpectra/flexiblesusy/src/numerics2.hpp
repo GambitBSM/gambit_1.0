@@ -21,6 +21,7 @@
 
 #include <cmath>
 #include <limits>
+#include <cstddef>
 
 namespace flexiblesusy {
 

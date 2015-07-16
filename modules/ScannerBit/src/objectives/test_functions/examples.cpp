@@ -107,8 +107,69 @@ objective_plugin(EggBox, version(1, 0, 0))
         std::pair <double, double> length;
         unsigned int dim;
         
+        class printer_stream
+        {
+        private:
+                printer *stream;
+                
+                static int get_id(const std::string &name)
+                {
+                        static std::unordered_map<std::string, int> map;
+                        static unsigned long long int N = 0;
+                        
+                        auto it = map.find(name);
+                        if (it != map.end())
+                        {
+                                return it->second;
+                        }
+                        else
+                        {
+                                N++;
+                                map[name] = N;
+                                return N;
+                        }
+                        
+                }
+                
+        public:
+                class printer_iterator
+                {
+                private:
+                        printer *stream;
+                        const std::string &param;
+                public:
+                        printer_iterator(printer *stream, const std::string &param) : stream(stream), param(param) 
+                        {
+                        }
+                        
+                        template <typename T>
+                        const T& operator = (const T& in)
+                        {
+                                stream->print(in, param, get_id(param), stream->getRank(), get_point_id());
+                                return in;
+                        }
+                };
+                
+                printer_stream()
+                {
+                }
+                
+                void open(const std::string &name = "")
+                {
+                        stream = get_printer().get_stream(name);std::cout << "open = " << stream << std::endl;
+                }
+                
+                printer_iterator operator [](const std::string &name)
+                {
+                        return printer_iterator(stream, name);
+                }
+        };
+        
+        printer_stream stream;
+        
         plugin_constructor
         {
+                stream.open("");
                 dim = get_keys().size();
                 if (dim != 2)
                 {
@@ -119,7 +180,15 @@ objective_plugin(EggBox, version(1, 0, 0))
         
         double plugin_main(const std::vector<double> &unit)
         {
+                std::cout << "id = " << get_point_id() << std::endl;
                 std::vector<double> &params = prior_transform(unit);
+                std::unordered_map<std::string, double> map;
+                prior_transform(unit, map);
+                auto pps = params.begin();
+                for (auto &k : add_gambit_prefix(get_keys()))
+                {
+                        stream[k] = *(pps++);
+                }
                 params[0] *= length.first;
                 params[1] *= length.second;
                 
