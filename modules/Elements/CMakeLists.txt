@@ -19,6 +19,7 @@ set(source_files src/functors.cpp
                  src/ini_functions.cpp
                  src/SMInputs.cpp
                  src/Spectrum.cpp
+                 src/SubSpectrum.cpp
                  src/terminator.cpp
 		 src/MSSM_slhahelp.cpp
                  src/virtual_higgs.cpp
