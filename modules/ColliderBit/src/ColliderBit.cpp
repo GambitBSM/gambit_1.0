@@ -681,7 +681,8 @@ namespace Gambit
             llb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
             llsb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
+          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << en
+dl;
 
           observedLikelihoods.push_back(result);
         } // end SR loop
@@ -692,16 +693,51 @@ namespace Gambit
     }
     
     
-    /// *** Limits from e+e- colliders ***
+    // *** Limits from e+e- colliders ***
     
-    /// ee-->slepton production cross-sections    
+    /// ee --> slepton pair production cross-sections    
+    /// @{
+    void LEP_SLHA1_convention_xsec_selselbar(triplet& result)    
+    {
+      double selmass = (*Dep::MSSM_spectrum)->get_pole_mass(1000011);
+      double[4] neutmass = { (*Dep::MSSM_spectrum)->get_pole_mass(1000022),
+			     (*Dep::MSSM_spectrum)->get_pole_mass(1000023), 
+                             (*Dep::MSSM_spectrum)->get_pole_mass(1000025), 
+                             (*Dep::MSSM_spectrum)->get_pole_mass(1000035) }
+      // get mixing matrices from spectrum
+      // extract selectron L<-->R submatrix, checking if the approximation holds.
+      
+      //std::pair<double> mass_uncerts = Dep::MSSM_spectrum->get_pole_mass_uncert(1000011); 
+      SLHA2BFM_NN(neutmix, (*Dep::MSSM_spectrum)->UV->runningpars->get_mass_parameter("tanb"));
+      double alpha = (*Dep::MSSM_spectrum)->
+      double mZ = (*Dep::MSSM_spectrum)->get_pole_mass(23);
+      double gZ = ???
+      double sin2thetaW = ??
     
-    /// ee-->neutralino production cross-sections    
+      result.central =  xsec_sleislej(1000011, -1000011, 208.0, selmass, selmass, sleptonmix,
+			              neutmix, neutmass, alpha, mZ, gZ, sin2thetaW);
+      result.upper = 
+      result.lower = 
+      result.check_and_swap();
+    }
+    /// @}
 
-    /// ee-->chargino production cross-sections    
+    
+    /// ee --> neutralino pair production cross-sections    
+    /// @{
+
+
+    /// @}
+
+
+    /// ee --> chargino pair production cross-sections    
+    /// @{
+
+
+    /// @}
 
     
-    /// *** Higgs physics ***
+    // *** Higgs physics ***
 
     /// FeynHiggs Higgs production cross-sections
     void FH_HiggsProd(fh_HiggsProd &result) 

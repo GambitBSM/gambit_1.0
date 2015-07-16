@@ -240,6 +240,18 @@ START_MODULE
   /// \todo How many more do we need to define...?
 
 
+  ///////////// LEP limits ////////////////////////
+
+  // LEP production cross section and uncertainties: ~eL ~eLbar	  
+  #define CAPABILITY LEP_xsec_selselbar		   		  
+  START_CAPABILITY				   		  
+    #define FUNCTION LEP_SLHA1_convention_xsec_selelbar 		  
+    START_FUNCTION(triplet)			   		  
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)     		  
+    ALLOW_MODELS(MSSM25atQ, MSSM25atMGUT)	   		  
+    #undef FUNCTION				   		  
+  #undef CAPABILITIY				   		  
+						                  
   ///////////// Higgs physics /////////////////////
 
   // FeynHiggs Higgs production cross-sections
@@ -248,8 +260,8 @@ START_MODULE
     #define FUNCTION FH_HiggsProd
     START_FUNCTION(fh_HiggsProd)
     DEPENDENCY(FH_Couplings, fh_Couplings)
-      BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
+    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
