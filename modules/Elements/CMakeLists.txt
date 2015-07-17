@@ -19,7 +19,6 @@ set(source_files src/functors.cpp
                  src/ini_functions.cpp
                  src/SMInputs.cpp
                  src/Spectrum.cpp
-                 src/SubSpectrum.cpp
                  src/terminator.cpp
 		 src/MSSM_slhahelp.cpp
                  src/virtual_higgs.cpp
@@ -40,7 +39,9 @@ set(header_files include/gambit/Elements/base_functions.hpp
                  include/gambit/Elements/shared_types.hpp
                  include/gambit/Elements/SMInputs.hpp
                  include/gambit/Elements/Spectrum.hpp
+                 include/gambit/Elements/SpecFptrFinder.hpp
                  include/gambit/Elements/SubSpectrum.hpp
+                 include/gambit/Elements/SubSpectrumDecl.hpp
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/types_rollcall.hpp
 		 include/gambit/Elements/MSSM_slhahelp.hpp

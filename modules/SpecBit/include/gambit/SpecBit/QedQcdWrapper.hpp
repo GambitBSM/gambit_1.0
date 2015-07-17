@@ -87,18 +87,18 @@ namespace Gambit {
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
-            
-            /// RunparDer overrides (access via spectrum.runningpar)
-            static typename MTget::fmap_extraM fill_mass_map_extraM_Get();   /*O*/
-            static typename MTget::fmap_extraM fill_mass0_map_extraM_Get();  /*O*/
-   
-            /// PhysDer overrides (access via spectrum.phys)
-            static typename MTget::fmap        fill_PoleMass_map_Get();        /*O*/
-            static typename MTget::fmap_extraI fill_PoleMass_map_extraI_Get(); /*O*/
+            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
+            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
 
-            /// PhysDer setters
-            static typename MTset::fmap        fill_PoleMass_map_Set();        /*O*/
-            static typename MTset::fmap_extraI fill_PoleMass_map_extraI_Set(); /*O*/
+            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
+            static RunningGetterMaps runningpars_fill_getter_maps(); /*O*/
+            //static RunningSetterMaps runningpars_fill_setter_maps(); // We don't currently use this in this wrapper
+ 
+            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            static PhysGetterMaps    phys_fill_getter_maps(); /*O*/
+            static PhysSetterMaps    phys_fill_setter_maps(); /*O*/
     
       };
  

@@ -20,96 +20,132 @@
 ///  *********************************************
 
 #include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/SpecFptrFinder.hpp"
 
 namespace Gambit {
 
-   /// @{ Helper macros
+   /// @{ CommonFuncs member function definitions
 
-   #define DEFINE_OVERRIDE_SETTERS1(CLASS,FUNC) \
-      /* Function definitions for the set_override_FUNC functions, which
-         allow manual overrides of the values usually retrieved by the
-         getters to be input. Set 'safety' to false if you want to be 
-         permitted to add completely new entries to the spectrum contents.
-         Note however that these override values will currently not show up 
-         if you e.g. convert the spectrum to SLHAea. The values are contained 
-         only in the SubSpectrum object itself and know nothing of the underlying
-         model. */ \
-      void CLASS::CAT(set_override_,FUNC)(const double value, const std::string& name, bool safety) \
-      {                                                      \
-         if(safety and not CAT(has_,FUNC)(name))             \
-         {                                                   \
-           std::ostringstream errmsg;                        \
-           errmsg << "Error setting override value in SubSpectrum object!" << std::endl; \
-           errmsg << "No "<<STRINGIFY(FUNC)<<" with string reference '"<<name<<"' exists in the "<<STRINGIFY(CLASS)<<" component of the wrapped spectrum!" <<std::endl; \
-           errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;                     \
-           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  \
-         }                                                   \
-         CAT_3(override_,FUNC,_map)[name] = value;           \
-      }                                                      \
-                                                             \
-      void CLASS::CAT(set_override_,FUNC)(const double value, const std::string& name, int i, bool safety) \
-      {                                                      \
-         if(safety and not CAT(has_,FUNC)(name,i))           \
-         {                                                   \
-           std::ostringstream errmsg;                        \
-           errmsg << "Error setting override value in SubSpectrum object!" << std::endl; \
-           errmsg << "No "<<STRINGIFY(FUNC)<<" with string reference '"<<name<<"' and index '"<<i<<"' exists in the "<<STRINGIFY(CLASS)<<" component of the wrapped spectrum!" <<std::endl; \
-           errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name and index used here." << std::endl;           \
-           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  \
-         }                                                   \
-         CAT_3(override_,FUNC,_map1)[name][i] = value;       \
-      }                                                      \
-                                                             
-   #define DEFINE_OVERRIDE_SETTERS(CLASS,FUNC) \
-      /* Adds the two-index setters */ \
-      DEFINE_OVERRIDE_SETTERS1(CLASS,FUNC) \
-      void CLASS::CAT(set_override_,FUNC)(const double value, const std::string& name, int i, int j, bool safety) \
-      {                                                      \
-         if(safety and not CAT(has_,FUNC)(name,i,j))         \
-         {                                                   \
-           std::ostringstream errmsg;                        \
-           errmsg << "Error setting override value in SubSpectrum object!" << std::endl; \
-           errmsg << "No "<<STRINGIFY(FUNC)<<" with string reference '"<<name<<"' and indices '"<<i<<","<<j<<"' exists in the "<<STRINGIFY(CLASS)<<" component of the wrapped spectrum!" <<std::endl; \
-           errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name and indices used here." << std::endl;         \
-           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  \
-         }                                                   \
-         CAT_3(override_,FUNC,_map2)[name][i][j] = value;    \
-      }                                                    
+   /// @{ PDB getter/checker overloads
+
+   /* Input PDG code plus context integer as separate arguments */
+   template <class PT>
+   bool CommonFuncs<PT>::has(const PT partype, 
+                        const int pdg_code, const int context) const
+   {
+      return has( partype, std::make_pair(pdg_code,context) );
+   }
+
+   /* Input PDG code plus context integer as separate arguments */
+   template <class PT>
+   double CommonFuncs<PT>::get(const PT partype, 
+                        const int pdg_code, const int context) const
+   {
+      return get( partype, std::make_pair(pdg_code,context) );
+   }
+
+   /* Input PDG code plus context integer as pair */
+   template <class PT>
+   bool CommonFuncs<PT>::has(const PT partype, 
+                        const std::pair<int,int> pdgpr) const
+   {
+      /* If there is a short name, then retrieve that plus the index */      
+      if( Models::ParticleDB().has_short_name(pdgpr) )                       
+      {                                                                      
+        return has( partype, Models::ParticleDB().short_name_pair(pdgpr) );
+      }                                                                      
+      else /* Use the long name with no index instead */                     
+      {                                                                      
+        return has( partype, Models::ParticleDB().long_name(pdgpr) );      
+      }                                                                      
+   }
+
+   /* Input PDG code plus context integer as pair */
+   template <class PT>
+   double CommonFuncs<PT>::get(const PT partype, 
+                        const std::pair<int,int> pdgpr) const
+   {
+      /* If there is a short name, then retrieve that plus the index */      
+      if( Models::ParticleDB().has_short_name(pdgpr) )                       
+      {                                                                      
+        return get( partype, Models::ParticleDB().short_name_pair(pdgpr) );
+      }                                                                      
+      else /* Use the long name with no index instead */                     
+      {                                                                      
+        return get( partype, Models::ParticleDB().long_name(pdgpr) );      
+      }                                                                      
+   }
+
+   /* Input short name plus index as pair */
+   template <class PT>
+   bool CommonFuncs<PT>::has(const PT partype, 
+                        const std::pair<str,int> shortpr) const
+   {
+      return has( partype, shortpr.first, shortpr.second);
+   }
+
+   /* Input short name plus index as pair */
+   template <class PT>
+   double CommonFuncs<PT>::get(const PT partype, 
+                        const std::pair<str,int> shortpr) const
+   {
+      return has( partype, shortpr.first, shortpr.second);
+   }
+
    /// @}
 
+   /// @{ Parameter override functions
 
-   /// @{ Member function definitions for SubSpectrum class
+   template <class PT>
+   void CommonFuncs<PT>::set_override(const PT partype,
+                      const double value, const str& name, bool safety)
+   {                                         
+      if( safety and not has(partype,name) )
+      {                                      
+        std::ostringstream errmsg;           
+        errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
+        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
+        errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
+        utils_error().forced_throw(LOCAL_INFO,errmsg.str());
+      }
+      get_override_maps.at(partype).m0[name] = value;
+   }
+
+   template <class PT>
+   void CommonFuncs<PT>::set_override(const PT partype,
+                      const double value, const str& name, int i, bool safety)
+   {                                         
+      if( safety and not has(partype,name) )
+      {                                      
+        std::ostringstream errmsg;           
+        errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
+        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and index '"<<i<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
+        errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
+        utils_error().forced_throw(LOCAL_INFO,errmsg.str());
+      }
+      get_override_maps.at(partype).m1[name][i] = value;
+   }
+
+   template <class PT>
+   void CommonFuncs<PT>::set_override(const PT partype,
+                      const double value, const str& name, int i, int j, bool safety)
+   {                                         
+      if( safety and not has(partype,name) )
+      {                                      
+        std::ostringstream errmsg;           
+        errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
+        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and indices '"<<i<<","<<j<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
+        errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
+        utils_error().forced_throw(LOCAL_INFO,errmsg.str());
+      }
+      get_override_maps.at(partype).m2[name][i][j] = value;
+   }
+
    /// @}
-
-   /// @{ Member function definitions for Phys class
-
-   /// PDG overloads for getter functions
-   DEFINE_PDG_GETTERS(Phys,Pole_Mass)
-   DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
-
-   /// Definitions of set_override functions
-   DEFINE_OVERRIDE_SETTERS1(Phys,Pole_Mass)
-   DEFINE_OVERRIDE_SETTERS(Phys,Pole_Mixing)
-
+ 
    /// @}
-
-   /// @{ Member function definitions for RunningPars class
-
-   /// PDG overloads for getter functions
-   DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
-
-   /// Definitions of set_override functions
-   DEFINE_OVERRIDE_SETTERS(RunningPars,mass_parameter)
-   DEFINE_OVERRIDE_SETTERS(RunningPars,mass2_parameter)
-   DEFINE_OVERRIDE_SETTERS(RunningPars,mass3_parameter)
-   DEFINE_OVERRIDE_SETTERS(RunningPars,mass4_parameter)
-   DEFINE_OVERRIDE_SETTERS(RunningPars,dimensionless_parameter)
-   DEFINE_OVERRIDE_SETTERS(RunningPars,mass_eigenstate)
+ 
+   /// @{ RunningPars member function definitions
 
    /// Wrapper for RunToScaleOverload which automatically checks limits and
    /// raises warnings.
@@ -161,8 +197,208 @@ namespace Gambit {
          }
       }
       RunToScaleOverride(scale);
+
    }
  
+   /// @}
+
+   /// @{ CommonDer member function definitions
+
+   /// @{ No indices
+   template <class PhysOrRun>
+   bool CommonDer<PhysOrRun>::has(const typename PhysOrRun::ParamType partype, const str& name) const
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTget MTget;
+      /// TODO: Could avoid dismantling the MapCollection struct by just letting the
+      ///       SetMaps class do it, but one step at a time...
+      ///       Could also reduce duplication between getter and checker functions by making the 
+      ///       'has' function take an optional argument to return an FptrFinder, which can then
+      ///       just be used to call the found function.
+
+      /// Need to access members of the derived class, so cast "this" pointer to the derived type
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
+                              .omap(  overridecoll.m0 ) 
+                              .omap1( overridecoll.m1 )
+                              .map(  mapcoll.map )       
+                              .mapM( mapcoll.map_extraM )
+                              .mapI( mapcoll.map_extraI )
+                              .map1( mapcoll.map1 );     
+      return finder.find(name);                                             
+   }                                                                        
+
+   template <class PhysOrRun>
+   double CommonDer<PhysOrRun>::get(const typename PhysOrRun::ParamType partype, const str& name) const
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTget MTget;
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+      double result;
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
+                              .omap(  overridecoll.m0 ) 
+                              .omap1( overridecoll.m1 )
+                              .map(  mapcoll.map )       
+                              .mapM( mapcoll.map_extraM )
+                              .mapI( mapcoll.map_extraI )
+                              .map1( mapcoll.map1 );     
+      if( finder.find(name) ){ result = finder.callfcn(); }
+      else { finder.raise_error(LOCAL_INFO); }
+      return result;
+   }                                                                        
+ 
+   template <class PhysOrRun>
+   void CommonDer<PhysOrRun>::set(const typename PhysOrRun::ParamType partype, const double set_value, const str& name)
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTset MTset;
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Set> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
+                              .map(  mapcoll.map )       
+                              .mapM( mapcoll.map_extraM )
+                              .mapI( mapcoll.map_extraI )
+                              .map1( mapcoll.map1 );     
+      if( finder.find(name) ){ finder.callfcn(set_value); }
+      else { finder.raise_error(LOCAL_INFO); }
+   }                                                                        
+   /// @}
+   /// @{ One index
+   template <class PhysOrRun>
+   bool CommonDer<PhysOrRun>::has(const typename PhysOrRun::ParamType partype, const str& name, int i) const
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTget MTget;
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
+                              .omap(  overridecoll.m0 ) 
+                              .omap1( overridecoll.m1 )
+                              .map(  mapcoll.map )       
+                              .mapM( mapcoll.map_extraM )
+                              .mapI( mapcoll.map_extraI )
+                              .map1( mapcoll.map1 );     
+      return finder.find(name,i);                                             
+   }                                                                        
+
+   template <class PhysOrRun>
+   double CommonDer<PhysOrRun>::get(const typename PhysOrRun::ParamType partype, const str& name, int i) const
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTget MTget;
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+      double result;
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
+                              .omap(  overridecoll.m0 ) 
+                              .omap1( overridecoll.m1 )
+                              .map(  mapcoll.map )       
+                              .mapM( mapcoll.map_extraM )
+                              .mapI( mapcoll.map_extraI )
+                              .map1( mapcoll.map1 );     
+      if( finder.find(name,i) ){ result = finder.callfcn(); }
+      else { finder.raise_error(LOCAL_INFO); }
+      return result;
+   }                                                                        
+ 
+   template <class PhysOrRun>
+   void CommonDer<PhysOrRun>::set(const typename PhysOrRun::ParamType partype, const double set_value, const str& name, int i)
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTset MTset;
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Set> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
+                              .map(  mapcoll.map )       
+                              .mapM( mapcoll.map_extraM )
+                              .mapI( mapcoll.map_extraI )
+                              .map1( mapcoll.map1 );     
+      if( finder.find(name,i) ){ finder.callfcn(set_value); }
+      else { finder.raise_error(LOCAL_INFO); }
+   }                                                                        
+
+   /// @}
+   /// @{ Two indices
+
+   template <class PhysOrRun>
+   bool CommonDer<PhysOrRun>::has(const typename PhysOrRun::ParamType partype, const str& name, int i, int j) const
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTget MTget;
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
+                              .omap2( overridecoll.m2 )
+                              .map2( mapcoll.map2 );
+      return finder.find(name,i,j);
+   }                                                                        
+
+   template <class PhysOrRun>
+   double CommonDer<PhysOrRun>::get(const typename PhysOrRun::ParamType partype, const str& name, int i, int j) const
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTget MTget;
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+      double result;
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
+      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
+                              .omap2( overridecoll.m2 )
+                              .map2( mapcoll.map2 );
+      if( finder.find(name,i,j) ){ result = finder.callfcn(); }
+      else { finder.raise_error(LOCAL_INFO); }
+      return result;
+   }                                                                        
+ 
+   template <class PhysOrRun>
+   void CommonDer<PhysOrRun>::set(const typename PhysOrRun::ParamType partype, const double set_value, const str& name, int i, int j)
+   {
+      typedef typename PhysOrRun::DT DT;
+      typedef typename PhysOrRun::MTset MTset;
+      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+
+      /* Create finder object, tell it what maps to search, and do the search */
+      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Set> finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
+                              .map2( mapcoll.map2 );
+      if( finder.find(name,i,j) ){ finder.callfcn(set_value); }
+      else { finder.raise_error(LOCAL_INFO); }
+   }                                                                        
+
+   /// @}
+
    /// @}
 
 }
