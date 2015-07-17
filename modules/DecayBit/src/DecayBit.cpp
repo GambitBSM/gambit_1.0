@@ -814,7 +814,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,2), 0.0, psn.ist1, psn.isb2bar);
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,1), 0.0, psn.ist2, psn.isb1bar);
 
-      cout <<  "H+ Decay Table entry as an SLHA DECAY block: \n" << result.as_slhaea_block("H+") << endl;
+      //cout <<  "H+ Decay Table entry as an SLHA DECAY block: \n" << result.as_slhaea_block("H+") << endl;
       
     }
 
@@ -908,8 +908,6 @@ namespace Gambit
       result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,3)+offset], 0.0, psn.ist2, psn.isb1bar);
       result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,3)+offset], 0.0, psn.ist2, psn.isb2bar);
 
-      cout <<  "H+ Decay Table entry as an SLHA DECAY block: \n" << result.as_slhaea_block("H+") << endl;
-      
     }
 
     /// MSSM decays: Hminus
@@ -2477,7 +2475,7 @@ namespace Gambit
         
       }
 
-      cout << "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
+      //cout << "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
   
     }
 

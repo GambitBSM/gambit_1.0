@@ -10,7 +10,7 @@
 
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
+  MSSM25atQ:           !import LesHouches.in.MSSM_light.yaml
 
 Priors:
     # none: all parameters fixed in this example.
@@ -34,12 +34,20 @@ ObsLikes:
     type:         DecayTable
 
   # Test LEP xsecs
-  - purpose:      Test
-    capability:   LEP_xsec_selselbar
-  - purpose:      Test
-    capability:   LEP_xsec_chi00_11
-  - purpose:      Test
-    capability:   LEP_xsec_chipm_11
+  #- purpose:      Test
+  #  capability:   LEP208_xsec_serserbar
+  #- purpose:      Test
+  #  capability:   LEP205_xsec_chi00_11
+  #- purpose:      Test
+  #  capability:   LEP188_xsec_chipm_11
+  #- purpose:      Test
+  #  capability:   LEP205_xsec_selserbar
+  #- purpose:      Test
+  #  capability:   LEP188_xsec_chi00_33
+  #- purpose:      Test
+  #  capability:   LEP208_xsec_chipm_12
+  #- purpose:      Test
+  #  capability:   LEP208_xsec_chi00_24
 
 Rules:
 

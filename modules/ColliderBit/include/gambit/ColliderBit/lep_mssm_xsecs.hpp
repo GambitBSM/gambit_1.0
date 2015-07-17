@@ -71,7 +71,8 @@ namespace Gambit
     /// Cross section [pb] for e^+e^- -> \tilde l_i \tilde l_j^*
     /// To use, call SLHA2BFM first on SLHA mixing matrices constructed as a vector of vectors
     double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix F, 
-                         MixMatrix N, const double mN[4], double alpha, double mZ, double gZ, double sin2thetaW);
+                         MixMatrix N, const double mN[4], double alpha, double mZ, double gZ,
+                         double sin2thetaW, bool warn_on_CP_violating_masses = true);
     /// Cross section [pb] for e^+e^- -> \tilde\chi^0_i \tilde\chi^0_j
     /// Masses mi and mj for the neutralinos are signed. mS are the selectron masses (left = 0, right = 1).
     /// Warning! BFM uses inverted \tan\beta! Use tanb = 1 / tanb in converting from SLHA.

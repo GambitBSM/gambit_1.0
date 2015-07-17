@@ -838,16 +838,17 @@ namespace Gambit
          std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es[type];
          double row_length = gauge_es_strs.size(); 
          for(std::vector<int>::size_type i = 1; i <= row_length; i++) 
-            {   
-               double temp1 = mssm->phys.get_Pole_Mixing(type, mass_index1, i);
-               double temp2 = mssm->phys.get_Pole_Mixing(type, mass_index2, i);
-               if(i == gauge_L_index || i == gauge_R_index) 
-                  {
-                     mix_row_1.push_back(temp1);
-                     mix_row_2.push_back(temp2);
-                  }
+         {   
+            double temp1 = mssm->phys.get_Pole_Mixing(type, mass_index1, i);
+            double temp2 = mssm->phys.get_Pole_Mixing(type, mass_index2, i);
+            if(i == gauge_L_index || i == gauge_R_index) 
+            {
+               mix_row_1.push_back(temp1);
+               mix_row_2.push_back(temp2);
             }
+         }
 
+         //FIXME columns seems to be reversed in return?? i.e. output seems to be { 12, 11, 22, 21} instead of { 11, 12, 21, 22}
          ///Put row 1 and row 2 into the same vector to return
          mix_row_1.insert(mix_row_1.end(), mix_row_2.begin(), mix_row_2.end());
 
@@ -955,6 +956,7 @@ namespace Gambit
       str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
                                           double tol, str context)
       {
+         // FIXME isn't max_mix here actually sum_sq_mix, meaning that it shoudln't be squared on line 965?
          double max_mix;
          std::vector<double> mass_comp;
          str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,

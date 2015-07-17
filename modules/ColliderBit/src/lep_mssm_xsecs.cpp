@@ -41,16 +41,29 @@ namespace Gambit
   namespace ColliderBit
   {
       
+    /// Simple convenience map filler
+    std::map<int, str> generate_genmap()
+    {
+      std::map<int, str> m;
+      m[1] = "~e_L";
+      m[2] = "~mu_L";
+      m[3] = "~tau_L";
+      return m;
+    }
+
     /// Retrieve the production cross-section at an e+e- collider for slepton pairs
     void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
                          const int lbar_chirality, const double tol, const Spectrum* spec, const double gammaZ)
     {
+      // Once-only generation-to-left_gauge_eigenstate map
+      static const std::map<int, str> genmap = generate_genmap();
+
       // Subspectrum
       const SubSpectrum* mssm = spec->get_UV();
 
       // PDG codes
-      const int id1 = 1000000*l_chirality + 10 +2*(generation-1);
-      const int id2 = -(1000000*lbar_chirality + 10 +2*(generation-1));
+      const int id1 = 1000000*l_chirality + 11 +2*(generation-1);
+      const int id2 = -(1000000*lbar_chirality + 11 +2*(generation-1));
 
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
@@ -59,7 +72,7 @@ namespace Gambit
       const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
       const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
       const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
-      const double alpha = 0.25*sin2thetaW*g1*g1/pi; 
+      const double alpha = 0.25*sin2thetaW*g2*g2/pi; 
 
       // MSSM parameters
       const double tanb = mssm->runningpars.get_dimensionless_parameter("tanbeta");
@@ -67,11 +80,18 @@ namespace Gambit
       str mass_es1, mass_es2;
       std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e", generation, mass_es1, mass_es2, mssm, tol, LOCAL_INFO);
       MixMatrix sleptonmix(2,std::vector<double>(2));
-      sleptonmix[0][0] = slepton4vec[0]; 
-      sleptonmix[0][1] = slepton4vec[1]; 
-      sleptonmix[1][0] = slepton4vec[2]; 
-      sleptonmix[1][1] = slepton4vec[3]; 
+      sleptonmix[0][0] = slepton4vec[1]; // FIXME columns seem to be reversed due to bug in slhahelp routines 
+      sleptonmix[0][1] = slepton4vec[0]; 
+      sleptonmix[1][0] = slepton4vec[3]; 
+      sleptonmix[1][1] = slepton4vec[2];
       // Get the slepton masses and uncertainties
+      const str mass_es_sl = slhahelp::mass_es_from_gauge_es(genmap.at(generation), mssm, tol, LOCAL_INFO);
+      if (mass_es_sl != mass_es1 and mass_es_sl != mass_es2) ColliderBit_error().raise(LOCAL_INFO, "Catastrophic eigenstate mismatch!");            
+      const str mass_es_sr = (mass_es_sl == mass_es1) ? mass_es2 : mass_es1;
+      mass_es1 = (l_chirality == 1) ? mass_es_sl : mass_es_sr;
+      mass_es2 = (lbar_chirality == 1) ? mass_es_sl : mass_es_sr;
+      // FIXME when spectrum object has separate pole mass getters for antiparticles
+      //mass_es2 = (lbar_chirality == 1) ? Models::ParticleDB().get_antiparticle(mass_es_sl) : Models::ParticleDB().get_antiparticle(mass_es_sr);   
       const double m1 = spec->get_Pole_Mass(mass_es1);
       const double m2 = spec->get_Pole_Mass(mass_es2);
       // FIXME when mass uncertainties are available from the spectrum objects
@@ -80,6 +100,17 @@ namespace Gambit
       // Until then
       const std::pair<double,double> m1_uncerts(0.05, 0.05);
       const std::pair<double,double> m2_uncerts = m1_uncerts;
+      
+      // Just return zero if the final state is kinematically inaccessible
+      // *even* if both masses are 2simga lower than their central values 
+      if (m1*(1.0-2.0*m1_uncerts.second) + m2*(1.0-2.0*m2_uncerts.second) > sqrts)
+      { 
+        result.central = 0.0;
+        result.upper = 0.0;
+        result.lower = 0.0;
+        return;
+      }
+
       // Get the neutralino masses
       const double neutmass[4] = { spec->get_Pole_Mass(1000022,0), spec->get_Pole_Mass(1000023,0), 
                                    spec->get_Pole_Mass(1000025,0), spec->get_Pole_Mass(1000035,0) };
@@ -98,15 +129,16 @@ namespace Gambit
       std::vector<double> xsecs;
       xsecs.push_back(result.central);
       xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first), sleptonmix, neutmix,
-                                   neutmass, alpha, mZ, gammaZ, sin2thetaW));
-      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.first), sleptonmix, neutmix,
-                                   neutmass, alpha, mZ, gammaZ, sin2thetaW));
-      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.second), sleptonmix, neutmix,
-                                   neutmass, alpha, mZ, gammaZ, sin2thetaW));
-      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.second), sleptonmix, neutmix,
-                                   neutmass, alpha, mZ, gammaZ, sin2thetaW));
+                                   neutmass, alpha, mZ, gammaZ, sin2thetaW, false));
+      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.+m2_uncerts.first), sleptonmix, neutmix,
+                                   neutmass, alpha, mZ, gammaZ, sin2thetaW, false));
+      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.-m2_uncerts.second), sleptonmix, neutmix,
+                                   neutmass, alpha, mZ, gammaZ, sin2thetaW, false));
+      xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.-m2_uncerts.second), sleptonmix, neutmix,
+                                   neutmass, alpha, mZ, gammaZ, sin2thetaW, false));
       result.upper = *std::max_element(xsecs.begin(), xsecs.end());
       result.lower = *std::min_element(xsecs.begin(), xsecs.end());
+
     }
 
 
@@ -118,8 +150,8 @@ namespace Gambit
       const SubSpectrum* mssm = spec->get_UV();
 
       // PDG codes
-      const int id1 = 1000021 + chi_first  + (chi_first  > 2 ? chi_first  - 1 + (chi_first -3)*10 : 0);
-      const int id2 = 1000021 + chi_second + (chi_second > 2 ? chi_second - 1 + (chi_second-3)*10 : 0);
+      const int id1 = 1000021 + chi_first  + (chi_first  > 2 ? 1 + (chi_first -3)*9 : 0);
+      const int id2 = 1000021 + chi_second + (chi_second > 2 ? 1 + (chi_second-3)*9 : 0);
 
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
@@ -128,7 +160,7 @@ namespace Gambit
       const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
       const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
       const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
-      const double alpha = 0.25*sin2thetaW*g1*g1/pi; 
+      const double alpha = 0.25*sin2thetaW*g2*g2/pi; 
 
       // MSSM parameters
       const double tanb = mssm->runningpars.get_dimensionless_parameter("tanbeta");
@@ -146,6 +178,17 @@ namespace Gambit
       // Until then
       const std::pair<double,double> m1_uncerts(0.05, 0.05);
       const std::pair<double,double> m2_uncerts = m1_uncerts;
+ 
+      // Just return zero if the final state is kinematically inaccessible
+      // *even* if both masses are 2simga lower than their central values 
+      if (abs(m1)*(1.0-2.0*m1_uncerts.second) + abs(m2)*(1.0-2.0*m2_uncerts.second) > sqrts)
+      { 
+        result.central = 0.0;
+        result.upper = 0.0;
+        result.lower = 0.0;
+        return;
+      }
+ 
       // Get the 4x4 neutralino mixing matrix
       MixMatrix neutmix(4,std::vector<double>(4));
       //FIXME use PDG code instead of "~chi0" once the spectrum object supports such an interface
@@ -162,14 +205,15 @@ namespace Gambit
       xsecs.push_back(result.central);
       xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first),
                                     neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
-      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.second),
+      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.-m2_uncerts.second),
                                     neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
-      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.first),
+      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.+m2_uncerts.first),
                                     neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
-      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.second),
+      xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.-m2_uncerts.second),
                                     neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
       result.upper = *std::max_element(xsecs.begin(), xsecs.end());
       result.lower = *std::min_element(xsecs.begin(), xsecs.end());
+
     }
 
     /// Retrieve the production cross-section at an e+e- collider for chargino pairs
@@ -180,8 +224,8 @@ namespace Gambit
       const SubSpectrum* mssm = spec->get_UV();
 
       // PDG codes
-      const int id1 = 1000023 + chi_plus + (chi_plus - 1)*14;
-      const int id2 = -(1000023 + chi_minus + (chi_minus - 1)*14);
+      const int id1 = 1000023 + chi_plus + (chi_plus - 1)*12;
+      const int id2 = -(1000023 + chi_minus + (chi_minus - 1)*12);
 
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
@@ -190,7 +234,7 @@ namespace Gambit
       const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
       const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
       const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
-      const double alpha = 0.25*sin2thetaW*g1*g1/pi; 
+      const double alpha = 0.25*sin2thetaW*g2*g2/pi; 
 
       // MSSM parameters
       // Get the mass eigenstates best corresponding to ~nu_e_L.
@@ -206,6 +250,17 @@ namespace Gambit
       // Until then
       const std::pair<double,double> m1_uncerts(0.05, 0.05);
       const std::pair<double,double> m2_uncerts = m1_uncerts;
+
+      // Just return zero if the final state is kinematically inaccessible
+      // *even* if both masses are 2simga lower than their central values 
+      if (abs(m1)*(1.0-2.0*m1_uncerts.second) + abs(m2)*(1.0-2.0*m2_uncerts.second) > sqrts)
+      { 
+        result.central = 0.0;
+        result.upper = 0.0;
+        result.lower = 0.0;
+        return;
+      }
+
       // Get the 2x2 chargino mixing matrices
       MixMatrix charginomixV(2,std::vector<double>(2));
       MixMatrix charginomixU(2,std::vector<double>(2));
@@ -227,16 +282,17 @@ namespace Gambit
       // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
       std::vector<double> xsecs;
       xsecs.push_back(result.central);
-      result.central = xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first), charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW);
-      result.central = xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.second), charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW);
-      result.central = xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.first), charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW);
-      result.central = xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.second), m2*(1.+m2_uncerts.second), charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW);
+      xsecs.push_back(xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first), charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.-m2_uncerts.second), charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_chaichaj(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.+m2_uncerts.first), charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW));
+      xsecs.push_back(xsec_chaichaj(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.-m2_uncerts.second), charginomixV, charginomixU, 
+                                     msn, alpha, mZ, gammaZ, sin2thetaW));
       result.upper = *std::max_element(xsecs.begin(), xsecs.end());
       result.lower = *std::min_element(xsecs.begin(), xsecs.end());
+
     }
 
     /// Integrals for t-channel neutralino diagrams
@@ -273,15 +329,15 @@ namespace Gambit
     
       double I2 = 0;
       // Careful with degenerate masses!
-      if( fabs(mksq-mlsq) < 0.1 ){
+      if( fabs(mksq-mlsq) < 0.1 )
+      {
         I2 = S/(m1sq*(m2sq-mksq)+mksq*(-m2sq+mksq+s));
-        //cout << s << " " << S << " " << m1 << " " << m2 << " " << mk << " " << ml << " I2 (degenerate masses) " << I2 << endl;
       }
-      else{
+      else
+      {
         I2 = log((m1sq+m2sq-2.*mksq-(s-S))/(m1sq+m2sq-2.*mksq-(s+S)));
         I2 += log((m1sq+m2sq-2.*mlsq-(s+S))/(m1sq+m2sq-2.*mlsq-(s-S)));
         I2 *= 1./(mksq-mlsq);
-        //cout << mk << " " << ml << " I2 " << I2 << endl;
       }
       return I2;
     }
@@ -304,9 +360,13 @@ namespace Gambit
     /// Cross section [pb] for e^+e^- -> \tilde l_i \tilde l_j^*
     /// To use, call SLHA2BFM first on SLHA mixing matrices constructed as a vector of vectors
     double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix F, 
-                         MixMatrix N, const double mN[4], double alpha, double mZ, double gZ, double sin2thetaW)
+                         MixMatrix N, const double mN[4], double alpha, double mZ, double gZ,
+                         double sin2thetaW, bool CP_lock)
     {
     
+      // Just return zero if the final state isn't kinematically accessible
+      if (m1+m2 > sqrts) return 0.0;
+
       // Slepton mixing
       double cosphi = F[0][0];
       double sinphi = F[0][1];
@@ -318,7 +378,7 @@ namespace Gambit
       // ~e_L ~e_L^*
       if((pid1 == 1000011 && pid2 == -1000011) || (pid1 == -1000011 && pid2 == 1000011)){
         bSelectron = true;
-        if(m1 != m2) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
+        if(m1 != m2 and CP_lock) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
       }
       // ~e_L ~e_R^*
       else if((pid1 == 1000011 && pid2 == -2000011) || (pid1 == -2000011 && pid2 == 1000011)){
@@ -334,11 +394,11 @@ namespace Gambit
       else if((pid1 == 2000011 && pid2 == -2000011) || (pid1 == -2000011 && pid2 == 2000011)){
         bSelectron = true;
         tempphi = cosphi; cosphi = sinphi; sinphi = tempphi;
-        if(m1 != m2) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
+        if(m1 != m2 and CP_lock) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
       }
       // ~mu_L ~mu_L^*
       else if((pid1 == 1000013 && pid2 == -1000013) || (pid1 == -1000013 && pid2 == 1000013)){
-        if(m1 != m2) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
+        if(m1 != m2 and CP_lock) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
       }
       // ~mu_L ~mu_R^*
       else if((pid1 == 1000013 && pid2 == -2000013) || (pid1 == -2000013 && pid2 == 1000013)){
@@ -353,11 +413,11 @@ namespace Gambit
       // ~mu_R ~mu_R^*
       else if((pid1 == 2000013 && pid2 == -2000013) || (pid1 == -2000013 && pid2 == 2000013)){
         tempphi = cosphi; cosphi = sinphi; sinphi = tempphi;
-        if(m1 != m2) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
+        if(m1 != m2 and CP_lock) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
       }
       // ~tau_1 ~tau_1^*
       else if((pid1 == 1000015 && pid2 == -1000015) || (pid1 == -1000015 && pid2 == 1000015)){
-        if(m1 != m2) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
+        if(m1 != m2 and CP_lock) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
       }
       // ~tau_1 ~tau_2^*
       else if((pid1 == 1000015 && pid2 == -2000015) || (pid1 == -2000015 && pid2 == 1000015)){
@@ -370,9 +430,10 @@ namespace Gambit
       // ~tau_2 ~tau_2^*
       else if((pid1 == 2000015 && pid2 == -2000015) || (pid1 == -2000015 && pid2 == 2000015)){
         tempphi = cosphi; cosphi = sinphi; sinphi = tempphi;
-        if(m1 != m2) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
+        if(m1 != m2 and CP_lock) ColliderBit_warning().raise(LOCAL_INFO, "You are using a different mass for antiparticle!");
       }
-      else{
+      else
+      {
         std::stringstream ss;
         ss << "I don't know that process!" << endl 
            << "You asked me to calculate slepton cross section with final states"
@@ -388,7 +449,7 @@ namespace Gambit
       // Left-right mixing
       double cos2phi = pow2(cosphi);
       double sin2phi = pow2(sinphi);
-    
+
       double fL[4], fR[4];
       for(int k = 0; k < 4; k++){
         fL[k] = -sqrt(2.) * (1./sqrt(1.-sin2thetaW)*(T3l+sin2thetaW)*N[k][1]-sqrt(sin2thetaW)*N[k][0]);
@@ -401,7 +462,7 @@ namespace Gambit
       S = sqrt(s-pow2(m1+m2))*sqrt(s-pow2(m1-m2));
       DZ2 = 1./(pow2(s-pow2(mZ))+pow2(mZ*gZ)); // Breit-Wigner for Z
       ReDZ = (s-pow2(mZ))*DZ2;
-    
+
       // Cross sections per diagram and interference terms
       double sigma, sigma_Z, sigma_Z_mix, sigma_g, sigma_gZ, sigma_N, sigma_N_mix, sigma_gN, sigma_ZN, sigma_ZN_mix;
       // gamma
@@ -425,14 +486,13 @@ namespace Gambit
       }
       sigma_N *= pi*pow2(alpha)/4./pow2(sin2thetaW)/pow2(s);
       sigma_N_mix = 0;
-      for(int k = 0; k < 4; k++){
-        for(int l = 0; l < 4; l++){
+      for(int k = 0; k < 4; k++)
+      {
+        for(int l = 0; l < 4; l++)
+        {
           sigma_N_mix += cos2phi*sin2phi*I1(s,m1,m2,mN[k],mN[l])*pow2(fL[k]*fL[l]);
           sigma_N_mix += cos2phi*sin2phi*I1(s,m1,m2,mN[k],mN[l])*pow2(fR[k]*fR[l]);
           sigma_N_mix += (pow2(cos2phi)+pow2(sin2phi))*s*mN[k]*mN[l]*I2(s,m1,m2,mN[k],mN[l])*fL[k]*fL[l]*fR[k]*fR[l];
-          if(mN[0] == 9.7){
-          //cout << k << " " << mN[k] << " " << fR[k] << " " << l << " " << mN[l] << " " << fR[l] << " " << (pow2(cos2phi)+pow2(sin2phi))*s*mN[k]*mN[l]*I2(s,m1,m2,mN[k],mN[l])*fL[k]*fL[l]*fR[k]*fR[l] << endl;
-          }
         }
       }
       sigma_N_mix *= pi*pow2(alpha)/4./pow2(sin2thetaW)/pow2(s);
@@ -472,18 +532,33 @@ namespace Gambit
                          const double mS[2], double tanb, double alpha, double mZ, double gZ, double sin2thetaW)
     {
       
+      // Just return zero if the final state isn't kinematically accessible
+      if (abs(mi)+abs(mj) > sqrts) return 0.0;
+
       // Translate from PDG codes to neutralino indices (starting at zero)
       int i, j;
       if(pid1 == 1000022) i = 0;
       else if(pid1 == 1000023) i = 1;
       else if(pid1 == 1000025) i = 2;
       else if(pid1 == 1000035) i = 3;
-      else{ cout << "Invalid final state neutralino PDG code " << pid1 << endl; return -1; }
+      else
+      {
+        std::stringstream ss;
+        ss << "Invalid final state neutralino PDG code " << pid1;
+        ColliderBit_error().raise(LOCAL_INFO, ss.str());
+        return -1;
+      }
       if(pid2 == 1000022) j = 0;
       else if(pid2 == 1000023) j = 1;
       else if(pid2 == 1000025) j = 2;
       else if(pid2 == 1000035) j = 3;
-      else{ cout << "Invalid final state neutralino PDG code " << pid2 << endl; return -1; }
+      else
+      {
+        std::stringstream ss;
+        ss << "Invalid final state neutralino PDG code " << pid2;
+        ColliderBit_error().raise(LOCAL_INFO, ss.str());
+        return -1;
+      }
       
       // Set slepton masses
       double msL = mS[0];
@@ -554,15 +629,30 @@ namespace Gambit
                          MixMatrix U, double ms, double alpha, double mZ, double gZ, double sin2thetaW)
     {
       
+      // Just return zero if the final state isn't kinematically accessible
+      if (abs(mi)+abs(mj) > sqrts) return 0.0;
+
       // Translate from PDG codes to chargino indices (silly paper convention that i=2 lighter than i=1!)
       int i, j;
       pid1 = abs(pid1); pid2 = abs(pid2);
       if(pid1 == 1000024) i = 1;
       else if(pid1 == 1000037) i = 0;
-      else{ cout << "Invalid final state chargino PDG code " << pid1 << endl; return -1; }
+      else
+      {
+        std::stringstream ss;
+        ss << "Invalid final state chargino PDG code " << pid1;
+        ColliderBit_error().raise(LOCAL_INFO, ss.str());
+        return -1;
+      }
       if(pid2 == 1000024) j = 1;
       else if(pid2 == 1000037) j = 0;
-      else{ cout << "Invalid final state chargino PDG code " << pid2 << endl; return -1; }
+      else
+      {
+        std::stringstream ss;
+        ss << "Invalid final state chargino PDG code " << pid2;
+        ColliderBit_error().raise(LOCAL_INFO, ss.str());
+        return -1;
+      }
       
       // Couplings
       int deltaij = 0;
@@ -592,7 +682,6 @@ namespace Gambit
       aL = 0.5/pow2(ms)*(2*pow2(ms)+s-pow2(mi)-pow2(mj));
       bL = q*sqrts/pow2(ms);
       h = 2.*q*sqrts-2.*pow2(q)*aL/bL+(Ei*Ej+pow2(q*aL/bL)-q*sqrts*aL/bL)*log(fabs((aL+bL)/(aL-bL)));
-      //cout << aL << " " << bL << endl;
       
       // Cross sections per diagram and interference terms
       double sigma, sigma_g, sigma_Z, sigma_s, sigma_gZ, sigma_gs, sigma_Zs;
