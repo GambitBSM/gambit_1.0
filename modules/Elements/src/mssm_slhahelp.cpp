@@ -848,7 +848,6 @@ namespace Gambit
             }
          }
 
-         //FIXME columns seems to be reversed in return?? i.e. output seems to be { 12, 11, 22, 21} instead of { 11, 12, 21, 22}
          ///Put row 1 and row 2 into the same vector to return
          mix_row_1.insert(mix_row_1.end(), mix_row_2.begin(), mix_row_2.end());
 
@@ -957,6 +956,7 @@ namespace Gambit
                                           double tol, str context)
       {
          // FIXME isn't max_mix here actually sum_sq_mix, meaning that it shoudln't be squared on line 965?
+         // This was fixed on SpecBit_development, so its version should take precedence during merge.
          double max_mix;
          std::vector<double> mass_comp;
          str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
