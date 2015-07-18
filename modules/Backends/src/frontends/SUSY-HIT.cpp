@@ -10,7 +10,7 @@
 ///  version of the backend that you want to employ. 
 ///  You also need to define BACKENDRENAME *before*
 ///  including the frontend header.
-
+///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -32,10 +32,25 @@
 BE_NAMESPACE
 {
 
+  /// Simple helper function for initialisation function, for adding missing SLHA1 2x2 family mixing matrices.
+  void attempt_to_add(const str& block, const str& type, SLHAstruct& slha, const SubSpectrum* spec, double tol, str& s1, str& s2)
+  {
+    if (slha.find(block) == slha.end())
+	  {
+	    std::vector<double> matmix = slhahelp::family_state_mix_matrix(type, 3, s1, s2, spec, tol, LOCAL_INFO);
+	    SLHAea_add_matrix(slha, block, matmix, 2, 2); 
+    }
+    else
+    {
+	    s1 = mass_es_from_family_state(s1, mssm, tol, LOCAL_INFO);
+	    s2 = mass_es_from_family_state(s2, mssm, tol, LOCAL_INFO);
+		}
+  }
+
   /// Runs actual SUSY-HIT decay calculations.
   /// Inputs: m_s_1GeV_msbar    strange mass in GeV, in MSbar scheme at an energy of 1GeV
   ///         W_width, Z_width  EW gauge boson total widths in GeV
-  void run_susy_hit(SLHAstruct slha, double W_width, double Z_width) 
+  void run_susy_hit(SLHAstruct slha, double W_width, double Z_width, int[35] pdg_codes) 
   {
     using SLHAea::to;
 
@@ -63,24 +78,24 @@ BE_NAMESPACE
       REQUIRED_BLOCK("ALPHA", alpha)
       REQUIRED_BLOCK("HMIX", hmix)
       REQUIRED_BLOCK("GAUGE", gauge)
+      REQUIRED_BLOCK("SPINFO", spinfo)
+      REQUIRED_BLOCK("STOPMIX", stopmix)
+      REQUIRED_BLOCK("SBOTMIX", sbotmix)
+      REQUIRED_BLOCK("STAUMIX", staumix)
       REQUIRED_BLOCK("YU", yu)
       REQUIRED_BLOCK("YD", yd)
       REQUIRED_BLOCK("YE", ye)     
-      REQUIRED_BLOCK("MSQ2", msq2)     
-      REQUIRED_BLOCK("MSD2", msd2)
-      REQUIRED_BLOCK("MSU2", msu2)
-      REQUIRED_BLOCK("TD", td)
-      REQUIRED_BLOCK("TU", tu)
-      REQUIRED_BLOCK("USQMIX", usqmix)
-      REQUIRED_BLOCK("DSQMIX", dsqmix)
-      REQUIRED_BLOCK("SELMIX", selmix)
-      REQUIRED_BLOCK("SPINFO", spinfo)
-      OPTIONAL_BLOCK("STOPMIX", stopmix)
-      OPTIONAL_BLOCK("SBOTMIX", sbotmix)
-      OPTIONAL_BLOCK("STAUMIX", staumix)
       OPTIONAL_BLOCK("AU", au)
       OPTIONAL_BLOCK("AD", ad)
       OPTIONAL_BLOCK("AE", ae)
+      OPTIONAL_BLOCK("MSQ2", msq2)     
+      OPTIONAL_BLOCK("MSD2", msd2)
+      OPTIONAL_BLOCK("MSU2", msu2)
+      OPTIONAL_BLOCK("TD", td)
+      OPTIONAL_BLOCK("TU", tu)
+      OPTIONAL_BLOCK("USQMIX", usqmix)
+      OPTIONAL_BLOCK("DSQMIX", dsqmix)
+      OPTIONAL_BLOCK("SELMIX", selmix)
 
       // SMINPUTS
       for (int i=1; i<=14; ++i)
@@ -124,17 +139,13 @@ BE_NAMESPACE
       // SLHA2 block EXTPAR
       sd_leshouches2->extval(0) = sd_leshouches2->qvalue(3);         // EWSB scale (set to SUSY scale as per MSOFT).  Not used by SUSY-HIT anymore.
 
-      // SLHA2 block MASS    FIXME needs checking for mass-gauge/flav eigenstate conversion.
-      int slha_indices[35] = {24, 25, 35, 36, 37, 1000001, 2000001, 1000002, 2000002, 1000003, 2000003, 1000004, 2000004, 1000005, 2000005, 1000006, 2000006,
-                           /* W+,  h,  H,  A, H+,    ~d_L,    ~d_R,    ~u_L,    ~u_R,    ~s_L,    ~s_R,    ~c_L,    ~c_R,    ~b_1,    ~b_2,    ~t_1,    ~t_2, */
-       1000011, 2000011, 1000012, 1000013, 2000013, 1000014, 1000015, 2000015, 1000016, 1000021, 1000022, 1000023, 1000025, 1000035, 1000024, 1000037, 5, 1000039};
-      //  ~e_L,    ~e_R,  ~nu_eL,   ~mu_L,   ~mu_R, ~nu_muL,  ~tau_1,  ~tau_2,~nu_tauL,      ~g, ~chi_10, ~chi_20, ~chi_30, ~chi_40, ~chi_1+, ~chi_2+, b pole, ~G
+      // SLHA2 block MASS
       for (int i=1; i<=35; ++i) 
       {
-        sd_leshouches2->massval(i) = (mass[slha_indices[i-1]].is_data_line()) ? to<double>(mass[slha_indices[i-1]][1]) : unlikely();
+        sd_leshouches2->massval(i) = (mass[pdg_codes[i-1]].is_data_line()) ? to<double>(mass[pdg_codes[i-1]][1]) : unlikely();
       }
-      for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0;   // zeroing
-      sd_leshouches2->massval(34) = 4.87877839E+00;  // b pole mass FIXME when available from slhaea object!!
+      for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0; // zeroing
+      sd_leshouches2->massval(34) = 4.87877839E+00;  // b pole mass FIXME delete this line when available from slhaea object in MASS::34!!
  
       // NMIX
       for (int i=1; i<=4; ++i) for (int j=1; j<=4; ++j) sd_leshouches2->nmixval(i,j) = (nmix[initVector<int>(i,j)].is_data_line()) ? to<double>(nmix.at(i,j)[2]) : 0.0;
@@ -147,27 +158,11 @@ BE_NAMESPACE
           std::vector<int> ij = initVector<int>(i,j);
           sd_leshouches2->vmixval(i,j) = (vmix[ij].is_data_line()) ? to<double>(vmix.at(i,j)[2]) : 0.0;
           sd_leshouches2->umixval(i,j) = (umix[ij].is_data_line()) ? to<double>(umix.at(i,j)[2]) : 0.0;
-          //FIXME these need to come from the spectrum's mixing functions
-          //sd_leshouches2->stopmixval(i,j) = (stopmix[ij].is_data_line()) ? to<double>(stopmix.at(i,j)[2]) : 0.0;
-          //sd_leshouches2->sbotmixval(i,j) = (sbotmix[ij].is_data_line()) ? to<double>(sbotmix.at(i,j)[2]) : 0.0;
-          //sd_leshouches2->staumixval(i,j) = (staumix[ij].is_data_line()) ? to<double>(staumix.at(i,j)[2]) : 0.0;
+          sd_leshouches2->stopmixval(i,j) = (stopmix[ij].is_data_line()) ? to<double>(stopmix.at(i,j)[2]) : 0.0;
+          sd_leshouches2->sbotmixval(i,j) = (sbotmix[ij].is_data_line()) ? to<double>(sbotmix.at(i,j)[2]) : 0.0;
+          sd_leshouches2->staumixval(i,j) = (staumix[ij].is_data_line()) ? to<double>(staumix.at(i,j)[2]) : 0.0;
         }
       }
-      // SLHA2 block STOPMIX -- FIXME delete when mixings avail from spectrum!
-      sd_leshouches2->stopmixval(1,1) = 5.52988023E-01; // cos(theta_t)
-      sd_leshouches2->stopmixval(1,2) = 8.33189202E-01; // sin(theta_t)
-      sd_leshouches2->stopmixval(2,1) =-8.33189202E-01; // -sin(theta_t)
-      sd_leshouches2->stopmixval(2,2) = 5.52988023E-01; // cos(theta_t) 
-      // SLHA2 block SBOTMIX -- FIXME delete when mixings avail from spectrum!
-      sd_leshouches2->sbotmixval(1,1) = 9.30091013E-01; // cos(theta_b)
-      sd_leshouches2->sbotmixval(1,2) = 3.67329153E-01; // sin(theta_b)
-      sd_leshouches2->sbotmixval(2,1) =-3.67329153E-01; // -sin(theta_b)
-      sd_leshouches2->sbotmixval(2,2) = 9.30091013E-01; // cos(theta_b)
-      // SLHA2 block STAUMIX -- FIXME delete when mixings avail from spectrum!
-      sd_leshouches2->staumixval(1,1) = 2.84460080E-01; // cos(theta_tau)
-      sd_leshouches2->staumixval(1,2) = 9.58687886E-01; // sin(theta_tau)
-      sd_leshouches2->staumixval(2,1) =-9.58687886E-01; // -sin(theta_tau)
-      sd_leshouches2->staumixval(2,2) = 2.84460080E-01; // cos(theta_tau)
   
       // ALPHA (value is spectrum generator's "best choice" => can be on-shell, DRbar at a give scale, whatever)
       sd_leshouches2->alphaval = to<double>(alpha.back().at(0));             // Mixing angle in the neutral Higgs boson sector.
@@ -486,24 +481,28 @@ BE_NAMESPACE
      
     }
 
-    // Must zero this flag in imitation of SUSY-HIT's SLHA reader, to tell it
-    // to calculate the b pole mass from mb(mb)_MSbar.  Given that we just tell
-    // it to use the b pole mass that we pass it anyway, the fact that it goes
-    // and calculates the b pole over again is stupid - but it seems to need
-    // to in order to initialise some other things.  It *might* be possible to
-    // speed up the decay calculation by setting this to 1, but that may be unsafe.
-    sd_mbmb->i_sd_mbmb = 0;
+    // Tell SUSY-HIT not to bother calculating the b pole mass from mb(mb)_MSbar, just use the value we pass it.
+    sd_mbmb->i_sd_mbmb = 1;
     
-    // Do calculation without flavour-violating light stop decays.  To do these, you need to reset
-    // this to 1 in your module function and call sdecay() again.  Probably there's a smarter way
-    // to order this so that it happens automatically if you want it, but it still needs to be tested
-    // that running first without flavour violation and then re-running with flavour violation does 
-    // not break the non-FV results.
+    // Do calculation without flavour-violating light stop decays.  
     flavviolation->ifavvio = 0;
+
+    // Note to developers interested in expanding this to use the v1.5 flavor-violating stop decay features
+    // ------------
+    // In order to turn FV on, some time after the initial call to sdecay() at the end of this function, you 
+    // need to set
+    //  flavviolation->ifavvio = 1;
+    //  checkfavvio->imodfav(1) = 6;
+    //  checkfavvio->imodfav(2) = 1;
+    // and then call sdecay() again.  You might do that somehow in this function, or in a module function.  
+    // There may be a smart way to order this so that it happens automatically if and when you want it.  
+    // However, before spending time automating this, it still needs to be tested that running first without
+    // flavour violation and then re-running with flavour violation actually works, i.e. it does not break 
+    // the non-FV results.  The SUSY-HIT authors think it should be OK.
     
     // Set equivalent SLHA common blocks for HDecay.  Only differences are dimension of qvalues and zero vs unlikely for au, ad & ae.
     *slha_leshouches1_hdec = *sd_leshouches1;                       // SLHA1 block is identical in SDECAY and HDECAY.
-    slha_leshouches2_hdec->imod = sd_leshouches2->imod;             // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
+    slha_leshouches2_hdec->imod = sd_leshouches2->imod;             // model; 1, 1 = SUGRA.
     slha_leshouches2_hdec->smval = sd_leshouches2->smval;           // SMINPUTS
     slha_leshouches2_hdec->extval = sd_leshouches2->extval;         // EXTPAR      
     slha_leshouches2_hdec->massval = sd_leshouches2->massval;       // MASS
@@ -551,13 +550,6 @@ BE_NAMESPACE
 
     // Run SUSY-HIT
     sdecay();
-
-    // Questions for SUSY-HIT authors (read paper first!!)
-    // ms_1Gev? mc pole?
-    // q values -- repeated 11, 14, assignment of selmix to 21 vs < 20; are these bugs?
-    // safety of just skipping sd_mbmb calculation
-    // safety of running over with FV.
-    // stop decay common block entries
       
   }
 }
@@ -566,8 +558,22 @@ END_BE_NAMESPACE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-  const double scale_tol = 0.1; // Run spectrum to MSUSY if |Q_input-MSUSY| > scale_tol GeV
   SLHAstruct slha;
+  int pdg_codes[35];
+  pdg_codes[0]  = 24;      // W+
+  pdg_codes[1]  = 25;      // h
+  pdg_codes[2]  = 35;      // H
+  pdg_codes[3]  = 36;      // A
+  pdg_codes[4]  = 37;      // H+
+	pdg_codes[26] = 1000021; // ~g
+	pdg_codes[27] = 1000022; // ~chi_10
+	pdg_codes[28] = 1000023; // ~chi_20
+	pdg_codes[29] = 1000025; // ~chi_30
+	pdg_codes[30] = 1000035; // ~chi_40
+	pdg_codes[31] = 1000024; // ~chi_1+
+	pdg_codes[32] = 1000037; // ~chi_2+
+	pdg_codes[33] = 5;       // b pole
+	pdg_codes[34] = 1000039; // ~G
  
   // If the user provides a file list, just read in SLHA files for debugging and ignore the MSSM_spectrum dependency.
   if (runOptions->hasKey("debug_SLHA_filenames"))
@@ -581,6 +587,27 @@ BE_INI_FUNCTION
     ifs.close();
     counter++;
     if (counter >= filenames.size()) counter = 0;
+		pdg_codes[5]  = 1000001; // ~d_L 
+		pdg_codes[6]  = 2000001; // ~d_R
+		pdg_codes[7]  = 1000002; // ~u_L
+		pdg_codes[8]  = 2000002; // ~u_R
+		pdg_codes[9]  = 1000003; // ~s_L
+		pdg_codes[10] = 2000003; // ~s_R
+		pdg_codes[11] = 1000004; // ~c_L
+		pdg_codes[12] = 2000004; // ~c_R
+		pdg_codes[13] = 1000005; // ~b_1
+		pdg_codes[14] = 2000005; // ~b_2
+		pdg_codes[15] = 1000006; // ~t_1
+		pdg_codes[16] = 2000006; // ~t_2
+		pdg_codes[17] = 1000011; // ~e_L
+		pdg_codes[18] = 2000011; // ~e_R
+		pdg_codes[19] = 1000012; // ~nu_eL
+		pdg_codes[20] = 1000013; // ~mu_L
+		pdg_codes[21] = 2000013; // ~mu_R
+		pdg_codes[22] = 1000014; // ~nu_muL
+		pdg_codes[23] = 1000015; // ~tau_1
+		pdg_codes[24] = 2000015; // ~tau_2
+		pdg_codes[25] = 1000016; // ~nu_tauL
     // If the CKM entries are missing from the SLHA file, fill them in with defaults.
     SLHAea_add(slha, "VCKMIN", 1, 0.22537, "lambda", false);
     SLHAea_add(slha, "VCKMIN", 2, 0.814, "A", false);
@@ -589,22 +616,48 @@ BE_INI_FUNCTION
   }
   else // Use the actual spectrum object.
   {
-    // Check whether the spectrum object is already at the SUSY scale
-    //double msusy = (*Dep::MSSM_spectrum)->get_DRBar_parameter("M_SUSY");  FIXME when M_SUSY is available from the spectrum object.
-    double msusy = (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();
-    if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
-    {
-      // Take a local copy to allow running.
-      std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
-      // Run to SUSY scale.
-      local_mssm_copy->runningpars.RunToScale(msusy);
-      slha = local_mssm_copy->getSLHAea();
-    }
-    else 
-    {
-      // Calculate decay rates using the spectrum 'as is'.
-      slha = (*Dep::MSSM_spectrum)->getSLHAea();
-    }
+    // Make sure the spectrum object is at the SUSY scale
+    // FIXME uncomment when at_SUSY_scale is available
+    //if (not Dep::MSSM_spectrum->at_SUSY_scale())
+    //{
+    //  backend_error().raise(LOCAL_INFO, "MSSM_spectrum dependency is not at the SUSY scale."); 
+    //}
+
+    slha = (*Dep::MSSM_spectrum)->getSLHAea();
+    const SubSpectrum* mssm Dep::MSSM_spectrum->get_UV();
+
+	  // Retrieve the tolerance for off-diagonal sfermion mixing
+	  double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+	      
+	  // Add the STOPMIX, SBOTMIX and STAUMIX blocks to the SLHAea object if they aren't present already.
+	  str stop1 = "~t_1", stop2 = "~t_2", sbotttom1 = "~b_1", sbottom2 = "~b_2", stau1 = "~tau_1", stau2 = "~tau_2";
+	  attempt_to_add("STOPMIX", slhaea, "~u", mssm, tol, stop1, stop2);
+	  attempt_to_add("SBOTMIX", slhaea, "~d", mssm, tol, sbottom1, sbottom2);
+	  attempt_to_add("STAUMIX", slhaea, "~e", mssm, tol, stau1, stau2);
+	                       
+	  // Set out the PDG codes of the mass eigenstates best corresponding to the
+	  // gauge eigenstates for which SUSY-HIT wants masses from the SLHA MASS block.
+	  pdg_codes[5]  = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~d_L",     mssm, tol, LOCAL_INFO)).first, 
+		pdg_codes[6]  = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~d_R",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[7]  = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~u_L",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[8]  = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~u_R",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[9]  = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~s_L",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[10] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~s_R",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[11] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~c_L",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[12] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~c_R",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[13] = Models::ParticleDB().pdg_pair(sbottom1).first,
+		pdg_codes[14] = Models::ParticleDB().pdg_pair(sbottom2).first,
+		pdg_codes[15] = Models::ParticleDB().pdg_pair(stop1).first,
+		pdg_codes[16] = Models::ParticleDB().pdg_pair(stop2).first,
+		pdg_codes[17] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~e_L",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[18] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~e_R",     mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[19] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~nu_eL",   mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[20] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~mu_L",    mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[21] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~mu_R",    mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[22] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~nu_muL",  mssm, tol, LOCAL_INFO)).first,
+		pdg_codes[23] = Models::ParticleDB().pdg_pair(stau1).first,
+		pdg_codes[24] = Models::ParticleDB().pdg_pair(stau2).first,
+		pdg_codes[25] = Models::ParticleDB().pdg_pair(mass_es_from_gauge_es("~nu_tauL", mssm, tol, LOCAL_INFO)).first,
   }
   
   // Get the W and Z widths.
@@ -612,7 +665,7 @@ BE_INI_FUNCTION
   double Z_width = Dep::Z_decay_rates->width_in_GeV;
 
   // Calculate decay rates
-  run_susy_hit(slha, W_width, Z_width);      
+  run_susy_hit(slha, W_width, Z_width, pdg_codes);      
 
 }
 END_BE_INI_FUNCTION
