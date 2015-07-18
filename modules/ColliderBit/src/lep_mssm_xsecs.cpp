@@ -80,10 +80,10 @@ namespace Gambit
       str mass_es1, mass_es2;
       std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e", generation, mass_es1, mass_es2, mssm, tol, LOCAL_INFO);
       MixMatrix sleptonmix(2,std::vector<double>(2));
-      sleptonmix[0][0] = slepton4vec[1]; // FIXME columns seem to be reversed due to bug in slhahelp routines 
-      sleptonmix[0][1] = slepton4vec[0]; 
-      sleptonmix[1][0] = slepton4vec[3]; 
-      sleptonmix[1][1] = slepton4vec[2];
+      sleptonmix[0][0] = slepton4vec[0]; 
+      sleptonmix[0][1] = slepton4vec[1]; 
+      sleptonmix[1][0] = slepton4vec[2]; 
+      sleptonmix[1][1] = slepton4vec[3];
       // Get the slepton masses and uncertainties
       const str mass_es_sl = slhahelp::mass_es_from_gauge_es(genmap.at(generation), mssm, tol, LOCAL_INFO);
       if (mass_es_sl != mass_es1 and mass_es_sl != mass_es2) ColliderBit_error().raise(LOCAL_INFO, "Catastrophic eigenstate mismatch!");            
