@@ -65,10 +65,10 @@ namespace Gambit
 	   }
 	
 	   /// Look for a block in an SLHAea object; add it if absent, check for an existing entry in the block if present.
-	   bool add_block_if_absent_and_check_for_entry(SLHAea::Coll& data /*modify*/, const std::string& block, const int index=1, const bool overwrite=false)
+	   bool add_block_if_absent_and_check_for_entry(SLHAea::Coll& data /*modify*/, const std::string& block, const int index, const bool overwrite)
 	   {
 	     // Check if block exists
-	     if (data.find(block) == slha.end())
+	     if (data.find(block) == data.end())
 	     {
 	       // Nope; add it.
 	       data[block][""] << "BLOCK" << block;  

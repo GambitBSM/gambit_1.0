@@ -12,7 +12,7 @@ namespace Gambit {
       protected:
         Pythia8::Pythia* _pythiaInstance;
       public:
-        Pythia8::Pythia* const pythia() const { return _pythiaInstance; }
+        const Pythia8::Pythia* pythia() const { return _pythiaInstance; }
       //@}
 
       /// @name Specialization function pointers

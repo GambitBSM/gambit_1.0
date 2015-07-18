@@ -89,37 +89,37 @@ namespace Gambit
    void SMInputs::add_to_SLHAea(SLHAea::Coll& data) const
    {
       // SMINPUTS block
-      SLHAea_add(data,"SMINPUTS",1 , alphainv, "alpha^{-1}(mZ)^MSbar");
-      SLHAea_add(data,"SMINPUTS",2 , GF      , "G_Fermi"             );
-      SLHAea_add(data,"SMINPUTS",3 , alphaS  , "alpha_s(mZ)^MSbar"   );
-      SLHAea_add(data,"SMINPUTS",4 , mZ      , "mZ(pole)"            );
-      SLHAea_add(data,"SMINPUTS",5 , mBmB    , "mb(mb)^MSbar"        );
-      SLHAea_add(data,"SMINPUTS",6 , mT      , "mtop(pole)"          );
-      SLHAea_add(data,"SMINPUTS",7 , mTau    , "mtau(pole)"          );
-      SLHAea_add(data,"SMINPUTS",8 , mNu3    , "mnu3(pole)"          );
+      Utils::SLHAea_add(data,"SMINPUTS",1 , alphainv, "alpha^{-1}(mZ)^MSbar");
+      Utils::SLHAea_add(data,"SMINPUTS",2 , GF      , "G_Fermi"             );
+      Utils::SLHAea_add(data,"SMINPUTS",3 , alphaS  , "alpha_s(mZ)^MSbar"   );
+      Utils::SLHAea_add(data,"SMINPUTS",4 , mZ      , "mZ(pole)"            );
+      Utils::SLHAea_add(data,"SMINPUTS",5 , mBmB    , "mb(mb)^MSbar"        );
+      Utils::SLHAea_add(data,"SMINPUTS",6 , mT      , "mtop(pole)"          );
+      Utils::SLHAea_add(data,"SMINPUTS",7 , mTau    , "mtau(pole)"          );
+      Utils::SLHAea_add(data,"SMINPUTS",8 , mNu3    , "mnu3(pole)"          );
 
-      SLHAea_add(data,"SMINPUTS",11, mE      , "melectron(pole)"     );
-      SLHAea_add(data,"SMINPUTS",12, mNu1    , "mnu1(pole)"          );
-      SLHAea_add(data,"SMINPUTS",13, mMu     , "mmuon(pole)"         );
-      SLHAea_add(data,"SMINPUTS",14, mNu2    , "mnu2(pole)"          );
-      SLHAea_add(data,"SMINPUTS",21, mD      , "md(2 GeV)^MSbar"     );
-      SLHAea_add(data,"SMINPUTS",22, mU      , "mu(2 GeV)^MSbar"     );
-      SLHAea_add(data,"SMINPUTS",23, mS      , "ms(2 GeV)^MSbar"     );
-      SLHAea_add(data,"SMINPUTS",24, mCmC    , "mc(mc)^MSbar"        );   
+      Utils::SLHAea_add(data,"SMINPUTS",11, mE      , "melectron(pole)"     );
+      Utils::SLHAea_add(data,"SMINPUTS",12, mNu1    , "mnu1(pole)"          );
+      Utils::SLHAea_add(data,"SMINPUTS",13, mMu     , "mmuon(pole)"         );
+      Utils::SLHAea_add(data,"SMINPUTS",14, mNu2    , "mnu2(pole)"          );
+      Utils::SLHAea_add(data,"SMINPUTS",21, mD      , "md(2 GeV)^MSbar"     );
+      Utils::SLHAea_add(data,"SMINPUTS",22, mU      , "mu(2 GeV)^MSbar"     );
+      Utils::SLHAea_add(data,"SMINPUTS",23, mS      , "ms(2 GeV)^MSbar"     );
+      Utils::SLHAea_add(data,"SMINPUTS",24, mCmC    , "mc(mc)^MSbar"        );   
 
       // VCKMIN block
-      SLHAea_add(data,"VCKMIN",1, CKM.lambda, "lambda");
-      SLHAea_add(data,"VCKMIN",2, CKM.A     , "A"     );
-      SLHAea_add(data,"VCKMIN",3, CKM.rhobar, "rhobar");
-      SLHAea_add(data,"VCKMIN",4, CKM.etabar, "etabar");
+      Utils::SLHAea_add(data,"VCKMIN",1, CKM.lambda, "lambda");
+      Utils::SLHAea_add(data,"VCKMIN",2, CKM.A     , "A"     );
+      Utils::SLHAea_add(data,"VCKMIN",3, CKM.rhobar, "rhobar");
+      Utils::SLHAea_add(data,"VCKMIN",4, CKM.etabar, "etabar");
 
       // UPMNSIN block
-      SLHAea_add(data,"UPMNSIN",1, PMNS.theta12, "theta12 (solar angle)");
-      SLHAea_add(data,"UPMNSIN",2, PMNS.theta23, "theta12 (atmospheric mixing angle)");
-      SLHAea_add(data,"UPMNSIN",3, PMNS.theta13, "theta13");
-      SLHAea_add(data,"UPMNSIN",4, PMNS.delta13, "delta13 (Dirac CP-violating phase)");
-      SLHAea_add(data,"UPMNSIN",5, PMNS.alpha1 , "alpha1 (first Majorana CP-violating phase)" );
-      SLHAea_add(data,"UPMNSIN",6, PMNS.alpha2 , "alpha2 (second CP-violating Majorana phase)");
+      Utils::SLHAea_add(data,"UPMNSIN",1, PMNS.theta12, "theta12 (solar angle)");
+      Utils::SLHAea_add(data,"UPMNSIN",2, PMNS.theta23, "theta12 (atmospheric mixing angle)");
+      Utils::SLHAea_add(data,"UPMNSIN",3, PMNS.theta13, "theta13");
+      Utils::SLHAea_add(data,"UPMNSIN",4, PMNS.delta13, "delta13 (Dirac CP-violating phase)");
+      Utils::SLHAea_add(data,"UPMNSIN",5, PMNS.alpha1 , "alpha1 (first Majorana CP-violating phase)" );
+      Utils::SLHAea_add(data,"UPMNSIN",6, PMNS.alpha2 , "alpha2 (second CP-violating Majorana phase)");
 
       return;
    }
