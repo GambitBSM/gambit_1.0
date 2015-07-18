@@ -12,10 +12,10 @@ Parameters:
       vev: 246
 
     SingletDM:
-        mass:
+        mS:
             range: [45.001, 100]
             prior_type: log
-        lambda:
+        lambda_hS:
             range: [0.002, 0.5]
             #fixed_value: 0.0366524 
             prior_type: log

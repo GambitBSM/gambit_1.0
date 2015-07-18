@@ -15,6 +15,10 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Feb
 ///
+///  \author Peter Athron  
+///          (peter.athron@coepp.org.au)
+///  \date 2015 
+///
 ///  *********************************************
 
 #ifndef __ini_functions_hpp__
@@ -93,6 +97,46 @@ namespace Gambit
   
   /// Set the classloading requirements of a given functor.
   int set_classload_requirements(module_functor_common&, str, str, str);
+
+  namespace slhahelp
+  {
+
+    /// Typedefs for pairs that we will use in maps
+    typedef std::pair<int,str> p_int_string;
+    typedef std::pair<int,int> pair_ints;
+    typedef std::pair<str,pair_ints> pair_string_ints;
+    typedef std::pair<str,str> pair_strings;
+
+    /// map from gauge eigenstate strings to string, index pairs  
+    std::map<str, p_int_string> init_gauge_label_to_index_type();
+  
+    /// map from mass eigenstate strings to string, index pairs
+    std::map<str, p_int_string> init_mass_label_to_index_type();
+  
+    /// map to extract info from family state   
+    std::map<str, pair_string_ints> init_familystate_label();
+    
+    ///map to obtain left_right gauge_pairs from state info
+    /// helps us reuse other routiones with string arguments 
+    std::map<p_int_string, std::vector<str> > init_type_family_to_gauge_states();
+  
+    /// maps directly from family string to left_right gauge_pairs
+    /// helps us reuse other routines that take string arguments 
+    std::map<str,std::vector<str> > init_family_state_to_gauge_state();
+    
+    ///maps directly from gauge_es string to familystates
+    /// helps us reuse other routines that take string arguments 
+    std::map<str,std::vector<str> > init_gauge_es_to_family_states();
+  
+    /// map from string representing type (ie up-squarks, down-squarks or 
+    /// charged sleptons) to appropriate set of mass eigenstates 
+    std::map<str,std::vector<str> > init_type_to_vec_of_mass_es();
+    
+    /// map from string representing type (ie up-squarks, down-squarks or 
+    /// charged sleptons) to appropriate set of gauge eigenstates 
+    std::map<str,std::vector<str> > init_type_to_vec_of_gauge_es();
+
+  }
 
 }
 

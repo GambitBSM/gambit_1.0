@@ -172,16 +172,16 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         int *total = new int[NThreads];
         bool cont;
         bool contin[NThreads];
-        ofstream out[NThreads];
+	std::ofstream out[NThreads];
         
         for (t = 0; t < NThreads; t++)
         {
                 mult[t] = 1;
-                stringstream s;
+		std::stringstream s;
                 s << t;
-                string end;
+		std::string end;
                 s >> end;
-                out[t].open((string(name)+string("_")+end).c_str());
+                out[t].open((std::string(name)+std::string("_")+end).c_str());
                 //gDev[t] = new RandomPlane(4, ma, 2.4, 2.5, 6.0, rand);//MultiNormDev(cvar, ma, 2.4, powl(rand, t));
                 gDev[t] = new RandomPlane(proj, ma, din, alim, alimt, rand);
                 //gDev[t] = new AdvanceDevs(cvar, ma, 2.4, pow(rand, t));
@@ -200,8 +200,8 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         //for (t = 0; t < NThreads; t++)
                 //TakeCov(a0, ma, NThreads, coVar);
                 
-        cout << "Metropolis Hastings Algorthm Started"  << endl;
-        //cout << "Metropolis Hastings Algorthm Started\n" << "\tpoints = " << "\n\taccept ratio = " << "\n\tR = "  << endl;//double div = 0.9836;
+	std::cout << "Metropolis Hastings Algorthm Started"  << std::endl;
+        //std::cout << "Metropolis Hastings Algorthm Started\n" << "\tpoints = " << "\n\taccept ratio = " << "\n\tR = "  << std::endl;//double div = 0.9836;
         double b0 = div/2.0;
         double b1 = div;
         double b2 = (1.0 + div)/2.0;
@@ -269,7 +269,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                                                         out[t] << a0[t][k] << "   ";
                                                         a0[t][k] = aNext[t][k];
                                                 }
-                                                out[t] << "   " << 2.0*chisq[t] << endl;
+                                                out[t] << "   " << 2.0*chisq[t] << std::endl;
                                         }
                                         else
                                         {
@@ -280,7 +280,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                                                                 out[t] << a0[t][k] << "   ";
                                                                 a0[t][k] = aNext[t][k];
                                                         }
-                                                        out[t] << "   " << 2.0*chisq[t] << endl;
+                                                        out[t] << "   " << 2.0*chisq[t] << std::endl;
                                                 }
                                         }
                                         
@@ -346,7 +346,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         //cout << R << "   " << R2 << endl; getchar();
                         if (false)
                         {
-                                cout << W[i] << "   " << (BnP[i] - (NThreads)*SQR(avgTot[i]))  << "   " << R << endl;
+                                std::cout << W[i] << "   " << (BnP[i] - (NThreads)*SQR(avgTot[i]))  << "   " << R << std::endl;
                                 getchar();
                         }
                         if(W[i] <= 0.0 || R >= tol || R <= 0.0)
@@ -357,8 +357,8 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         cont = true;
                 
                 totall++;
-                cout << "points = " << count  << "( " << count/double(NThreads) << ")" << "\n\taccept ratio = " << (double)count/(double)totall << "\n\tR = " << Ravg/ma << endl;
-                //cout << "\033[3A\tpoints = " << count  << "( " << count/double(NThreads) << ")" << "\n\taccept ratio = " << blank << (double)count/(double)totall << "\n\tR = " << Ravg/ma << endl;
+                std::cout << "points = " << count  << "( " << count/double(NThreads) << ")" << "\n\taccept ratio = " << (double)count/(double)totall << "\n\tR = " << Ravg/ma << std::endl;
+                //std::cout << "\033[3A\tpoints = " << count  << "( " << count/double(NThreads) << ")" << "\n\taccept ratio = " << blank << (double)count/(double)totall << "\n\tR = " << Ravg/ma << std::endl;
         }
         while(cont || count < NThreads*3e4);
 
