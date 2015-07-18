@@ -56,7 +56,7 @@ namespace Gambit
       // Create a SubSpectrum object to wrap the qedqcd object
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
-      static QedQcdWrapper qedqcdspec(oneset,sminputs);
+      QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Initialise an object to carry the Singlet plus Higgs sector information
       SingletDMModel singletmodel;
@@ -66,10 +66,14 @@ namespace Gambit
       singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
 
       // Create a SubSpectrum object to wrap the EW sector information
-      static SingletDMContainer singletspec(singletmodel);
+      SingletDMContainer singletspec(singletmodel);
 
       // Create full Spectrum object from components above
-      static Spectrum full_spectrum(&qedqcdspec,&singletspec,sminputs);
+      // Note: SubSpectrum objects cannot be copied, but Spectrum
+      // objects can due to a special copy constructor which does
+      // the required cloning of the constituent SubSpectra.
+      static Spectrum full_spectrum;
+      full_spectrum = Spectrum(&qedqcdspec,&singletspec,sminputs);
  
       result = &full_spectrum;
     }

@@ -179,12 +179,12 @@ namespace Gambit
       //
       // This object will COPY the interface data members into itself, so it is now the 
       // one-stop-shop for all spectrum information, including the model interface object.
-      static MSSMSpec<MI> mssmspec(model_interface);
+      MSSMSpec<MI> mssmspec(model_interface);
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
-      static QedQcdWrapper qedqcdspec(oneset,sminputs);
+      QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
       {
@@ -212,7 +212,8 @@ namespace Gambit
       // Package pointer to QedQcd SubSpectrum object along with pointer to MSSM SubSpectrum object, 
       // and SMInputs struct.
       // Return pointer to this package.
-      static Spectrum matched_spectra(&qedqcdspec,&mssmspec,sminputs);
+      static Spectrum matched_spectra;
+      matched_spectra = Spectrum(&qedqcdspec,&mssmspec,sminputs);
       return &matched_spectra;
     }
 
@@ -439,18 +440,18 @@ namespace Gambit
  
       // Create MSSMskeleton SubSpectrum object from the SLHAea object
       // (interacts with MSSM blocks)
-      static MSSMskeleton mssmskel(input_slha);
+      MSSMskeleton mssmskel(input_slha);
 
       // Create SMInputs object from the SLHAea object
       SMInputs sminputs(fill_SMInputs_from_SLHAea(input_slha));
 
       // Create SMskeleton SubSpectrum object from the SLHAea object
       // (basically just interacts with SMINPUTS block)
-      static SMskeleton smskel(input_slha);
+      SMskeleton smskel(input_slha);
 
       // Create full Spectrum object from components above
-      static Spectrum matched_spectra(&smskel,&mssmskel,sminputs);
- 
+      static Spectrum matched_spectra;
+      matched_spectra = Spectrum(&smskel,&mssmskel,sminputs);
       result = &matched_spectra;
     } 
     
