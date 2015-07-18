@@ -937,12 +937,12 @@ namespace Gambit {
       str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
                                           double tol, str context)
        {
-          double max_mix;
+          double sum_sq_mix;
           std::vector<double> mass_comp;
-          str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
+          str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, mass_comp,
                                                    mssm);
           str full_context = LOCAL_INFO + " called from " + context;
-          if(max_mix*max_mix <= 1-tol){
+          if(sum_sq_mix <= 1-tol){
              utils_error().raise(full_context, "family_state_closest_to_mass_es  called when family mixing away from closest mass_es is greater than tol"); 
           }
           return fs;
