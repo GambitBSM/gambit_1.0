@@ -36,23 +36,23 @@ namespace Gambit {
          SetMaps(const std::string& label, const This* const fakethis)
           : label_(label) 
           , fakethis_(fakethis)
-          , map_ (NULL)
-          , mapM_(NULL)
-          , mapI_(NULL)
+          , map0_(NULL)
+          , map0M_(NULL)
+          , map0I_(NULL)
           , map1_(NULL)
           , map2_(NULL)
-          , omap_(NULL)
+          , omap0_(NULL)
           , omap1_(NULL)
           , omap2_(NULL)
          {}
          /// derived class maps
-         SetMaps& map (const typename MapTypes<DT,MTag>::fmap&        map) { map_=&map;   return *this; }
-         SetMaps& mapM(const typename MapTypes<DT,MTag>::fmap_extraM& mapM){ mapM_=&mapM; return *this; }
-         SetMaps& mapI(const typename MapTypes<DT,MTag>::fmap_extraI& mapI){ mapI_=&mapI; return *this; }
-         SetMaps& map1(const typename MapTypes<DT,MTag>::fmap1&       map1){ map1_=&map1; return *this; }
-         SetMaps& map2(const typename MapTypes<DT,MTag>::fmap2&       map2){ map2_=&map2; return *this; }
+         SetMaps& map0(const typename MapTypes<DT,MTag>::fmap0&        map0)  { map0_=&map0; return *this; }
+         SetMaps& map0M(const typename MapTypes<DT,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
+         SetMaps& map0I(const typename MapTypes<DT,MTag>::fmap0_extraI& map0I){ map0I_=&map0I; return *this; }
+         SetMaps& map1(const typename MapTypes<DT,MTag>::fmap1&        map1)  { map1_=&map1; return *this; }
+         SetMaps& map2(const typename MapTypes<DT,MTag>::fmap2&        map2)  { map2_=&map2; return *this; }
          /// base class override maps
-         SetMaps& omap (const std::map<std::string,double>& om)               { omap_= &om;  return *this;}
+         SetMaps& omap0(const std::map<std::string,double>& om0)              { omap0_=&om0; return *this;}
          SetMaps& omap1(const std::map<std::string,std::map<int,double>>& om1){ omap1_=&om1; return *this;}
          SetMaps& omap2(const std::map<std::string,std::map<int,std::map<int,double>>>& om2){ omap2_=&om2; return *this;}
 
@@ -62,14 +62,14 @@ namespace Gambit {
          const This* const fakethis_;
 
          /// Maps from derived class
-         const typename MapTypes<DT,MTag>::fmap*        map_;
-         const typename MapTypes<DT,MTag>::fmap_extraM* mapM_; 
-         const typename MapTypes<DT,MTag>::fmap_extraI* mapI_; 
-         const typename MapTypes<DT,MTag>::fmap1*       map1_; 
-         const typename MapTypes<DT,MTag>::fmap2*       map2_; 
+         const typename MapTypes<DT,MTag>::fmap0*        map0_;
+         const typename MapTypes<DT,MTag>::fmap0_extraM* map0M_; 
+         const typename MapTypes<DT,MTag>::fmap0_extraI* map0I_; 
+         const typename MapTypes<DT,MTag>::fmap1*        map1_; 
+         const typename MapTypes<DT,MTag>::fmap2*        map2_; 
           
          /// Maps from base class (override maps, only used in getter case)
-         const std::map<std::string,double>*                             omap_;
+         const std::map<std::string,double>*                             omap0_;
          const std::map<std::string,std::map<int,double>>*               omap1_;
          const std::map<std::string,std::map<int,std::map<int,double>>>* omap2_;
    }; 
@@ -97,36 +97,36 @@ namespace Gambit {
 
          /// Pointers to const maps to use for search
          /// Maps from base class (override maps, should only be used in getter case)
-         const std::map<std::string,double>*                             omap_;
+         const std::map<std::string,double>*                             omap0_;
          const std::map<std::string,std::map<int,double>>*               omap1_;
          const std::map<std::string,std::map<int,std::map<int,double>>>* omap2_;
          /// Maps filled by derived (wrapper) classes
-         const typename MapTypes<DT,MTag>::fmap*        map_;
-         const typename MapTypes<DT,MTag>::fmap_extraM* mapM_; 
-         const typename MapTypes<DT,MTag>::fmap_extraI* mapI_; 
-         const typename MapTypes<DT,MTag>::fmap1*       map1_; 
-         const typename MapTypes<DT,MTag>::fmap2*       map2_; 
+         const typename MapTypes<DT,MTag>::fmap0*        map0_;
+         const typename MapTypes<DT,MTag>::fmap0_extraM* map0M_; 
+         const typename MapTypes<DT,MTag>::fmap0_extraI* map0I_; 
+         const typename MapTypes<DT,MTag>::fmap1*        map1_; 
+         const typename MapTypes<DT,MTag>::fmap2*        map2_; 
 
          /// Iterators needed for storing locatation of search result
          /// ...for override values
-         std::map<std::string,double>::const_iterator                ito; // 0
+         std::map<std::string,double>::const_iterator                ito0; // 0
          std::map<std::string,std::map<int,double>>::const_iterator  ito1; // 1
          std::map<std::string,std::map<int,std::map<int,double>>>::const_iterator ito2; // 2
          /// ...for derived class values
-         typename MapTypes<DT,MTag>::fmap::const_iterator        it;  // 3
-         typename MapTypes<DT,MTag>::fmap_extraM::const_iterator itM; // 4
-         typename MapTypes<DT,MTag>::fmap_extraI::const_iterator itI; // 5
+         typename MapTypes<DT,MTag>::fmap0::const_iterator        it0;  // 3
+         typename MapTypes<DT,MTag>::fmap0_extraM::const_iterator it0M; // 4
+         typename MapTypes<DT,MTag>::fmap0_extraI::const_iterator it0I; // 5
          typename MapTypes<DT,MTag>::fmap1::const_iterator       it1; // 6
          typename MapTypes<DT,MTag>::fmap2::const_iterator       it2; // 7
 
          /// Booleans to indicate whether or not it is safe to dereference
          /// the above iterators
-         bool ito_safe;
+         bool ito0_safe;
          bool ito1_safe;
          bool ito2_safe;
-         bool it_safe;
-         bool itM_safe;
-         bool itI_safe;
+         bool it0_safe;
+         bool it0M_safe;
+         bool it0I_safe;
          bool it1_safe;
          bool it2_safe;
 
@@ -162,28 +162,28 @@ namespace Gambit {
            : label(params.label_)
            , lastname("NONE")
            , fakethis(params.fakethis_)
-           , omap_ (params.omap_)   
+           , omap0_(params.omap0_)   
            , omap1_(params.omap1_)   
            , omap2_(params.omap2_)   
-           , map_ (params.map_)   
-           , mapM_(params.mapM_)
-           , mapI_(params.mapI_)
+           , map0_ (params.map0_)   
+           , map0M_(params.map0M_)
+           , map0I_(params.map0I_)
            , map1_(params.map1_)
            , map2_(params.map2_)
-           , ito()
+           , ito0()
            , ito1()
            , ito2()
-           , it ()
-           , itM()
-           , itI()
+           , it0()
+           , it0M()
+           , it0I()
            , it1()
            , it2()
-           , ito_safe (false)
+           , ito0_safe (false)
            , ito1_safe(false)
            , ito2_safe(false)
-           , it_safe (false)
-           , itM_safe(false)
-           , itI_safe(false)
+           , it0_safe (false)
+           , it0M_safe(false)
+           , it0I_safe(false)
            , it1_safe(false)
            , it2_safe(false) 
            , whichiter(-1)
@@ -268,9 +268,9 @@ namespace Gambit {
             //  Search override maps first
             if(doublecheck)
             {
-               if( omap_!=NULL and search_map(name,omap_,ito) )
+               if( omap0_!=NULL and search_map(name,omap0_,ito0) )
                { 
-                  ito_safe=true; 
+                  ito0_safe=true; 
                   override_found=true; 
                   whichiter=0; 
                }
@@ -293,9 +293,9 @@ namespace Gambit {
             // If no override, search the wrapper class maps
             if(not override_found)
             {
-               if( search_map(name,map_,it)   ){ it_safe=true; whichiter=3; }
-               else if( search_map(name,mapM_,itM) ){ itM_safe=true; whichiter=4; }
-               else if( search_map(name,mapI_,itI) ){ itI_safe=true; whichiter=5; }
+               if( search_map(name,map0_,it0)   ){ it0_safe=true; whichiter=3; }
+               else if( search_map(name,map0M_,it0M) ){ it0M_safe=true; whichiter=4; }
+               else if( search_map(name,map0I_,it0I) ){ it0I_safe=true; whichiter=5; }
                else if( doublecheck and PDB.has_short_name(name) )
                {
                   // Didn't find it in 0-index maps; translate using PDB entry and try 1-index maps
@@ -335,11 +335,11 @@ namespace Gambit {
                      index1=i;
                      whichiter=1; 
                   }
-                  else if( omap_!=NULL and search_map(PDB.long_name(name,i),omap_,ito) )
+                  else if( omap0_!=NULL and search_map(PDB.long_name(name,i),omap0_,ito0) )
                   {
                      // Didn't find it in 1-index override map; translate using PDB entry and try
                      // 0-index override map
-                     ito_safe=true; 
+                     ito0_safe=true; 
                      override_found=true; 
                      whichiter=0;
                   }
@@ -477,8 +477,8 @@ namespace Gambit {
             {
                // Override retrieval cases
                case 0: {
-                 ff->check(ff->ito_safe);
-                 result = ff->ito->second;
+                 ff->check(ff->ito0_safe);
+                 result = ff->ito0->second;
                  break;}
                case 1: {
                  ff->check(ff->ito1_safe);
@@ -490,18 +490,18 @@ namespace Gambit {
                  break;}
                // Wrapper class function call cases
                case 3: {
-                 ff->check(ff->it_safe);
-                 typename MT::FSptr f = ff->it->second;
+                 ff->check(ff->it0_safe);
+                 typename MT::FSptr f = ff->it0->second;
                  result = (model->*f)();
                  break;}
                case 4: {
-                 ff->check(ff->itM_safe);
-                 typename MT::plainfptrM f = ff->itM->second;
+                 ff->check(ff->it0M_safe);
+                 typename MT::plainfptrM f = ff->it0M->second;
                  result = (*f)(*model);
                  break;}
                case 5: {
-                 ff->check(ff->itI_safe);
-                 typename MT::plainfptrI f = ff->itI->second;
+                 ff->check(ff->it0I_safe);
+                 typename MT::plainfptrI f = ff->it0I->second;
                  result = (*f)(*input);
                  break;}
                case 6: {
@@ -556,18 +556,18 @@ namespace Gambit {
             switch( ff->whichiter )
             {
                case 3: {
-                 ff->check(ff->it_safe);
-                 typename MT::FSptr f = ff->it->second;
+                 ff->check(ff->it0_safe);
+                 typename MT::FSptr f = ff->it0->second;
                  (model->*f)(set_value);
                  break;}
                case 4: {
-                 ff->check(ff->itM_safe);
-                 typename MT::plainfptrM f = ff->itM->second;
+                 ff->check(ff->it0M_safe);
+                 typename MT::plainfptrM f = ff->it0M->second;
                  (*f)(*model,set_value);
                  break;}
                case 5: {
-                 ff->check(ff->itI_safe);
-                 typename MT::plainfptrI f = ff->itI->second;
+                 ff->check(ff->it0I_safe);
+                 typename MT::plainfptrI f = ff->it0I->second;
                  (*f)(*input,set_value);
                  break;}
                case 6: {

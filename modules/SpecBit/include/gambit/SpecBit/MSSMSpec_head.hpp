@@ -56,9 +56,16 @@ namespace Gambit {
          friend class RunparDer<MSSMSpec<MI>,MSSMSpecTraits<MI>>;
          friend class PhysDer  <MSSMSpec<MI>,MSSMSpecTraits<MI>>;
         
+         public:
+            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Get> MTget; 
+            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Set> MTset; 
+
+            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
+            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
+   
          private:
-            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Get> MT; 
-            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Set> MTSet; 
             int index_offset;
             virtual int get_index_offset() const {return index_offset;}
 
@@ -128,32 +135,14 @@ namespace Gambit {
          protected:
             /// Map filler overrides
 
-            /// RunparDer overrides (access via spectrum.runningpar)
-            static typename MT::fmap        fill_mass_map_Get();         /*O*/
-            static typename MT::fmap2       fill_mass_map2_Get();        /*O*/
-            static typename MT::fmap        fill_mass0_map_Get();        /*O*/
-            static typename MT::fmap_extraM fill_mass0_map_extraM_Get(); /*O*/
-            static typename MT::fmap2       fill_mass0_map2_Get();       /*O*/
-            static typename MT::fmap        fill_mass2_map_Get();        /*O*/
-            static typename MT::fmap2       fill_mass2_map2_Get();       /*O*/
-            static typename MT::fmap        fill_mass_eigenstate_map_Get();  /*O*/
-            static typename MT::fmap1       fill_mass_eigenstate_map1_Get(); /*O*/
-            static typename MTSet::fmap        fill_mass_map_Set();         /*O*/
-            static typename MTSet::fmap2       fill_mass_map2_Set();        /*O*/
-            static typename MTSet::fmap        fill_mass0_map_Set();        /*O*/
-            // static typename MTSet::fmap_extraM fill_mass0_map_extraM_Set(); /*O*/
-            static typename MTSet::fmap2       fill_mass0_map2_Set();       /*O*/
-            static typename MTSet::fmap     fill_mass2_map_Set();        /*O*/
-            static typename MTSet::fmap2       fill_mass2_map2_Set();       /*O*/
-            // static typename MTSet::fmap        fill_mass_eigenstate_map_Set();  /*O*/
-            // static typename MTSet::fmap1       fill_mass_eigenstate_map1_Set(); /*O*/
-
-            /// PhysDer overrides (access via spectrum.phys)
-            static typename MT::fmap        fill_PoleMass_map_Get();        /*O*/
-            static typename MT::fmap_extraM fill_PoleMass_map_extraM_Get(); /*O*/
-            static typename MT::fmap1       fill_PoleMass_map1_Get();       /*O*/
-            static typename MT::fmap2       fill_PoleMixing_map2_Get();     /*O*/
-            
+            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
+            static RunningGetterMaps runningpars_fill_getter_maps();
+            static RunningSetterMaps runningpars_fill_setter_maps();
+ 
+            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            static PhysGetterMaps    phys_fill_getter_maps();
+            //static PhysSetterMaps    phys_fill_setter_maps(); // Currently unused
+           
 
       };
    } // end SpecBit namespace

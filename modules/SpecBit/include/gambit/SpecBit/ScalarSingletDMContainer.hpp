@@ -48,7 +48,7 @@ namespace Gambit {
         private:
             typedef SingletDMContainer   This;
             typedef SingletDMModelTraits Traits;
-            typedef MapTypes<Traits,MapTag::Get> MT; 
+            typedef MapTypes<Traits,MapTag::Get> MTget; 
 
          public:
             /// @{ Constructors/destructors
@@ -73,24 +73,16 @@ namespace Gambit {
             /// These are not the normal map fillers called by the Spec class
             /// They are called from the base class BaseHiggsContainer and used
             /// to add the extra values into the maps stored there.
-
-            // Fillers listed here for bookkeeping: they are actually defined below
-            // static void derived_fill_mass_map_Get    (MT::fmap& in);
-            // static void derived_fill_PoleMass_map_Get(MT::fmap& in);
+            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
  
             /// Definitions of map fillers
-            static void derived_fill_mass_map_Get(MT::fmap& in_map) 
+            static void derived_phys_fill_getter_maps(PhysGetterMaps& in)
             {
-               /* nothing so far */
+               in[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
+               in[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass; 
             }
-
-            static void derived_fill_PoleMass_map_Get(MT::fmap& in_map)
-            {
-               in_map["S"]       = &Model::get_SingletPoleMass; 
-               in_map["Singlet"] = &Model::get_SingletPoleMass; 
-            }
-
-     }; 
+        }; 
 
    } // end SpecBit namespace
 } // end Gambit namespace

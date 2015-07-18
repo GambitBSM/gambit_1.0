@@ -203,177 +203,7 @@ namespace Gambit {
          errormsg = "Error accessing "+ state + " element is out of bounds";
          return errormsg;
       }
-        
-      // Function to initialise mass2_map
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass2_map_Get() 
-      {
-         typedef typename MI::Model Model;
-         typename MT::fmap tmp_map;
-         tmp_map["BMu"] = &Model::get_BMu;
-         tmp_map["mHd2"] = &Model::get_mHd2;
-         tmp_map["mHu2"] = &Model::get_mHu2;
-      
-         return tmp_map;
-      }
-      
-       // Function to initialise mass2_map
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap MSSMSpec<MI>::fill_mass2_map_Set() 
-      {
-         typedef typename MI::Model Model;
-         typename MTSet::fmap tmp_map;
-         tmp_map["BMu"] = &Model::set_BMu;
-         tmp_map["mHd2"] = &Model::set_mHd2;
-         tmp_map["mHu2"] = &Model::set_mHu2;
-      
-         return tmp_map;
-      }
-      
-
-      // Function to initialise mass2_map2
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_mass2_map2_Get() 
-      {
-         typedef typename MI::Model Model;
-         typedef typename MT::FInfo2 FInfo2;
-         typename MT::fmap2 tmp_map;
-
-         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-         tmp_map["mq2"] = FInfo2( &Model::get_mq2, i012, i012);
-         tmp_map["ml2"] = FInfo2( &Model::get_ml2, i012, i012);
-         tmp_map["md2"] = FInfo2( &Model::get_md2, i012, i012);
-         tmp_map["mu2"] = FInfo2( &Model::get_mu2, i012, i012);
-         tmp_map["me2"] = FInfo2( &Model::get_me2, i012, i012);
-        
-         return tmp_map;
-      }
-
-
-       // Function to initialise mass2_map2
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap2 MSSMSpec<MI>::fill_mass2_map2_Set() 
-      {
-         typedef typename MI::Model Model;
-         typedef typename MTSet::FInfo2 FInfo2;
-         typename MTSet::fmap2 tmp_map;
-
-         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-         tmp_map["mq2"] = FInfo2( &Model::set_mq2, i012, i012);
-         tmp_map["ml2"] = FInfo2( &Model::set_ml2, i012, i012);
-         tmp_map["md2"] = FInfo2( &Model::set_md2, i012, i012);
-         tmp_map["mu2"] = FInfo2( &Model::set_mu2, i012, i012);
-         tmp_map["me2"] = FInfo2( &Model::set_me2, i012, i012);
-        
-         return tmp_map;
-      }
-      
-      // Function to initialise mass_map
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass_map_Get() 
-      {
-         typedef typename MI::Model Model;
-         typename MT::fmap tmp_map;
-         tmp_map["M1"]= &Model::get_MassB;
-         tmp_map["M2"]= &Model::get_MassWB;
-         tmp_map["M3"]= &Model::get_MassG;
-         tmp_map["Mu"]= &Model::get_Mu;
-         tmp_map["vu"]= &Model::get_vu;
-         tmp_map["vd"]= &Model::get_vd;
-         return tmp_map;
-      }
-
-
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap MSSMSpec<MI>::fill_mass_map_Set() 
-      {
-         typedef typename MI::Model Model;
-         typename MTSet::fmap tmp_map;
-         tmp_map["M1"]= &Model::set_MassB;
-         tmp_map["M2"]= &Model::set_MassWB;
-         tmp_map["M3"]= &Model::set_MassG;
-         tmp_map["Mu"]= &Model::set_Mu;
-         tmp_map["vu"]= &Model::set_vu;
-         tmp_map["vd"]= &Model::set_vd;
-         return tmp_map;
-      }
-
-      // Function to initialise mass_map2
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_mass_map2_Get() 
-      {
-         typedef typename MI::Model Model;
-         typedef typename MT::FInfo2 FInfo2;
-         typename MT::fmap2 tmp_map;
-
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-         tmp_map["TYd"]= FInfo2( &Model::get_TYd, i012, i012);
-         tmp_map["TYe"]= FInfo2( &Model::get_TYe, i012, i012);
-         tmp_map["TYu"]= FInfo2( &Model::get_TYu, i012, i012);
-         tmp_map["ad"] = FInfo2( &Model::get_TYd, i012, i012);
-         tmp_map["ae"] = FInfo2( &Model::get_TYe, i012, i012);
-         tmp_map["au"] = FInfo2( &Model::get_TYu, i012, i012);
-      
-         return tmp_map;
-      }
-
-
-      // Function to initialise mass_map2
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap2 MSSMSpec<MI>::fill_mass_map2_Set() 
-      {
-         typedef typename MI::Model Model;
-         typedef typename MTSet::FInfo2 FInfo2;
-         typename MTSet::fmap2 tmp_map;
-
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-         tmp_map["TYd"]= FInfo2( &Model::set_TYd, i012, i012);
-         tmp_map["TYe"]= FInfo2( &Model::set_TYe, i012, i012);
-         tmp_map["TYu"]= FInfo2( &Model::set_TYu, i012, i012);
-         tmp_map["ad"] = FInfo2( &Model::set_TYd, i012, i012);
-         tmp_map["ae"] = FInfo2( &Model::set_TYe, i012, i012);
-         tmp_map["au"] = FInfo2( &Model::set_TYu, i012, i012);
-      
-         return tmp_map;
-      }
-      
-      // Function to initialise mass0_map
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass0_map_Get() 
-      {
-         typedef typename MI::Model Model;
-         typename MT::fmap tmp_map;
-         tmp_map["g1"]= &Model::get_g1;
-         tmp_map["g2"]= &Model::get_g2;
-         tmp_map["g3"]= &Model::get_g3;
-        
-         return tmp_map;
-      }
-
-
-       // Function to initialise mass0_map
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap MSSMSpec<MI>::fill_mass0_map_Set() 
-      {
-         typedef typename MI::Model Model;
-         typename MTSet::fmap tmp_map;
-         tmp_map["g1"]= &Model::set_g1;
-         tmp_map["g2"]= &Model::set_g2;
-         tmp_map["g3"]= &Model::set_g3;
-        
-         return tmp_map;
-      }
-      
+     
       // "extra" function to compute TanBeta 
       template <class Model>
       double get_tanbeta(const Model& model) 
@@ -381,95 +211,19 @@ namespace Gambit {
          return model.get_vu() / model.get_vd(); 
       }
  
-      // Function to initialise mass0_map_extraM
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap_extraM MSSMSpec<MI>::fill_mass0_map_extraM_Get() 
-      {
-         typedef typename MI::Model Model;
-         typename MT::fmap_extraM tmp_map;
-         tmp_map["tanbeta"]= &get_tanbeta<Model>;
-         
-         return tmp_map;
-      }
-      
+      /// @{ Fillers for "Running" subclass
  
-      // Function to initialise mass0_map2
+      // Filler function for getter function pointer maps extractable from "runningpars" container
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_mass0_map2_Get() 
+      typename MSSMSpec<MI>::RunningGetterMaps MSSMSpec<MI>::runningpars_fill_getter_maps()
       {
+         typename MSSMSpec<MI>::RunningGetterMaps map_collection; 
          typedef typename MI::Model Model;
-         typedef typename MT::FInfo2 FInfo2;
-         typename MT::fmap2 tmp_map;
-        
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-         tmp_map["Yd"]= FInfo2( &Model::get_Yd, i012, i012);
-         tmp_map["Yu"]= FInfo2( &Model::get_Yu, i012, i012);
-         tmp_map["Ye"]= FInfo2( &Model::get_Ye, i012, i012);
- 
-         return tmp_map;
-      }
+         typedef typename MTget::FInfo1 FInfo1;
+         typedef typename MTget::FInfo2 FInfo2;
 
-
-       // Function to initialise mass0_map2
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap2 MSSMSpec<MI>::fill_mass0_map2_Set() 
-      {
-         typedef typename MI::Model Model;
-         typedef typename MTSet::FInfo2 FInfo2;
-         typename MTSet::fmap2 tmp_map;
-        
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-         tmp_map["Yd"]= FInfo2( &Model::set_Yd, i012, i012);
-         tmp_map["Yu"]= FInfo2( &Model::set_Yu, i012, i012);
-         tmp_map["Ye"]= FInfo2( &Model::set_Ye, i012, i012);
- 
-         return tmp_map;
-      }
-
-      
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass_eigenstate_map_Get()
-      {
-         typedef typename MI::Model Model;
-         typename MT::fmap tmp_map;
-
-         tmp_map["MZ"]      = &Model::get_MVZ;
-         tmp_map["MW"]      = &Model::get_MVWm;
-         tmp_map["MGluino"] = &Model::get_MGlu; 
-         tmp_map["MGluon"]  = &Model::get_MVG; 
-         tmp_map["MPhoton"] = &Model::get_MVP;
-         
-         // these are not present in the model object currently
-         // But maybe we should add them
-         // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
-         // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
-         // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
-         // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
-         
-         // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
-         // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
-         // tmp_map["Mup"] = &Model::get_DRbar_mup;
-         // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
-         // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
-         // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
-         // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
-         // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
-         // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
-         return tmp_map;
-      }
-
-      //map for string access with an index supplied
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap1 MSSMSpec<MI>::fill_mass_eigenstate_map1_Get()
-      {
-         typedef typename MI::Model Model;
-         typedef typename MT::FInfo1 FInfo1;
-         typename MT::fmap1 tmp_map;
-
+         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
          static const int i01v[] = {0,1};
          static const std::set<int> i01(i01v, Utils::endA(i01v));
 
@@ -481,106 +235,302 @@ namespace Gambit {
 
          static const int i012345v[] = {0,1,2,3,4,5};
          static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-
-         tmp_map["Sd"] = FInfo1( &Model::get_MSd, i012345 );
-         tmp_map["Su"] = FInfo1( &Model::get_MSu, i012345 );
-         tmp_map["Se"] = FInfo1( &Model::get_MSe, i012345 );
-         tmp_map["Snu"]= FInfo1( &Model::get_MSv, i012 );
-         tmp_map["h0"] = FInfo1( &Model::get_Mhh, i01 );
-         //Here we may access the goldstone boson
-         // and higgs. maybe too dangerous to keep?
-         tmp_map["A0"] = FInfo1( &Model::get_MAh, i01 );      
-         //Here we may access the goldstone boson
-         //and higgs. maybe too dangerous to keep?
-         tmp_map["H+"] = FInfo1( &Model::get_MHpm, i01 );   
-         tmp_map["chi+"] = FInfo1( &Model::get_MCha, i01 );
-         tmp_map["chi0"] = FInfo1( &Model::get_MChi, i0123 );
          
-         tmp_map["d"] =    FInfo1( &Model::get_MFd, i012 );
-         tmp_map["u"] =    FInfo1( &Model::get_MFu, i012 );
-         tmp_map["e-"] =   FInfo1( &Model::get_MFe, i012 );
-         tmp_map["e"] =    FInfo1( &Model::get_MFe, i012 );
-         tmp_map["dbar"] = FInfo1( &Model::get_MFd, i012 );
-         tmp_map["ubar"] = FInfo1( &Model::get_MFu, i012 );
-         tmp_map["e+"] =   FInfo1( &Model::get_MFe, i012 );
+         /// @{ mass2 - mass dimension 2 parameters
+         //
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {  // scope so we can reuse the name 'tmp_map' several times, so that our macro works.
+            // could make a better macro, or an actual function, but I'm in a hurry
+            typename MTget::fmap0 tmp_map;
+            tmp_map["BMu"]  = &Model::get_BMu;
+            tmp_map["mHd2"] = &Model::get_mHd2;
+            tmp_map["mHu2"] = &Model::get_mHu2;
 
-         return tmp_map;
-      }
-  
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_PoleMass_map_Get()
-      {
-         typedef typename MI::Model Model;
-         typename MT::fmap tmp_map;
+            map_collection[Par::mass2].map0 = tmp_map;
+         }
+ 
+         // functions utilising the two-index "plain-vanilla" function signature
+         // (two-index member functions of model object)
+         {
+            typename MTget::fmap2 tmp_map;
+            tmp_map["mq2"] = FInfo2( &Model::get_mq2, i012, i012);
+            tmp_map["ml2"] = FInfo2( &Model::get_ml2, i012, i012);
+            tmp_map["md2"] = FInfo2( &Model::get_md2, i012, i012);
+            tmp_map["mu2"] = FInfo2( &Model::get_mu2, i012, i012);
+            tmp_map["me2"] = FInfo2( &Model::get_me2, i012, i012);
         
-         // tmp_map["MZ"] = &Model::get_Pole_MZ;
-         // tmp_map["MW"] = &Model::get_Pole_MW;
+            map_collection[Par::mass2].map2 = tmp_map;
+         }
 
-         // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
-         //// tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
-         //// tmp_map["W+"] = &Model::get_MVWm_pole_slha;
-         //// tmp_map["W-"] = &Model::get_MVWm_pole_slha;
-         //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
-         //// tmp_map["g"] = &Model::get_MVG_pole_slha;
-         ////    //tmp_map["gamma"] = &Model::get_pole_MPhoton;
-         //// tmp_map["gamma"] = &Model::get_MVP_pole_slha;
+         /// @}
+         /// @{ mass1 - mass dimension 1 parameters
+         //
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {
+            typename MTget::fmap0 tmp_map;
+            tmp_map["M1"]= &Model::get_MassB;
+            tmp_map["M2"]= &Model::get_MassWB;
+            tmp_map["M3"]= &Model::get_MassG;
+            tmp_map["Mu"]= &Model::get_Mu;
+            tmp_map["vu"]= &Model::get_vu;
+            tmp_map["vd"]= &Model::get_vd;
 
-         tmp_map["~g"] = &Model::get_MGlu_pole_slha; 
+            map_collection[Par::mass1].map0 = tmp_map;
+         }
 
-         // tmp_map["MGoldstone0"] = &Model::get_Pole_neut_goldstone;
-         // tmp_map["MA0"] = &Model::get_Pole_neut_CPodd_higgs;
-         // tmp_map["MGoldstonePM"] = &Model::get_Pole_ch_goldstone; 
-         // tmp_map["MHpm"] = &Model::get_Pole_ch_higgs;    
-         // tmp_map["Mtop"] = &Model::get_Pole_mtop;
-         // tmp_map["Mcharm"] = &Model::get_Pole_mcharm;
-         // tmp_map["Mup"] = &Model::get_Pole_mup;
-         // tmp_map["Mbottom"] = &Model::get_Pole_mbottom;
-         // tmp_map["Mstrange"] = &Model::get_Pole_mstrange;
-         // tmp_map["Mdown"] = &Model::get_Pole_mdown;
-         // tmp_map["Mtau"] = &Model::get_Pole_mtau; 
-         // tmp_map["Mmuon"] = &Model::get_Pole_mmuon; 
-         // tmp_map["Melectron"] = &Model::get_Pole_melectron; 
-      
-         return tmp_map;
-      }
-      
+         // Functions utilising the two-index "plain-vanilla" function signature
+         // (Two-index member functions of model object)
+         {
+            typename MTget::fmap2 tmp_map;
+            tmp_map["TYd"]= FInfo2( &Model::get_TYd, i012, i012);
+            tmp_map["TYe"]= FInfo2( &Model::get_TYe, i012, i012);
+            tmp_map["TYu"]= FInfo2( &Model::get_TYu, i012, i012);
+            tmp_map["ad"] = FInfo2( &Model::get_TYd, i012, i012);
+            tmp_map["ae"] = FInfo2( &Model::get_TYe, i012, i012);
+            tmp_map["au"] = FInfo2( &Model::get_TYu, i012, i012);
+ 
+            map_collection[Par::mass1].map2 = tmp_map;
+         }
+
+         /// @}
+
+         // @{ dimensionless - mass dimension 0 parameters
+         //
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {
+            typename MTget::fmap0 tmp_map;
+            tmp_map["g1"]= &Model::get_g1;
+            tmp_map["g2"]= &Model::get_g2;
+            tmp_map["g3"]= &Model::get_g3;
+
+            map_collection[Par::dimensionless].map0 = tmp_map;
+         }
+
+         // Functions utilising the "extraM" function signature
+         // (Zero index, model object as argument)
+         {
+            typename MTget::fmap0_extraM tmp_map;
+            tmp_map["tanbeta"]= &get_tanbeta<Model>;
+
+            map_collection[Par::dimensionless].map0_extraM = tmp_map;
+         }
+
+         // Functions utilising the two-index "plain-vanilla" function signature
+         // (Two-index member functions of model object)
+         {
+            typename MTget::fmap2 tmp_map;
+
+            tmp_map["Yd"]= FInfo2( &Model::get_Yd, i012, i012);
+            tmp_map["Yu"]= FInfo2( &Model::get_Yu, i012, i012);
+            tmp_map["Ye"]= FInfo2( &Model::get_Ye, i012, i012);
+
+            map_collection[Par::dimensionless].map2 = tmp_map;
+         }
+
+         /// @}
+
+         // @{ mass_eigenstate - tree level mass parameters
+
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {
+            typename MTget::fmap0 tmp_map;
+
+            tmp_map["MZ"]      = &Model::get_MVZ;
+            tmp_map["MW"]      = &Model::get_MVWm;
+            tmp_map["MGluino"] = &Model::get_MGlu; 
+            tmp_map["MGluon"]  = &Model::get_MVG; 
+            tmp_map["MPhoton"] = &Model::get_MVP;
+ 
+            // these are not present in the model object currently
+            // But maybe we should add them
+            // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
+            // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
+            // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
+            // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
+            
+            // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
+            // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
+            // tmp_map["Mup"] = &Model::get_DRbar_mup;
+            // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
+            // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
+            // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
+            // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
+            // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
+            // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
+ 
+            map_collection[Par::mass_eigenstate].map0 = tmp_map;
+         }
+
+         // Functions utilising the one-index "plain-vanilla" function signature
+         // (One-index member functions of model object)
+         {
+            typename MTget::fmap1 tmp_map;
+
+            tmp_map["Sd"] = FInfo1( &Model::get_MSd, i012345 );
+            tmp_map["Su"] = FInfo1( &Model::get_MSu, i012345 );
+            tmp_map["Se"] = FInfo1( &Model::get_MSe, i012345 );
+            tmp_map["Snu"]= FInfo1( &Model::get_MSv, i012 );
+            tmp_map["h0"] = FInfo1( &Model::get_Mhh, i01 );
+            //Here we may access the goldstone boson
+            // and higgs. maybe too dangerous to keep?
+            tmp_map["A0"] = FInfo1( &Model::get_MAh, i01 );      
+            //Here we may access the goldstone boson
+            //and higgs. maybe too dangerous to keep?
+            tmp_map["H+"] = FInfo1( &Model::get_MHpm, i01 );   
+            tmp_map["chi+"] = FInfo1( &Model::get_MCha, i01 );
+            tmp_map["chi0"] = FInfo1( &Model::get_MChi, i0123 );
+            
+            tmp_map["d"] =    FInfo1( &Model::get_MFd, i012 );
+            tmp_map["u"] =    FInfo1( &Model::get_MFu, i012 );
+            tmp_map["e-"] =   FInfo1( &Model::get_MFe, i012 );
+            tmp_map["e"] =    FInfo1( &Model::get_MFe, i012 );
+            tmp_map["dbar"] = FInfo1( &Model::get_MFd, i012 );
+            tmp_map["ubar"] = FInfo1( &Model::get_MFu, i012 );
+            tmp_map["e+"] =   FInfo1( &Model::get_MFe, i012 );
+
+            map_collection[Par::mass_eigenstate].map1 = tmp_map;
+         }
+         /// @}
+
+         return map_collection;
+     } 
+
+      // Filler function for setter function pointer maps extractable from "runningpars" container
+      template <class MI>
+      typename MSSMSpec<MI>::RunningSetterMaps MSSMSpec<MI>::runningpars_fill_setter_maps()
+      {
+         typename MSSMSpec<MI>::RunningSetterMaps map_collection; 
+         typedef typename MI::Model Model;
+
+         typedef typename MTset::FInfo1 FInfo1;
+         typedef typename MTset::FInfo2 FInfo2;
+
+         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
+         static const int i01v[] = {0,1};
+         static const std::set<int> i01(i01v, Utils::endA(i01v));
+
+         static const int i012v[] = {0,1,2};
+         static const std::set<int> i012(i012v, Utils::endA(i012v));
+
+         static const int i0123v[] = {0,1,2,3};
+         static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+
+         static const int i012345v[] = {0,1,2,3,4,5};
+         static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
+         
+         /// @{ mass2 - mass dimension 2 parameters
+         //
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {  // scope so we can reuse the name 'tmp_map' several times, so that our macro works.
+            // could make a better macro, or an actual function, but I'm in a hurry
+            typename MTset::fmap0 tmp_map;
+            tmp_map["BMu"]  = &Model::set_BMu;
+            tmp_map["mHd2"] = &Model::set_mHd2;
+            tmp_map["mHu2"] = &Model::set_mHu2;
+
+            map_collection[Par::mass2].map0 = tmp_map;
+         }
+ 
+         // Functions utilising the two-index "plain-vanilla" function signature
+         // (Two-index member functions of model object)
+         {
+            typename MTset::fmap2 tmp_map;
+            tmp_map["mq2"] = FInfo2( &Model::set_mq2, i012, i012);
+            tmp_map["ml2"] = FInfo2( &Model::set_ml2, i012, i012);
+            tmp_map["md2"] = FInfo2( &Model::set_md2, i012, i012);
+            tmp_map["mu2"] = FInfo2( &Model::set_mu2, i012, i012);
+            tmp_map["me2"] = FInfo2( &Model::set_me2, i012, i012);
+        
+            map_collection[Par::mass2].map2 = tmp_map;
+         }
+         /// @}
+
+         /// @{ mass1 - mass dimension 1 parameters
+         //
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {
+            typename MTset::fmap0 tmp_map;
+            tmp_map["M1"]= &Model::set_MassB;
+            tmp_map["M2"]= &Model::set_MassWB;
+            tmp_map["M3"]= &Model::set_MassG;
+            tmp_map["Mu"]= &Model::set_Mu;
+            tmp_map["vu"]= &Model::set_vu;
+            tmp_map["vd"]= &Model::set_vd;
+
+            map_collection[Par::mass1].map0 = tmp_map;
+         }
+
+         // Functions utilising the two-index "plain-vanilla" function signature
+         // (Two-index member functions of model object)
+         {
+            typename MTset::fmap2 tmp_map;
+            tmp_map["TYd"]= FInfo2( &Model::set_TYd, i012, i012);
+            tmp_map["TYe"]= FInfo2( &Model::set_TYe, i012, i012);
+            tmp_map["TYu"]= FInfo2( &Model::set_TYu, i012, i012);
+            tmp_map["ad"] = FInfo2( &Model::set_TYd, i012, i012);
+            tmp_map["ae"] = FInfo2( &Model::set_TYe, i012, i012);
+            tmp_map["au"] = FInfo2( &Model::set_TYu, i012, i012);
+ 
+            map_collection[Par::mass1].map2 = tmp_map;
+         }
+
+         /// @}
+
+         // @{ dimensionless - mass dimension 0 parameters
+         //
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {
+            typename MTset::fmap0 tmp_map;
+            tmp_map["g1"]= &Model::set_g1;
+            tmp_map["g2"]= &Model::set_g2;
+            tmp_map["g3"]= &Model::set_g3;
+
+            map_collection[Par::dimensionless].map0 = tmp_map;
+         }
+
+         // Functions utilising the two-index "plain-vanilla" function signature
+         // (Two-index member functions of model object)
+         {
+            typename MTset::fmap2 tmp_map;
+
+            tmp_map["Yd"]= FInfo2( &Model::set_Yd, i012, i012);
+            tmp_map["Yu"]= FInfo2( &Model::set_Yu, i012, i012);
+            tmp_map["Ye"]= FInfo2( &Model::set_Ye, i012, i012);
+
+            map_collection[Par::dimensionless].map2 = tmp_map;
+         }
+
+         return map_collection;
+      } 
+
+      /// @}
+
+      /// @{ Fillers for Phys subclass
+
       // Need wrapper functios for A0 and H+ getters, to retrieve only the 
       // non-Goldstone entries. 
       // Need to pass in the model object, since we won't have the 'this' pointer
       template <class Model> double get_MAh1_pole(const Model& model) { return model.get_MAh_pole_slha(1); }
       template <class Model> double get_MHpm1_pole(const Model& model) { return model.get_MHpm_pole_slha(1); }
 
-      // Note! Map fillers appended with "_extraM" or "_extraI" will be treated by the SubSpectrum object as
-      // alternative routines to call for that getter type.
-      // e.g.
-      // get_Pole_Mass(name)
-      // draws upon three maps, filled by the filling functions
-      // fill_PoleMass_map_Get()           call signature: model.func() -- i.e. 'native' member functions
-      // fill_PoleMass_map_extraM_Get()    call signature: func(Model& model) -- extras using model info
-      // fill_PoleMass_map_extraI_Get()    call signature: func(Input& input) -- extras using input info
-      template <class MI>  
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap_extraM MSSMSpec<MI>::fill_PoleMass_map_extraM_Get()
-      {
-         typedef typename MI::Model Model;
-         typename MT::fmap_extraM tmp_map;
-        
-         // Using wrapper functions defined above
-         tmp_map["A0"] = &get_MAh1_pole<Model>;   
-         tmp_map["H+"] = &get_MHpm1_pole<Model>;   
-      
-         // Antiparticle label 
-         tmp_map["H-"] = &get_MHpm1_pole<Model>;   
-
-         return tmp_map;
-      }
-
+      // Filler function for getter function pointer maps extractable from "phys" container
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap1 MSSMSpec<MI>::fill_PoleMass_map1_Get()
+      typename MSSMSpec<MI>::PhysGetterMaps MSSMSpec<MI>::phys_fill_getter_maps()
       {
+         typename MSSMSpec<MI>::PhysGetterMaps map_collection; 
          typedef typename MI::Model Model;
-         typedef typename MT::FInfo1 FInfo1;
-         typename MT::fmap1 tmp_map;
 
+         typedef typename MTget::FInfo1 FInfo1;
+         typedef typename MTget::FInfo2 FInfo2;
+
+         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
          static const int i01v[] = {0,1};
          static const std::set<int> i01(i01v, Utils::endA(i01v));
 
@@ -592,84 +542,134 @@ namespace Gambit {
 
          static const int i012345v[] = {0,1,2,3,4,5};
          static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-
-         tmp_map["~d"] =  FInfo1( &Model::get_MSd_pole_slha, i012345 );
-         tmp_map["~u"] =  FInfo1( &Model::get_MSu_pole_slha, i012345 );
-         tmp_map["~e-"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
-         tmp_map["~e"] =  FInfo1( &Model::get_MSe_pole_slha, i012345 );  // Just an extra name for charged sleptons; not in PDB
-         tmp_map["~nu"]=  FInfo1( &Model::get_MSv_pole_slha, i012 );
-         tmp_map["h0"] =  FInfo1( &Model::get_Mhh_pole_slha, i01 );
-         // NOTE: I have added the following two to the "no index" map as well, 
-         // where only the "safe" entries are retrieved
-         //Here we may access the goldstone boson
-         //and higgs. maybe too dangerous to keep?
-         tmp_map["A0"] = FInfo1( &Model::get_MAh_pole_slha, i01 );      
-         //Here we may access the goldstone boson
-         //and higgs. maybe too dangerous to keep?
-         tmp_map["H+"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
-         tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
-         tmp_map["~chi0"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
-      
-         // Standard Model pole masses now come from QedQcdWrapper (except Higgs)
-         // tmp_map["d"] =  FInfo1( &Model::get_MFd_pole_slha, i012 );
-         // tmp_map["u"] =  FInfo1( &Model::get_MFu_pole_slha, i012 );
-         // tmp_map["e-"] = FInfo1( &Model::get_MFe_pole_slha, i012 ); // SHOULD BE e-
-         // tmp_map["e"] =  FInfo1( &Model::get_MFe_pole_slha, i012 );  // Another extra name; not in PDB
-         // tmp_map["dbar"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
-         // tmp_map["ubar"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
-         // tmp_map["e+"] =   FInfo1( &Model::get_MFe_pole_slha, i012 );
-
-         // Antiparticles (same getters, just different string name)
-         tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
-         tmp_map["~ubar"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
-         tmp_map["~ebar"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
-         tmp_map["~nubar"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
-         tmp_map["H-"] =    FInfo1( &Model::get_MHpm_pole_slha, i01 );   
-         tmp_map["~chi-"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
-
-
-         return tmp_map;
-      }
          
-      template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_PoleMixing_map2_Get()
-      {
-         typedef typename MI::Model Model;
-         typedef typename MT::FInfo2 FInfo2;
-         typename MT::fmap2 tmp_map;
-
-         static const int i01v[] = {0,1};
-         static const std::set<int> i01(i01v, Utils::endA(i01v));
-
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-         static const int i0123v[] = {0,1,2,3};
-         static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
-
-         static const int i012345v[] = {0,1,2,3,4,5};
-         static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-
-         //Need to add these to generated code before I can use them here.
+         /// @{ Pole_Mass - Pole mass parameters
+         //
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {  
+            typename MTget::fmap0 tmp_map;
         
-         tmp_map["~d"] =   FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
-         tmp_map["~nu"] =   FInfo2( &Model::get_ZV_pole_slha, i012, i012);
-         tmp_map["~u"] =   FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
-         tmp_map["~e"] =   FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
-         tmp_map["h0"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
-         tmp_map["A0"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
-         tmp_map["H+"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
-         tmp_map["~chi0"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
-         tmp_map["~chi-"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
-         tmp_map["~chi+"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
+            // tmp_map["MZ"] = &Model::get_Pole_MZ;
+            // tmp_map["MW"] = &Model::get_Pole_MW;
+
+            // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
+            //// tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
+            //// tmp_map["W+"] = &Model::get_MVWm_pole_slha;
+            //// tmp_map["W-"] = &Model::get_MVWm_pole_slha;
+            //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
+            //// tmp_map["g"] = &Model::get_MVG_pole_slha;
+            ////    //tmp_map["gamma"] = &Model::get_pole_MPhoton;
+            //// tmp_map["gamma"] = &Model::get_MVP_pole_slha;
+
+            tmp_map["~g"] = &Model::get_MGlu_pole_slha; 
+
+            // tmp_map["MGoldstone0"] = &Model::get_Pole_neut_goldstone;
+            // tmp_map["MA0"] = &Model::get_Pole_neut_CPodd_higgs;
+            // tmp_map["MGoldstonePM"] = &Model::get_Pole_ch_goldstone; 
+            // tmp_map["MHpm"] = &Model::get_Pole_ch_higgs;    
+            // tmp_map["Mtop"] = &Model::get_Pole_mtop;
+            // tmp_map["Mcharm"] = &Model::get_Pole_mcharm;
+            // tmp_map["Mup"] = &Model::get_Pole_mup;
+            // tmp_map["Mbottom"] = &Model::get_Pole_mbottom;
+            // tmp_map["Mstrange"] = &Model::get_Pole_mstrange;
+            // tmp_map["Mdown"] = &Model::get_Pole_mdown;
+            // tmp_map["Mtau"] = &Model::get_Pole_mtau; 
+            // tmp_map["Mmuon"] = &Model::get_Pole_mmuon; 
+            // tmp_map["Melectron"] = &Model::get_Pole_melectron; 
+
+            map_collection[Par::Pole_Mass].map0 = tmp_map;
+         } 
+
+         // Functions utilising the "extraM" function signature
+         // (Zero index, model object as argument)
+         {
+            typename MTget::fmap0_extraM tmp_map;
+        
+            // Using wrapper functions defined above
+            tmp_map["A0"] = &get_MAh1_pole<Model>;   
+            tmp_map["H+"] = &get_MHpm1_pole<Model>;   
       
-         /* Could add SM fermion mixing but these are only filled
-            when we actually calculate the SM pole masses
-            which is not necessary */
-        
-         return tmp_map;
+            // Antiparticle label 
+            tmp_map["H-"] = &get_MHpm1_pole<Model>;   
+      
+            map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
+         }
+
+         // Functions utilising the one-index "plain-vanilla" function signature
+         // (One-index member functions of model object)
+         {  
+            typename MTget::fmap1 tmp_map;
+
+            tmp_map["~d"] =  FInfo1( &Model::get_MSd_pole_slha, i012345 );
+            tmp_map["~u"] =  FInfo1( &Model::get_MSu_pole_slha, i012345 );
+            tmp_map["~e-"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+            tmp_map["~e"] =  FInfo1( &Model::get_MSe_pole_slha, i012345 );  // Just an extra name for charged sleptons; not in PDB
+            tmp_map["~nu"]=  FInfo1( &Model::get_MSv_pole_slha, i012 );
+            tmp_map["h0"] =  FInfo1( &Model::get_Mhh_pole_slha, i01 );
+            // NOTE: I have added the following two to the "no index" map as well, 
+            // where only the "safe" entries are retrieved
+            //Here we may access the goldstone boson
+            //and higgs. maybe too dangerous to keep?
+            tmp_map["A0"] = FInfo1( &Model::get_MAh_pole_slha, i01 );      
+            //Here we may access the goldstone boson
+            //and higgs. maybe too dangerous to keep?
+            tmp_map["H+"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
+            tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
+            tmp_map["~chi0"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
+      
+            // Standard Model pole masses now come from QedQcdWrapper (except Higgs)
+            // tmp_map["d"] =  FInfo1( &Model::get_MFd_pole_slha, i012 );
+            // tmp_map["u"] =  FInfo1( &Model::get_MFu_pole_slha, i012 );
+            // tmp_map["e-"] = FInfo1( &Model::get_MFe_pole_slha, i012 ); // SHOULD BE e-
+            // tmp_map["e"] =  FInfo1( &Model::get_MFe_pole_slha, i012 );  // Another extra name; not in PDB
+            // tmp_map["dbar"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
+            // tmp_map["ubar"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
+            // tmp_map["e+"] =   FInfo1( &Model::get_MFe_pole_slha, i012 );
+
+            // Antiparticles (same getters, just different string name)
+            tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
+            tmp_map["~ubar"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
+            tmp_map["~ebar"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+            tmp_map["~nubar"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
+            tmp_map["H-"] =    FInfo1( &Model::get_MHpm_pole_slha, i01 );   
+            tmp_map["~chi-"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
+
+            map_collection[Par::Pole_Mass].map1 = tmp_map;
+         }
+ 
+         /// @}
+
+         /// @{ Pole_Mixing - Pole mass parameters
+         //
+         // Functions utilising the two-index "plain-vanilla" function signature
+         // (Two-index member functions of model object)
+         {
+            typename MTget::fmap2 tmp_map;
+
+            tmp_map["~d"] =   FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
+            tmp_map["~nu"] =   FInfo2( &Model::get_ZV_pole_slha, i012, i012);
+            tmp_map["~u"] =   FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
+            tmp_map["~e"] =   FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
+            tmp_map["h0"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
+            tmp_map["A0"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
+            tmp_map["H+"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
+            tmp_map["~chi0"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
+            tmp_map["~chi-"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
+            tmp_map["~chi+"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
+      
+            /* Could add SM fermion mixing but these are only filled
+               when we actually calculate the SM pole masses
+               which is not necessary */
+ 
+            map_collection[Par::Pole_Mixing].map2 = tmp_map;
+         }
+         /// @}
+         return map_collection;
       }
-   
+
+      /// @}
+  
    } // end SpecBit namespace 
 } // end Gambit namespace
 

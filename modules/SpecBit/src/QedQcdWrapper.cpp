@@ -148,6 +148,7 @@ namespace Gambit {
          // supplied at whatever scale the rest of the parameters are currently
          // defined at. Not sure how to handle this.
          //QedQcd::getGaugeMu(const double m2, const double sinth)
+         return 0.;
       }
 
       /// Plain C-function wrappers for extra pole mass getters (manually specified masses)
@@ -172,7 +173,7 @@ namespace Gambit {
          // (Zero index, model object as argument)
          {  // scope so we can reuse the name 'tmp_map' several times, so that our macro works.
             // could make a better macro, or an actual function, but I'm in a hurry
-            MTget::fmap0_extraM& tmp_map;
+            MTget::fmap0_extraM tmp_map;
 
             addtomap(("u", "ubar", "u_1", "ubar_1"), &get_mUp);
             addtomap(("c", "cbar", "u_2", "ubar_2"), &get_mCharm);
@@ -187,7 +188,7 @@ namespace Gambit {
             tmp_map["gamma"] = &get_mPhoton;
             tmp_map["g"]     = &get_mGluon;
 
-            map_collection.at(Par::mass1).map0_extraM = tmp_map;
+            map_collection[Par::mass1].map0_extraM = tmp_map;
          }
          /// @}
 
@@ -201,7 +202,7 @@ namespace Gambit {
             tmp_map["alpha"]  = &get_alpha;
             tmp_map["alphaS"] = &get_alphaS;
 
-            map_collection.at(Par::dimensionless).map0_extraM = tmp_map;
+            map_collection[Par::dimensionless].map0_extraM = tmp_map;
          }
 
          /// @}  
@@ -229,7 +230,7 @@ namespace Gambit {
             addtomap(("b", "bbar", "d_3", "dbar_3"), &softsusy::QedQcd::displayPoleMb);
             addtomap(("tau+","tau-","tau","e+_3","e-_3"), &softsusy::QedQcd::displayPoleMtau);
    
-            map_collection.at(Par::Pole_Mass).map0 = tmp_map;
+            map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 
          /// Functions utilising the "extraI" signature
@@ -250,7 +251,7 @@ namespace Gambit {
             tmp_map["gamma"] = &get_Pole_mPhoton;
             tmp_map["g"]     = &get_Pole_mGluon;
 
-            map_collection.at(Par::Pole_Mass).map0_extraI = tmp_map;
+            map_collection[Par::Pole_Mass].map0_extraI = tmp_map;
          }
          /// @}
          return map_collection;
@@ -280,7 +281,7 @@ namespace Gambit {
             // input, as in the getter case)
             //addtomap(("Z0", "Z"),       &softsusy::QedQcd::displayPoleMZ);
                
-            map_collection.at(Par::Pole_Mass).map0 = tmp_map;
+            map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 
          /// Functions utilising the "extraI" signature
@@ -290,7 +291,7 @@ namespace Gambit {
 
             addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &set_Pole_mElectron);
          
-            map_collection.at(Par::Pole_Mass).map0_extraI = tmp_map; 
+            map_collection[Par::Pole_Mass].map0_extraI = tmp_map; 
          }
          /// @}
          return map_collection;
