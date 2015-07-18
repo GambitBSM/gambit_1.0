@@ -519,14 +519,15 @@ namespace Gambit {
          /// iterate over vector of strings for mass states 
          std::vector<str> gauge_es_vec = type_to_vec_of_gauge_es[type];
          typedef std::vector<str>::iterator iter;
-         for(iter it = gauge_es_vec.begin(); it != gauge_es_vec.end(); ++it){
-            temp_gauge_es = *it;   
-            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm); 
+         for(iter it = gauge_es_vec.begin(); it != gauge_es_vec.end(); ++it)
+            {
+            temp_gauge_es = *it;
+            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm);
             mass_composition.push_back(temp_admix);
             //select largest 
             if(fabs(temp_admix) > fabs(max_mixing)) 
                {
-               max_mixing = temp_admix; 
+               max_mixing = temp_admix;
                gauge_es = temp_gauge_es;
                }
          } //end iteration over temp_mass_es
@@ -936,12 +937,12 @@ namespace Gambit {
       str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
                                           double tol, str context)
        {
-          double max_mix;
+          double sum_sq_mix;
           std::vector<double> mass_comp;
-          str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
+          str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, mass_comp,
                                                    mssm);
           str full_context = LOCAL_INFO + " called from " + context;
-          if(max_mix*max_mix <= 1-tol){
+          if(sum_sq_mix <= 1-tol){
              utils_error().raise(full_context, "family_state_closest_to_mass_es  called when family mixing away from closest mass_es is greater than tol"); 
           }
           return fs;
