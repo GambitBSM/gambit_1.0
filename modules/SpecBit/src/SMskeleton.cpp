@@ -39,8 +39,10 @@
 
 using namespace SLHAea;
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
+   namespace SpecBit
+   {
 
       /// Simplify access to map types in this file
       typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
@@ -109,17 +111,17 @@ namespace Gambit {
  
       /// Default Constructor
       SMskeleton::SMskeleton() 
-        : SLHAskeleton()
+        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >()
       {}
 
       /// Constructor via SLHAea object
       SMskeleton::SMskeleton(const SLHAea::Coll& input)
-        : SLHAskeleton(input)
+        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >(input)
       {}
 
       /// Copy constructor: needed by clone function.
       SMskeleton::SMskeleton(const SMskeleton& other)
-        : SLHAskeleton(other)
+        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >(other)
       {} 
 
       /// @}  

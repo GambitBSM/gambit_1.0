@@ -38,14 +38,14 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
                                 $<TARGET_OBJECTS:Core>
                                 $<TARGET_OBJECTS:Printers>
   )
+  foreach (plugin ${SCANNERBIT_PLUGINS})
+    add_dependencies(gambit ${plugin})
+  endforeach()
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(gambit flexiblesusy)
   endif()
   if (NOT EXCLUDE_DELPHES)
     add_dependencies(gambit delphes)
-  endif()
-  if(MPI_FOUND)
-    target_link_libraries(gambit ${MPI_LIBRARIES})
   endif()
 endif()
 
@@ -59,6 +59,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
   endif()
   add_gambit_executable(ExampleBit_A_standalone "${ExampleBit_A_XTRA}"
                         SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp 
+                                ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/standalone_functors.cpp 
                                 $<TARGET_OBJECTS:ExampleBit_A>
                                 ${GAMBIT_ALL_COMMON_OBJECTS}
   )
@@ -87,19 +88,18 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
                                 ${GAMBIT_BASIC_COMMON_OBJECTS}
   )
   set_target_properties(ScannerBit_standalone PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/ScannerBit/bin")
+  foreach (plugin ${SCANNERBIT_PLUGINS})
+    add_dependencies(ScannerBit_standalone ${plugin})
+  endforeach()
   if(EXISTS "${PROJECT_SOURCE_DIR}/Elements/") 
     if (NOT EXCLUDE_FLEXIBLESUSY)
       add_dependencies(ScannerBit_standalone flexiblesusy)
     endif()
     if (NOT EXCLUDE_DELPHES)
-      add_dependencies(ExampleBit_A_standalone delphes)
+      add_dependencies(ScannerBit_standalone delphes)
     endif()
   else()
     # Make sure the printers compile OK if the rest of GAMBIT is missing
     add_definitions(-DSTANDALONE=1)
-  endif()
-  # Probably don't need this? Don't think it will hurt though.
-  if(MPI_FOUND)
-    target_link_libraries(ExampleBit_A_standalone ${MPI_LIBRARIES})
   endif()
 endif()

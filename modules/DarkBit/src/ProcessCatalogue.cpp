@@ -160,7 +160,15 @@ namespace Gambit {
      */
     TH_ParticleProperty TH_ProcessCatalog::getParticleProperty(str id) const
     {
-      return particleProperties.at(id);
+      auto it = particleProperties.find(id);
+      if ( it != particleProperties.end() )
+        return it->second;
+      else
+      {
+        DarkBit_error().raise(LOCAL_INFO,
+            "Cannot find entry for " + id +
+            " in particleProperties of TH_ProcessCatalog.");
+      }
     }
   } // namespace DarkBit
 } // namespace Gambit

@@ -26,9 +26,9 @@
 // Gambit headers
 #include "gambit/Core/gambit_core.hpp"
 #include "gambit/Core/error_handlers.hpp"
-#include "gambit/Core/version.hpp"
 #include "gambit/Core/modelgraph.hpp"
 #include "gambit/Core/yaml_description_database.hpp"
+#include "gambit/Utils/version.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"

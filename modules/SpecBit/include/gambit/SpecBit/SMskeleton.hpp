@@ -17,7 +17,7 @@
 #ifndef __SMskeleton_hpp__
 #define __SMskeleton_hpp__
 
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/SpecBit/SLHAskeleton.hpp"
 
 namespace Gambit {
@@ -60,11 +60,11 @@ namespace Gambit {
       };
 
       /// SM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class SMskeleton : public SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea>> 
+      class SMskeleton : public SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> > 
       {
-         friend class RunparDer<SMskeleton,SLHAskeletonTraits<SMea>>;
-         friend class PhysDer  <SMskeleton,SLHAskeletonTraits<SMea>>;
-
+         friend class RunparDer<SMskeleton,SLHAskeletonTraits<SMea> >;
+         friend class PhysDer  <SMskeleton,SLHAskeletonTraits<SMea> >;
+        
          public:
             typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
             typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 

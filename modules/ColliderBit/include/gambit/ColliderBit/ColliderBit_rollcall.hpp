@@ -10,10 +10,18 @@
 ///
 ///  \author Abram Krislock
 ///          (a.m.b.krislock@fys.uio.no)
+///
 ///  \author Aldo Saavedra
 ///
+///  \author Christopher Rogan
+///          (christophersrogan@gmail.com)
+///  \date 2015 Apr
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015 Jul
+///
 ///  *********************************************
-
 
 #ifndef __ColliderBit_rollcall_hpp__
 #define __ColliderBit_rollcall_hpp__
@@ -24,6 +32,8 @@
 #include "gambit/ColliderBit/ColliderBit_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
+
+
 #define MODULE ColliderBit
 START_MODULE
 
@@ -33,6 +43,8 @@ START_MODULE
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
     NEEDS_CLASSES_FROM(Pythia, default)
+    // FIXME this should not be needed once the dep resolver orders things correctly.
+    MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, const Spectrum*, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -41,9 +53,11 @@ START_MODULE
   #define CAPABILITY HardScatteringSim
   START_CAPABILITY
     #define FUNCTION getPythia
-    START_FUNCTION(Gambit::ColliderBit::PythiaBase*)
+    START_FUNCTION(Gambit::ColliderBit::SpecializablePythia)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(decay_rates, DecayTable)
+    MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, const Spectrum*, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -52,7 +66,7 @@ START_MODULE
   #define CAPABILITY DetectorSim
   START_CAPABILITY
     #define FUNCTION getDelphes
-    START_FUNCTION(Gambit::ColliderBit::DelphesBase*)
+    START_FUNCTION(Gambit::ColliderBit::DelphesVanilla)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
@@ -61,7 +75,7 @@ START_MODULE
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
     #define FUNCTION getBuckFast
-    START_FUNCTION(Gambit::ColliderBit::BuckFastBase*)
+    START_FUNCTION(Gambit::ColliderBit::BuckFastSmear)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   #undef CAPABILITY
@@ -69,11 +83,12 @@ START_MODULE
 
   /// Capability that holds list of analyses to run
   /// Eventually needs to be configurable from yaml file
-  #define CAPABILITY ListOfAnalyses
+  #define CAPABILITY AnalysisContainer
   START_CAPABILITY
-    #define FUNCTION specifyAnalysisPointerVector
-    START_FUNCTION(std::vector<Gambit::ColliderBit::Analysis*>)
+    #define FUNCTION getAnalysisContainer
+    START_FUNCTION(HEPUtilsAnalysisContainer)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -85,17 +100,10 @@ START_MODULE
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::PythiaBase*)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+/// @TODO Replace SLHAea pseudo-code with actual code:
+    /// DEPENDENCY(SLHAeaFromSomewhere, SLHAea::Coll)
     #undef FUNCTION
-
-    /// Event converters to the standard Gambit collider event format
-    #define FUNCTION convertPythia8Event
-    START_FUNCTION(HEPUtils::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::PythiaBase*)
-    #undef FUNCTION
-
   /// For now, let's stick to what we already have running.
   /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
   /// \todo ... these later:
@@ -110,6 +118,24 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   */
+  #undef CAPABILITY
+
+  #define CAPABILITY ConvertedScatteringEvent
+  START_CAPABILITY
+    /// Event converters to the standard Gambit collider event format
+    #define FUNCTION convertPythia8PartonEvent
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+    #undef FUNCTION
+
+    #define FUNCTION convertPythia8ParticleEvent
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+    #undef FUNCTION
   #undef CAPABILITY
 
 /// I still need to see how Aldo's FastSim works... So for now, I'll
@@ -135,14 +161,14 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
-    DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesBase*)
+    DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
     #undef FUNCTION
 
     #define FUNCTION reconstructBuckFastEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(HardScatteringEvent, HEPUtils::Event)
-    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastBase*)
+    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmear)
     #undef FUNCTION
   /// For now, let's stick to what we already have running.
   /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for typedefs.
@@ -178,12 +204,12 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION runAnalyses
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
-    ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
-    DEPENDENCY(ListOfAnalyses, std::vector<Gambit::ColliderBit::Analysis*>)
-    //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
-    //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    DEPENDENCY(AnalysisContainer, HEPUtilsAnalysisContainer)
+    //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
+    //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_GROUP(lnlike_marg_poisson)
     #undef FUNCTION
   #undef CAPABILITY
@@ -193,7 +219,6 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION calcLogLike
     START_FUNCTION(double)
-    ALLOW_MODELS(NormalDist)
     DEPENDENCY(AnalysisNumbers, ColliderLogLikes)
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
@@ -208,14 +233,101 @@ START_MODULE
     /// \todo Make a group of analyses rather than a simple counter.
     #define FUNCTION simpleCounter
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
-    ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     #undef FUNCTION
     #undef CAPABILITY*/
   /// \todo How many more do we need to define...?
 
+
+  ///////////// Higgs physics /////////////////////
+
+  // FeynHiggs Higgs production cross-sections
+  #define CAPABILITY FH_HiggsProd            
+  START_CAPABILITY
+    #define FUNCTION FH_HiggsProd
+    START_FUNCTION(fh_HiggsProd)
+    DEPENDENCY(FH_Couplings, fh_Couplings)
+      BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
+      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // HiggsBounds input model parameters
+  #define CAPABILITY HB_ModelParameters
+  START_CAPABILITY
+
+    // SM Higgs only model parameters
+    #define FUNCTION SMHiggs_ModelParameters  
+    START_FUNCTION(hb_ModelParameters)
+    DEPENDENCY(SM_spectrum, const Spectrum*)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    #undef FUNCTION
+
+    // MSSM Higgs model parameters
+    #define FUNCTION MSSMHiggs_ModelParameters
+    START_FUNCTION(hb_ModelParameters)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(decay_rates, DecayTable)
+    DEPENDENCY(FH_Couplings, fh_Couplings) // temporary dependency 
+    DEPENDENCY(FH_HiggsProd, fh_HiggsProd) // temporary dependency 
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY 
+
+  // Get a LEP chisq from HiggsBounds
+  #define CAPABILITY HB_LEPchisq
+  START_CAPABILITY
+    #define FUNCTION HB_LEPchisq
+    START_FUNCTION(double)
+    DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
+       BACKEND_REQ(HiggsBounds_neutral_input_part, (libhiggsbounds), void, 
+		   (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
+		    double*, double*, double*, double*, double*, double*, double*,
+		    double*, double*, double*, double*, double*, double*, double*,
+		    double*, double*, double*, double*, double*, double*, double*,
+		    double*, double*, double*, double*, double*, double*, double*,
+		    double*, double*, Farray<double, 1,3, 1,3>&))
+       BACKEND_REQ(HiggsBounds_charged_input, (libhiggsbounds), void,
+		   (double*, double*, double*, double*,
+		    double*, double*, double*, double*))
+       BACKEND_REQ(HiggsBounds_set_mass_uncertainties, (libhiggsbounds), void, (double*, double*))
+       BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (double&, int&, double&, int&))            
+       BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
+       
+       BACKEND_OPTION( (HiggsBounds, 4.1), (libhiggsbounds) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Get an LHC chisq from HiggsSignals
+  #define CAPABILITY HS_LHCchisq
+    START_CAPABILITY
+      #define FUNCTION HS_LHCchisq
+      START_FUNCTION(double)
+      DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
+         BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
+		     (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
+		      double*, double*, double*, double*, double*, double*, double*,
+		      double*, double*, double*, double*, double*, double*, double*,
+		      double*, double*, double*, double*, double*, double*, double*,
+		      double*, double*, double*, double*, double*, double*, double*,
+		      double*, double*, Farray<double, 1,3, 1,3>&))
+        BACKEND_REQ(HiggsBounds_charged_input_HS, (libhiggssignals), void,
+		    (double*, double*, double*, double*,
+		     double*, double*, double*, double*))
+        BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))  
+        BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
+        BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
+        BACKEND_OPTION( (HiggsSignals, 1.2), (libhiggssignals) )
+     #undef FUNCTION
+  #undef CAPABILITY
+
+
 #undef MODULE
+
 
 
 #endif /* defined __ColliderBit_rollcall_hpp__ */

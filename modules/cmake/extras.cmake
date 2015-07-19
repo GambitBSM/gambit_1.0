@@ -29,10 +29,17 @@
 #  \author Chris Rogan
 #          (crogan@cern.ch)              
 #  \date 2015 May
+#
+#  \author Anders Kvellestad
+#          (anderkve@fys.uio.no)
+#  \date 2015 May
 #                                               
 #************************************************
 
 include(ExternalProject)
+
+
+########### Utility commands #################
 
 # Define the sed command to use differently for OSX and linux
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -44,6 +51,71 @@ endif()
 # Define the newline strings to use for OSX-safe substitution.
 set(nl "___totally_unlikely_to_occur_naturally___")
 set(true_nl \"\\n\")
+
+# Define the module location switch differently depending on compiler
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")	
+  set(FMODULE "module")					
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")	
+  set(FMODULE "J")					
+endif()                                                 
+
+
+########### Scanners #########################
+
+# Diver
+set(diver_ver "1\\.0\\.0")
+set(diver_lib "libdiver")
+set(diver_dir "${PROJECT_SOURCE_DIR}/../extras/Diver")
+set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
+if(MPI_Fortran_FOUND)
+  set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
+else()
+  set(diverFFLAGS "${CMAKE_Fortran_FLAGS}")
+endif()
+ExternalProject_Add(diver
+  #URL 
+  #URL_MD5 
+  #DOWNLOAD_DIR ${diver_dir}
+  SOURCE_DIR ${diver_dir}
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
+  INSTALL_COMMAND "" 
+)
+set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
+
+# MultiNest
+set(mn_ver "3\\.9")
+set(mn_lib "libnest3")
+set(mn_dir "${PROJECT_SOURCE_DIR}/../extras/MultiNest_v3.9")
+set(mnLAPACK "${LAPACK_LINKLIBS}")
+set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS} ${mnLAPACK}")
+if(MPI_Fortran_FOUND)
+  set(mnFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
+else()
+  set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
+endif()
+ExternalProject_Add(multinest 
+  #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask CCPForge for a solution.
+  #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
+  #URL_MD5 6c0c9e9ee0ac3c906109675302fb30f0
+  #DOWNLOAD_DIR ${mn_dir}
+  SOURCE_DIR ${mn_dir}
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
+                                 -e "s#-o[[:space:]]*\\(\\$\\)(LIBS)[[:space:]]*\\$@#-o \\$\\(LIBS\\)\\$@#g"
+                                 <SOURCE_DIR>/Makefile 
+            COMMAND sed ${dashi} -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
+                                 -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g"
+                                 <SOURCE_DIR>/cwrapper.f90
+  BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LAPACKLIB=${mnLAPACK} LIBS=${mn_dir}/ 
+  INSTALL_COMMAND "" 
+)
+set_property(TARGET multinest PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+set(clean_files ${clean_files} "${mn_dir}/${mn_lib}.so")
+
+########### Backends #########################
 
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
@@ -62,9 +134,13 @@ ExternalProject_Add(darksusy
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/DarkSUSY
   BUILD_IN_SOURCE 1
+  PATCH_COMMAND patch -b -p1 -d src < ../patchDS.dif COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy  < ../patchISA.dif
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND make COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
-  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so COMMAND cp <SOURCE_DIR>/lib/libdarksusy.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  BUILD_COMMAND make 
+        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
+        COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
+  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so 
+          COMMAND cp <SOURCE_DIR>/lib/libdarksusy.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 set_property(TARGET darksusy PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
@@ -77,7 +153,13 @@ ExternalProject_Add(superiso
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/SuperIso/SuperIso
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile COMMAND make COMMAND ar x <SOURCE_DIR>/src/libisospin.a COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile 
+        COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile
+        COMMAND make 
+        COMMAND ar x <SOURCE_DIR>/src/libisospin.a
+        COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh
+        COMMAND chmod u+x make_so.sh
+        COMMAND ./make_so.sh
   INSTALL_COMMAND cp <SOURCE_DIR>/libsuperiso.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 set_property(TARGET superiso PROPERTY _EP_DOWNLOAD_ALWAYS 0)
@@ -113,7 +195,7 @@ ExternalProject_Add(gamlike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
-  INSTALL_COMMAND cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so
+  INSTALL_COMMAND "" #cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so
 )
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/gamLike/gamLike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so")
 
@@ -127,19 +209,33 @@ ExternalProject_Add(micromegas
 )
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmicromegas.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegas.so")
 
+
 # Pythia
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
 endif()
-set(pythia_CXXFLAGS "${CMAKE_CXX_FLAGS} -Wno-extra")
+# - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
+string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
+# - Suppress warnings from -Wextra when building Pythia with gcc
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")	
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra")
+endif()                                                 
+# - Set include directories
+set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
+# - Actual configure and compile commands
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared ${pythia_CONFIGURE_EXTRAS}
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${pythia_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
+  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so" ${pythia_CONFIGURE_EXTRAS}
+  COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
+  COMMAND echo "OSX DEBUG: pythia_CXXFLAGS = ${pythia_CXXFLAGS}"
+  COMMAND echo "OSX DEBUG: pythia_CONFIGURE_EXTRAS = ${pythia_CONFIGURE_EXTRAS}"
+  COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
+  BUILD_COMMAND make CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
 )
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/lib/libpythia8.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so")
+
 
 # Fastsim
 ExternalProject_Add(fastsim
@@ -152,23 +248,22 @@ ExternalProject_Add(fastsim
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/fast_sim/lib/libfastsim.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libfastsim.so")
 
 # Nulike
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(FMODULE "module")
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(FMODULE "J")
-endif()
 set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/../extras/nulike")
 set(nulike_short_dir "./../extras/nulike")
 set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
+  #URL 
+  #URL_MD5 
+  #DOWNLOAD_DIR ${nulike_dir}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
   INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
+set_property(TARGET nulike PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
 # SUSY-HIT
@@ -289,7 +384,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/Hig
 
 
 set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim  
-                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
+                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit diver multinest PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia darksusy superiso susyhit) #fastsim micromegas
 

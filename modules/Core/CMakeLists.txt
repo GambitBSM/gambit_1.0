@@ -24,6 +24,7 @@ set(source_files src/container_factory.cpp
                  src/core_singleton.cpp
                  src/depresolver.cpp
                  src/error_handlers.cpp
+                 src/functors.cpp
                  src/gambit_core.cpp
                  src/ini_functions.cpp
                  src/likelihood_container.cpp
@@ -41,7 +42,6 @@ set(header_files include/gambit/Core/container_factory.hpp
                  include/gambit/Core/ini_functions.hpp
                  include/gambit/Core/likelihood_container.hpp
                  include/gambit/Core/modelgraph.hpp
-                 include/gambit/Core/version.hpp
                  include/gambit/Core/yaml_description_database.hpp
                  include/gambit/Core/yaml_parser.hpp
 )

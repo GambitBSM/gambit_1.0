@@ -19,19 +19,22 @@
 #ifndef __SingletDMContainer_hpp__
 #define __SingletDMContainer_hpp__
 
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/SpecBit/SMHiggsContainer.hpp"
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{     
+   namespace SpecBit
+   {
 
       /// Simple extension for the SMHiggs container "model object"
       /// to include scalar singlet DM parameters
       struct SingletDMModel : public SMHiggsModel
       {
          double SingletPoleMass;
-
+         double SingletLambda;
          double get_SingletPoleMass() const { return SingletPoleMass; } 
+         double get_lambda_hS() const { return SingletLambda; } 
       };
 
       // Needed for typename aliases in Spec and MapTypes classes
@@ -79,8 +82,10 @@ namespace Gambit {
             /// Definitions of map fillers
             static void derived_phys_fill_getter_maps(PhysGetterMaps& in)
             {
+
                in[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
                in[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass; 
+
             }
         }; 
 

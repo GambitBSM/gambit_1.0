@@ -5,6 +5,8 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include "wrapper_Rndm_decl.h"
+#include "wrapper_AlphaStrong_decl.h"
+#include "wrapper_AlphaEM_decl.h"
 #include "wrapper_Settings_decl.h"
 #include <cstddef>
 

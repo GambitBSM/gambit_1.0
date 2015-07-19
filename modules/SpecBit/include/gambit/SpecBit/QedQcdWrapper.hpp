@@ -30,13 +30,16 @@
 #ifndef __QedQcdWrapper_hpp__
 #define __QedQcdWrapper_hpp__
 
-#include "gambit/Elements/SMInputs.hpp"
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/sminputs.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
+
+   namespace SpecBit
+   {
 
       // Needed for typename aliases in Spec and MapTypes classes
       struct QedQcdWrapperTraits

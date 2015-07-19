@@ -19,7 +19,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/SpecFptrFinder.hpp"
 
 namespace Gambit {
