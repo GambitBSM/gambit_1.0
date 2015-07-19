@@ -38,10 +38,10 @@ mCmC    :  1.27400000E+00 # mc(mc)^MSbar *
 # CKM
 # Wolfenstein parameterisation (matches SLHA2 VCKMIN block)
 # from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-ckm-matrix.pdf
-lambda  :  0.22537
-A       :  0.814
-rhobar  :  0.117
-etabar  :  0.353
+CKM_lambda  :  0.22537
+CKM_A       :  0.814
+CKM_rhobar  :  0.117
+CKM_etabar  :  0.353
 
 # PMNS
 # from     http://pdg.lbl.gov/2014/tables/rpp2014-sum-leptons.pdf

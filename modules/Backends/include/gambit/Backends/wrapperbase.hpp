@@ -48,6 +48,7 @@ class WrapperBase
             {
                 if (BEptr->can_delete_me())
                 {
+                    BEptr->can_delete_wrapper(false);
                     delete BEptr;
                 }
             }

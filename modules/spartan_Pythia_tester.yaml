@@ -91,7 +91,7 @@ Scanner:
     random:
       plugin: random_sampler
       options:
-        point_number: 10
+        point_number: 3
         output_file:  output
         like:  Likelihood
         files:

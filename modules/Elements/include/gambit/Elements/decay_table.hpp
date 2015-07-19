@@ -47,13 +47,13 @@ namespace Gambit
       /// @}
 
       /// Output entire decay table as an SLHAea file full of DECAY blocks
-      SLHAstruct as_slhaea(bool include_zero_bfs=false);
+      SLHAstruct as_slhaea(bool include_zero_bfs=false) const;
     
       /// Output a decay table entry as an SLHAea DECAY block, using input parameter to identify the entry.
       /// @{
-      SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false);
-      SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false);
-      SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false);
+      SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
+      SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false) const;
+      SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false) const;
       /// @}
 
       /// Get entry in decay table for a given particle, adding the particle to the table if it is absent.
@@ -91,7 +91,7 @@ namespace Gambit
           void init(const SLHAea::Block&, int);
 
           /// Make sure all particles listed in a set are actually known to the GAMBIT particle database
-          void check_particles_exist(std::multiset< std::pair<int,int> >&);
+          void check_particles_exist(std::multiset< std::pair<int,int> >&) const;
 
           /// Construct a set of particles from a variadic list of full names or short names and indices 
           /// @{
@@ -241,9 +241,9 @@ namespace Gambit
 
           /// Output this entry as an SLHAea DECAY block, using input parameter to identify the mother particle.
           /// @{
-          SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false);
-          SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false);
-          SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false);
+          SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false) const;
+          SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false) const;
+          SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
           /// @}
 
           /// Sum up the partial widths and return the result.

@@ -20,7 +20,7 @@
 
 #define MODEL SingletDM
   START_MODEL
-  DEFINEPARS(lambda,mass)
+  DEFINEPARS(mS, lambda_hS)
 #undef MODEL
 
 #endif

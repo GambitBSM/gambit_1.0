@@ -42,8 +42,11 @@
 #define addtomap(__KEYS,FPTR) BOOST_PP_SEQ_FOR_EACH_PRODUCT(addtomap_EL, (BOOST_PP_TUPLE_TO_SEQ(__KEYS))((FPTR)) )
 
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
+
+   namespace SpecBit
+   {
 
       /// Simplify access to map types in this file
       typedef MapTypes<QedQcdWrapperTraits> MT; 
@@ -52,12 +55,13 @@ namespace Gambit {
       
       ///   @{ Constructors
       QedQcdWrapper::QedQcdWrapper() 
-         : qedqcd()
+         : Spec<QedQcdWrapper,QedQcdWrapperTraits>()
+         , qedqcd()
          , sminputs()
       {}
 
       QedQcdWrapper::QedQcdWrapper(const softsusy::QedQcd& model, const SMInputs& input)
-         : Spec(qedqcd, sminputs) /***/
+         : Spec<QedQcdWrapper,QedQcdWrapperTraits>(qedqcd, sminputs) /***/
          , qedqcd(model)
          , sminputs(input)        /***/
          , softup(phys.get_Pole_Mass("t")) // Set top quark pole mass as soft upper limit of running. /***/
@@ -69,7 +73,7 @@ namespace Gambit {
       /// just call Spec<T> copy constructor, because we need to change the base
       /// class references to the "connected" qedqcd_msbar_pars and qedqcd_ph objects.
       QedQcdWrapper::QedQcdWrapper(const QedQcdWrapper& other)
-         : Spec(qedqcd, sminputs)   /***/
+         : Spec<QedQcdWrapper,QedQcdWrapperTraits>(qedqcd, sminputs)   /***/
          , qedqcd(other.qedqcd)
          , sminputs(other.sminputs)
          , softup(other.softup)
