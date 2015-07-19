@@ -40,7 +40,9 @@ set(header_files include/gambit/Elements/base_functions.hpp
                  include/gambit/Elements/shared_types.hpp
                  include/gambit/Elements/SMInputs.hpp
                  include/gambit/Elements/Spectrum.hpp
+                 include/gambit/Elements/SpecFptrFinder.hpp
                  include/gambit/Elements/SubSpectrum.hpp
+                 include/gambit/Elements/SubSpectrumDecl.hpp
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/types_rollcall.hpp
 		 include/gambit/Elements/MSSM_slhahelp.hpp

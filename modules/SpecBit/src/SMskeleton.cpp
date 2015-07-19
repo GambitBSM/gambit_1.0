@@ -43,7 +43,9 @@ namespace Gambit {
    namespace SpecBit {
 
       /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MT; 
+      typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
+      typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
+      typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
 
       /// @{ Member functions for SLHAeaModel class
            
@@ -129,39 +131,49 @@ namespace Gambit {
       
       // Map fillers
 
-      /// Filler for Pole_mass_map (from Model object)
-      MT::fmap SMskeleton::fill_PoleMass_map_Get()
+      RunningGetterMaps SMskeleton::runningpars_fill_getter_maps()
       {
-         MT::fmap tmp_map;
-      
-         addtomap(("Z0", "Z"),       &SMea::get_MZ_pole );      
-         addtomap(("W+", "W-", "W"), &SMea::get_MW_pole );
-         addtomap(("t", "tbar", "u_3", "ubar_3"), &SMea::get_Mtop_pole );    
-         addtomap(("b", "bbar", "d_3", "dbar_3"), &SMea::get_MbMb      );
-         addtomap(("c", "cbar", "u_2", "ubar_2"), &SMea::get_McMc      );
-         addtomap(("tau+","tau-","tau","e+_3","e-_3"),         &SMea::get_Mtau_pole      );
-         addtomap(("mu-", "mu+", "mu", "e-_2", "e+_2", "e_2"), &SMea::get_Mmuon_pole     );
-         addtomap(("e-",  "e+",  "e",  "e-_1", "e+_1", "e_1"), &SMea::get_Melectron_pole );
-         addtomap(("nu_1", "nubar_1"), &SMea::get_Mnu1_pole );
-         addtomap(("nu_2", "nubar_2"), &SMea::get_Mnu2_pole );
-         addtomap(("nu_3", "nubar_3"), &SMea::get_Mnu3_pole );
+         RunningGetterMaps map_collection; 
 
-         tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
-         tmp_map["g"]     = &SMea::get_MGluon_pole;  
+         /// Filler for mass1 map 
+         {
+            MTget::fmap0 tmp_map;
 
-         return tmp_map; 
+            addtomap(("u", "ubar", "u_1", "ubar_1"), &SMea::get_mu );
+            addtomap(("d", "dbar", "d_1", "dbar_1"), &SMea::get_md );
+            addtomap(("s", "sbar", "d_2", "dbar_2"), &SMea::get_ms );
+ 
+            map_collection[Par::mass1].map0 = tmp_map;
+         }
+         return map_collection;
       }
 
-      /// Filler for mass_map 
-      MT::fmap SMskeleton::fill_mass_map_Get()
+      PhysGetterMaps SMskeleton::phys_fill_getter_maps()
       {
-         MT::fmap tmp_map;
+         PhysGetterMaps map_collection; 
 
-         addtomap(("u", "ubar", "u_1", "ubar_1"), &SMea::get_mu );
-         addtomap(("d", "dbar", "d_1", "dbar_1"), &SMea::get_md );
-         addtomap(("s", "sbar", "d_2", "dbar_2"), &SMea::get_ms );
- 
-         return tmp_map;
+         /// Filler for Pole_mass map (from Model object)
+         {
+            MTget::fmap0 tmp_map;
+         
+            addtomap(("Z0", "Z"),       &SMea::get_MZ_pole );      
+            addtomap(("W+", "W-", "W"), &SMea::get_MW_pole );
+            addtomap(("t", "tbar", "u_3", "ubar_3"), &SMea::get_Mtop_pole );    
+            addtomap(("b", "bbar", "d_3", "dbar_3"), &SMea::get_MbMb      );
+            addtomap(("c", "cbar", "u_2", "ubar_2"), &SMea::get_McMc      );
+            addtomap(("tau+","tau-","tau","e+_3","e-_3"),         &SMea::get_Mtau_pole      );
+            addtomap(("mu-", "mu+", "mu", "e-_2", "e+_2", "e_2"), &SMea::get_Mmuon_pole     );
+            addtomap(("e-",  "e+",  "e",  "e-_1", "e+_1", "e_1"), &SMea::get_Melectron_pole );
+            addtomap(("nu_1", "nubar_1"), &SMea::get_Mnu1_pole );
+            addtomap(("nu_2", "nubar_2"), &SMea::get_Mnu2_pole );
+            addtomap(("nu_3", "nubar_3"), &SMea::get_Mnu3_pole );
+
+            tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
+            tmp_map["g"]     = &SMea::get_MGluon_pole;  
+
+            map_collection[Par::Pole_Mass].map0 = tmp_map;
+         }
+         return map_collection;
       }
 
    } // end SpecBit namespace
