@@ -115,7 +115,7 @@ else()
 endif()
 
 # Check for HDF5 libraries
-find_package(HDF5 QUIET)
+find_package(HDF5 QUIET COMPONENTS C CXX)
 if(HDF5_FOUND)
   #Make sure C++ interface exists
   if(NOT "${HDF5_CXX_LIBRARIES}" STREQUAL "")
@@ -127,7 +127,6 @@ if(HDF5_FOUND)
     endif()
   endif()
   if(HDF5_CPP)
-    link_directories(${HDF5_LIBRARY_DIRS})
     include_directories(${HDF5_INCLUDE_DIR})
     message("-- Found HDF5 libraries")  
   else()

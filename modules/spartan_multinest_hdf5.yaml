@@ -30,8 +30,7 @@ Printer:
 
 #======== Scanner setup ========
 Scanner:
-  use_scanner: de 
-#multinest
+  use_scanner: multinest
 
   scanners:
     multinest:

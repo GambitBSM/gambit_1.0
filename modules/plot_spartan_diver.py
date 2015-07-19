@@ -5,6 +5,8 @@
 #import numpy as np
 import h5py
 import numpy as np
+import matplotlib 
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colorbar as colorbar
 import plottools #Some handy bits and pieces I wrote for plotting stuff
@@ -42,6 +44,7 @@ chi2 = -2*LnL[mask][cuts]
 
 data = np.vstack((x,y,chi2)).T
 
+print "Plotting figure..."
 fig= plt.figure(figsize=(12,8))
 ax = fig.add_subplot(111)
 plot = plottools.chi2scatplot(ax,data,labels=["mu","sigma"],s=20)
@@ -53,4 +56,4 @@ cbar = fig.colorbar(plot, ax=ax, cax=cax, ticks=[0, 1, 2, 3, 4, 5], **kw)
 cbar.ax.set_yticklabels(['0','1','4','9','16',r'$\geq$25'])# vertically oriented colorbar
 cbar.ax.set_title("$\Delta\chi^2$")
 fig.savefig("diver_LnL_scat.png")
-
+print "Done."

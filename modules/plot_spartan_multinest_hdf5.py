@@ -5,6 +5,8 @@
 #import numpy as np
 import h5py
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 f = h5py.File("runs/spartan_multinest_hdf5/samples/gambit_output.hdf5",'r')
