@@ -5,8 +5,6 @@
 
 #include "gambit/Utils/threadsafe_rng.hpp"
 
-using namespace std;
-
 template <typename T>
 T *matrix(const int xN)
 {
@@ -200,7 +198,7 @@ class Cholesky
 					{
 						if(sum <= 0.0)
 						{
-							cout << "Cholesky failed " << sum << endl;
+                                                        std::cout << "Cholesky failed " << sum << std::endl;
 							getchar();
 						}
 						el[i][i] = sqrt(sum);

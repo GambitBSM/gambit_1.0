@@ -53,6 +53,37 @@ namespace Gambit
   using std::cout;
   using std::endl;
 
+  // A simple triplet class for holding a central value and aysmmetric +/- variations
+  template<typename TYPE>
+  struct triplet
+  {
+    TYPE central, upper, lower;
+    /// Default constructor
+    triplet()
+     : central(0.),
+       upper(0.),
+       lower(0.)
+    {}
+    /// One-value constructor
+    triplet(TYPE centralval)
+     : central(centralval),
+       upper(0.),
+       lower(0.)
+    {}
+    /// Three-value constructor
+    triplet(TYPE centralval, TYPE upperval, TYPE lowerval)
+     : central(centralval),
+       upper(upperval),
+       lower(lowerval)
+    {}
+    /// Copy constructor
+    triplet(const triplet<TYPE>& in)
+     : central(in.central),
+       upper(in.upper),
+       lower(in.lower)
+    {}    
+  }; 
+
   /// A safe pointer that throws an informative error if you try to dereference
   /// it when nullified, and cannot be used to overwrite the thing it points to.
   template <typename TYPE> 

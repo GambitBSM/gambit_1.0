@@ -33,6 +33,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
+#include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 
 namespace Gambit
 {
@@ -693,7 +694,520 @@ namespace Gambit
     }
     
     
-    /// *** Higgs physics ***
+    // *** Limits from e+e- colliders ***
+    
+    /// ee --> selectron pair production cross-sections at 208 GeV
+    /// @{
+    void LEP208_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_selselbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_selserbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_serserbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP208_SLHA1_convention_xsec_serselbar::Dep::LEP208_xsec_selserbar;
+    }
+    /// @}
+
+    /// ee --> smuon pair production cross-sections at 208 GeV
+    /// @{
+    void LEP208_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_smulsmulbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_smulsmurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_smursmurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP208_SLHA1_convention_xsec_smursmulbar::Dep::LEP208_xsec_smulsmurbar;
+    }
+    /// @}
+
+    /// ee --> stau pair production cross-sections at 208 GeV
+    /// @{
+    void LEP208_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_staulstaulbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_staulstaurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_staurstaurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP208_SLHA1_convention_xsec_staurstaulbar::Dep::LEP208_xsec_staulstaurbar;
+    }
+    /// @}
+
+
+    /// ee --> neutralino pair production cross-sections at 208 GeV
+    /// @{
+    void LEP208_SLHA1_convention_xsec_chi00_11(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_11;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_12(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_12;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_13(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_13;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 1, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_14(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_14;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 1, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_22(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_22;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_23(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_23;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 2, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_24(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_24;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 2, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_33(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_33;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 3, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_34(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_34;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 3, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chi00_44(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_44;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 208.0, 4, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    /// @}
+
+
+    /// ee --> chargino pair production cross-sections at 208 GeV   
+    /// @{
+    void LEP208_SLHA1_convention_xsec_chipm_11(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_11;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 208.0, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chipm_12(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_12;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 208.0, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chipm_22(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_22;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 208.0, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP208_SLHA1_convention_xsec_chipm_21(triplet<double>& result)    
+    {
+      result = *Pipes::LEP208_SLHA1_convention_xsec_chipm_21::Dep::LEP208_xsec_chipm_12;
+    }
+    /// @}
+
+
+    /// ee --> selectron pair production cross-sections at 205 GeV   
+    /// @{
+    void LEP205_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_selselbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_selserbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_serserbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP205_SLHA1_convention_xsec_serselbar::Dep::LEP205_xsec_selserbar;
+    }
+    /// @}
+
+    /// ee --> smuon pair production cross-sections at 205 GeV   
+    /// @{
+    void LEP205_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_smulsmulbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_smulsmurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_smursmurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP205_SLHA1_convention_xsec_smursmulbar::Dep::LEP205_xsec_smulsmurbar;
+    }
+    /// @}
+
+    /// ee --> stau pair production cross-sections at 205 GeV   
+    /// @{
+    void LEP205_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_staulstaulbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_staulstaurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_staurstaurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP205_SLHA1_convention_xsec_staurstaulbar::Dep::LEP205_xsec_staulstaurbar;
+    }
+    /// @}
+
+
+    /// ee --> neutralino pair production cross-sections at 205 GeV   
+    /// @{
+    void LEP205_SLHA1_convention_xsec_chi00_11(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_11;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_12(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_12;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_13(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_13;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 1, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_14(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_14;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 1, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_22(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_22;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_23(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_23;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 2, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_24(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_24;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 2, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_33(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_33;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 3, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_34(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_34;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 3, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chi00_44(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_44;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 205.0, 4, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    /// @}
+
+
+    /// ee --> chargino pair production cross-sections at 205 GeV   
+    /// @{
+    void LEP205_SLHA1_convention_xsec_chipm_11(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_11;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 205.0, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chipm_12(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_12;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 205.0, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chipm_22(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_22;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 205.0, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP205_SLHA1_convention_xsec_chipm_21(triplet<double>& result)    
+    {
+      result = *Pipes::LEP205_SLHA1_convention_xsec_chipm_21::Dep::LEP205_xsec_chipm_12;
+    }
+    
+    /// ee --> selectron pair production cross-sections at 188.6 GeV   
+    /// @{
+    void LEP188_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_selselbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_selserbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_serserbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP188_SLHA1_convention_xsec_serselbar::Dep::LEP188_xsec_selserbar;
+    }
+    /// @}
+
+    /// ee --> smuon pair production cross-sections at 188.6 GeV   
+    /// @{
+    void LEP188_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_smulsmulbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_smulsmurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_smursmurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP188_SLHA1_convention_xsec_smursmulbar::Dep::LEP188_xsec_smulsmurbar;
+    }
+    /// @}
+
+    /// ee --> stau pair production cross-sections at 188.6 GeV   
+    /// @{
+    void LEP188_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_staulstaulbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_staulstaurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_staurstaurbar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP188_SLHA1_convention_xsec_staurstaulbar::Dep::LEP188_xsec_staulstaurbar;
+    }
+    /// @}
+
+
+    /// ee --> neutralino pair production cross-sections at 188.6 GeV   
+    /// @{
+    void LEP188_SLHA1_convention_xsec_chi00_11(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_11;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_12(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_12;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_13(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_13;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 1, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_14(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_14;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 1, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_22(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_22;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_23(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_23;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 2, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_24(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_24;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 2, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_33(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_33;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 3, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_34(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_34;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 3, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chi00_44(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_44;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chi00(result, 188.6, 4, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    /// @}
+
+
+    /// ee --> chargino pair production cross-sections at 188.6 GeV   
+    /// @{
+    void LEP188_SLHA1_convention_xsec_chipm_11(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_11;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 188.6, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chipm_12(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_12;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 188.6, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chipm_22(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_22;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      get_sigma_ee_chipm(result, 188.6, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+    }
+    void LEP188_SLHA1_convention_xsec_chipm_21(triplet<double>& result)    
+    {
+      result = *Pipes::LEP188_SLHA1_convention_xsec_chipm_21::Dep::LEP188_xsec_chipm_12;
+    }
+    /// @}
+
+    
+    // *** Higgs physics ***
 
     /// FeynHiggs Higgs production cross-sections
     void FH_HiggsProd(fh_HiggsProd &result) 

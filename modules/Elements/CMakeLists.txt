@@ -16,6 +16,7 @@
 
 set(source_files src/decay_table.cpp
                  src/ini_functions.cpp
+                 src/slhaea_helpers.cpp
                  src/sminputs.cpp
                  src/spectrum.cpp
                  src/terminator.cpp
@@ -36,6 +37,7 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/numerical_constants.hpp
                  include/gambit/Elements/safety_bucket.hpp
                  include/gambit/Elements/shared_types.hpp
+                 include/gambit/Elements/slhaea_helpers.hpp
                  include/gambit/Elements/sminputs.hpp
                  include/gambit/Elements/spectrum.hpp
                  include/gambit/Elements/subspectrum.hpp

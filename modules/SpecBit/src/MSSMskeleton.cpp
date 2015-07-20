@@ -29,7 +29,7 @@ namespace Gambit {
    namespace SpecBit {
 
       /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<MSSMea>> MT; 
+      typedef MapTypes<SLHAskeletonTraits<MSSMea> > MT; 
 
       /// @{ Member functions for SLHAeaModel class
            
@@ -158,17 +158,17 @@ namespace Gambit {
  
       /// Default Constructor
       MSSMskeleton::MSSMskeleton() 
-        : SLHAskeleton()
+        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >()
       {}
 
       /// Constructor via SLHAea object
       MSSMskeleton::MSSMskeleton(const SLHAea::Coll& input)
-        : SLHAskeleton(input)
+        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >(input)
       {}
 
       /// Copy constructor: needed by clone function.
       MSSMskeleton::MSSMskeleton(const MSSMskeleton& other)
-        : SLHAskeleton(other)
+        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >(other)
       {} 
 
       /// @}  

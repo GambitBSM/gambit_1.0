@@ -33,6 +33,22 @@ ObsLikes:
     capability:   decay_rates
     type:         DecayTable
 
+  # Test LEP xsecs
+  #- purpose:      Test
+  #  capability:   LEP208_xsec_serserbar
+  #- purpose:      Test
+  #  capability:   LEP205_xsec_chi00_11
+  #- purpose:      Test
+  #  capability:   LEP188_xsec_chipm_11
+  #- purpose:      Test
+  #  capability:   LEP205_xsec_selserbar
+  #- purpose:      Test
+  #  capability:   LEP188_xsec_chi00_33
+  #- purpose:      Test
+  #  capability:   LEP208_xsec_chipm_12
+  #- purpose:      Test
+  #  capability:   LEP208_xsec_chi00_24
+
 Rules:
 
   - capability: MSSM_spectrum 
@@ -55,10 +71,10 @@ Rules:
   - capability: decay_rates
     function: all_decays
 
-#  - function: SUSY_HIT_1_5_init
-#    options:
-#      debug_SLHA_filenames:
-#        - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+  #- function: SUSY_HIT_1_5_init
+  #  options:
+  #    debug_SLHA_filenames:
+  #      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
       
       
 ##############################

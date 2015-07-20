@@ -92,13 +92,13 @@ namespace Gambit {
       };
 
       /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class MSSMskeleton : public SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea>> 
+      class MSSMskeleton : public SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> > 
       {
-         friend class RunparDer<MSSMskeleton,SLHAskeletonTraits<MSSMea>>;
-         friend class PhysDer  <MSSMskeleton,SLHAskeletonTraits<MSSMea>>;
+         friend class RunparDer<MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
+         friend class PhysDer  <MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
 
          private:
-            typedef MapTypes<SLHAskeletonTraits<MSSMea>> MT; 
+            typedef MapTypes<SLHAskeletonTraits<MSSMea> > MT; 
             typedef MSSMea Model; 
 
          public:

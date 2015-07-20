@@ -62,8 +62,8 @@ namespace Gambit
       SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = *myPipe::Param.at("mH");
       singletmodel.HiggsVEV        = *myPipe::Param.at("vev");
-      singletmodel.SingletPoleMass = *myPipe::Param.at("mass"); // Should make name in SingletDM model more specific
-      singletmodel.SingletLambda   = *myPipe::Param.at("lambda");
+      singletmodel.SingletPoleMass = *myPipe::Param.at("mS");
+      singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
 
       // Create a SubSpectrum object to wrap the EW sector information
       static SingletDMContainer singletspec(singletmodel);
