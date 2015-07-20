@@ -3,13 +3,12 @@
 #include <iostream>
 #include <limits>
 
-inline double pi() { return acos(-1); }
-
 namespace Gambit {
   namespace ColliderBit {
     double add_quad(const double& a, const double& b) {
       return sqrt(a*a + b*b);
     }
+
 
     /// @brief A simple container for a point on an xy plane.
     ///
@@ -89,6 +88,10 @@ namespace Gambit {
     //@}
 
 
+    /// @brief A simple container for a line segment on an xy plane.
+    ///
+    /// This class depends on the P2 class above. It has a built in algorithm
+    /// to detect intersection with another LineSegment.
     class LineSegment {
       /// @name Storage
       //@{

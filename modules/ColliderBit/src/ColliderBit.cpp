@@ -205,6 +205,7 @@ namespace Gambit
           result.init(pythiaOptions, &slha);
         }
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
+        // For now, just use the total cross section from SUSY:all
       }
     }
 
