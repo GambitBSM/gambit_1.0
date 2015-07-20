@@ -82,11 +82,15 @@ namespace Gambit
             /// Definitions of map fillers
             static void derived_phys_fill_getter_maps(PhysGetterMaps& in)
             {
-
                in[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
                in[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass; 
-
             }
+
+            static void derived_runningpars_fill_getter_maps(RunningGetterMaps& in)
+            {
+               in[Par::mass1].map0["lambda_hS"] = &Model::get_lambda_hS;
+            }
+
         }; 
 
    } // end SpecBit namespace
