@@ -73,8 +73,18 @@ namespace Gambit
       // objects can due to a special copy constructor which does
       // the required cloning of the constituent SubSpectra.
       static Spectrum full_spectrum;
-      full_spectrum = Spectrum(&qedqcdspec,&singletspec,sminputs);
- 
+
+      // Note subtlety! There are TWO constructors for the Spectrum object:
+      // If pointers to SubSpectrum objects are passed, it is assumed that
+      // these objects are managed EXTERNALLY! So if we were to do this:
+      //   full_spectrum = Spectrum(&qedqcdspec,&singletspec,sminputs);
+      // then the SubSpectrum objects would end up DELETED at the end of
+      // this scope, and we will get a segfault if we try to access them
+      // later. INSTEAD, we should just pass the objects themselves, and
+      // then they will be CLONED and the Spectrum object will take
+      // possession of them:
+      full_spectrum = Spectrum(qedqcdspec,singletspec,sminputs);
+
       result = &full_spectrum;
     }
 

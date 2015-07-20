@@ -213,7 +213,7 @@ namespace Gambit
       // and SMInputs struct.
       // Return pointer to this package.
       static Spectrum matched_spectra;
-      matched_spectra = Spectrum(&qedqcdspec,&mssmspec,sminputs);
+      matched_spectra = Spectrum(qedqcdspec,mssmspec,sminputs);
       return &matched_spectra;
     }
 
@@ -451,7 +451,16 @@ namespace Gambit
 
       // Create full Spectrum object from components above
       static Spectrum matched_spectra;
-      matched_spectra = Spectrum(&smskel,&mssmskel,sminputs);
+      // Note subtlety! There are TWO constructors for the Spectrum object:
+      // If pointers to SubSpectrum objects are passed, it is assumed that
+      // these objects are managed EXTERNALLY! So if we were to do this:
+      //   matched_spectra = Spectrum(&smskel,&mssmskel,sminputs);
+      // then the SubSpectrum objects would end up DELETED at the end of
+      // this scope, and we will get a segfault if we try to access them
+      // later. INSTEAD, we should just pass the objects themselves, and
+      // then they will be CLONED and the Spectrum object will take
+      // possession of them:
+      matched_spectra = Spectrum(smskel,mssmskel,sminputs);
       result = &matched_spectra;
     } 
     
