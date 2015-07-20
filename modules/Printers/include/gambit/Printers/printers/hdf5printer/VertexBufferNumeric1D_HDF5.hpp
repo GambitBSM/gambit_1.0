@@ -124,7 +124,14 @@ namespace Gambit {
            /// write to the supplied absolute dataset index (e.g. by inserting
            /// blank entries if need)
            void synchronise_output_to_position(const ulong i);
-         
+        
+           /// Check how many RA writes are waiting in the postpone queue
+           /// (mostly for debugging purposes)
+           std::size_t postponed_RA_queue_length() { return postpone_write_queue_and_locs.size(); }
+
+           // Needed for checking that dataset sizes on disk are consistent
+           ulong get_dataset_length();
+
       };
  
 
@@ -265,7 +272,24 @@ namespace Gambit {
 
       /// Reset the output (non-synchronised datasets only)
       template<class T, std::size_t L>
-      void VertexBufferNumeric1D_HDF5<T,L>::reset() { }
+      void VertexBufferNumeric1D_HDF5<T,L>::reset() 
+      { 
+         if(this->is_synchronised())
+         {
+            std::ostringstream errmsg;
+            errmsg << "rank "<<this->myRank<<": Error! Tried to reset() a non-synchronised buffer! This is currently forbidden. (buffer name = "<<this->get_label()<<")";
+            printer_error().raise(LOCAL_INFO, errmsg.str()); 
+         }
+
+         /// Empty the queue of postponed writes, because it would now
+         /// be erased had we gotten around to writing it.
+         postpone_write_queue_and_locs.clear();
+
+         /// Invalidate the contents of the linked datasets
+         /// This can be done by simply resetting the all validity bools to "false"
+         dsetvalid().zero();
+         //dsetdata().zero(); // Should work fine, but should be unneccesary.
+      }
 
       /// Send random access write queue to dataset interfaces for writing
       template<class T, std::size_t CHUNKLENGTH>
@@ -303,6 +327,7 @@ namespace Gambit {
                /// potentially many times we'll just copy everything twice)
                std::vector<std::pair<T,PPIDpair>> tmp_postpone;
 
+               //std::cout<<"rank "<<this->myRank<<": Checking if postponed writes can now be performed (number in queue = "<<postpone_write_queue_and_locs.size()<<"); buffer is '"<<this->get_label()<<"'"<<std::endl;
                for(typename std::vector<std::pair<T,PPIDpair>>::iterator 
                     itpp = postpone_write_queue_and_locs.begin();
                     itpp!= postpone_write_queue_and_locs.end(); ++itpp)
@@ -333,7 +358,7 @@ namespace Gambit {
                   std::fill_n(valid, now_i, true); 
                   dsetvalid().RA_write(valid,           now_abs_write_locations, now_i); 
                   dsetdata().RA_write (now_write_queue, now_abs_write_locations, now_i);
-                  std::cout<<"Wrote "<<now_i<<" postponed RA items to disk"<<std::endl;
+                  //std::cout<<"Wrote "<<now_i<<" postponed RA items to disk"<<std::endl;
                }
                // Reset the "now" buffer for the actual scheduled write
                now_i = 0;
@@ -341,6 +366,7 @@ namespace Gambit {
                // (also resets the postpone buffer if there are no unwritten writes)
                postpone_write_queue_and_locs = tmp_postpone;
 
+               //std::cout<<"rank "<<this->myRank<<": Number of items remaining in postpone queue after write attempt = "<<postpone_write_queue_and_locs.size()<<"); buffer is '"<<this->get_label()<<"'"<<std::endl;
 
                // Now go through the current RA_queue and try to write them to disk
                for(ulong i=0; i<this->RA_queue_length; i++)
@@ -377,7 +403,6 @@ namespace Gambit {
                }
 
                // TODO: Need some check at the end of the run to ensure postpone buffer is emptied?
-               //       Also need to make sure it gets emptied when printer->reset gets called.
             }
          }
       }
@@ -470,6 +495,17 @@ namespace Gambit {
          }
       }
  
+      template<class T, std::size_t L>
+      ulong VertexBufferNumeric1D_HDF5<T,L>::get_dataset_length()
+      {
+         if(dsetvalid().dset_length() != dsetdata().dset_length())
+         {
+            std::ostringstream errmsg;
+            errmsg << "rank "<<this->myRank<<": Error! Lengths of 'data' and 'valid' datasets for buffer "<<this->get_label()<<" are different ("<<dsetdata().dset_length()<<" and "<<dsetvalid().dset_length()<<" respectively). This should never happen.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+         return dsetdata().dset_length();
+      }
       /// @} 
   }
 }

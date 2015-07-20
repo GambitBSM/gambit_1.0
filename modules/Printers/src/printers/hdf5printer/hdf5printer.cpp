@@ -346,7 +346,7 @@ namespace Gambit
         DBUG( std::cout << "Performing final writes for HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
 
           // Make sure all the buffers are caught up to the final point.
-          primary_printer->synchronise_buffers();          
+          synchronise_buffers();          
 
           #ifdef WITH_MPI
           // Trigger all worker buffers to send to master, regardless of how full they are
@@ -361,7 +361,7 @@ namespace Gambit
  
           // If the master process buffers are full, need to empty those as well
           // before (potentially) trying to receive mpi buffer messages.
-          empty_sync_buffers_if_full();
+          empty_sync_buffers();
 
           #ifdef WITH_MPI
           // Wait for all the nodes to do their final sends
@@ -404,11 +404,17 @@ namespace Gambit
              check_sync("FINAL Post-mpi-buffer-collect check (in finalise)", 1);
              #endif
 
-             // Make sure buffers are sync'd, to ensure that they all have the same final length
-             //  This is a bit of a hack to force the printer to increment by one final (fake) point
-             //  so that the synchronisation works correctly.
-             //reverse_global_index_lookup.push_back(PPIDpair(0,0));
-             
+             // No more message passing should happen, so make sure that all messages
+             // have been received. 
+             MPI_Status status;
+             if(myComm.Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, &status))
+             {
+                bool bufsent = myComm.Iprobe(MPI_ANY_SOURCE, N_BUFFERS_SENT);
+                std::ostringstream errmsg;
+                errmsg << "Error! At least one MPI message left unreceived at end of run! Tag is "<<status.MPI_TAG
+                       << " (Was there an N_BUFFERS_SENT message amongst them? answer="<<bufsent<<")";
+                printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
 
              // Very very last write to disk
              #ifdef MPI_DEBUG
@@ -417,6 +423,32 @@ namespace Gambit
                      
              #endif    
              flush();
+
+             //std::cout << "Checking number of RA writes still postponed in buffers: " << std::endl;
+             //std::cout << "(also checking that final datasets all have a consistent length)" << std::endl;
+             unsigned long dset_length = 0;
+             for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+             {
+                //std::cout << it->second->get_label() <<": "<< it->second->postponed_RA_queue_length() <<std::endl;
+                std::size_t remaining_msgs = it->second->postponed_RA_queue_length();
+                if(remaining_msgs!=0)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "Error! There are (N="<<remaining_msgs<<") postponed random-access writes still left unwritten to disk in buffer "<<it->second->get_label()<<" at end of run! This may mean that some sync buffer data was not properly delivered from another process.";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+             
+                if(dset_length==0) 
+                {
+                   dset_length = it->second->get_dataset_length();
+                }
+                else if(dset_length != it->second->get_dataset_length())
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "Error! Inconsistency detected in output dataset lengths during hdf5printer::finalise(). Datasets from buffer "<<it->second->get_label()<<" have length "<<it->second->get_dataset_length()<<", but previous datasets had length "<<dset_length<<".";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+             }
           }
        } //end if(is_primary_printer)
     }
@@ -488,7 +520,10 @@ namespace Gambit
 
     #ifdef WITH_MPI
     /// Clear index lists (master process should never do this!)
-    void HDF5Printer::send_PPID_lists()
+    /// finalsend = false by default. Set to true only for final
+    /// sending of index lists; this changes the behaviour to
+    /// allow a shorter message to be sent.
+    void HDF5Printer::send_PPID_lists(bool finalsend)
     {
       if ( myRank==0 ) {
          std::ostringstream errmsg;
@@ -497,7 +532,7 @@ namespace Gambit
       }
 
       std::vector<PPIDpair>& reverse_lookup = primary_printer->reverse_global_index_lookup;
-      if ( reverse_lookup.size() != BUFFERLENGTH )
+      if (not finalsend and reverse_lookup.size() != BUFFERLENGTH )
       {
          std::ostringstream errmsg;
          errmsg << "Error! hdf5printer tried to clear PPID lists, but list size ("<<reverse_lookup.size()<<") was not equal to buffer size ("<<BUFFERLENGTH<<")! Should only be sending data to master node in chunks equal to BUFFERLENGTH.";
@@ -516,7 +551,14 @@ namespace Gambit
       std::copy(reverse_lookup.begin(), reverse_lookup.end(), PPID_send_buffer);
 
       /// Send the list to the master process
-      myComm.Isend(&PPID_send_buffer, BUFFERLENGTH, 0 /*master*/, PPID_SEND, &req_PPIDsend);
+      if(finalsend)
+      {  // Buffer may not be full, so check actual number of PPIDs we are sending
+         myComm.Isend(&PPID_send_buffer, reverse_lookup.size(), 0 /*master*/, PPID_SEND, &req_PPIDsend);
+      }
+      else
+      {  // If not the final send, we know that the message must be of size BUFFERLENGTH
+         myComm.Isend(&PPID_send_buffer, BUFFERLENGTH, 0 /*master*/, PPID_SEND, &req_PPIDsend);
+      }
       PPID_send_buffer_ready = false;
 
       /// Reset the lists for this process
@@ -535,10 +577,19 @@ namespace Gambit
 
       /// Receive the list
       PPIDpair recv_buffer[BUFFERLENGTH];
-      myComm.Recv(&recv_buffer, BUFFERLENGTH, source, PPID_SEND);
+
+      /// Message might be the finalsend and therefore shorter than
+      /// BUFFERLENGTH; to keep the logic simple we'll just check the
+      /// message length each time.
+      MPI_Status status;
+      myComm.Iprobe(source, PPID_SEND, &status);      
+      int msgsize = GMPI::Get_count<PPIDpair>(&status);
+      myComm.Recv(&recv_buffer, msgsize, source, PPID_SEND);
+
+      //std::cout<<"rank "<<myRank<<": received "<<msgsize<<" PPIDs from rank "<<source<<std::endl;
 
       /// Update the lists with the new PPIDs
-      for(uint i=0; i<BUFFERLENGTH; i++)
+      for(int i=0; i<msgsize; i++)
       {
          add_PPID_to_list(recv_buffer[i]);
       }
@@ -601,7 +652,9 @@ namespace Gambit
 
     // (this will trigger MPI sends if needed)
     // Note that if one sync buffer is full, they should all be full!
-    void HDF5Printer::empty_sync_buffers_if_full()
+    // By default this only empties buffers if they are full. Use
+    // flag to force the flush for the finalise buffer dumps.
+    void HDF5Printer::empty_sync_buffers(bool force)
     {
       #ifdef DEBUG_MODE
       std::cout<<"rank "<<myRank<<": Emptying sync buffers (if full)..."<<std::endl;
@@ -613,12 +666,12 @@ namespace Gambit
         if(it->second->is_synchronised())
         {
           N_sync_buffers += 1;
-          if(it->second->sync_buffer_is_full())
+          if(it->second->sync_buffer_is_full() or force)
           {
             #ifdef DEBUG_MODE
             std::cout<<"rank "<<myRank<<": Emptying sync buffer "<<it->second->get_label()<<std::endl;
             #endif
-            N_were_full += 1;    
+            N_were_full += 1; // Can get flushed if not full only if force=true
             it->second->flush();
           }
         }
@@ -636,7 +689,7 @@ namespace Gambit
       // Trigger send of the PPIDs associated with these sync writes
       if(myRank != 0 and N_were_full != 0) 
       {
-        send_PPID_lists();
+        send_PPID_lists(force); // force should only be true for the finalsend.
  
         // Let the master process know how many buffer messages it has been sent
         N_buffers_sent = N_were_full;
@@ -705,21 +758,34 @@ namespace Gambit
                 // waiting to be retrieved, to check on these first.
                 uint N_buffers = 0;
                 uint N_buffers_with_msg = 0;
+                int exp_msgsize = 0; // Expected length of mpi buffer message (filled by probe_sync_mpi_message)
                 for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
                 {
                    VertexBufferBase* buf = it->second;
                    if(buf->is_synchronised())
                    {
                       // Check for sync buffer messages from 'source_rank'
-                      if(buf->probe_sync_mpi_message(source_rank))
+                      int msgsize;
+                      if(buf->probe_sync_mpi_message(source_rank,&msgsize))
                       {
+                         if(exp_msgsize==0)
+                         {
+                            exp_msgsize = msgsize;
+                         }
+                         else if(exp_msgsize != msgsize)
+                         {
+                            std::ostringstream errmsg;
+                            errmsg << "Error in printer_name = "<<printer_name<<"! Tried to retrieve sync buffers from rank="<<source_rank<<" process via MPI, but some message sent by buffer "<<buf->get_label()<<" has length ("<<msgsize<<") not matching the previous buffer ("<<exp_msgsize<<")! These buffers should all be from the same rank and should be synchronised!";
+                            printer_error().raise(LOCAL_INFO, errmsg.str());
+                         }
+
                          #ifdef MPI_DEBUG
-                         std::cout<<"rank "<<myRank<<": Collecting buffers from process "<<source_rank<<std::endl;
+                         std::cout<<"rank "<<myRank<<": Collecting buffers from process "<<source_rank<<"; expected message size is "<<exp_msgsize<<std::endl;
                          #endif
                          // Receive messages from 'source_rank'
                          // Will push all the received print data through the append system
                          // Thus it needs to happen for *every* buffer at once.
-                         buf->get_sync_mpi_message(source_rank);
+                         buf->get_sync_mpi_message(source_rank,exp_msgsize);
                          N_buffers_with_msg += 1;
                       }
                       N_buffers += 1;
@@ -755,18 +821,26 @@ namespace Gambit
 
                 // Update master PPIDs with those from the worker node
                 // Will block until these are received; they should come right alongside the buffers themselves
-                #ifdef MPI_DEBUG
                 long npoints_init = primary_printer->reverse_global_index_lookup.size();
+                #ifdef MPI_DEBUG
                 std::cout<<"rank "<<myRank<<": npoints_init = "<<npoints_init<<std::endl;
                 #endif
 
                 receive_PPID_list(source_rank);
 
-                #ifdef MPI_DEBUG
                 long npoints_final = primary_printer->reverse_global_index_lookup.size();
+                #ifdef MPI_DEBUG
                 std::cout<<"rank "<<myRank<<": npoints_final = "<<npoints_final<<std::endl;
                 std::cout<<"rank "<<myRank<<": Received "<<npoints_final-npoints_init<<" new PPIDs from process "<<source_rank<<std::endl;
                 #endif
+
+                // Make sure number of received PPIDs matches the length of the buffers that were received
+                if(npoints_final-npoints_init != exp_msgsize)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "Error in printer_name = "<<printer_name<<"! Tried to retrieve sync buffers from rank="<<source_rank<<" process via MPI, but the number of PPIDs received ("<<npoints_final-npoints_init<<") did not match the length of the buffers that were received ("<<exp_msgsize<<"); (note: N_buffers_sent = "<<N_buffers_sent<<" )";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
 
                 #ifdef CHECK_SYNC
                 check_sync("Post-mpi-buffer-collect (and PPID update) check (in collect_mpi_buffers)", 1);
@@ -904,17 +978,19 @@ namespace Gambit
     #endif
 
     /// Empty all the buffers to disk
-    /// TODO: This is not currently completely safe. If it gets called during a scan on one
-    /// of the primary buffers, then the chunk-writer will get desynchronised and crash. 
-    /// Need to make this work, or die gracefully.
     /// Note: Empty sync buffers will not get flushed, to avoid writing extra
     /// buffer-lengths at the end of scan.
     void HDF5Printer::flush()
     {
+      empty_sync_buffers(true); // NOTE: forces flush even if buffers not full
+
+      // Need to do all the sync buffers before the RA buffers, so that at the end of the
+      // run the sync buffers all get written to disk first, and no RA writes get left
+      // in the postpone queue due to missing targets.
       for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
       {
-        if(it->second->is_synchronised() and not it->second->sync_buffer_is_empty()) {
-          it->second->flush();
+        if(it->second->is_synchronised() and not it->second->sync_buffer_is_empty()) 
+        { // do nothing, these are the sync buffers
         }
         else {
           it->second->RA_flush(primary_printer->global_index_lookup);
@@ -1081,7 +1157,7 @@ namespace Gambit
 
          // Check if the buffers are full and waiting to be emptied
          // (this will trigger MPI sends if needed)
-         empty_sync_buffers_if_full();
+         empty_sync_buffers();
           
          #ifdef CHECK_SYNC
          check_sync("Post-buffer-empty check (in check_for_new_point)", 1);
@@ -1127,9 +1203,6 @@ namespace Gambit
          #ifdef CHECK_SYNC
          check_sync("Post-newpoint check (in check_for_new_point)", 2);
          #endif
-
-         // TODO: This shouldn't be needed but for some reason it seems to be...
-         //empty_sync_buffers_if_full();
 
          // Debugging only! check if buffers are somehow still full...
          #ifdef MPI_DEBUG
