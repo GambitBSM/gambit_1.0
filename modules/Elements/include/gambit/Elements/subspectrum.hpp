@@ -24,8 +24,8 @@
 #ifndef __SubSpectrum_hpp__
 #define __SubSpectrum_hpp__
 
-#include "gambit/Elements/SubSpectrumDecl.hpp"
-#include "gambit/Elements/SpecFptrFinder.hpp"
+#include "gambit/Elements/subspectrum_decl.hpp"
+#include "gambit/Elements/spec_fptrfinder.hpp"
 
 namespace Gambit {
 
