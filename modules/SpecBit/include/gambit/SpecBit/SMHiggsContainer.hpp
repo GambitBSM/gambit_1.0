@@ -53,7 +53,7 @@ namespace Gambit {
         friend class PhysDer  <Derived,DerivedTraits>;
  
         protected:
-            typedef MapTypes<DerivedTraits> MT; 
+            typedef MapTypes<DerivedTraits,MapTag::Get> MTget; 
             typedef typename DerivedTraits::Model Model;
  
             /// Actual model object stored here
@@ -92,7 +92,7 @@ namespace Gambit {
                return -1;
             }
 
-            virtual void SetScale(double scale) {
+            virtual void SetScale(double) {
                utils_error().raise(LOCAL_INFO,"Cannot call SetScale for BaseHiggsContainer SubSpectrum!");    
             }
 
@@ -103,34 +103,44 @@ namespace Gambit {
 
          protected:
             /// Map fillers
-            // (just listed here to help bookkeeping)
-            //static typename MT::fmap  fill_mass_map(); 
-            //static typename MT::fmap  fill_PoleMass_map();
+            /// Used to initialise maps in the RunparDer and PhysDer classes
+            /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
+            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
+            //typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
+            //typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
 
             /// Map fillers for derived classes to statically overload
             /// (so that the "real" map fillers here can add their
             /// extra information into the final wrapper)
-            static void derived_fill_mass_map    (typename MT::fmap& in) {}
-            static void derived_fill_PoleMass_map(typename MT::fmap& in) {}             
+            static void derived_runningpars_fill_getter_maps(RunningGetterMaps&) { }
+            static void derived_phys_fill_getter_maps(PhysGetterMaps&) { }
  
             /// Definitions of map fillers
-            static typename MT::fmap fill_mass_map() 
+            static RunningGetterMaps runningpars_fill_getter_maps()
             {
-               typename MT::fmap tmp_map;
-               Derived::derived_fill_mass_map(tmp_map);
-    
-               tmp_map["vev"]      = &Model::get_HiggsVEV;
-               return tmp_map;
+               RunningGetterMaps map_collection;
+
+               /// First grab values from the derived class
+               Derived::derived_runningpars_fill_getter_maps(map_collection);
+   
+               /// Now add our own
+               map_collection[Par::mass1].map0["vev"] = &Model::get_HiggsVEV;
+
+               return map_collection;
             }
 
-            static typename MT::fmap fill_PoleMass_map()
+            static PhysGetterMaps phys_fill_getter_maps()
             {
-               typename MT::fmap tmp_map;
-               Derived::derived_fill_PoleMass_map(tmp_map);
- 
-               tmp_map["h0"]   = &Model::get_HiggsPoleMass; 
-               tmp_map["h0_1"] = &Model::get_HiggsPoleMass;   
-               return tmp_map;
+               PhysGetterMaps map_collection;
+
+               /// First grab values from the derived class
+               Derived::derived_phys_fill_getter_maps(map_collection);
+   
+               /// Now add our own
+               map_collection[Par::Pole_Mass].map0["h0"]   = &Model::get_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0["h0_1"] = &Model::get_HiggsPoleMass;
+               return map_collection;
             }
 
      }; 
@@ -141,7 +151,7 @@ namespace Gambit {
          protected:
             typedef SMHiggsContainer   This;
             typedef SMHiggsModelTraits Traits;
-            typedef MapTypes<Traits> MT; 
+            typedef MapTypes<Traits,MapTag::Get> MTget; 
 
          public:
             /// @{ Constructors/destructors

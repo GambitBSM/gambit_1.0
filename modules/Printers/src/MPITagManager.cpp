@@ -91,8 +91,8 @@ namespace Gambit
        /// debugging...
        //std::cout << "bufID: " << bufID.vertexID << ", " << bufID.index<<std::endl; 
 
-       std::map<VBIDpair, int>::iterator it2 = tags_from_VBID.begin();
-       std::cout << "test: " << it2->first.vertexID << "," << it2->first.index << std::endl;
+       //std::map<VBIDpair, int>::iterator it2 = tags_from_VBID.begin();
+       //std::cout << "test: " << it2->first.vertexID << "," << it2->first.index << std::endl;
 
        std::map<VBIDpair, int>::iterator it = tags_from_VBID.find(bufID);
        if(it==tags_from_VBID.end())
@@ -144,8 +144,10 @@ namespace Gambit
        /// Set sleep times
        struct timespec short_time, long_time;
        //short_time.tv_nsec = 10000000; // Hundreth of a second (10^7 nanoseconds)
-       short_time.tv_nsec = 100000000; // Tenth of a second (10^8 nanoseconds)
-       long_time.tv_sec = 1; // 1 whole second 
+       short_time.tv_sec  = 0; // No seconds
+       short_time.tv_nsec = 100000000; // plus one tenth of a second (10^8 nanoseconds)
+       long_time.tv_sec  = 1; // 1 whole second 
+       long_time.tv_nsec = 0; // plus no nanoseconds
 
        #ifdef MPI_DEBUG
        std::cout<<"rank "<<thisptr->mpiRank<<": (Tag daemon) checking for incoming tag requests..."<<std::endl;

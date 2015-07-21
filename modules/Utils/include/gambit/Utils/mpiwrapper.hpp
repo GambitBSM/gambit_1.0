@@ -166,7 +166,12 @@ namespace Gambit
             {
               int errflag;
               errflag = MPI_Barrier(boundcomm);
-            }
+              if(errflag!=0) {
+                 std::ostringstream errmsg;
+                 errmsg << "Error performing MPI_Barrier! Received error flag: "<<errflag; 
+                 utils_error().raise(LOCAL_INFO, errmsg.str());
+              }
+           }
 
             /// Blocking receive
             ///  void*        buf      - memory address in which to store received message
@@ -185,6 +190,11 @@ namespace Gambit
                MPI_Status* status = MPI_STATUS_IGNORE; 
                if(in_status!=NULL) status=in_status;
                errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, status);
+               if(errflag!=0) {
+                 std::ostringstream errmsg;
+                 errmsg << "Error performing MPI_Recv! Received error flag: "<<errflag; 
+                 utils_error().raise(LOCAL_INFO, errmsg.str());
+               }
             }
 
             /// Templated blocking receive to automatically determine types
@@ -203,6 +213,11 @@ namespace Gambit
             {
                int errflag; 
                errflag = MPI_Send(buf, count, datatype, destination, tag, boundcomm);
+               if(errflag!=0) {
+                 std::ostringstream errmsg;
+                 errmsg << "Error performing MPI_Send! Received error flag: "<<errflag; 
+                 utils_error().raise(LOCAL_INFO, errmsg.str());
+               }
             }
 
             /// Templated blocking send
@@ -222,6 +237,11 @@ namespace Gambit
             {
                int errflag; 
                errflag = MPI_Isend(buf, count, datatype, destination, tag, boundcomm, request);
+               if(errflag!=0) {
+                 std::ostringstream errmsg;
+                 errmsg << "Error performing MPI_Isend! Received error flag: "<<errflag; 
+                 utils_error().raise(LOCAL_INFO, errmsg.str());
+               }
             }
 
             /// Templated Non-blocking send
@@ -296,6 +316,23 @@ namespace Gambit
       /// Shut down MPI
       void Finalize();
 
+      /// Nice wrapper for getting the message size from an MPI_status struct.
+      /// Provide the type whose MPI_Datatype you want to retrieve as the
+      /// template argument.
+      template<class T>
+      int Get_count(MPI_Status *status) 
+      {
+         static const MPI_Datatype datatype = get_mpi_data_type<T>::type();
+         int msgsize;
+         MPI_Get_count(status, datatype, &msgsize);
+         if(msgsize<0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error performing MPI_Get_count! Message size returned negative (value was "<<msgsize<<")! This can happen if the number of bytes received is not a multiple of the size of the specified MPI_Datatype. In other words you may have specified a type that doesn't match the type of the sent message; please double-check this."; 
+            utils_error().raise(LOCAL_INFO, errmsg.str());
+         }
+         return msgsize;
+      }
 
       /// @{ Helpers for registration of compound datatypes
  

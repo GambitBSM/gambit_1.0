@@ -51,7 +51,10 @@ scanner_plugin(Diver, version(1, 0, 0))
     // Retrieve the external printer
     data.printer = &(get_printer());
     // Initialise the print stream
-    data.printer->new_stream("txt",get_inifile_node("aux_printer_txt_options"));
+    // Ben: there appears to be no need to do this unless you really want to for some reason.
+    // You can just sent your extra data straight to the primary printer when you are adding
+    // it at the same time the likelihood is evaluated, don't need to create an auxilliary one.
+    //data.printer->new_stream("txt",get_inifile_node("aux_printer_txt_options"));
   }
   
   int plugin_main (void)
@@ -149,14 +152,15 @@ namespace Gambit
       double lnlike = data->likelihood_function(param_vec);
 
       // Print the likelihood, unit cube parameters, thread number and point ID
-      int thread = 0; //TODO Not sure exactly what Ben has in mind for this, or if it should always be zero.
+      Scanner::printer* primary_printer(data->printer->get_stream()); // Gets primary printer by default
+
+      int MPIrank = primary_printer->getRank(); 
       int pointID = data->likelihood_function->getPtID();
-      Scanner::printer* txt_stream(data->printer->get_stream("txt"));
-      txt_stream->print(lnlike,    "Ln(likelihood)",       -4, thread, pointID);
-      txt_stream->print(param_vec, "Unit cube parameters", -6, thread, pointID);
-      txt_stream->print(thread,    "thread",               -7, thread, pointID);
-      txt_stream->print(pointID,   "pointID",              -8, thread, pointID);
-      txt_stream->flush();
+
+      primary_printer->print(lnlike,    "Ln(likelihood)",       -4, MPIrank, pointID);
+      primary_printer->print(param_vec, "Unit cube parameters", -6, MPIrank, pointID);
+      primary_printer->print(MPIrank,   "MPIrank",              -7, MPIrank, pointID);
+      primary_printer->print(pointID,   "pointID",              -8, MPIrank, pointID);
 
       // Increment the number of function calls, tell Diver to continue and return the likelihood
       fcall += 1;

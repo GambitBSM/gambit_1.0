@@ -56,7 +56,9 @@ namespace Gambit {
           /// Perform desynchronised ("random access") dataset writes to previous scan iterations
           /// from a queue.
           void RA_write(const T (&values)[CHUNKLENGTH], const hsize_t (&coords)[CHUNKLENGTH], std::size_t npoints); 
- 
+
+          /// Set all elements of the dataset to zero
+          void zero();
       };
 
       /// @{ DataSetInterfaceScalar member definitions
@@ -82,16 +84,12 @@ namespace Gambit {
          hsize_t offsets[DSETRANK];
 
          #ifdef HDF5_DEBUG
-         std::cout << "Preparing to write new chunk to dataset "<<this->get_myname()<<std::endl
-                   << "Extending dataset from current size "<<this->dsetdims()[0]; 
+         std::cout << "Preparing to write new chunk to dataset "<<this->get_myname()<<std::endl;
          #endif
-         // Extend the dataset. Dataset on disk becomes 1 chunk larger.
-         this->dsetdims()[0] += CHUNKLENGTH; // extend dataset by 1 chunk
-         #ifdef HDF5_DEBUG
-         std::cout << " to new size "<<this->dsetdims()[0]<< std::endl; 
-         #endif
+         // Extend the dataset if needed. Usually dataset on disk just becomes 1 chunk larger.
+         this->extend_dset(this->dsetnextemptyslab+CHUNKLENGTH);
+
          // newsize[1] = dims[1]; // don't need: only 1D for now.
-         this->my_dataset.extend( this->dsetdims() );  
 
          // Select a hyperslab.
          H5::DataSpace filespace = this->my_dataset.getSpace();
@@ -118,14 +116,49 @@ namespace Gambit {
             errmsg << "Error writing new chunk to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. Message was: "<<e.getDetailMsg() << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
-
-         // Update the "next empty hyperslab" counter
          #ifdef HDF5_DEBUG
          std::cout<<"Chunk written to dataset \""<<this->get_myname()<<"\"! Incrementing chunk offset:"
                   <<this->dsetnextemptyslab<<" --> "<<this->dsetnextemptyslab+CHUNKLENGTH<<std::endl;
          #endif
          this->dsetnextemptyslab += CHUNKLENGTH;
       }
+
+      /// Set all elements of the dataset to zero
+      template<class T, std::size_t CHUNKLENGTH>
+      void DataSetInterfaceScalar<T,CHUNKLENGTH>::zero()
+      {
+         /// Easiest way to do this is to simply point the "nextemptyslab" index
+         /// back to the beginning of the dataset, and then rewrite all the chunks
+         /// with zero values.
+         //std::cout<<"Zeroing dataset "<<this->get_myname()<<std::endl;
+
+         T  zero_buffer[CHUNKLENGTH] = {}; // Should set everything to zero I believe... at least for primitive T.
+ 
+         unsigned long orig_nextslab = this->dsetnextemptyslab; 
+     
+         /// Figure out how many chunks to overwrite
+         //std::size_t Nslabs = this->dsetnextemptyslab / CHUNKLENGTH; //no good for RA datasets
+         std::size_t Nslabs = this->dset_length() / CHUNKLENGTH; //should be ok since length is constrained to multiples of CHUNKLENGTH
+        
+         /// Point hyperslab selector back to beginning of dataset
+         /// (might already point there if this is a random-access dataset,
+         ///  which actually it should be since we shouldn't be resetting the
+         ///  sync datasets. Well anyway it should be ok, just means we
+         ///  cannot use it to compute how many chunks there are)
+         this->dsetnextemptyslab = 0; 
+
+         for(std::size_t i=0; i<Nslabs; i++)
+         {
+            writenewchunk(zero_buffer);
+         }
+
+         // hyperslab selector should automatically end up pointing back to the
+         // correct place for sync buffers, but since this should be a RA dataset 
+         // we shall put it back to whatever value it had (which should probably
+         // be zero).
+         this->dsetnextemptyslab = orig_nextslab;
+      }
+
 
       /// Perform desynchronised ("random access") dataset writes to previous scan iterations
       /// from a queue.
