@@ -9,8 +9,8 @@ namespace Gambit {
       /// @name Types and Storage
       //@{
       public:
-        static const double confidenceLevel = 0.95;
-        static const double sqrtsGeV = 205;
+        static constexpr double confidenceLevel = 0.95;
+        static constexpr double sqrtsGeV = 205;
       //@}
 
       /// @name Point interpolation, conversion, and region checks
@@ -211,8 +211,8 @@ namespace Gambit {
       /// @name Types and Storage
       //@{
       public:
-        static const double confidenceLevel = 0.95;
-        static const double sqrtsGeV = 205;
+        static constexpr double confidenceLevel = 0.95;
+        static constexpr double sqrtsGeV = 205;
       //@}
 
       /// @name Point interpolation, conversion, and region checks
@@ -381,8 +381,8 @@ namespace Gambit {
       /// @name Types and Storage
       //@{
       public:
-        static const double confidenceLevel = 0.95;
-        static const double sqrtsGeV = 205;
+        static constexpr double confidenceLevel = 0.95;
+        static constexpr double sqrtsGeV = 205;
       //@}
 
       /// @name Point interpolation, conversion, and region checks

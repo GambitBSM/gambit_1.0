@@ -1,3 +1,4 @@
+#pragma once
 #include <cmath>
 #include <sstream>
 #include <iostream>
@@ -5,10 +6,9 @@
 
 namespace Gambit {
   namespace ColliderBit {
-    double add_quad(const double& a, const double& b) {
-      return sqrt(a*a + b*b);
-    }
 
+    /// @brief Add two numbers in quadrature
+    inline double addInQuad(const double& a, const double& b) { return sqrt(a*a + b*b); }
 
     /// @brief A simple container for a point on an xy plane.
     ///
@@ -51,9 +51,9 @@ namespace Gambit {
         double getx() const { return _x; }
         double gety() const { return _y; }
         /// Get the length of the vector from the origin to this point
-        double abs() const { return add_quad(_x, _y); }
+        double abs() const { return addInQuad(_x, _y); }
         /// Alias for abs
-        double r() const { return add_quad(_x, _y); }
+        double r() const { return addInQuad(_x, _y); }
       //@}
 
       /// @name Self-modifying operators

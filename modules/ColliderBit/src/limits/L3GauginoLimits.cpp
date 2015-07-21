@@ -5,12 +5,12 @@ namespace Gambit {
 
 
     /// @brief A class to contain the limit data from L3PLB_472_2000_420, figure 2a.
-    class L3CharginoToWLimit : public BaseLimit {
+    class L3CharginoAllChannelsLimit : public BaseLimit {
       /// @name Types and Storage
       //@{
       public:
-        static const double confidenceLevel = 0.95;
-        static const double sqrtsGeV = 188.6;
+        static constexpr double confidenceLevel = 0.95;
+        static constexpr double sqrtsGeV = 188.6;
       //@}
 
       /// @name Point interpolation, conversion, and region checks
@@ -30,7 +30,7 @@ namespace Gambit {
       /// @name Construction, initializing with all necessary data from the plot
       //@{
       public:
-        L3CharginoToWLimit() {
+        L3CharginoAllChannelsLimit() {
           Corners corners;
           ContoursPointer contoursPointer;
 
@@ -221,12 +221,12 @@ namespace Gambit {
 
 
     /// @brief A class to contain the limit data from L3PLB_472_2000_420, figure 2b.
-    class L3CharginoToLeptonicWLimit : public BaseLimit {
+    class L3CharginoLeptonicLimit : public BaseLimit {
       /// @name Types and Storage
       //@{
       public:
-        static const double confidenceLevel = 0.95;
-        static const double sqrtsGeV = 188.6;
+        static constexpr double confidenceLevel = 0.95;
+        static constexpr double sqrtsGeV = 188.6;
       //@}
 
       /// @name Point interpolation, conversion, and region checks
@@ -246,7 +246,7 @@ namespace Gambit {
       /// @name Construction, initializing with all necessary data from the plot
       //@{
       public:
-        L3CharginoToLeptonicWLimit() {
+        L3CharginoLeptonicLimit() {
           Corners corners;
           ContoursPointer contoursPointer;
 
@@ -374,12 +374,12 @@ namespace Gambit {
 
 
     /// @brief A class to contain the limit data from L3PLB_472_2000_420, figure 3a.
-    class L3NeutralinoToZLimit : public BaseLimit {
+    class L3NeutralinoAllChannelsLimit : public BaseLimit {
       /// @name Types and Storage
       //@{
       public:
-        static const double confidenceLevel = 0.95;
-        static const double sqrtsGeV = 188.6;
+        static constexpr double confidenceLevel = 0.95;
+        static constexpr double sqrtsGeV = 188.6;
       //@}
 
       /// @name Point interpolation, conversion, and region checks
@@ -406,7 +406,7 @@ namespace Gambit {
       /// @name Construction, initializing with all necessary data from the plot
       //@{
       public:
-        L3NeutralinoToZLimit() {
+        L3NeutralinoAllChannelsLimit() {
           Corners corners;
           ContoursPointer contoursPointer;
 
@@ -575,12 +575,12 @@ namespace Gambit {
 
 
     /// @brief A class to contain the limit data from L3PLB_472_2000_420, figure 3b.
-    class L3NeutralinoToZLimit : public BaseLimit {
+    class L3NeutralinoLeptonicLimit : public BaseLimit {
       /// @name Types and Storage
       //@{
       public:
-        static const double confidenceLevel = 0.95;
-        static const double sqrtsGeV = 188.6;
+        static constexpr double confidenceLevel = 0.95;
+        static constexpr double sqrtsGeV = 188.6;
       //@}
 
       /// @name Point interpolation, conversion, and region checks
@@ -607,7 +607,7 @@ namespace Gambit {
       /// @name Construction, initializing with all necessary data from the plot
       //@{
       public:
-        L3NeutralinoToZLimit() {
+        L3NeutralinoLeptonicLimit() {
           Corners corners;
           ContoursPointer contoursPointer;
 

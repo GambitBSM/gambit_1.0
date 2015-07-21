@@ -16,13 +16,13 @@ namespace Gambit {
   namespace ColliderBit {
 
     /// @brief Factory function for lines
-    LineSegment makeLine(const P2& pt1, const P2& pt2) { return LineSegment(pt1, pt2, 0.01); }
+    inline LineSegment makeLine(const P2& pt1, const P2& pt2) { return LineSegment(pt1, pt2, 0.01); }
 
     /// @brief Base class for experimental limit curve interpolation
     class BaseLimit {
       /// @name Types and Storage
       //@{
-      private:
+      protected:
         typedef std::vector<P2> Corners;
         typedef std::vector<LineSegment> Contours;
         typedef std::vector<LineSegment>* ContoursPointer;
@@ -35,19 +35,19 @@ namespace Gambit {
       /// @name Construction and Destruction
       //@{
       public:
-        BaseCollider() { }
-        virtual ~BaseCollider() { }
+        BaseLimit() { }
+        virtual ~BaseLimit() { }
       //@}
       
       /// @name Point interpolation, conversion, and region checks
       //@{
       public:
         /// @brief Convert a point from pixel units to axis units, creating a P2
-        P2 convertPt(double x, double y) = 0;
+        virtual P2 convertPt(double x, double y) = 0;
         /// @brief Check to see if the point is within the exclusion region
-        bool isWithinExclusionRegion(double x, double y) = 0;
+        virtual bool isWithinExclusionRegion(double x, double y) = 0;
         /// @brief Return the limit value outside of the exclusion region
-        double specialLimit(double x, double y) {
+        virtual double specialLimit(double x, double y) {
           return std::numeric_limits<double>::infinity();
         }
         /// @brief Two-pi averaging interpolator to find limits between limit curves
