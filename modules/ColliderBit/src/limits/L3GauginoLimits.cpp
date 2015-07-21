@@ -392,13 +392,14 @@ namespace Gambit {
         }
         /// @brief Check to see if the point is within the exclusion region
         bool isWithinExclusionRegion(double x, double y) {
-          /// @note x + y <= 92. is LEP I excluded... TODO: check if this is proper treatment
-          return (y <= x and x + y <= sqrtsGeV and x + y > 92.);
+          /// @TODO Use actual Z mass from spectrum
+          return (y <= x and x + y <= sqrtsGeV and x + y > 91.19);
         }
         /// @brief Return the limit value outside of the exclusion region
         double specialLimit(double x, double y) {
-          /// @note x + y <= 92. is LEP I excluded... TODO: check if this is proper treatment
-          return x + y > 92. ? 0. : -1.;
+          /// @TODO Use actual Z mass from spectrum
+          return x + y <= 91.19 ? std::numeric_limits<double>::epsilon()
+                                : std::numeric_limits<double>::infinity();
         }
       //@}
 
@@ -573,7 +574,7 @@ namespace Gambit {
     };
 
 
-    /// @brief A class to contain the limit data from L3PLB_472_2000_420, figure 3a.
+    /// @brief A class to contain the limit data from L3PLB_472_2000_420, figure 3b.
     class L3NeutralinoToZLimit : public BaseLimit {
       /// @name Types and Storage
       //@{
@@ -592,13 +593,14 @@ namespace Gambit {
         }
         /// @brief Check to see if the point is within the exclusion region
         bool isWithinExclusionRegion(double x, double y) {
-          /// @note x + y <= 92. is LEP I excluded... TODO: check if this is proper treatment
-          return (y <= x and x + y <= sqrtsGeV and x + y > 92.);
+          /// @TODO Use actual Z mass from spectrum
+          return (y <= x and x + y <= sqrtsGeV and x + y > 91.19);
         }
         /// @brief Return the limit value outside of the exclusion region
         double specialLimit(double x, double y) {
-          /// @note x + y <= 92. is LEP I excluded... TODO: check if this is proper treatment
-          return x + y > 92. ? 0. : -1.;
+          /// @TODO Use actual Z mass from spectrum
+          return x + y <= 91.19 ? std::numeric_limits<double>::epsilon()
+                                : std::numeric_limits<double>::infinity();
         }
       //@}
 
@@ -618,13 +620,80 @@ namespace Gambit {
           corners.push_back(convertPt(546.00,906.00));
           corners.push_back(convertPt(837.00,1466.00));
           corners.push_back(convertPt(534.00,1466.00));
-          /// TODO resume here
 
           contoursPointer = new Contours();
           contoursPointer->resize(corners.size() - 1);
           std::transform(corners.begin(), --corners.end(), ++corners.begin(),
                          contoursPointer->begin(), makeLine);
-          _limitContours.insert(LimitContourEntry(XX, contoursPointer));
+          _limitContours.insert(LimitContourEntry(2.0, contoursPointer));
+
+          ///// 0.6pb /////
+          corners.clear();
+          corners.push_back(convertPt(534.00,1466.00));
+          corners.push_back(convertPt(394.62,1197.00));
+          corners.push_back(convertPt(461.00,1079.00));
+          corners.push_back(convertPt(518.00,976.00));
+          corners.push_back(convertPt(550.68,915.01));
+          corners.push_back(convertPt(828.00,1450.00));
+          corners.push_back(convertPt(819.95,1466.00));
+          corners.push_back(convertPt(534.00,1466.00));
+
+          contoursPointer = new Contours();
+          contoursPointer->resize(corners.size() - 1);
+          std::transform(corners.begin(), --corners.end(), ++corners.begin(),
+                         contoursPointer->begin(), makeLine);
+          _limitContours.insert(LimitContourEntry(0.6, contoursPointer));
+
+          ///// 0.3pb /////
+          corners.clear();
+          corners.push_back(convertPt(534.00,1466.00));
+          corners.push_back(convertPt(400.57,1208.00));
+          corners.push_back(convertPt(412.00,1188.00));
+          corners.push_back(convertPt(481.00,1071.00));
+          corners.push_back(convertPt(522.00,995.57));
+          corners.push_back(convertPt(561.85,936.56));
+          corners.push_back(convertPt(785.07,1367.19));
+          corners.push_back(convertPt(757.00,1466.00));
+          corners.push_back(convertPt(534.00,1466.00));
+
+          contoursPointer = new Contours();
+          contoursPointer->resize(corners.size() - 1);
+          std::transform(corners.begin(), --corners.end(), ++corners.begin(),
+                         contoursPointer->begin(), makeLine);
+          _limitContours.insert(LimitContourEntry(0.3, contoursPointer));
+
+          ///// 0.18pb /////
+          corners.clear();
+          corners.push_back(convertPt(526.31,1451.00));
+          corners.push_back(convertPt(413.77,1232.00));
+          corners.push_back(convertPt(425.56,1208.64));
+          corners.push_back(convertPt(450.00,1157.00));
+          corners.push_back(convertPt(458.00,1141.00));
+          corners.push_back(convertPt(503.00,1084.00));
+          corners.push_back(convertPt(516.00,1067.00));
+          corners.push_back(convertPt(551.00,1048.00));
+          corners.push_back(convertPt(564.00,952.00));
+          corners.push_back(convertPt(567.13,946.73));
+          corners.push_back(convertPt(680.75,1165.93));
+          corners.push_back(convertPt(674.00,1173.00));
+          corners.push_back(convertPt(657.00,1216.00));
+          corners.push_back(convertPt(652.39,1262.00));
+          corners.push_back(convertPt(650.00,1263.00));
+          corners.push_back(convertPt(639.00,1261.00));
+          corners.push_back(convertPt(618.00,1266.00));
+          corners.push_back(convertPt(609.00,1282.00));
+          corners.push_back(convertPt(594.00,1312.00));
+          corners.push_back(convertPt(592.00,1321.00));
+          corners.push_back(convertPt(600.00,1330.00));
+          corners.push_back(convertPt(580.00,1357.00));
+          corners.push_back(convertPt(582.00,1373.00));
+          corners.push_back(convertPt(526.31,1451.00));
+
+          contoursPointer = new Contours();
+          contoursPointer->resize(corners.size() - 1);
+          std::transform(corners.begin(), --corners.end(), ++corners.begin(),
+                         contoursPointer->begin(), makeLine);
+          _limitContours.insert(LimitContourEntry(0.18, contoursPointer));
 
         }
       //@}
@@ -633,13 +702,3 @@ namespace Gambit {
 
   }
 }
-
-          ///// XXpb /////
-          corners.clear();
-
-          contoursPointer = new Contours();
-          contoursPointer->resize(corners.size() - 1);
-          std::transform(corners.begin(), --corners.end(), ++corners.begin(),
-                         contoursPointer->begin(), makeLine);
-          _limitContours.insert(LimitContourEntry(XX, contoursPointer));
-

@@ -48,7 +48,7 @@ namespace Gambit {
         bool isWithinExclusionRegion(double x, double y) = 0;
         /// @brief Return the limit value outside of the exclusion region
         double specialLimit(double x, double y) {
-          return -1.;
+          return std::numeric_limits<double>::infinity();
         }
         /// @brief Two-pi averaging interpolator to find limits between limit curves
         double limitAverage(double x, double y) {
