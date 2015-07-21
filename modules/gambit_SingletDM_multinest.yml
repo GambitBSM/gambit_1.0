@@ -67,9 +67,9 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/singletDM_multinest/samples/gambit_output.txt"
+    output_file: "runs/singletDM_multinest/samples/gambit_output.data"
     # name of info file (explains content of output file)
-    info_file: "runs/singletDM_multinest/samples/gambit_output.info"
+    info_file: "runs/singletDM_multinest/samples/gambit_output.data_info"
 
 ##############################
 # Scanner setup
