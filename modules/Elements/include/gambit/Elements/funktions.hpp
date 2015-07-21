@@ -35,7 +35,19 @@
 //using std::shared_ptr;
 //using std::enable_shared_from_this;
 
-#define DEF_FUNKTRAIT(C) class C { public: static void* ptr; }; void* C::ptr = 0;
+namespace Funk {class FunkPlain;}
+
+#define DEF_FUNKTRAIT(C)                         \
+  class C {                                      \
+    public:                                      \
+      static Funk::FunkPlain* ptr;               \
+      static void set(Funk::FunkPlain* new_ptr)  \
+      {                                          \
+        delete ptr;                              \
+        ptr = new_ptr;                           \
+      }                                          \
+  };                                             \
+  Funk::FunkPlain* C::ptr = NULL;
 
 // Extensions
 #include <gsl/gsl_integration.h>
@@ -997,25 +1009,25 @@ namespace Funk
     template <typename T>
     inline PlainPtr1 FunkBase::plain(std::string arg1)
     {
-        T::ptr = new FunkPlain(shared_from_this(), arg1);
+        T::set(new FunkPlain(shared_from_this(), arg1));
         return &FunkPlain::plain1<T>;
     }
     template <typename T>
     inline PlainPtr2 FunkBase::plain(std::string arg1, std::string arg2)
     {
-        T::ptr = new FunkPlain(shared_from_this(), arg1, arg2);
+        T::set(new FunkPlain(shared_from_this(), arg1, arg2));
         return &FunkPlain::plain2<T>;
     }
     template <typename T>
     inline PlainPtr3 FunkBase::plain(std::string arg1, std::string arg2, std::string arg3)
     {
-        T::ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3);
+        T::set(new FunkPlain(shared_from_this(), arg1, arg2, arg3));
         return &FunkPlain::plain3<T>;
     }
     template <typename T>
     inline PlainPtr4 FunkBase::plain(std::string arg1, std::string arg2, std::string arg3, std::string arg4)
     {
-        T::ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3, arg4);
+        T::set(new FunkPlain(shared_from_this(), arg1, arg2, arg3, arg4));
         return &FunkPlain::plain4<T>;
     }
 
