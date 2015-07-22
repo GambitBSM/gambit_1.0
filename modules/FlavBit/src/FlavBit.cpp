@@ -36,9 +36,18 @@
 #include "gambit/FlavBit/FlavBit_types.hpp"
 #include "SLHAea/slhaea.h"
 #include "gambit/Elements/spectrum.hpp"
+#include "gambit/FlavBit/flav_obs.hpp"
+#include <string>
+#include <iostream>
+#include <fstream>
 
+#include <map>
 
-
+#include <boost/numeric/ublas/matrix.hpp>       
+#include <boost/numeric/ublas/triangular.hpp>   
+#include <boost/numeric/ublas/lu.hpp>           
+#include <boost/numeric/ublas/io.hpp>           
+                                                
 
 
 #define Nobs_BKsll 21
@@ -53,7 +62,12 @@ namespace Gambit
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
+    
+    using namespace std; 
+    namespace ublas = boost::numeric::ublas;  
 
+
+    
     void SI_FlavBit_fill(struct parameters &result)
     {
       namespace myPipe = Pipes::SI_FlavBit_fill;
@@ -980,33 +994,81 @@ namespace Gambit
     //##########################################
     void b2sll_likelihood(double &result)
     {
-
-
-
+      
+      
+      
     }
     void b2sll_measurements(Flav_measurement_assym &Flav_measurement_assym)
     {
-
-
-
+      
+      
+      
     }
     void b2ll_likelihood(double &result)
     {
-
-
-
+      
+      
+      
     }
     void b2ll_measurements(Flav_measurement_assym &Flav_measurement_assym)
     {
+      // experimental measurement
+      //Bsmumu
+      Flav_reader *red = new Flav_reader("/storage/git_repos/Gambit/gambit/modules/FlavBit/Measurements");
+      red->read_yaml_mesurement("example.yaml", "BR_Bs2mumu");
+      red->read_yaml_mesurement("example.yaml", "BR_B02mumu");     
+      red->create_global_corr();
+            
+      double theory_bs2mumu=0;
+      SI_Bsmumu_untag(theory_bs2mumu);
+      double theory_bd2mumu=0;
+      SI_Bdmumu(theory_bd2mumu); 
+      
+      // now the correlation(no correlation from theory for B->sll)
+      //###################################################  
+      // nasty hack for now, hate my self!                   
+      //###################################################  
+      //#include "gambit/FlavBit/names.txt"
+      // we have map 
+      double theory_bs2mumu_error=0.23e-9;
+      double theory_bd2mumu_error=0.09e-10;
+      //double cov_theory[2][2]={{ theory_bs2mumu_error*theory_bs2mumu_error, 0}, {0., theory_bd2mumu_error*theory_bd2mumu_error}};
+      
+      // we have everything, correlation      
+      
+      boost::numeric::ublas::matrix<double> M_cov_th(2,2);
+      M_cov_th(0,0)=theory_bs2mumu_error;
+      M_cov_th(0,1)=0.;
+      M_cov_th(1,0)=0.; 
+      M_cov_th(1,1)=theory_bd2mumu_error;
+      
+      boost::numeric::ublas::matrix<double> M_th(2,1);
+      
+      M_th(0,0)=theory_bs2mumu;
+      M_th(1,0)=theory_bd2mumu; 
+      
+      // #########################
+      
+      boost::numeric::ublas::matrix<double> M_cov_uu=red->get_cov_uu();
+      boost::numeric::ublas::matrix<double> M_cov_du=red->get_cov_du();  
+      boost::numeric::ublas::matrix<double> M_cov_ud=red->get_cov_ud();  
+      boost::numeric::ublas::matrix<double> M_cov_dd=red->get_cov_dd();  
+      
+      
+      
 
-
-
+	
     }
     
-
+    
+    
+    
+    
+    //#########################################
+    
     
 
-
+    
 
 
 

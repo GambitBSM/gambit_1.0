@@ -1,3 +1,7 @@
+
+const int size_obs=128;
+vector<string> names_obs(size_obs);
+
 names_obs[0]="BR_B0Kstar0mumu_0.1-2";
 names_obs[1]="AFB_B0Kstar0mumu_0.1-2";
 names_obs[2]="FL_B0Kstar0mumu_0.1-2";
@@ -126,3 +130,12 @@ names_obs[124]="S3_Bsphimumu_14.18-16";
 names_obs[125]="BR_Bsphimumu_16-19";
 names_obs[126]="FL_Bsphimumu_16-19";
 names_obs[127]="S3_Bsphimumu_16-19";
+
+
+
+std::map<string,int> map;
+for(int i=0;i<size_obs;++i)
+{
+	map[names_obs[i]]=i;
+		
+}

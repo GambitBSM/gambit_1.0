@@ -20,7 +20,8 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
-using namespace std;
+#include "gambit/FlavBit/FlavBit_types.hpp"          
+
 
 
                  
@@ -29,15 +30,16 @@ namespace Gambit
   namespace FlavBit  
   {                  
  
+    using namespace std; 
 
 
-
-
+    /*
     struct Correlation
     {
       double corr_val;
       string corr_name;
     };
+
     struct Measurement
     {
       double value;
@@ -56,7 +58,7 @@ namespace Gambit
       string source;
     };
     
-
+    */
 
 
     class Flav_reader
@@ -98,6 +100,7 @@ namespace Gambit
       int read_yaml(string name); // reads a yaml file
       int read_root(string name); // reads a root saved histogram
       int read(string name); // reads root or yaml files, by checking the name
+      void read_yaml_mesurement(string name, string measurement_name) ;
       void construct_theory_b2sll();
       void print(Measurement);
       void debug_mode() {debug= true;};
@@ -106,8 +109,12 @@ namespace Gambit
       void print_cov_matrix(); 
       void print_cov_inv_matrix();
       double calc_Chi2(vector<double> theory, vector<double> theory_error);
-  
-  
+      boost::numeric::ublas::matrix<double> get_cov_uu(){return M_glob_cov_uu;};
+      boost::numeric::ublas::matrix<double> get_cov_ud(){return M_glob_cov_ud;};  
+      boost::numeric::ublas::matrix<double> get_cov_du(){return M_glob_cov_du;};  
+      boost::numeric::ublas::matrix<double> get_cov_dd(){return M_glob_cov_dd;};  
+      
+      
   
     };
 

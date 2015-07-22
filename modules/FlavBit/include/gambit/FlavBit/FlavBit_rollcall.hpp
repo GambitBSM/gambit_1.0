@@ -412,8 +412,8 @@ START_MODULE
   #define CAPABILITY b2ll_LL                      
   START_CAPABILITY                                 
     #define FUNCTION b2ll_likelihood              
-START_FUNCTION(double)                         
-  DEPENDENCY(FlavBit_fill, parameters)     
+    START_FUNCTION(double)                         
+          DEPENDENCY(FlavBit_fill, parameters)     
     #undef FUNCTION                                
   #undef CAPABILITY                                
                                                    
@@ -421,13 +421,17 @@ START_FUNCTION(double)
   #define CAPABILITY b2ll_M                       
   START_CAPABILITY                                 
     #define FUNCTION b2ll_measurements            
-  START_FUNCTION(FlavBit::Flav_measurement_assym)
-DEPENDENCY(FlavBit_fill, parameters)     
+    START_FUNCTION(FlavBit::Flav_measurement_assym)
+          DEPENDENCY(FlavBit_fill, parameters)     
     #undef FUNCTION                                
   #undef CAPABILITY                                
+  
+  
+  
   
 
 
 #undef MODULE
 
 #endif // defined(__FlavBit_rollcall_hpp__)
+

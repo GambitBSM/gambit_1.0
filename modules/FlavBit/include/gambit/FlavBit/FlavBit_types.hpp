@@ -41,6 +41,12 @@
 #include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
 
+#include <boost/numeric/ublas/matrix.hpp>      
+#include <boost/numeric/ublas/io.hpp>          
+                                               
+#include "gambit/FlavBit/FlavBit_types.hpp"    
+
+
 
 namespace Gambit
 {
@@ -48,7 +54,9 @@ namespace Gambit
   namespace FlavBit
   {
     using namespace std;
-    
+                                                 
+    namespace ublas = boost::numeric::ublas;     
+
      struct Correlation    
      {                     
        double corr_val;    
@@ -73,10 +81,15 @@ namespace Gambit
      };                             
     struct Flav_measurement_simple
     {
-      vector<double> value;
-      vector< vector <double> > cov;
+      
+      boost::numeric::ublas::matrix<double> M_cov;
+      boost::numeric::ublas::matrix<double> M_mes;
+      
       
     };
+    
+
+
     struct Flav_measurement_assym
     {                                
       vector<double> value;          

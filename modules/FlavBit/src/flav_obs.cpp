@@ -67,6 +67,11 @@ using namespace std;
 
 //namespace ublas = boost::numeric::ublas;
 
+#include <boost/numeric/ublas/matrix.hpp>       
+#include <boost/numeric/ublas/io.hpp>           
+                                                
+#include "gambit/FlavBit/FlavBit_types.hpp"     
+                                                
 
 
 
@@ -77,9 +82,7 @@ namespace Gambit
   {                 
 
     namespace ublas = boost::numeric::ublas; 
-
-
-
+    
 /* Matrix inversion routine.
    Uses lu_factorize and lu_substitute in uBLAS to invert a matrix */
     template<class T>
@@ -190,6 +193,18 @@ namespace Gambit
       cout<<"Number of measurements: "<<number_measurements<<endl;
       return OK;
     }
+    void Flav_reader::read_yaml_mesurement(string name, string measurement_name)
+    {
+      string path=measurement_location+"/"+name;       
+      std::ifstream fin(path.c_str()); 
+      //YAML::Parser parser(fin);      
+      YAML::Node doc = YAML::Load(fin);
+      Measurement mes_tmp;
+      doc[measurement_name.c_str()]>>  mes_tmp;
+      
+    }
+    
+    
     
     void Flav_reader::print(Measurement mes)
     {
@@ -208,6 +223,18 @@ namespace Gambit
       cout<<"########## END"<<endl;
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     void Flav_reader::create_global_corr()
     {

@@ -1270,5 +1270,9 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+ 
+
+
+
 #undef MODULE
 #endif /* defined(__DarkBit_rollcall_hpp__) */
