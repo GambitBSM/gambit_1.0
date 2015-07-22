@@ -185,14 +185,6 @@ execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING
 check_result(${result} ${locate_scanners}) 
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
 
-# FIXME this should be removed, and the generation of Printers/CMakeLists.txt shifted into cmake/update_cmakelists.py
-# Generate the Printer compilation files
-message("${Yellow}-- Updating GAMBIT printer cmake and related files${ColourReset}")
-set(harvest_printers ${PROJECT_SOURCE_DIR}/cmake/printer_harvester.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
-execute_process(RESULT_VARIABLE result COMMAND python ${harvest_printers} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${harvest_printers}) 
-message("${Yellow}-- Updating GAMBIT printer cmake and related files - done.${ColourReset}")
-
 # Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
 add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
 
@@ -211,8 +203,7 @@ endif()
 set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
 set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Elements/scripts/module_harvester.py)
-# FIXME printer_harvester.py should live in Printers/scripts, and should not generate a CMakeLists.txt file
-set(PRINTER_HARVESTER ${PROJECT_SOURCE_DIR}/cmake/printer_harvester.py)
+set(PRINTER_HARVESTER ${PROJECT_SOURCE_DIR}/Printers/scripts/printer_harvester.py)
 set(HARVEST_TOOLS ${PROJECT_SOURCE_DIR}/Utils/scripts/harvesting_tools.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
@@ -248,7 +239,6 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends
                            ${BACKEND_HARVESTER_FILES}
                            ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 
-# FIXME printer_harvester.py should not generate a CMakeLists.txt file
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp 
                           ${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt
                    COMMAND python ${PRINTER_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
@@ -276,22 +266,19 @@ add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/g
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp
                                           ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp)
 
-# FIXME printer_harvest should not depend on Printers/CMakeLists.txt (as printer_harvesters.py should not generate this file)
-add_custom_target(printer_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp
-                                          ${PRINTER_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt)
+add_custom_target(printer_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp)
 
 add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
                                           ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp
                                           ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
                                           backend_harvest)
 
-# FIXME this should also generate the CMakeLists.txt file for the printers
-# Generate the CMakeLists.txt files for GAMBIT modules
-message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
+# Generate the CMakeLists.txt files for GAMBIT modules (and backends, and printers)
+message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files.${ColourReset}")
 set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 check_result(${result} ${update_cmakelists})
-message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
+message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - done.${ColourReset}")
 
 # Include other cmake scripts
 include(cmake/warnings.cmake)

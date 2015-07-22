@@ -135,8 +135,11 @@ def main(argv):
         towrite+='#include \"{0}\"\n'.format(h)
     towrite+="\n#endif // defined __module_types_rollcall_hpp__\n"
     
-    with open("./Elements/include/gambit/Elements/module_types_rollcall.hpp","w") as f:
-        f.write(towrite)
+    # Don't touch any existing file unless it is actually different from what we will create
+    header = "./Elements/include/gambit/Elements/module_types_rollcall.hpp"
+    candidate = "./scratch/module_types_rollcall.hpp.candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_only_if_different(header, candidate)
 
     print "Harvesting types from headers..."
 
@@ -232,8 +235,11 @@ def main(argv):
 
     towrite+="\n\n#endif // defined __all_functor_types_hpp__\n"
     
-    with open("./Elements/include/gambit/Elements/all_functor_types.hpp","w") as f:
-        f.write(towrite)
+    # Don't touch any existing file unless it is actually different from what we will create
+    header = "./Elements/include/gambit/Elements/all_functor_types.hpp"
+    candidate = "./scratch/all_functor_types.hpp.candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_only_if_different(header, candidate)
 
     # Generate a c++ source file containing all the explicit functor template specialisations needed by each module in standalone mode.
     for module in modules:
@@ -279,8 +285,12 @@ namespace Gambit                                  \n\
         towrite += "}\n\n\
 // Instantiate the backend functor templates for all required types \n\
 BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)\n"
-        with open("./"+module+"/examples/standalone_functors.cpp","w") as f:
-            f.write(towrite)
+
+        # Don't touch any existing file unless it is actually different from what we will create
+        filename = "./"+module+"/examples/standalone_functors.cpp"
+        candidate = "./scratch/"+module+"_standalone_functors.cpp.candidate"
+        with open(candidate,"w") as f: f.write(towrite)
+        update_only_if_different(filename, candidate)
 
     if verbose:
         print "\nGenerated module_rollcall.hpp." 
