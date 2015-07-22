@@ -101,28 +101,12 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
-/// @TODO Replace SLHAea pseudo-code with actual code:
-    /// DEPENDENCY(SLHAeaFromSomewhere, SLHAea::Coll)
     #undef FUNCTION
-  /// For now, let's stick to what we already have running.
-  /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
-  /// \todo ... these later:
-  /*
-    #define FUNCTION generateHerwigEvent
-    START_FUNCTION(BLAH_herwigEvent)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    #undef FUNCTION
-
-    #define FUNCTION generateMadGraphEvent
-    START_FUNCTION(BLAH_madGraphEvent)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    #undef FUNCTION
-  */
   #undef CAPABILITY
 
+  /// Event converters to the standard Gambit collider event format
   #define CAPABILITY ConvertedScatteringEvent
   START_CAPABILITY
-    /// Event converters to the standard Gambit collider event format
     #define FUNCTION convertPythia8PartonEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
@@ -153,9 +137,9 @@ START_MODULE
   #undef CAPABILITY
 */
 
+  /// Detector simulators which directly produce the standard event format
   #define CAPABILITY ReconstructedEvent
   START_CAPABILITY
-    /// Detector simulators which directly produce the standard event format
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
@@ -170,32 +154,6 @@ START_MODULE
     DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmear)
     #undef FUNCTION
-  /// For now, let's stick to what we already have running.
-  /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for typedefs.
-  /// \todo ... these later:
-  /*
-    #define FUNCTION convertHerwigEvent
-    START_FUNCTION(Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(hardScatteringEvent, BLAH_herwigEvent)
-    #undef FUNCTION
-
-    #define FUNCTION convertMadGraphEvent
-    START_FUNCTION(Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(hardScatteringEvent, BLAH_madGraphEvent)
-    #undef FUNCTION
-  */
-
-  /// Currently, it seems that the delphes "backend" we have automatically
-  /// converts its own output to our standard event format.
-  /*
-    #define FUNCTION convertDelphesEvent
-    START_FUNCTION(Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(detectorReconstructedEvent, BLAH_delphesEvent)
-    #undef FUNCTION
-  */
   #undef CAPABILITY
 
   // A capability that calculates the log likelihood
@@ -208,13 +166,10 @@ START_MODULE
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
     DEPENDENCY(AnalysisContainer, HEPUtilsAnalysisContainer)
-    //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
-    //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
-    //BACKEND_GROUP(lnlike_marg_poisson)
     #undef FUNCTION
   #undef CAPABILITY
 
-  //Calculate the log likelihood from the analysis numbers
+  // Calculate the log likelihood from the analysis numbers
   #define CAPABILITY LogLikelihood
   START_CAPABILITY
     #define FUNCTION calcLogLike
@@ -225,20 +180,6 @@ START_MODULE
     BACKEND_GROUP(lnlike_marg_poisson)
     #undef FUNCTION
   #undef CAPABILITY
-
-  /// Event accumulators
-  /// \todo Do we need one of these defined for each analysis??
-/*#define CAPABILITY analysisAccumulator
-  START_CAPABILITY
-    /// \todo Make a group of analyses rather than a simple counter.
-    #define FUNCTION simpleCounter
-    START_FUNCTION(double)   /// Could be a scaled number of events, so double
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
-    #undef FUNCTION
-    #undef CAPABILITY*/
-  /// \todo How many more do we need to define...?
-
 
   ///////////// LEP limits ////////////////////////
 
