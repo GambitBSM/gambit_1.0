@@ -13,7 +13,7 @@ Parameters:
 
     SingletDM:
         mS:
-            range: [50., 120.]
+            range: [50., 1000.]
             prior_type: log
         lambda_hS:
             range: [0.001, 1.00]
@@ -91,7 +91,7 @@ Scanner:
       options:
         like:  Likelihood
         nlive: 1000
-        tol: 0.1
+        tol: 0.01
         aux_printer_txt_options:
           output_file: "runs/singletDM_multinest/samples/gambit_output.txt"
           info_file: "runs/singletDM_multinest/samples/gambit_output.txt_info"
@@ -126,19 +126,18 @@ ObsLikes:
 # Fermi LAT dwarf limits
 #    - capability: lnL_FermiLATdwarfs
 #      function: lnL_FermiLATdwarfs_gamLike
-#      purpose:  Likelihood
+#      purpose:  Observable
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
-      function: RD_oh2_general
     - capability: lnL_oh2
       purpose: Likelihood 
 # XENON100 2012 direct detection likelihood
     - capability: lnL_XENON100_2012
-      purpose:  Likelihood
+      purpose: Observable 
 # LUX 2013 direct detection likelihood
     - capability: lnL_LUX_2013
-      purpose:  Likelihood
+      purpose:  Observable
 # DARWIN argon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!
 #    - capability: lnL_DARWIN_Ar_2015
