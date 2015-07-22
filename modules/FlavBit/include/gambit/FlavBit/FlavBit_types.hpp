@@ -47,7 +47,7 @@ namespace Gambit
 
   namespace FlavBit
   {
-    //    using namespace std;
+    using namespace std;
     
      struct Correlation    
      {                     
@@ -71,9 +71,26 @@ namespace Gambit
        std::string name;                 
        std::string source;               
      };                             
-    
+    struct Flav_measurement_simple
+    {
+      vector<double> value;
+      vector< vector <double> > cov;
+      
+    };
+    struct Flav_measurement_assym
+    {                                
+      vector<double> value;          
+      vector< vector <double> > cov_uu; 
+      vector< vector <double> > cov_ud;  
+      vector< vector <double> > cov_du;  
+      vector< vector <double> > cov_dd;  
+    };                               
     
 
+    
+    
+    
+    
   }
 }
 

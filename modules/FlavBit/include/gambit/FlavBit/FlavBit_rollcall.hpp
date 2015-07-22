@@ -64,6 +64,7 @@
 
 #ifndef __FlavBit_rollcall_hpp__
 #define __FlavBit_rollcall_hpp__
+#include "gambit/FlavBit/FlavBit_types.hpp"
 
 
 #define MODULE FlavBit
@@ -375,8 +376,56 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+//###############################################
+//  Lieklighood stuff
+//###############################################
 
 
+
+  #define CAPABILITY DD
+  START_CAPABILITY
+    #define FUNCTION dummy
+    START_FUNCTION(FlavBit::Correlation)
+         DEPENDENCY(FlavBit_fill, parameters)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  #define CAPABILITY b2sll_LL
+  START_CAPABILITY
+    #define FUNCTION b2sll_likelihood
+    START_FUNCTION(double)
+          DEPENDENCY(FlavBit_fill, parameters)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  #define CAPABILITY b2sll_M
+  START_CAPABILITY
+    #define FUNCTION b2sll_measurements
+    START_FUNCTION(FlavBit::Flav_measurement_assym)
+          DEPENDENCY(FlavBit_fill, parameters)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  #define CAPABILITY b2ll_LL                      
+  START_CAPABILITY                                 
+    #define FUNCTION b2ll_likelihood              
+START_FUNCTION(double)                         
+  DEPENDENCY(FlavBit_fill, parameters)     
+    #undef FUNCTION                                
+  #undef CAPABILITY                                
+                                                   
+                                                   
+  #define CAPABILITY b2ll_M                       
+  START_CAPABILITY                                 
+    #define FUNCTION b2ll_measurements            
+  START_FUNCTION(FlavBit::Flav_measurement_assym)
+DEPENDENCY(FlavBit_fill, parameters)     
+    #undef FUNCTION                                
+  #undef CAPABILITY                                
+  
 
 
 #undef MODULE

@@ -19,6 +19,7 @@
 ///
 ///  \author Marcin Chrzaszcz
 ///  \date 2015 May
+///  \date 2015 July
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -27,16 +28,21 @@
 ///  \author Pat Scott
 ///          p.scott@imperial.ac.uk
 ///  \date 2015 May, June
-///  
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
-
+#include "gambit/FlavBit/FlavBit_types.hpp"
 #include "SLHAea/slhaea.h"
 #include "gambit/Elements/spectrum.hpp"
 
+
+
+
+
 #define Nobs_BKsll 21
+
 
 namespace Gambit
 {
@@ -61,23 +67,23 @@ namespace Gambit
       ifs >> spectrum;
       ifs.close();
       */
-      
+
       // Bulding spectrum object
       const Spectrum* fullspectrum = *myPipe::Dep::MSSM_spectrum;
-      SLHAstruct spectrum;      //eaSLHA spectrum = fullspectrum->getSLHAea(); 
+      SLHAstruct spectrum;      //eaSLHA spectrum = fullspectrum->getSLHAea();
       // saving slha for futher examinations
-      std::ofstream out1;               
-      out1.open("Read_FlavBit.slha");   
-      out1 << spectrum;                 
-      out1.close();                     
-      
+      std::ofstream out1;
+      out1.open("Read_FlavBit.slha");
+      out1 << spectrum;
+      out1.close();
+
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
 
       BEreq::Init_param(&result);
 
       int ie,je;
-  
+
       if(!spectrum["MODSEL"].empty())
       {
         if(spectrum["MODSEL"][1].is_data_line()) result.model=SLHAea::to<int>(spectrum["MODSEL"][1][1]);
@@ -87,11 +93,11 @@ namespace Gambit
         if(spectrum["MODSEL"][6].is_data_line()) result.FV=SLHAea::to<int>(spectrum["MODSEL"][6][1]);
         if(spectrum["MODSEL"][12].is_data_line()) result.Q=SLHAea::to<double>(spectrum["MODSEL"][12][1]);
       }
-  
+
       if(result.NMSSM != 0) result.model=result.NMSSM;
       if(result.RV != 0) result.model=-2;
       if(result.CPV != 0) result.model=-2;
-  
+
       if(!spectrum["SMINPUTS"].empty())
       {
         if(spectrum["SMINPUTS"][1].is_data_line()) result.inv_alpha_em=SLHAea::to<double>(spectrum["SMINPUTS"][1][1]);
@@ -129,7 +135,7 @@ namespace Gambit
         if(spectrum["UPMNSIN"][5].is_data_line()) result.PMNS_alpha1=SLHAea::to<double>(spectrum["UPMNSIN"][5][1]);
         if(spectrum["UPMNSIN"][6].is_data_line()) result.PMNS_alpha2=SLHAea::to<double>(spectrum["UPMNSIN"][6][1]);
       }
-  
+
       if(!spectrum["MINPAR"].empty())
       {
         switch(result.model)
@@ -164,7 +170,7 @@ namespace Gambit
           }
         }
       }
-  
+
       if(!spectrum["EXTPAR"].empty())
       {
         if(spectrum["EXTPAR"][0].is_data_line()) result.Min=SLHAea::to<double>(spectrum["EXTPAR"][0][1]);
@@ -268,9 +274,9 @@ namespace Gambit
         if(spectrum["MASS"][2000015].is_data_line()) result.mass_tau2=SLHAea::to<double>(spectrum["MASS"][2000015][1]);
         if(spectrum["MASS"][2000016].is_data_line()) result.mass_nutr=SLHAea::to<double>(spectrum["MASS"][2000016][1]);
       }
-  
+
       if(!spectrum["ALPHA"].empty()) if(spectrum["ALPHA"].back().is_data_line()) result.alpha=SLHAea::to<double>(spectrum["ALPHA"].back().at(0));
-  
+
       if(!spectrum["STOPMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
              if(spectrum["STOPMIX"][max(ie,je)].is_data_line()) result.stop_mix[ie][je]=SLHAea::to<double>(spectrum["STOPMIX"].at(ie,je)[2]);
       if(!spectrum["SBOTMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
@@ -285,18 +291,18 @@ namespace Gambit
              if(spectrum["UMIX"][max(ie,je)].is_data_line()) result.charg_Umix[ie][je]=SLHAea::to<double>(spectrum["UMIX"].at(ie,je)[2]);
       if(!spectrum["VMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
              if(spectrum["VMIX"][max(ie,je)].is_data_line()) result.charg_Vmix[ie][je]=SLHAea::to<double>(spectrum["VMIX"].at(ie,je)[2]);
-  
+
       if(!spectrum["GAUGE"].empty())
       {
         if(spectrum["GAUGE"][1].is_data_line()) result.gp_Q=SLHAea::to<double>(spectrum["GAUGE"][1][1]);
         if(spectrum["GAUGE"][2].is_data_line()) result.g2_Q=SLHAea::to<double>(spectrum["GAUGE"][2][1]);
         if(spectrum["GAUGE"][3].is_data_line()) result.g3_Q=SLHAea::to<double>(spectrum["GAUGE"][3][1]);
       }
-  
+
       if(!spectrum["YU"].empty()) for(ie=1;ie<=3;ie++) if(spectrum["YU"][ie].is_data_line()) result.yut[ie]=SLHAea::to<double>(spectrum["YU"].at(ie,ie)[2]);
       if(!spectrum["YD"].empty()) for(ie=1;ie<=3;ie++) if(spectrum["YD"][ie].is_data_line()) result.yub[ie]=SLHAea::to<double>(spectrum["YD"].at(ie,ie)[2]);
       if(!spectrum["YE"].empty()) for(ie=1;ie<=3;ie++) if(spectrum["YE"][ie].is_data_line()) result.yutau[ie]=SLHAea::to<double>(spectrum["YE"].at(ie,ie)[2]);
-  
+
       if(!spectrum["HMIX"].empty())
       {
         if(spectrum["HMIX"][1].is_data_line()) result.mu_Q=SLHAea::to<double>(spectrum["HMIX"][1][1]);
@@ -304,13 +310,13 @@ namespace Gambit
         if(spectrum["HMIX"][3].is_data_line()) result.Higgs_VEV=SLHAea::to<double>(spectrum["HMIX"][3][1]);
         if(spectrum["HMIX"][4].is_data_line()) result.mA2_Q=SLHAea::to<double>(spectrum["HMIX"][4][1]);
       }
-  
+
       if(!spectrum["NMHMIX"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["NMHMIX"][max(ie,je)].is_data_line()) result.H0_mix[ie][je]=SLHAea::to<double>(spectrum["NMHMIX"].at(ie,je)[2]);
-  
+
       if(!spectrum["NMAMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
              if(spectrum["NMAMIX"][max(ie,je)].is_data_line()) result.A0_mix[ie][je]=SLHAea::to<double>(spectrum["NMAMIX"].at(ie,je)[2]);
-  
+
       if(!spectrum["MSOFT"].empty())
       {
         if(!spectrum["MSOFT"].front().empty()) result.MSOFT_Q=SLHAea::to<double>(spectrum["MSOFT"].front().at(3));
@@ -335,28 +341,28 @@ namespace Gambit
         if(spectrum["MSOFT"][48].is_data_line()) result.MsR_Q=SLHAea::to<double>(spectrum["MSOFT"][48][1]);
         if(spectrum["MSOFT"][49].is_data_line()) result.MbR_Q=SLHAea::to<double>(spectrum["MSOFT"][49][1]);
       }
-  
+
       if(!spectrum["AU"].empty())
       {
         if(spectrum["AU"][1].is_data_line()) result.A_u=SLHAea::to<double>(spectrum["AU"].at(1,1)[2]);
         if(spectrum["AU"][2].is_data_line()) result.A_c=SLHAea::to<double>(spectrum["AU"].at(2,2)[2]);
         if(spectrum["AU"][3].is_data_line()) result.A_t=SLHAea::to<double>(spectrum["AU"].at(3,3)[2]);
       }
-  
+
       if(!spectrum["AD"].empty())
       {
         if(spectrum["AD"][1].is_data_line()) result.A_d=SLHAea::to<double>(spectrum["AD"].at(1,1)[2]);
         if(spectrum["AD"][2].is_data_line()) result.A_s=SLHAea::to<double>(spectrum["AD"].at(2,2)[2]);
         if(spectrum["AD"][3].is_data_line()) result.A_b=SLHAea::to<double>(spectrum["AD"].at(3,3)[2]);
       }
-  
+
       if(!spectrum["AE"].empty())
       {
         if(spectrum["AE"][1].is_data_line()) result.A_e=SLHAea::to<double>(spectrum["AE"].at(1,1)[2]);
         if(spectrum["AE"][2].is_data_line()) result.A_mu=SLHAea::to<double>(spectrum["AE"].at(2,2)[2]);
         if(spectrum["AE"][3].is_data_line()) result.A_tau=SLHAea::to<double>(spectrum["AE"].at(3,3)[2]);
       }
-  
+
       if(!spectrum["NMSSMRUN"].empty())
       {
         if(spectrum["NMSSMRUN"][1].is_data_line()) result.lambdaNMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][1][1]);
@@ -370,7 +376,7 @@ namespace Gambit
         if(spectrum["NMSSMRUN"][9].is_data_line()) result.mSp2NMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][9][1]);
         if(spectrum["NMSSMRUN"][10].is_data_line()) result.mS2NMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][10][1]);
       }
-  
+
       if(!spectrum["USQMIX"].empty()) for(ie=1;ie<=6;ie++) for(je=1;je<=6;je++)
              if(spectrum["USQMIX"][max(ie,je)].is_data_line()) result.sU_mix[ie][je]=SLHAea::to<double>(spectrum["USQMIX"].at(ie,je)[2]);
       if(!spectrum["DSQMIX"].empty()) for(ie=1;ie<=6;ie++) for(je=1;je<=6;je++)
@@ -379,7 +385,7 @@ namespace Gambit
              if(spectrum["SELMIX"][max(ie,je)].is_data_line()) result.sE_mix[ie][je]=SLHAea::to<double>(spectrum["SELMIX"].at(ie,je)[2]);
       if(!spectrum["SNUMIX"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["SNUMIX"][max(ie,je)].is_data_line()) result.sNU_mix[ie][je]=SLHAea::to<double>(spectrum["SNUMIX"].at(ie,je)[2]);
-  
+
       if(!spectrum["MSQ2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["MSQ2"][max(ie,je)].is_data_line()) result.sCKM_msq2[ie][je]=SLHAea::to<double>(spectrum["MSQ2"].at(ie,je)[2]);
       if(!spectrum["MSL2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
@@ -390,25 +396,27 @@ namespace Gambit
              if(spectrum["MSU2"][max(ie,je)].is_data_line()) result.sCKM_msu2[ie][je]=SLHAea::to<double>(spectrum["MSU2"].at(ie,je)[2]);
       if(!spectrum["MSE2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["MSE2"][max(ie,je)].is_data_line()) result.sCKM_mse2[ie][je]=SLHAea::to<double>(spectrum["MSE2"].at(ie,je)[2]);
-  
+
       if(!spectrum["IMVCKM"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
       if(!spectrum["IMVCKM"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
-  
+
       if(!spectrum["UPMNS"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["UPMNS"][max(ie,je)].is_data_line()) result.PMNS_U[ie][je]=SLHAea::to<double>(spectrum["UPMNS"].at(ie,je)[2]);
-  
+
       if(!spectrum["TU"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["TU"][max(ie,je)].is_data_line()) result.TU[ie][je]=SLHAea::to<double>(spectrum["TU"].at(ie,je)[2]);
       if(!spectrum["TD"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["TD"][max(ie,je)].is_data_line()) result.TD[ie][je]=SLHAea::to<double>(spectrum["TD"].at(ie,je)[2]);
       if(!spectrum["TE"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
              if(spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
-  
+
 
       BEreq::slha_adjust(&result);
     }
+
+
 
      /// *************************************************
 
@@ -955,6 +963,52 @@ namespace Gambit
 
       printf("A_I(B->K* mu mu)_zero=%.3e\n",result);
     }
+
+    //#######################################
+    // likelihood stuff:
+    // Example how this works:
+    void dummy(Correlation &result)
+    {
+      using namespace Pipes::dummy;
+      struct parameters param = *Dep::FlavBit_fill;
+
+      double a=1.;
+      //result =a;
+    }
+    //##########################################
+    // now let's do a real likelihood
+    //##########################################
+    void b2sll_likelihood(double &result)
+    {
+
+
+
+    }
+    void b2sll_measurements(Flav_measurement_assym &Flav_measurement_assym)
+    {
+
+
+
+    }
+    void b2ll_likelihood(double &result)
+    {
+
+
+
+    }
+    void b2ll_measurements(Flav_measurement_assym &Flav_measurement_assym)
+    {
+
+
+
+    }
+    
+
+    
+
+
+
+
 
 
   }
