@@ -41,22 +41,21 @@ namespace Gambit
   namespace ColliderBit
   {
       
-    /// Simple convenience map filler
-    std::map<int, str> generate_genmap()
-    {
-      std::map<int, str> m;
-      m[1] = "~e_L";
-      m[2] = "~mu_L";
-      m[3] = "~tau_L";
-      return m;
-    }
-
-    /// Retrieve the production cross-section at an e+e- collider for slepton pairs
+    /// Retrieve the production cross-section at an e+e- collider for slepton pairs.
+    ///  If l_are_gauge_es = T, then l(bar)_chirality = 1 => (anti-)left-type  slepton
+    ///                                               = 2 => (anti-)right-type slepton
+    ///  If l_are_gauge_es = F, then l(bar)_chirality = 1 => (anti-)slepton is lightest family state
+    ///                                               = 2 => (anti-)slepton is heaviest family state
     void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
-                         const int lbar_chirality, const double tol, const Spectrum* spec, const double gammaZ)
+                         const int lbar_chirality, const double tol, const Spectrum* spec, const double gammaZ,
+                         const bool l_are_gauge_es)
     {
-      // Once-only generation-to-left_gauge_eigenstate map
-      static const std::map<int, str> genmap = generate_genmap();
+      static const str genmap[3][2] =
+      {
+        {"~e_L",   "~e_R"  },  
+        {"~mu_L",  "~mu_R" }, 
+        {"~tau_L", "~tau_R"}          
+      };
 
       // Subspectrum
       const SubSpectrum* mssm = spec->get_UV();
@@ -76,33 +75,45 @@ namespace Gambit
 
       // MSSM parameters
       const double tanb = mssm->runningpars.get_dimensionless_parameter("tanbeta");
-      // Get the mass eigenstate string and 2x2 slepton mixing matrix for this family
+      // Get the mass eigenstate strings and 2x2 slepton generation mass mixing matrix
       str mass_es1, mass_es2;
-      std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e", generation, mass_es1, mass_es2, mssm, tol, LOCAL_INFO);
       MixMatrix sleptonmix(2,std::vector<double>(2));
-      sleptonmix[0][0] = slepton4vec[0]; 
-      sleptonmix[0][1] = slepton4vec[1]; 
-      sleptonmix[1][0] = slepton4vec[2]; 
-      sleptonmix[1][1] = slepton4vec[3];
-      // Get the slepton masses and uncertainties
-      const str mass_es_sl = slhahelp::mass_es_from_gauge_es(genmap.at(generation), mssm, tol, LOCAL_INFO);
-      if (mass_es_sl != mass_es1 and mass_es_sl != mass_es2) ColliderBit_error().raise(LOCAL_INFO, "Catastrophic eigenstate mismatch!");            
-      const str mass_es_sr = (mass_es_sl == mass_es1) ? mass_es2 : mass_es1;
-      mass_es1 = (l_chirality == 1) ? mass_es_sl : mass_es_sr;
-      mass_es2 = (lbar_chirality == 1) ? mass_es_sl : mass_es_sr;
-      // FIXME when spectrum object has separate pole mass getters for antiparticles
-      //mass_es2 = (lbar_chirality == 1) ? Models::ParticleDB().get_antiparticle(mass_es_sl) : Models::ParticleDB().get_antiparticle(mass_es_sr);   
+      if (l_are_gauge_es)
+      {
+        // Requested final states are gauge eigenstates.  Pass diagonal mixing matrix to low-level routine.
+        sleptonmix[0][0] = 1.0; 
+        sleptonmix[0][1] = 0.0; 
+        sleptonmix[1][0] = 0.0; 
+        sleptonmix[1][1] = 1.0;
+        mass_es1 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][l_chirality-1],    mssm, tol, LOCAL_INFO);
+        mass_es2 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][lbar_chirality-1], mssm, tol, LOCAL_INFO);
+      }
+      else
+      {
+        // Requested final states are family mass eigenstates.  Pass 2x2 family mass mixing matrix to low-level routine.
+        str m_light, m_heavy;
+        std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e", generation, m_light, m_heavy, mssm, tol, LOCAL_INFO);
+        mass_es1 = (l_chirality    == 1) ? m_light : m_heavy;
+        mass_es2 = (lbar_chirality == 1) ? m_light : m_heavy;
+        sleptonmix[0][0] = slepton4vec[0]; 
+        sleptonmix[0][1] = slepton4vec[1]; 
+        sleptonmix[1][0] = slepton4vec[2]; 
+        sleptonmix[1][1] = slepton4vec[3];
+      }
       const double m1 = spec->get_Pole_Mass(mass_es1);
+      // FIXME when spectrum object has separate pole mass getters for antiparticles
+      //const double m2 = spec->get_Pole_Mass(Models::ParticleDB().get_antiparticle(mass_es2));
+      // until then
       const double m2 = spec->get_Pole_Mass(mass_es2);
       // FIXME when mass uncertainties are available from the spectrum objects
-      //std::pair<double,double> m1_uncerts = spec->get_pole_mass_uncert(mass_es1); 
-      //std::pair<double,double> m2_uncerts = spec->get_pole_mass_uncert(mass_es2); 
+      //std::pair<double,double> m1_uncerts = spec->get_Pole_Mass_Uncert(mass_es1); 
+      //std::pair<double,double> m2_uncerts = spec->get_Pole_Mass_Uncert(Models::ParticleDB().get_antiparticle(mass_es2)); 
       // Until then
       const std::pair<double,double> m1_uncerts(0.05, 0.05);
       const std::pair<double,double> m2_uncerts = m1_uncerts;
       
-      // Just return zero if the final state is kinematically inaccessible
-      // *even* if both masses are 2simga lower than their central values 
+      // If the final state is kinematically inaccessible *even* if both masses 
+      // are 2simga lower than their central values, then return zero. 
       if (m1*(1.0-2.0*m1_uncerts.second) + m2*(1.0-2.0*m2_uncerts.second) > sqrts)
       { 
         result.central = 0.0;

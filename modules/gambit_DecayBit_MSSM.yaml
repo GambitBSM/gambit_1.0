@@ -11,6 +11,7 @@
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
   MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
+  #MSSM25atQ:           !import LesHouches.in.MSSM_light.yaml
 
 Priors:
     # none: all parameters fixed in this example.
@@ -37,11 +38,15 @@ ObsLikes:
   #- purpose:      Test
   #  capability:   LEP208_xsec_serserbar
   #- purpose:      Test
+  #  capability:   LEP208_xsec_smu1smu2bar
+  #- purpose:      Test
   #  capability:   LEP205_xsec_chi00_11
   #- purpose:      Test
   #  capability:   LEP188_xsec_chipm_11
   #- purpose:      Test
   #  capability:   LEP205_xsec_selserbar
+  #- purpose:      Test
+  #  capability:   LEP205_xsec_stau1stau1bar
   #- purpose:      Test
   #  capability:   LEP188_xsec_chi00_33
   #- purpose:      Test
