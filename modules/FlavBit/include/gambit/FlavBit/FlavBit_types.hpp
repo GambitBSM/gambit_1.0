@@ -81,9 +81,9 @@ namespace Gambit
      };                             
     struct Flav_measurement_simple
     {
-      
       boost::numeric::ublas::matrix<double> M_cov;
       boost::numeric::ublas::matrix<double> M_mes;
+      
       
       
     };
@@ -92,11 +92,25 @@ namespace Gambit
 
     struct Flav_measurement_assym
     {                                
-      vector<double> value;          
-      vector< vector <double> > cov_uu; 
-      vector< vector <double> > cov_ud;  
-      vector< vector <double> > cov_du;  
-      vector< vector <double> > cov_dd;  
+      
+      string LL_name;
+
+      
+      boost::numeric::ublas::matrix<double>  value_exp;          
+      boost::numeric::ublas::matrix<double> cov_exp_uu; 
+      boost::numeric::ublas::matrix<double> cov_exp_ud;  
+      boost::numeric::ublas::matrix<double> cov_exp_du;  
+      boost::numeric::ublas::matrix<double> cov_exp_dd;
+
+      boost::numeric::ublas::matrix<double> value_th;             
+      boost::numeric::ublas::matrix<double> cov_th_uu; 
+      boost::numeric::ublas::matrix<double> cov_th_ud; 
+      boost::numeric::ublas::matrix<double> cov_th_du; 
+      boost::numeric::ublas::matrix<double> cov_th_dd; 
+      
+      vector<double> diff;
+      int dim;
+  
     };                               
     
 

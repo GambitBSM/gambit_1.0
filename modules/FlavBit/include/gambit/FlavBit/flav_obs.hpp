@@ -78,6 +78,8 @@ namespace Gambit
   
       bool use_P;
       bool use_S;
+
+      boost::numeric::ublas::matrix<double> M_measurement;
       
       boost::numeric::ublas::matrix<double> M_glob_correlation;
       boost::numeric::ublas::matrix<double> M_glob_correlation_inv;
@@ -113,9 +115,10 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> get_cov_ud(){return M_glob_cov_ud;};  
       boost::numeric::ublas::matrix<double> get_cov_du(){return M_glob_cov_du;};  
       boost::numeric::ublas::matrix<double> get_cov_dd(){return M_glob_cov_dd;};  
+      boost::numeric::ublas::matrix<double> get_exp_value(){return M_measurement;};
       
       
-  
+      
     };
 
 

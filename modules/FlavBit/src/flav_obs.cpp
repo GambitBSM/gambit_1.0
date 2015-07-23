@@ -308,6 +308,18 @@ namespace Gambit
       InvertMatrix(M_glob_cov_du, M_glob_cov_inv_du);
       InvertMatrix(M_glob_cov_dd, M_glob_cov_inv_dd);
       
+      // calcul;atin the the measurement vector:
+      M_measurement= boost::numeric::ublas::matrix<double> (number_measurements,0);
+      for(int i=0; i<number_measurements;++i)   
+	{                                       
+	  M_measurement(i,0)=measurements[i].value;
+	}
+
+
+
+
+
+      
     }
 
     int Flav_reader::get_measurement_for_corr(string ss)
