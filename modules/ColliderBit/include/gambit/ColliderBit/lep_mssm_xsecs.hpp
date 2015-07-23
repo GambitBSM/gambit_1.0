@@ -55,9 +55,14 @@ namespace Gambit
     
     /// High-level cross section routines.
     /// @{
-    /// Retrieve the production cross-section at an e+e- collider for slepton pairs
+    /// Retrieve the production cross-section at an e+e- collider for slepton pairs.
+    ///  If l_are_gauge_es = T, then l(bar)_chirality = 1 => (anti-)left-type  slepton
+    ///                                               = 2 => (anti-)right-type slepton
+    ///  If l_are_gauge_es = F, then l(bar)_chirality = 1 => (anti-)slepton is lightest family state
+    ///                                               = 2 => (anti-)slepton is heaviest family state
     void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
-                         const int lbar_chirality, const double tol, const Spectrum* spec, const double gammaZ);
+                         const int lbar_chirality, const double tol, const Spectrum* spec, const double gammaZ,
+                         const bool l_are_gauge_es);
     /// Retrieve the production cross-section at an e+e- collider for neutralino pairs
     void get_sigma_ee_chi00(triplet<double>& result, const double sqrts, const int chi_first, const int chi_second,
                             const double tol, const Spectrum* spec, const double gammaZ);

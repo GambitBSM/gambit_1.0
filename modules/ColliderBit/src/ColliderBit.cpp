@@ -701,24 +701,46 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_selselbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_selserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_serserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_serselbar::Dep::LEP208_xsec_selserbar;
+    }
+    void LEP208_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_se1se1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_se1se2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_se2se2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP208_SLHA1_convention_xsec_se2se1bar::Dep::LEP208_xsec_se1se2bar;
     }
     /// @}
 
@@ -727,24 +749,46 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_smursmulbar::Dep::LEP208_xsec_smulsmurbar;
+    }
+    void LEP208_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_smu1smu1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_smu1smu2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_smu2smu2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP208_SLHA1_convention_xsec_smu2smu1bar::Dep::LEP208_xsec_smu1smu2bar;
     }
     /// @}
 
@@ -753,24 +797,46 @@ namespace Gambit
     void LEP208_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP208_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_staurstaulbar::Dep::LEP208_xsec_staulstaurbar;
+    }
+    void LEP208_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_stau1stau1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_stau1stau2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP208_SLHA1_convention_xsec_stau2stau2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP208_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP208_SLHA1_convention_xsec_stau2stau1bar::Dep::LEP208_xsec_stau1stau2bar;
     }
     /// @}
 
@@ -872,24 +938,46 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_selselbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_selserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_serserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_serselbar::Dep::LEP205_xsec_selserbar;
+    }
+    void LEP205_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_se1se1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_se1se2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_se2se2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP205_SLHA1_convention_xsec_se2se1bar::Dep::LEP205_xsec_se1se2bar;
     }
     /// @}
 
@@ -898,24 +986,46 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_smursmulbar::Dep::LEP205_xsec_smulsmurbar;
+    }
+    void LEP205_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_smu1smu1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_smu1smu2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_smu2smu2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP205_SLHA1_convention_xsec_smu2smu1bar::Dep::LEP205_xsec_smu1smu2bar;
     }
     /// @}
 
@@ -924,24 +1034,46 @@ namespace Gambit
     void LEP205_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP205_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_staurstaulbar::Dep::LEP205_xsec_staulstaurbar;
+    }
+    void LEP205_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_stau1stau1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_stau1stau2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP205_SLHA1_convention_xsec_stau2stau2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP205_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP205_SLHA1_convention_xsec_stau2stau1bar::Dep::LEP205_xsec_stau1stau2bar;
     }
     /// @}
 
@@ -1041,24 +1173,46 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_selselbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_selserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_serserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_serselbar::Dep::LEP188_xsec_selserbar;
+    }
+    void LEP188_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_se1se1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_se1se2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_se2se2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP188_SLHA1_convention_xsec_se2se1bar::Dep::LEP188_xsec_se1se2bar;
     }
     /// @}
 
@@ -1067,24 +1221,46 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_smursmulbar::Dep::LEP188_xsec_smulsmurbar;
+    }
+    void LEP188_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_smu1smu1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_smu1smu2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_smu2smu2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP188_SLHA1_convention_xsec_smu2smu1bar::Dep::LEP188_xsec_smu1smu2bar;
     }
     /// @}
 
@@ -1093,24 +1269,46 @@ namespace Gambit
     void LEP188_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
     }
     void LEP188_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_staurstaulbar::Dep::LEP188_xsec_staulstaurbar;
+    }
+    void LEP188_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_stau1stau1bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_stau1stau2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)    
+    {
+      using namespace Pipes::LEP188_SLHA1_convention_xsec_stau2stau2bar;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+    }
+    void LEP188_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)    
+    {
+      result = *Pipes::LEP188_SLHA1_convention_xsec_stau2stau1bar::Dep::LEP188_xsec_stau1stau2bar;
     }
     /// @}
 
