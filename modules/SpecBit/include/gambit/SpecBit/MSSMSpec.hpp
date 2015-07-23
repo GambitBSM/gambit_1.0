@@ -30,6 +30,7 @@
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/SpecBit/MSSMSpec_head.hpp"   // "Header" declarations for MSSMSpec class
+#include "gambit/SpecBit/BaseSLHAeaWriter.hpp" // Class for helping to create SLHAea objects from SubSpectrum objects
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
@@ -90,7 +91,30 @@ namespace Gambit {
       template <class MI>
       SLHAea::Coll MSSMSpec<MI>::getSLHAea() const
       {
-        return model_interface.getSLHAea();
+        // return model_interface.getSLHAea(); // Old way
+
+        // Create writer object (has functions for error checking and interacting with SLHAea)
+        BaseSLHAeaWriter writer;
+ 
+        writer.add_block("GAUGE",this->runningpars.GetScale());
+        writer.add_entry(LOCAL_INFO,this->runningpars,Par::dimensionless,"g1","GAUGE",1,"# gY",false); // optional parameter to disable error if entry missing from spectrum object. Probably only useful for stuff you know may be added later by a set_override call.
+        writer.add_entry(LOCAL_INFO,this->runningpars,Par::dimensionless,"g2","GAUGE",2,"# g2");
+        writer.add_entry(LOCAL_INFO,this->runningpars,Par::dimensionless,"g3","GAUGE",3,"# g3");
+
+        writer.add_block("YU",this->runningpars.GetScale());
+        for(int i=1;i<3;i++) {
+          for(int j=1;j<3;j++) {
+            std::ostringstream comment;
+            comment << "# Yu("<<i<<","<<j<<")";
+            writer.add_entry(LOCAL_INFO,this->runningpars,Par::dimensionless,"Yu",i,j,"GAUGE",i,j,comment.str());
+          }
+        }
+
+        // Of course can write to an SLHAea object directly, but the error checking will probably be helpful
+
+        // etc...
+ 
+        return writer.output;
       }
       
       //inspired by softsusy's lsp method.  
