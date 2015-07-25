@@ -155,10 +155,11 @@ namespace Gambit {
      */
     Funk::Funk boost_dNdE(Funk::Funk dNdE, double gamma, double mass)
     {
-      if ( gamma < 1 ) 
+      if ( gamma < 1 + .01 )  // FIXME:  Change threshold via ini-file
       {
-        DarkBit_error().raise(LOCAL_INFO, 
-            "boost_dNdE: Requested Lorentz boost with gamma < 1");
+       /* DarkBit_error().raise(LOCAL_INFO, 
+            "boost_dNdE: Requested Lorentz boost with gamma < 1");*/
+        return dNdE;
       }
       double betaGamma = sqrt(gamma*gamma-1);
       Funk::Funk E = Funk::var("E");

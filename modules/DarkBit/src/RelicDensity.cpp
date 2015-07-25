@@ -433,6 +433,9 @@ namespace Gambit {
         if (widthheavyHiggs<0.1) 
           (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))=0.1;
 
+        for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
+          std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
+
         // tabulate invariant rate
         logger() << "Tabulating RD_eff_annrate..." << std::endl;
         BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
