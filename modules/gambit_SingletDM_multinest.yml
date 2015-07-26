@@ -101,14 +101,6 @@ Scanner:
         aux_printer_live_options:
           output_file: "runs/singletDM_multinest/samples/gambit_output.live"
           info_file: "runs/singletDM_multinest/samples/gambit_output.live_info"
-#        outfile: 0
-#        root: "runs/singletDM_multinest_hdf5/samples/native-"
-#        # resuming doesn't work yet
-#        resume: 0
-#        # No options to set, but still need the nodes at the moment...
-#        aux_printer_txt_options:
-#        aux_printer_stats_options:
-#        aux_printer_live_options:
 
 ###############################
 # Observables of interest
@@ -134,7 +126,7 @@ ObsLikes:
       purpose: Likelihood 
 # XENON100 2012 direct detection likelihood
     - capability: lnL_XENON100_2012
-      purpose: Observable 
+      purpose: Observable
 # LUX 2013 direct detection likelihood
     - capability: lnL_LUX_2013
       purpose:  Observable
