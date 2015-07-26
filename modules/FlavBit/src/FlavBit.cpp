@@ -40,7 +40,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-
+#include "gambit/cmake/cmake_variables.hpp"
 #include <map>
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -1032,7 +1032,8 @@ namespace Gambit
       // experimental measurement
       //Bsmumu
       cout<<"In b2ll_measurements"<<endl;
-      Flav_reader *red = new Flav_reader("/storage/git_repos/Gambit/gambit/modules/FlavBit/Measurements");
+      cout<<GAMBIT_DIR  "/FlavBit/Measurements"<<endl;
+      Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
       cout<<"init"<<endl;
       red->read_yaml_mesurement("example.yaml", "BR_Bs2mumu");
       cout<<"read bs2mumu"<<endl;  
@@ -1093,7 +1094,9 @@ namespace Gambit
       // now filling the Flav_measurement_assym
 
       measurement_assym.LL_name="b2ll_likelihood";
-
+      
+      cout<<"works?"<<endl;
+      
       measurement_assym.value_exp=M_exp;
       measurement_assym.cov_exp_uu=M_cov_uu;
       measurement_assym.cov_exp_du=M_cov_du;
@@ -1106,11 +1109,17 @@ namespace Gambit
       measurement_assym.cov_th_du=M_cov_th;
       measurement_assym.cov_th_dd=M_cov_th;
 
+
+      cout<<M_exp<<endl;
+      cout<<M_th<<endl;
       vector<double> diff;
+      cout<<"diff?"<<endl;
+
       for(int i=0;i<2;++i)
 	{
 	  diff.push_back(M_exp(i,0)-M_th(i,0));
 	}
+      cout<<"diff done"<<endl;
       measurement_assym.diff=diff;
       measurement_assym.dim=2;
     }

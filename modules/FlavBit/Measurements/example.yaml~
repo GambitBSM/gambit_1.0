@@ -1,7 +1,0 @@
-- name: BR_Bs2mumu_measurement
-#  value: 2.1e-9
-#  stat_error: 0.1e-9
-#  sys_error: 0.1e-9
-#  limit: false
-#  fun_name: BR_Bs2mumu
-#  source: PDG
