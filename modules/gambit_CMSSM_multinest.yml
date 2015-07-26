@@ -10,13 +10,13 @@ Parameters:
     #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
     CMSSM:
       M0:
-        range: [200, 1000]
+        range: [100, 1000]
         prior_type: flat
       M12:
-        range: [200, 1000]
+        range: [100, 1000]
         prior_type: flat
-      A0: 500
-      tanb: 3
+      A0: 0
+      tanb: 10
       signmu: 1
 
 
@@ -43,9 +43,9 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/CMSSM_multinest/samples/gambit_output.txt"
+    output_file: "runs/CMSSM_multinest/samples/gambit_output.data"
     # name of info file (explains content of output file)
-    info_file: "runs/CMSSM_multinest/samples/gambit_output.info"
+    info_file: "runs/CMSSM_multinest/samples/gambit_output.data_info"
 
 ##############################
 # Scanner setup
@@ -91,6 +91,9 @@ ObsLikes:
     - capability: lnL_oh2
       purpose: Likelihood 
 
+    - capability: RD_oh2
+      purpose: Observable
+
 #    - capability: lnL_FermiLATdwarfs
 #     purpose:  Likelihood
 #   - capability: lnL_FermiGC
@@ -107,6 +110,9 @@ ObsLikes:
       
 # Complete list of likelihoods in DarkBit as of 2015-05-10
 Rules:
+  - function: get_mass_es_pseudonyms
+    options:
+      hard_error_on_mixing_failure: false
 
   - capability: decay_rates
     function: all_decays
