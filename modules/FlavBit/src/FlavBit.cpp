@@ -1131,6 +1131,7 @@ namespace Gambit
       Flav_measurement_assym measurement_assym;
       b2ll_measurements(measurement_assym);
       // calculating the chi2:
+      cout<<"Dimension= "<<measurement_assym.dim<<endl;
       boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;
       boost::numeric::ublas::matrix<double> cov_du=measurement_assym.cov_exp_du;
       boost::numeric::ublas::matrix<double> cov_ud=measurement_assym.cov_exp_ud;
@@ -1145,27 +1146,34 @@ namespace Gambit
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
+      cout<<"got here"<<endl;
+
+      boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim); 
+      boost::numeric::ublas::matrix<double> cov_ud_inv(measurement_assym.dim, measurement_assym.dim); 
+      boost::numeric::ublas::matrix<double> cov_dd_inv(measurement_assym.dim, measurement_assym.dim); 
       
-
-      boost::numeric::ublas::matrix<double> cov_uu_inv;
-      boost::numeric::ublas::matrix<double> cov_du_inv;
-      boost::numeric::ublas::matrix<double> cov_ud_inv;
-      boost::numeric::ublas::matrix<double> cov_dd_inv;
-
+      cout<<cov_uu<<endl;
+      
       InvertMatrix(cov_uu, cov_uu_inv);
       InvertMatrix(cov_du, cov_du_inv);    
-      InvertMatrix(cov_ud, cov_ud_inv);    
+      InvertMatrix(cov_ud, cov_ud_inv);   
       InvertMatrix(cov_dd, cov_dd_inv);    
+      
+      cout<<cov_dd<<endl;
+      cout<<"inverted"<<endl;
+      cout<<cov_dd_inv<<endl;
 
-
-
-
+      cout<<"Test: "<< cov_dd_inv(1,1)<<endl;
+      cout<<"Test2: "<<diff[1]<<endl;
       // calculating the chi2
       double Chi2=0;
-      for(int i=0; i<measurement_assym.dim; ++i)
+      cout<<"Dimension= "<<measurement_assym.dim<<endl;     
+      for(int i=0; i < measurement_assym.dim; ++i)
 	{                                                                                         
-	  for(int j=0; j<measurement_assym.dim; ++i)    
-	    {                                                                                     
+	  for(int j=0; j<measurement_assym.dim; ++j)    
+	    {           
+	      cout<<i<<" "<<j<<endl;
 	      if( diff[i] >= 0. && diff[j] >=0.) Chi2+= diff[i] * cov_uu_inv(i,j)*diff[j]; 
 	      if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];  
 	      if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];  
@@ -1174,6 +1182,7 @@ namespace Gambit
 	    }                                                                                     
 
 	}
+      cout<<"ok?"<<endl;
       Chi2=Chi2/measurement_assym.dim;
       result+=0.5*Chi2;
       cout<<0.5*Chi2<<endl;
