@@ -72,7 +72,7 @@ namespace Gambit
       vector< Measurement > measurements;
       string measurement_location;
       bool debug;
-      int number_measurements;
+      //      int number_measurements;
       int get_measurement_for_corr(string);
       bool check_corr_matrix();
   
@@ -98,6 +98,9 @@ namespace Gambit
       
     public:
       
+      int number_measurements;   
+
+
       Flav_reader(string loc);
       int read_yaml(string name); // reads a yaml file
       int read_root(string name); // reads a root saved histogram

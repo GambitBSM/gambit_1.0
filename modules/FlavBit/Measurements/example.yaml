@@ -7,10 +7,10 @@
   sys_error_plus: 0.3e-9
   source: PDG
   correlation:
-  - name: B02mumu
+  - name: BR_B02mumu
     value: 0.1
 
-- name: B02mumu
+- name: BR_B02mumu
   islimit: false
   value: 2.3e-10
   stat_error_minus: 0.1e-10

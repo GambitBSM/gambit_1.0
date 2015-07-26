@@ -71,7 +71,8 @@ ObsLikes:
     capability:   AI_BKstarmumu
   - purpose:      Observable
     capability:   AI_BKstarmumu_zero
-
+  - purpose:      Observable
+    capability:   b2ll_M
 
 #########################
 # Rule entries

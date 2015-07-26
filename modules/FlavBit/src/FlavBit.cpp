@@ -1028,17 +1028,30 @@ namespace Gambit
     }
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
     {
+      
       // experimental measurement
       //Bsmumu
+      cout<<"In b2ll_measurements"<<endl;
       Flav_reader *red = new Flav_reader("/storage/git_repos/Gambit/gambit/modules/FlavBit/Measurements");
+      cout<<"init"<<endl;
       red->read_yaml_mesurement("example.yaml", "BR_Bs2mumu");
+      cout<<"read bs2mumu"<<endl;  
       red->read_yaml_mesurement("example.yaml", "BR_B02mumu");
+      
+      cout<<"Read yaml file"<<endl;  
+
+      cout<<"We have: "<<red->number_measurements<<endl; 
+
+
       red->create_global_corr();
+
+      cout<<"correlation"<<endl;
 
       double theory_bs2mumu=0;
       SI_Bsmumu_untag(theory_bs2mumu);
       double theory_bd2mumu=0;
       SI_Bdmumu(theory_bd2mumu);
+
 
       // now the correlation(no correlation from theory for B->sll)
       //###################################################
@@ -1064,6 +1077,8 @@ namespace Gambit
       M_th(0,0)=theory_bs2mumu;
       M_th(1,0)=theory_bd2mumu;
 
+      cout<<"Up to here should be ok"<<endl;
+
       // #########################
 
       boost::numeric::ublas::matrix<double> M_cov_uu=red->get_cov_uu();
@@ -1072,6 +1087,8 @@ namespace Gambit
       boost::numeric::ublas::matrix<double> M_cov_dd=red->get_cov_dd();
 
       boost::numeric::ublas::matrix<double> M_exp=red->get_exp_value();
+      
+      cout<<"here"<<endl;
 
       // now filling the Flav_measurement_assym
 
@@ -1101,6 +1118,7 @@ namespace Gambit
 
     void b2ll_likelihood(double &result)
     {
+      cout<<"Doing the likelihood"<<endl;
       Flav_measurement_assym measurement_assym;
       b2ll_measurements(measurement_assym);
       // calculating the chi2:
@@ -1149,7 +1167,8 @@ namespace Gambit
 	}
       Chi2=Chi2/measurement_assym.dim;
       result+=0.5*Chi2;
-      
+      cout<<0.5*Chi2<<endl;
+      cout<<"DONE the likelihood"<<endl;      
 
       
     }

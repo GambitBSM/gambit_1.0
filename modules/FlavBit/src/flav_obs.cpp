@@ -74,8 +74,6 @@ using namespace std;
                                                 
 
 
-
-
 namespace Gambit    
 {                   
   namespace FlavBit 
@@ -121,9 +119,9 @@ namespace Gambit
     void operator >> (const YAML::Node& node, Measurement& v) {
       cout<<"Op"<<endl;
       v.name=node["name"].as<std::string>();
-      cout<<"passed"<<endl;
+      //cout<<"passed"<<endl;
       v.is_limit = node["islimit"].as<bool>();
-      cout<<"passed"<<endl;
+      // cout<<"passed"<<endl;
 
       if(v.is_limit== true)
 	{
@@ -171,7 +169,8 @@ namespace Gambit
       debug=false;
       use_S=true;
       use_P=false;
-    }
+      number_measurements=0;
+   }
 
     int Flav_reader::read_yaml(string name)
     {
@@ -200,8 +199,22 @@ namespace Gambit
       //YAML::Parser parser(fin);      
       YAML::Node doc = YAML::Load(fin);
       Measurement mes_tmp;
-      doc[measurement_name.c_str()]>>  mes_tmp;
+      cout<<"here?"<<endl;
+      cout<<"Size:"<<doc.size()<<endl;
+      cout<<measurement_name.c_str()<<endl;
       
+      for(unsigned i=0;i<doc.size();++i)   
+	{                                  
+	  Measurement mes_tmp;             
+	  doc[i] >> mes_tmp;               
+	  if(mes_tmp.name!=measurement_name.c_str()) continue;
+	  
+	  measurements.push_back(mes_tmp); 
+	  number_measurements++;  
+	  cout<<"Increasing"<<endl;
+	}                                  
+
+      cout<<"does this work?"<<endl;
     }
     
     
@@ -223,15 +236,6 @@ namespace Gambit
       cout<<"########## END"<<endl;
 
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -258,7 +262,7 @@ namespace Gambit
       M_glob_cov_inv_du = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
       M_glob_cov_inv_dd = boost::numeric::ublas::matrix<double> (number_measurements,number_measurements);
 
-
+      
 
 
       for(int i =0; i<number_measurements;++i)
@@ -303,18 +307,26 @@ namespace Gambit
 
       // InvertMatrix(M_glob_correlation, M_glob_cov_inv);
       
+      cout<<"Inversing: "<<endl;
+      cout<<M_glob_cov_dd<<endl;
+
       InvertMatrix(M_glob_cov_uu, M_glob_cov_inv_uu);
       InvertMatrix(M_glob_cov_ud, M_glob_cov_inv_ud);
       InvertMatrix(M_glob_cov_du, M_glob_cov_inv_du);
       InvertMatrix(M_glob_cov_dd, M_glob_cov_inv_dd);
       
+      cout<<"Inversed"<<endl;
+      cout<<M_glob_cov_inv_dd<<endl;
+
       // calcul;atin the the measurement vector:
-      M_measurement= boost::numeric::ublas::matrix<double> (number_measurements,0);
+      M_measurement= boost::numeric::ublas::matrix<double> (number_measurements,1);
+      cout<<"measurement vector"<<number_measurements <<endl;
       for(int i=0; i<number_measurements;++i)   
 	{                                       
 	  M_measurement(i,0)=measurements[i].value;
 	}
-
+      cout<<M_measurement<<endl;
+      cout<<"DONE"<<endl;
 
 
 
@@ -368,6 +380,7 @@ namespace Gambit
 	    cout<<endl;
 	  }
       }
+      cout<<"finishing printing"<<endl;
     }
 
 
