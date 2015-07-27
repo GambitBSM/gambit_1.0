@@ -149,13 +149,14 @@ namespace Gambit {
                 const std::string& label 
               , const int vID
               , const unsigned int i
-              , bool sync
-              , bool sil
+              , const unsigned long start_pos
+              , const bool sync
+              , const bool sil
               #ifdef WITH_MPI
               , const BuffTags& tags
               , const GMPI::Comm& pComm
               #endif
-           ): VertexBufferBase(label,vID,i,sync,sil)
+           ): VertexBufferBase(label,vID,i,start_pos,sync,sil)
             , buffer_valid() 
             , buffer_entries()
             #ifdef WITH_MPI
@@ -177,6 +178,7 @@ namespace Gambit {
                 <<tags.RA_length  <<", "
                 <<std::endl; 
              #endif
+
           }
 
           /// Destructor

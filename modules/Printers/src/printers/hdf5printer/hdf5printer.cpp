@@ -114,7 +114,7 @@
   #define DBUG(x)
 #endif
 
-//#define CHECK_SYNC 
+#define CHECK_SYNC 
 
 // Code!
 namespace Gambit
@@ -179,19 +179,20 @@ namespace Gambit
           // output stream. If so, we relinquish control over it and silence the
           // new output stream.
           bool silence = false;
-          #ifdef DEBUG_MODE
+          //#ifdef DEBUG_MODE
           std::cout<<"Preparing to create new print output stream..."<<std::endl;
           std::cout<<"...label = "<<label<<std::endl;
           std::cout<<"...is stream already managed? "<<printer->is_stream_managed(key)<<std::endl;
           std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
-          #endif
+          std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
+          //#endif
           if( printer->is_stream_managed(key) )
           {
             silence = true;
           }
-          #ifdef DEBUG_MODE
+          //#ifdef DEBUG_MODE
           std::cout<<"...is silenced? "<<silence<<std::endl;
-          #endif
+          //#endif
 
           // Create the new buffer object
           H5FGPtr loc(NULL);
@@ -204,6 +205,7 @@ namespace Gambit
                                        , label/*deconstruct?*/
                                        , vertexID
                                        , aux_i
+                                       , printer->get_N_pointIDs()
                                        , synchronised
                                        , silence
                                        #ifdef WITH_MPI
@@ -633,7 +635,7 @@ namespace Gambit
 
       // Determine the desired sync position
       // (i.e. look up how many parameter points have been generated)
-      const ulong sync_pos = reverse_global_index_lookup.size()-1;  
+      const ulong sync_pos = get_N_pointIDs()-1;  
 
       // Cycle through all buffers and tell them to ensure they are at the right position
       // The buffers should throw an error if we are accidentally telling them to go backwards
@@ -821,14 +823,14 @@ namespace Gambit
 
                 // Update master PPIDs with those from the worker node
                 // Will block until these are received; they should come right alongside the buffers themselves
-                long npoints_init = primary_printer->reverse_global_index_lookup.size();
+                long npoints_init = get_N_pointIDs();
                 #ifdef MPI_DEBUG
                 std::cout<<"rank "<<myRank<<": npoints_init = "<<npoints_init<<std::endl;
                 #endif
 
                 receive_PPID_list(source_rank);
 
-                long npoints_final = primary_printer->reverse_global_index_lookup.size();
+                long npoints_final = get_N_pointIDs();
                 #ifdef MPI_DEBUG
                 std::cout<<"rank "<<myRank<<": npoints_final = "<<npoints_final<<std::endl;
                 std::cout<<"rank "<<myRank<<": Received "<<npoints_final-npoints_init<<" new PPIDs from process "<<source_rank<<std::endl;
@@ -1064,7 +1066,7 @@ namespace Gambit
          {
            long head_pos = it->second->dset_head_pos();
            std::string name       = it->second->get_label();
-           long sync_pos_plus1 = reverse_global_index_lookup.size();
+           long sync_pos_plus1 = get_N_pointIDs();
 
            if(sync_type==0) {
               if(head_pos+1 < sync_pos_plus1)
@@ -1111,7 +1113,7 @@ namespace Gambit
        {
          #ifdef MPI_DEBUG
          std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
-         std::cout<<"rank "<<myRank<<": sync_pos="<<reverse_global_index_lookup.size()<<std::endl;
+         std::cout<<"rank "<<myRank<<": sync_pos="<<get_N_pointIDs()<<std::endl;
          #endif
  
          // Explicitly check up on the synchronisation of all the buffers and their
@@ -1130,7 +1132,7 @@ namespace Gambit
          // (with the last ID being the point from which the next print statements 
          // will arrive).
          //
-         // So, in the end, with sync_pos = reverse_global_index_lookup.size() - 1
+         // So, in the end, with sync_pos = reverse_global_index_lookup.size() - 1 = get_N_pointIDs() - 1
          // we require 
          //   dset_head_pos() == sync_pos
          // for every buffer.

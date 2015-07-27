@@ -216,6 +216,10 @@ namespace Gambit
         /// Get the name of this printer
         std::string get_printer_name() { return printer_name; }
 
+        /// Get the number of pointIDs know to this printer
+        /// (should correspond to the number of "appends" each active buffer has received)
+        ulong get_N_pointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
+
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
         /// BaseBasePrinter, so we need to  
@@ -238,6 +242,8 @@ namespace Gambit
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
            HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
           {                                                                        \
+             std::cout << "pointID=" << pointID << ", mpirank="<<mpirank<<std::endl; \
+                                                                                 \
              /* If the buffermanger hasn't been initialised, do so now */        \
              if( not CAT(hdf5_localbufferman_,NAME).ready() )                    \
              {                                                                   \
