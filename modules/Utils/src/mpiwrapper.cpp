@@ -32,16 +32,29 @@ namespace Gambit
             
       /// @{ Constructors
       /// Default (attaches to MPI_COMM_WORLD):
-      Comm::Comm()
-        : boundcomm(MPI_COMM_WORLD)
+      Comm::Comm() : boundcomm(MPI_COMM_WORLD)
       {
       }
 
-      /// Duplicate input communicator (creates new context)
-      Comm::Comm(const MPI_Comm& comm) 
+      /// Copy existing communicator
+      Comm::Comm(const MPI_Comm& comm) : boundcomm(comm)
       {
-         MPI_Comm_dup(comm, &boundcomm);
       }
+
+      /// Duplicate input communicator into boundcomm
+      /// (creates new context)
+      /// NOTE! MPI_Comm_dup is a COLLECTIVE call, so all processes
+      /// must call it! Beware deadlocks. May be better to duplicate
+      /// first and then wrap in a communicator.
+      void Comm::dup(const MPI_Comm& comm)
+      {
+         int errflag = MPI_Comm_dup(comm, &boundcomm);
+         if(errflag!=0) {
+           std::ostringstream errmsg;
+           errmsg << "Error performing MPI_Comm_dup! Received error flag: "<<errflag; 
+           utils_error().raise(LOCAL_INFO, errmsg.str());
+         }
+     }
 
       /// @}      
   
