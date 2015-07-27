@@ -149,11 +149,15 @@ namespace Gambit
       class Comm
       {
          public:
-            /// Default Constructor
+            /// Default Constructor; attaches to MPI_COMM_WORLD
             Comm();
 
-            /// Duplicate constructor
+            /// Constructor which copies existing communicator into boundcomm
             Comm(const MPI_Comm& comm);
+ 
+            /// Duplicate existing communicator
+            /// (NOTE, this is a collective operation on all procceses)
+            void dup(const MPI_Comm& comm);
         
             /// Get total number of MPI tasks in this communicator group
             int Get_size() const;

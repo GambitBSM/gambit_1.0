@@ -34,6 +34,9 @@
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
+// MPI bindings
+#include "gambit/Utils/mpiwrapper.hpp"
+
 // Code!
 namespace Gambit
 {
@@ -80,8 +83,8 @@ namespace Gambit
         /// Constructor (for construction via inifile options)
         asciiPrinter(const Options&);
 
-        /// Auxilliary mode constructor (for construction in scanner plugins)
-        asciiPrinter(const Options&, std::string&, bool global=0);
+        // /// Auxilliary mode constructor (for construction in scanner plugins)
+        // asciiPrinter(const Options&, std::string&, bool global=0);
 
         /// Tasks common to the various constructors
         void common_constructor();
@@ -157,9 +160,15 @@ namespace Gambit
         /// Number of lines to store in buffer before printing
         unsigned int bufferlength = 1000;
 
-        /// MPI rank (currently not hooked up to MPI, just hardcoded to 0)
-        int myRank = 0;
-
+        /// MPI rank
+        uint myRank;  // Needed even without MPI available, for some default behaviour.
+        #ifdef WITH_MPI
+        // Gambit MPI communicator context for use within the printer system
+        GMPI::Comm myComm;
+ 
+        uint mpiSize;
+        #endif
+ 
         /// Number of digits of precision to use in output columns
         int precision = 10;
  
