@@ -205,7 +205,6 @@ namespace Gambit
                                        , label/*deconstruct?*/
                                        , vertexID
                                        , aux_i
-                                       , printer->get_N_pointIDs()
                                        , synchronised
                                        , silence
                                        #ifdef WITH_MPI
@@ -214,6 +213,12 @@ namespace Gambit
                                        , printer->get_Comm()
                                        #endif
                                        );
+          
+          // Catch the new buffer up to the same position as the already
+          // existing buffers (minus 1, since after the buffer is retrived
+          // by this function then the printer will do an append).
+          std::cout << "printer->get_N_pointIDs() : "<<printer->get_N_pointIDs()<<std::endl;
+          local_buffers.at(key).N_skip_append(printer->get_N_pointIDs()-1);
 
           // Get the new (possibly silenced) buffer back out of the map
           it = local_buffers.find(key);
@@ -241,48 +246,29 @@ namespace Gambit
       : printer_name("Primary printer")
       , myRank(0)
      #ifdef WITH_MPI
-      , myComm(MPI_COMM_WORLD) // duplicates MPI_COMM_WORLD, creating new communicator context
+      , myComm() // initially attaches to MPI_COMM_WORLD
       , mpiSize(1)
      #endif
      {
       #ifdef WITH_MPI
-      // Do basic MPI checks
       myRank = myComm.Get_rank();
-      mpiSize = myComm.Get_size();
-
-      if(myRank==0) {
-         printer_name = "Master primary printer";
-      } else {
-         std::ostringstream ss;
-         ss << "Primary printer for rank " << myRank;
-         printer_name = ss.str();
-      }
       #endif
 
-      // (Needs modifying when full MPI implentation is done)
-      // Initialise "lastPointID" map to -1 (i.e. no last point)
-      lastPointID[myRank] = -1; // Only rank 0 process for now; parallel mode not implemented
-
-      if(options.getValueOrDef<bool>(false,"auxilliary"))
-      {
-        // Set up this printer in auxilliary mode
-        std::ostringstream ss;
-        ss << options.getValueOrDef<std::string>("Primary printer","name");
-        #ifdef WITH_MPI
-        ss << " for rank " << myRank;
-        #endif
-        printer_name = ss.str();
-        synchronised = options.getValueOrDef<bool>(true,"synchronised");
-        DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" synchronised="<<synchronised<<")..." << std::endl; )
-      } 
-      else
+      if(not options.getValueOrDef<bool>(false,"auxilliary"))
       {
         // Set up this printer in primary mode
         DBUG( std::cout << "Constructing Primary HDF5Printer object..." << std::endl; )
         is_primary_printer = true;
 
+        // Set up communicator context for HDF5 printer system
+        #ifdef WITH_MPI
+        myComm.dup(MPI_COMM_WORLD); // duplicates MPI_COMM_WORLD
+        #endif
+
         if(myRank==0) // Only master node will actuall write to file
         {  
+           printer_name = "Master primary printer";
+
            #ifdef WITH_MPI
            // Create object to issue MPI tags for the various buffers
            tag_manager = new MPITagManager(myComm,FIRST_EMPTY_TAG,TAG_REQ,BuffTags::NTAGS);
@@ -304,8 +290,34 @@ namespace Gambit
            // Set the target dataset write location to the chosen group
            location = groupptr;
         }
+        else
+        {
+           std::ostringstream ss;
+           ss << "Primary printer for rank " << myRank;
+           printer_name = ss.str();
+        }
+      }
+      else
+      {
+        // Set up this printer in auxilliary mode
+        std::ostringstream ss;
+        ss << options.getValue<std::string>("name");
+        #ifdef WITH_MPI
+        ss << " for rank " << myRank;
+        #endif
+        printer_name = ss.str();
+        synchronised = options.getValueOrDef<bool>(true,"synchronised");
+        DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" synchronised="<<synchronised<<")..." << std::endl; )
       } 
-    }
+      // Now that communicator is set up, get its properties.
+      #ifdef WITH_MPI
+      myRank = myComm.Get_rank();
+      mpiSize = myComm.Get_size();
+      #endif
+ 
+      // Initialise "lastPointID" map to -1 (i.e. no last point)
+      lastPointID[myRank] = -1; // Only rank 0 process for now; parallel mode not implemented
+   }
 
 
     /// Initialisation for the auxilliary printer
@@ -315,6 +327,14 @@ namespace Gambit
       // Need to cast it to the derived type, but this should always be safe 
       // for the auxilliary printers.
       primary_printer = dynamic_cast<HDF5Printer*>(this->get_primary_printer());
+
+      // Fix up mpi communicator (need to copy the one created by the
+      // primary printer)
+      #ifdef WITH_MPI
+      myComm = primary_printer->get_Comm();
+      myRank = myComm.Get_rank();
+      mpiSize = myComm.Get_size();
+      #endif
 
       // Retrieve the target location for adding new datasets from the primary
       // printer

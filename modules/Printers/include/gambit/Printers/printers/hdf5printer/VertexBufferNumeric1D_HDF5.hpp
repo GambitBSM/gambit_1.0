@@ -147,15 +147,27 @@ namespace Gambit {
       {}
 
       template<class T, std::size_t CHUNKLENGTH>
-      VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i, bool sync, bool silence
+      VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::VertexBufferNumeric1D_HDF5(
+          H5FGPtr location
+        , const std::string& name
+        , const int vID
+        , const unsigned int i
+        , bool sync
+        , bool silence
         #ifdef WITH_MPI
         , const BuffTags& tags
         , const GMPI::Comm& pComm
         #endif
         )
-        : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i, sync, silence
+        : VertexBufferNumeric1D<T,CHUNKLENGTH>(
+            name
+          , vID
+          , i
+          , sync
+          , silence
           #ifdef WITH_MPI
-          , tags, pComm
+          , tags
+          , pComm
           #endif
           )
         , _dsetvalid()

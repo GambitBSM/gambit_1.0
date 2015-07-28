@@ -149,14 +149,13 @@ namespace Gambit {
                 const std::string& label 
               , const int vID
               , const unsigned int i
-              , const unsigned long start_pos
               , const bool sync
               , const bool sil
               #ifdef WITH_MPI
               , const BuffTags& tags
               , const GMPI::Comm& pComm
               #endif
-           ): VertexBufferBase(label,vID,i,start_pos,sync,sil)
+           ): VertexBufferBase(label,vID,i,sync,sil)
             , buffer_valid() 
             , buffer_entries()
             #ifdef WITH_MPI
@@ -199,6 +198,12 @@ namespace Gambit {
 
           /// No data to append this iteration; skip this slot
           virtual void skip_append();
+
+          /// Skip several/many positions
+          /// NOTE! This is meant for initialising new buffers to the correct
+          /// position. If buffer overflows it may get cleared without data
+          /// being written, so don't use this in other contexts.
+          virtual void N_skip_append(ulong N);
 
           // Trigger MPI send of sync buffer to master node, or write to disk
           virtual void flush();
@@ -658,6 +663,20 @@ namespace Gambit {
             this->reset_head(); 
             this->sync_buffer_full = false;
             this->sync_buffer_empty = true;
+         }
+      }
+
+      /// Skip several/many positions
+      /// NOTE! This is meant for initialising new buffers to the correct
+      /// position. If buffer overflows it will be cleared without data
+      /// being written, so don't use this in other contexts.
+      template<class T, std::size_t L>
+      void VertexBufferNumeric1D<T,L>::N_skip_append(ulong N)
+      {
+         for(ulong i=0; i<N; i++)
+         {
+            if(this->sync_buffer_is_full()) clear();
+            skip_append();
          }
       }
 

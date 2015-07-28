@@ -68,7 +68,7 @@ namespace Gambit {
               #endif
             }   
 
-            VertexBufferBase(const std::string& l, const int vID, const uint i, const ulong start_pos, const bool sync, const bool sil) 
+            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil) 
               : label(l)
               , vertexID(vID)
               , index(i)
@@ -78,17 +78,6 @@ namespace Gambit {
               #ifdef HDF5_DEBUG
               std::cout<<"Constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
               #endif
-
-              // Move dataset write head to the set position, filling the dataset
-              // with empty values up to this position.
-              // TODO: This might break in MPI mode.
-              if(synchronised)
-              {
-                 for(ulong i=0; i<start_pos; i++)
-                 {
-                    skip_append();
-                 }
-              }
             }
 
             virtual ~VertexBufferBase() 
@@ -139,6 +128,12 @@ namespace Gambit {
 
             // Needed to externally inform buffer of a skipped iteration (when no data to write)
             virtual void skip_append() = 0;           
+
+            /// Skip several/many positions
+            /// NOTE! This is meant for initialising new buffers to the correct
+            /// position. If buffer overflows it may get cleared without data
+            /// being written, so don't use this in other contexts.
+            virtual void N_skip_append(ulong N) = 0;
 
             // Needed for checking that dataset sizes on disk are consistent
             virtual ulong get_dataset_length() = 0;

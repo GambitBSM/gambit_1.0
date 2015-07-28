@@ -39,7 +39,7 @@
 
 // Switch for debugging output (manual at the moment)
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 #ifdef DEBUG_MODE 
   #define DBUG(x) x
@@ -93,9 +93,15 @@ namespace Gambit
         //std::exit(0);
       #endif
 
-      // (Needs modifying when full MPI implentation is done)
       // Initialise "lastPointID" map to -1 (i.e. no last point)
-      lastPointID[0] = -1; // Only rank 0 process for now; parallel mode not implemented
+      #ifdef WITH_MPI
+      for(uint i=0; i<mpiSize; i++)
+      {
+        lastPointID[i] = -1;
+      }
+      #else
+      lastPointID[myRank] = -1;
+      #endif 
 
       // Erase contents of output_file and info_file if they already exist
       std::ofstream output;
@@ -110,27 +116,51 @@ namespace Gambit
     // Constructor
     asciiPrinter::asciiPrinter(const Options& options)
       : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
-      , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
+      , info_file("")
+      , bufferlength( options.getValueOrDef<uint>(100,"buffer_length") )
       , global(false)
       , printer_name("Primary")
+      , myRank(0)
+     #ifdef WITH_MPI
+      , myComm() // attaches to MPI_COMM_WORLD, beware collisions with e.g. scanning algorithms.
+      , mpiSize(1)
+     #endif
     {
+      // Name "info" file to match "output" file
+      std::ostringstream finfo;
+      finfo<< output_file <<"_info";
+      info_file = finfo.str();
+
+      #ifdef WITH_MPI
+      myRank = myComm.Get_rank();
+      mpiSize = myComm.Get_size();
+
+      // Append mpi rank to file names to avoid collisions between processes
+      std::ostringstream fout;
+      std::ostringstream finfo2;
+      fout << output_file <<"_"<<myRank;
+      finfo2<< info_file  <<"_"<<myRank;
+      output_file = fout.str();
+      info_file = finfo2.str();
+      #endif
+
       DBUG( std::cout << "Constructing Primary asciiPrinter object..." << std::endl; )
       common_constructor();
     }
  
-    /// Auxiliary mode constructor 
-    asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool globalIN)
-      : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
-      , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
-      , global(globalIN)
-      , printer_name(name)
-    {
-      std::cout << "does this ever get called???" << std::endl;
-      exit(0);
-      // Could set these things via options also if we like.
-      DBUG( std::cout << "Constructing Auxilliary asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
-      common_constructor();
-    }
+    // /// Auxiliary mode constructor 
+    // asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool globalIN)
+    //   : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
+    //   , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
+    //   , global(globalIN)
+    //   , printer_name(name)
+    // {
+    //   std::cout << "does this ever get called???" << std::endl;
+    //   exit(0);
+    //   // Could set these things via options also if we like.
+    //   DBUG( std::cout << "Constructing Auxilliary asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
+    //   common_constructor();
+    // }
  
     /// Destructor
     // Overload the base class virtual destructor
@@ -173,7 +203,14 @@ namespace Gambit
       my_fstream.close();
       erase_buffer();
       lastPointID.clear();
-      lastPointID[0] = -1; // Only rank 0 process for now; parallel mode not implemented (same as in constructor)
+      #ifdef WITH_MPI
+      for(uint i=0; i<mpiSize; i++)
+      {
+        lastPointID[i] = -1;
+      }
+      #else
+      lastPointID[myRank] = -1;
+      #endif 
     }
 
     /// Retrieve MPI rank

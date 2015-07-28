@@ -102,6 +102,10 @@ namespace Gambit
       DBUG( std::cout << "PrinterManager: Retrieving printer stream \"" << streamname << "\"" << std::endl; )
       if(streamname=="")
       {
+        if(printerptr==NULL)
+        {
+           printer_error().raise(LOCAL_INFO,"Error retrieving primary printer from PrinterManager! printerptr==NULL! Must be a bug in the PrinterManager initialisation.");
+        }
         return printerptr;
       }
       else

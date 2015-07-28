@@ -106,21 +106,28 @@ scanner_plugin(MultiNest, version(3, 9))
       // Print some basic startup diagnostics.      
       std::cout << "MultiNest ndims:" << ndims << std::endl;
       std::cout << "MultiNest nPar: " << nPar  << std::endl;
-   
-      // Get inifile options for each print stream
-      Gambit::Options txt_options   = get_inifile_node("aux_printer_txt_options");
-      Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
-      Gambit::Options live_options  = get_inifile_node("aux_printer_live_options");
+  
+      // Setup auxilliary streams. These are only needed by the master process,
+      // so let's create them only for that process
+      int myrank = get_printer().get_stream()->getRank(); // mpi rank of this process
+      std::cout << "myrank? " << myrank <<std::endl;
+      if(myrank==0)
+      {
+         // Get inifile options for each print stream
+         Gambit::Options txt_options   = get_inifile_node("aux_printer_txt_options");
+         Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
+         Gambit::Options live_options  = get_inifile_node("aux_printer_live_options");
 
-      // Options to desynchronise print streams from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
-      stats_options.setValue("synchronised",false); 
-      txt_options.setValue("synchronised",false);
-      live_options.setValue("synchronised",false);
+         // Options to desynchronise print streams from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
+         stats_options.setValue("synchronised",false); 
+         txt_options.setValue("synchronised",false);
+         live_options.setValue("synchronised",false);
 
-      // Initialise auxiliary print streams
-      get_printer().new_stream("txt",txt_options);
-      get_printer().new_stream("stats",stats_options);            
-      get_printer().new_stream("live",live_options);
+         // Initialise auxiliary print streams
+         get_printer().new_stream("txt",txt_options);
+         get_printer().new_stream("stats",stats_options);            
+         get_printer().new_stream("live",live_options);
+      }
 
       // Create the object that interfaces to the MultiNest LogLike callback function
       Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, get_printer(), ndims);
@@ -211,6 +218,7 @@ namespace Gambit {
          int pointID = boundLogLike->getPtID();   // point ID number
          Cube[ndim+0] = myrank;
          Cube[ndim+1] = pointID;
+         //std::cout << "Cube input: rank="<<myrank<<", pointID="<<pointID<<std::endl;
          primary_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
          primary_stream->print( pointID, "pointID", -8, myrank, pointID);
 
@@ -290,6 +298,7 @@ namespace Gambit {
              myrank  = posterior[(nPar-2)*nSamples + i]; //MPI rank stored in second last entry of cube
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
            
+             //std::cout << "Posterior output: i="<<i<<", rank="<<myrank<<", pointID="<<pointID<<std::endl;
              txt_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
              txt_stream->print( pointID, "pointID", -8, myrank, pointID);
              txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   -4, myrank, pointID);
