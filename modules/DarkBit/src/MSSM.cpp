@@ -185,6 +185,7 @@ namespace Gambit {
           // JE's BE initialization happens here
           if ( BEreq::initFromSLHA(byVal(mySLHA)) == 0 )
           {
+            logger() << "Using JE's DarkSUSY BE initialization." << std::endl;
             BEreq::dsprep();
             result = true;
           }
