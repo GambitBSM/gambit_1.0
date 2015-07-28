@@ -116,7 +116,8 @@ namespace Gambit
     // Constructor
     asciiPrinter::asciiPrinter(const Options& options)
       : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
-      , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
+      , info_file("")
+      , bufferlength( options.getValueOrDef<uint>(100,"buffer_length") )
       , global(false)
       , printer_name("Primary")
       , myRank(0)
@@ -133,7 +134,7 @@ namespace Gambit
       std::ostringstream fout;
       std::ostringstream finfo;
       fout << output_file <<"_"<<myRank;
-      finfo<< info_file   <<"_"<<myRank;
+      finfo<< info_file   <<"_info_"<<myRank;
       output_file = fout.str();
       info_file = finfo.str();
       #endif

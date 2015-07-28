@@ -25,7 +25,7 @@ Printer:
   printer: ascii
   options:
     output_file: "runs/spartan_multinest/samples/gambit_output.data"
-    info_file: "runs/spartan_multinest/samples/gambit_output.data_info"
+    buffer_length: 10
 
 #======== Scanner setup ========
 Scanner:
