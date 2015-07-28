@@ -3,7 +3,7 @@
 #include <memory>
 #include <iomanip>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/mt2w.h"
 
@@ -26,13 +26,12 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    class Analysis_CMS_2LEPDMTOP_20invfb : public Analysis {
+    class Analysis_CMS_2LEPDMTOP_20invfb : public HEPUtilsAnalysis {
     private:
 
       // Numbers passing cuts
       int _numSR;
 
-      vector<int> cutFlowVector_alt;
       vector<int> cutFlowVector;
       vector<string> cutFlowVector_str;
       int NCUTS; //=24;
@@ -48,11 +47,10 @@ namespace Gambit {
         for (int i=0; i<NCUTS; i++) {
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
-          cutFlowVector_alt.push_back(0);
         }
       }
 
-      double SmallestdPhi(std::vector<Jet *> jets,double phi_met)
+      double SmallestdPhi(std::vector<HEPUtils::Jet *> jets,double phi_met)
       {
 	if (jets.size()<2) return(999);
 	double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
@@ -66,41 +64,41 @@ namespace Gambit {
 	
       }
       
-      void analyze(const Event* event) {
+      void analyze(const HEPUtils::Event* event) {
 
         // Missing energy
-        P4 ptot = event->missingmom();
+        HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
         // Now define vectors of baseline objects
-	vector<Particle*> baselineLeptons;
+	vector<HEPUtils::Particle*> baselineLeptons;
 
-        vector<Particle*> baselineElectrons;
-        for (Particle* electron : event->electrons()) {
+        vector<HEPUtils::Particle*> baselineElectrons;
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 20. && fabs(electron->eta()) < 2.5) {
 	    baselineElectrons.push_back(electron);
 	    baselineLeptons.push_back(electron);
 	  }
         }
-        vector<Particle*> baselineMuons;
-        for (Particle* muon : event->muons()) {
+        vector<HEPUtils::Particle*> baselineMuons;
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 20. && fabs(muon->eta()) < 2.4) {
 	    baselineMuons.push_back(muon);
 	    baselineLeptons.push_back(muon);
 	  }
         }
 
-        vector<Jet*> baselineJets;
+        vector<HEPUtils::Jet*> baselineJets;
 	vector<LorentzVector> jets;
-        vector<Jet*> bJets;
+        vector<HEPUtils::Jet*> bJets;
 	vector<bool> btag;
 	
 	const std::vector<double>  a = {0,10.};
         const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.60};
-        BinnedFn2D<double> _eff2d(a,b,c);
+        HEPUtils::BinnedFn2D<double> _eff2d(a,b,c);
 
-        for (Jet* jet : event->jets()) {
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 5.0) {
 	    baselineJets.push_back(jet);
 	    LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ; 
@@ -190,8 +188,25 @@ namespace Gambit {
         if(passPresel && met > 320. && jetPtSum < 400. && lepPtSum > 120. && dPhiLL < 2.)_numSR++;
 
         return;
-
       }
+
+
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_CMS_2LEPDMTOP_20invfb* specificOther
+                = dynamic_cast<Analysis_CMS_2LEPDMTOP_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] += specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+        _numSR += specificOther->_numSR;
+      }
+
 
       void finalize() {
 
@@ -222,8 +237,6 @@ namespace Gambit {
       }
 
       void collect_results() {
-        finalize();
-
         SignalRegionData results_SR;
         results_SR.set_observation(1.);
         results_SR.set_background(1.89);

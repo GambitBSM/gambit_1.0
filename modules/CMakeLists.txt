@@ -24,8 +24,8 @@
 #
 #************************************************
 
-# Require a minimum cmake version of 2.6.0
-cmake_minimum_required(VERSION 2.6.0 FATAL_ERROR)
+# Require a minimum cmake version of 2.8.0
+cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 
 if(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Debug CACHE STRING
@@ -34,6 +34,7 @@ endif()
 
 # Set certain policies to NEW
 foreach(p
+  CMP0003 # CMake 2.6.0
   CMP0012 # CMake 2.8.0
   CMP0022 # CMake 2.8.12
   CMP0025 # CMake 3.0
@@ -201,14 +202,6 @@ retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 # Include contributed packages
 include(cmake/contrib.cmake)
 
-# FIXME this should also generate the CMakeLists.txt file for the printers
-# Generate the CMakeLists.txt files for GAMBIT modules
-message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
-set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
-execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${update_cmakelists}) 
-message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
-
 # Generate the backend_locations.yaml file if there isn't one
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")
   configure_file("${PROJECT_SOURCE_DIR}/config/backend_locations.yaml.example" "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml" COPYONLY)
@@ -223,14 +216,21 @@ set(PRINTER_HARVESTER ${PROJECT_SOURCE_DIR}/cmake/printer_harvester.py)
 set(HARVEST_TOOLS ${PROJECT_SOURCE_DIR}/Utils/scripts/harvesting_tools.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
-# model_types_rollcall.hpp, backend_rollcall.hpp, backend_types_rollcall.hpp and printer_rollcall.hpp.
+# model_types_rollcall.hpp, backend_rollcall.hpp, backend_types_rollcall.hpp, printer_rollcall.hpp
+# and the various standalone_functors.cpp.
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
 file(GLOB PRINTER_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printers/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
+                                  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp"
                                   "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
+foreach(bit ${GAMBIT_BITS})
+  if(NOT ScannerBit STREQUAL ${bit})
+    set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
+  endif()
+endforeach()
 
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp
                    COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
@@ -245,9 +245,9 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${BACKEND_HARVESTER}
                            ${HARVEST_TOOLS}
-                           ${BACKEND_HARVESTER_FILES} 
+                           ${BACKEND_HARVESTER_FILES}
                            ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-                           
+
 # FIXME printer_harvester.py should not generate a CMakeLists.txt file
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp 
                           ${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt
@@ -261,11 +261,12 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
                           ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp
                           ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
+                          ${STANDALONE_FUNCTOR_CPPS}
                    COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${MODULE_HARVESTER} 
-                           ${HARVEST_TOOLS} 
-                           ${MODULE_HARVESTER_FILES} 
+                   DEPENDS ${MODULE_HARVESTER}
+                           ${HARVEST_TOOLS}
+                           ${MODULE_HARVESTER_FILES}
                            ${BACKEND_HARVESTER_FILES} 
                            ${PROJECT_BINARY_DIR}/CMakeCache.txt
                            ${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml)
@@ -283,6 +284,14 @@ add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include
                                           ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp
                                           ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
                                           backend_harvest)
+
+# FIXME this should also generate the CMakeLists.txt file for the printers
+# Generate the CMakeLists.txt files for GAMBIT modules
+message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+check_result(${result} ${update_cmakelists})
+message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
 
 # Include other cmake scripts
 include(cmake/warnings.cmake)

@@ -79,18 +79,24 @@ def sorted_nicely( l ):
 # Parse a string to see if it has a class, struct or typedef declaration
 def check_for_declaration(input_snippet,module,local_namespace,candidate_type):
     splitline = neatsplit('\s|\(|\)|\*|\&|\;',input_snippet)
+    candidate_parts = neatsplit('::',candidate_type)
     if len(splitline)>1:
-        # If the local namespace matches the module name, and the candidate type is declared here, qualify it
-        # Note that if candidate_type is a pointer then candidate_type==splitline[1] fails to match due to the extra *.
-        # This case is working, but there might be more cases like this that crop up, which we will need to handle here. --Ben.
-        if local_namespace==module:
-            if splitline[0] in ["class", "struct"] \
-             and ( candidate_type==splitline[1] or candidate_type==splitline[1]+"*" ):
-                return local_namespace+"::"+candidate_type
-            if len(splitline)>2:
-                if splitline[0]=="typedef" and candidate_type==splitline[2]:
-                    return local_namespace+"::"+candidate_type
-    return candidate_type
+        # Look for class/struct declarations
+        if splitline[0] in ["class", "struct"] and \
+         ( candidate_type in (splitline[1], splitline[1]+"*") or \
+           candidate_parts[-1] in (splitline[1], splitline[1]+"*") ):
+            # If the local namespace matches the module name, and the candidate type is unqualified, qualify it.
+            if local_namespace==module and candidate_type in (splitline[1], splitline[1]+"*"):
+                candidate_type = local_namespace+"::"+candidate_type
+            return (True, candidate_type)
+        # Look for typedefs
+        if len(splitline)>2:
+            if splitline[0]=="typedef" and (candidate_type in splitline[2:] or candidate_parts[-1] in splitline[2:]):
+                # If the local namespace matches the module name, and the candidate type is unqualified, qualify it.
+                if local_namespace==module and candidate_type in splitline[2:]:
+                    candidate_type = local_namespace+"::"+candidate_type
+                return (True, candidate_type)
+    return (False, candidate_type)
 
 # Parse a string to see if it has a namespace declaration
 def check_for_namespace(input_snippet,local_namespace):
@@ -148,7 +154,7 @@ def first_type_equivalent(candidate_in, equivs, existing):
     return common_elements.pop()+candidate_suffix
 
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
-def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
+def addiffunctormacro(line,module,typedict,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
 
     command_index = {"START_FUNCTION":1,
                      "QUICK_FUNCTION":5, 
@@ -159,6 +165,7 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
     splitline = neatsplit('\(|\)|,|\s',line)
 
     qualifier_list = ["const"]
+    typeset = typedict["all"]
 
     if len(splitline)>1 and splitline[0] in command_index.keys():
         #This line defines a function and one or more of the arguments defines a candidate type
@@ -193,6 +200,7 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                 if verbose: print "    {0} located, searching for declaration of {1}...".format(line.strip(),candidate_type)
                 for header in typeheaders:
                     local_namespace = ""
+                    found_declaration = False
                     with open(header) as f:
                         for newline in readlines_nocomments(f):
                             splitline = neatsplit('\{|\}|:|;',newline)
@@ -200,10 +208,25 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                             for i in range(5):
                                 if len(splitline)>i:
                                     local_namespace = check_for_namespace(splitline[i],local_namespace)
-                                    candidate_type = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
-                            # Ben: The loop above misses some of the typedefs, so need to re-parse the whole line for these
-                            candidate_type = check_for_declaration(newline,module,local_namespace,candidate_type)
-            typeset.add(candidate_type)                 
+                                    if not found_declaration:
+                                        (found_declaration, candidate_type) = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
+                            # The loop above misses some of the typedefs, so we need to re-parse the whole line for these.
+                            if not found_declaration: 
+                                (found_declaration, candidate_type) = check_for_declaration(newline,module,local_namespace,candidate_type)
+                            if found_declaration: break
+                    # If the type was declared in this header, and this is a module header, save the type into the list of types for this module.
+                    if found_declaration and re.sub(".*?/include/gambit/", "",header).startswith(module):
+                        if not module in typedict: typedict[module] = set([])
+                        typedict[module].add(candidate_type)
+                        break
+                # If the type was not identified with any module, save it as a non-module type.
+                if module not in typedict or candidate_type not in typedict[module]:
+                    typedict["non_module"].add(candidate_type)
+            else:
+                # Type is intrinsic, so must be a non-module type.
+                typedict["non_module"].add(candidate_type)
+            # Add the type to the list of all types from everywhere.
+            typeset.add(candidate_type)
 
 
 # Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call

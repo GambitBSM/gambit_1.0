@@ -11,8 +11,13 @@
 #include <string>
 #include "wrapper_Vec4_decl.h"
 #include <vector>
+#include "wrapper_BeamParticle_decl.h"
+#include "wrapper_UserHooks_decl.h"
 #include "wrapper_PartonLevel_decl.h"
+#include "wrapper_SigmaTotal_decl.h"
 #include <istream>
+#include "wrapper_SigmaProcess_decl.h"
+#include "wrapper_ResonanceWidths_decl.h"
 #include <ostream>
 
 #include "identification.hpp"
@@ -77,6 +82,21 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline bool Pythia::readFile(std::basic_istream<char,std::char_traits<char> >& is, int subrun)
         {
             return wrapperbase::BEptr->readFile(is, subrun);
+        }
+        
+        inline bool Pythia::setUserHooksPtr(WrapperBase< Pythia8::Abstract_UserHooks >* userHooksPtrIn)
+        {
+            return wrapperbase::BEptr->setUserHooksPtr__BOSS((*userHooksPtrIn).BEptr);
+        }
+        
+        inline bool Pythia::setSigmaPtr(WrapperBase< Pythia8::Abstract_SigmaProcess >* sigmaPtrIn)
+        {
+            return wrapperbase::BEptr->setSigmaPtr__BOSS((*sigmaPtrIn).BEptr);
+        }
+        
+        inline bool Pythia::setResonancePtr(WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn)
+        {
+            return wrapperbase::BEptr->setResonancePtr__BOSS((*resonancePtrIn).BEptr);
         }
         
         inline bool Pythia::init()

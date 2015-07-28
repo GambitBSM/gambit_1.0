@@ -19,10 +19,10 @@ Parameters:
       fixed_value: 246.0
 
   SingletDM:
-    mass:
+    mS:
       range: [45, 100]
       prior_type: log
-    lambda:
+    lambda_hS:
       range: [0.005, 0.5]
       prior_type: log
 

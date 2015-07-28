@@ -15,6 +15,8 @@
 ///  
 ///  *********************************************
 
+#ifndef __SpecBit_sandbox_hpp__
+#define __SpecBit_sandbox_hpp__
 
  // For testing only
   #define CAPABILITY test_MSSM_spectrum   
@@ -91,9 +93,7 @@
 
   #undef CAPABILITY
 
-#undef MODULE
-
-#endif /* defined(__SpecBit_rollcall_hpp__) */
+#endif /* defined(__SpecBit_sandbox_hpp__) */
 
 
 

@@ -104,7 +104,7 @@ namespace Gambit
     }
 
     // Add the calculator info
-    SLHAea::Block DCblock;   
+    SLHAea::Block DCblock("DCINFO");   
     DCblock.push_back("BLOCK DCINFO              # Decay Program information");
     SLHAea::Line line1, line2;
     line1 << 1 << calculators << "# Decay calculators";
@@ -217,11 +217,11 @@ namespace Gambit
 
     // Add the info about the decay in general
     str long_name = Models::ParticleDB().long_name(p);
-    SLHAea::Block block;   
-    block.push_back("#     PDG         Width (GeV)");
     SLHAea::Line line;
     line << "DECAY" << p.first << this->width_in_GeV << "# " + long_name + " decays";
+    SLHAea::Block block(std::to_string(p.first));   
     block.push_back(line);
+    block.insert(block.begin(),SLHAea::Line("#     PDG         Width (GeV)"));
     block.push_back("#          BF              NDA Daughter PDG codes");
 
     // Add the branching fraction and daughter particle PDG codes for each decay channel

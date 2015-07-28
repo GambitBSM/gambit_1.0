@@ -278,7 +278,6 @@ namespace Gambit {
           //stats_stream->print(maxLogLike, "maxLogLike", -1,  0,  -1);
           //stats_stream->print(logZ,       "logZ",       -2,  0,  -1);
           //stats_stream->print(logZerr,    "logZerr",    -3,  0,  -1);
-          //stats_stream->flush(); // Empty printer buffer
 
           // txt file stuff
           // Send info for each point to printer one command at a time
@@ -303,7 +302,6 @@ namespace Gambit {
              }
              txt_stream->print(parameters, "Parameters", -6, myrank, pointID);
           }
-          txt_stream->flush(); // Empty the printer buffer
 
           // The last set of live points
           for( int i = 0; i < nlive; i++ )
@@ -321,7 +319,6 @@ namespace Gambit {
              }
              live_stream->print(parameters, "Parameters", -6, myrank, pointID);
           }
-          live_stream->flush(); // Empty the printer buffer
 
           // OLD DEBUG CODE, probably not ready to be tossed just yet.
           

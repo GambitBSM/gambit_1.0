@@ -10,9 +10,9 @@ Parameters:
       mH: 125
       vev: 238
     SingletDM:
-        lambda:
+        lambda_hS:
             range: [0.001, 1]
-        mass:
+        mS:
             #range: [10, 100]
             fixed_value: 150.001
 #    MSSM25:
@@ -338,11 +338,6 @@ Rules:
             - b
             - bbar
         test_printMore:         false
-
-  # SM information from SpecBit
-  - capability: SM_spectrum 
-    function: get_QedQcd_spectrum  # Use this function to compute this capability
-
   # DarkSUSY ---------------------------
   - capability: DarkSUSY_5_1_1_init # Initialization of DarkSUSY backend
     options:
