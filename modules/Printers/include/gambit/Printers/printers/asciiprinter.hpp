@@ -158,7 +158,7 @@ namespace Gambit
         std::ofstream info_fstream;
 
         /// Number of lines to store in buffer before printing
-        unsigned int bufferlength = 1000;
+        unsigned int bufferlength;
 
         /// MPI rank
         uint myRank;  // Needed even without MPI available, for some default behaviour.

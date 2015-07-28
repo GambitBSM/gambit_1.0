@@ -116,7 +116,8 @@ namespace Gambit
     // Constructor
     asciiPrinter::asciiPrinter(const Options& options)
       : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
-      , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
+      , info_file("")
+      , bufferlength( options.getValueOrDef<uint>(100,"buffer_length") )
       , global(false)
       , printer_name("Primary")
       , myRank(0)
@@ -125,17 +126,22 @@ namespace Gambit
       , mpiSize(1)
      #endif
     {
+      // Name "info" file to match "output" file
+      std::ostringstream finfo;
+      finfo<< output_file <<"_info";
+      info_file = finfo.str();
+
       #ifdef WITH_MPI
       myRank = myComm.Get_rank();
       mpiSize = myComm.Get_size();
 
       // Append mpi rank to file names to avoid collisions between processes
       std::ostringstream fout;
-      std::ostringstream finfo;
+      std::ostringstream finfo2;
       fout << output_file <<"_"<<myRank;
-      finfo<< info_file   <<"_"<<myRank;
+      finfo2<< info_file  <<"_"<<myRank;
       output_file = fout.str();
-      info_file = finfo.str();
+      info_file = finfo2.str();
       #endif
 
       DBUG( std::cout << "Constructing Primary asciiPrinter object..." << std::endl; )
