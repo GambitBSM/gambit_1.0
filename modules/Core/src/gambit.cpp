@@ -25,12 +25,12 @@ using namespace LogTags;
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
-
+/*
   #ifdef WITH_MPI
   /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
   /// can fix up the command line arguments to match the non-mpi'd call. 
   GMPI::Init(argc,argv);
-  #endif
+  #endif*/
 
   try
   {
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      scan.Run(); 
+      scan.Run(argc, argv); 
 
       cout << "GAMBIT has finished successfully!" << endl;
 

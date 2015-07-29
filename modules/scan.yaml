@@ -68,7 +68,7 @@ Scanner:
 
   use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: multinest
+  use_scanner: ransample
   #find_shift
   #find_kernel
   #object_detection
@@ -281,15 +281,15 @@ Scanner:
           - "/home/gmartine/Downloads/drop/no15/efit_.txt"
           - "/home/gmartine/Downloads/drop/no17/efit_.txt"
           - "/home/gmartine/Downloads/drop/no28/efit_.txt"
-        output_file: "average_output.txt"
-        #output_file: "median_output.txt"
+        #output_file: "average_output.txt"
+        output_file: "median_output.txt"
         mult: 0
         loglike: 1
         main_file: "/home/gmartine/Downloads/drop/efit_.txt"
-        opt: "average"
-        #opt: "median"
+        #opt: "average"
+        opt: "median"
         labels: [M, x0, y0, vx, vy, vz, R0, Omega, omega, i, P, T0, e]
-        joints: [[0, 6], [1, 2], [3, 4]]
+        joints: [[0, 6], [1, 2], [3, 4], [0, 3], [0, 4], [0, 1], [0, 2], [6, 3], [6, 4], [6, 1], [6, 2]]
         
     find_kernel:
       plugin: find_kernel

@@ -170,7 +170,7 @@ namespace Gambit
 
                 }
                 
-                int Scan_Manager::Run()
+                int Scan_Manager::Run(int argc, char* argv[])
                 {
                         std::vector<std::string> pluginNames;
                         if (options.hasKey("use_scanner") && options.getNode("use_scanner").IsScalar())
@@ -190,7 +190,11 @@ namespace Gambit
                                 
                                 if(plugin_interface["initialize_mpi"] && plugin_interface["initialize_mpi"].as<bool>())
                                 {
-                                        std::cout << "do mpi stuff ..." << std::endl;
+#ifdef WITH_MPI
+                                        /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
+                                        /// can fix up the command line arguments to match the non-mpi'd call. 
+                                        //GMPI::Init(argc,argv);
+#endif
                                 }
                                 
                                 plugin_interface();

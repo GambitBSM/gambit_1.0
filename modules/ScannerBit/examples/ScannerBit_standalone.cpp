@@ -65,12 +65,7 @@ cout << "\nusage: scannerbit [options] [<command>]                              
 int main(int argc, char **argv)
 {
         std::set_terminate(scan_terminator);
-#ifdef WITH_MPI
-        /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
-        /// can fix up the command line arguments to match the non-mpi'd call. 
         GMPI::Init(argc,argv);
-#endif
-        
         try
         {
                 if (argc == 1)
@@ -121,7 +116,7 @@ int main(int argc, char **argv)
 
                         //Do the scan!
                         logger() << "Starting scan." << EOM;
-                        scan.Run(); 
+                        scan.Run(argc, argv); 
 
                         std::cout << "ScannerBit has finished successfully!" << std::endl;
                 }
