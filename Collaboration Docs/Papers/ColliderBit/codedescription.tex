@@ -1,0 +1,44 @@
+For each part of the calculation outlined above: describe the code that exists within GAMBIT and/or the ready-made interface to a standard HEP code. Show validation plots (with possible links to appendices).
+
+\subsection{Cross-section calculations}
+
+\begin{itemize}
+\item Describe fast SUSY cross-section calculator design and implementation
+\item Link to paper if we have an external paper
+\item Include validation plots
+\item Describe parameters that can be varied in yaml file.
+\item Describe how we treat cross-sections for generic models.
+\end{itemize}
+
+\subsection{Monte Carlo event generation}
+
+\begin{itemize}
+\item Describe existing Pythia 8 interface (and OpenMP parallelisation)
+\item Explain how to interface a different MC generator?
+\item Describe parameters that can be varied in yaml file for Pythia.
+\end{itemize}
+
+\subsection{Detector simulation}
+
+\begin{itemize}
+\item Describe DELPHES interface for ATLAS and CMS processes
+\item FastSim: Give brief description of simulation, with link to FastSim paper?)
+\item Show some FastSim validation plots? (not really necessary if we have a FastSim paper, but might be useful to show DELPHES vs FastSim plots with speed comparisons)
+\item Describe parameters that can be varied in yaml file.
+\end{itemize}
+
+\subsection{Event analysis framework}
+
+\begin{itemize}
+\item Describe event analysis framework
+\item Emphasise applicability to simulated and/or reconstructed events
+\item Describe the LHC analyses included in the module and include some validation plots showing some nicely reproduced ATLAS and CMS limits.
+\item Explain how to add new analyses
+\end{itemize}
+
+\subsection{Statistics}
+
+\begin{itemize}
+\item Describe the various likelihoods one may calculate given a signal yield (overlaps with main GAMBIT framework- perhaps we need to release a small stats offshoot within ColliderBit for standlone users?))
+\item Describe parameters that can be varied in yaml file.
+\end{itemize}
