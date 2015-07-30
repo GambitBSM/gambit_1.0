@@ -210,7 +210,52 @@ namespace Gambit {
       { 
          return model.get_vu() / model.get_vd(); 
       }
+
+      template <class Model>
+     void set_MSu(Model& model, int i, double mass)
+     {
+       model.get_physical().MSu(i) = mass;
+     }
+    
+     // PA: I'm using nicer names than the FlexibleSUSY ones here
+     // but maybe I shouldn't as it breaks the symmetry with the
+     // getters and could generate some confusion
+     template <class Model>
+     void set_MGluino(Model& model, double mass)
+     {
+       model.get_physical().MGlu = mass;
+    }
+
+     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
+     template <class Model>
+     void set_MZ(Model& model, double mass)
+     {
+       model.get_physical().MVZ = mass;
+     }
+
+     template <class Model>
+     void set_MW(Model& model, double mass)
+     {
+       model.get_physical().MVWm = mass;
+     }
+
+     
+     // PA: do we really need to set the masses of states that must be
+     // massless in the MSSM.  This is an MSSM specific file.
+     template <class Model>
+     void set_MGluon(Model& model, double mass)
+     {
+       model.get_physical().MG() = mass;
+     }
+     
+     template <class Model>
+     void set_MPhoton(Model& model, double mass)
+     {
+       model.get_physical().MVP() = mass;
+     }
  
+
+     
       /// @{ Fillers for "Running" subclass
  
       // Filler function for getter function pointer maps extractable from "runningpars" container
@@ -520,6 +565,40 @@ namespace Gambit {
       template <class Model> double get_MAh1_pole(const Model& model) { return model.get_MAh_pole_slha(1); }
       template <class Model> double get_MHpm1_pole(const Model& model) { return model.get_MHpm_pole_slha(1); }
 
+ // Filler function for getter function pointer maps extractable from "phys" container
+      template <class MI>
+      typename MSSMSpec<MI>::PhysSetterMaps MSSMSpec<MI>::phys_fill_setter_maps()
+      {
+	typename MSSMSpec<MI>::PhysSetterMaps map_collection; 
+	 typedef typename MI::Model Model;
+
+         typedef typename MTset::FInfo1 FInfo1;
+         typedef typename MTset::FInfo2 FInfo2;
+
+	 // Can't use c++11 initialise lists,
+	 // so have to initialise the index sets like this.
+         static const int i01v[] = {0,1};
+         static const std::set<int> i01(i01v, Utils::endA(i01v));
+
+         static const int i012v[] = {0,1,2};
+         static const std::set<int> i012(i012v, Utils::endA(i012v));
+
+         static const int i0123v[] = {0,1,2,3};
+         static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+
+         static const int i012345v[] = {0,1,2,3,4,5};
+         static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
+
+
+	 {  
+            typename MTset::fmap0_extraM tmp_map;
+	     tmp_map["~g"] = &set_MGluino; 
+
+	    map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
+	  }
+	 
+	 return map_collection;
+      }
       // Filler function for getter function pointer maps extractable from "phys" container
       template <class MI>
       typename MSSMSpec<MI>::PhysGetterMaps MSSMSpec<MI>::phys_fill_getter_maps()
@@ -530,7 +609,7 @@ namespace Gambit {
          typedef typename MTget::FInfo1 FInfo1;
          typedef typename MTget::FInfo2 FInfo2;
 
-         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
+         // Can't use c++11 initialise lists, so have to initialise the index sets like this.
          static const int i01v[] = {0,1};
          static const std::set<int> i01(i01v, Utils::endA(i01v));
 
