@@ -318,6 +318,38 @@ START_MODULE
   QUICK_FUNCTION(ColliderBit, LEP188_xsec_chipm_22, NEW_CAPABILITY, LEP188_SLHA1_convention_xsec_chipm_22, triplet<double>, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (Z_decay_rates, DecayTable::Entry)) 
   QUICK_FUNCTION(ColliderBit, LEP188_xsec_chipm_21, NEW_CAPABILITY, LEP188_SLHA1_convention_xsec_chipm_21, triplet<double>, (MSSM25atQ, MSSM25atMGUT), (LEP188_xsec_chipm_12, triplet<double>)) 
 
+  // LEP Slepton analyses
+  // ALEPH
+  QUICK_FUNCTION(ColliderBit, ALEPH_Selectron_LLike, NEW_CAPABILITY, ALEPH_Selectron_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_selselbar, triplet<double>), (LEP208_xsec_serserbar, triplet<double>), (selectron_l_decay_rates, DecayTable::Entry), (selectron_r_decay_rates, DecayTable::Entry))
+  QUICK_FUNCTION(ColliderBit, ALEPH_Smuon_LLike, NEW_CAPABILITY, ALEPH_Smuon_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_smulsmulbar, triplet<double>), (LEP208_xsec_smursmurbar, triplet<double>), (smuon_l_decay_rates, DecayTable::Entry), (smuon_r_decay_rates, DecayTable::Entry))
+  QUICK_FUNCTION(ColliderBit, ALEPH_Stau_LLike, NEW_CAPABILITY, ALEPH_Stau_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_stau1stau1bar, triplet<double>), (LEP208_xsec_stau2stau2bar, triplet<double>), (stau_1_decay_rates, DecayTable::Entry), (stau_2_decay_rates, DecayTable::Entry))
+  // L3
+  QUICK_FUNCTION(ColliderBit, L3_Selectron_LLike, NEW_CAPABILITY, L3_Selectron_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP205_xsec_selselbar, triplet<double>), (LEP205_xsec_serserbar, triplet<double>), (selectron_l_decay_rates, DecayTable::Entry), (selectron_r_decay_rates, DecayTable::Entry))
+  QUICK_FUNCTION(ColliderBit, L3_Smuon_LLike, NEW_CAPABILITY, L3_Smuon_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP205_xsec_smulsmulbar, triplet<double>), (LEP205_xsec_smursmurbar, triplet<double>), (smuon_l_decay_rates, DecayTable::Entry), (smuon_r_decay_rates, DecayTable::Entry))
+  QUICK_FUNCTION(ColliderBit, L3_Stau_LLike, NEW_CAPABILITY, L3_Stau_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP205_xsec_stau1stau1bar, triplet<double>), (LEP205_xsec_stau2stau2bar, triplet<double>), (stau_1_decay_rates, DecayTable::Entry), (stau_2_decay_rates, DecayTable::Entry))
+
+  // LEP Gaugino analyses
+  // L3 Mass Eigeninos
+  QUICK_FUNCTION(ColliderBit, L3_Neutralino_All_Channels_LLike, NEW_CAPABILITY, L3_Neutralino_All_Channels_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP188_xsec_chi00_12, triplet<double>), (LEP188_xsec_chi00_13, triplet<double>), (LEP188_xsec_chi00_14, triplet<double>), (decay_rates, DecayTable))
+  QUICK_FUNCTION(ColliderBit, L3_Neutralino_Leptonic_LLike, NEW_CAPABILITY, L3_Neutralino_Leptonic_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP188_xsec_chi00_12, triplet<double>), (LEP188_xsec_chi00_13, triplet<double>), (LEP188_xsec_chi00_14, triplet<double>), (decay_rates, DecayTable))
+  QUICK_FUNCTION(ColliderBit, L3_Chargino_All_Channels_LLike, NEW_CAPABILITY, L3_Chargino_All_Channels_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP188_xsec_chipm_11, triplet<double>), (LEP188_xsec_chipm_22, triplet<double>), (decay_rates, DecayTable))
+  QUICK_FUNCTION(ColliderBit, L3_Chargino_Leptonic_LLike, NEW_CAPABILITY, L3_Chargino_Leptonic_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP188_xsec_chipm_11, triplet<double>), (LEP188_xsec_chipm_22, triplet<double>), (decay_rates, DecayTable))
+  // OPAL Mass Eigeninos
+  QUICK_FUNCTION(ColliderBit, OPAL_Chargino_Hadronic_LLike, NEW_CAPABILITY, OPAL_Chargino_Hadronic_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_chipm_11, triplet<double>), (LEP208_xsec_chipm_22, triplet<double>), (decay_rates, DecayTable))
+  QUICK_FUNCTION(ColliderBit, OPAL_Chargino_SemiLeptonic_LLike, NEW_CAPABILITY, OPAL_Chargino_SemiLeptonic_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_chipm_11, triplet<double>), (LEP208_xsec_chipm_22, triplet<double>), (decay_rates, DecayTable))
+  QUICK_FUNCTION(ColliderBit, OPAL_Chargino_Leptonic_LLike, NEW_CAPABILITY, OPAL_Chargino_Leptonic_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_chipm_11, triplet<double>), (LEP208_xsec_chipm_22, triplet<double>), (decay_rates, DecayTable))
+  QUICK_FUNCTION(ColliderBit, OPAL_Chargino_All_Channels_LLike, NEW_CAPABILITY, OPAL_Chargino_All_Channels_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_chipm_11, triplet<double>), (LEP208_xsec_chipm_22, triplet<double>), (decay_rates, DecayTable))
+    // Due to the nature of the analysis details in the OPAL paper, I'm not sure
+    // which of the following two limits is appropriate for our use. Thus, I will
+    // be conservative and choose only the weaker of the two limits.
+  QUICK_FUNCTION(ColliderBit, OPAL_Neutralino_Hadronic_LLike, NEW_CAPABILITY, OPAL_Neutralino_Hadronic_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_chi00_12, triplet<double>), (LEP208_xsec_chi00_13, triplet<double>), (LEP208_xsec_chi00_14, triplet<double>), (decay_rates, DecayTable))
+////QUICK_FUNCTION(ColliderBit, OPAL_Neutralino_Hadronic_viaZ_LLike, NEW_CAPABILITY, OPAL_Neutralino_Hadronic_viaZ_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_chi00_12, triplet<double>), (LEP208_xsec_chi00_13, triplet<double>), (LEP208_xsec_chi00_14, triplet<double>), (decay_rates, DecayTable))
+  // L3 Small DeltaM Gaugino and Higgsinos
+  // FIXME: Ah crap, these limits involve an associated ISR Photon... That's not the xsec Are is calculating...
+////QUICK_FUNCTION(ColliderBit, L3_Charged_Gaugino_Small_DeltaM_Heavy_Sneutrino_LLike, NEW_CAPABILITY, L3_Charged_Gaugino_Small_DeltaM_Heavy_Sneutrino_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
+////QUICK_FUNCTION(ColliderBit, L3_Charged_Gaugino_Small_DeltaM_Any_Sneutrino_LLike, NEW_CAPABILITY, L3_Charged_Gaugino_Small_DeltaM_Any_Sneutrino_Conservative_LLike, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
+////QUICK_FUNCTION(ColliderBit, L3_Charged_Higgsino_Small_DeltaM, NEW_CAPABILITY, L3_Charged_Higgsino_Small_DeltaM, double, (MSSM25atQ, MSSM25atMGUT), (MSSM_spectrum, const Spectrum*), (LEP188_xsec_chipm_11, triplet<double>), (charginoplus_1_decay_rates, DecayTable::Entry), (W_plus_decay_rates, DecayTable::Entry))
+
 
   ///////////// Higgs physics /////////////////////
 

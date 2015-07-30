@@ -24,6 +24,7 @@
 ///
 ///  *********************************************
 
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -32,6 +33,7 @@
 #include <vector>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 
@@ -1405,6 +1407,1260 @@ namespace Gambit
     /// @}
 
     
+    /// LEP Slepton Log-Likelihoods
+    /// @{
+    void ALEPH_Selectron_Conservative_LLike(double& result)
+    {
+      static ALEPHSelectronLimitAt208GeV *limitContainer = new ALEPHSelectronLimitAt208GeV();
+      using namespace Pipes::ALEPH_Selectron_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_seL = spec->get_Pole_Mass(1000011, 0); 
+      const double mass_seR = spec->get_Pole_Mass(2000011, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these two processes individually:
+
+      // se_L, se_L
+      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_selselbar;
+      xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
+      xsecWithError.central *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
+      xsecWithError.lower *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // se_R, se_R
+      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_serserbar;
+      xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
+      xsecWithError.central *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
+      xsecWithError.lower *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void ALEPH_Smuon_Conservative_LLike(double& result)
+    {
+      static ALEPHSmuonLimitAt208GeV *limitContainer = new ALEPHSmuonLimitAt208GeV();
+      using namespace Pipes::ALEPH_Smuon_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_smuL = spec->get_Pole_Mass(1000013, 0); 
+      const double mass_smuR = spec->get_Pole_Mass(2000013, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit, mass_slepton;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these two processes individually:
+
+      // smu_L, smu_L
+      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_smulsmulbar;
+      xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
+      xsecWithError.central *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
+      xsecWithError.lower *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // smu_R, smu_R
+      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_smursmurbar;
+      xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
+      xsecWithError.central *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
+      xsecWithError.lower *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void ALEPH_Stau_Conservative_LLike(double& result)
+    {
+      static ALEPHStauLimitAt208GeV *limitContainer = new ALEPHStauLimitAt208GeV();
+      using namespace Pipes::ALEPH_Stau_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_stau1 = spec->get_Pole_Mass(1000015, 0); 
+      const double mass_stau2 = spec->get_Pole_Mass(2000015, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit, mass_slepton;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these two processes individually:
+
+      // stau_1, stau_1
+      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_stau1stau1bar;
+      xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
+      xsecWithError.central *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
+      xsecWithError.lower *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // stau_2, stau_2
+      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_stau2stau2bar;
+      xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
+      xsecWithError.central *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
+      xsecWithError.lower *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void L3_Selectron_Conservative_LLike(double& result)
+    {
+      static L3SelectronLimitAt205GeV *limitContainer = new L3SelectronLimitAt205GeV();
+      using namespace Pipes::L3_Selectron_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_seL = spec->get_Pole_Mass(1000011, 0); 
+      const double mass_seR = spec->get_Pole_Mass(2000011, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit, mass_slepton;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these two processes individually:
+
+      // se_L, se_L
+      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1);
+
+      xsecWithError = *Dep::LEP205_xsec_selselbar;
+      xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
+      xsecWithError.central *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
+      xsecWithError.lower *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // se_R, se_R
+      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1);
+
+      xsecWithError = *Dep::LEP205_xsec_serserbar;
+      xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
+      xsecWithError.central *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
+      xsecWithError.lower *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void L3_Smuon_Conservative_LLike(double& result)
+    {
+      static L3SmuonLimitAt205GeV *limitContainer = new L3SmuonLimitAt205GeV();
+      using namespace Pipes::L3_Smuon_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_smuL = spec->get_Pole_Mass(1000013, 0); 
+      const double mass_smuR = spec->get_Pole_Mass(2000013, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit, mass_slepton;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these two processes individually:
+
+      // smu_L, smu_L
+      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1);
+
+      xsecWithError = *Dep::LEP205_xsec_smulsmulbar;
+      xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
+      xsecWithError.central *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
+      xsecWithError.lower *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // smu_R, smu_R
+      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1);
+
+      xsecWithError = *Dep::LEP205_xsec_smursmurbar;
+      xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
+      xsecWithError.central *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
+      xsecWithError.lower *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void L3_Stau_Conservative_LLike(double& result)
+    {
+      static L3StauLimitAt205GeV *limitContainer = new L3StauLimitAt205GeV();
+      using namespace Pipes::L3_Stau_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_stau1 = spec->get_Pole_Mass(1000015, 0); 
+      const double mass_stau2 = spec->get_Pole_Mass(2000015, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit, mass_slepton;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these two processes individually:
+
+      // stau_1, stau_1
+      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1);
+
+      xsecWithError = *Dep::LEP205_xsec_stau1stau1bar;
+      xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
+      xsecWithError.central *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
+      xsecWithError.lower *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // stau_2, stau_2
+      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1);
+
+      xsecWithError = *Dep::LEP205_xsec_stau2stau2bar;
+      xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
+      xsecWithError.central *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
+      xsecWithError.lower *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+    /// @}
+
+    /// LEP Gaugino Log-Likelihoods
+    /// @{
+    void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
+    {
+      static L3NeutralinoAllChannelsLimitAt188pt6GeV *limitContainer = new L3NeutralinoAllChannelsLimitAt188pt6GeV();
+      using namespace Pipes::L3_Neutralino_All_Channels_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
+      const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
+      const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // neut2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chi00_12;
+      // Total up all channels which look like Z* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "Z0");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "ubar", "u");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "dbar", "d");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "cbar", "c");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "sbar", "s");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "bbar", "b");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_tau", "nu_tau");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // neut3, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chi00_13;
+      // Total up all channels which look like Z* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "Z0");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "ubar", "u");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "dbar", "d");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "cbar", "c");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "sbar", "s");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "bbar", "b");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_tau", "nu_tau");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // neut4, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chi00_14;
+      // Total up all channels which look like Z* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "Z0");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "ubar", "u");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "dbar", "d");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "cbar", "c");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "sbar", "s");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "bbar", "b");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_tau", "nu_tau");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
+    {
+      static L3NeutralinoLeptonicLimitAt188pt6GeV *limitContainer = new L3NeutralinoLeptonicLimitAt188pt6GeV();
+      using namespace Pipes::L3_Neutralino_Leptonic_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
+      const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
+      const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // neut2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chi00_12;
+      // Total up all channels which look like leptonic Z* decays
+      // Total up the leptonic Z decays first...
+      totalBR = 0;
+      totalBR += decays->at("Z0").BF("e+", "e-");
+      totalBR += decays->at("Z0").BF("mu+", "mu-");
+      totalBR += decays->at("Z0").BF("tau+", "tau-");
+      totalBR = decays->at("~chi0_2").BF("~chi0_1", "Z0") * totalBR;
+
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "tau+", "tau-");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // neut3, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chi00_13;
+      // Total up all channels which look like leptonic Z* decays
+      // Total up the leptonic Z decays first...
+      totalBR = 0;
+      totalBR += decays->at("Z0").BF("e+", "e-");
+      totalBR += decays->at("Z0").BF("mu+", "mu-");
+      totalBR += decays->at("Z0").BF("tau+", "tau-");
+      totalBR = decays->at("~chi0_3").BF("~chi0_1", "Z0") * totalBR;
+
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "tau+", "tau-");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // neut4, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chi00_14;
+      // Total up all channels which look like leptonic Z* decays
+      // Total up the leptonic Z decays first...
+      totalBR = 0;
+      totalBR += decays->at("Z0").BF("e+", "e-");
+      totalBR += decays->at("Z0").BF("mu+", "mu-");
+      totalBR += decays->at("Z0").BF("tau+", "tau-");
+      totalBR = decays->at("~chi0_4").BF("~chi0_1", "Z0") * totalBR;
+
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "tau+", "tau-");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void L3_Chargino_All_Channels_Conservative_LLike(double& result)
+    {
+      static L3CharginoAllChannelsLimitAt188pt6GeV *limitContainer = new L3CharginoAllChannelsLimitAt188pt6GeV();
+      using namespace Pipes::L3_Chargino_All_Channels_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
+      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // char1, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chipm_11;
+      // Total up all channels which look like W* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "W+");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "c", "sbar");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // char2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chipm_22;
+      // Total up all channels which look like W* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "W+");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "c", "sbar");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void L3_Chargino_Leptonic_Conservative_LLike(double& result)
+    {
+      static L3CharginoLeptonicLimitAt188pt6GeV *limitContainer = new L3CharginoLeptonicLimitAt188pt6GeV();
+      using namespace Pipes::L3_Chargino_Leptonic_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
+      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // char1, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chipm_11;
+      // Total up all channels which look like leptonic W* decays
+      // Total up the leptonic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("e+", "nu_e");
+      totalBR += decays->at("W+").BF("mu+", "nu_mu");
+      totalBR += decays->at("W+").BF("tau+", "nu_tau");
+      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // char2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+
+      xsecWithError = *Dep::LEP188_xsec_chipm_22;
+      // Total up all channels which look like leptonic W* decays
+      // Total up the leptonic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("e+", "nu_e");
+      totalBR += decays->at("W+").BF("mu+", "nu_mu");
+      totalBR += decays->at("W+").BF("tau+", "nu_tau");
+      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
+    {
+      static OPALCharginoHadronicLimitAt208GeV *limitContainer = new OPALCharginoHadronicLimitAt208GeV();
+      using namespace Pipes::OPAL_Chargino_Hadronic_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
+      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // char1, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chipm_11;
+      // Total up all channels which look like hadronic W* decays
+      // Total up the hadronic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("u", "dbar");
+      totalBR += decays->at("W+").BF("c", "sbar");
+      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "c", "sbar");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // char2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chipm_22;
+      // Total up all channels which look like hadronic W* decays
+      // Total up the hadronic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("u", "dbar");
+      totalBR += decays->at("W+").BF("c", "sbar");
+      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "c", "sbar");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
+    {
+      static OPALCharginoSemiLeptonicLimitAt208GeV *limitContainer = new OPALCharginoSemiLeptonicLimitAt208GeV();
+      using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum *mssm = spec->get_UV();
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO);
+      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO);
+      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
+      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // char1, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chipm_11;
+      // Total up all channels which look like leptonic W* decays
+      // Total up the leptonic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("e+", "nu_e");
+      totalBR += decays->at("W+").BF("mu+", "nu_mu");
+      totalBR += decays->at("W+").BF("tau+", "nu_tau");
+      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays->at("~chi+_1").BF(snue, "e+")
+               * decays->at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays->at("~chi+_1").BF(snumu, "mu+")
+               * decays->at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays->at("~chi+_1").BF(snutau, "tau+")
+               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      // ALSO, total up all channels which look like hadronic W* decays
+      // Total up the hadronic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("u", "dbar");
+      totalBR += decays->at("W+").BF("c", "sbar");
+      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "c", "sbar");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // char2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chipm_22;
+      // Total up all channels which look like leptonic W* decays
+      // Total up the leptonic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("e+", "nu_e");
+      totalBR += decays->at("W+").BF("mu+", "nu_mu");
+      totalBR += decays->at("W+").BF("tau+", "nu_tau");
+      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays->at("~chi+_2").BF(snue, "e+")
+               * decays->at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays->at("~chi+_2").BF(snumu, "mu+")
+               * decays->at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays->at("~chi+_2").BF(snutau, "tau+")
+               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      // ALSO, total up all channels which look like hadronic W* decays
+      // Total up the hadronic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("u", "dbar");
+      totalBR += decays->at("W+").BF("c", "sbar");
+      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "c", "sbar");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
+    {
+      static OPALCharginoLeptonicLimitAt208GeV *limitContainer = new OPALCharginoLeptonicLimitAt208GeV();
+      using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum *mssm = spec->get_UV();
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO);
+      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO);
+      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
+      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // char1, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chipm_11;
+      // Total up all channels which look like leptonic W* decays
+      // Total up the leptonic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("e+", "nu_e");
+      totalBR += decays->at("W+").BF("mu+", "nu_mu");
+      totalBR += decays->at("W+").BF("tau+", "nu_tau");
+      totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays->at("~chi+_1").BF(snue, "e+")
+               * decays->at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays->at("~chi+_1").BF(snumu, "mu+")
+               * decays->at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays->at("~chi+_1").BF(snutau, "tau+")
+               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // char2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chipm_22;
+      // Total up all channels which look like leptonic W* decays
+      // Total up the leptonic W decays first...
+      totalBR = 0;
+      totalBR += decays->at("W+").BF("e+", "nu_e");
+      totalBR += decays->at("W+").BF("mu+", "nu_mu");
+      totalBR += decays->at("W+").BF("tau+", "nu_tau");
+      totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
+
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays->at("~chi+_2").BF(snue, "e+")
+               * decays->at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays->at("~chi+_2").BF(snumu, "mu+")
+               * decays->at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays->at("~chi+_2").BF(snutau, "tau+")
+               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
+    {
+      static OPALCharginoAllChannelsLimitAt208GeV *limitContainer = new OPALCharginoAllChannelsLimitAt208GeV();
+      using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum *mssm = spec->get_UV();
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO);
+      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO);
+      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
+      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // char1, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chipm_11;
+      // Total up all channels which look like W* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "W+");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "c", "sbar");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays->at("~chi+_1").BF(snue, "e+")
+               * decays->at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays->at("~chi+_1").BF(snumu, "mu+")
+               * decays->at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays->at("~chi+_1").BF(snutau, "tau+")
+               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // char2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chipm_22;
+      // Total up all channels which look like W* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "W+");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "c", "sbar");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "e+", "nu_e");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "mu+", "nu_mu");
+      totalBR += decays->at("~chi+_2").BF("~chi0_1", "tau+", "nu_tau");
+      totalBR += decays->at("~chi+_2").BF(snue, "e+")
+               * decays->at(snue).BF("~chi0_1", "nu_e");
+      totalBR += decays->at("~chi+_2").BF(snumu, "mu+")
+               * decays->at(snumu).BF("~chi0_1", "nu_mu");
+      totalBR += decays->at("~chi+_2").BF(snutau, "tau+")
+               * decays->at(snutau).BF("~chi0_1", "nu_tau");
+      xsecWithError.upper *= pow(totalBR, 2);
+      xsecWithError.central *= pow(totalBR, 2);
+      xsecWithError.lower *= pow(totalBR, 2);
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
+    {
+      static OPALNeutralinoHadronicLimitAt208GeV *limitContainer = new OPALNeutralinoHadronicLimitAt208GeV();
+      using namespace Pipes::OPAL_Neutralino_Hadronic_Conservative_LLike;
+      using std::erf;
+      using std::pow;
+      using std::sqrt;
+      using std::log;
+
+      const Spectrum *spec = *Dep::MSSM_spectrum;
+      const DecayTable *decays = &(*Dep::decay_rates);
+      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
+      const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
+      const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
+      const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      triplet<double> xsecWithError;
+      double xsecLimit, totalBR;
+
+      result = 0;
+      // Due to the nature of the analysis details of the model independent limit in
+      // the paper, the best we can do is to try these processes individually:
+
+      // neut2, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chi00_12;
+      // Total up all channels which look like Z* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "Z0");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "ubar", "u");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "dbar", "d");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "cbar", "c");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "sbar", "s");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "bbar", "b");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_tau", "nu_tau");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // neut3, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chi00_13;
+      // Total up all channels which look like Z* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "Z0");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "ubar", "u");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "dbar", "d");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "cbar", "c");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "sbar", "s");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "bbar", "b");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_tau", "nu_tau");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+      // neut4, neut1
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+
+      xsecWithError = *Dep::LEP208_xsec_chi00_14;
+      // Total up all channels which look like Z* decays
+      totalBR = 0;
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "Z0");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "ubar", "u");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "dbar", "d");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "cbar", "c");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "sbar", "s");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "bbar", "b");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "e+", "e-");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "mu+", "mu-");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "tau+", "tau-");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_e", "nu_e");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_mu", "nu_mu");
+      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_tau", "nu_tau");
+      xsecWithError.upper *= totalBR;
+      xsecWithError.central *= totalBR;
+      xsecWithError.lower *= totalBR;
+
+      if (xsecWithError.central < xsecLimit) {
+        // Tend to accept this point, so Likelihood > 1/2
+        // Error function with mu = xsecLimit, sigma = upper - central, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+      } else {
+        // Tend to reject this point, so Likelihood <= 1/2
+        // Error function with mu = xsecLimit, sigma = central - lower, x = central
+        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+      }
+
+    }
+
+    /// @}
+
+
     // *** Higgs physics ***
 
     /// FeynHiggs Higgs production cross-sections

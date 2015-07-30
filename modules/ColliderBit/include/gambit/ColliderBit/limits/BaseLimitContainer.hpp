@@ -19,7 +19,7 @@ namespace Gambit {
     inline LineSegment makeLine(const P2& pt1, const P2& pt2) { return LineSegment(pt1, pt2, 0.01); }
 
     /// @brief Base class for experimental limit curve interpolation
-    class BaseLimit {
+    class BaseLimitContainer {
       /// @name Types and Storage
       //@{
       protected:
@@ -35,8 +35,8 @@ namespace Gambit {
       /// @name Construction and Destruction
       //@{
       public:
-        BaseLimit() { }
-        virtual ~BaseLimit() { }
+        BaseLimitContainer() { }
+        virtual ~BaseLimitContainer() { }
       //@}
       
       /// @name Point interpolation, conversion, and region checks
