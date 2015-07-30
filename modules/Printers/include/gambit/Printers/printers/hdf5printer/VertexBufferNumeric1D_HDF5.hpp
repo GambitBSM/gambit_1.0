@@ -97,8 +97,8 @@ namespace Gambit {
            /// Write externally-supplied buffer to HDF5 dataset
            virtual void write_external_to_disk(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH]);
 
-           /// Reset the output (non-synchronised datasets only)
-           virtual void reset();
+           /// Reset the output (non-synchronised datasets only, unless force=true)
+           virtual void reset(bool force=false);
 
            /// Send random access write queue to dataset interfaces for writing
            virtual void RA_write_to_disk(const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
@@ -284,23 +284,29 @@ namespace Gambit {
 
       /// Reset the output (non-synchronised datasets only)
       template<class T, std::size_t L>
-      void VertexBufferNumeric1D_HDF5<T,L>::reset() 
+      void VertexBufferNumeric1D_HDF5<T,L>::reset(bool force) 
       { 
-         if(this->is_synchronised())
+         if(not force and this->is_synchronised())
          {
             std::ostringstream errmsg;
-            errmsg << "rank "<<this->myRank<<": Error! Tried to reset() a non-synchronised buffer! This is currently forbidden. (buffer name = "<<this->get_label()<<")";
+            errmsg << "rank "<<this->myRank<<": Error! Tried to reset() a synchronised buffer! This is forbidden unless force=true. (buffer name = "<<this->get_label()<<")";
             printer_error().raise(LOCAL_INFO, errmsg.str()); 
          }
+
+         // Clear the sync buffers
+         this->clear();
 
          /// Empty the queue of postponed writes, because it would now
          /// be erased had we gotten around to writing it.
          postpone_write_queue_and_locs.clear();
 
-         /// Invalidate the contents of the linked datasets
-         /// This can be done by simply resetting the all validity bools to "false"
-         dsetvalid().zero();
-         //dsetdata().zero(); // Should work fine, but should be unneccesary.
+         if(this->myRank==0) // Can only touch datasets on master process.
+         {
+            /// Invalidate the contents of the linked datasets
+            /// This can be done by simply resetting the all validity bools to "false"
+            dsetvalid().zero();
+            //dsetdata().zero(); // Should work fine, but should be unneccesary.
+         }
       }
 
       /// Send random access write queue to dataset interfaces for writing

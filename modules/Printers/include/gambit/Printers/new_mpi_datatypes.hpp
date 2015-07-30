@@ -47,6 +47,15 @@ namespace Gambit
        return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index));
     }
 
+    inline bool operator==( const VBIDpair& l, const VBIDpair& r) {
+        return l.vertexID==r.vertexID && l.index==r.index;
+    }    
+    inline bool operator!=( const VBIDpair& l, const VBIDpair& r) {
+        return !( l == r );
+    }
+
+
+
     /// pointID / process number pair
     /// Used to identify a single parameter space point
     //typedef std::pair<unsigned long int, unsigned int> PPIDpair;
@@ -66,7 +75,14 @@ namespace Gambit
       //std::cout<<"lP: "<<l.pointID<<", "<<l.rank<<std::endl;
       return (l.pointID<r.pointID || (l.pointID==r.pointID && l.rank<r.rank));
     }
-    
+ 
+    inline bool operator==( const PPIDpair& l, const PPIDpair& r) {
+        return l.pointID==r.pointID && l.rank==r.rank;
+    }    
+    inline bool operator!=( const PPIDpair& l, const PPIDpair& r) {
+        return !( l == r );
+    }
+   
   } // end namespace Printers
 
   #ifdef WITH_MPI

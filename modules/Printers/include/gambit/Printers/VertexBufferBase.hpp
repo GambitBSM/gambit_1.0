@@ -124,7 +124,7 @@ namespace Gambit {
 
             // Resets buffer and signals to printer to empty out the contents of the output
             // dataset in preparation of new writing.
-            virtual void reset() = 0;
+            virtual void reset(bool force=false) = 0;
 
             // Needed to externally inform buffer of a skipped iteration (when no data to write)
             virtual void skip_append() = 0;           
@@ -161,7 +161,11 @@ namespace Gambit {
             void set_donepoint(bool flag) {donethispoint=flag;}
 
             // Move buffer write head to next position
-            void move_head_to_next_slot() { head_position++; }
+            void move_head_to_next_slot() 
+            { 
+               head_position++; 
+               //std::cout<<"Advanced head of buffer "<<get_label()<<" to pos. "<<head_position<<std::endl;
+            }
 
             // Rewind buffer head to start of buffer
             void reset_head() { head_position = 0; }

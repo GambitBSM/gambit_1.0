@@ -442,7 +442,15 @@ def same(f1,f2):
 
 # Compare a candidate file to an existing file, replacing only if they differ.
 def update_only_if_different(existing, candidate):
-   if os.path.isfile(existing) and same(existing, candidate): 
+   print "existing : ", existing
+   print "candidate: ", candidate
+   if not os.path.isfile(existing):
+        print "Contents of directory ", os.path.dirname(existing)
+        for item in os.listdir(os.path.dirname(existing)):
+           print item
+        os.rename(candidate,existing)
+        print "\033[1;33m   Created "+re.sub("\\.\\/","",existing)+"\033[0m"
+   elif same(existing, candidate): 
         os.remove(candidate)
         print "\033[1;33m   Existing "+re.sub("\\.\\/","",existing)+" is identical to candidate; leaving it untouched\033[0m"
    else:

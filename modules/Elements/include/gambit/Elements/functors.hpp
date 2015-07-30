@@ -499,6 +499,9 @@ namespace Gambit
       /// Needs recalculating or not?
       bool* needs_recalculating;
 
+      /// Has result already been sent to the printer?
+      bool* already_printed;
+
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;
 

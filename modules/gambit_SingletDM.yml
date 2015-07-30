@@ -89,7 +89,7 @@ Scanner:
       verion: ">=1.0"
       options:
         purpose: Likelihood
-        grid_pts: 3 #NxN grid
+        grid_pts: 5 #NxN grid
 
 ###############################
 # Observables of interest

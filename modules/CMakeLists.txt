@@ -240,7 +240,6 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends
                            ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp 
-                          ${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt
                    COMMAND python ${PRINTER_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${PRINTER_HARVESTER}
@@ -266,7 +265,8 @@ add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/g
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp
                                           ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp)
 
-add_custom_target(printer_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp)
+add_custom_target(printer_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp
+                                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp)
 
 add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
                                           ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp

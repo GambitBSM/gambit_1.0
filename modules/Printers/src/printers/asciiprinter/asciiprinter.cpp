@@ -196,7 +196,7 @@ namespace Gambit
     }
 
     /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer
-    void asciiPrinter::reset() 
+    void asciiPrinter::reset(bool) 
     {
       std::ofstream my_fstream;
       open_output_file(my_fstream, output_file, std::ofstream::trunc);

@@ -141,7 +141,7 @@ namespace Gambit
         void initialise(const std::vector<int>&);
         void auxilliary_init();
         void flush();
-        void reset();
+        void reset(bool force=false);
         int getRank();
         void finalise();
 
@@ -160,6 +160,9 @@ namespace Gambit
 
         /// Add PPIDpair to global index list
         void add_PPID_to_list(const PPIDpair&);
+
+        /// Check if PPIDpair exists in global index list
+        bool seen_PPID_before(const PPIDpair& ppid);
 
         #ifdef WITH_MPI
         /// Send PPID lists to the master and clear them (master process should never do this!)
@@ -242,8 +245,6 @@ namespace Gambit
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
            HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
           {                                                                        \
-             std::cout << "pointID=" << pointID << ", mpirank="<<mpirank<<std::endl; \
-                                                                                 \
              /* If the buffermanger hasn't been initialised, do so now */        \
              if( not CAT(hdf5_localbufferman_,NAME).ready() )                    \
              {                                                                   \
@@ -307,7 +308,7 @@ namespace Gambit
            if(synchronised)
            {
              // Write the data to the selected buffer ("just works" for simple numeric types)
-             selected_buffer.append(value);
+             selected_buffer.append(value,PPIDpair(pointID,mpirank));
            }
            else
            {

@@ -114,7 +114,7 @@
   #define DBUG(x)
 #endif
 
-#define CHECK_SYNC 
+//#define CHECK_SYNC 
 
 // Code!
 namespace Gambit
@@ -213,12 +213,6 @@ namespace Gambit
                                        , printer->get_Comm()
                                        #endif
                                        );
-          
-          // Catch the new buffer up to the same position as the already
-          // existing buffers (minus 1, since after the buffer is retrived
-          // by this function then the printer will do an append).
-          std::cout << "printer->get_N_pointIDs() : "<<printer->get_N_pointIDs()<<std::endl;
-          local_buffers.at(key).N_skip_append(printer->get_N_pointIDs()-1);
 
           // Get the new (possibly silenced) buffer back out of the map
           it = local_buffers.find(key);
@@ -491,7 +485,10 @@ namespace Gambit
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     void HDF5Printer::initialise(const std::vector<int>& printmevec)
     {
-      // Currently don't seem to need this... could use it to check if all VertexID's have submitted print requests.
+       // Use this trigger a single null print for every functor, which will
+       // trigger the creation of all the buffers that we will need.
+
+
     }
 
     /// Retrieve MPI rank
@@ -539,6 +536,16 @@ namespace Gambit
       lookup[ppid] = reverse_lookup.size();
       reverse_lookup.push_back(ppid);
     }
+
+    /// Check if PPIDpair exists in global index list
+    bool HDF5Printer::seen_PPID_before(const PPIDpair& ppid)
+    {
+      bool result = false;
+      std::map<PPIDpair, ulong>& lookup = primary_printer->global_index_lookup;
+      if ( lookup.find(ppid) != lookup.end() ) result = true;
+      return result;
+    }
+
 
     #ifdef WITH_MPI
     /// Clear index lists (master process should never do this!)
@@ -1022,21 +1029,22 @@ namespace Gambit
 
     /// Invalidate all data on disk which has been printed by this printer so far,
     /// and reset all the buffers to write back to the first data slots.
-    /// This is only allowed if this is an auxilliary printer with global=true
-    void HDF5Printer::reset()
+    /// This is only allowed if this is an auxilliary printer with global=true, or
+    /// if "force=true" is specified.
+    void HDF5Printer::reset(bool force)
     {
       #ifdef DEBUG_MODE
       std::cout<<"is_auxilliary_printer() = "<<is_auxilliary_printer()<<std::endl;
       std::cout<<"synchronised            = "<<synchronised<<std::endl;
       std::cout<<"printer_name            = "<<printer_name<<std::endl;
       #endif
-      if(not this->is_auxilliary_printer())
+      if(not force and not this->is_auxilliary_printer())
       {
          std::ostringstream errmsg;
          errmsg << "Error! Tried to call reset() on the primary HDF5Printer (printer_name = "<<printer_name<<")! This would delete all the data from the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
-      else if(synchronised)
+      else if(not force and synchronised)
       { 
          std::ostringstream errmsg;
          errmsg << "Error! Tried to call reset() on an auxilliary HDF5Printer (printer_name = "<<printer_name<<") which is synchronised with the primary printer! This would delete all the point-level data written by this printer during the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
@@ -1047,7 +1055,7 @@ namespace Gambit
          // Ok safe to do the resets.
          for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
          {
-           it->second->reset();
+           it->second->reset(force);
          }
       }
     }
@@ -1127,6 +1135,8 @@ namespace Gambit
           // Redirect task to primary printer
           primary_printer->check_for_new_point(candidate_newpoint, mpirank);
        }
+
+       //std::cout<<"rank "<<myRank<<": Checking for new point (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
 
        // Check if we have changed target PointIDs since the last print call
        if(candidate_newpoint!=lastPointID.at(myRank))
@@ -1279,7 +1289,7 @@ namespace Gambit
          if(synchronised)
          {
            // Write the data to the selected buffer ("just works" for simple numeric types)
-           buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
+           buffer_manager.get_buffer(vID, i, ss.str()).append(value[i],PPIDpair(pointID,mpirank));
          }
          else
          {
@@ -1312,7 +1322,7 @@ namespace Gambit
          if(synchronised)
          {
            // Write the data to the selected buffer ("just works" for simple numeric types)
-           buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
+           buffer_manager.get_buffer(vID, i, ss.str()).append(it->second,PPIDpair(pointID,mpirank));
          }
          else
          {

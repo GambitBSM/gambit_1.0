@@ -10,10 +10,10 @@ Parameters:
     #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
     CMSSM:
       M0:
-        range: [100, 1000]
+        range: [300, 301]
         prior_type: flat
       M12:
-        range: [100, 1000]
+        range: [300, 301]
         prior_type: flat
       A0: 0
       tanb: 10

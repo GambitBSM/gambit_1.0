@@ -39,6 +39,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
 
 # Arrange for removal of all_functor_types.hpp and other generated headers upon "make clean".
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp")
