@@ -253,6 +253,68 @@ namespace Gambit {
        model.get_physical_slha().Mhh(i) = mass;
      }
 
+     template <class Model>
+     void set_ZD_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().ZD(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_ZU_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().ZU(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_ZE_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().ZE(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_ZV_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().ZV(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_ZH_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().ZH(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_ZA_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().ZA(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_ZP_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().ZP(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_ZN_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().ZN(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_UM_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().UM(i,j) = mass;
+     }
+
+     template <class Model>
+     void set_UP_pole_slha(Model& model, double mass, int i, int j)
+     {
+       model.get_physical_slha().UP(i,j) = mass;
+     }
+
+    
+     
       template <class Model>
       void set_MAh1_pole_slha(Model& model, double mass)
       {
@@ -315,7 +377,7 @@ namespace Gambit {
        model.get_physical().MVP() = mass;
      }
  
-
+     
      
       /// @{ Fillers for "Running" subclass
  
@@ -624,13 +686,13 @@ namespace Gambit {
       // non-Goldstone entries. 
       // Need to pass in the model object, since we won't have the 'this' pointer
       template <class Model>
-      double get_MAh1_pole(const Model& model)
+      double get_MAh1_pole_slha(const Model& model)
       {
 	return model.get_MAh_pole_slha(1);
       }
      
       template <class Model>\
-      double get_MHpm1_pole(const Model& model)
+      double get_MHpm1_pole_slha(const Model& model)
       {
 	return model.get_MHpm_pole_slha(1);
       }
@@ -638,13 +700,13 @@ namespace Gambit {
      // maybe we will need the goldstones at some point
      // I think it doesn't hurt to add them in case we do
      template <class Model>
-      double get_neutral_goldstone_pole(const Model& model)
+      double get_neutral_goldstone_pole_slha(const Model& model)
       {
 	return model.get_MAh_pole_slha(0);
       }
 
       template <class Model>
-      double get_charged_goldstone_pole(const Model& model)
+      double get_charged_goldstone_pole_slha(const Model& model)
       {
 	return model.get_MHpm_pole_slha(0);
       }
@@ -726,6 +788,30 @@ namespace Gambit {
 	  }
 
 	 
+         /// @{ Pole_Mixing - Pole mass parameters
+         //
+         // Functions utilising the two-index "plain-vanilla" function signature
+         // (Two-index member functions of model object)
+         {
+            typename MTset::fmap2_extraM tmp_map;
+
+            tmp_map["~d"] =   FInfo2M( &set_ZD_pole_slha, i012345, i012345);
+            tmp_map["~nu"] =   FInfo2M( &set_ZV_pole_slha, i012, i012);
+            tmp_map["~u"] =   FInfo2M( &set_ZU_pole_slha, i012345, i012345);
+            tmp_map["~e"] =   FInfo2M( &set_ZE_pole_slha, i012345, i012345);
+            tmp_map["h0"] =   FInfo2M( &set_ZH_pole_slha, i01, i01);
+            tmp_map["A0"] =   FInfo2M( &set_ZA_pole_slha, i01, i01);
+            tmp_map["H+"] = FInfo2M( &set_ZP_pole_slha, i01, i01);
+            tmp_map["~chi0"] =   FInfo2M( &set_ZN_pole_slha, i0123, i0123); 
+            tmp_map["~chi-"] =   FInfo2M( &set_UM_pole_slha, i01, i01);
+            tmp_map["~chi+"] =   FInfo2M( &set_UP_pole_slha, i01, i01);
+      
+            /* Could add SM fermion mixing but these are only filled
+               when we actually calculate the SM pole masses
+               which is not necessary */
+ 
+            map_collection[Par::Pole_Mixing].map2_extraM = tmp_map;
+         }
 	 
 	 return map_collection;
       }
@@ -796,11 +882,18 @@ namespace Gambit {
             typename MTget::fmap0_extraM tmp_map;
         
             // Using wrapper functions defined above
-            tmp_map["A0"] = &get_MAh1_pole<Model>;   
-            tmp_map["H+"] = &get_MHpm1_pole<Model>;   
-      
+            tmp_map["A0"] = &get_MAh1_pole_slha<Model>;   
+            tmp_map["H+"] = &get_MHpm1_pole_slha<Model>;   
+	    
             // Antiparticle label 
-            tmp_map["H-"] = &get_MHpm1_pole<Model>;   
+            tmp_map["H-"] = &get_MHpm1_pole_slha<Model>;
+	    // Goldstones
+	    // Using wrapper functions defined above
+            tmp_map["Goldstone0"] = &get_neutral_goldstone_pole_slha<Model>;   
+            tmp_map["Goldstone+"] = &get_charged_goldstone_pole_slha<Model>;   
+	    
+            // Antiparticle label 
+            tmp_map["Goldstone-"] = &get_charged_goldstone_pole_slha<Model>;   
       
             map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
          }
