@@ -212,31 +212,92 @@ namespace Gambit {
       }
 
       template <class Model>
-     void set_MSu(Model& model, int i, double mass)
+      void set_MSu_pole_slha(Model& model, double mass,int i)
      {
-       model.get_physical().MSu(i) = mass;
+       model.get_physical_slha().MSu(i) = mass;
      }
+
+     template <class Model>
+      void set_MSd_pole_slha(Model& model, double mass,int i)
+     {
+       model.get_physical_slha().MSd(i) = mass;
+     }
+
+     template <class Model>
+      void set_MSe_pole_slha(Model& model, double mass,int i)
+     {
+       model.get_physical_slha().MSe(i) = mass;
+     }
+
+     template <class Model>
+      void set_MSv_pole_slha(Model& model, double mass,int i)
+     {
+       model.get_physical_slha().MSv(i) = mass;
+     }
+
+     template <class Model>
+      void set_MCha_pole_slha(Model& model, double mass, int i)
+     {
+       model.get_physical_slha().MCha(i) = mass;
+     }
+
+     template <class Model>
+      void set_MChi_pole_slha(Model& model, double mass, int i)
+     {
+       model.get_physical_slha().MChi(i) = mass;
+     }
+
+     template <class Model>
+     void set_Mhh_pole_slha(Model& model, double mass, int i)
+     {
+       model.get_physical_slha().Mhh(i) = mass;
+     }
+
+      template <class Model>
+      void set_MAh1_pole_slha(Model& model, double mass)
+      {
+        model.get_physical_slha().MAh(1) = mass;
+      }
+      template <class Model>
+      void set_MHpm1_pole_slha(Model& model, double mass)
+      {
+	model.get_physical_slha().MHpm(1) = mass;
+      }
     
+     // goldstone setters.  maybe we need these for some consistent calculation
+     // unlikely but I'll add them for now.
+      template <class Model>
+      void set_neutral_goldstone_pole_slha(Model& model, double mass)
+      {
+	model.get_physical_slha().MAh(0) = mass;
+      }
+
+      template <class Model>
+      void set_charged_goldstone_pole_slha(Model& model, double mass)
+      {
+       	model.get_physical_slha().MHpm(0) = mass;
+      }
+     
      // PA: I'm using nicer names than the FlexibleSUSY ones here
      // but maybe I shouldn't as it breaks the symmetry with the
      // getters and could generate some confusion
      template <class Model>
-     void set_MGluino(Model& model, double mass)
+     void set_MGluino_pole_slha(Model& model, double mass)
      {
-       model.get_physical().MGlu = mass;
+       model.get_physical_slha().MGlu = mass;
     }
 
      //PA:  setting MZ and MW is necessary because we may have them as ouptuts
      template <class Model>
-     void set_MZ(Model& model, double mass)
+     void set_MZ_pole_slha(Model& model, double mass)
      {
-       model.get_physical().MVZ = mass;
+       model.get_physical_slha().MVZ = mass;
      }
 
      template <class Model>
-     void set_MW(Model& model, double mass)
+     void set_MW_pole_slha(Model& model, double mass)
      {
-       model.get_physical().MVWm = mass;
+       model.get_physical_slha().MVWm = mass;
      }
 
      
@@ -562,8 +623,33 @@ namespace Gambit {
       // Need wrapper functios for A0 and H+ getters, to retrieve only the 
       // non-Goldstone entries. 
       // Need to pass in the model object, since we won't have the 'this' pointer
-      template <class Model> double get_MAh1_pole(const Model& model) { return model.get_MAh_pole_slha(1); }
-      template <class Model> double get_MHpm1_pole(const Model& model) { return model.get_MHpm_pole_slha(1); }
+      template <class Model>
+      double get_MAh1_pole(const Model& model)
+      {
+	return model.get_MAh_pole_slha(1);
+      }
+     
+      template <class Model>\
+      double get_MHpm1_pole(const Model& model)
+      {
+	return model.get_MHpm_pole_slha(1);
+      }
+
+     // maybe we will need the goldstones at some point
+     // I think it doesn't hurt to add them in case we do
+     template <class Model>
+      double get_neutral_goldstone_pole(const Model& model)
+      {
+	return model.get_MAh_pole_slha(0);
+      }
+
+      template <class Model>
+      double get_charged_goldstone_pole(const Model& model)
+      {
+	return model.get_MHpm_pole_slha(0);
+      }
+
+    
 
  // Filler function for getter function pointer maps extractable from "phys" container
       template <class MI>
@@ -572,8 +658,8 @@ namespace Gambit {
 	typename MSSMSpec<MI>::PhysSetterMaps map_collection; 
 	 typedef typename MI::Model Model;
 
-         typedef typename MTset::FInfo1 FInfo1;
-         typedef typename MTset::FInfo2 FInfo2;
+         typedef typename MTset::FInfo1M FInfo1M;
+         typedef typename MTset::FInfo2M FInfo2M;
 
 	 // Can't use c++11 initialise lists,
 	 // so have to initialise the index sets like this.
@@ -592,10 +678,54 @@ namespace Gambit {
 
 	 {  
             typename MTset::fmap0_extraM tmp_map;
-	     tmp_map["~g"] = &set_MGluino; 
-
+	     tmp_map["~g"] = &set_MGluino_pole_slha<Model>; 
+	     tmp_map["A0"] = &set_MAh1_pole_slha<Model>;
+	     tmp_map["H+"] = &set_MHpm1_pole_slha<Model>;
+	     tmp_map["H-"] = &set_MHpm1_pole_slha<Model>;
+	     tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
+	     // tmp_map["Goldstone+"] = &set_charged_goldstone_pole_slha<Model>;
+	     // tmp_map["Goldstone-"] = &set_charged_goldstone_pole_slha<Model>;
+     
 	    map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
 	  }
+
+	 {  
+            typename MTset::fmap1_extraM tmp_map;
+	    
+	    tmp_map["~u"] = FInfo1M( &set_MSu_pole_slha<Model>, i012345 );
+	    tmp_map["~d"] = FInfo1M( &set_MSd_pole_slha<Model>, i012345 );
+	    tmp_map["~e"] = FInfo1M( &set_MSe_pole_slha<Model>, i012345 );
+	    tmp_map["~e-"] = FInfo1M( &set_MSe_pole_slha<Model>, i012345 );
+	   
+            tmp_map["~nu"]=  FInfo1M( &set_MSv_pole_slha<Model>, i012 );
+	    tmp_map["~chi+"] = FInfo1M( &set_MCha_pole_slha<Model>, i01 );
+            tmp_map["~chi0"] = FInfo1M( &set_MChi_pole_slha<Model>, i0123 );
+	    tmp_map["h0"] =  FInfo1M( &set_Mhh_pole_slha<Model>, i01 );
+            // NOTE: I have added the following two to the "no index" map as well, 
+            // where only the "safe" entries are retrieved
+            //Here we may access the goldstone boson
+            //and higgs. maybe too dangerous to keep?
+	    //  tmp_map["A0"] = FInfo1(&set_MAh_pole_slha, i01 );      
+            //Here we may access the goldstone boson
+            //and higgs. maybe too dangerous to keep?
+            //tmp_map["H+"] = FInfo1( &set_MHpm_pole_slha, i01 );
+
+	    // Do we really want to set the massing using either the particle or anti-particel string?
+	    tmp_map["~ubar"] = FInfo1M( &set_MSu_pole_slha<Model>, i012345 );
+	    tmp_map["~dbar"] = FInfo1M( &set_MSd_pole_slha<Model>, i012345 );
+	    tmp_map["~ebar"] = FInfo1M( &set_MSe_pole_slha<Model>, i012345 );
+	    tmp_map["~e+"] = FInfo1M( &set_MSe_pole_slha<Model>, i012345 );
+	    tmp_map["~nubar"]=  FInfo1M( &set_MSv_pole_slha<Model>, i012 );
+	    tmp_map["~chi-"] = FInfo1M( &set_MCha_pole_slha<Model>, i01 );
+	    //tmp_map["H-"] = FInfo1( &set_MHpm_pole_slha, i01 );
+
+            
+            
+            
+	    map_collection[Par::Pole_Mass].map1_extraM = tmp_map;
+	  }
+
+	 
 	 
 	 return map_collection;
       }
@@ -709,7 +839,8 @@ namespace Gambit {
             // Antiparticles (same getters, just different string name)
             tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
             tmp_map["~ubar"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
-            tmp_map["~ebar"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+	    tmp_map["~e+"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+	    tmp_map["~ebar"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );	
             tmp_map["~nubar"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
             tmp_map["H-"] =    FInfo1( &Model::get_MHpm_pole_slha, i01 );   
             tmp_map["~chi-"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
