@@ -56,7 +56,7 @@ Printer:
     # name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
 
-    output_file: "runs/spartan_multinest_hdf5/samples/gambit_output.hdf5"
+    output_file: "runs/test_hdf5/samples/gambit_output.hdf5"
     group: "/test/test2"
     delete_file_if_exists: true
 
@@ -68,7 +68,7 @@ Scanner:
 
   use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: ransample
+  use_scanner: multinest
   #find_shift
   #find_kernel
   #object_detection

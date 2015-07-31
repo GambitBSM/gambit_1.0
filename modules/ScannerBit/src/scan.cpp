@@ -27,6 +27,7 @@
 #include "gambit/ScannerBit/scan.hpp"
 #include "gambit/ScannerBit/plugin_interface.hpp"
 #include "gambit/ScannerBit/plugin_factory.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
 
 namespace Gambit
 {
@@ -188,16 +189,31 @@ namespace Gambit
                         {
                                 Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
                                 
-                                if(plugin_interface["initialize_mpi"] && plugin_interface["initialize_mpi"].as<bool>())
+                                //if(plugin_interface["initialize_mpi"] && !plugin_interface["initialize_mpi"].as<bool>())
+                                if (false)
+                                {
+                                        plugin_interface();
+                                        printerInterface->finalise();
+                                }
+                                else
                                 {
 #ifdef WITH_MPI
-                                        /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
-                                        /// can fix up the command line arguments to match the non-mpi'd call. 
+                                        if(GMPI::Is_initialized())
+                                        {
+                                                //scan_err << "Error initialising MPI! It is already initialised!" << scan_end; 
+                                        } 
+                                        else
+                                        {
+                                                //MPI_Init(&argc,&argv); 
+                                        }
                                         //GMPI::Init(argc,argv);
 #endif
+                                        plugin_interface();
+                                        printerInterface->finalise();
+#ifdef WITH_MPI
+                                        MPI_Finalize(); 
+#endif
                                 }
-                                
-                                plugin_interface();
                         }
  
                         /// From Ben: To Greg: This is a command I added to the 
@@ -206,7 +222,7 @@ namespace Gambit
                         /// to file and so on). It just needs to happen
                         /// when the scan is done; feel free to move it to
                         /// wherever you like.
-                        printerInterface->finalise();
+                        
 
                         return 0;
                 }
