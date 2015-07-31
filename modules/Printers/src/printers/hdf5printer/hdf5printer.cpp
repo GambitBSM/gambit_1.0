@@ -239,11 +239,11 @@ namespace Gambit
     HDF5Printer::HDF5Printer(const Options& options)
       : printer_name("Primary printer")
       , myRank(0)
-     #ifdef WITH_MPI
+      #ifdef WITH_MPI
       , myComm() // initially attaches to MPI_COMM_WORLD
       , mpiSize(1)
-     #endif
-     {
+      #endif
+    {
       #ifdef WITH_MPI
       myRank = myComm.Get_rank();
       #endif
@@ -311,7 +311,87 @@ namespace Gambit
  
       // Initialise "lastPointID" map to -1 (i.e. no last point)
       lastPointID[myRank] = -1; // Only rank 0 process for now; parallel mode not implemented
-   }
+    }
+
+    #ifdef WITH_MPI
+    /// Master waits until all processes send the specified tag, and monitors
+    /// for tag requests in the meantime. Used during initialise and finalise to
+    /// ensure monitoring for tag requests continues until it is no longer needed
+    /// by the workers.
+    /// Acts similarly to a Barrier for the master process, but lets it continue
+    /// monitoring for tag requests while waiting.
+    void HDF5Printer::master_wait_for_tag(Tags tag)
+    {
+       if(mpiSize>1)
+       {
+          if(myRank==0)
+          {
+             MPI_Status status;
+             int recv_buffer = 0; // To receive the null message
+             std::vector<bool> passed(mpiSize); // should init to "false"
+             passed[0] = true; // Set rank zero entry to 'true' so we don't wait for ourselves.
+             while( std::find(passed.begin(), passed.end(), false) != passed.end() ) // Pass when 'false' cannot be found
+             {
+                // Check whether other processes have caught up yet
+                for(uint source=1;source<mpiSize;source++)
+                {
+                   std::cout<<"rank "<<myRank<<": process "<<source<<" passed block? "<<passed[source]<<std::endl;
+                   if(not passed[source])
+                   {
+                      if( myComm.Iprobe(source, tag, &status) )
+                      {
+                         // Ok the source has now reached this function.
+                         passed[source] = true;
+                         myComm.Recv(&recv_buffer, 1, source, tag);
+                      } 
+                   }
+                }
+
+                // While waiting, fulfil tag requests from other processes
+                tag_manager->check_for_tag_requests();
+  
+                // sleep? leave for now.
+             }
+          }
+          else
+          {
+             // Other processes simply signal that they have passed this point.
+             myComm.Isend(&waitfortag_send_buffer, 1, 0 /*master*/, tag, &req_null);
+          }
+       }
+    }
+    #endif
+
+    /// Initialisation function
+    // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
+    void HDF5Printer::initialise(const std::vector<int>& printmevec)
+    {
+       // Prior to running this, the dependency resolver triggers a single null
+       // print for every functor, which will trigger the creation of all the
+       // buffer managers that we will need (but possibly not all the buffers,
+       // since multiple buffers can be created within a single print function,
+       // for instance if each entry of a variable-length vector is directed
+       // into a different buffer. New buffers can thus appear at any time.
+       // I am not sure if I have dealt with this case sufficiently well yet,
+       // further testing is needed.)
+       // Anyway, when new buffers are created, they put in tag requests to
+       // the master, which are blocking Sends and Recvs. So if the master 
+       // doesn't wait for these to complete, and for example goes into a 
+       // Barrier in the scanner, then a deadlock will occur. So here, we
+       // the master process to sit and fulfil the tag requests
+       // until everyone has passed this function. After that, tag requests can
+       // only be fulfilled by the master once per iteration, which may or 
+       // may not be enough to avoid future deadlocks with the scanner MPI
+       // commands. Will try it out and see what happens.
+
+       #ifdef WITH_MPI
+       std::cout << "rank "<<myRank<<": Reached initialise!"<<std::endl;
+       master_wait_for_tag(INIT_PASS);
+       std::cout << "rank "<<myRank<<": Passed initialise!"<<std::endl;
+       #endif
+
+       return;
+    }
 
 
     /// Initialisation for the auxilliary printer
@@ -384,7 +464,8 @@ namespace Gambit
           #ifdef MPI_DEBUG
           std::cout << "rank "<<myRank<<": Waiting at barrier in finalise() ("<<printer_name<<")"<<std::endl;
           #endif
-          myComm.Barrier(); 
+          master_wait_for_tag(FINAL_PASS);
+          //myComm.Barrier(); // replaced with master_wait_for_tag
           #ifdef MPI_DEBUG
           std::cout << "rank "<<myRank<<": Barrier passed ("<<printer_name<<")"<<std::endl;
           #endif
@@ -479,16 +560,6 @@ namespace Gambit
          printer_error().raise(LOCAL_INFO, errmsg.str());
        }
        return location;
-    }
-
-    /// Initialisation function
-    // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
-    void HDF5Printer::initialise(const std::vector<int>& printmevec)
-    {
-       // Use this trigger a single null print for every functor, which will
-       // trigger the creation of all the buffers that we will need.
-
-
     }
 
     /// Retrieve MPI rank
@@ -768,6 +839,10 @@ namespace Gambit
        // First we will check if any BUFFER_SENT messages are waiting.
        if(myComm.Iprobe(MPI_ANY_SOURCE, N_BUFFERS_SENT))
        {
+          #ifdef MPI_DEBUG
+          std::cout<<"rank "<<myRank<<": N_BUFFERS_SENT message detected..."<<std::endl;
+          #endif
+
           collected_sync_buffers = true;
           for(uint source_rank=1; source_rank<mpiSize; source_rank++)
           {
@@ -969,41 +1044,6 @@ namespace Gambit
        // Reconstruct the whole tag group and return
        return BuffTags(first_tag_in_group);
     }
-
-    /// REPLACED BY MPITagManager
-    /// Check for tag requests from worker nodes
-    //void HDF5Printer::check_for_bufftag_requests()
-    //{
-    //  if(is_auxilliary_printer())
-    //  {
-    //     // Primary printer must handle the tag requests
-    //     primary_printer->check_for_bufftag_requests();
-    //  }
-
-    //  if(myRank!=0)
-    //  {
-    //      std::ostringstream errmsg;
-    //      errmsg << "Error! Called check_for_buftag_request() from non-master node! (myRank="<<myRank<<"). Only the master node may fulfil requests for new MPI tags.";
-    //      printer_error().raise(LOCAL_INFO, errmsg.str());
-    //  }
-    //  for(uint rank=1; rank<mpiSize; rank++)
-    //  {
-    //    // Check for tag request
-    //    bool message_waiting = myComm.Iprobe(rank, TAG_REQ);
-    //    if( message_waiting )
-    //    {
-    //       // Get the tag request
-    //       VBIDpair bufID;
-    //       myComm.Recv(&bufID, 1, rank, TAG_REQ);
-  
-    //       // Do the tag lookup/issue
-    //       int tag = tag_manager->get_tags(bufID);
-    //      
-    //       // Send the tag back to the worker
-    //       myComm.Send(&tag, 1, rank, TAG_REQ);
-    //    }        
-    //  }
-    //}
     #endif
 
     /// Empty all the buffers to disk
@@ -1130,6 +1170,13 @@ namespace Gambit
     // and perform adjustments needed to prepare the printer.
     void HDF5Printer::check_for_new_point(const ulong candidate_newpoint, const uint mpirank)
     {
+       if(myRank==0)
+       {
+          // Master process primary printer checks for tag requests from worker processes
+          // I am hoping this check is cheap since it will happen quite a lot.
+          tag_manager->check_for_tag_requests();
+       }
+
        if(is_auxilliary_printer())
        {
           // Redirect task to primary printer
@@ -1145,7 +1192,7 @@ namespace Gambit
          std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
          std::cout<<"rank "<<myRank<<": sync_pos="<<get_N_pointIDs()<<std::endl;
          #endif
- 
+
          // Explicitly check up on the synchronisation of all the buffers and their
          // associated datasets
 

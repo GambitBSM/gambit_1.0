@@ -170,6 +170,16 @@ namespace Gambit
 
         /// Update the master node PPID lists with IDs from a worker node
         void receive_PPID_list(uint source);
+ 
+        /// Master waits until all processes send the specified tag, and monitors
+        /// for tag requests in the meantime. Used during initialise and finalise to
+        /// ensure monitoring for tag requests continues until it is no longer needed
+        /// by the workers.
+        void master_wait_for_tag(Tags tag);
+
+        /// MPI variables to use in the above function;
+        int waitfortag_send_buffer = 0;
+        MPI_Request req_null;
         #endif
 
         /// Function to ensure buffers are all synchronised to the same absolute position

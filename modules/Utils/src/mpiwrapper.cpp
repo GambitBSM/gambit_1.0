@@ -113,7 +113,32 @@ namespace Gambit
         } 
         else
         {
-           MPI_Init(&argc,&argv); 
+           int errflag;
+           errflag = MPI_Init(&argc,&argv);
+
+           /// // Test case for thread-safe MPI. Probably not going to use this though.
+           /// int provided; // output; level of thread support provided (may not meet the requested level)    
+           /// errflag = MPI_Init_thread(&argc,&argv,MPI_THREAD_MULTIPLE,&provided);
+           /// if(provided!=MPI_THREAD_MULTIPLE)
+           /// {
+           ///    std::ostringstream errmsg;
+           ///    errmsg << "Error initialising MPI with thread support level MPI_THREAD_MULTIPLE. The implementation did not provide the requested level of thread support; the best it could do was ";
+           ///    switch(provided)
+           ///    {
+           ///       case MPI_THREAD_SINGLE:     errmsg<<"MPI_THREAD_SINGLE"; break;
+           ///       case MPI_THREAD_FUNNELED:   errmsg<<"MPI_THREAD_FUNNELED"; break;
+           ///       case MPI_THREAD_SERIALIZED: errmsg<<"MPI_THREAD_SERIALIZED"; break;
+           ///       case MPI_THREAD_MULTIPLE:   errmsg<<"MPI_THREAD_MULTIPLE"; break;
+           ///       default: errmsg<<"[UNRECOGNISED CODE!!!]"; break;
+           ///    }
+           ///    utils_error().raise(LOCAL_INFO, errmsg.str());
+           /// }
+
+           if(errflag!=0) {
+              std::ostringstream errmsg;
+              errmsg << "Error initialising MPI! Received error flag: "<<errflag; 
+              utils_error().raise(LOCAL_INFO, errmsg.str());
+           }
         }
 
         // Create communicator and check out basic info

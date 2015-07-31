@@ -27,7 +27,7 @@
 // Standard libraries
 #include <map>
 #include <vector>
-#include <pthread.h> // Using pthreads for MPI listener process
+//#include <pthread.h> // Using pthreads for MPI listener process
 #include <time.h> // For short sleeps in listener process 
 
 // Gambit
@@ -72,8 +72,8 @@ namespace Gambit
         unsigned int mpiRank;
         unsigned int mpiSize;
 
-        /// tag_daemon thread
-        pthread_t tag_daemon_thread;
+        //// /// tag_daemon thread
+        //// pthread_t tag_daemon_thread;
 
         /// Flag to trigger tag_daemon "long sleep" mode
         /// (i.e. waits longer between polls for new messages)
@@ -95,6 +95,9 @@ namespace Gambit
 
         /// Retrieve VBIDpair match a specific tag from a BuffTags collection
         VBIDpair get_VBID_from_tag(const int tag); 
+
+        /// Check for tag requests (via MPI) and fulfil if found
+        void check_for_tag_requests();
 
         /// Retrieve all the VBIDpairs known to this tag manager
         const std::vector<VBIDpair>& get_all_known_VBIDpairs() { return VBID_from_tag;}
