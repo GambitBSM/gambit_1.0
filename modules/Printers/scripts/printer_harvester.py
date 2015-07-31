@@ -27,7 +27,7 @@ import os
 import sys
 import getopt
 execfile("./Utils/scripts/harvesting_tools.py")
-execfile("./cmake/update_cmakelists.py")
+#execfile("./cmake/update_cmakelists.py")
 
 def main(argv):
 

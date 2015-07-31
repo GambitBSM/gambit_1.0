@@ -242,10 +242,12 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp 
                    COMMAND python ${PRINTER_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${PRINTER_HARVESTER}
-                           ${HARVEST_TOOLS}
-                           ${PRINTER_HARVESTER_FILES}
-                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+                   DEPENDS ${PROJECT_BINARY_DIR}/CMakeCache.txt )
+#                           ${PRINTER_HARVESTER_FILES})
+#                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+
+#                           ${PRINTER_HARVESTER} )
+#                           ${HARVEST_TOOLS} )
 
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
                           ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp
