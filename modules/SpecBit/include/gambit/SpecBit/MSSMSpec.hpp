@@ -745,9 +745,16 @@ namespace Gambit {
 	     tmp_map["H+"] = &set_MHpm1_pole_slha<Model>;
 	     tmp_map["H-"] = &set_MHpm1_pole_slha<Model>;
 	     tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
-	     // tmp_map["Goldstone+"] = &set_charged_goldstone_pole_slha<Model>;
-	     // tmp_map["Goldstone-"] = &set_charged_goldstone_pole_slha<Model>;
-     
+	     tmp_map["Goldstone+"] = &set_charged_goldstone_pole_slha<Model>;
+	     tmp_map["Goldstone-"] = &set_charged_goldstone_pole_slha<Model>;
+
+	     /// the getters for these were removed but Pat last meeting
+	     /// we agreed to add setters here unless I misunderstood.
+	     /// need to discuss this
+	     // tmp_map["W+"] = &set_MW_pole_slha<Model>;
+	     // tmp_map["W-"] = &set_MW_pole_slha<Model>;
+	     // tmp_map["Z0"] = &set_MW_pole_slha<Model>;
+	     
 	    map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
 	  }
 
