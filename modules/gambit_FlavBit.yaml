@@ -75,6 +75,14 @@ ObsLikes:
 #    capability:   b2ll_M
   - purpose:      Likelihood
     capability:   b2ll_LL      
+#  - purpose:      Likelihood
+#    capability:   b2ll_LL
+#  - purpose:      Observable
+#    capability:   SL_M
+  - purpose:      Likelihood
+    capability:   SL_LL
+
+
   
 #########################
 # Rule entries
