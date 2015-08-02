@@ -3,32 +3,17 @@
 # to sample from a flat prior over this range. For any other prior, you need to specify it
 # properly in the "priors" section.
 
-# Standard_Model:
-#   alpha_emi:
-#     fixed_value: 80
-#   G_F:
-#     fixed_value: 80
-#   alpha_s:
-#     fixed_value: 80
-#   mZ:
-#     fixed_value: 80
-#   mb:
-#     fixed_value: 80
-#   mt:
-#     fixed_value: 80
-#   mtau:
-#     fixed_value: 80
-CMSSM_demo:
+#StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+CMSSM:
   A0:
-    range: [-1000, 1000]
+  #  range: [-1000, 1000]
   M0:
     prior_type: log
     range: [0.001,1000]
   M12:
-  #  same_as: CMSSM_demo::M0
-  Mstop:
-  #  same_as: CMSSM_demo::M0
-  sgnmu:
+  #  same_as: CMSSM::M0
+  signmu:
     range: [-1, 1]
     fixed_value: 1
   tanb:
@@ -40,6 +25,28 @@ NormalDist:
   sigma:
     fixed_value: 1
 
+#nuclear_params_fnq:
+#  # proton hadronic matrix elements
+#  fpd:
+#    fixed_value: 0.0191
+#  fpu:
+#    fixed_value: 0.0153
+#  fps:
+#    fixed_value: 0.0447
+#  # neutron hadronic matrix elements
+#  fnd:
+#    fixed_value: 0.0273
+#  fnu:
+#    fixed_value: 0.011
+#  fns:
+#    fixed_value: 0.0447
+#  # proton spin content
+#  deltad:
+#    fixed_value: -0.427
+#  deltau:
+#    fixed_value: 0.842
+#  deltas:
+#    fixed_value: -0.085
 
 # Ben: this was in the old inifile: I don't know what it does 
 #  param_not_in_gambit:

@@ -11,7 +11,7 @@
 ///  \author Christoph Weniger
 ///    (c.weniger@uva.nl)
 ///  \date 2013 May, June, July
-//
+///
 ///  \author Gregory Martinez
 ///    (gregory.david.martinez@gmail.com)
 ///  \date 2013 July
@@ -33,52 +33,60 @@
 namespace Gambit
 {
 
-  class Likelihood_Container_Base : public Scanner::Function_Base<double (const std::vector<double>&)>
-  {
-
-    protected:
-      std::vector<DRes::VertexID> target_vertices;
-      std::vector<DRes::VertexID> aux_vertices;
-      DRes::DependencyResolver &dependencyResolver;
-      std::vector<double> realParameters;
-      Priors::CompositePrior &prior;
-      std::unordered_map<str, double> parameterMap;
-      std::map<str, primary_model_functor *> functorMap;
-			
-    public:
-      Likelihood_Container_Base(const std::map<str, primary_model_functor *> &functorMap, 
-       DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const str &purpose); 
-      inline void calcObsLike(DRes::VertexID &it);
-      inline double getObsLike(DRes::VertexID &it);
-      void setParameters (const std::vector<double> &vec); 
-      void resetAll();
-      void print(double, const str &) const;
-
-  };
-		
   /// Class for collecting pointers to all the likelihood components, then running and combining them.
-  class Likelihood_Container : public Likelihood_Container_Base
+  class Likelihood_Container : public Scanner::Function_Base<double (const std::vector<double>&)>
   {
 
     private:
+
+      /// Graph vertices corresponding to functors in the ObsLike section of yaml file
+      std::vector<DRes::VertexID> target_vertices;
+
+      /// Graph vertices corresponding to additional functors not in ObsLike part of yaml file
+      std::vector<DRes::VertexID> aux_vertices;
+
+      /// Bound dependency resolver object
+      DRes::DependencyResolver &dependencyResolver;
+
+      /// Actual values of the parameters
+      std::vector<double> realParameters;
+
+      /// Bound prior object
+      Priors::CompositePrior &prior;
+      
+      /// Map of parameter names to values
+      std::unordered_map<str, double> parameterMap;
+
+      /// Map of scanned model names to primary model functors
+      std::map<str, primary_model_functor *> functorMap;
+			
       /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
+      
+      /// Map of return types of target functors
+      std::map<DRes::VertexID,str> return_types;
 
     public:
-      /// TODO: As above, I had to add this, probably temporarily
-      inline void calcObsLike(DRes::VertexID &it);
 
       /// Constructor
       Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
        Priors::CompositePrior &prior, const str &purpose);
 
+      /// Do the prior transformation and populate the parameter map  
+      void setParameters (const std::vector<double> &vec); 
+      
+      /// Print the results of the likelihood evaluation
+      void print(double, const str &) const;
+
       /// Evaluate total likelihood function
       double main (const std::vector<double> &in);
 
   };
-  
-  // Register the Likelihood Container as an available target function for ScannerBit.
+		  
+  // Register the Likelihood Container as an available target function for ScannerBit.  The first argument
+  // is a tag that gets used later by the Likelihood_Container_Factory to create a new Likelihood_Container 
+  // and return a pointer to it. 
   LOAD_SCANNER_FUNCTION(Scanner_Function, Likelihood_Container)
 
 }

@@ -23,7 +23,7 @@
 ///
 ///  \author Christopher Rogan
 ///          (christophersrogan@gmail.com)
-///  \date 2015 Feb
+///  \date 2015 Apr
 ///
 ///  *********************************************
 
@@ -31,50 +31,37 @@
 #ifndef __EWPOBit_rollcall_hpp__
 #define __EWPOBit_rollcall_hpp__
 
-#include "EWPOBit_types.hpp"
 
 #define MODULE EWPOBit
 START_MODULE
 
-  #define CAPABILITY FH_Precision            // FeynHiggs EWK precision observables
+
+  // FeynHiggs EWK precision observables
+  #define CAPABILITY FH_PrecisionObs            
   START_CAPABILITY
-    #define FUNCTION FH_Precision
-    START_FUNCTION(double)
-      BACKEND_REQ(FHConstraints, (libfeynhiggs), void, (int&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
-							fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    #define FUNCTION FH_PrecisionObs
+    START_FUNCTION(fh_PrecisionObs)
+    DEPENDENCY(FH_Couplings, fh_Couplings)
+    BACKEND_REQ(FHConstraints, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
+                fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))
+    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
 
-  #define CAPABILITY FH_Masses               // FeynHiggs SUSY masses and mixings
+  // SUSYPOPE EWK precision observables
+  #define CAPABILITY SP_PrecisionObs
   START_CAPABILITY
-    #define FUNCTION FH_Masses
+    #define FUNCTION SP_PrecisionObs
     START_FUNCTION(double)
-      BACKEND_REQ(FHGetPara, (libfeynhiggs), void, (int&,int&,fh_real*,fh_complex*,fh_real*,fh_complex*,
-						    fh_real*,fh_complex*,fh_complex*,fh_real*,fh_complex*,
-						    fh_complex&,fh_real&,fh_real*,fh_real&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_REQ(CalcObs_SUSYPOPE, (libSUSYPOPE), void, (int&,
+                                                        Farray<Fdouble,1,35>&,
+                                                        Farray<Fdouble,1,35>&))
+    BACKEND_OPTION( (SUSYPOPE, 0.2), (libSUSYPOPE) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
 
-  #define CAPABILITY FH_Flavor               // FeynHiggs flavor observables
-  START_CAPABILITY
-    #define FUNCTION FH_Flavor
-    START_FUNCTION(double)
-      BACKEND_REQ(FHFlavour, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    #undef FUNCTION
-  #undef CAPABILITY 
-
-  #define CAPABILITY FH_Higgs               // Higgs observables with errors
-  START_CAPABILITY
-    #define FUNCTION FH_Higgs
-    START_FUNCTION(double)
-      BACKEND_REQ(FHHiggsCorr, (libfeynhiggs), void, (int&,fh_real*,fh_complex&,fh_complex*,fh_complex*))
-      BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&,fh_real*,fh_complex&,fh_complex*,fh_complex*))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    #undef FUNCTION
-  #undef CAPABILITY 
 
 #undef MODULE
 

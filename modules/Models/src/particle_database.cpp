@@ -42,24 +42,16 @@ namespace Gambit
 
     void define_particles(partmap* particles)
     {
-      // Ben: I am hereby claiming context integer 0 in the name of MSSM mass eigenstates!
-      //  I am still a little unsure what the "best" string names to use here are. I was
-      //  just going with the strings close to those already used in flexibleSUSY, but now
-      //  I am somewhat leaning towards something close to those used by Pythia since they
-      //  might be more familiar to people. That is what is currently used below (though
-      //  I don't have individual names for particles which flexibleSUSY puts into groups,
-      //  since that was a headache).
-      //  Anyway we should settle on something fairly quickly to avoid further such headaches later.
-
-
-      // ---- Standard Model gauge bosons (context = 0) ----
+ 
+      // ---- Standard Model gauge/Higgs bosons (context = 0) ----
 
       add_particle("g",     ( 21, 0) )
       add_particle("gamma", ( 22, 0) )
       add_particle("Z0",    ( 23, 0) )
       add_particle("W+",    ( 24, 0) )
       add_particle("W-",    (-24, 0) )
-
+      add_particle("G",     ( 39, 0) )
+      //  particle("h0_1"   ( 25, 0) ) is added in MSSM section below.
 
       // ---- Standard Model mass eigenstates (context = 0) ----
 
@@ -104,17 +96,32 @@ namespace Gambit
       add_particle("nubar_mu" , (-14, 1) )
       add_particle("nubar_tau", (-16, 1) )
 
+      // ---- Standard Model significant mesons (context = 0) ----
 
-      // ---- MSSM sparticle mass eigenstates ---- (TODO to be extended to NMSSM)
+      add_particle("pi0",   ( 111, 0) ) 
+      add_particle("pi+",   ( 211, 0) ) 
+      add_particle("pi-",   (-211, 0) ) 
+      add_particle("eta",   ( 221, 0) ) 
+      add_particle("rho0",  ( 113, 0) ) 
+      add_particle("rho+",  ( 213, 0) ) 
+      add_particle("rho-",  (-213, 0) ) 
+      add_particle("omega", ( 223, 0) ) 
+
+
+      // ---- MSSM sparticle mass eigenstates (context = 0) ---- (TODO to be extended to NMSSM)
       // Defined according to SLHA2 (http://arxiv.org/pdf/0801.0045v3.pdf, see eq. 28 - 31)
 
-      // Gluino
+      // Gluino and gravitino
       add_particle("~g", (1000021,0) )
+      add_particle("~G", (1000039,0) )
+
       // Mass-ordered neutral, pseudoscalar, and charged Higgs bosons
+      // PDG 25 is also the SM Higgs boson, but in the MSSM it is not always the most SM-like.
       add_particle_set("h0", ((25, 0), (35, 0)) )
       add_particle("A0", ( 36, 0) )
       add_particle("H+", ( 37, 0) )
       add_particle("H-", (-37, 0) )
+
       // Mass-ordered down and up-type squarks
       add_particle_set("~d",    (( 1000001, 0), ( 1000003, 0), ( 1000005, 0),
                                  ( 2000001, 0), ( 2000003, 0), ( 2000005, 0)) )
@@ -124,18 +131,19 @@ namespace Gambit
                                  (-2000001, 0), (-2000003, 0), (-2000005, 0)) )
       add_particle_set("~ubar", ((-1000002, 0), (-1000004, 0), (-1000006, 0),
                                  (-2000002, 0), (-2000004, 0), (-2000006, 0)) )
+
       // Mass-ordered sleptons and sneutrinos 
-      add_particle_set("~e-", (( 1000011, 0), ( 1000013, 0), ( 1000015, 0),
-                               ( 2000011, 0), ( 2000013, 0), ( 2000015, 0)) )
-      add_particle_set("~e+", ((-1000011, 0), (-1000013, 0), (-1000015, 0),
-                               (-2000011, 0), (-2000013, 0), (-2000015, 0)) )
-      add_particle_set("~nu", (( 1000012, 0), ( 1000014, 0), ( 1000016, 0)) )
+      add_particle_set("~e-",    (( 1000011, 0), ( 1000013, 0), ( 1000015, 0),
+                                  ( 2000011, 0), ( 2000013, 0), ( 2000015, 0)) )
+      add_particle_set("~e+",    ((-1000011, 0), (-1000013, 0), (-1000015, 0),
+                                  (-2000011, 0), (-2000013, 0), (-2000015, 0)) )
+      add_particle_set("~nu",    (( 1000012, 0), ( 1000014, 0), ( 1000016, 0)) )
       add_particle_set("~nubar", ((-1000012, 0), (-1000014, 0), (-1000016, 0)) )
+
       // Mass-ordered charginos and neutralinos
       add_particle_set("~chi0", (( 1000022, 0), ( 1000023, 0), (1000025, 0), (1000035, 0)) )
       add_particle_set("~chi+", (( 1000024, 0), ( 1000037, 0)) )
       add_particle_set("~chi-", ((-1000024, 0), (-1000037, 0)) )
-
 
       // ---- RPV NMSSM mass eigenstates (context = 10) ---- //TODO not yet totally complete?
 
@@ -144,7 +152,11 @@ namespace Gambit
            (1000022, 10), (1000023, 10), (1000025, 10), (1000035, 10), (1000045, 10)) )
 
 
-    }// end define_particles
+      // ---- Scalar singlet dark matter ----
+
+      add_particle("S", (9900001, 0))
+
+    }
 
   }
 

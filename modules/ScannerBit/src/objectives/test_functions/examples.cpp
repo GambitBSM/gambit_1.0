@@ -71,7 +71,7 @@ objective_plugin(gaussian, version(1, 0, 0))
                 
                 if (!chol.EnterMat(cov))
                 {
-                        std::vector <double> sigs = get_inifile_value <std::vector <double>> ("sigs", std::vector<double>(dim, 1));
+                        std::vector <double> sigs = get_inifile_value <std::vector <double>> ("sigs", std::vector<double>(dim, 1.0));
                         if (sigs.size() != dim)
                         {
                                 scan_err << "Gaussian: Sigma vector size of " << sigs.size() << " is different than the parameter size of " << dim << scan_end;
@@ -83,10 +83,6 @@ objective_plugin(gaussian, version(1, 0, 0))
                                         cov[i][i] = sigs[i]*sigs[i];
                                 }
                         }
-                }
-                else
-                {
-                        scan_err << "Gaussian: Need to enter a sigma or covariance matrix." << scan_end;
                 }
                 
                 mean = get_inifile_value<std::vector <double>> ("mean", std::vector <double>(dim, 0));
@@ -138,9 +134,9 @@ objective_plugin(flat_prior, version(1, 0, 0))
         
         plugin_constructor
         {
-                keys = get_keys();
-                set_dimension(keys.size());
-                range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
+                //keys = get_keys();
+                //set_dimension(keys.size());
+                //range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
         }
         
         void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)
@@ -148,5 +144,11 @@ objective_plugin(flat_prior, version(1, 0, 0))
                 auto u_it = unitpars.begin();
                 for (auto it = keys.begin(), end = keys.end(); it != end; it++)
                         outputMap[*it] = range.first + (range.second - range.first)*(*u_it++);
+        }
+        
+        double plugin_main(const std::vector<double>&)
+        {
+                std::cout << "It works!" << std::endl;
+                return 0.0;
         }
 }

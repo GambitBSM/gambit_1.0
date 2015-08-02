@@ -1,0 +1,104 @@
+#! /usr/bin/env python
+
+"""\
+Usage: %prog rundirs*
+
+Read a set of results.txt files from the m0-m12 grid dir structure, and make a CL contour plot.
+"""
+
+## Handle command line
+import optparse
+op = optparse.OptionParser(usage=__doc__)
+op.add_option("--text", dest="TEXT", action="store_true", default=False, help="write CL sample values on the m0-m12 plot")
+op.add_option("--ipol", dest="IPOL", action="store_true", default=False, help="build a complete grid via 2D interpolation ")
+opts, args = op.parse_args()
+
+
+## Read results.txt files into a data structure keyed on each (ANA,SR)
+import os
+RESULTS = {}
+M0s, M12s = set(), set()
+for d in args:
+    dparts = os.path.basename(d).split("_")
+    m0, m12, A0, tanB = map(float, dparts[2:2+4])
+    M0s.add(m0)
+    M12s.add(m12)
+    m0_m12 = tuple([m0, m12])
+    with open(os.path.join(d, "results.txt")) as f:
+        for line in f:
+            _, ana, sr, cl = line.strip("\n").split()
+            ana_sr = tuple([int(ana), int(sr)])
+            RESULTS.setdefault(ana_sr, {})[m0_m12] = float(cl)
+M0s = sorted(list(M0s))
+M12s = sorted(list(M12s))
+
+
+## Configure plotting
+import matplotlib as mpl
+mpl.use("pgf")
+mpl.rcParams["text.usetex"] = True
+mpl.rcParams["font.family"] = "serif"
+mpl.rcParams["font.serif"] = ["TeX Gyre Pagella"]
+mpl.rcParams["pgf.preamble"] = [r"\usepackage{mathspec}", r"\usepackage{amsmath,amssymb}",
+                                r"\defaultfontfeatures{Numbers=OldStyle}",
+                                r"\setmathsfont(Digits,Greek){TeX Gyre Pagella}"]
+from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import numpy as np
+from scipy import stats, interpolate
+
+
+## Make a contour plot for each ANA+SR
+for ana_sr, clmap in RESULTS.iteritems():
+    # print ana_sr
+    # from pprint import pprint
+    # pprint(clmap)
+    # print
+
+    ## Populate the plotting values 2D array
+    xx, yy = np.meshgrid(M0s, M12s)
+    cls = np.empty([len(M0s),len(M12s)])
+    cls.fill(np.nan)
+    for (m0, m12), cl in clmap.iteritems():
+        im0 = M0s.index(m0)
+        im12 = M12s.index(m12)
+        cls[im0, im12] = cl
+    #print cls.shape
+
+    ## Interpolate the irregular 2D grid and make a complete 2D array
+    if opts.IPOL:
+        m0s_ipol, m12s_ipol, cls_ipol = [], [], []
+        for (m0, m12), cl in clmap.iteritems():
+            m0s_ipol.append(m0)
+            m12s_ipol.append(m12)
+            cls_ipol.append(cl)
+        ipol = interpolate.SmoothBivariateSpline(m0s_ipol, m12s_ipol, cls_ipol)
+        ipolv = np.vectorize(ipol)
+        xs2 = np.linspace(M0s[0], M0s[-1], 5*len(M0s))
+        ys2 = np.linspace(M12s[0], M12s[-1], 5*len(M12s))
+        # cls2 = np.zeros([5*len(M0s),5*len(M12s)])
+        # for i, m0 in enumerate(xx2):
+        #     for j, m12 in enumerate(yy2):
+        #         cls2[i,j] = ipol(m0, m12) if m12 < 1600-(400/1200.)*m0 else np.nan # < masking
+        xx2, yy2 = np.meshgrid(xs2, ys2)
+        cls2 = ipolv(xx2, yy2)
+        #print cls2.shape
+
+    ## Plotting
+    fig = plt.figure(figsize=[9,6])
+    ax = fig.add_subplot(1,1,1)
+    #ax.set_title("$p$ value contours", x=0, ha="left", va="bottom")
+    if not opts.IPOL:
+        p = ax.contourf(xx, yy, cls.T)
+    else:
+        p = ax.contourf(xx2, yy2, cls2)
+    plt.colorbar(p)
+    # TODO: Emphasise the 95% CL contour with contour(..., vals=[0.95])
+    if opts.TEXT:
+        for (m0, m12), cl in clmap.iteritems():
+            ax.text(m0, m12, str(cl), ha="center", va="center", fontsize="xx-small")
+    ax.set_xlabel("$M_0$", x=1, ha="right")
+    ax.set_ylabel("$M_{12}$", y=0.95, va="top", labelpad=16)
+    fig.tight_layout()
+    #plt.show()
+    fig.savefig("cl-ana%d-sr%d.pdf" % ana_sr)

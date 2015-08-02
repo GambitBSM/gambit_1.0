@@ -22,6 +22,7 @@
 #ifndef PRIOR_DEFS_HPP
 #define PRIOR_DEFS_HPP
 
+#include <cmath>
 #include "gambit/ScannerBit/priors.hpp"
 
    /// Registry of priors
@@ -97,6 +98,8 @@ namespace Gambit
                 return x*(b-a) + a;
         }
         
+        inline double flatop (double){return 0.0;}
+        
         // 'log' prior
         // Transforms x=log(y) to a sample from the uniform interval [log(a),log(b)].
         // The base is irrelevant since it is just a scaling factor which normalises out
@@ -105,9 +108,11 @@ namespace Gambit
                 return exp( x*(log(b)-log(a)) + log(a) );
         }
         
+        inline double logop (double a){return -std::log(a);}
+        
         /// Template class for 1d priors which need only a "range" option in their constructor
         // See factory function map to see how to use this class to quickly create new priors of this kind
-        template <double Func(double,double,double)>
+        template <double Func(double,double,double), double op(double)>
         class RangePrior1D : public BasePrior
         {
         private:
@@ -168,10 +173,12 @@ namespace Gambit
                 {
                         output[myparameter] = Func(unitpars[0],lower,upper);
                 }
+                
+                double operator()(const std::vector<double> &vec){return op(vec[0]);}
         };
         
-        LOAD_PRIOR(log, RangePrior1D<logprior>)
-        LOAD_PRIOR(flat, RangePrior1D<flatprior>)
+        LOAD_PRIOR(log, RangePrior1D<logprior, logop>)
+        LOAD_PRIOR(flat, RangePrior1D<flatprior, flatop>)
    }
 }
 

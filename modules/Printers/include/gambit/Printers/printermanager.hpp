@@ -19,16 +19,23 @@
 #ifndef __printermanager_hpp__
 #define __printermanager_hpp__
 
-#include "gambit/Printers/baseprinter.hpp"
+#include <string>
+#include <map>
+#include "gambit/Printers/baseprintermanager.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Utils/mpiwrapper.hpp" // for debugging
 
 namespace Gambit
 {
   namespace Printers 
   {
 
+    /// Forward declaration of base printer classes (Declared fully in baseprinter.hpp and basebaseprinter.hpp)
+    class BaseBasePrinter; 
+    class BasePrinter; 
+
     /// Manager class for creating printer objects  
-    class PrinterManager 
+    class PrinterManager: public BasePrinterManager
     {
       private:
         /// Map containing pointers to auxiliary printer objects
@@ -54,8 +61,17 @@ namespace Gambit
         void new_stream(const std::string&, const Options&);
 
         /// Getter for auxiliary printer objects
-        BasePrinter* get_stream(const std::string&);
-    };
+        BaseBasePrinter* get_stream(const std::string& = "");
+  
+        /// Instruct printers that scan has finished and to perform cleanup
+        void finalise();
+
+        /// For debugging: check up on MPI
+        #ifdef WITH_MPI
+        bool Is_MPI_initialized()  { return GMPI::Is_initialized(); }
+        #endif
+
+  };
 
 
   }

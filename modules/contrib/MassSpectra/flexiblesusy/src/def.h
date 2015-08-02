@@ -12,30 +12,48 @@
 #ifndef DEF_H
 #define DEF_H
 
+#ifdef HAVE_CONFIG_H
+ #include <config.h>
+#endif
+
 #include <cmath>
 namespace softsusy{
-  const char SOFTSUSY_VERSION[] = "3.3.9";
+  const char SOFTSUSY_VERSION[] = "3.5.2";
 
   /// uncomment if you want checking of vector/matrices bounds: slows code
   /// down. It also now checks over/underflows in matrix multiplication etc
-  ///  #define ARRAY_BOUNDS_CHECKING 
+  ///   #define ARRAY_BOUNDS_CHECKING 
 
   /// Make true if you want to include the 2-loop RGE corrections to scalar mass
   /// squared parameters and trilinear terms: they slow it down by a factor of
   /// 3. Note that gaugino and Higgs mass parameters are evolved to 2-loops by
   /// default anyway.
   extern bool INCLUDE_2_LOOP_SCALAR_CORRECTIONS;
+  /// PA: switch for selecting between the Z3 preserving case and the
+  /// Z3 violating case with mu and m3sq allowed
+  /// needed fpr slecting which EWSB routines to use.
+  extern bool Z3;
+  /// If true the input value of lambda is set at the GUT scale
+  /// If false the input lambda is set at MSUSY.
+  extern bool GUTlambda;
+  /// If true the input value of kappa is set at the GUT scale
+  /// If false the input kappa is set at MSUSY.
+  extern bool GUTkappa;
+  extern bool GUTmuPrime;
+  extern bool GUTxiF;
+  extern bool GUTsVev;
+  /// If true we give the output needed for nmssmTools
+  /// otherwise normal nmssm softsusy output
+  extern bool NMSSMTools;
+  /// If true then the EWSB conditions will output soft Higgs masses
+  /// Will be inconsistent with constrained models
+  /// but can be useful for non-universal Higgs cases 
+  extern bool SoftHiggsOut;
+  extern int MICROMEGAS;
+  extern int NMSDECAY;
+  
   /// Set to number of loops to use for calculation of Higgs mass 
   /// (currently up to 2, the default)
-
-  /// PA: switch for selecting between the Z3 preserving case and the
-  // Z3 violating case with mu and m3sq allowed
-  // needed fpr slecting which EWSB routines to use.
-  extern bool Z3;
-  //If true the input value of lambda is set at the GUT scale
-  //If false the input lambda is set at MSUSY.
-  extern bool GUTlambda;
-
   extern int numHiggsMassLoops;
   /// Set to number of loops to use for REWSB condition up to the default of 2
   extern int numRewsbLoops;
@@ -45,9 +63,9 @@ namespace softsusy{
   const double root2 = sqrt(2.0);
   ///< used to flag diabolical problems
   const double numberOfTheBeast = 6.66e66; 
-
-  extern double GMU;
-  extern double MZ; 
+  
+  extern double GMU; ///< Fermi constant
+  extern double MZ;  ///< Z boson mass
   
   /// LEPEWWG central value 14/06/06. Is just used for intialisation etc
   const double MW = 80.404; 
@@ -86,6 +104,34 @@ namespace softsusy{
   extern bool includeTwoLoopMssmCorrectionsToMt;
   /// Switch to use SPHENO conventions for masses in loops
   extern bool sphenoMassConv;
+
+#ifdef COMPILE_THREE_LOOP_RGE
+  /// Controls the use of MSSM three-loop RGEs
+  extern bool USE_THREE_LOOP_RGE;
+#endif
+
+#ifdef COMPILE_FULL_SUSY_THRESHOLD
+  /// Threshold to prevent the re-evaluation of two-loop leading SUSY 
+  /// thresholds corrections
+  extern double TWOLOOP_NUM_THRESH;
+  /// Includes the evaluation of leading two-loop thresholds corrections
+  /// to the strong coupling constant and to the third family of fermion masses 
+  extern bool USE_TWO_LOOP_THRESHOLD; 
+  /// just implements decoupling procedure "consistently" for
+  /// the case of b-quark mass. It requires the external momentum to be zero. 
+  /// However, the difference between the p^2 = 0 and p^2 = mb^2 cases
+  /// is expected to be of O((mb/MSUSY)^2), which we can formally neglect.
+  extern bool MB_DECOUPLING;
+
+  enum { ENABLE_TWO_LOOP_MT_AS  = 0x1,    
+	 ENABLE_TWO_LOOP_AS_AS_YUK = 0x2,
+	 ENABLE_TWO_LOOP_MB_AS  = 0x4, 
+	 ENABLE_TWO_LOOP_MB_YUK = 0x8,    
+	 ENABLE_TWO_LOOP_MTAU_YUK = 0x10    
+  };    
+
+#endif
+  
 }
 
 #endif

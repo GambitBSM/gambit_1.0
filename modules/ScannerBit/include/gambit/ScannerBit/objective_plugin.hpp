@@ -27,8 +27,6 @@
 #include "gambit/ScannerBit/plugin_defs.hpp"
 #include "gambit/ScannerBit/plugin_macros.hpp"
 
-#include "yaml-cpp/yaml.h"
-
 namespace Gambit
 {
         /*ScannerBit specific stuff.*/
@@ -39,6 +37,7 @@ namespace Gambit
                 {
                 public:
                         virtual void transform(const std::vector<double> &, std::unordered_map<std::string, double> &) const = 0;
+                        virtual double operator()(const std::vector<double>&) const = 0;
                         virtual ~PriorTransform() = 0;
                 };
         }
@@ -47,8 +46,6 @@ namespace Gambit
 ///\name Objective Plugin Macros
 ///Macros used by the objective plugins.
 ///@{
-///Initialize "exp" to the parameter names.
-#define init_keys(exp)                  INIT_KEYS(exp)
 ///Gets the parameter names.
 #define get_keys()                      GET_KEYS()
 ///Used only if the plugin is doing to be used as a prior.
@@ -58,10 +55,8 @@ namespace Gambit
 #define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
 ///@}
 
-#define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
-
 #define GET_KEYS()                      get_input_value<std::vector<std::string>>(0)
-#define SET_DIMENSION(...)                  get_input_value<unsigned int>(1) = __VA_ARGS__
+#define SET_DIMENSION(...)              get_input_value<unsigned int>(1) = __VA_ARGS__
 
 #define OBJECTIVE_SETUP                                                                                                 \
 using namespace Gambit::Scanner;                                                                                        \
@@ -93,24 +88,13 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
                                                                                                                         \
         return ret;                                                                                                     \
 }                                                                                                                       \
-
-#define ENTER_FUNC_FUNC(func, num, ...) COMBINE(func, num)( __VA_ARGS__ )
-
-#define OBJECTIVE_PLUGIN(...) ENTER_FUNC_FUNC(OBJECTIVE_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
-
-#define OBJECTIVE_PLUGIN_2(mod_name, mod_version)                                                                       \
-GAMBIT_PLUGIN(mod_name, like, mod_version)                                                                              \
+                                                                                                                        \
+inline void prior_transform(const std::vector<double> &in, std::unordered_map<std::string, double> &key_map)            \
 {                                                                                                                       \
-        OBJECTIVE_SETUP                                                                                                 \
+        const static PriorTransform &prior = get_input_value<PriorTransform>(1);                                        \
+        prior.transform(in, key_map);                                                                                   \
 }                                                                                                                       \
-namespace __gambit_plugin_ ## mod_name ## __t__like__v__ ## mod_version ##  _namespace__                                \
 
-#define OBJECTIVE_PLUGIN_3(mod_name, mod_version, option)                                                               \
-GAMBIT_PLUGIN(mod_name, like, mod_version, option)                                                                      \
-{                                                                                                                       \
-        OBJECTIVE_SETUP                                                                                                 \
-}                                                                                                                       \
-namespace COMBINE_3(mod_name ## __t__like__v__ ## mod_version ## __reqd_libs__,                                         \
-        libs_present_ ## mod_name ## __t__like__v__ ## mod_version)                                                     \
+#define OBJECTIVE_PLUGIN(plug_name, ...) GAMBIT_PLUGIN_INITIALIZE(OBJECTIVE_SETUP, plug_name, objective, __VA_ARGS__)
 
 #endif

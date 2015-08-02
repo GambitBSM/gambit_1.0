@@ -1,25 +1,32 @@
 #ifndef __WRAPPERBASE__
 #define __WRAPPERBASE__
 
+#include <iostream>
+
 
 
 template <typename T>
 class WrapperBase
 {
     public:
-        T* BEptr;
-        bool memvar;
+        T* myBEptr;
+        T* const & BEptr;
+        bool skip_delete;
 
         // Constructor
-        WrapperBase(T* BEptr_in, bool memvar_in) : BEptr(BEptr_in), memvar(memvar_in)
+        WrapperBase(T* BEptr_in) : myBEptr(BEptr_in), BEptr(myBEptr), skip_delete(false)
         {
             // BEptr->wrapper__BOSS(this);
         }
 
+        WrapperBase(T* const & BEptr_in, bool) : BEptr(BEptr_in), skip_delete(false)
+        {
+            // BEptr->wrapper__BOSS(this);
+        }
+
+
         // Copy constructor: 
-        WrapperBase(const WrapperBase<T>& in) :
-            BEptr(in.BEptr->pointerCopy__BOSS()),
-            memvar(in.memvar)
+        WrapperBase(const WrapperBase<T>& in) : myBEptr(in.BEptr->pointerCopy__BOSS()), BEptr(myBEptr), skip_delete(false)
         {
             // BEptr->wrapper__BOSS(this);
         }
@@ -34,18 +41,14 @@ class WrapperBase
             return *this;        
         }
 
-        // Special member function to set member_variable: 
-        void _setMemberVariable(bool memvar_in)
-        {
-            memvar = memvar_in;
-        }
-
+        // Destructor
         ~WrapperBase()
         {
-            if (!memvar)
+            if (not skip_delete)
             {
                 if (BEptr->can_delete_me())
                 {
+                    BEptr->can_delete_wrapper(false);
                     delete BEptr;
                 }
             }
@@ -66,7 +69,6 @@ class WrapperBase
             else
             {
                 U* wptr = new U(ptr);
-                ptr->wrapper__BOSS(wptr);
                 ptr->can_delete_wrapper(true);
                 return wptr;
             }
@@ -85,7 +87,6 @@ class WrapperBase
             else
             {
                 U* wptr = new U(ptr);
-                ptr->wrapper__BOSS(wptr);
                 ptr->can_delete_wrapper(true);
                 return *wptr;
             }
@@ -103,12 +104,28 @@ class WrapperBase
             else
             {
                 U* wptr = new U(ptr);
-                ptr->wrapper__BOSS(wptr);
                 ptr->can_delete_wrapper(true);
                 return *wptr;
             }
         }
 
+
+        // Const-const version of the above function
+        template<typename U, typename V>
+        U& reference_returner(const V* ptr)
+        {
+            if (ptr->is_wrapped())
+            {
+                return *(ptr->wrapper__BOSS());
+            }
+
+            else
+            {
+                U* wptr = new U(ptr);
+                ptr->can_delete_wrapper(true);
+                return *wptr;
+            }
+        }
 
 };
 

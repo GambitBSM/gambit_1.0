@@ -28,6 +28,9 @@
 #include <algorithm>
 #include <typeinfo>
 
+#include "gambit/ScannerBit/printer_interface.hpp"
+#include "gambit/Utils/type_index.hpp"
+
 namespace Gambit
 {
 
@@ -36,7 +39,8 @@ namespace Gambit
 
                 namespace Plugins
                 {
-
+                        using Gambit::type_index;
+                        
                         class factoryBase
                         {
                         public:
@@ -83,23 +87,26 @@ namespace Gambit
                                 std::string name;
                                 std::string tag;
                                 YAML::Node node;
+                                printer_interface *printer;
                                 std::vector <void *> inputData;
                                 std::vector <void (*)(pluginData &)> inits;
                                 std::map<std::string, factoryBase *> outputFuncs;
-                                std::type_info const &(*main_type)(void);
+                                std::map<type_index, void *> plugin_mains;
                                 void (*deconstructor)();
                                 bool loaded;
                                 
                                 pluginData(std::string name) : name(name), deconstructor(NULL), loaded(false) {}
                                 ~pluginData()
                                 {
-                                        if (deconstructor != NULL)
+                                        if (deconstructor != NULL && loaded == true)
                                                 deconstructor();
                                         
                                         for (auto it = outputFuncs.begin(), end = outputFuncs.end(); it != end; it++)
                                         {
                                                 delete it->second;
                                         }
+                                        
+                                        loaded = false;
                                 }
                         };  
 

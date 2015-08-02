@@ -69,22 +69,34 @@ def readlines_nocomments(f):
 def neatsplit(regex,string):
     return [x for x in re.split(regex,string) if x != '']
 
+# Nice sorting function (from http://stackoverflow.com/a/2669120/1447953)
+def sorted_nicely( l ): 
+    """ Sort the given iterable in the way that humans expect.""" 
+    convert = lambda text: int(text) if text.isdigit() else text 
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    return sorted(l, key = alphanum_key)
+
 # Parse a string to see if it has a class, struct or typedef declaration
 def check_for_declaration(input_snippet,module,local_namespace,candidate_type):
     splitline = neatsplit('\s|\(|\)|\*|\&|\;',input_snippet)
+    candidate_parts = neatsplit('::',candidate_type)
     if len(splitline)>1:
-        # If the local namespace matches the module name, and the candidate type is declared here, qualify it
-        # Note that if candidate_type is a pointer then candidate_type==splitline[1] fails to match due to the extra *.
-        # This case is working, but there might be more cases like this that crop up, which we will need to handle here. --Ben.
-        if local_namespace==module:
-            if splitline[0] in ["class", "struct"] \
-             and ( candidate_type==splitline[1] or candidate_type==splitline[1]+"*" ):
-                return local_namespace+"::"+candidate_type
-            if len(splitline)>2:
-                #if splitline[0]=="typedef": print splitline
-                if splitline[0]=="typedef" and candidate_type==splitline[2]:
-                    return local_namespace+"::"+candidate_type
-    return candidate_type
+        # Look for class/struct declarations
+        if splitline[0] in ["class", "struct"] and \
+         ( candidate_type in (splitline[1], splitline[1]+"*") or \
+           candidate_parts[-1] in (splitline[1], splitline[1]+"*") ):
+            # If the local namespace matches the module name, and the candidate type is unqualified, qualify it.
+            if local_namespace==module and candidate_type in (splitline[1], splitline[1]+"*"):
+                candidate_type = local_namespace+"::"+candidate_type
+            return (True, candidate_type)
+        # Look for typedefs
+        if len(splitline)>2:
+            if splitline[0]=="typedef" and (candidate_type in splitline[2:] or candidate_parts[-1] in splitline[2:]):
+                # If the local namespace matches the module name, and the candidate type is unqualified, qualify it.
+                if local_namespace==module and candidate_type in splitline[2:]:
+                    candidate_type = local_namespace+"::"+candidate_type
+                return (True, candidate_type)
+    return (False, candidate_type)
 
 # Parse a string to see if it has a namespace declaration
 def check_for_namespace(input_snippet,local_namespace):
@@ -115,8 +127,34 @@ def update_module(line,module):
             return splitline[2]
     return module
 
+# Check for an existing or type equivalent entry. Preferentially return
+#  1. the existing equivalent entry
+#  2. the first equivalent entry
+#  3. the original type
+def first_type_equivalent(candidate_in, equivs, existing):
+    if candidate_in in existing: return candidate_in
+    candidate = candidate_in
+    candidate.strip()
+    # Exists in the equivalency classes
+    if candidate in equivs:
+        candidate_suffix = ""
+    # Pointer or reference to something that exists in the equivalency classes
+    elif candidate[:-1] in equivs:
+        candidate_suffix = candidate[-1:]
+        candidate = candidate[:-1]
+    # Just not there
+    else:
+        return candidate
+    equivalency_class = equivs[candidate]
+    common_elements = set.intersection(set(equivalency_class), existing)
+    if not common_elements: return equivalency_class[0]+candidate_suffix
+    if len(common_elements) != 1: 
+        print "Error: existing types and equivalency class have more than one element in common!"
+        sys.exit(1)
+    return common_elements.pop()+candidate_suffix
+
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
-def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
+def addiffunctormacro(line,module,typedict,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
 
     command_index = {"START_FUNCTION":1,
                      "QUICK_FUNCTION":5, 
@@ -126,9 +164,16 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                      "BE_INI_CONDITIONAL_DEPENDENCY":2}
     splitline = neatsplit('\(|\)|,|\s',line)
 
+    qualifier_list = ["const"]
+    typeset = typedict["all"]
+
     if len(splitline)>1 and splitline[0] in command_index.keys():
         #This line defines a function and one or more of the arguments defines a candidate type
-        candidate_types = set([splitline[command_index[splitline[0]]]])
+        index = command_index[splitline[0]]
+        if splitline[index] in qualifier_list:
+            candidate_types = set([splitline[index]+" "+splitline[index+1]])            
+        else:
+            candidate_types = set([splitline[index]])
         if splitline[0]=="QUICK_FUNCTION" and len(splitline)>6:
             #Get the dep types out of a QUICK_FUNCTION command
             splitline = re.findall("\(.*?\)",re.sub("QUICK_FUNCTION\(", "", re.sub("\)\)\s*$",")",line) ) )
@@ -138,9 +183,14 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
         # Remove excluded types from the set
         candidate_types.difference_update(exclude_types)
 
-        #Iterate over all the candidate types and check if they are defined.
+        #Iterate over all the candidate types and remove any leading Gambit namespace 
+        new_candidate_types = []
         for candidate_type in candidate_types:
-            if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
+          new_candidate_types.append(re.sub("^Gambit::", "", candidate_type))
+
+        #Iterate over all the candidate types and check if they are defined.
+        for candidate_type in new_candidate_types:
+            candidate_type = first_type_equivalent(candidate_type,equiv_classes,typeset)
             #Skip out now if the type is already found.
             if (candidate_type in typeset or
                 module+"::"+candidate_type in typeset or
@@ -150,6 +200,7 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                 if verbose: print "    {0} located, searching for declaration of {1}...".format(line.strip(),candidate_type)
                 for header in typeheaders:
                     local_namespace = ""
+                    found_declaration = False
                     with open(header) as f:
                         for newline in readlines_nocomments(f):
                             splitline = neatsplit('\{|\}|:|;',newline)
@@ -157,10 +208,25 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                             for i in range(5):
                                 if len(splitline)>i:
                                     local_namespace = check_for_namespace(splitline[i],local_namespace)
-                                    candidate_type = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
-                            # Ben: The loop above misses some of the typedefs, so need to re-parse the whole line for these
-                            candidate_type = check_for_declaration(newline,module,local_namespace,candidate_type)
-            typeset.add(candidate_type)                 
+                                    if not found_declaration:
+                                        (found_declaration, candidate_type) = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
+                            # The loop above misses some of the typedefs, so we need to re-parse the whole line for these.
+                            if not found_declaration: 
+                                (found_declaration, candidate_type) = check_for_declaration(newline,module,local_namespace,candidate_type)
+                            if found_declaration: break
+                    # If the type was declared in this header, and this is a module header, save the type into the list of types for this module.
+                    if found_declaration and re.sub(".*?/include/gambit/", "",header).startswith(module):
+                        if not module in typedict: typedict[module] = set([])
+                        typedict[module].add(candidate_type)
+                        break
+                # If the type was not identified with any module, save it as a non-module type.
+                if module not in typedict or candidate_type not in typedict[module]:
+                    typedict["non_module"].add(candidate_type)
+            else:
+                # Type is intrinsic, so must be a non-module type.
+                typedict["non_module"].add(candidate_type)
+            # Add the type to the list of all types from everywhere.
+            typeset.add(candidate_type)
 
 
 # Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call
@@ -178,9 +244,11 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
 
         if splitline[0] == "BACKEND_REQ":
             args = re.sub("\s*BACKEND_REQ\s*\(.*?,\s*\(.*?\)\s*,\s*", "", re.sub("\s*\)\s*$", "", line) )
+            args = args.strip()
             if re.search("\)\s*\)\s*$", line): 
                 #This is a backend function requirement
                 leading_type = re.sub("\s*,\s*\(.*?\)\s*$", "", args)
+                leading_type = first_type_equivalent(leading_type,equiv_classes,be_typeset)
                 functor_template_types = list([leading_type])
                 args = re.sub(".*?,\s*\(\s*", "", re.sub("\s*\)\s*$", "", args) )
                 for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
@@ -188,14 +256,17 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                     if arg != "":
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
-                        if (arg_list[0] in {"class", "struct", "typename"}): arg = arg_list[1]
+                        if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
+                        arg = first_type_equivalent(arg,equiv_classes,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #This is a backend variable requirement
-                functor_template_types = list([args.strip()+"*"])
+                args = first_type_equivalent(args,equiv_classes,be_typeset)
+                functor_template_types = list([args+"*"])
 
         else:
             functor_template_types = list([splitline[command_index[splitline[0]]]])
+            functor_template_types[0] = first_type_equivalent(functor_template_types[0],equiv_classes,be_typeset)
             if splitline[0].endswith("FUNCTION"):
                 #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
                 args = re.sub("\s*BE_(CONV_)?FUNCTION\s*\(.*?,.*?,\s*?\(", "", line)
@@ -209,16 +280,22 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                     if arg != "":
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
-                        if (arg_list[0] in {"class", "struct", "typename"}): arg = arg_list[1]
+                        if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
+                        arg = first_type_equivalent(arg,equiv_classes,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
                 functor_template_types[0] += "*"
 
-        #Iterate over all the candidate types and check if they are defined.
+        #Iterate over all the candidate types and remove any leading Gambit namespace 
         candidate_types = set(functor_template_types)
+        new_candidate_types = []
         for candidate_type in candidate_types:
-            if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
+          new_candidate_types.append(re.sub("^Gambit::", "", candidate_type))
+
+        #Iterate over all the candidate types and check if they are defined.
+        for candidate_type in new_candidate_types:
+            candidate_type = first_type_equivalent(candidate_type,equiv_classes,be_typeset)
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.
             if ("Gambit::"+candidate_type in be_typeset):
@@ -322,6 +399,17 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
                     type_headers+=[rel_name]
     return type_headers
 
+#Get all files in a directory tree with one of a given set of extensions
+def get_all_files_with_ext(verbose,starting_dir,ext_set,kind):
+    results=[]
+    for root,dirs,files in os.walk(starting_dir):
+        for name in files:
+            for ext in ext_set:
+                if name.endswith(ext):
+                    if verbose: print "  Located "+kind+" file '{0}' at path '{1}'".format(name,os.path.join(root,name))
+                    results+=[os.path.join(root, name)]
+    return results
+
 #Search a directory for headers that are not excluded.
 def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
     headers=[]
@@ -372,7 +460,7 @@ def make_module_rollcall(rollcall_headers,verbose):
 #ifndef __module_rollcall_hpp__                   \n\
 #define __module_rollcall_hpp__                   \n\
                                                   \n\
-#include \"gambit/Utils/module_macros_incore.hpp\"\n\n"
+#include \"gambit/Elements/module_macros_incore.hpp\"\n\n"
 
     for h in rollcall_headers:
         towrite+='#include \"{0}\"\n'.format(h)

@@ -17,26 +17,27 @@
 // ====================================================================
 
 #include "gsl_utils.hpp"
-#include <limits>
+#include <cstddef>
 #include <cmath>
 
 namespace flexiblesusy {
 
 /**
- * Returns true if GSL vector contains a Nan, false otherwise.
+ * Returns true if GSL vector contains only finite elements (neither
+ * nan nor inf), false otherwise.
  *
  * @param x GSL vector
- * @param length length of the vector
- *
- * @return true if vector contains a Nan, false otherwise.
+ * @return true if vector contains only finite elements, false otherwise.
  */
-bool contains_nan(const gsl_vector* x, std::size_t length)
+bool is_finite(const gsl_vector* x)
 {
-   for (std::size_t i = 0; i < length; ++i)
-      if (std::isnan(gsl_vector_get(x, i)))
-         return true;
+   const std::size_t length = x->size;
+   bool is_finite = true;
 
-   return false;
+   for (std::size_t i = 0; i < length; i++)
+      is_finite = is_finite && std::isfinite(gsl_vector_get(x, i));
+
+   return is_finite;
 }
 
 }

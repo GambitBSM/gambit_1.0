@@ -18,39 +18,29 @@
 #ifndef __decay_chain_hpp__
 #define __decay_chain_hpp__
 
-#include <iostream> 
-#include <algorithm>
 #include <vector>
-#include <math.h>
 #include <unordered_map>
-#include <fstream>
 #include <string>
 #include <set>
-
-#include "gambit/Utils/threadsafe_rng.hpp"
-
 #include <boost/shared_ptr.hpp>
+#include "gambit/Utils/threadsafe_rng.hpp"
 
 namespace Gambit
 {
     namespace DarkBit
     {
-        class TH_Channel;
+        struct TH_Channel;
         class TH_ProcessCatalog;
         class SimYieldTable;
         namespace DecayChain
         {
             using std::vector;
-            using std::cout;
-            using std::endl;
             using std::ofstream;
-            using std::ios;
-            using std::pair;
             using std::ostream;
             using std::string;
-            using std::set;
             using boost::shared_ptr;
             using std::unordered_map;
+            using std::set;
             
             //  *********************************************
             //  Generic 3-vector class
@@ -227,14 +217,14 @@ namespace Gambit
             class DecayTable
             {
                 public:
-                    DecayTable(const TH_ProcessCatalog &cat, const SimYieldTable &tab);
+                    DecayTable(const TH_ProcessCatalog &cat, const SimYieldTable &tab, set<string> disabledList);
                     DecayTable(){};
                     bool hasEntry(string) const;
                     // Add particle to decay table, specifying particle ID, mass and whether or not it should be decayed in decay chains
                     void addEntry(string pID, double m, bool stable);
                     void addEntry(string pID, DecayTableEntry entry);
                     bool randomDecay(string pID, const TH_Channel* &decay) const; 
-                    const DecayTableEntry& operator[](string i) const{return table.at(i);} 
+                    const DecayTableEntry& operator[](string i) const; 
                     // Retrieve width of decay channel
                     static double getWidth(const TH_Channel *ch);
                     // Print the decay table (to cout)
@@ -275,7 +265,11 @@ namespace Gambit
                     // Get number of child particles
                     int getnChildren() const {return nChildren;}
                     // Get child particle
-                    const ChainParticle* operator[](int i) const;     
+                    const ChainParticle* operator[](int i) const;  
+                    // Get parent particle
+                    const ChainParticle* getParent() const;   
+                    // Get energy in parent frame
+                    double E_parentFrame() const;
                     // Get particle ID
                     string getpID() const {return pID;}
                     // Print the decay chain (to cout)

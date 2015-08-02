@@ -1,6 +1,24 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  declaration for scanner module
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2015 Feb, Mar
+///
+///  *********************************************
+
 #ifndef __FACTORY_DEFS_HPP__
 #define __FACTORY_DEFS_HPP__
 
+#include <string>
+#include <typeinfo>
 #ifdef __NO_PLUGIN_BOOST__
   #include <memory>
 #else
@@ -8,7 +26,7 @@
   #include <boost/enable_shared_from_this.hpp>
 #endif
 
-#include <typeinfo>
+#include "gambit/ScannerBit/scanner_utils.hpp"
 
 namespace Gambit
 {

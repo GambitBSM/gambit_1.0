@@ -16,6 +16,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July, Aug
 ///  \date 2014 Jan, Nov
+///  \date 2015 Feb
 ///
 ///  *********************************************
 
@@ -26,10 +27,37 @@
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/types_rollcall.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
+#include "gambit/Elements/ini_functions.hpp"
+#include "gambit/Elements/types_rollcall.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
+
+#ifndef STANDALONE
+  #include "gambit/Core/ini_functions.hpp"
+  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)  MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN) \
+                                                                  MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                  
+#else
+  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)  MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)
+#endif
+
+#ifdef __model_rollcall_hpp__
+  #include "gambit/Elements/module_macros_incore.hpp"
+  #define START_MODEL                                             CORE_START_MODEL
+  #define DEFINEPARS(...)                                         CORE_DEFINEPARS(__VA_ARGS__)
+  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
+  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
+  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
+#else
+  #include "gambit/Elements/module_macros_inmodule.hpp"
+  #define START_MODEL                                             MODULE_START_MODEL
+  #define DEFINEPARS(...)                                         /* Do nothing */
+  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 /* Do nothing */
+  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
+  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
+#endif
 
 
 // MACRO DEFINITIONS. 
@@ -38,40 +66,7 @@
 /// "Rollcall" macros. These are lifted straight from module_macros_incore.hpp
 /// but are modified here and there to suit the role of models.
 
-// New addition: Now with core vs module macro redirections similar to those
-// in the module macros, to permit translation ("interpret as") functions to
-// be defined in source files and be compiled separately from the gambit core.
-// (Note: this is not yet throughly tested. Might be missing some currently
-// unused  macros)
-
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
-
-#ifdef __model_rollcall_hpp__
-  #include "gambit/Utils/module_macros_incore.hpp"
-  #define START_MODEL             CORE_START_MODEL
-  #define DEFINEPARS(...)         CORE_DEFINEPARS(__VA_ARGS__)
-  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)  \
-                                  CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
-  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)  \
-                                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)  \
-                                  CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
-  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
-                                  CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
-#else
-  #define START_MODEL             MODULE_START_MODEL
-  #define DEFINEPARS(...)         /* Do nothing */
-  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY) /* Do nothing */
-  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC) \
-                                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT__FUNCTION(FUNC) \
-                                  MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
-  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
-                                  MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
-#endif
-
-/// "in module" version of the START_MODEL macro
+/// "In module" version of the START_MODEL macro
 #define MODULE_START_MODEL                                                     \
   IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
    "START_MODEL."))                                                            \
@@ -91,7 +86,7 @@
    }                                                                           \
   }                                                                            \
 
-/// "in module" version of the INTERPRET_AS_X__FUNCTION macro
+/// "In module" version of the INTERPRET_AS_X__FUNCTION macro
 #define MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                          \
   namespace Gambit                                                             \
   {                                                                            \
@@ -122,29 +117,9 @@
     }                                                                          \
   }                                                                            \
 
-/// "in module" version of the INTERPRET_AS_X__DEPENDENCY macro
+/// "In module" version of the INTERPRET_AS_X__DEPENDENCY macro
 #define MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                  \
-  namespace Gambit                                                             \
-  {                                                                            \
-    namespace Models                                                           \
-    {                                                                          \
-      namespace MODEL                                                          \
-      {                                                                        \
-        /* Given that TYPE is not void, create a safety_bucket for the         \
-        dependency result. To be initialized automatically at runtime          \
-        when the dependency is resolved. */                                    \
-        namespace Pipes                                                        \
-        {                                                                      \
-          namespace CAT(MODEL_X,_parameters)                                  \
-          {                                                                    \
-            BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                  \
-              namespace Dep { extern dep_bucket<TYPE> DEP; } )                 \
-          }                                                                    \
-                                                                               \
-        }                                                                      \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            
+  MODULE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)
 
 
 /// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same 
@@ -167,16 +142,8 @@
            (macro from module_macros_incore.hpp) */                            \
         CORE_START_MODULE_COMMON_MAIN(MODEL)                                   \
                                                                                \
-        /* Runtime addition of model to GAMBIT model database */               \
-        void rt_add_model()                                                    \
-        {                                                                      \
-          ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));        \
-        }                                                                      \
-                                                                               \
-        namespace Ini                                                          \
-        {                                                                      \
-          ini_code AddModel(&rt_add_model);                        \
-        }                                                                      \
+        /* Add the model to GAMBIT model database */                           \
+        int model_rego = add_model(STRINGIFY(MODEL), STRINGIFY(PARENT));       \
                                                                                \
         namespace Accessors                                                    \
         {                                                                      \
@@ -286,34 +253,18 @@
 /// Macro to define parameter.  Does not create a corresponding CAPABILITY;
 /// use MAP_TO_CAPABILITY to do this after calling DEFINEPAR(S).
 #define DEFINEPAR(PARAMETER)                                                   \
-                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
-                                                                               \
     namespace Models                                                           \
     {                                                                          \
-                                                                               \
       namespace MODEL                                                          \
       {                                                                        \
-                                                                               \
-        /* A function that tells the functor holding the ModelParameters object\
-           to add the new parameter to its [parameter name, value] map. */     \
-        void CAT(add,PARAMETER)()                                              \
-        {                                                                      \
-          Functown::primary_parameters.addParameter(STRINGIFY(PARAMETER));     \
-        }                                                                      \
-                                                                               \
-        /* Compiler cann't call push_back, so do it at  initialisation time    \
-           using this ini_code trick. Don't call this function ever again!*/   \
-        namespace Ini                                                          \
-        {                                                                      \
-          ini_code CAT(iniadd,PARAMETER) (&CAT(add,PARAMETER));    \
-        }                                                                      \
-                                                                               \
+        /* Tell the functor holding the ModelParameters object to add the new  \
+           parameter to its [parameter name, value] map. */                    \
+        int CAT(added_,PARAMETER) =                                            \
+         add_parameter(Functown::primary_parameters,STRINGIFY(PARAMETER));     \
       }                                                                        \
-                                                                               \
     }                                                                          \
-                                                                               \
   }                                                                            \
 
 /// Define multiple model parameters
@@ -368,23 +319,14 @@
         MAKE_FUNCTOR(CAT(MODEL_X,_parameters),ModelParameters,                 \
          CAT(MODEL_X,_parameters),MODEL,0)                                     \
                                                                                \
-        /* Make a function that tells the functor to take its parameter        \
+        /* Call a function that tells the functor to take its parameter        \
            definition from MODEL_X's primary_parameters functor, and           \
            adds MODEL_X as a friend of MODEL if it is not a parent. */         \
-        void CAT(pars_for_,MODEL_X)()                                          \
-        {                                                                      \
-          MODEL_X::Functown::primary_parameters.donateParameters               \
-           (Functown::CAT(MODEL_X,_parameters));                               \
-          BOOST_PP_IIF(ADD_FRIEND,                                             \
-           ModelDB().add_friend(STRINGIFY(MODEL), STRINGIFY(MODEL_X));,)       \
-        }                                                                      \
-                                                                               \
-        /* Call it at initialisation time using an ini_code object. */         \
-        namespace Ini                                                          \
-        {                                                                      \
-          ini_code CAT(ini_pars_for_,MODEL_X)                                  \
-           (&CAT(pars_for_,MODEL_X));                              \
-        }                                                                      \
+        int CAT(pars_for_,MODEL_X) =                                           \
+         copy_parameters(MODEL_X::Functown::primary_parameters,                \
+          Functown::CAT(MODEL_X,_parameters),                                  \
+          BOOST_PP_IIF(ADD_FRIEND,true,false),                                 \
+          STRINGIFY(MODEL), STRINGIFY(MODEL_X));                               \
                                                                                \
       }                                                                        \
                                                                                \
@@ -449,26 +391,15 @@
 #define USE_MODEL_PIPE(MODEL_X)                                                 \
   using namespace MODEL_NAMESPACE::Pipes::CAT(MODEL_X,_parameters);             \
 
+
 /// Macros to create and register primary model functors. 
 ///
 /// We need this extra wrapper in order to define these special functors and add
 /// them to the Core's primary model functor list (no other functors allowed here).         
 /// @{
-
-// Determine whether to make registration calls to the Core in the 
-// MAKE_PRIMARY_MODEL_FUNCTOR macro, depending on STANDALONE flag 
-#ifdef STANDALONE
-  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)               \
-          MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)
-#else
-  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)               \
-          MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)          \
-          MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                  
-#endif
   
 /// Main version of MAKE_FUNCTOR modified to build primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)            \
-                                                                               \
   /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
   {                                                                            \
@@ -476,38 +407,15 @@
      (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
      "ModelParameters", STRINGIFY(ORIGIN), ModelDB());                         \
   }                                                                            \
-                                                                               \
-  /* Set up the commands to be called at runtime to register the function. */  \
-  template <>                                                                  \
-  void rt_register_function<Tags::FUNCTION> ()                                 \
-  {                                                                            \
-    Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
-     &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
-    Accessors::iCanDo[STRINGIFY(FUNCTION)] = "ModelParameters";                \
-  }                                                                            \
-                                                                               \
-  /* Create the function initialisation object */                              \
-  namespace Ini                                                                \
-  {                                                                            \
-    ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);     \
-  }                                                                            \
+  /* Register the functor with the rollcall system. */                         \
+  int CAT(registered_,FUNCTION) = register_model_functor(Accessors::map_bools, \
+   Accessors::iCanDo, Accessors::provides<Gambit::Tags::CAPABILITY>,           \
+   STRINGIFY(CAPABILITY), STRINGIFY(FUNCTION));                                \
 
 /// Supplementary version of MAKE_FUNCTOR modded for primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                              \
-                                                                               \
   /* Register the functor with the Core. */                                    \
-  template <>                                                                  \
-  void rt_register_function_supp<Tags::FUNCTION> ()                            \
-  {                                                                            \
-    Core().registerPrimaryModelFunctor(Functown::FUNCTION);                    \
-  }                                                                            \
-                                                                               \
-  /* Create the function initialisation object */                              \
-  namespace Ini                                                                \
-  {                                                                            \
-    ini_code CAT(FUNCTION,_supp)                                               \
-     (&rt_register_function_supp<Tags::FUNCTION>);                 \
-  }                                                                            \
+  int CAT(coreg_,FUNCTION) = register_model_functor_core(Functown::FUNCTION);  \
 
 /// @}
 

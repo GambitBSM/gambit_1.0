@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:58:43
+// File generated at Mon 1 Jun 2015 13:17:28
 
 #include "lowMSSM_two_scale_susy_scale_constraint.hpp"
 #include "lowMSSM_two_scale_model.hpp"
@@ -32,11 +32,12 @@
 
 namespace flexiblesusy {
 
-#define INPUTPARAMETER(p) inputPars.p
+#define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
+#define PHASE(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
 #define MODEL model
@@ -47,16 +48,13 @@ lowMSSM_susy_scale_constraint<Two_scale>::lowMSSM_susy_scale_constraint()
    , scale(0.)
    , initial_scale_guess(0.)
    , model(0)
-   , inputPars()
 {
 }
 
 lowMSSM_susy_scale_constraint<Two_scale>::lowMSSM_susy_scale_constraint(
-   lowMSSM<Two_scale>* model_,
-   const lowMSSM_input_parameters& inputPars_)
+   lowMSSM<Two_scale>* model_)
    : Constraint<Two_scale>()
    , model(model_)
-   , inputPars(inputPars_)
 {
    initialize();
 }
@@ -88,19 +86,19 @@ void lowMSSM_susy_scale_constraint<Two_scale>::apply()
    const auto MassWBInput = INPUTPARAMETER(MassWBInput);
    const auto MassGInput = INPUTPARAMETER(MassGInput);
 
-   MODEL->set_Mu(MuInput);
-   MODEL->set_TYd(TYdInput);
-   MODEL->set_TYe(TYeInput);
-   MODEL->set_TYu(TYuInput);
-   MODEL->set_BMu(BMuInput);
-   MODEL->set_mq2(mq2Input);
-   MODEL->set_ml2(ml2Input);
-   MODEL->set_md2(md2Input);
-   MODEL->set_mu2(mu2Input);
-   MODEL->set_me2(me2Input);
-   MODEL->set_MassB(MassBInput);
-   MODEL->set_MassWB(MassWBInput);
-   MODEL->set_MassG(MassGInput);
+   MODEL->set_Mu(Re(MuInput));
+   MODEL->set_TYd((TYdInput).real());
+   MODEL->set_TYe((TYeInput).real());
+   MODEL->set_TYu((TYuInput).real());
+   MODEL->set_BMu(Re(BMuInput));
+   MODEL->set_mq2((mq2Input).real());
+   MODEL->set_ml2((ml2Input).real());
+   MODEL->set_md2((md2Input).real());
+   MODEL->set_mu2((mu2Input).real());
+   MODEL->set_me2((me2Input).real());
+   MODEL->set_MassB(Re(MassBInput));
+   MODEL->set_MassWB(Re(MassWBInput));
+   MODEL->set_MassG(Re(MassGInput));
 
 
    // the parameters, which are fixed by the EWSB eqs., will now be
@@ -119,14 +117,22 @@ double lowMSSM_susy_scale_constraint<Two_scale>::get_initial_scale_guess() const
    return initial_scale_guess;
 }
 
+const lowMSSM_input_parameters& lowMSSM_susy_scale_constraint<Two_scale>::get_input_parameters() const
+{
+   assert(model && "Error: lowMSSM_susy_scale_constraint::"
+          "get_input_parameters(): model pointer is zero.");
+
+   return model->get_input();
+}
+
+lowMSSM<Two_scale>* lowMSSM_susy_scale_constraint<Two_scale>::get_model() const
+{
+   return model;
+}
+
 void lowMSSM_susy_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
    model = cast_model<lowMSSM<Two_scale>*>(model_);
-}
-
-void lowMSSM_susy_scale_constraint<Two_scale>::set_input_parameters(const lowMSSM_input_parameters& inputPars_)
-{
-   inputPars = inputPars_;
 }
 
 void lowMSSM_susy_scale_constraint<Two_scale>::clear()

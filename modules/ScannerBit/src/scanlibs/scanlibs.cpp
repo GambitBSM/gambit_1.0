@@ -1,3 +1,18 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  declaration for scanner module
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2015 Feb, Mar
+///
+///  *********************************************
 
 #include <cstdlib>
 #include <string>
@@ -86,7 +101,7 @@ int main(int argc, char *argv[])
         if (hdrs)
         {
                 str += "-I" GAMBIT_DIR " "; 
-                str += "-I" GAMBIT_BUILD_DIR " ";
+                str += "-I" GAMBIT_DIR "/cmake/include ";
                 str += "-I" GAMBIT_DIR "/Utils/include ";
                 str += "-I" GAMBIT_DIR "/ScannerBit/include ";
                 str += "-I" GAMBIT_DIR "/Logs/include ";

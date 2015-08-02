@@ -21,7 +21,7 @@ IF(NOT PKG_CONFIG_FOUND)
   message(FATAL_ERROR "Package pkgconfig is required.")
 ENDIF()
 PKG_CHECK_MODULES(GSL "gsl >= 1.10")
-IF(NOT GSL_FOUND)
+set(GSL_FOUND_BY_PKG_CHECK_MODULES ${GSL_FOUND})
 
 set( GSL_FOUND OFF )
 set( GSL_CBLAS_FOUND OFF )
@@ -43,7 +43,7 @@ if( WIN32 AND NOT CYGWIN AND NOT MSYS )
       set( GSL_FOUND ON )
     endif( GSL_LIBRARY )
 
-		# look for gsl cblas library
+    # look for gsl cblas library
     find_library( GSL_CBLAS_LIBRARY
         NAMES gslcblas
       )
@@ -94,9 +94,12 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
         string( REGEX REPLACE "-I[^;]+;" ""
           GSL_CFLAGS "${GSL_CFLAGS}")
 
-        message("   GSL_DEFINITIONS=${GSL_DEFINITIONS}")
-        message("   GSL_INCLUDE_DIRS=${GSL_INCLUDE_DIRS}")
-        message("   GSL_CFLAGS=${GSL_CFLAGS}")
+        if(VERBOSE)
+          message("   GSL_DEFINITIONS=${GSL_DEFINITIONS}")
+          message("   GSL_INCLUDE_DIRS=${GSL_INCLUDE_DIRS}")
+          message("   GSL_CFLAGS=${GSL_CFLAGS}")
+        endif()
+          
       else( RET EQUAL 0 )
         set( GSL_FOUND FALSE )
       endif( RET EQUAL 0 )
@@ -104,37 +107,71 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
       # run the gsl-config program to get the libs
       execute_process(
         COMMAND sh "${GSL_CONFIG_EXECUTABLE}" --libs
-        OUTPUT_VARIABLE GSL_LIBRARIES
+        OUTPUT_VARIABLE GSL_LIBRARIES_RAW
         RESULT_VARIABLE RET
         ERROR_QUIET
         )
       if( RET EQUAL 0 )
-        string(STRIP "${GSL_LIBRARIES}" GSL_LIBRARIES )
-        separate_arguments( GSL_LIBRARIES )
+        string(STRIP "${GSL_LIBRARIES_RAW}" GSL_LIBRARIES_RAW )
+        separate_arguments( GSL_LIBRARIES_RAW )
 
         # extract linkdirs (-L) for rpath (i.e., LINK_DIRECTORIES)
         string( REGEX MATCHALL "-L[^;]+"
-          GSL_LIBRARY_DIRS "${GSL_LIBRARIES}" )
+          GSL_LIBRARY_DIRS "${GSL_LIBRARIES_RAW}" )
         string( REPLACE "-L" ""
           GSL_LIBRARY_DIRS "${GSL_LIBRARY_DIRS}" )
+        
+        # work out the absolute paths of the required libs
+        set(CURRENT_LINK_DIR "")
+        set(GSL_LIBRARIES "")
+        foreach(entry ${GSL_LIBRARIES_RAW})
+          string( REGEX MATCH "-L[^;]+" IS_DIR "${entry}" )
+          if (IS_DIR)
+            string( REPLACE "-L" "" CURRENT_LINK_DIR "${IS_DIR}")
+          else()
+            string (REPLACE "-l" "" entry "${entry}")
+            find_library(GSL_${entry}_LIBRARY NAMES ${entry} lib${entry} HINTS ${CURRENT_LINK_DIR}) 
+            if(GSL_${entry}_LIBRARY)
+              set(TEMP "GSL_${entry}_LIBRARY")
+              set(GSL_LIBRARIES "${GSL_LIBRARIES} ${${TEMP}}")
+            else()
+              message(FATAL_ERROR "Could not locate library needed for GSL: ${entry}")
+            endif()
+          endif()
+        endforeach()
+        string(STRIP "${GSL_LIBRARIES}" ${GSL_LIBRARIES})
+        separate_arguments(GSL_LIBRARIES)
+       
       else( RET EQUAL 0 )
+
         set( GSL_FOUND FALSE )
+
       endif( RET EQUAL 0 )
 
-			MARK_AS_ADVANCED(
-				GSL_CFLAGS
-			)
-			message( STATUS "   Using GSL from ${GSL_PREFIX}" )
-		else( GSL_CONFIG_EXECUTABLE )
-			message( STATUS "   FindGSL: gsl-config not found.")
-		endif( GSL_CONFIG_EXECUTABLE )
-	endif( UNIX OR MSYS )
+      MARK_AS_ADVANCED(GSL_CFLAGS)
+
+      if(VERBOSE)
+        message( STATUS "   Using GSL from ${GSL_PREFIX}" )
+      endif()
+
+    else( GSL_CONFIG_EXECUTABLE )
+
+      message( STATUS "   FindGSL: gsl-config not found.")
+
+    endif( GSL_CONFIG_EXECUTABLE )
+
+  endif( UNIX OR MSYS )
+
 endif( WIN32 AND NOT CYGWIN AND NOT MSYS )
 
 if( GSL_FOUND )
-  if( NOT GSL_FIND_QUIETLY )
-    message( STATUS "   FindGSL: Found both GSL headers and library" )
-  endif( NOT GSL_FIND_QUIETLY )
+  if(VERBOSE)
+    message( STATUS "  FindGSL: Found both GSL headers and library" )
+  endif()
+  if (NOT GSL_FOUND_BY_PKG_CHECK_MODULES)
+    message("${Red}   WARNING: Found GSL, but could not verify that the version is appropriate.")
+    message("   If you get link errors from GSL, you may need to upgrade to a newer version.${ColourReset}")
+  endif()
 else( GSL_FOUND )
   if( GSL_FIND_REQUIRED )
     message( FATAL_ERROR "FindGSL: Could not find GSL headers or library" )
@@ -143,4 +180,3 @@ endif( GSL_FOUND )
 
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(GSL DEFAULT_MSG GSL_LIBRARIES GSL_INCLUDE_DIRS)
-ENDIF(NOT GSL_FOUND)

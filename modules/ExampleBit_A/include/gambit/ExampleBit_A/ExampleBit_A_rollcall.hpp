@@ -13,8 +13,9 @@
 ///
 ///  Don't put typedefs or other type definitions
 ///  in this file; see
-///  Core/include/types_rollcall.hpp for further
-///  instructions on how to add new types.
+///  Elements/include/gambit/Elements/types_rollcall.hpp
+///  for further instructions on how to add new 
+///  types.
 ///
 ///  *********************************************
 ///
@@ -30,8 +31,6 @@
 
 #ifndef __ExampleBit_A_rollcall_hpp__
 #define __ExampleBit_A_rollcall_hpp__
-
-#include "gambit/ExampleBit_A/ExampleBit_A_types.hpp"
 
 #define MODULE ExampleBit_A
 START_MODULE
@@ -51,14 +50,14 @@ START_MODULE
   START_CAPABILITY
 
     #define FUNCTION exampleEventGen
-    START_FUNCTION(singleprec)
+    START_FUNCTION(float)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement) // Declares that the module function can only run inside a loop, and that the loop
     #undef FUNCTION                                    // must be managed by another module function that has CAPABILITY eventLoopManagement
                                                        // (and has been declared as a potential manager with the flag CAN_MANAGE_LOOPS).
     #define FUNCTION exampleCut
     START_FUNCTION(int)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement)
-    DEPENDENCY(event, singleprec)
+    DEPENDENCY(event, float)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -168,11 +167,13 @@ START_MODULE
 
     #define FUNCTION normaldist_loglike
     START_FUNCTION(double)
-    ALLOW_MODEL_DEPENDENCE(NormalDist, SingletDM, CMSSM_demo)
-    MODEL_GROUP(group1, (NormalDist))
-    MODEL_GROUP(group2, (CMSSM_demo, SingletDM))
-    MODEL_GROUP(group3, (CMSSM_demo, NormalDist))
-    ALLOW_MODEL_COMBINATION(group1, group2)
+    ALLOW_MODELS(NormalDist)
+    /// Need to move these into a different test function; I want to actually use this one :)
+    //ALLOW_MODEL_DEPENDENCE(NormalDist, SingletDM, CMSSM_demo)
+    //MODEL_GROUP(group1, (NormalDist))
+    //MODEL_GROUP(group2, (CMSSM_demo, SingletDM))
+    //MODEL_GROUP(group3, (CMSSM_demo, NormalDist))
+    //ALLOW_MODEL_COMBINATION(group1, group2)    
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -201,28 +202,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION marg_poisson_test
     START_FUNCTION(double)
-    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
-    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
+    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
+    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_GROUP(lnlike_marg_poisson)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Tester 1 for BOSSed types.
-  #define CAPABILITY BOSSed_X
-  START_CAPABILITY
-    #define FUNCTION bossed_class_example1
-    START_FUNCTION(X)
-    NEEDS_CLASSES_FROM(BOSSMinimalExample, default, 1.0)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // Tester 2 for BOSSed types.
-  #define CAPABILITY BOSS_tester
-  START_CAPABILITY
-    #define FUNCTION bossed_class_example2
-    START_FUNCTION(int)
-    DEPENDENCY(BOSSed_X, X)
-    NEEDS_CLASSES_FROM(BOSSMinimalExample) // same as NEEDS_CLASSES_FROM(BOSSMinimalExample, default)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -236,6 +218,16 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Tester for C/C++ backend array interfaces
+  #define CAPABILITY BE_Array_tester
+  START_CAPABILITY
+    #define FUNCTION Backend_array_test
+    START_FUNCTION(double)   
+    BACKEND_REQ(example_be_array_1D, (), double, (double*))
+    BACKEND_REQ(example_be_array_2D, (), double, (double(*)[10]))
+    BACKEND_REQ(example_be_array_3D, (), double, (double(*)[10][10]))
+    #undef FUNCTION
+  #undef CAPABILITY
 
 #undef MODULE
 

@@ -35,38 +35,15 @@ namespace Gambit
         {
 
                 inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
-                {
-                        std::stringstream ss;
-                        
-                        if (!node.IsNull())
-                                ss << node << std::endl;
+                {       
+                        YAML::Node outNode = node;
                         
                         for (auto it = nodesMap.begin(), end = nodesMap.end(); it != end; it++)
                         {
-                                ss << it->first << ": ";
-                                if (it->second.IsScalar())
-                                {
-                                        ss << it->second.Scalar() << std::endl;
-                                }
-                                else if (it->second.IsMap())
-                                {
-                                        std::stringstream ssNode;
-                                        ssNode << it->second << std::endl;
-                                        std::string temp;
-                                        ss << std::endl;
-                                        std::string::size_type pos;
-                                        while (std::getline(ssNode, temp))
-                                        {
-                                                ss << "  " << temp << std::endl;
-                                        }
-                                }
-                                else
-                                {
-                                        ss << std::endl;
-                                }
+                                outNode[it->first] = it->second;
                         }
                         
-                        return YAML::Load(ss.str());
+                        return outNode;
                 }
                 
                 inline std::vector<std::string> get_infile_values(const YAML::Node &node)
@@ -79,19 +56,20 @@ namespace Gambit
                         {
                                 std::string plug = node.as<std::string>();
                                 
-                                std::string::size_type pos = 0;
-                                while ((pos = plug.find(",", pos)) != std::string::npos)
+                                std::string::size_type pos = plug.find_first_of(",;:.");
+                                while (pos != std::string::npos)
                                 {
-                                        plug.replace(pos, 1, " ");
+                                        plug[pos] = ' ';
+                                        pos = plug.find_first_of(",;:.", pos + 1);
                                 }
                                 
-                                pos = 0;
-                                while ((pos = plug.find(";", pos)) != std::string::npos)
-                                {
-                                        plug.replace(pos, 1, " ");
-                                }
+                                std::stringstream ss;
+                                ss << plug;
+                                std::vector<std::string> ret;
+                                std::string temp;
+                                while (ss >> temp) ret.push_back(temp);
                                 
-                                return std::vector<std::string> (1, plug);
+                                return ret;
                         }
                         else
                         {
@@ -100,47 +78,49 @@ namespace Gambit
                         }
                 }
         
-                Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options &options_in, const Priors::CompositePrior &priorIn, 
+                Scan_Manager::Scan_Manager (const Factory_Base *factoryIn, const Options options_in, const Priors::CompositePrior *priorIn, 
                  printer_interface *printerInterface) 
-                : options(&options_in), printerInterface(printerInterface)
+                : options(options_in), printerInterface(printerInterface)
                 {
-                        if (!options->hasKey("plugins"))
-                        {
-                                scan_err << "There is no \"plugins\" subsection in the scanner inifile section." << scan_end;
-                                return;
-                        }
+                        Plugins::plugin_info.iniFile(options, *printerInterface);
                         
-                        Plugins::plugin_info.iniFile(options->getOptions("plugins"));
-                        
-                        if (options->hasKey("use_objective_plugins"))
+                        if (options.hasKey("use_objectives"))
                         {
                                 std::map< std::string, std::vector<std::string> > names;
                                 std::map< std::string, YAML::Node > nodes;
-                                std::vector <std::string> plugs = get_infile_values(options->getNode("use_objective_plugins"));
+                                std::vector <std::string> plugs = get_infile_values(options.getNode("use_objectives"));
                                         
                                 for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
                                 {
-                                        if (options->hasKey("plugins", *it, "purpose"))
+                                        if (options.hasKey("objectives") && options.hasKey("objectives", *it))
                                         {
-                                                std::vector <std::string> purposes = get_infile_values(options->getNode("plugins", *it, "purpose"));
+                                                if (options.hasKey("objectives", *it, "purpose"))
+                                                {
+                                                        std::vector <std::string> purposes = get_infile_values(options.getNode("objectives", *it, "purpose"));
+                                                        
+                                                        for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
+                                                                names[*it2].push_back(*it);
+                                                }
+                                                else
+                                                {
+                                                        scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
+                                                }
                                                 
-                                                for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
-                                                        names[*it2].push_back(*it);
+                                                if (options.hasKey("objectives", *it, "parameters"))
+                                                {
+                                                        if (options.hasKey("parameters") && options.hasKey("parameters", *it))
+                                                        {
+                                                                scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
+                                                                        << "both the \"parameters\" section and the \"plugins\" "
+                                                                        << "section in the inifile." << scan_end;
+                                                        }
+                                                        nodes[*it] = options.getNode("objectives", *it, "parameters");
+                                                }
                                         }
                                         else
                                         {
-                                                scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
-                                        }
-                                        
-                                        if (options->hasKey("plugins", *it, "parameters"))
-                                        {
-                                                if (options->hasKey("parameters") && options->hasKey("parameters", *it))
-                                                {
-                                                        scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
-                                                                << "both the \"parameters\" section and the \"plugins\" "
-                                                                << "section in the inifile." << scan_end;
-                                                }
-                                                nodes[*it] = options->getNode("plugins", *it, "parameters");
+                                                scan_err << "Plugin \"" << *it << "\" of type \"" << "objective" << "\" is not defined under the \"Scanner\""
+                                                << " subsection in the inifile" << scan_end;
                                         }
                                 }
                                 
@@ -149,15 +129,15 @@ namespace Gambit
                                         YAML::Node paramNode;
                                         YAML::Node priorNode;
                                         
-                                        if (options->hasKey("parameters"))
+                                        if (options.hasKey("parameters"))
                                         {
                                                 if (nodes.size() > 0)
                                                 {
-                                                        paramNode = combineNodes(nodes, options->getNode("parameters"));
+                                                        paramNode = combineNodes(nodes, options.getNode("parameters"));
                                                 }
                                                 else
                                                 {
-                                                        paramNode = options->getNode("parameters");
+                                                        paramNode = options.getNode("parameters");
                                                 }
                                         }
                                         else
@@ -168,9 +148,9 @@ namespace Gambit
                                                 }
                                         }
                                         
-                                        if (options->hasKey("priors"))
+                                        if (options.hasKey("priors"))
                                         {
-                                                priorNode = options->getNode("priors");
+                                                priorNode = options.getNode("priors");
                                         }
                                         
                                         prior = new Gambit::Priors::CompositePrior(paramNode, priorNode);
@@ -178,35 +158,52 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        factory = &factoryIn;
-                                        prior = &priorIn;
+                                        factory = factoryIn;
+                                        prior = priorIn;
                                 }
                         }
                         else
                         {
-                                factory = &factoryIn;
-                                prior = &priorIn;
+                                factory = factoryIn;
+                                prior = priorIn;
                         }
+
                 }
                 
                 int Scan_Manager::Run()
                 {
-                        Plugins::Plugin_Details plugin;
-                        std::string pluginName;
-                        if (options->hasKey("use_scanner_plugin"))
+                        std::vector<std::string> pluginNames;
+                        if (options.hasKey("use_scanner") && options.getNode("use_scanner").IsScalar())
                         {
-                                pluginName = options->getValue<std::string>("use_scanner_plugin");
+                                pluginNames = get_infile_values(options.getNode("use_scanner"));
                         }
                         else
                         {
-                                scan_err << "\"use_scanner_plugin:\" input value not usable in the inifile." << scan_end;
+                                scan_err << "\"use_scanner:\" input value not usable in the inifile." << scan_end;
                         }
 
                         unsigned int dim = prior->size();
                         
-                        Plugins::Plugin_Interface<int ()> plugin_interface("scan", pluginName, dim, *factory);
-                        plugin_interface();
-                        
+                        scan_for(pluginName, pluginNames)
+                        {
+                                Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
+                                
+                                if(plugin_interface["initialize_mpi"] && plugin_interface["initialize_mpi"].as<bool>())
+                                {
+                                        std::cout << "do mpi stuff ..." << std::endl;
+                                }
+                                
+                                plugin_interface();
+                        }
+ 
+                        /// From Ben: To Greg: This is a command I added to the 
+                        /// printer base class which instructs the printers
+                        /// to perform final output tasks (emptying buffers
+                        /// to file and so on). It just needs to happen
+                        /// when the scan is done; feel free to move it to
+                        /// wherever you like.
+                        printerInterface->finalise();
+
                         return 0;
                 }
                 

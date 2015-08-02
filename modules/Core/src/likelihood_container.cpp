@@ -11,7 +11,7 @@
 ///  \author Christoph Weniger
 ///    (c.weniger@uva.nl)
 ///  \date 2013 May, June, July
-//
+///
 ///  \author Gregory Martinez
 ///    (gregory.david.martinez@gmail.com)
 ///  \date 2013 July
@@ -30,13 +30,20 @@
 namespace Gambit
 {
 
-  Likelihood_Container_Base::Likelihood_Container_Base(const std::map<str, primary_model_functor *> &functorMap, 
-   DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const str &purpose) 
-  : dependencyResolver(dependencyResolver), 
-    realParameters(prior.getShownParameters().size()), 
-    prior(prior),
-    functorMap(functorMap)
+  // Methods for Likelihood_Container class.
+
+  /// Constructor
+  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
+   Priors::CompositePrior &prior, const str &purpose) 
+  : dependencyResolver (dependencyResolver), 
+    realParameters     (prior.getShownParameters().size()), 
+    prior              (prior),
+    functorMap         (functorMap),
+    min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
   {
+    // Set the list of valid return types of functions that can be used for 'purpose' by this container class. 
+    const std::vector<str> allowed_types_for_purpose = initVector<str>("double", "std::vector<double>", "float", "std::vector<float>");
     // Find subset of vertices that match requested purpose
     target_vertices = dependencyResolver.getObsLikeOrder();
     int size = 0;
@@ -45,6 +52,7 @@ namespace Gambit
     {
       if (dependencyResolver.getIniEntry(*vert_it)->purpose == purpose)
       {
+        return_types[*vert_it] = dependencyResolver.checkTypeMatch(*vert_it, purpose, allowed_types_for_purpose);
         *(it++) = *vert_it;
         size++;
       }
@@ -53,23 +61,11 @@ namespace Gambit
         aux_vertices.push_back(*vert_it);
       }
     }
-
     target_vertices.resize(size);
   }
 			
-  inline void Likelihood_Container_Base::calcObsLike(DRes::VertexID&)
-  {
-    // TODO: dependencyResolver.calcObsLike now requires (int) pointID argument
-    // See Likelihood_Container version
-    //dependencyResolver.calcObsLike(it);
-  }
-
-  inline double Likelihood_Container_Base::getObsLike(DRes::VertexID &it)
-  {
-    return dependencyResolver.getObsLike(it);
-  }
-    
-  void Likelihood_Container_Base::setParameters (const std::vector<double> &vec) 
+  /// Do the prior transformation and populate the parameter map  
+  void Likelihood_Container::setParameters (const std::vector<double> &vec) 
   {
     prior.transform(vec, parameterMap);
     
@@ -91,35 +87,17 @@ namespace Gambit
     //getchar();
   }
     
-  void Likelihood_Container_Base::resetAll() 
-  {
-    dependencyResolver.resetAll();
-  }
-
-  void Likelihood_Container_Base::print(double in, const str &type) const
+  /// Print the results of the likelihood evaluation
+  void Likelihood_Container::print(double in, const str &type) const
   {
     //real stuff here to replace what is below;
     double tmp = in; tmp++; str tmp2 = type;
   }
-		
-
-// Methods for Likelihood_Container class.
-
-  /// Constructor
-  Likelihood_Container::Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, const str &purpose) :
-   Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose),
-   min_valid_lnlike (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
-  {}
-  
-  /// TODO: Had to overwrite this so that pointID can be accessed
-  inline void Likelihood_Container::calcObsLike(DRes::VertexID &it)
-  {
-    dependencyResolver.calcObsLike(it,getPtID());
-  }
- 
+		  
   /// Evaluate total likelihood function
-  // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points (ie ones with valid like calculations).				
+  // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points 
+  // (ie ones with valid likelihood calculations but invalid auxilary observables).	 Invalid observables should be identified by
+  // functor::retrieve_invalid_point_exception() != NULL in printers.
   double Likelihood_Container::main (const std::vector<double> &in)
   {
     double lnlike = 0;
@@ -131,19 +109,41 @@ namespace Gambit
     // First work through the target functors, i.e. the ones contributing to the likelihood.
     for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
     {
-      logger() << LogTags::core << "Calculating likelihood vertex " << *it << EOM;
+      logger() << LogTags::core << "Calculating likelihood vertex " << *it << "." << EOM;
       try
       {
-        calcObsLike(*it); //pointID is passed through to the printer call for each functor
-        lnlike += getObsLike(*it);
-        if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it);
-        logger() << LogTags::core << "done with likelihood vertex " << *it << EOM;
+        dependencyResolver.calcObsLike(*it,getPtID()); //pointID is passed through to the printer call for each functor
+        // Switch depending on whether the functor returns floats or doubles and a single likelihood or a vector of them.
+        str rtype = return_types[*it];
+        if (rtype == "double")
+        {
+          lnlike += dependencyResolver.getObsLike<double>(*it);
+        }
+        else if (rtype == "std::vector<double>")
+        {
+          std::vector<double> result = dependencyResolver.getObsLike<std::vector<double> >(*it);
+          for (auto jt = result.begin(); jt != result.end(); ++jt) lnlike += *jt;
+        }
+        else if (rtype == "float")
+        {
+          lnlike += dependencyResolver.getObsLike<float>(*it);
+        }
+        else if (rtype == "std::vector<float>")
+        {
+          std::vector<float> result = dependencyResolver.getObsLike<std::vector<float> >(*it);
+          for (auto jt = result.begin(); jt != result.end(); ++jt) lnlike += *jt;
+        }
+        else core_error().raise(LOCAL_INFO, "Unexpected target functor type.");
+        bool isnan = Utils::isnan(lnlike);
+        if (isnan or lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, isnan);
+        logger() << LogTags::core << "Computed likelihood vertex " << *it << "." << EOM;
       }
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
       catch(invalid_point_exception& e)
       {
-        lnlike = min_valid_lnlike;
         logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
+        logger().leaving_module();
+        lnlike = min_valid_lnlike;
         compute_aux = false;
         break;
       }
@@ -157,19 +157,18 @@ namespace Gambit
         logger() << LogTags::core << "Calculating auxiliary vertex " << *it << EOM;
         try
         {
-          calcObsLike(*it);
+          dependencyResolver.calcObsLike(*it,getPtID());
           logger() << LogTags::core << "done with auxiliary vertex " << *it << EOM;;
         }
         catch(Gambit::invalid_point_exception& e)
         {
           logger() << LogTags::core << "The calculation was declared invalid by " << e.thrower()->origin()
                    << "::" << e.thrower()->name() << ".  *Shrug*." << EOM;
-          // FIXME Pat: not sure what else to do here exactly when a calculation of an auxiliary quantity fails but the likelihood is ok.
         }
       }
     }
       
-    resetAll();     
+    dependencyResolver.resetAll();
     return lnlike;
   }
 

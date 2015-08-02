@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:03:19
+// File generated at Mon 1 Jun 2015 13:22:20
 
 #ifndef MSSMatMGUT_UTILITIES_H
 #define MSSMatMGUT_UTILITIES_H
@@ -118,5 +118,8 @@ std::valarray<double> MSSMatMGUT_spectrum_plotter::to_valarray(const Eigen::Arra
 }
 
 } // namespace flexiblesusy
+
+#undef PHYSICAL
+#undef MODELPARAMETER
 
 #endif

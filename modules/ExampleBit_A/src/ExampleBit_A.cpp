@@ -29,7 +29,7 @@
 #include <cmath>
 #include <functional>
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
 
 namespace Gambit
@@ -75,8 +75,9 @@ namespace Gambit
     void nevents_int(int &result)
     {
       result = (int) (*Pipes::nevents_int::Dep::nevents);
-      // Randomly raise some ficticious alarms about this point in 10% of cases.
-      if (Random::draw() < 0.1)
+      // Randomly raise some ficticious alarms about this point, with probability x.
+      double x = 0.0;
+      if (Random::draw() < x)
       {
         //Example of how to raise an error from a module function.
         ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
@@ -170,8 +171,8 @@ namespace Gambit
       // Say we have a sample of 20 drawn from a normal distribution with
       // parameters muTrue and sigmaTrue. Let the sample mean and standard
       // deviation be as follows (this is our data):
-      double N = 20;
-      double samples [] = {
+      static const int N = 20;
+      static const double samples [] = {
         21.32034213,  20.39713359,  19.27957134,  19.81839231,
         20.89474358,  20.11058756,  22.38214557,  21.41479798,
         23.49896999,  17.55991187,  24.9921142 ,  23.90166585,
@@ -181,17 +182,22 @@ namespace Gambit
 
       double loglTotal = 0.;
 
-      logger() << "Is CMSSM_demo being scanned? " << ModelInUse("CMSSM_demo") << endl;
-      logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
-      logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
-      logger() << info << EOM;
+      //logger() << "Is CMSSM_demo being scanned? " << ModelInUse("CMSSM_demo") << endl;
+      //logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
+      //logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
+      //logger() << info << EOM;
 
       // The loglikelihood value for the hypothesised parameters is then:
-      for (int i=0; i <= N; ++i)
-      {
-        if (ModelInUse("NormalDist")) loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
+      if (ModelInUse("NormalDist")) {
+        for (int i=0; i<N; ++i)
+        {
+          loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
+        }
       }
-
+      else
+      {
+         ExampleBit_A_error().raise(LOCAL_INFO,"Whoops, you are not scanning the model NormalDist! There is probably a bug ExampleBit_A_rollcall.hpp; this module function should have ALLOW_MODELS(NormalDist) defined.");
+      }
       result = loglTotal;
     }
 
@@ -204,7 +210,7 @@ namespace Gambit
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
-      unsigned int nEvents = 20;         // Number of times to run the loop
+      //unsigned int nEvents = 20;         // Number of times to run the loop  //bjf> unused variable warning
 
       //There is basically just one thing available from the Loops namespace in loop managers like this one:
       //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered
@@ -242,7 +248,7 @@ namespace Gambit
     }
 
     /// Produces a random floating-point 'event count' between 0 and 5.
-    void exampleEventGen(singleprec &result)
+    void exampleEventGen(float &result)
     {
       using namespace Pipes::exampleEventGen;
       result = Random::draw()*5.0;                 // Generate and return the random number
@@ -250,7 +256,7 @@ namespace Gambit
       {
         cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       }
-      if (result > 2.0) invalid_point().raise("This point is annoying.");
+      //if (result > 2.0) invalid_point().raise("This point is annoying.");
     }
 
     /// Rounds an event count to the nearest integer
@@ -343,7 +349,7 @@ namespace Gambit
       // Example on how to pass an farray to a Fortran function that is declared to take Fdouble* instead of Farray< Fdouble,1,3>&
       // This should only be necessary in very special cases, where you need to pass arrays with different index ranges than those specified in the function.
       cout << "Calling doubleFuncArray2 with commonblock element b as argument..." << endl;
-      tmp = BEreq::libFarrayTest_doubleFuncArray2(commonBlock->b.array);
+      tmp = BEreq::libFarrayTest_doubleFuncArray2(&(commonBlock->b.array[0]));
       cout << "Returned value: " << tmp << endl;
       
       cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
@@ -424,63 +430,6 @@ namespace Gambit
         logger() << "This is marg_poisson_test using req " << *BEgroup::lnlike_marg_poisson << ". My result is " << result << EOM;
     }
 
-    /// Basic example use of some loaded classes.
-    void bossed_class_example1(X &result)
-    {
-      cout << "Testing X type." << endl;
-      cout << "===================" << endl;
-
-      result.i = 0;
-      cout << "Result X's int: " << result.i << endl;
-      result.i+=1;
-      cout << "After adding 1: " << result.i << endl;
-
-      X localX(1);
-      cout << "Local X's int: " << localX.i << endl;
-      localX.i+=1;
-      cout << "After adding 1: " << localX.i << endl;
-
-      BOSSMinimalExample_1_0::nspace1::nspace2::X oldX(3);
-      cout << "v1.0 X's int: " << oldX.i << endl;
-
-      result = localX;
-      cout << "Now we set result = localX" << endl;
-      cout << "result.i: " << result.i << endl;
-
-      cout << "Testing Y type." << endl;
-      cout << "===================" << endl;
-
-      Y myY;
-      cout << "myY's X's int: " << myY.x.i << endl;
-      myY.x.i+=1;
-      cout << "After adding 1: " << myY.x.i << endl;
-
-      cout << "Making localY from localX." << endl;
-      Y localY(localX);
-      cout << "LocalY's int: " << localY.x.i << endl;
-      localY.x.i+=1;
-      cout << "After adding 1: " << localY.x.i << endl;
-      cout << "LocalX's int after LocalY's int has been incremented: " << localX.i << endl;
-
-      localX = localY.get_x();
-      cout << "i of X retrieved from localY: " << localX.i << endl;
-
-      localX.i-=1;
-      localY.set_x(localX);
-      cout << "LocalY's int after sending an X to localY: " << localY.x.i << endl;
-
-      BOSSMinimalExample_1_0::nspace3::Y oldY(oldX);
-      cout << "v1.0 Y's int: " << oldY.x.i << endl;
-    }
-
-    /// Higher-level example use of some loaded classes.
-    void bossed_class_example2(int &result)
-    {
-      using namespace Pipes::bossed_class_example2;
-      Y localY(*Dep::BOSSed_X);
-      result = localY.x.i;
-    }
-
 
     /// Example of using a BOSSed version of Pythia
     void bossed_pythia_test_function(bool &result)
@@ -525,16 +474,28 @@ namespace Gambit
     }
 
 
-    /// \name SLHA Examples
-    /// Some example functions for getting and manipulating SLHA-style information
-    /// @{
+    /// Tester for C/C++ backend array interfaces
+    void Backend_array_test(double &result)
+    {
+      using namespace Pipes::Backend_array_test;
+      double arr1D[10], arr2D[10][10], arr3D[10][10][10];
+      arr1D[0] = 5;
+      arr1D[9] = 2;
+      arr2D[0][0] = 5;
+      arr2D[9][0] = 2;
+      arr2D[9][9] = 3;
+      arr3D[0][0][0] = 5;
+      arr3D[9][0][0] = 2;
+      arr3D[9][9][9] = 8;
+      double test1 = BEreq::example_be_array_1D(&arr1D[0]);
+      cout << "TEST 1 in array_test: " << test1 << endl;
+      double test2 = BEreq::example_be_array_2D(&arr2D[0]);
+      cout << "TEST 2 in array_test: " << test2 << endl;
+      double test3 = BEreq::example_be_array_3D(&arr3D[0]);
+      cout << "TEST 3 in array_test: " << test3 << endl;
+      result = test3;
+    } 
 
-    /// Calculate some random thing which requires a low energy MSSM spectrum
-    // void BRstopneutralino(int &result)
-    // {
-    //   using namespace Pipes::BRstopneutralino;
-
-    // }
 
     /// @}
   }

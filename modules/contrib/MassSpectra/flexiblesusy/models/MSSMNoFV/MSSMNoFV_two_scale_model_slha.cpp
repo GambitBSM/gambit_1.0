@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:55:37
+// File generated at Mon 1 Jun 2015 13:05:19
 
 /**
  * @file MSSMNoFV_two_scale_model_slha.cpp
@@ -24,15 +24,20 @@
  */
 
 #include "MSSMNoFV_two_scale_model_slha.hpp"
-#include "MSSMNoFV_slha_io.hpp"
+#include "slha_io.hpp"
+#include "ckm.hpp"
+#include "pmns.hpp"
 
 namespace flexiblesusy {
 
 #define CLASSNAME MSSMNoFV_slha<Two_scale>
+#define LOCALPHYSICAL(p) physical.p
 
 CLASSNAME::MSSMNoFV_slha(const MSSMNoFV_input_parameters& input_)
    : MSSMNoFV<Two_scale>(input_)
    , physical_slha()
+   , ckm(Eigen::Matrix<std::complex<double>,3,3>::Identity())
+   , pmns(Eigen::Matrix<std::complex<double>,3,3>::Identity())
 {
 }
 
@@ -67,7 +72,59 @@ void CLASSNAME::calculate_spectrum()
 void CLASSNAME::convert_to_slha()
 {
    physical_slha = get_physical();
-   MSSMNoFV_slha_io::convert_to_slha_convention(physical_slha);
+   physical_slha.convert_to_slha();
+
+   convert_yukawa_couplings_to_slha();
+   calculate_ckm_matrix();
+   calculate_pmns_matrix();
+   convert_trilinear_couplings_to_slha();
+   convert_soft_squared_masses_to_slha();
+}
+
+void CLASSNAME::calculate_ckm_matrix()
+{
+
+}
+
+void CLASSNAME::calculate_pmns_matrix()
+{
+   pmns << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+
+}
+
+/**
+ * Convert Yukawa couplings to SLHA convention
+ */
+void CLASSNAME::convert_yukawa_couplings_to_slha()
+{
+   Yu_slha = Yu.diagonal().real();
+   Yd_slha = Yd.diagonal().real();
+   Ye_slha = Ye.diagonal().real();
+
+}
+
+/**
+ * Convert trilinear couplings to SLHA convention
+ */
+void CLASSNAME::convert_trilinear_couplings_to_slha()
+{
+   TYu_slha = TYu.real();
+   TYd_slha = TYd.real();
+   TYe_slha = TYe.real();
+
+}
+
+/**
+ * Convert trilinear couplings to SLHA convention
+ */
+void CLASSNAME::convert_soft_squared_masses_to_slha()
+{
+   mq2_slha = mq2.real();
+   mu2_slha = mu2.real();
+   md2_slha = md2.real();
+   ml2_slha = ml2.real();
+   me2_slha = me2.real();
+
 }
 
 const MSSMNoFV_physical& CLASSNAME::get_physical_slha() const

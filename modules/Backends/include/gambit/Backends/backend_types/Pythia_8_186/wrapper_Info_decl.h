@@ -21,13 +21,18 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Info : public WrapperBase<Pythia8::Abstract_Info>
         {
             public:
+                typedef WrapperBase<Pythia8::Abstract_Info> wrapperbase;
+        
                 // Member variables: 
+            public:
                 // -- Static factory pointers: 
                 static Pythia8::Abstract_Info* (*__factory0)();
+        
                 // -- Other member variables: 
         
                 // Member functions: 
-                void list(std::ostream& os) const;
+            public:
+                void list(std::basic_ostream<char,std::char_traits<char> >& os) const;
         
                 void list() const;
         
@@ -53,7 +58,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool tooLowPTmin() const;
         
-                std::string name() const;
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > name() const;
         
                 int code() const;
         
@@ -79,9 +84,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool hasSub() const;
         
-                std::string nameSub(int i) const;
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameSub(int i) const;
         
-                std::string nameSub() const;
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameSub() const;
         
                 int codeSub(int i) const;
         
@@ -249,11 +254,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int iBMPI(int i) const;
         
-                std::vector<int, std::allocator<int> > codesHard();
+                std::vector<int,std::allocator<int> > codesHard();
         
-                std::string nameProc(int i);
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameProc(int i);
         
-                std::string nameProc();
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameProc();
         
                 long int nTried(int i);
         
@@ -287,17 +292,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void errorReset();
         
-                void errorMsg(std::string messageIn, std::string extraIn, bool showAlways, std::ostream& os);
+                void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn, bool showAlways, std::basic_ostream<char,std::char_traits<char> >& os);
         
-                void errorMsg(std::string messageIn, std::string extraIn, bool showAlways);
+                void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn, bool showAlways);
         
-                void errorMsg(std::string messageIn, std::string extraIn);
+                void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn);
         
-                void errorMsg(std::string messageIn);
+                void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn);
         
                 int errorTotalNumber();
         
-                void errorStatistics(std::ostream& os);
+                void errorStatistics(std::basic_ostream<char,std::char_traits<char> >& os);
         
                 void errorStatistics();
         
@@ -329,22 +334,27 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void setWeightFIRST(double weightIn);
         
-                std::string header(const std::string& key);
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > header(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >& key);
         
-                std::vector<std::string, std::allocator<std::string> > headerKeys();
+                std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > headerKeys();
         
         
                 // Wrappers for original constructors: 
+            public:
                 Info();
         
                 // Special pointer-based constructor: 
-                Info(Pythia8::Abstract_Info* in, bool memvar_in=false);
+                Info(Pythia8::Abstract_Info* in);
+                Info(Pythia8::Abstract_Info* const & in, bool);
         
                 // Copy constructor: 
                 Info(const Info& in);
         
                 // Assignment operator: 
                 Info& operator=(const Info& in);
+        
+                // Destructor: 
+                ~Info();
         
         };
     }

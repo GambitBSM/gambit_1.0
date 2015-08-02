@@ -25,10 +25,7 @@
 #ifndef __scan_hpp__
 #define __scan_hpp__
 
-#include "gambit/ScannerBit/priors.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
-#include "gambit/ScannerBit/plugin_interface.hpp"
-#include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/ScannerBit/factory_defs.hpp"
 #include "gambit/ScannerBit/priors/composite.hpp"
 #include "gambit/Utils/yaml_options.hpp"
@@ -41,12 +38,12 @@ namespace Gambit
                 {
                 private:
                         const Factory_Base *factory;
-                        const Options *options;
+                        const Options options;
                         const Priors::CompositePrior *prior;
                         printer_interface *printerInterface;
 
                 public:
-                        Scan_Manager (const Factory_Base&, const Options&, const Priors::CompositePrior&, printer_interface* = 0);
+                        Scan_Manager (const Factory_Base*, const Options, const Priors::CompositePrior*, printer_interface* = 0);
                         ~Scan_Manager();
                         int Run();                       
                 };             

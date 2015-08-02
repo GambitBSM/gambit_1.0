@@ -2,11 +2,6 @@
 # Only needs example modules ExampleBit_A and ExampleBit_B,
 # plus example backends libfirst and libFortran.
 #
-# To use this you'll need to 
-# make
-# make libfirst
-# make libfortran
-#
 # Don't commit modified versions of this file!
 # If you want to change it in order to test 
 # your own modifications to the code, copy 
@@ -86,12 +81,12 @@ Printer:
 
 Scanner:
 
-  #use_objective_plugins: uniform
-  use_scanner_plugin: random
+  #use_objectives: uniform
+  use_scanner: random
 
 # Scanners
 
-  plugins:
+  scanners:
   
     random:
       plugin: random_sampler
@@ -116,7 +111,7 @@ Scanner:
         purpose: Likelihood
         grid_pts: [2, 2]
 
-# Test functions
+  objectives:
 
     uniform:
       plugin: uniform
@@ -156,18 +151,23 @@ ObsLikes:
     capability:   test_vector
     type:         std::vector<double>
 
+  # Test passing of arrays to backends
+  - purpose:      Observable
+    capability:   BE_Array_tester
+
 
 #########################
 # Auxiliary entries
 #########################
 
-Auxiliaries:
+Rules:
 
   - capability:   "LibFirst_1_1_init"
     dependencies:
     - {capability: "nevents", module: "ExampleBit_A"}  
 
   - capability:    "nevents_postcuts"
+    type: "int*"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
@@ -231,6 +231,7 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: true
+    log_runtime: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
@@ -240,7 +241,6 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    #scan_error: non-fatal #make this fatal to see an example error
     ExampleBit_A_error: non-fatal
 
   enable_testing: false

@@ -21,12 +21,6 @@
 #include <functional>
 #include <string>
 
-namespace std
-{
-        template<typename _Tp> struct hash;
-        template<typename _Tp> struct equal_to;
-}
-
 namespace Gambit
 {
         struct type_index

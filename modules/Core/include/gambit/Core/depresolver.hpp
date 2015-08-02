@@ -15,7 +15,8 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May, Aug, Nov
-///  \date 2014 Aug        
+///  \date 2014 Aug
+///  \date 2015 May
 ///
 ///  *********************************************
 
@@ -32,7 +33,8 @@
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/yaml_parser.hpp"
 #include "gambit/Printers/baseprinter.hpp"
-#include "gambit/Utils/functors.hpp"
+#include "gambit/Elements/functors.hpp"
+#include "gambit/Utils/type_equivalency.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
@@ -70,13 +72,14 @@ namespace Gambit
     /// function name).
     struct Rule
     {
+      Rule(std::string function, std::string module) : function(function), module(module) {};
       Rule(IniParser::ObservableType t)
       {
         module = t.module;
         function = t.function;
       };
-      std::string module;
       std::string function;
+      std::string module;
     };
 
     /// Information in parameter queue
@@ -97,10 +100,10 @@ namespace Gambit
     };
 
     /// Check whether s1 (wildcard + regex allowed) matches s2
-    bool stringComp(const str &s1, const str &s2);
+    bool stringComp(const str &s1, const str &s2, bool with_regex = true);
 
     /// Type comparison taking into account equivalence classes
-    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq);
+    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq, bool with_regex = true);
 
     /// Main dependency resolver
     class DependencyResolver
@@ -121,16 +124,35 @@ namespace Gambit
         /// Pretty print function evaluation order
         void printFunctorEvalOrder(bool toterminal=false);
 
-        /// New IO routines
+        /// Retrieve the order in which target vertices are to be evaluated.
         std::vector<VertexID> getObsLikeOrder();
 
+        /// Calculate a single target vertex.
         void calcObsLike(VertexID, const int);
 
-        double getObsLike(VertexID);
+        /// Ensure that the type of a given vertex is equivalent to at least one of a provided list, and return the matching list entry.
+        str checkTypeMatch(VertexID, const str&, const std::vector<str>&);
+
+        /// Return the result of a functor.
+        template <typename TYPE>
+        TYPE getObsLike(VertexID vertex)
+        {
+          module_functor<TYPE>* module_ptr = dynamic_cast<module_functor<TYPE>*>(masterGraph[vertex]);
+          if (module_ptr == NULL)
+          {
+            str msg = "Attempted to retrieve result of " + masterGraph[vertex]->origin() + "::" +
+                      masterGraph[vertex]->name() + "\nwith incorrect type.  The type should be: " +
+                      masterGraph[vertex]->type() + ".";
+            core_error().raise(LOCAL_INFO, msg);
+          }
+          // This always accesses the 0-index result, which is the one-thread result
+          // or the 'final result' when more than one thread has run the functor.
+          return (*module_ptr)(0);
+        }
 
         const IniParser::ObservableType * getIniEntry(VertexID);
 
-        void invalidatePointAt(VertexID);
+        void invalidatePointAt(VertexID, bool);
 
         void resetAll();
 
@@ -140,6 +162,10 @@ namespace Gambit
 
         /// Pretty print backend functor information
         str printGenericFunctorList(const std::vector<functor*>&);
+        str printGenericFunctorList(const std::vector<VertexID>&);
+
+        /// Print quantity to be resolved
+        str printQuantityToBeResolved(const sspair & quantity, const DRes::VertexID & vertex);
 
         /// Initialise the printer object with a list of functors for it to expect to be printed.
         void initialisePrinter();

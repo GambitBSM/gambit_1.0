@@ -2,7 +2,7 @@
 #************************************************
 # \file                                          
 #                                                
-#  Helpful cmake utility macros and functions for
+#  Helpful CMake utility macros and functions for
 #  GAMBIT.  
 #    
 #************************************************
@@ -12,6 +12,7 @@
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)              
 #  \date 2014 Sep, Oct, Nov
+#        2015 Feb
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
@@ -20,6 +21,32 @@
 #************************************************
 
 include(CMakeParseArguments)
+
+# defining some colors
+string(ASCII 27 Esc)
+set(ColourReset "${Esc}[m")
+set(ColourBold  "${Esc}[1m")
+set(Red         "${Esc}[31m")
+set(Green       "${Esc}[32m")
+set(Yellow      "${Esc}[33m")
+set(Blue        "${Esc}[34m")
+set(Magenta     "${Esc}[35m")
+set(Cyan        "${Esc}[36m")
+set(White       "${Esc}[37m")
+set(BoldRed     "${Esc}[1;31m")
+set(BoldGreen   "${Esc}[1;32m")
+set(BoldYellow  "${Esc}[1;33m")
+set(BoldBlue    "${Esc}[1;34m")
+set(BoldMagenta "${Esc}[1;35m")
+set(BoldCyan    "${Esc}[1;36m")
+set(BoldWhite   "${Esc}[1;37m")
+
+#Crash function for failed execute_processes
+function(check_result result command)
+  if(NOT ${result} STREQUAL "0")
+    message(FATAL_ERROR "${BoldRed}Cmake failed because a GAMBIT python script failed.  Culprit: ${command}${ColourReset}")
+  endif()
+endfunction()
 
 #Macro to retrieve GAMBIT modules
 macro(retrieve_bits bits root excludes quiet)
@@ -44,7 +71,7 @@ macro(retrieve_bits bits root excludes quiet)
       # Exclude or add this bit.
       if(${excluded})
         if(NOT ${quiet} STREQUAL "Quiet") 
-          message("   Excluding ${child} from GAMBIT configuration.")
+          message("${BoldCyan} X Excluding ${child} from GAMBIT configuration.${ColourReset}")
         endif()
       else()
         list(APPEND ${bits} ${child})
@@ -54,6 +81,13 @@ macro(retrieve_bits bits root excludes quiet)
   endforeach()
 
 endmacro()
+
+# Function to add GAMBIT directory if and only if it exists
+function(add_subdirectory_if_present dir)
+  if(EXISTS "${PROJECT_SOURCE_DIR}/${dir}")
+    add_subdirectory(${dir})
+  endif()
+endfunction()
 
 # Function to add static GAMBIT library
 function(add_gambit_library libraryname)
@@ -80,8 +114,34 @@ function(add_gambit_library libraryname)
 
 endfunction()
 
+# Macro to strip a library out of a set of full paths
+macro(strip_library KEY LIBRARIES)
+  set(TEMP "${${LIBRARIES}}")
+  set(${LIBRARIES} "")
+  foreach(lib ${TEMP})
+    if ("${lib}" STREQUAL "debug"   OR
+        "${lib}" STREQUAL "general" OR
+        "${lib}" STREQUAL "optimized")
+      set(LIB_TYPE_SPECIFIER "${lib}")
+    else()
+      string(FIND "${lib}" "/${KEY}." FOUND_KEY1)  
+      string(FIND "${lib}" "/lib${KEY}." FOUND_KEY2)  
+      if (${FOUND_KEY1} EQUAL -1 AND ${FOUND_KEY2} EQUAL -1)
+        if (LIB_TYPE_SPECIFIER)
+          list(APPEND ${LIBRARIES} ${LIB_TYPE_SPECIFIER})
+        endif()
+        list(APPEND ${LIBRARIES} ${lib})
+      endif()
+      set(LIB_TYPE_SPECIFIER "")
+  endif()
+  endforeach()
+  set(TEMP "")
+  set(FOUND_KEY1 "")
+  set(FOUND_KEY2 "")
+endmacro()
+
 # Function to add GAMBIT executable
-function(add_gambit_executable executablename)
+function(add_gambit_executable executablename LIBRARIES)
   cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
 
   add_executable(${executablename} ${ARG_SOURCES} ${ARG_HEADERS})
@@ -96,8 +156,17 @@ function(add_gambit_executable executablename)
     endforeach()
   endif()
 
-  if (MPI_FOUND)
+  if(MPI_CXX_FOUND)
     set(LIBRARIES ${LIBRARIES} ${MPI_CXX_LIBRARIES})
+    if(MPI_CXX_LINK_FLAGS)
+      set_target_properties(${executablename} PROPERTIES LINK_FLAGS ${MPI_CXX_LINK_FLAGS})
+    endif()
+  endif()
+  if(MPI_C_FOUND)
+    set(LIBRARIES ${LIBRARIES} ${MPI_C_LIBRARIES})
+    if(MPI_C_LINK_FLAGS)
+      set_target_properties(${executablename} PROPERTIES LINK_FLAGS ${MPI_C_LINK_FLAGS})
+    endif()
   endif()
   if (LIBDL_FOUND)
     set(LIBRARIES ${LIBRARIES} ${LIBDL_LIBRARY})
@@ -106,31 +175,37 @@ function(add_gambit_executable executablename)
     set(LIBRARIES ${LIBRARIES} ${Boost_LIBRARIES})
   endif()
   if (GSL_FOUND)
-    if(GSL_LDFLAGS)
-      set(LIBRARIES ${LIBRARIES} ${GSL_LDFLAGS})
-    else()
-      set(LIBRARIES ${LIBRARIES} "-L${GSL_LIBRARY_DIRS}")
-      foreach(LIB ${GSL_LIBRARIES})
-        set(LIBRARIES ${LIBRARIES} ${LIB})
-      endforeach()
-    endif()
+    if(HDF5_FOUND AND "${USE_MATH_LIBRARY_CHOSEN_BY}" STREQUAL "HDF5")
+      strip_library(m GSL_LIBRARIES)
+    endif()					    
+    set(LIBRARIES ${LIBRARIES} ${GSL_LIBRARIES})
   endif()
-  set(LIBRARIES ${LIBRARIES} ${yaml_LDFLAGS})
-  #For checking if all the needed libs are present.  Don't add them manually with -lsomelib!!
-  #message(STATUS ${LIBRARIES})
-  target_link_libraries(${executablename} ${LIBRARIES})
+  if(HDF5_FOUND)
+    if(GSL_FOUND AND "${USE_MATH_LIBRARY_CHOSEN_BY}" STREQUAL "GSL")
+      strip_library(m HDF5_LIBRARIES)
+    endif()   
+    set(LIBRARIES ${LIBRARIES} ${HDF5_LIBRARIES})
+  endif()                                         
+  target_link_libraries(${executablename} ${LIBRARIES} yaml-cpp)
+  add_dependencies(${executablename} mkpath)
+
+  #For checking if all the needed libs are present.  Never add them manually with -lsomelib!!
+  if(VERBOSE)
+    message(STATUS ${LIBRARIES})
+  endif()
+
 endfunction()
 
 # Simple function to find specific Python modules
 function(find_python_module module)
   execute_process(COMMAND python -c "import ${module}" RESULT_VARIABLE return_value ERROR_QUIET)
   if (NOT return_value)
-    message("-- Found Python module ${module}.")
+    message(STATUS "Found Python module ${module}.")
   else()
     if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
       message(FATAL_ERROR "-- FAILED to find Python module ${module}.")
     else()      	
-      message("-- FAILED to find Python module ${module}.")
+      message(STATUS "FAILED to find Python module ${module}.")
     endif()	
   endif()
 endfunction()

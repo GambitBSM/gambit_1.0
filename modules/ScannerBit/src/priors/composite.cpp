@@ -55,7 +55,7 @@ namespace Gambit
  
         namespace Priors 
         {
-                inline std::vector<std::string> expand_dots(const std::vector<std::string> &param_names_in)
+                std::vector<std::string> expand_dots(const std::vector<std::string> &param_names_in)
                 {
                         std::vector<std::string> param_names = param_names_in;
                         
@@ -211,7 +211,7 @@ namespace Gambit
                                                                 range.second = temp;
                                                         }
                                                         
-                                                        my_subpriors.push_back(new RangePrior1D<flatprior>(joined_parname,range));
+                                                        my_subpriors.push_back(new RangePrior1D<flatprior, flatop>(joined_parname,range));
                                                 }
                                                 else 
                                                 {
