@@ -82,6 +82,13 @@ namespace Gambit
        upper(in.upper),
        lower(in.lower)
     {}    
+    /// Copy assignment operator
+    triplet<TYPE>& operator = (const triplet<TYPE>& in) {
+      central = in.central;
+      upper = in.upper;
+      lower = in.lower;
+      return *this;
+    }
   }; 
 
   /// A safe pointer that throws an informative error if you try to dereference
