@@ -335,7 +335,7 @@ namespace Gambit
                 // Check whether other processes have caught up yet
                 for(uint source=1;source<mpiSize;source++)
                 {
-                   std::cout<<"rank "<<myRank<<": process "<<source<<" passed block? "<<passed[source]<<std::endl;
+                   //std::cout<<"rank "<<myRank<<": process "<<source<<" passed block? "<<passed[source]<<std::endl;
                    if(not passed[source])
                    {
                       if( myComm.Iprobe(source, tag, &status) )
@@ -457,7 +457,7 @@ namespace Gambit
  
           // If the master process buffers are full, need to empty those as well
           // before (potentially) trying to receive mpi buffer messages.
-          empty_sync_buffers();
+          if(myRank==0) empty_sync_buffers();
 
           #ifdef WITH_MPI
           // Wait for all the nodes to do their final sends
@@ -547,6 +547,42 @@ namespace Gambit
                 }
              }
           }
+
+          /// Double-check that all the buffers are empty.
+          for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+          {
+             if(it->second->is_synchronised())
+             {
+                if(it->second->sync_buffer_is_full()==true)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error! Buffer "<<it->second->get_label()<<" reports sync_buffer_is_full()=true after finalise operations should be complete!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+                if(it->second->sync_buffer_is_empty()==false)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error! Buffer "<<it->second->get_label()<<" reports sync_buffer_is_empty()=false after finalise operations should be complete!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+             }
+             else
+             {
+                if(it->second->postponed_RA_queue_length()!=0)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error! Buffer "<<it->second->get_label()<<" reports postponed_RA_queue_length!=0 (length is "<<it->second->postponed_RA_queue_length()<<") after finalise operations should be complete!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+                if(it->second->get_RA_queue_length()!=0)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error! Buffer "<<it->second->get_label()<<" reports get_RA_queue_length()!=0 (length is "<<it->second->get_RA_queue_length()<<") after finalise operations should be complete!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+             }
+          }
+
        } //end if(is_primary_printer)
     }
 
@@ -1063,6 +1099,7 @@ namespace Gambit
         }
         else {
           it->second->RA_flush(primary_printer->global_index_lookup);
+          //std::cout<<"rank "<<myRank<<": flushing RA buffer of "<<it->second->get_label()<<std::endl;
         }
       }
     }

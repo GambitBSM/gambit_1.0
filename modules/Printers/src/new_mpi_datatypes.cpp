@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Definitions for new_mpi_datatypes.hpp  
+///  Function definitions for new_mpi_datatypes.hpp  
 /// 
 ///  *********************************************
 ///
@@ -23,9 +23,45 @@
 // Code!
 namespace Gambit
 {
-  #ifdef WITH_MPI 
   namespace Printers {
-    
+
+     // Needed by std::map for comparison of keys of type VBIDpair
+     bool operator<(const VBIDpair& l, const VBIDpair& r) {
+        //debugging:
+        //std::cout<<"r: "<<r.vertexID<<", "<<r.index<<std::endl;
+        //std::cout<<"l: "<<l.vertexID<<", "<<l.index<<std::endl;
+        return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index));
+     }
+     bool operator==( const VBIDpair& l, const VBIDpair& r) {
+         return l.vertexID==r.vertexID && l.index==r.index;
+     }    
+     bool operator!=( const VBIDpair& l, const VBIDpair& r) {
+         return !( l == r );
+     }
+
+     // Needed by std::map for comparison of keys of type VBIDpair
+     bool operator<(const PPIDpair& l, const PPIDpair& r) {
+       //debugging:
+       //std::cout<<"rP: "<<r.pointID<<", "<<r.rank<<std::endl;
+       //std::cout<<"lP: "<<l.pointID<<", "<<l.rank<<std::endl;
+       r.pointID;
+       r.rank;
+       l.pointID;
+       l.rank;
+       //return (l.pointID<r.pointID || (l.pointID==r.pointID && l.rank<r.rank));
+
+       // Test:
+       return std::make_pair(l.pointID,l.rank) < std::make_pair(r.pointID,r.rank);
+     }
+     bool operator==( const PPIDpair& l, const PPIDpair& r) {
+         return l.pointID==r.pointID && l.rank==r.rank;
+     }    
+     bool operator!=( const PPIDpair& l, const PPIDpair& r) {
+         return !( l == r );
+     }
+ 
+ 
+     #ifdef WITH_MPI 
      MPI_Datatype mpi_VBIDpair_type;  
      MPI_Datatype mpi_PPIDpair_type;  
 
@@ -59,18 +95,19 @@ namespace Gambit
      /// Queue up these functiona to run when MPI initialises
      GMPI::AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
      GMPI::AddMpiIniFunc prepare_mpiPPIDpair(LOCAL_INFO, "define_mpiPPIDpair", &define_mpiPPIDpair);
+     #endif
+
  }
 
   /// Definition needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
   /// so that template MPI Send and Receive functions work.
   //template<> MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>() { return Printers::mpi_VBIDpair_type; }
-
+  #ifdef WITH_MPI 
   MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>::type() 
   { return Printers::mpi_VBIDpair_type; } 
 
   MPI_Datatype GMPI::get_mpi_data_type<Printers::PPIDpair>::type() 
   { return Printers::mpi_PPIDpair_type; } 
-
   #endif
 
 } // end namespace Gambit

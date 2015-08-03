@@ -115,6 +115,7 @@ namespace Gambit {
 
             // For debugging purposes only
             virtual std::size_t postponed_RA_queue_length() = 0;
+            virtual uint get_RA_queue_length() = 0;
 
             // // Perform write to disk of sync buffer 
             // virtual void write_to_disk() = 0;            

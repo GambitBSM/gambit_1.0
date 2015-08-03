@@ -244,6 +244,9 @@ namespace Gambit {
           virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
           #endif
 
+          // Report queue length (e.g. for checking that it is empty during finalise)
+          virtual uint get_RA_queue_length() { return RA_queue_length; }
+
           /// Extract (copy) a record
           T get_entry(const std::size_t i) const;
  
@@ -443,6 +446,7 @@ namespace Gambit {
             #else
             RA_write_to_disk(PPID_to_dsetindex);
             #endif
+            RA_queue_length = 0;
          }
       }
 
@@ -466,7 +470,6 @@ namespace Gambit {
             if(RA_queue_length==L)
             {
                RA_flush(PPID_to_dsetindex);
-               RA_queue_length = 0;
             }
          }
       }

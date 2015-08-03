@@ -179,7 +179,7 @@ namespace Gambit
 
         /// MPI variables to use in the above function;
         int waitfortag_send_buffer = 0;
-        MPI_Request req_null;
+        MPI_Request req_null = MPI_REQUEST_NULL;
         #endif
 
         /// Function to ensure buffers are all synchronised to the same absolute position
