@@ -16,7 +16,7 @@
 #ifndef __core_singleton_hpp__
 #define __core_singleton_hpp__
 
-#include "gambit/Core/gambit_core.hpp"
+#include "gambit/Core/core.hpp"
 
 
 namespace Gambit

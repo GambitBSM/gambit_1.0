@@ -89,7 +89,11 @@ namespace Gambit
       /// @}
 
       /// Initialise MPI
-      void Init(int argc, char* argv[]) {
+      void Init()
+      {
+        // Dummies; can't rely on being able to use these seriously as the MPI standard doesn't mandate it.
+        int argc = 0;
+        char** argv = NULL;
         // Do basic interrogation
         std::cout << "Hooking up to MPI..." << std::endl;
         if(Is_initialized())
@@ -129,13 +133,6 @@ namespace Gambit
         std::cout << "  MPI initialisation complete." << std::endl;
       }
       
-      /// Shut down MPI
-      void Finalize() { 
-        Comm COMM_WORLD;
-        std::cout << "Shutting down MPI (process "<< COMM_WORLD.Get_rank() <<")..." << std::endl;
-        MPI_Finalize(); 
-      }
-
    }
 }
 
