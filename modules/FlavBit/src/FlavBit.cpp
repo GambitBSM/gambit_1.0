@@ -1014,18 +1014,19 @@ namespace Gambit
     //##########################################
     // now let's do a real likelihood
     //##########################################
-    void b2sll_likelihood(double &result)
-    {
 
-
-
-    }
     void b2sll_measurements(Flav_measurement_assym &Flav_measurement_assym)
     {
-
-
-
+      
+      
+      
     }
+    void b2sll_likelihood(double &result)
+    {                                    
+                                     
+                                     
+                                     
+    }                                    
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
     {
 
