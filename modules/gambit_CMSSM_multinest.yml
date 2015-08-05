@@ -10,10 +10,10 @@ Parameters:
     #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
     CMSSM:
       M0:
-        range: [300, 301]
+        range: [100, 1000]
         prior_type: flat
       M12:
-        range: [300, 301]
+        range: [100, 1000]
         prior_type: flat
       A0: 0
       tanb: 10
@@ -44,8 +44,8 @@ Printer:
   options:
     # name of output file
     output_file: "runs/CMSSM_multinest/samples/gambit_output.data"
+    buffer_length: 10
     # name of info file (explains content of output file)
-    info_file: "runs/CMSSM_multinest/samples/gambit_output.data_info"
 
 ##############################
 # Scanner setup
@@ -66,17 +66,14 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 100
+        nlive: 500
         tol: 0.1
         aux_printer_txt_options:
           output_file: "runs/CMSSM_multinest/samples/gambit_output.txt"
-          info_file: "runs/CMSSM_multinest/samples/gambit_output.txt_info"
         aux_printer_stats_options:
           output_file: "runs/CMSSM_multinest/samples/gambit_output.stats"
-          info_file: "runs/CMSSM_multinest/samples/gambit_output.stats_info"
         aux_printer_live_options:
           output_file: "runs/CMSSM_multinest/samples/gambit_output.live"
-          info_file: "runs/CMSSM_multinest/samples/gambit_output.live_info"
 
 
 ###############################
