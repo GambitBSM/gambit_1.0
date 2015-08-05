@@ -349,52 +349,50 @@ is a unique record for every rank/pointID pair.";
       DBUG( std::cout << "lfpvfc 2" << std::endl; )
 
       // Check if the output format has changed, and raise an error if so
-      if (lineindexrecord.size()!=0)
+      if (lineindexrecord.size()==0)
       {
-        if (lineindexrecord!=newlineindexrecord)
-        {
-          std::ostringstream errmsg;
-          errmsg << "Error! Output format has changed since last buffer dump! The asciiPrinter cannot handle this!"
-                 << "Details:" << std::endl;
-          // First check if a new vertexID has appeared
-          std::vector<int> new_vIDs;
-          std::vector<int> increased_lengths;
-          for (std::map<int,int>::iterator
-            it = newlineindexrecord.begin(); it != newlineindexrecord.end(); ++it)
-          {
-            // try to find each key in the old lineindexrecord 
-            if(lineindexrecord.find(it->first)==lineindexrecord.end())
-            {
-              new_vIDs.push_back(it->first);
-            } // otherwise see if its data increased in length
-            else if(it->second > lineindexrecord.at(it->first))
-            {
-              increased_lengths.push_back(it->first);    
-            }
-          }
-          if(new_vIDs.size()!=0)
-          {
-            errmsg << "   The following vertexIDs are new since the last buffer dump (i.e. they did not try to print themselves during filling of any previous buffer):" <<std::endl;
-            for(std::vector<int>::iterator it = new_vIDs.begin(); it!=new_vIDs.end(); ++it)
-            {
-              errmsg<<"      - vID="<<(*it)<<", label="<<label_record.at(*it)<<std::endl;
-            }
-          }
-          if(increased_lengths.size()!=0)
-          {
-            errmsg << "   The following vertexIDs tried to print longer data vectors than were seen during filling of the first (and any other) previous buffer:" <<std::endl;
-            for(std::vector<int>::iterator it = increased_lengths.begin(); it!=increased_lengths.end(); ++it)
-            {
-              errmsg<<"      - vID="<<(*it)<<", label="<<label_record.at(*it)<<std::endl;
-              errmsg<<"          orig length="<<lineindexrecord.at(*it)<<", new length="<<newlineindexrecord.at(*it)<<std::endl;
-            }
-          }
-          printer_error().raise(LOCAL_INFO,errmsg.str());
-        }
-      }
-      else
-      {
+        // initialise if empty
         lineindexrecord = newlineindexrecord;
+      }
+      else if (lineindexrecord!=newlineindexrecord)
+      {
+        std::ostringstream errmsg;
+        errmsg << "Error! Output format has changed since last buffer dump! The asciiPrinter cannot handle this!"
+               << "Details:" << std::endl;
+        // First check if a new vertexID has appeared
+        std::vector<int> new_vIDs;
+        std::vector<int> increased_lengths;
+        for (std::map<int,int>::iterator
+          it = newlineindexrecord.begin(); it != newlineindexrecord.end(); ++it)
+        {
+          // try to find each key in the old lineindexrecord 
+          if(lineindexrecord.find(it->first)==lineindexrecord.end())
+          {
+            new_vIDs.push_back(it->first);
+          } // otherwise see if its data increased in length
+          else if(it->second > lineindexrecord.at(it->first))
+          {
+            increased_lengths.push_back(it->first);    
+          }
+        }
+        if(new_vIDs.size()!=0)
+        {
+          errmsg << "   The following vertexIDs are new since the last buffer dump (i.e. they did not try to print themselves during filling of any previous buffer):" <<std::endl;
+          for(std::vector<int>::iterator it = new_vIDs.begin(); it!=new_vIDs.end(); ++it)
+          {
+            errmsg<<"      - vID="<<(*it)<<", label="<<label_record.at(*it)<<std::endl;
+          }
+        }
+        if(increased_lengths.size()!=0)
+        {
+          errmsg << "   The following vertexIDs tried to print longer data vectors than were seen during filling of the first (and any other) previous buffer:" <<std::endl;
+          for(std::vector<int>::iterator it = increased_lengths.begin(); it!=increased_lengths.end(); ++it)
+          {
+            errmsg<<"      - vID="<<(*it)<<", label="<<label_record.at(*it)<<std::endl;
+            errmsg<<"          orig length="<<lineindexrecord.at(*it)<<", new length="<<newlineindexrecord.at(*it)<<std::endl;
+          }
+        }
+        printer_error().raise(LOCAL_INFO,errmsg.str());
       }
       DBUG( std::cout << "lfpvfc 3" << std::endl; )
 
