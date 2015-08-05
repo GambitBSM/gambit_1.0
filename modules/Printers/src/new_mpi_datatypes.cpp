@@ -25,11 +25,9 @@ namespace Gambit
 {
   namespace Printers {
 
-     // Needed by std::map for comparison of keys of type VBIDpair
+     // Operators for (e.g. map) key comparisons
+
      bool operator<(const VBIDpair& l, const VBIDpair& r) {
-        //debugging:
-        //std::cout<<"r: "<<r.vertexID<<", "<<r.index<<std::endl;
-        //std::cout<<"l: "<<l.vertexID<<", "<<l.index<<std::endl;
         return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index));
      }
      bool operator==( const VBIDpair& l, const VBIDpair& r) {
@@ -39,19 +37,18 @@ namespace Gambit
          return !( l == r );
      }
 
-     // Needed by std::map for comparison of keys of type VBIDpair
-     bool operator<(const PPIDpair& l, const PPIDpair& r) {
-       //debugging:
-       //std::cout<<"rP: "<<r.pointID<<", "<<r.rank<<std::endl;
-       //std::cout<<"lP: "<<l.pointID<<", "<<l.rank<<std::endl;
-       r.pointID;
-       r.rank;
-       l.pointID;
-       l.rank;
-       //return (l.pointID<r.pointID || (l.pointID==r.pointID && l.rank<r.rank));
+     bool operator<(const VBIDtrip& l, const VBIDtrip& r) {
+        return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index) || (l.vertexID==r.vertexID && l.index==r.index && l.first_tag<r.first_tag) );
+     }
+     bool operator==( const VBIDtrip& l, const VBIDtrip& r) {
+         return l.vertexID==r.vertexID && l.index==r.index && l.first_tag==r.first_tag;
+     }    
+     bool operator!=( const VBIDtrip& l, const VBIDtrip& r) {
+         return !( l == r );
+     }
 
-       // Test:
-       return std::make_pair(l.pointID,l.rank) < std::make_pair(r.pointID,r.rank);
+     bool operator<(const PPIDpair& l, const PPIDpair& r) {
+       return (l.pointID<r.pointID || (l.pointID==r.pointID && l.rank<r.rank));
      }
      bool operator==( const PPIDpair& l, const PPIDpair& r) {
          return l.pointID==r.pointID && l.rank==r.rank;
@@ -63,6 +60,7 @@ namespace Gambit
  
      #ifdef WITH_MPI 
      MPI_Datatype mpi_VBIDpair_type;  
+     MPI_Datatype mpi_VBIDtrip_type;  
      MPI_Datatype mpi_PPIDpair_type;  
 
      void define_mpiVBIDpair()
@@ -77,6 +75,20 @@ namespace Gambit
 
         MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_VBIDpair_type);
         MPI_Type_commit(&mpi_VBIDpair_type);
+     }
+     void define_mpiVBIDtrip()
+     {
+        const int nitems=3;
+        int          blocklengths[3] = {1,1,1};
+        MPI_Datatype types[3] = {MPI_INT, MPI_UNSIGNED, MPI_UNSIGNED};
+        MPI_Aint     offsets[3];
+
+        offsets[0] = offsetof(VBIDtrip, vertexID);
+        offsets[1] = offsetof(VBIDtrip, index);
+        offsets[2] = offsetof(VBIDtrip, first_tag);
+
+        MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_VBIDtrip_type);
+        MPI_Type_commit(&mpi_VBIDtrip_type);
      }
      void define_mpiPPIDpair()
      {
@@ -94,6 +106,7 @@ namespace Gambit
 
      /// Queue up these functiona to run when MPI initialises
      GMPI::AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
+     GMPI::AddMpiIniFunc prepare_mpiVBIDtrip(LOCAL_INFO, "define_mpiVBIDtrip", &define_mpiVBIDtrip);
      GMPI::AddMpiIniFunc prepare_mpiPPIDpair(LOCAL_INFO, "define_mpiPPIDpair", &define_mpiPPIDpair);
      #endif
 
@@ -105,6 +118,9 @@ namespace Gambit
   #ifdef WITH_MPI 
   MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>::type() 
   { return Printers::mpi_VBIDpair_type; } 
+
+  MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDtrip>::type() 
+  { return Printers::mpi_VBIDtrip_type; } 
 
   MPI_Datatype GMPI::get_mpi_data_type<Printers::PPIDpair>::type() 
   { return Printers::mpi_PPIDpair_type; } 

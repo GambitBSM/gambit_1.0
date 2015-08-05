@@ -153,6 +153,9 @@ namespace Gambit {
             // Retrieve RA buffer data from an MPI message from a known process rank
             // Should only be triggered if a valid message is known to exist to be retrieved!
             virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>&) = 0;
+ 
+            // Update MPI tags with valid values
+            virtual void update_myTags(uint) = 0;
             #endif
 
             // getter for donethispoint

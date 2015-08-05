@@ -48,6 +48,33 @@ namespace Gambit
     bool operator==(const VBIDpair& l, const VBIDpair& r);
     bool operator!=(const VBIDpair& l, const VBIDpair& r);
 
+    // Same as VBIDpair, but plus the "first_tag" value (association with MPI tag)
+    struct VBIDtrip {
+      int   vertexID;
+      unsigned int index;
+      unsigned int first_tag; 
+      VBIDtrip() 
+        : vertexID(0)
+        , index(0)
+        , first_tag(0)
+      {}
+      VBIDtrip(const int v, const unsigned int i, const unsigned int t)
+        : vertexID(v)
+        , index(i)
+        , first_tag(t)
+      {}
+      VBIDtrip(const VBIDpair p, const unsigned int t)
+        : vertexID(p.vertexID)
+        , index(p.index)
+        , first_tag(t)
+      {}
+    };
+  
+    // Needed by std::map for comparison of keys of type VBIDpair
+    bool operator<(const VBIDtrip& l, const VBIDtrip& r);
+    bool operator==(const VBIDtrip& l, const VBIDtrip& r);
+    bool operator!=(const VBIDtrip& l, const VBIDtrip& r);
+
     /// pointID / process number pair
     /// Used to identify a single parameter space point
     //typedef std::pair<unsigned long int, unsigned int> PPIDpair;
@@ -80,6 +107,11 @@ namespace Gambit
        static MPI_Datatype type();
      }; 
      template<> 
+     struct get_mpi_data_type<Printers::VBIDtrip> 
+     { 
+       static MPI_Datatype type();
+     }; 
+     template<> 
      struct get_mpi_data_type<Printers::PPIDpair> 
      { 
        static MPI_Datatype type();
@@ -87,6 +119,7 @@ namespace Gambit
   }
   /// Declare MPI datatype for structs VBIDpair and PPIDpair (which is what the above functions will 'get')
   extern MPI_Datatype mpi_VBIDpair_type;
+  extern MPI_Datatype mpi_VBIDtrip_type;
   extern MPI_Datatype mpi_PPIDpair_type;
   #endif
 

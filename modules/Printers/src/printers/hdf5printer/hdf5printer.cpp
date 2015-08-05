@@ -257,16 +257,14 @@ namespace Gambit
         // Set up communicator context for HDF5 printer system
         #ifdef WITH_MPI
         myComm.dup(MPI_COMM_WORLD); // duplicates MPI_COMM_WORLD
+           
+        // Create object to issue/manage MPI tags for the various buffers
+        tag_manager = new MPITagManager(myComm,FIRST_EMPTY_TAG,TAG_REQ,BuffTags::NTAGS);
         #endif
 
         if(myRank==0) // Only master node will actuall write to file
         {  
            printer_name = "Master primary printer";
-
-           #ifdef WITH_MPI
-           // Create object to issue MPI tags for the various buffers
-           tag_manager = new MPITagManager(myComm,FIRST_EMPTY_TAG,TAG_REQ,BuffTags::NTAGS);
-           #endif
 
            std::string file = options.getValue<std::string>("output_file");
            std::string group = options.getValueOrDef<std::string>("/","group");
@@ -425,7 +423,7 @@ namespace Gambit
 
       #ifdef WITH_MPI
       // Make sure to delete the MPITagManager that we created with 'new'
-      if(myRank==0 and is_primary_printer)
+      if(is_primary_printer)
       {
         delete tag_manager;
       }
@@ -1052,6 +1050,7 @@ namespace Gambit
        }
 
        int first_tag_in_group;
+
        if(myRank==0)
        {
           // We are the master, just get the tags ourselves.
@@ -1062,24 +1061,83 @@ namespace Gambit
        }
        else
        {
-          // Otherwise have to ask the master node for the tags
-          #ifdef MPI_DEBUG
-          std::cout<<"rank "<<myRank<<": Sending tag request ("<<bufID.vertexID<<","<<bufID.index<<") to master"<<std::endl;
-          #endif
+          // Check if tags for this buffer have been received from the master
+          if(tag_manager->tag_exists(bufID))
+          {
+             // Ok they are available, get them.
+             first_tag_in_group = tag_manager->get_tags(bufID);
+          }
+          else
+          {
+             // Post non-blocking request for new tag to be issued; we will check 
+             // back later to retrieve the reply.
+             myComm.Isend(&bufID, 1, 0, TAG_REQ, &req_null);
 
-          // Send request for new tag
-          myComm.Send(&bufID, 1, 0, TAG_REQ);
+             // Tell tag_manager that we are waiting for a tag for this buffer
+             tag_manager->add_to_waiting_list(bufID);
 
-          // Receive the new tag
-          myComm.Recv(&first_tag_in_group, 1, 0, TAG_REQ);
+             // For now, give the buffer a dummy value, so that it knows not to
+             // try and send MPI messages yet.
+             first_tag_in_group = -1;
 
-          #ifdef MPI_DEBUG
-          std::cout<<"rank "<<myRank<<": Received first-tag ("<<first_tag_in_group<<") from master"<<std::endl;
-          #endif
+             // Receive the new tag
+             //myComm.Recv(&first_tag_in_group, 1, 0, TAG_REQ);
+          }
        }
        // Reconstruct the whole tag group and return
        return BuffTags(first_tag_in_group);
     }
+
+    // Check for MPI tag messages waiting to be delivered from the master
+    void HDF5Printer::check_for_bufftag_deliveries()
+    {
+       if(not is_primary_printer)
+       {
+          std::ostringstream errmsg;
+          errmsg << "rank "<<myRank<<": Error! Only primary printer may check_for_bufftag_deliveries()";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       if(myRank==0)
+       {
+          std::ostringstream errmsg;
+          errmsg << "rank "<<myRank<<": Error! Master process is not permitted to check_for_bufftag_deliveries()";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       //std::cout<<"rank "<<myRank<<": checking for bufftag_deliveries "<<std::endl; 
+
+       MPI_Status status;
+       while(myComm.Iprobe(0, TAG_REQ, &status) )
+       {
+          // Returns true if there is a message waiting
+          //std::cout<<"rank "<<myRank<<": receiving tag (TAG_REQ) "<<std::endl; 
+
+          // Receive the message
+          VBIDtrip new_tag; 
+          myComm.Recv(&new_tag, 1, 0, TAG_REQ);
+
+          // Check validity of tag
+          if(new_tag.first_tag<FIRST_EMPTY_TAG)
+          {
+             std::ostringstream errmsg;
+             errmsg << "Error! (rank "<<myRank<<"): Received invalid tags from master (new_tag.first_tag="<<new_tag.first_tag<<" < FIRST_EMPTY_TAG="<<FIRST_EMPTY_TAG<<") (i.e. is reserved, or invalid, tag value)";
+             printer_error().raise(LOCAL_INFO, errmsg.str());
+          }
+
+          // buffer ID pair
+          VBIDpair buffkey(new_tag.vertexID,new_tag.index);
+
+          //std::cout<<"rank "<<myRank<<": received tag "<<new_tag.first_tag<<" for buffer ("<<new_tag.vertexID<<","<<new_tag.index<<")"<<std::endl; 
+
+          // Register buffer as no longer missing tags
+          tag_manager->remove_from_waiting_list(buffkey);
+
+          // Give the tags to the appropriate buffer
+          all_buffers.find(buffkey)->second->update_myTags(new_tag.first_tag); 
+       }
+       //std::cout<<"rank "<<myRank<<": finished checking for bufftag_deliveries "<<std::endl; 
+       return;
+    }
+
     #endif
 
     /// Empty all the buffers to disk
@@ -1212,6 +1270,11 @@ namespace Gambit
           // Master process primary printer checks for tag requests from worker processes
           // I am hoping this check is cheap since it will happen quite a lot.
           tag_manager->check_for_tag_requests();
+       }
+       else
+       {
+          // Everyone else checks for the replies to the tag requests.
+          primary_printer->check_for_bufftag_deliveries();
        }
 
        if(is_auxilliary_printer())
