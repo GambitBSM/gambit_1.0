@@ -39,6 +39,7 @@ Scanner:
         like:  Likelihood
         nlive: 500
         tol: 0.1
+        mmodal: 0
         # write native MultiNest ascii output files?
         outfile: 0
         root: "runs/spartan_multinest_hdf5/samples/native-"
@@ -74,6 +75,8 @@ Logger:
   prefix : "runs/spartan_multinest_hdf5/logs/"
   redirection:
     [Default]      : "default.log"
+    [Utilities]    : "utils.log"
+    [Utilities,Info] : "utils_info.log"
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
     [Printers]     : "Printers.log"
