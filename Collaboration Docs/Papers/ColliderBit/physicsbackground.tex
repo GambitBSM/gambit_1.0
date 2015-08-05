@@ -1,8 +1,49 @@
-Describe the basic design elements of the package, i.e. what we calculate given a model of BSM physics, but with the full details of the calculation deferred to the following section. Need to emphasise that the user may pick and choose each element of the calculation.
+\textbf{Describe the basic design elements of the package, i.e. what we calculate given a model of BSM physics, but with the full details of the calculation deferred to the following section. Need to emphasise that the user may pick and choose each element of the calculation.}
 
 \begin{itemize}
-\item Number of signal events for cut and count analyses (or in a particular bin of a binned likelihood fit) is $\sigma \times A \times \epsilon \times \mathcal{L}$.
-\item State very briefly how each element of the calculation above is performed in ColliderBit.
-\item Define likelihoods used in LHC searches based on the signal yields.
-\item Describe LEP limit treatment
+\item \textbf{Number of signal events for cut and count analyses (or in a particular bin of a binned likelihood fit) is $\sigma \times A \times \epsilon \times \mathcal{L}$.}
+\item \textbf{State very briefly how each element of the calculation above is performed in ColliderBit.}
+\item \textbf{Define likelihoods used in LHC searches based on the signal yields.}
+\item \textbf{Describe LEP limit treatment}
 \end{itemize}
+
+Assuming that ColliderBit is supplied a parameter point of a physics model (either standalone via an SLHA file, or from a full GAMBIT run), the basic output is a series of likelihood terms derived from the LEP and LHC BSM searches, and the LEP, Tevatron and LHC Higgs searches. The terms may then be combined to form a composite likelihood as required by the user. We here describe the basic strategy for calculating each individual term, with the full details of the calculation deferred to Section~\ref{sec:code}. \textbf{MJW: Should we in fact just merge the two sections? I can't remember why we thought it was a good idea to separate them.} 
+
+\subsection{LHC likelihood calculation}
+A parameter point of a specified BSM model (hereafter referred to as a ``model'') can in principle be expected to show up in a variety of LHC BSM searches. Assuming that these are ``cut and count'' style analyses, the relevant data are the number of events that pass the kinematic cuts imposed by each analysis. If a model predicts that $s$ signal events pass the cuts for a given signal region, with $b$ expected SM background events and $o$ observed events, the likelihood of the model is given by the standard Poisson formula:
+
+\begin{equation}
+\mathcal{L}=\frac{e^{-(s+b)}(s+b)^o}{o!}
+\end{equation}
+
+Note that this does not include the effects of a systematic uncertainties in the signal and background yields, $\sigma_s$ and $\sigma_b$ respectively. Assuming a distribution for the errors, one may treat them as nuisance parameters and marginalise over them as detailed in Section~\ref{sec:code}.
+
+LHC BSM search papers provide details of $b$ and $o$ for each signal region, along with the background uncertainty (and some estimate of the signal uncertainty for representative models). Calculating the likelihood for a given model thus requires an accurate estimate of $s$ which is given by:
+
+\begin{equation}
+\label{eq:s}
+s=\sigma \times A \times \epsilon \times L
+\end{equation}
+
+where $\sigma$ is the production cross-section for processes for which the detector has an acceptance of $A$ and an efficiency of $\epsilon$. $L$ is the integrated luminosity of data used in the search (typically 20.1 fb$^{-1}$ for the searches considered here).
+
+The only fool proof way to calculate $s$ is to perform a cross-section calculation at the desired accuracy before evaluating the acceptance and efficiency via a Monte Carlo simulation of the LHC collisions followed by a simulation of the ATLAS and/or CMS detectors. Previous approaches using look up tables and extrapolation from simplified models remove the need for simulation, but give very conservative results as a consequence, leading to an underestimate of the LHC reach.
+
+The overriding strategy of \tt ColliderBit \rm is to make each step of the simulation chain faster using a combination of custom speed increases and parallel computing. The package thus performs a cross-section calculation, generates Monte Carlo events, performs an LHC detector simulation and then applies the analysis cuts for a range of LHC analyses using a custom event analysis framework. Although the code is sufficiently modular as to allow the user to change each aspect of the calculation, \tt ColliderBit \rm nevertheless has a default chain implemented. The first release contains the following elements:
+
+\begin{itemize}
+\item \textbf{Cross-section calculation: } We use the LO+LL cross-sections calculated numerically by the popular \tt Pythia 8 \rm event generator. For many models, these are state of the art. For models where a NLO calculation is available (e.g. SUSY) our results are conservative, but considerably quicker to evaluate than the full NLO results obtained using the standard \tt Prospino \rm tool~\cite{Beenakker:1996ed}.
+\item \textbf{Monte Carlo event generation: }We supply an interface to the \tt Pythia 8 \rm event generator, alongside custom routines that increase the speed of key bottlenecks in the Pythia code, and that parallelise the main event loop of \tt Pythia \rm using \tt OpenMP \rm (for a similar approach, see~\cite{Lester:2005je}. This allows generation of $\approx$ 10,000 SUSY events on an Intel Core i7 processor in less than 10s. In addition, in a GAMBIT-driven global fit, points are vetoed if the production cross-section is already too low to lead to observable consequences at the LHC, giving an implicit speed increase. Taken together, these routines make the running of a full Monte Carlo simulation in a global fit computationally tractable. The choice of the \tt Pythia \rm generator is an acceptable compromise between generality and ease of use for the first \tt ColliderBit \rm release. It is sufficient for many BSM models, and is easily extendable with matrix elements for new models via the existing \tt Madgraph 5 \rm interface (for an example, see Section ADD). \tt Pythia \rm will prove insufficient, however.  where NLO diagrams are significant (for example, in the accurate treatment of some effective field theories of dark matter in LHC monojet searches, where top quark loops become important~\cite{Buckley:2014fba}). These deficiencies can be fixed in the current release via a user-supplied interface to an appropriate Monte Carlo tool, and such interfaces will be supplied as standard in future \tt ColliderBit \rm releases.
+\item \textbf{Detector simulation:}Implicitly parallelised. DELPHES plus BuckFast.
+\item \textbf{LHC analysis framework:} Can be run on det level, parton level, etc.
+\item \textbf{Likelihood calculations:}Having obtained a likelihood for each CMS and ATLAS signal region, we calculate the overall LHC likelihood by using the observed likelihood obtained using the signal region that gives the best expected limit. This is conservative, but is the appropriate treatment when one lacks sufficient information to handle correlated systematic uncertainties. \textbf{Is this actually true? i.e. should we in fact multiply CMS and ATLAS likelihoods?}. 
+\end{itemize}
+
+
+
+\subsection{LEP limit calculation}
+
+\textbf{Are to write short summary.}
+
+\subsection{Higgs likelihood}
+\textbf{Chris Rogan to write short summary.}
