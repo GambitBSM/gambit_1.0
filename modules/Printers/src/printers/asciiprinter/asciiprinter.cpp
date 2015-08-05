@@ -355,11 +355,24 @@ is a unique record for every rank/pointID pair.";
       }
       DBUG( std::cout << "lfpvfc 2" << std::endl; )
 
+      // FIXME CW: Cheap hack to stop asciiprinter from stopping CMSSM scans
+      lineindexrecord = newlineindexrecord;
+
       // Check if the output format has changed, and raise an error if so
       if (lineindexrecord.size()!=0)
       {
         if (lineindexrecord!=newlineindexrecord)
         {
+          // // Print debug information
+          // for ( auto it = lineindexrecord.begin(); it != lineindexrecord.end(); it ++ )
+          // {
+          //   std::cout << it->first << " " << it->second << std::endl;
+          // }
+          // std::cout << std::endl;
+          // for ( auto it = newlineindexrecord.begin(); it != newlineindexrecord.end(); it ++ )
+          // {
+          //   std::cout << it->first << " " << it->second << std::endl;
+          // }
           printer_error().raise(LOCAL_INFO,"Error! Output format has changed since last buffer dump! The asciiPrinter cannot handle this!");
         }
       }
