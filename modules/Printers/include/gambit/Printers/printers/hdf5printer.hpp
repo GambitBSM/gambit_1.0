@@ -207,6 +207,9 @@ namespace Gambit
  
         /// Check for buffers waiting to be delivered from other processes 
         bool collect_mpi_buffers();
+ 
+        // Check for MPI tag messages waiting to be delivered from the master
+        void check_for_bufftag_deliveries();
         #endif  
 
         // Check if the buffers are full and waiting to be emptied
@@ -412,7 +415,7 @@ namespace Gambit
  
         uint mpiSize;
  
-        /// Tag manager object (only the primary printer on the master node has one of these) 
+        /// Tag manager object (only the primary printer has one of these) 
         MPITagManager* tag_manager = NULL;
 
         /// Buffer and flag for tracking the status of the PPIDpair Isend to master (in clear_PPID_lists)

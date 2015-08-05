@@ -61,6 +61,9 @@ namespace Gambit
         /// Match buffer IDs to (first of an) MPI tag group
         std::map<VBIDpair, int> tags_from_VBID;
 
+        /// List of buffers waiting to have MPI tags issued by the master
+        std::vector<VBIDpair> waiting_list;
+
         /// Reverse lookup; need to quickly figure out which VBIDpair an 
         /// individual tag belongs to.
         /// Note that there is an offset between the vector indices and the tag
@@ -93,11 +96,33 @@ namespace Gambit
         /// constructor to get the rest (e.g. "BuffTags sometags(first_tag);")
         int get_tags(const VBIDpair bufID);
 
+        /// Check if tag is currently registered
+        bool tag_exists(const VBIDpair bufID);
+
+        /// Add new tags to the registry, and return the first new one of the group
+        int register_new_tags(const VBIDpair bufID);
+
+        /// Add new tags to the registry, where even the tag is supplied externally
+        void register_new_tags(const VBIDtrip bufIDplustag);
+
         /// Retrieve VBIDpair match a specific tag from a BuffTags collection
         VBIDpair get_VBID_from_tag(const int tag); 
 
+        /// MPI buffer space for all the tag messages we want to send. This 
+        /// space only grows, so if there are huge numbers of buffers requesting 
+        /// tags then it could become problematic.
+        std::vector<VBIDtrip> msg_buffer;
+
+        /// Notify tag manager that a buffer is waiting for tags to be issued,
+        /// or that tags for a buffer have been received
+        void add_to_waiting_list(const VBIDpair bufID);
+        void remove_from_waiting_list(const VBIDpair bufID);
+
         /// Check for tag requests (via MPI) and fulfil if found
         void check_for_tag_requests();
+
+        /// For use in MPI sends where we don't need to check up on the message later
+        MPI_Request req_null = MPI_REQUEST_NULL;
 
         /// Retrieve all the VBIDpairs known to this tag manager
         const std::vector<VBIDpair>& get_all_known_VBIDpairs() { return VBID_from_tag;}
@@ -107,7 +132,7 @@ namespace Gambit
         /// for tag requests from the worker nodes. Thread is stopped and joined
         /// when the MPITagManager destructs.
         /// Has to have this funny function signature to work with pthreads
-        static void* tag_daemon(void* thisptr_void);
+        //// static void* tag_daemon(void* thisptr_void);
 
     };
     #endif
