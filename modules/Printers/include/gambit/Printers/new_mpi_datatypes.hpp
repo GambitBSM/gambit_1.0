@@ -33,19 +33,20 @@ namespace Gambit
     struct VBIDpair {
       int   vertexID;
       unsigned int  index;
-      VBIDpair() {}
-      VBIDpair(int v, unsigned int i)
+      VBIDpair() 
+        : vertexID(0)
+        , index(0)
+      {}
+      VBIDpair(const int v, const unsigned int i)
         : vertexID(v)
         , index(i)
       {}
     };
+  
     // Needed by std::map for comparison of keys of type VBIDpair
-    inline bool operator<(const VBIDpair& l, const VBIDpair& r) {
-       //debugging:
-       //std::cout<<"r: "<<r.vertexID<<", "<<r.index<<std::endl;
-       //std::cout<<"l: "<<l.vertexID<<", "<<l.index<<std::endl;
-       return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index));
-    }
+    bool operator<(const VBIDpair& l, const VBIDpair& r);
+    bool operator==(const VBIDpair& l, const VBIDpair& r);
+    bool operator!=(const VBIDpair& l, const VBIDpair& r);
 
     /// pointID / process number pair
     /// Used to identify a single parameter space point
@@ -53,20 +54,21 @@ namespace Gambit
     struct PPIDpair {
       unsigned long int pointID;
       unsigned int  rank;
-      PPIDpair() {}
-      PPIDpair(unsigned long int p, unsigned int r)
+      PPIDpair() 
+        : pointID(0)
+        , rank(0)
+      {}
+      PPIDpair(const unsigned long int p, const unsigned int r)
         : pointID(p)
         , rank(r)
       {}
     };
+
     // Needed by std::map for comparison of keys of type VBIDpair
-    inline bool operator<(const PPIDpair& l, const PPIDpair& r) {
-      //debugging:
-      //std::cout<<"rP: "<<r.pointID<<", "<<r.rank<<std::endl;
-      //std::cout<<"lP: "<<l.pointID<<", "<<l.rank<<std::endl;
-      return (l.pointID<r.pointID || (l.pointID==r.pointID && l.rank<r.rank));
-    }
-    
+    bool operator<(const PPIDpair& l, const PPIDpair& r);
+    bool operator==(const PPIDpair& l, const PPIDpair& r);
+    bool operator!=(const PPIDpair& l, const PPIDpair& r);
+   
   } // end namespace Printers
 
   #ifdef WITH_MPI

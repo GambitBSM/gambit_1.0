@@ -321,6 +321,14 @@ namespace Gambit
       
       // Dump spectrum information to slha file (for testing...)
       result->get_UV()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
+
+      // TEMPORARY CHECKING!
+      std::cout<<"in get_CMSSM_spectrum"<<std::endl;
+      std::cout<<"Scale: "<<result->get_UV()->GetScale()<<std::endl;
+      // Check scale in SLHAea output
+      SLHAea::Coll slhaea = result->get_UV()->getSLHAea();
+      // 4th element of block definition should be the scale
+      std::cout<<"Scale (slhaea): "<<slhaea.at("MSOFT").find_block_def()->at(3)<<std::endl;
     }
 
     // Runs MSSM spectrum generator with EWSB scale input

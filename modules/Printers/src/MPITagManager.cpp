@@ -21,7 +21,7 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
-#include <pthread.h> // Using pthreads for MPI listener process
+//#include <pthread.h> // Using pthreads for MPI listener process
 #include <time.h> // For short sleeps in listener process 
 
 // Gambit
@@ -59,27 +59,27 @@ namespace Gambit
           printer_error().raise(LOCAL_INFO, errmsg.str());
        }
 
-       /// Start tag_daemon in new thread, if it is needed (i.e. if there is more than one process)
-       /// args: thread, thread attributes, function to run, function args
-       if( mpiSize>1 )
-       {
-          int ret = pthread_create(&tag_daemon_thread, NULL, &MPITagManager::tag_daemon, this);
-          if(ret)
-          {
-             std::ostringstream errmsg;
-             errmsg << "Error creating tag_daemon thread! pthread_create() returned code: "<< ret; 
-             printer_error().raise(LOCAL_INFO, errmsg.str());
-          }
-       }
+       //// /// Start tag_daemon in new thread, if it is needed (i.e. if there is more than one process)
+       //// /// args: thread, thread attributes, function to run, function args
+       //// if( mpiSize>1 )
+       //// {
+       ////    int ret = pthread_create(&tag_daemon_thread, NULL, &MPITagManager::tag_daemon, this);
+       ////    if(ret)
+       ////    {
+       ////       std::ostringstream errmsg;
+       ////       errmsg << "Error creating tag_daemon thread! pthread_create() returned code: "<< ret; 
+       ////       printer_error().raise(LOCAL_INFO, errmsg.str());
+       ////    }
+       //// }
     }
 
     // Destructor, make sure to stop the tag_daemon
     MPITagManager::~MPITagManager()
     {
-       stop_tag_daemon = true;
+       //// stop_tag_daemon = true;
 
-       /// Wait for it to finish, and re-join tag_daemon thread
-       if( mpiSize>1 ) pthread_join(tag_daemon_thread, NULL);
+       //// /// Wait for it to finish, and re-join tag_daemon thread
+       //// if( mpiSize>1 ) pthread_join(tag_daemon_thread, NULL);
     }
     
 
@@ -129,6 +129,46 @@ namespace Gambit
        return VBID_from_tag[index];
     }
 
+    /// Check for a tag request and fulfil it if found
+    void MPITagManager::check_for_tag_requests()
+    {
+       MPI_Status status;
+       while(printerComm.Iprobe(MPI_ANY_SOURCE, tag_req, &status) )
+       {
+          // Returns true if there is a message waiting
+  
+          // Find out who sent the message
+          int sender_rank(-1);
+          sender_rank = status.MPI_SOURCE;
+          #ifdef MPI_DEBUG
+          std::cout<<"rank "<<mpiRank<<" (tag_daemon): Noticed tag request message from rank "<<sender_rank<<", triggering Recv..."<<std::endl;
+          #endif
+            
+          // Receive the tag request message
+          VBIDpair bufID;
+          printerComm.Recv(&bufID, 1, sender_rank, tag_req);
+ 
+          #ifdef MPI_DEBUG
+          std::cout<<"rank "<<mpiRank<<": Received tag request ("<<bufID.vertexID<<","<<bufID.index<<") from rank "<<sender_rank<<std::endl;
+          #endif
+ 
+          // Do the tag lookup/issue
+          int tag = get_tags(bufID);
+   
+          #ifdef MPI_DEBUG
+          std::cout<<"rank "<<mpiRank<<": Sending first-tag ("<<tag<<") to rank "<<sender_rank<<std::endl;
+          #endif
+          // Send the tag data back to the worker
+          printerComm.Send(&tag, 1, sender_rank, tag_req);
+       }
+       // No more tag request messages waiting 
+
+       return;
+    }
+
+    //// TODO: Tag daemon thread seemed to cause problems with MPI, now master process simply
+    //// checks for tag requests every loop. Bit more wasteful but removes need for a new thread.
+
     /// Tag daemon function
     /// This is run in a separate thread on the master node, and just monitors
     /// for tag requests from the worker nodes. Thread is stopped and joined
@@ -155,36 +195,7 @@ namespace Gambit
 
        while(not thisptr->stop_tag_daemon)
        {
-          MPI_Status status;
-          while(not thisptr->stop_tag_daemon and thisptr->printerComm.Iprobe(MPI_ANY_SOURCE, thisptr->tag_req, &status) )
-          {
-             // Returns true if there is a message waiting
-  
-             // Find out who sent the message
-             int sender_rank(-1);
-             sender_rank = status.MPI_SOURCE;
-             #ifdef MPI_DEBUG
-             std::cout<<"rank "<<thisptr->mpiRank<<" (tag_daemon): Noticed tag request message from rank "<<sender_rank<<", triggering Recv..."<<std::endl;
-             #endif
-               
-             // Receive the tag request message
-             VBIDpair bufID;
-             thisptr->printerComm.Recv(&bufID, 1, sender_rank, thisptr->tag_req);
- 
-             #ifdef MPI_DEBUG
-             std::cout<<"rank "<<thisptr->mpiRank<<": Received tag request ("<<bufID.vertexID<<","<<bufID.index<<") from rank "<<sender_rank<<std::endl;
-             #endif
- 
-             // Do the tag lookup/issue
-             int tag = thisptr->get_tags(bufID);
-   
-             #ifdef MPI_DEBUG
-             std::cout<<"rank "<<thisptr->mpiRank<<": Sending first-tag ("<<tag<<") to rank "<<sender_rank<<std::endl;
-             #endif
-             // Send the tag data back to the worker
-             thisptr->printerComm.Send(&tag, 1, sender_rank, thisptr->tag_req);
-          }
-          // No more tag request messages waiting 
+          thisptr->check_for_tag_requests();
 
           // Wait a little before checking again
           if (thisptr->tag_daemon_longsleep)
@@ -212,8 +223,8 @@ namespace Gambit
 
        logger() << LogTags::printers << "rank "<<thisptr->mpiRank<<": Terminating MPITagManager::tag_daemon thread" << EOM;
 
-       // Finished! 
-       pthread_exit(NULL);  
+       //// // Finished! 
+       //// pthread_exit(NULL);  
     }
     #endif 
     /// @}

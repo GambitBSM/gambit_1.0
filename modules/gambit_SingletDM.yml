@@ -57,19 +57,24 @@ Priors:
 
 Printer:
 
-  # Select printer to use via string tag
-  # (currently only ascii printer available)
-  printer: ascii
+  # # Select printer to use via string tag
+  # # (currently only ascii printer available)
+  # printer: ascii
+  # # This options node is passed on wholesale to
+  # # the printer object; required options may
+  # # therefore vary according to the selected
+  # # printer. 
+  # options:
+  #   # name of output file
+  #   output_file: "runs/DarkBit_SingletDM/samples/gambit_output.txt"
+  #   # name of info file (explains content of output file)
+  #   info_file: "runs/DarkBit_SingletDM/samples/gambit_output.info"
 
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer. 
+  printer: hdf5
   options:
-    # name of output file
-    output_file: "runs/DarkBit_SingletDM/samples/gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "runs/DarkBit_SingletDM/samples/gambit_output.info"
+    output_file: "runs/DarkBit_SingletDM/samples/gambit_output.hdf5"
+    group: "/"
+    delete_file_if_exists: true
 
 ##############################
 # Scanner setup
@@ -84,7 +89,7 @@ Scanner:
       verion: ">=1.0"
       options:
         purpose: Likelihood
-        grid_pts: 3 #NxN grid
+        grid_pts: 5 #NxN grid
 
 ###############################
 # Observables of interest
@@ -206,17 +211,18 @@ Logger:
 
   prefix : "runs/DarkBit_SingletDM/logs/"
   redirection:
-    [Debug] : stdout #"debug.log"
-    [Default] : stdout #"default.log"
-    [Error] : stdout #"errors.log"
-    [Warning] : stdout #"warnings.log"
-    [Core,Error] : stdout #"core_errors.log"
-    [Core,Error,Fatal] : stdout #"fatal_core_errors.log"
-    [Dependency Resolver] : stdout #"stdout"
+    # [Debug] : stdout #"debug.log"
+    # [Default] : stdout #"default.log"
+    # [Error] : stdout #"errors.log"
+    # [Warning] : stdout #"warnings.log"
+    # [Core,Error] : stdout #"core_errors.log"
+    # [Core,Error,Fatal] : stdout #"fatal_core_errors.log"
+    # [Dependency Resolver] : stdout #"stdout"
     [ExampleBit_A] : "ExampleBit_A.log"
     [ExampleBit_B] : "ExampleBit_B.log"
     [BackendIniBit]: "BackendIniBit.log"
     [LibFirst] : "libfirst.log"
+    [Default] : "default.log"
   #  [Logger, Debug] : "stdout"
   #  [Core] : "stdout"
   #  [Dependency Resolver] : "stdout"

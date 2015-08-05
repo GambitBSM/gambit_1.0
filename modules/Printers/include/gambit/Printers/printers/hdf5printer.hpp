@@ -141,7 +141,7 @@ namespace Gambit
         void initialise(const std::vector<int>&);
         void auxilliary_init();
         void flush();
-        void reset();
+        void reset(bool force=false);
         int getRank();
         void finalise();
 
@@ -161,12 +161,25 @@ namespace Gambit
         /// Add PPIDpair to global index list
         void add_PPID_to_list(const PPIDpair&);
 
+        /// Check if PPIDpair exists in global index list
+        bool seen_PPID_before(const PPIDpair& ppid);
+
         #ifdef WITH_MPI
         /// Send PPID lists to the master and clear them (master process should never do this!)
         void send_PPID_lists(bool finalsend=false);
 
         /// Update the master node PPID lists with IDs from a worker node
         void receive_PPID_list(uint source);
+ 
+        /// Master waits until all processes send the specified tag, and monitors
+        /// for tag requests in the meantime. Used during initialise and finalise to
+        /// ensure monitoring for tag requests continues until it is no longer needed
+        /// by the workers.
+        void master_wait_for_tag(Tags tag);
+
+        /// MPI variables to use in the above function;
+        int waitfortag_send_buffer = 0;
+        MPI_Request req_null = MPI_REQUEST_NULL;
         #endif
 
         /// Function to ensure buffers are all synchronised to the same absolute position
@@ -215,6 +228,10 @@ namespace Gambit
  
         /// Get the name of this printer
         std::string get_printer_name() { return printer_name; }
+
+        /// Get the number of pointIDs know to this printer
+        /// (should correspond to the number of "appends" each active buffer has received)
+        ulong get_N_pointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
@@ -301,7 +318,7 @@ namespace Gambit
            if(synchronised)
            {
              // Write the data to the selected buffer ("just works" for simple numeric types)
-             selected_buffer.append(value);
+             selected_buffer.append(value,PPIDpair(pointID,mpirank));
            }
            else
            {

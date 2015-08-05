@@ -137,20 +137,27 @@ namespace Gambit {
         private:
           static const std::size_t bufferlength = LENGTH;
 
+          /// Variable to check that "append" is not called twice in a row for the same scan point
+          PPIDpair PPID_of_last_append;
+
+          /// Special value for the above to use for skipping the double-append check (e.g. when receiving many points via MPI)
+          static const PPIDpair null_PPID;
+
         public:
           /// Constructors
           VertexBufferNumeric1D()
             : VertexBufferBase()
             , buffer_valid()
             , buffer_entries()
+            , PPID_of_last_append(null_PPID)
           {}
 
           VertexBufferNumeric1D(
                 const std::string& label 
               , const int vID
               , const unsigned int i
-              , bool sync
-              , bool sil
+              , const bool sync
+              , const bool sil
               #ifdef WITH_MPI
               , const BuffTags& tags
               , const GMPI::Comm& pComm
@@ -162,6 +169,7 @@ namespace Gambit {
             , myTags(tags)
             , printerComm(pComm)
             #endif
+            , PPID_of_last_append(null_PPID)
           {
              #ifdef WITH_MPI
              myRank = pComm.Get_rank();
@@ -177,6 +185,7 @@ namespace Gambit {
                 <<tags.RA_length  <<", "
                 <<std::endl; 
              #endif
+
           }
 
           /// Destructor
@@ -184,7 +193,7 @@ namespace Gambit {
           {} 
 
           /// Append a record to the buffer
-          void append(const T& data);
+          void append(const T& value, const PPIDpair pID = null_PPID);
 
           /// Virtual for debugging; find out what the absolute sync position is from the derived class.
           virtual unsigned long dset_head_pos() = 0;
@@ -197,6 +206,12 @@ namespace Gambit {
 
           /// No data to append this iteration; skip this slot
           virtual void skip_append();
+
+          /// Skip several/many positions
+          /// NOTE! This is meant for initialising new buffers to the correct
+          /// position. If buffer overflows it may get cleared without data
+          /// being written, so don't use this in other contexts.
+          virtual void N_skip_append(ulong N);
 
           // Trigger MPI send of sync buffer to master node, or write to disk
           virtual void flush();
@@ -229,6 +244,9 @@ namespace Gambit {
           virtual void get_RA_mpi_message(uint, const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
           #endif
 
+          // Report queue length (e.g. for checking that it is empty during finalise)
+          virtual uint get_RA_queue_length() { return RA_queue_length; }
+
           /// Extract (copy) a record
           T get_entry(const std::size_t i) const;
  
@@ -237,13 +255,30 @@ namespace Gambit {
 
       };
 
+      /// @{ Static member definitions
+  
+      /// Use to skip the double-append check (for receiving many points via MPI)
+      template<class T, std::size_t L>
+      const PPIDpair VertexBufferNumeric1D<T,L>::null_PPID = PPIDpair(-1,-1); 
+
+      /// @}
+
       /// @{ VertexBufferNumeric1D function definitions
 
       /// Append a record to the buffer
       template<class T, std::size_t L>
-      void VertexBufferNumeric1D<T,L>::append(const T& data)
+      void VertexBufferNumeric1D<T,L>::append(const T& data, const PPIDpair pID)
       {
          if(not this->is_silenced()) {
+            //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running append()"<<std::endl;
+
+            if(pID!=null_PPID and pID==PPID_of_last_append)
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error! Tried to append data to buffer "<<this->get_label()<<" but supplied PPID matches PPID_of_last_append, i.e. the previous append was to the same point! This indicates a bug in the buffer calling code.";
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+
             if(sync_buffer_is_full())
             {
                std::ostringstream errmsg;
@@ -285,6 +320,7 @@ namespace Gambit {
                #endif
                this->sync_buffer_full = true;
            }
+           PPID_of_last_append = pID;
          }   
       }
 
@@ -293,6 +329,7 @@ namespace Gambit {
       void VertexBufferNumeric1D<T,L>::skip_append()
       {
          if(not this->is_silenced()) {
+            //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running skip_append()"<<std::endl;
             if(sync_buffer_is_full())
             {
                std::ostringstream errmsg;
@@ -409,6 +446,7 @@ namespace Gambit {
             #else
             RA_write_to_disk(PPID_to_dsetindex);
             #endif
+            RA_queue_length = 0;
          }
       }
 
@@ -432,7 +470,6 @@ namespace Gambit {
             if(RA_queue_length==L)
             {
                RA_flush(PPID_to_dsetindex);
-               RA_queue_length = 0;
             }
          }
       }
@@ -656,6 +693,22 @@ namespace Gambit {
             this->reset_head(); 
             this->sync_buffer_full = false;
             this->sync_buffer_empty = true;
+         }
+      }
+
+      /// TODO: Deprecated.
+      /// Skip several/many positions
+      /// NOTE! This is meant for initialising new buffers to the correct
+      /// position. If buffer overflows it will be cleared without data
+      /// being written, so don't use this in other contexts.
+      template<class T, std::size_t L>
+      void VertexBufferNumeric1D<T,L>::N_skip_append(ulong N)
+      {
+         //std::cout << "rank "<<myRank<<": Pushing forward (new?) buffer '"<<this->get_label()<<"' by "<<N<<" positions"<<std::endl; 
+         for(ulong i=0; i<N; i++)
+         {
+            if(this->sync_buffer_is_full()) clear();
+            skip_append();
          }
       }
 
