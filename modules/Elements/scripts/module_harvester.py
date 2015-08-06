@@ -6,8 +6,9 @@
 #
 #  Module and functor type harvesting script
 #  Generates all_functor_types.hpp,  
-#  module_rollcall.hpp and 
-#  module_types_rollcall.hpp.
+#  module_rollcall.hpp, 
+#  module_types_rollcall.hpp and
+#  *Bit/examples/standalone_functors.cpp
 #  
 #  This script identifies then reads through 
 #  all the module rollcall and frontend headers, 
@@ -19,7 +20,7 @@
 #  baseprinter.hpp).
 #
 #  It also finds all the module type headers
-#  and includes them in modult_types_rollcall.hpp.  
+#  and includes them in module_types_rollcall.hpp.  
 #
 #*********************************************
 #
@@ -27,7 +28,9 @@
 #   
 #  \author Ben Farmer 
 #          (ben.farmer@gmail.com)
-#    \date 2013 Sep, 2014 Jan 
+#    \date 2013 Sep
+#          2014 Jan
+#          2015 Jul
 #
 #  \author Pat Scott 
 #          (patscott@physics.mcgill.ca)
@@ -191,7 +194,7 @@ def main(argv):
     for t in be_types:
         if t != "": print ' ',t
 
-    # Generate a c++ header containing the preprocessor sequence needed by Printers/include/gambit/Printers/printers.hpp, containing all the types we have harvested.
+    # Generate a c++ header containing the preprocessor sequence needed by Printers/include/gambit/Printers/printer_rollcall.hpp, containing all the types we have harvested.
     towrite = "\
 //   GAMBIT: Global and Modular BSM Inference Tool\n\
 //   *********************************************\n\

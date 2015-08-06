@@ -90,7 +90,7 @@ namespace Gambit {
       // and ignore the MSSM_spectrum dependency.
       if (runOptions->hasKey("debug_SLHA_filenames"))
       {
-        static int counter = 0;
+        static unsigned int counter = 0;
         logger() << 
           "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
 
