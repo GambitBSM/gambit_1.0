@@ -86,8 +86,12 @@ namespace Gambit
 
       /// @{ Helpers for registration of compound datatypes
 
-      /// Vector storing functions to be run when MPI initialises.
-      std::vector<MpiIniFunc> mpi_ini_functions;
+      /// Get vector storing functions to be run when MPI initialises.
+      std::vector<MpiIniFunc>& get_mpi_ini_functions()
+      {
+         static std::vector<MpiIniFunc> mpi_ini_functions;
+         return mpi_ini_functions;
+      }
 
       /// Constructor for AddMpiInitFunc
       ///
@@ -96,7 +100,7 @@ namespace Gambit
       /// cause the functions to be run, just "queues them up" so to speak.
       AddMpiIniFunc::AddMpiIniFunc(std::string local_info, std::string name, void(*func)())
       {
-        mpi_ini_functions.push_back(MpiIniFunc(local_info,name,func));
+         get_mpi_ini_functions().push_back(MpiIniFunc(local_info,name,func));
       }
 
       /// @}
@@ -149,8 +153,8 @@ namespace Gambit
 
         // Run externally defined initialisation functions
         std::cout << "  Running MPI initialisation functions..." << std::endl;
-        for (std::vector<MpiIniFunc>::iterator it=mpi_ini_functions.begin();
-              it != mpi_ini_functions.end(); it++)
+        for (std::vector<MpiIniFunc>::iterator it=get_mpi_ini_functions().begin();
+              it != get_mpi_ini_functions().end(); it++)
         {
           std::cout << "    - Running function '"<<it->myname()<<"'" << std::endl;
           try

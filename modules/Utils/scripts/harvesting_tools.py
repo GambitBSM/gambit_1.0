@@ -441,21 +441,25 @@ def same(f1,f2):
     return True
 
 # Compare a candidate file to an existing file, replacing only if they differ.
+# TODO: This might be causing issues with file dates confusing cmake, so disable
+# it for now
 def update_only_if_different(existing, candidate):
-   print "existing : ", existing
-   print "candidate: ", candidate
-   if not os.path.isfile(existing):
-        print "Contents of directory ", os.path.dirname(existing)
-        for item in os.listdir(os.path.dirname(existing)):
-           print item
-        os.rename(candidate,existing)
-        print "\033[1;33m   Created "+re.sub("\\.\\/","",existing)+"\033[0m"
-   elif same(existing, candidate): 
-        os.remove(candidate)
-        print "\033[1;33m   Existing "+re.sub("\\.\\/","",existing)+" is identical to candidate; leaving it untouched\033[0m"
-   else:
-        os.rename(candidate,existing)
-        print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
+   # print "existing : ", existing
+   # print "candidate: ", candidate
+   # if not os.path.isfile(existing):
+   #      print "Contents of directory ", os.path.dirname(existing)
+   #      for item in os.listdir(os.path.dirname(existing)):
+   #         print item
+   #      os.rename(candidate,existing)
+   #      print "\033[1;33m   Created "+re.sub("\\.\\/","",existing)+"\033[0m"
+   # elif same(existing, candidate): 
+   #      os.remove(candidate)
+   #      print "\033[1;33m   Existing "+re.sub("\\.\\/","",existing)+" is identical to candidate; leaving it untouched\033[0m"
+   # else:
+   #      os.rename(candidate,existing)
+   #      print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
+   os.rename(candidate,existing)
+   print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
 
 #Create the module_rollcall header in the Core directory
 def make_module_rollcall(rollcall_headers,verbose):
