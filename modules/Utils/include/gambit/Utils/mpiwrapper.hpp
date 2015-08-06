@@ -337,13 +337,7 @@ namespace Gambit
       bool Is_initialized(); 
       
       /// Initialise MPI
-      /// The arguments are required in order to "fix up" the command line 
-      /// arguments so that they match their positions when the "mpirun -n X" 
-      /// wrapper call is absent.
-      void Init(int argc, char* argv[]);
-
-      /// Shut down MPI
-      void Finalize();
+      void Init();
 
       /// Nice wrapper for getting the message size from an MPI_status struct.
       /// Provide the type whose MPI_Datatype you want to retrieve as the
