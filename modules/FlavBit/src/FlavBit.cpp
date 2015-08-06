@@ -1017,6 +1017,11 @@ namespace Gambit
 
     void b2sll_measurements(Flav_measurement_assym &Flav_measurement_assym)
     {
+      //kB2sll
+      cout<<"In b2sll_measurements"<<endl;
+      cout<<GAMBIT_DIR  "/FlavBit/Measurements"<<endl;                 
+      Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data"); 
+      cout<<"init"<<endl;      
       
       
       
