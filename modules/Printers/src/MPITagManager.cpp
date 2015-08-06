@@ -152,7 +152,7 @@ namespace Gambit
     void MPITagManager::register_new_tags(const VBIDtrip in)
     {
        VBIDpair bufID(in.vertexID,in.index);
-       uint tag = in.first_tag;
+       unsigned int tag = in.first_tag;
 
        std::map<VBIDpair, int>::iterator it = tags_from_VBID.find(bufID);
        if(it!=tags_from_VBID.end())
