@@ -31,13 +31,13 @@ namespace Gambit
     /// Identifies individual buffers (I call them VertexBuffer, but actually there can be more than one per vertex) 
     //typedef std::pair<int,unsigned int> VBIDpair;
     struct VBIDpair {
-      int   vertexID;
-      unsigned int  index;
+      int vertexID;
+      int index;
       VBIDpair() 
         : vertexID(0)
         , index(0)
       {}
-      VBIDpair(const int v, const unsigned int i)
+      VBIDpair(const int v, const int i)
         : vertexID(v)
         , index(i)
       {}
@@ -50,20 +50,20 @@ namespace Gambit
 
     // Same as VBIDpair, but plus the "first_tag" value (association with MPI tag)
     struct VBIDtrip {
-      int   vertexID;
-      unsigned int index;
-      unsigned int first_tag; 
+      int vertexID;
+      int index;
+      int first_tag; 
       VBIDtrip() 
         : vertexID(0)
         , index(0)
         , first_tag(0)
       {}
-      VBIDtrip(const int v, const unsigned int i, const unsigned int t)
+      VBIDtrip(const int v, const int i, const int t)
         : vertexID(v)
         , index(i)
         , first_tag(t)
       {}
-      VBIDtrip(const VBIDpair p, const unsigned int t)
+      VBIDtrip(const VBIDpair p, const int t)
         : vertexID(p.vertexID)
         , index(p.index)
         , first_tag(t)
@@ -79,13 +79,13 @@ namespace Gambit
     /// Used to identify a single parameter space point
     //typedef std::pair<unsigned long int, unsigned int> PPIDpair;
     struct PPIDpair {
-      unsigned long int pointID;
-      unsigned int  rank;
+      long int pointID;
+      int  rank;
       PPIDpair() 
         : pointID(0)
         , rank(0)
       {}
-      PPIDpair(const unsigned long int p, const unsigned int r)
+      PPIDpair(const long int p, const int r)
         : pointID(p)
         , rank(r)
       {}
