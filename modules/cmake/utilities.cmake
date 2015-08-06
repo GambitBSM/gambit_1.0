@@ -155,6 +155,15 @@ function(add_gambit_custom target filename HARVESTER HARVESTER_FILES OTHER_DEPS)
   add_custom_target(${target} DEPENDS ${PROJECT_SOURCE_DIR}/scratch/${filename})
 endfunction()
 
+# Function to remove specific GAMBIT scratch files
+function(remove_scratch_files FILENAMES)
+  foreach (f ${ARGN})
+    if (EXISTS "${PROJECT_SOURCE_DIR}/scratch/${f}")
+      file(REMOVE "${PROJECT_SOURCE_DIR}/scratch/${f}")
+    endif()
+  endforeach()
+endfunction()
+
 # Function to add GAMBIT executable
 function(add_gambit_executable executablename LIBRARIES)
   cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
