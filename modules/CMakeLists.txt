@@ -222,56 +222,12 @@ foreach(bit ${GAMBIT_BITS})
     set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
   endif()
 endforeach()
-
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp
-                          ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_types_rollcall.hpp
-                   COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${MODEL_HARVESTER} 
-                           ${HARVEST_TOOLS}
-                           ${MODEL_HARVESTER_FILES}
-                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp
-                          ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types_rollcall.hpp
-                   COMMAND python ${BACKEND_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${BACKEND_HARVESTER}
-                           ${HARVEST_TOOLS}
-                           ${BACKEND_HARVESTER_FILES}
-                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_rollcall.hpp
-                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
-                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
-                          ${STANDALONE_FUNCTOR_CPPS}
-                   COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${MODULE_HARVESTER}
-                           ${HARVEST_TOOLS}
-                           ${MODULE_HARVESTER_FILES}
-                           ${PROJECT_BINARY_DIR}/CMakeCache.txt
-                           ${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml)
-
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp 
-                   COMMAND python ${PRINTER_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${PRINTER_HARVESTER}
-                           ${HARVEST_TOOLS}
-                           ${PRINTER_HARVESTER_FILES}
-                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-
-add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp
-                                          ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_types_rollcall.hpp)
-add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp
-                                          ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types_rollcall.hpp)
-add_custom_target(module_harvest  DEPENDS backend_harvest
-                                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_rollcall.hpp
-                                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
-                                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
-                                          ${STANDALONE_FUNCTOR_CPPS})
-add_custom_target(printer_harvest DEPENDS module_harvest
-                                          ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp)
+add_gambit_custom(model_harvest   models_harvested   ${MODEL_HARVESTER}   ${MODEL_HARVESTER_FILES}  )
+add_gambit_custom(backend_harvest backends_harvested ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
+add_gambit_custom(module_harvest  modules_harvested  ${MODULE_HARVESTER}  ${MODULE_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml)
+add_gambit_custom(printer_harvest printers_harvested ${PRINTER_HARVESTER} ${PRINTER_HARVESTER_FILES})
+add_dependencies(module_harvest backend_harvest)
+add_dependencies(printer_harvest module_harvest)
 
 # Generate the CMakeLists.txt files for GAMBIT modules (and backends, and printers)
 message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files.${ColourReset}")

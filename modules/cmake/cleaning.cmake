@@ -38,6 +38,12 @@ endforeach()
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt")
 
+# Make sure clean removes the scratch files indicating that the harvesters have been run.
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/models_harvested")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/backends_harvested")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/modules_harvested")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/printers_harvested")
+
 # Arrange for removal of all_functor_types.hpp and other generated headers upon "make clean".
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_types_rollcall.hpp")
