@@ -20,7 +20,7 @@
 #include <iostream>
 
 #include "gambit/Utils/mpiwrapper.hpp"
-
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 namespace Gambit
 {
@@ -54,7 +54,7 @@ namespace Gambit
            errmsg << "Error performing MPI_Comm_dup! Received error flag: "<<errflag; 
            utils_error().raise(LOCAL_INFO, errmsg.str());
          }
-     }
+      }
 
       /// @}      
   
@@ -107,6 +107,11 @@ namespace Gambit
 
       /// Initialise MPI
       void Init(int argc, char* argv[]) {
+
+        // Run any functions needed to queue up MPI datatype definition functions
+        // (still a little hacky, but works)
+        Printers::queue_mpidefs();
+
         // Do basic interrogation
         std::cout << "Hooking up to MPI..." << std::endl;
         if(Is_initialized())

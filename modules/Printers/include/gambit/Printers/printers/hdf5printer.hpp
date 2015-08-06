@@ -29,7 +29,6 @@
 
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
-#include "gambit/Printers/new_mpi_datatypes.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/VertexBufferBase.hpp"
 #include "gambit/Printers/VertexBuffer_mpitags.hpp"
@@ -39,6 +38,7 @@
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 //#define DEBUG_MODE
 //#define HDEBUG_MODE // "High output" debug mode (info with every single print command)

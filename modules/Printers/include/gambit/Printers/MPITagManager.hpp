@@ -31,10 +31,10 @@
 #include <time.h> // For short sleeps in listener process 
 
 // Gambit
-#include "gambit/Printers/new_mpi_datatypes.hpp"
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 
 // Code!

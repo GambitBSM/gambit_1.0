@@ -94,7 +94,6 @@
 #include <iomanip>
 
 // Gambit
-#include "gambit/Printers/new_mpi_datatypes.hpp"
 #include "gambit/Printers/printers/hdf5printer.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
@@ -105,6 +104,7 @@
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 // Switch for debugging output (manual at the moment)
 
