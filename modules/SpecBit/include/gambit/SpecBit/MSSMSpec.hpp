@@ -751,9 +751,9 @@ namespace Gambit {
 	     /// the getters for these were removed but Pat last meeting
 	     /// we agreed to add setters here unless I misunderstood.
 	     /// need to discuss this
-	     // tmp_map["W+"] = &set_MW_pole_slha<Model>;
-	     // tmp_map["W-"] = &set_MW_pole_slha<Model>;
-	     // tmp_map["Z0"] = &set_MW_pole_slha<Model>;
+	     tmp_map["W+"] = &set_MW_pole_slha<Model>;
+	     tmp_map["W-"] = &set_MW_pole_slha<Model>;
+	     tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
 	     
 	    map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
 	  }
@@ -852,13 +852,13 @@ namespace Gambit {
          {  
             typename MTget::fmap0 tmp_map;
         
-            // tmp_map["MZ"] = &Model::get_Pole_MZ;
-            // tmp_map["MW"] = &Model::get_Pole_MW;
-
+           
             // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
-            //// tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
-            //// tmp_map["W+"] = &Model::get_MVWm_pole_slha;
-            //// tmp_map["W-"] = &Model::get_MVWm_pole_slha;
+	    // reinstating the Z and W getters as otherwise there is no
+	    // point in having the setters!
+	    tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
+            tmp_map["W+"] = &Model::get_MVWm_pole_slha;
+            tmp_map["W-"] = &Model::get_MVWm_pole_slha;
             //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
             //// tmp_map["g"] = &Model::get_MVG_pole_slha;
             ////    //tmp_map["gamma"] = &Model::get_pole_MPhoton;
