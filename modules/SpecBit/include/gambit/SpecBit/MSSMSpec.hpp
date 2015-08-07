@@ -340,10 +340,12 @@ namespace Gambit {
        	model.get_physical_slha().MHpm(0) = mass;
       }
      
+
      // PA: I'm using nicer names than the FlexibleSUSY ones here
      // but maybe I shouldn't as it breaks the symmetry with the
      // getters and could generate some confusion
      template <class Model>
+
      void set_MGluino_pole_slha(Model& model, double mass)
      {
        model.get_physical_slha().MGlu = mass;
@@ -368,13 +370,13 @@ namespace Gambit {
      template <class Model>
      void set_MGluon(Model& model, double mass)
      {
-       model.get_physical().MG() = mass;
+       model.get_physical().MG = mass;
      }
      
      template <class Model>
      void set_MPhoton(Model& model, double mass)
      {
-       model.get_physical().MVP() = mass;
+       model.get_physical().MVP = mass;
      }
  
      
@@ -498,41 +500,8 @@ namespace Gambit {
             map_collection[Par::dimensionless].map2 = tmp_map;
          }
 
-         /// @}
-
-         // @{ mass_eigenstate - tree level mass parameters
-
-         // Functions utilising the "plain-vanilla" function signature
-         // (Zero index member functions of model object)
-         {
-            typename MTget::fmap0 tmp_map;
-
-            tmp_map["MZ"]      = &Model::get_MVZ;
-            tmp_map["MW"]      = &Model::get_MVWm;
-            tmp_map["MGluino"] = &Model::get_MGlu; 
-            tmp_map["MGluon"]  = &Model::get_MVG; 
-            tmp_map["MPhoton"] = &Model::get_MVP;
+         
  
-            // these are not present in the model object currently
-            // But maybe we should add them
-            // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
-            // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
-            // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
-            // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
-            
-            // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
-            // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
-            // tmp_map["Mup"] = &Model::get_DRbar_mup;
-            // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
-            // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
-            // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
-            // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
-            // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
-            // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
- 
-            map_collection[Par::mass_eigenstate].map0 = tmp_map;
-         }
-
          // Functions utilising the one-index "plain-vanilla" function signature
          // (One-index member functions of model object)
          {
@@ -864,7 +833,7 @@ namespace Gambit {
             ////    //tmp_map["gamma"] = &Model::get_pole_MPhoton;
             //// tmp_map["gamma"] = &Model::get_MVP_pole_slha;
 
-            tmp_map["~g"] = &Model::get_MGlu_pole_slha; 
+            tmp_map["~g"] = &Model::get_MGlu_pole_slha;
 
             // tmp_map["MGoldstone0"] = &Model::get_Pole_neut_goldstone;
             // tmp_map["MA0"] = &Model::get_Pole_neut_CPodd_higgs;
@@ -978,6 +947,41 @@ namespace Gambit {
          return map_collection;
       }
 
+/// @}
+
+         // @{ mass_eigenstate - tree level mass parameters
+
+         // Functions utilising the "plain-vanilla" function signature
+         // // (Zero index member functions of model object)
+         // {
+         //    typename MTget::fmap0 tmp_map;
+
+         //    tmp_map["MZ"]      = &Model::get_MVZ;
+         //    tmp_map["MW"]      = &Model::get_MVWm;
+         //    tmp_map["MGluino"] = &Model::get_MGlu; 
+         //    tmp_map["MGluon"]  = &Model::get_MVG; 
+         //    tmp_map["MPhoton"] = &Model::get_MVP;
+ 
+         //    // these are not present in the model object currently
+         //    // But maybe we should add them
+         //    // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
+         //    // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
+         //    // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
+         //    // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
+            
+         //    // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
+         //    // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
+         //    // tmp_map["Mup"] = &Model::get_DRbar_mup;
+         //    // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
+         //    // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
+         //    // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
+         //    // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
+         //    // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
+         //    // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
+ 
+         //    map_collection[Par::mass_eigenstate].map0 = tmp_map;
+         // }
+     
       /// @}
   
    } // end SpecBit namespace 
