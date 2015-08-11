@@ -42,6 +42,7 @@ namespace Gambit {
       }
     //@}
 
+    
     /// @name SpecializablePythia definitions
     //@{
       void SpecializablePythia::init(const std::vector<std::string>& externalSettings,

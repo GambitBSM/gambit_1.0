@@ -171,8 +171,8 @@ Rules:
     function: operatePythia
     options:
       nEvents: 1000
-      pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
-      #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
+      pythiaNames: ["Pythia_external"]
+      #pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
       #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
 
@@ -180,12 +180,16 @@ Rules:
     function:  getPythia
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_SUSY_LHC_8TeV:
+      Pythia_external:
         pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
+                          "UserModel:all = on",
                           "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
-                          "HadronLevel:all = off"]
+                          "HadronLevel:all = on"]
+      debug_SLHA_filenames:
+       - martin.slha
+
       #Pythia_glusq_LHC_8TeV:
       #  pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
       #                    "PartonLevel:MPI = off",
