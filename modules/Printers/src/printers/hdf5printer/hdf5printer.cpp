@@ -94,7 +94,6 @@
 #include <iomanip>
 
 // Gambit
-#include "gambit/Printers/new_mpi_datatypes.hpp"
 #include "gambit/Printers/printers/hdf5printer.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
@@ -105,6 +104,7 @@
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 // Switch for debugging output (manual at the moment)
 
@@ -179,19 +179,20 @@ namespace Gambit
           // output stream. If so, we relinquish control over it and silence the
           // new output stream.
           bool silence = false;
-          #ifdef DEBUG_MODE
+          //#ifdef DEBUG_MODE
           std::cout<<"Preparing to create new print output stream..."<<std::endl;
           std::cout<<"...label = "<<label<<std::endl;
           std::cout<<"...is stream already managed? "<<printer->is_stream_managed(key)<<std::endl;
           std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
-          #endif
+          std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
+          //#endif
           if( printer->is_stream_managed(key) )
           {
             silence = true;
           }
-          #ifdef DEBUG_MODE
+          //#ifdef DEBUG_MODE
           std::cout<<"...is silenced? "<<silence<<std::endl;
-          #endif
+          //#endif
 
           // Create the new buffer object
           H5FGPtr loc(NULL);
@@ -238,53 +239,32 @@ namespace Gambit
     HDF5Printer::HDF5Printer(const Options& options)
       : printer_name("Primary printer")
       , myRank(0)
-     #ifdef WITH_MPI
-      , myComm(MPI_COMM_WORLD) // duplicates MPI_COMM_WORLD, creating new communicator context
-      , mpiSize(1)
-     #endif
-     {
       #ifdef WITH_MPI
-      // Do basic MPI checks
+      , myComm() // initially attaches to MPI_COMM_WORLD
+      , mpiSize(1)
+      #endif
+    {
+      #ifdef WITH_MPI
       myRank = myComm.Get_rank();
-      mpiSize = myComm.Get_size();
-
-      if(myRank==0) {
-         printer_name = "Master primary printer";
-      } else {
-         std::ostringstream ss;
-         ss << "Primary printer for rank " << myRank;
-         printer_name = ss.str();
-      }
       #endif
 
-      // (Needs modifying when full MPI implentation is done)
-      // Initialise "lastPointID" map to -1 (i.e. no last point)
-      lastPointID[myRank] = -1; // Only rank 0 process for now; parallel mode not implemented
-
-      if(options.getValueOrDef<bool>(false,"auxilliary"))
-      {
-        // Set up this printer in auxilliary mode
-        std::ostringstream ss;
-        ss << options.getValueOrDef<std::string>("Primary printer","name");
-        #ifdef WITH_MPI
-        ss << " for rank " << myRank;
-        #endif
-        printer_name = ss.str();
-        synchronised = options.getValueOrDef<bool>(true,"synchronised");
-        DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" synchronised="<<synchronised<<")..." << std::endl; )
-      } 
-      else
+      if(not options.getValueOrDef<bool>(false,"auxilliary"))
       {
         // Set up this printer in primary mode
         DBUG( std::cout << "Constructing Primary HDF5Printer object..." << std::endl; )
         is_primary_printer = true;
 
+        // Set up communicator context for HDF5 printer system
+        #ifdef WITH_MPI
+        myComm.dup(MPI_COMM_WORLD); // duplicates MPI_COMM_WORLD
+           
+        // Create object to issue/manage MPI tags for the various buffers
+        tag_manager = new MPITagManager(myComm,FIRST_EMPTY_TAG,TAG_REQ,BuffTags::NTAGS);
+        #endif
+
         if(myRank==0) // Only master node will actuall write to file
         {  
-           #ifdef WITH_MPI
-           // Create object to issue MPI tags for the various buffers
-           tag_manager = new MPITagManager(myComm,FIRST_EMPTY_TAG,TAG_REQ,BuffTags::NTAGS);
-           #endif
+           printer_name = "Master primary printer";
 
            std::string file = options.getValue<std::string>("output_file");
            std::string group = options.getValueOrDef<std::string>("/","group");
@@ -302,7 +282,113 @@ namespace Gambit
            // Set the target dataset write location to the chosen group
            location = groupptr;
         }
+        else
+        {
+           std::ostringstream ss;
+           ss << "Primary printer for rank " << myRank;
+           printer_name = ss.str();
+        }
+      }
+      else
+      {
+        // Set up this printer in auxilliary mode
+        std::ostringstream ss;
+        ss << options.getValue<std::string>("name");
+        #ifdef WITH_MPI
+        ss << " for rank " << myRank;
+        #endif
+        printer_name = ss.str();
+        synchronised = options.getValueOrDef<bool>(true,"synchronised");
+        DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" synchronised="<<synchronised<<")..." << std::endl; )
       } 
+      // Now that communicator is set up, get its properties.
+      #ifdef WITH_MPI
+      myRank = myComm.Get_rank();
+      mpiSize = myComm.Get_size();
+      #endif
+ 
+      // Initialise "lastPointID" map to -1 (i.e. no last point)
+      lastPointID[myRank] = -1; // Only rank 0 process for now; parallel mode not implemented
+    }
+
+    #ifdef WITH_MPI
+    /// Master waits until all processes send the specified tag, and monitors
+    /// for tag requests in the meantime. Used during initialise and finalise to
+    /// ensure monitoring for tag requests continues until it is no longer needed
+    /// by the workers.
+    /// Acts similarly to a Barrier for the master process, but lets it continue
+    /// monitoring for tag requests while waiting.
+    void HDF5Printer::master_wait_for_tag(Tags tag)
+    {
+       if(mpiSize>1)
+       {
+          if(myRank==0)
+          {
+             MPI_Status status;
+             int recv_buffer = 0; // To receive the null message
+             std::vector<bool> passed(mpiSize); // should init to "false"
+             passed[0] = true; // Set rank zero entry to 'true' so we don't wait for ourselves.
+             while( std::find(passed.begin(), passed.end(), false) != passed.end() ) // Pass when 'false' cannot be found
+             {
+                // Check whether other processes have caught up yet
+                for(uint source=1;source<mpiSize;source++)
+                {
+                   //std::cout<<"rank "<<myRank<<": process "<<source<<" passed block? "<<passed[source]<<std::endl;
+                   if(not passed[source])
+                   {
+                      if( myComm.Iprobe(source, tag, &status) )
+                      {
+                         // Ok the source has now reached this function.
+                         passed[source] = true;
+                         myComm.Recv(&recv_buffer, 1, source, tag);
+                      } 
+                   }
+                }
+
+                // While waiting, fulfil tag requests from other processes
+                tag_manager->check_for_tag_requests();
+  
+                // sleep? leave for now.
+             }
+          }
+          else
+          {
+             // Other processes simply signal that they have passed this point.
+             myComm.Isend(&waitfortag_send_buffer, 1, 0 /*master*/, tag, &req_null);
+          }
+       }
+    }
+    #endif
+
+    /// Initialisation function
+    // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
+    void HDF5Printer::initialise(const std::vector<int>& printmevec)
+    {
+       // Prior to running this, the dependency resolver triggers a single null
+       // print for every functor, which will trigger the creation of all the
+       // buffer managers that we will need (but possibly not all the buffers,
+       // since multiple buffers can be created within a single print function,
+       // for instance if each entry of a variable-length vector is directed
+       // into a different buffer. New buffers can thus appear at any time.
+       // I am not sure if I have dealt with this case sufficiently well yet,
+       // further testing is needed.)
+       // Anyway, when new buffers are created, they put in tag requests to
+       // the master, which are blocking Sends and Recvs. So if the master 
+       // doesn't wait for these to complete, and for example goes into a 
+       // Barrier in the scanner, then a deadlock will occur. So here, we
+       // the master process to sit and fulfil the tag requests
+       // until everyone has passed this function. After that, tag requests can
+       // only be fulfilled by the master once per iteration, which may or 
+       // may not be enough to avoid future deadlocks with the scanner MPI
+       // commands. Will try it out and see what happens.
+
+       #ifdef WITH_MPI
+       std::cout << "rank "<<myRank<<": Reached initialise!"<<std::endl;
+       master_wait_for_tag(INIT_PASS);
+       std::cout << "rank "<<myRank<<": Passed initialise!"<<std::endl;
+       #endif
+
+       return;
     }
 
 
@@ -313,6 +399,14 @@ namespace Gambit
       // Need to cast it to the derived type, but this should always be safe 
       // for the auxilliary printers.
       primary_printer = dynamic_cast<HDF5Printer*>(this->get_primary_printer());
+
+      // Fix up mpi communicator (need to copy the one created by the
+      // primary printer)
+      #ifdef WITH_MPI
+      myComm = primary_printer->get_Comm();
+      myRank = myComm.Get_rank();
+      mpiSize = myComm.Get_size();
+      #endif
 
       // Retrieve the target location for adding new datasets from the primary
       // printer
@@ -329,7 +423,7 @@ namespace Gambit
 
       #ifdef WITH_MPI
       // Make sure to delete the MPITagManager that we created with 'new'
-      if(myRank==0 and is_primary_printer)
+      if(is_primary_printer)
       {
         delete tag_manager;
       }
@@ -361,14 +455,15 @@ namespace Gambit
  
           // If the master process buffers are full, need to empty those as well
           // before (potentially) trying to receive mpi buffer messages.
-          empty_sync_buffers();
+          if(myRank==0) empty_sync_buffers();
 
           #ifdef WITH_MPI
           // Wait for all the nodes to do their final sends
           #ifdef MPI_DEBUG
           std::cout << "rank "<<myRank<<": Waiting at barrier in finalise() ("<<printer_name<<")"<<std::endl;
           #endif
-          myComm.Barrier(); 
+          master_wait_for_tag(FINAL_PASS);
+          //myComm.Barrier(); // replaced with master_wait_for_tag
           #ifdef MPI_DEBUG
           std::cout << "rank "<<myRank<<": Barrier passed ("<<printer_name<<")"<<std::endl;
           #endif
@@ -450,6 +545,42 @@ namespace Gambit
                 }
              }
           }
+
+          /// Double-check that all the buffers are empty.
+          for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+          {
+             if(it->second->is_synchronised())
+             {
+                if(it->second->sync_buffer_is_full()==true)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error! Buffer "<<it->second->get_label()<<" reports sync_buffer_is_full()=true after finalise operations should be complete!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+                if(it->second->sync_buffer_is_empty()==false)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error! Buffer "<<it->second->get_label()<<" reports sync_buffer_is_empty()=false after finalise operations should be complete!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+             }
+             else
+             {
+                if(it->second->postponed_RA_queue_length()!=0)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error! Buffer "<<it->second->get_label()<<" reports postponed_RA_queue_length!=0 (length is "<<it->second->postponed_RA_queue_length()<<") after finalise operations should be complete!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+                if(it->second->get_RA_queue_length()!=0)
+                {
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error! Buffer "<<it->second->get_label()<<" reports get_RA_queue_length()!=0 (length is "<<it->second->get_RA_queue_length()<<") after finalise operations should be complete!";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+             }
+          }
+
        } //end if(is_primary_printer)
     }
 
@@ -463,13 +594,6 @@ namespace Gambit
          printer_error().raise(LOCAL_INFO, errmsg.str());
        }
        return location;
-    }
-
-    /// Initialisation function
-    // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
-    void HDF5Printer::initialise(const std::vector<int>& printmevec)
-    {
-      // Currently don't seem to need this... could use it to check if all VertexID's have submitted print requests.
     }
 
     /// Retrieve MPI rank
@@ -517,6 +641,16 @@ namespace Gambit
       lookup[ppid] = reverse_lookup.size();
       reverse_lookup.push_back(ppid);
     }
+
+    /// Check if PPIDpair exists in global index list
+    bool HDF5Printer::seen_PPID_before(const PPIDpair& ppid)
+    {
+      bool result = false;
+      std::map<PPIDpair, ulong>& lookup = primary_printer->global_index_lookup;
+      if ( lookup.find(ppid) != lookup.end() ) result = true;
+      return result;
+    }
+
 
     #ifdef WITH_MPI
     /// Clear index lists (master process should never do this!)
@@ -633,7 +767,7 @@ namespace Gambit
 
       // Determine the desired sync position
       // (i.e. look up how many parameter points have been generated)
-      const ulong sync_pos = reverse_global_index_lookup.size()-1;  
+      const ulong sync_pos = get_N_pointIDs()-1;  
 
       // Cycle through all buffers and tell them to ensure they are at the right position
       // The buffers should throw an error if we are accidentally telling them to go backwards
@@ -739,6 +873,10 @@ namespace Gambit
        // First we will check if any BUFFER_SENT messages are waiting.
        if(myComm.Iprobe(MPI_ANY_SOURCE, N_BUFFERS_SENT))
        {
+          #ifdef MPI_DEBUG
+          std::cout<<"rank "<<myRank<<": N_BUFFERS_SENT message detected..."<<std::endl;
+          #endif
+
           collected_sync_buffers = true;
           for(uint source_rank=1; source_rank<mpiSize; source_rank++)
           {
@@ -821,14 +959,14 @@ namespace Gambit
 
                 // Update master PPIDs with those from the worker node
                 // Will block until these are received; they should come right alongside the buffers themselves
-                long npoints_init = primary_printer->reverse_global_index_lookup.size();
+                long npoints_init = get_N_pointIDs();
                 #ifdef MPI_DEBUG
                 std::cout<<"rank "<<myRank<<": npoints_init = "<<npoints_init<<std::endl;
                 #endif
 
                 receive_PPID_list(source_rank);
 
-                long npoints_final = primary_printer->reverse_global_index_lookup.size();
+                long npoints_final = get_N_pointIDs();
                 #ifdef MPI_DEBUG
                 std::cout<<"rank "<<myRank<<": npoints_final = "<<npoints_final<<std::endl;
                 std::cout<<"rank "<<myRank<<": Received "<<npoints_final-npoints_init<<" new PPIDs from process "<<source_rank<<std::endl;
@@ -912,6 +1050,7 @@ namespace Gambit
        }
 
        int first_tag_in_group;
+
        if(myRank==0)
        {
           // We are the master, just get the tags ourselves.
@@ -922,59 +1061,83 @@ namespace Gambit
        }
        else
        {
-          // Otherwise have to ask the master node for the tags
-          #ifdef MPI_DEBUG
-          std::cout<<"rank "<<myRank<<": Sending tag request ("<<bufID.vertexID<<","<<bufID.index<<") to master"<<std::endl;
-          #endif
+          // Check if tags for this buffer have been received from the master
+          if(tag_manager->tag_exists(bufID))
+          {
+             // Ok they are available, get them.
+             first_tag_in_group = tag_manager->get_tags(bufID);
+          }
+          else
+          {
+             // Post non-blocking request for new tag to be issued; we will check 
+             // back later to retrieve the reply.
+             myComm.Isend(&bufID, 1, 0, TAG_REQ, &req_null);
 
-          // Send request for new tag
-          myComm.Send(&bufID, 1, 0, TAG_REQ);
+             // Tell tag_manager that we are waiting for a tag for this buffer
+             tag_manager->add_to_waiting_list(bufID);
 
-          // Receive the new tag
-          myComm.Recv(&first_tag_in_group, 1, 0, TAG_REQ);
+             // For now, give the buffer a dummy value, so that it knows not to
+             // try and send MPI messages yet.
+             first_tag_in_group = -1;
 
-          #ifdef MPI_DEBUG
-          std::cout<<"rank "<<myRank<<": Received first-tag ("<<first_tag_in_group<<") from master"<<std::endl;
-          #endif
+             // Receive the new tag
+             //myComm.Recv(&first_tag_in_group, 1, 0, TAG_REQ);
+          }
        }
        // Reconstruct the whole tag group and return
        return BuffTags(first_tag_in_group);
     }
 
-    /// REPLACED BY MPITagManager
-    /// Check for tag requests from worker nodes
-    //void HDF5Printer::check_for_bufftag_requests()
-    //{
-    //  if(is_auxilliary_printer())
-    //  {
-    //     // Primary printer must handle the tag requests
-    //     primary_printer->check_for_bufftag_requests();
-    //  }
+    // Check for MPI tag messages waiting to be delivered from the master
+    void HDF5Printer::check_for_bufftag_deliveries()
+    {
+       if(not is_primary_printer)
+       {
+          std::ostringstream errmsg;
+          errmsg << "rank "<<myRank<<": Error! Only primary printer may check_for_bufftag_deliveries()";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       if(myRank==0)
+       {
+          std::ostringstream errmsg;
+          errmsg << "rank "<<myRank<<": Error! Master process is not permitted to check_for_bufftag_deliveries()";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       //std::cout<<"rank "<<myRank<<": checking for bufftag_deliveries "<<std::endl; 
 
-    //  if(myRank!=0)
-    //  {
-    //      std::ostringstream errmsg;
-    //      errmsg << "Error! Called check_for_buftag_request() from non-master node! (myRank="<<myRank<<"). Only the master node may fulfil requests for new MPI tags.";
-    //      printer_error().raise(LOCAL_INFO, errmsg.str());
-    //  }
-    //  for(uint rank=1; rank<mpiSize; rank++)
-    //  {
-    //    // Check for tag request
-    //    bool message_waiting = myComm.Iprobe(rank, TAG_REQ);
-    //    if( message_waiting )
-    //    {
-    //       // Get the tag request
-    //       VBIDpair bufID;
-    //       myComm.Recv(&bufID, 1, rank, TAG_REQ);
-  
-    //       // Do the tag lookup/issue
-    //       int tag = tag_manager->get_tags(bufID);
-    //      
-    //       // Send the tag back to the worker
-    //       myComm.Send(&tag, 1, rank, TAG_REQ);
-    //    }        
-    //  }
-    //}
+       MPI_Status status;
+       while(myComm.Iprobe(0, TAG_REQ, &status) )
+       {
+          // Returns true if there is a message waiting
+          //std::cout<<"rank "<<myRank<<": receiving tag (TAG_REQ) "<<std::endl; 
+
+          // Receive the message
+          VBIDtrip new_tag; 
+          myComm.Recv(&new_tag, 1, 0, TAG_REQ);
+
+          // Check validity of tag
+          if(new_tag.first_tag<FIRST_EMPTY_TAG)
+          {
+             std::ostringstream errmsg;
+             errmsg << "Error! (rank "<<myRank<<"): Received invalid tags from master (new_tag.first_tag="<<new_tag.first_tag<<" < FIRST_EMPTY_TAG="<<FIRST_EMPTY_TAG<<") (i.e. is reserved, or invalid, tag value)";
+             printer_error().raise(LOCAL_INFO, errmsg.str());
+          }
+
+          // buffer ID pair
+          VBIDpair buffkey(new_tag.vertexID,new_tag.index);
+
+          //std::cout<<"rank "<<myRank<<": received tag "<<new_tag.first_tag<<" for buffer ("<<new_tag.vertexID<<","<<new_tag.index<<")"<<std::endl; 
+
+          // Register buffer as no longer missing tags
+          tag_manager->remove_from_waiting_list(buffkey);
+
+          // Give the tags to the appropriate buffer
+          all_buffers.find(buffkey)->second->update_myTags(new_tag.first_tag); 
+       }
+       //std::cout<<"rank "<<myRank<<": finished checking for bufftag_deliveries "<<std::endl; 
+       return;
+    }
+
     #endif
 
     /// Empty all the buffers to disk
@@ -994,27 +1157,29 @@ namespace Gambit
         }
         else {
           it->second->RA_flush(primary_printer->global_index_lookup);
+          //std::cout<<"rank "<<myRank<<": flushing RA buffer of "<<it->second->get_label()<<std::endl;
         }
       }
     }
 
     /// Invalidate all data on disk which has been printed by this printer so far,
     /// and reset all the buffers to write back to the first data slots.
-    /// This is only allowed if this is an auxilliary printer with global=true
-    void HDF5Printer::reset()
+    /// This is only allowed if this is an auxilliary printer with global=true, or
+    /// if "force=true" is specified.
+    void HDF5Printer::reset(bool force)
     {
       #ifdef DEBUG_MODE
       std::cout<<"is_auxilliary_printer() = "<<is_auxilliary_printer()<<std::endl;
       std::cout<<"synchronised            = "<<synchronised<<std::endl;
       std::cout<<"printer_name            = "<<printer_name<<std::endl;
       #endif
-      if(not this->is_auxilliary_printer())
+      if(not force and not this->is_auxilliary_printer())
       {
          std::ostringstream errmsg;
          errmsg << "Error! Tried to call reset() on the primary HDF5Printer (printer_name = "<<printer_name<<")! This would delete all the data from the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
-      else if(synchronised)
+      else if(not force and synchronised)
       { 
          std::ostringstream errmsg;
          errmsg << "Error! Tried to call reset() on an auxilliary HDF5Printer (printer_name = "<<printer_name<<") which is synchronised with the primary printer! This would delete all the point-level data written by this printer during the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
@@ -1025,7 +1190,7 @@ namespace Gambit
          // Ok safe to do the resets.
          for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
          {
-           it->second->reset();
+           it->second->reset(force);
          }
       }
     }
@@ -1064,7 +1229,7 @@ namespace Gambit
          {
            long head_pos = it->second->dset_head_pos();
            std::string name       = it->second->get_label();
-           long sync_pos_plus1 = reverse_global_index_lookup.size();
+           long sync_pos_plus1 = get_N_pointIDs();
 
            if(sync_type==0) {
               if(head_pos+1 < sync_pos_plus1)
@@ -1100,20 +1265,34 @@ namespace Gambit
     // and perform adjustments needed to prepare the printer.
     void HDF5Printer::check_for_new_point(const ulong candidate_newpoint, const uint mpirank)
     {
+       if(myRank==0)
+       {
+          // Master process primary printer checks for tag requests from worker processes
+          // I am hoping this check is cheap since it will happen quite a lot.
+          tag_manager->check_for_tag_requests();
+       }
+       else
+       {
+          // Everyone else checks for the replies to the tag requests.
+          primary_printer->check_for_bufftag_deliveries();
+       }
+
        if(is_auxilliary_printer())
        {
           // Redirect task to primary printer
           primary_printer->check_for_new_point(candidate_newpoint, mpirank);
        }
 
+       //std::cout<<"rank "<<myRank<<": Checking for new point (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
+
        // Check if we have changed target PointIDs since the last print call
        if(candidate_newpoint!=lastPointID.at(myRank))
        {
          #ifdef MPI_DEBUG
          std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
-         std::cout<<"rank "<<myRank<<": sync_pos="<<reverse_global_index_lookup.size()<<std::endl;
+         std::cout<<"rank "<<myRank<<": sync_pos="<<get_N_pointIDs()<<std::endl;
          #endif
- 
+
          // Explicitly check up on the synchronisation of all the buffers and their
          // associated datasets
 
@@ -1130,7 +1309,7 @@ namespace Gambit
          // (with the last ID being the point from which the next print statements 
          // will arrive).
          //
-         // So, in the end, with sync_pos = reverse_global_index_lookup.size() - 1
+         // So, in the end, with sync_pos = reverse_global_index_lookup.size() - 1 = get_N_pointIDs() - 1
          // we require 
          //   dset_head_pos() == sync_pos
          // for every buffer.
@@ -1257,7 +1436,7 @@ namespace Gambit
          if(synchronised)
          {
            // Write the data to the selected buffer ("just works" for simple numeric types)
-           buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
+           buffer_manager.get_buffer(vID, i, ss.str()).append(value[i],PPIDpair(pointID,mpirank));
          }
          else
          {
@@ -1290,7 +1469,7 @@ namespace Gambit
          if(synchronised)
          {
            // Write the data to the selected buffer ("just works" for simple numeric types)
-           buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
+           buffer_manager.get_buffer(vID, i, ss.str()).append(it->second,PPIDpair(pointID,mpirank));
          }
          else
          {

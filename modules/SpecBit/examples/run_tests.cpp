@@ -1,8 +1,8 @@
 // This file is not strictly part of Gambit. It is simply a set of test routines
 // to make sure the Spectrum class and related classes are working correctly
 
-#include "SpecBit_tests.hpp"
-#include "external_examples.hpp"
+#include "gambit/SpecBit/SpecBit_tests.hpp"
+#include "gambit/SpecBit/external_examples.hpp"
 
 using namespace Gambit;
 using namespace SpecBit;

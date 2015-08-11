@@ -25,11 +25,13 @@ namespace Gambit
 
     /// Reserved tags for MPI messages
     /// TAG_REQ   - for messages registering/requesting a new tags
+    /// INIT_PASS - for messages registering completion of initialisation
+    /// FINAL_PASS - for messages registering passing of checkpoint during finalise
     /// PPID_SEND - for messages transferring point ID information
     /// N_BUFFERS_SENT - for messages counting the number of buffer transfer messages being sent in one 'package' 
     /// RA_BUFFERS_SENT - Contains no data, just indicates that RA buffer messages from some process are waiting to send.
     /// FINAL_SYNC - Contains no data, used to trigger final buffer sends and receives.
-    enum Tags { TAG_REQ=0, PPID_SEND, N_BUFFERS_SENT, RA_BUFFERS_SENT, FINAL_SYNC };
+    enum Tags { TAG_REQ=0, INIT_PASS, FINAL_PASS, PPID_SEND, N_BUFFERS_SENT, RA_BUFFERS_SENT, FINAL_SYNC };
     const int FIRST_EMPTY_TAG = FINAL_SYNC+1;
 
   }

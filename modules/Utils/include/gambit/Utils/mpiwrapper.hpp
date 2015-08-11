@@ -77,9 +77,8 @@
          static MPI_Datatype type() { return RETURN_MPI_TYPE; }                                                              \
       };                                                                                                                     \
 
-/// Trigger debugging output in various places (specifically, hdf5 printer)
-//#define MPI_DEBUG
-
+/// Trigger debugging output when messages sent/recvd
+//#define MPI_MSG_DEBUG
 
 namespace Gambit
 {
@@ -149,11 +148,15 @@ namespace Gambit
       class Comm
       {
          public:
-            /// Default Constructor
+            /// Default Constructor; attaches to MPI_COMM_WORLD
             Comm();
 
-            /// Duplicate constructor
+            /// Constructor which copies existing communicator into boundcomm
             Comm(const MPI_Comm& comm);
+ 
+            /// Duplicate existing communicator
+            /// (NOTE, this is a collective operation on all procceses)
+            void dup(const MPI_Comm& comm);
         
             /// Get total number of MPI tasks in this communicator group
             int Get_size() const;
@@ -164,6 +167,10 @@ namespace Gambit
             /// Prevent further executation until all members of the bound communicator group enter the call
             void Barrier()
             {
+              #ifdef MPI_MSG_DEBUG
+              std::cout<<"rank "<<Get_rank()<<": Barrier() called"<<std::endl;
+              #endif 
+
               int errflag;
               errflag = MPI_Barrier(boundcomm);
               if(errflag!=0) {
@@ -171,6 +178,10 @@ namespace Gambit
                  errmsg << "Error performing MPI_Barrier! Received error flag: "<<errflag; 
                  utils_error().raise(LOCAL_INFO, errmsg.str());
               }
+
+              #ifdef MPI_MSG_DEBUG
+              std::cout<<"rank "<<Get_rank()<<": Barrier() passed"<<std::endl;
+              #endif 
            }
 
             /// Blocking receive
@@ -186,7 +197,10 @@ namespace Gambit
                                   int source, int tag, 
                                   MPI_Status *in_status=NULL /*out*/)
             {
-               int errflag;
+              #ifdef MPI_MSG_DEBUG
+              std::cout<<"rank "<<Get_rank()<<": Recv() called (count="<<count<<", source="<<source<<", tag="<<tag<<")"<<std::endl;
+              #endif 
+              int errflag;
                MPI_Status* status = MPI_STATUS_IGNORE; 
                if(in_status!=NULL) status=in_status;
                errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, status);
@@ -195,6 +209,9 @@ namespace Gambit
                  errmsg << "Error performing MPI_Recv! Received error flag: "<<errflag; 
                  utils_error().raise(LOCAL_INFO, errmsg.str());
                }
+               #ifdef MPI_MSG_DEBUG
+               std::cout<<"rank "<<Get_rank()<<": Recv() finished "<<std::endl;
+               #endif 
             }
 
             /// Templated blocking receive to automatically determine types
@@ -211,6 +228,9 @@ namespace Gambit
             void Send(void *buf, int count, MPI_Datatype datatype, 
                                   int destination, int tag)
             {
+               #ifdef MPI_MSG_DEBUG
+               std::cout<<"rank "<<Get_rank()<<": Send() called (count="<<count<<", destination="<<destination<<", tag="<<tag<<")"<<std::endl;
+               #endif 
                int errflag; 
                errflag = MPI_Send(buf, count, datatype, destination, tag, boundcomm);
                if(errflag!=0) {
@@ -218,6 +238,9 @@ namespace Gambit
                  errmsg << "Error performing MPI_Send! Received error flag: "<<errflag; 
                  utils_error().raise(LOCAL_INFO, errmsg.str());
                }
+               #ifdef MPI_MSG_DEBUG
+               std::cout<<"rank "<<Get_rank()<<": Send() finished"<<std::endl;
+               #endif 
             }
 
             /// Templated blocking send
@@ -235,7 +258,10 @@ namespace Gambit
                                   int destination, int tag, 
                                   MPI_Request *request /*out*/)
             {
-               int errflag; 
+              #ifdef MPI_MSG_DEBUG
+              std::cout<<"rank "<<Get_rank()<<": Isend() called (count="<<count<<", destination="<<destination<<", tag="<<tag<<")"<<std::endl;
+              #endif 
+              int errflag; 
                errflag = MPI_Isend(buf, count, datatype, destination, tag, boundcomm, request);
                if(errflag!=0) {
                  std::ostringstream errmsg;
@@ -263,7 +289,10 @@ namespace Gambit
             // Probe for messages waiting to be delivered
             bool Iprobe(int source, int tag, MPI_Status* in_status=NULL /*out*/)
             {
-               int errflag;
+              //#ifdef MPI_MSG_DEBUG
+              //std::cout<<"rank "<<Get_rank()<<": Iprobe() called (source="<<source<<", tag="<<tag<<")"<<std::endl;
+              //#endif 
+              int errflag;
                int you_have_mail; // C does not have a bool type...
                MPI_Status def_status;
                MPI_Status* status;
@@ -279,9 +308,9 @@ namespace Gambit
                  errmsg << "Error performing MPI_Iprobe! Received error flag: "<<errflag; 
                  utils_error().raise(LOCAL_INFO, errmsg.str());
                }
-               #ifdef MPI_DEBUG
+               #ifdef MPI_MSG_DEBUG
                if(you_have_mail!=0) {
-                     std::cout<<"Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
+                     std::cout<<"rank "<<Get_rank()<<": Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
                }
                #endif
                return (you_have_mail != 0);
@@ -308,13 +337,7 @@ namespace Gambit
       bool Is_initialized(); 
       
       /// Initialise MPI
-      /// The arguments are required in order to "fix up" the command line 
-      /// arguments so that they match their positions when the "mpirun -n X" 
-      /// wrapper call is absent.
-      void Init(int argc, char* argv[]);
-
-      /// Shut down MPI
-      void Finalize();
+      void Init();
 
       /// Nice wrapper for getting the message size from an MPI_status struct.
       /// Provide the type whose MPI_Datatype you want to retrieve as the

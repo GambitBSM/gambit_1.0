@@ -12,7 +12,9 @@
 #   
 #  \author Ben Farmer 
 #          (ben.farmer@gmail.com)
-#    \date 2013 Sep, 2014 Jan 
+#    \date 2013 Sep
+#          2014 Jan 
+#          2015 Jul
 #
 #  \author Pat Scott 
 #          (patscott@physics.mcgill.ca)
@@ -26,6 +28,7 @@ import re
 import datetime
 import sys
 import getopt
+import itertools
 
 equiv_config = "./config/resolution_type_equivalency_classes.yaml"
 
@@ -299,7 +302,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.
             if ("Gambit::"+candidate_type in be_typeset):
-				candidate_type = "Gambit::"+candidate_type
+                candidate_type = "Gambit::"+candidate_type
             elif (candidate_type not in be_typeset):
                 be_typeset.add(candidate_type)
             # Replace the argument types in the functor_template_types with the fully-qualified versions if required.
@@ -310,7 +313,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
         type_pack = functor_template_types[0] + "(*)(" + ptr_args + ")," + functor_template_types[0]
         if arg_list != "": type_pack += "," + arg_list
         type_pack_set.add(type_pack) 
-				                 
+                         
 
 # Harvest the list of rollcall headers to be searched, and the list of type headers to be searched.
 def get_headers(path,header_set,exclude_set,verbose=False):
@@ -425,6 +428,31 @@ def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
                 headers+=[rel_name] 
         if kind != "BOSSed type": break
     return headers
+
+# Check whether or not two files differ in their contents except for the date line
+def same(f1,f2):
+    file1 = open(f1,"r")
+    file2 = open(f2,"r")
+    for l1,l2 in itertools.izip_longest(file1,file2,fillvalue=''): 
+        if l1 != l2:
+              l1nospace = ''.join(l1.split()).lower() #remove spaces and make lowercase
+              if not l1nospace.startswith("#\\date") \
+                  and not l1nospace.startswith("//\\date") \
+                  and not l1nospace.startswith("///\\date"): 
+                 return False
+    return True
+
+# Compare a candidate file to an existing file, replacing only if they differ.
+def update_only_if_different(existing, candidate):
+    if not os.path.isfile(existing):
+         os.rename(candidate,existing)
+         print "\033[1;33m   Created "+re.sub("\\.\\/","",existing)+"\033[0m"
+    elif same(existing, candidate): 
+         os.remove(candidate)
+         print "\033[1;33m   Existing "+re.sub("\\.\\/","",existing)+" is identical to candidate; leaving it untouched\033[0m"
+    else:
+         os.rename(candidate,existing)
+         print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
 
 #Create the module_rollcall header in the Core directory
 def make_module_rollcall(rollcall_headers,verbose):

@@ -384,7 +384,7 @@ namespace Gambit {
         DS_RDMGEV *myrdmgev = &(*BEreq::rdmgev); 
 
         myrdmgev->nco=myRDspec.coannihilatingParticles.size();
-        for (std::size_t i=1; i<=((int)myrdmgev->nco); i++) {
+        for (std::size_t i=1; i<=((unsigned int)myrdmgev->nco); i++) {
           myrdmgev->mco(i)=myRDspec.coannihilatingParticles[i-1].mass;
           myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom; 
         }
@@ -432,6 +432,9 @@ namespace Gambit {
                (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"));
         if (widthheavyHiggs<0.1) 
           (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))=0.1;
+
+        for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
+          std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
 
         // tabulate invariant rate
         logger() << "Tabulating RD_eff_annrate..." << std::endl;
