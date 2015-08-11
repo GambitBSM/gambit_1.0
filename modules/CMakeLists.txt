@@ -220,6 +220,7 @@ list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//inclu
 foreach(bit ${GAMBIT_BITS})
   if(NOT ScannerBit STREQUAL ${bit})
     set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
+    file(WRITE ${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp "#include \"gambit/Elements/functor_definitions.hpp\"")
   endif()
 endforeach()
 remove_scratch_files(models_harvested backends_harvested modules_harvested printers_harvested)
