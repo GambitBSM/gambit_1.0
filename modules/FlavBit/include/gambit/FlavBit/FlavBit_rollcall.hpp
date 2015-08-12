@@ -341,7 +341,7 @@ START_MODULE
   #define CAPABILITY BRBKstarmumu               // Observable: BR(B -> K* mu mu)_lowq2
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu                 // Name of specific function providing the observable
-    START_FUNCTION(double)                  // Function calculates a double precision variable
+    START_FUNCTION( FlavBit::Flav_KstarMuMu_obs)//, double , double)                  // Function calculates a double precision variable
 		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(BRBKstarmumu, (libsuperiso), double, (double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))

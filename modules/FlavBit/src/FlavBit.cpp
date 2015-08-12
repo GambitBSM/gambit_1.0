@@ -907,13 +907,13 @@ namespace Gambit
 
      /// *************************************************
 
-    void SI_BRBKstarmumu(double &result)
+    void SI_BRBKstarmumu( Flav_KstarMuMu_obs &obs_out)
     {
       using namespace Pipes::SI_BRBKstarmumu;
 
       struct parameters param = *Dep::FlavBit_fill;
 
-      if(param.model<0) result=0.;
+      if(obs_out.q2_min<0) return;
       else
       {
 		double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
@@ -927,7 +927,7 @@ namespace Gambit
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
 		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-		result = BEreq::BRBKstarmumu(1.,6.,byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+		double result = BEreq::BRBKstarmumu(1.,6.,byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 
 	    printf("BR(B->K* mu mu)_lowq2=%.3e\n",result);
 	    printf("AFB(B->K* mu mu)_zero=%.3e\n",obs[0]);
