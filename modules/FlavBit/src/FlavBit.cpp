@@ -1015,21 +1015,41 @@ namespace Gambit
     // now let's do a real likelihood
     //##########################################
 
-    void b2sll_measurements(Flav_measurement_assym &Flav_measurement_assym)
+    void b2sll_measurements(Flav_measurement_assym &_measurement_assym)
     {
-      //kB2sll
+      //B2sll
       cout<<"In b2sll_measurements"<<endl;
       cout<<GAMBIT_DIR  "/FlavBit/Measurements"<<endl;                 
       Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data"); 
-      cout<<"init"<<endl;      
-      
-      
+      cout<<"init the B2sll "<<endl;      
+      vector<string> observablesn = {"Fl", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
+      vector<string> observablesq = {"1.1_2.5", "2.5_4", "4_6", "6_8", "15_19"};
+      vector<string> observables;
+      for(int i=0;i<observablesn.size();++i)
+	{
+	  for(int j=0;j<observablesq.size();++j)
+	    {
+	      observables.push_back(observablesn[i]+"_"+observablesq[j]);
+
+	    }
+	}
+      // we have all names
+      cout<<"Number of K*mumu observables: "<<observables.size()<<endl;
+      //##############################################
+      for(int i=0;i<observables.size();++i)
+	{
+	  red->read_yaml_mesurement("example.yaml", observables[i]);
+	  
+	}
       
     }
     void b2sll_likelihood(double &result)
     {                                    
-                                     
-                                     
+      cout<<"Doing the likelihood for b2sll"<<endl;         
+      Flav_measurement_assym measurement_assym;
+      b2sll_measurements(measurement_assym);       
+      
+      
                                      
     }                                    
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
