@@ -121,9 +121,11 @@ namespace Gambit
       double S9;
       double q2_min;
       double q2_max;
-      
 
     };
+    
+    
+
     
     
     

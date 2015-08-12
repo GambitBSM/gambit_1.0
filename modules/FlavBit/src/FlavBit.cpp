@@ -907,13 +907,14 @@ namespace Gambit
 
      /// *************************************************
 
-    void SI_BRBKstarmumu( Flav_KstarMuMu_obs &obs_out)
+    void SI_BRBKstarmumu( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu;
-
+      
       struct parameters param = *Dep::FlavBit_fill;
-
-      if(obs_out.q2_min<0) return;
+      //double S3, S4, S5, AFB, S7, S8, S9, FL;
+      //      Flav_KstarMuMu_obs obs_out;
+      if(param.model<0) result.BR=0.;
       else
       {
 		double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
@@ -923,12 +924,16 @@ namespace Gambit
 		double mu_W=2.*param.mass_W;
 		double mu_b=param.mass_b_pole;
 
+		const double q2_min=result.q2_min;
+		const double q2_max=result.q2_max;
+
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
 		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-		double result = BEreq::BRBKstarmumu(1.,6.,byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-
+		result.BR = BEreq::BRBKstarmumu(byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
+		
+		
 	    printf("BR(B->K* mu mu)_lowq2=%.3e\n",result);
 	    printf("AFB(B->K* mu mu)_zero=%.3e\n",obs[0]);
 	    printf("AFB(B->K* mu mu)_lowq2=%.3e\n",obs[1]);
@@ -949,7 +954,23 @@ namespace Gambit
 	    printf("P6prime(B->K* mu mu)_lowq2=%.3e\n",obs[19]);
 	    printf("P8(B->K* mu mu)_lowq2=%.3e\n",obs[20]);
 	    printf("P8prime(B->K* mu mu)_lowq2=%.3e\n",obs[21]);
-	  }
+	    
+	    
+	    // nowe we have the Piss, we need to recalculate the S, hate theorists for this
+	    
+	    result.FL=obs[2];
+	    double Fl=obs[2];
+	    result.AFB=obs[1];
+	    
+	    result.S3=obs[4]; // THIS FOR SURE IS WRONG!!!! send email to Nazila 12 August.
+	    result.S4=obs[17]*sqrt(Fl*(1.-Fl));
+	    result.S5=obs[18]*sqrt(Fl*(1.-Fl));
+	    result.S7=obs[19]*sqrt(Fl*(1.-Fl));
+	    result.S8=obs[21]*sqrt(Fl*(1.-Fl));
+	    result.S9=(-1.)*obs[15]*(1.-Fl);
+	    
+	    
+      }
     }
 
      /// *************************************************
@@ -1015,7 +1036,7 @@ namespace Gambit
     // now let's do a real likelihood
     //##########################################
 
-    void b2sll_measurements(Flav_measurement_assym &_measurement_assym)
+    void b2sll_measurements(Flav_measurement_assym &measurement_assym)
     {
       //B2sll
       cout<<"In b2sll_measurements"<<endl;
@@ -1025,11 +1046,11 @@ namespace Gambit
       vector<string> observablesn = {"Fl", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
       vector<string> observablesq = {"1.1_2.5", "2.5_4", "4_6", "6_8", "15_19"};
       vector<string> observables;
-      for(int i=0;i<observablesn.size();++i)
+      for(int i=0;i<observablesq.size();++i)
 	{
-	  for(int j=0;j<observablesq.size();++j)
+	  for(int j=0;j<observablesn.size();++j)
 	    {
-	      observables.push_back(observablesn[i]+"_"+observablesq[j]);
+	      observables.push_back(observablesn[j]+"_"+observablesq[i]);
 
 	    }
 	}
@@ -1038,9 +1059,54 @@ namespace Gambit
       //##############################################
       for(int i=0;i<observables.size();++i)
 	{
-	  red->read_yaml_mesurement("example.yaml", observables[i]);
+	  red->read_yaml_mesurement("example.yaml", observables[i]); 
 	  
 	}
+      //cov matirces
+                                                                       
+      boost::numeric::ublas::matrix<double> M_cov_uu=red->get_cov_uu();
+      boost::numeric::ublas::matrix<double> M_cov_du=red->get_cov_du();
+      boost::numeric::ublas::matrix<double> M_cov_ud=red->get_cov_ud();
+      boost::numeric::ublas::matrix<double> M_cov_dd=red->get_cov_dd();
+                                                                 
+      boost::numeric::ublas::matrix<double> M_exp=red->get_exp_value();
+
+      // We read the measurements, now for the fucking theory part ;(
+      
+      Flav_KstarMuMu_obs obs_out_11_25;
+      obs_out_11_25.q2_min=1.1;
+      obs_out_11_25.q2_max=2.5;
+      SI_BRBKstarmumu(obs_out_11_25);
+      // we got observables
+      Flav_KstarMuMu_obs obs_out_25_40; 
+      obs_out_25_40.q2_min=2.5;         
+      obs_out_25_40.q2_max=4.0;         
+      SI_BRBKstarmumu(obs_out_25_40);   
+      // we got observables    
+      Flav_KstarMuMu_obs obs_out_40_60;  
+      obs_out_40_60.q2_min=4.;          
+      obs_out_40_60.q2_max=6.;          
+      SI_BRBKstarmumu(obs_out_40_60);    
+      // we got observables   
+      Flav_KstarMuMu_obs obs_out_60_80;      
+      obs_out_60_80.q2_min=6.0;              
+      obs_out_60_80.q2_max=8.0;              
+      SI_BRBKstarmumu(obs_out_60_80);        
+      // we got observables
+      Flav_KstarMuMu_obs obs_out_15_19; 
+      obs_out_15_19.q2_min=15.;         
+      obs_out_15_19.q2_max=19.;         
+      SI_BRBKstarmumu(obs_out_15_19);   
+      
+      // here we got all the observables, now the funcking theory errors
+      
+      
+      
+      
+      
+      
+      
+
       
     }
     void b2sll_likelihood(double &result)
@@ -1078,7 +1144,7 @@ namespace Gambit
       SI_Bsmumu_untag(theory_bs2mumu);
       double theory_bd2mumu=0;
       SI_Bdmumu(theory_bd2mumu);
-
+      
 
       // now the correlation(no correlation from theory for B->sll)
       //###################################################
