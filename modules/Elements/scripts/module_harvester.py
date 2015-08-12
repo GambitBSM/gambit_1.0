@@ -96,6 +96,8 @@ def main(argv):
     print "Module rollcall headers identified:"
     for h in module_rollcall_headers:
         print ' ',h
+        h_parts = neatsplit('\/',h)
+        modules.add(h_parts[1])
     print "Module type headers identified:"
     for h in module_type_headers:
         print ' ',h
@@ -168,9 +170,8 @@ def main(argv):
                 # If this line defines the module name, update it.
                 module = update_module(continued_line,module)
                 # Check for calls to module functor creation macros, and harvest the types used.
-                addiffunctormacro(continued_line,module,returned_types,full_type_headers,intrinsic_types,exclude_types,equiv_classes,verbose=verbose)
+                addiffunctormacro(continued_line,module,modules,returned_types,full_type_headers,intrinsic_types,exclude_types,equiv_classes,verbose=verbose)
                 continued_line = ""
-        if module != "": modules.add(module)
         
     print "Found types for module functions:"
     for t in types:

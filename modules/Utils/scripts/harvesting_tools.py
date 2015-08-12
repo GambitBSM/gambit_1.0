@@ -80,34 +80,41 @@ def sorted_nicely( l ):
     return sorted(l, key = alphanum_key)
 
 # Parse a string to see if it has a class, struct or typedef declaration
-def check_for_declaration(input_snippet,module,local_namespace,candidate_type):
+def check_for_declaration(input_snippet,module,all_modules,local_namespace,candidate_type):
     splitline = neatsplit('\s|\(|\)|\*|\&|\;',input_snippet)
     candidate_parts = neatsplit('::',candidate_type)
-    if len(splitline)>1:
+    namespace_parts = neatsplit('::',local_namespace)
+    right_class = False
+    # Skip out if the local namespace is inside a different module, or the input snippet is too short to contain a declaration.
+    if len(splitline) > 1 and (not local_namespace or namespace_parts[0] not in all_modules or namespace_parts[0] == module):
         # Look for class/struct declarations
-        if splitline[0] in ["class", "struct"] and \
-         ( candidate_type in (splitline[1], splitline[1]+"*") or \
-           candidate_parts[-1] in (splitline[1], splitline[1]+"*") ):
-            # If the local namespace matches the module name, and the candidate type is unqualified, qualify it.
-            if local_namespace==module and candidate_type in (splitline[1], splitline[1]+"*"):
-                candidate_type = local_namespace+"::"+candidate_type
-            return (True, candidate_type)
+        if splitline[0] in ["class", "struct"]: 
+            if candidate_type in (splitline[1], splitline[1]+"*"):
+                right_class = True
+            elif len(candidate_parts) > 1 and candidate_parts[-1] in (splitline[1], splitline[1]+"*"):
+                if (candidate_parts[:-1] == namespace_parts[1-len(candidate_parts):]): right_class = True                  
         # Look for typedefs
-        if len(splitline)>2:
-            if splitline[0]=="typedef" and (candidate_type in splitline[2:] or candidate_parts[-1] in splitline[2:]):
-                # If the local namespace matches the module name, and the candidate type is unqualified, qualify it.
-                if local_namespace==module and candidate_type in splitline[2:]:
-                    candidate_type = local_namespace+"::"+candidate_type
-                return (True, candidate_type)
-    return (False, candidate_type)
+        if len(splitline)>2 and splitline[0]=="typedef":
+            if (candidate_type in splitline[2:]):
+                right_class = True
+            elif len(candidate_parts) > 1 and candidate_parts[-1] in splitline[2:]:
+                if (candidate_parts[:-1] == namespace_parts[1-len(candidate_parts):]): right_class = True
+        # The class declared at this line matches the candidate class
+        if right_class and local_namespace and local_namespace != "Gambit": candidate_type = local_namespace+"::"+candidate_parts[-1]
+    return (right_class, candidate_type)
 
 # Parse a string to see if it has a namespace declaration
 def check_for_namespace(input_snippet,local_namespace):
     splitline = neatsplit('\s',input_snippet)
     if len(splitline)>1:
-        # If the line starts by declaring a namespace, return it
+        # If the line starts by declaring a namespace, return it appended to the current namespace
         if splitline[0]=="namespace":
-            return splitline[1]
+            if local_namespace.endswith(splitline[1]):
+                return local_namespace
+            elif local_namespace and local_namespace != "Gambit" and splitline[1] not in local_namespace:
+                return local_namespace+"::"+splitline[1]
+            else: 
+                return splitline[1]
     return local_namespace
 
 # Harvest header filename from an include statement
@@ -157,7 +164,7 @@ def first_type_equivalent(candidate_in, equivs, existing):
     return common_elements.pop()+candidate_suffix
 
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
-def addiffunctormacro(line,module,typedict,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
+def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
 
     command_index = {"START_FUNCTION":1,
                      "QUICK_FUNCTION":5, 
@@ -212,14 +219,14 @@ def addiffunctormacro(line,module,typedict,typeheaders,intrinsic_types,exclude_t
                                 if len(splitline)>i:
                                     local_namespace = check_for_namespace(splitline[i],local_namespace)
                                     if not found_declaration:
-                                        (found_declaration, candidate_type) = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
+                                        (found_declaration, candidate_type) = check_for_declaration(splitline[i],module,all_modules,local_namespace,candidate_type)
                             # The loop above misses some of the typedefs, so we need to re-parse the whole line for these.
                             if not found_declaration: 
-                                (found_declaration, candidate_type) = check_for_declaration(newline,module,local_namespace,candidate_type)
+                                (found_declaration, candidate_type) = check_for_declaration(newline,module,all_modules,local_namespace,candidate_type)
                             if found_declaration: break
                     # If the type was declared in this header, and this is a module header, save the type into the list of types for this module.
                     if found_declaration and re.sub(".*?/include/gambit/", "",header).startswith(module):
-                        if not module in typedict: typedict[module] = set([])
+                        if module not in typedict: typedict[module] = set([])
                         typedict[module].add(candidate_type)
                         break
                 # If the type was not identified with any module, save it as a non-module type.
