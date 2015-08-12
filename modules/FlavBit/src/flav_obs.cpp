@@ -211,7 +211,7 @@ namespace Gambit
 	  
 	  measurements.push_back(mes_tmp); 
 	  number_measurements++;  
-	  cout<<"Increasing"<<endl;
+	  cout<<"Increasing "<<measurement_name<<" "<< mes_tmp.name<<" "<<mes_tmp.value<<endl;
 	}                                  
 
       cout<<"does this work?"<<endl;

@@ -1043,14 +1043,15 @@ namespace Gambit
       cout<<GAMBIT_DIR  "/FlavBit/Measurements"<<endl;                 
       Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data"); 
       cout<<"init the B2sll "<<endl;      
-      vector<string> observablesn = {"Fl", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
-      vector<string> observablesq = {"1.1_2.5", "2.5_4", "4_6", "6_8", "15_19"};
+      vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
+      vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8"};
       vector<string> observables;
       for(int i=0;i<observablesq.size();++i)
 	{
 	  for(int j=0;j<observablesn.size();++j)
 	    {
-	      observables.push_back(observablesn[j]+"_"+observablesq[i]);
+	      cout<<observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]<<endl;
+	      observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
 
 	    }
 	}
@@ -1062,14 +1063,23 @@ namespace Gambit
 	  red->read_yaml_mesurement("example.yaml", observables[i]); 
 	  
 	}
+
+      red->create_global_corr();
       //cov matirces
                                                                        
       boost::numeric::ublas::matrix<double> M_cov_uu=red->get_cov_uu();
       boost::numeric::ublas::matrix<double> M_cov_du=red->get_cov_du();
       boost::numeric::ublas::matrix<double> M_cov_ud=red->get_cov_ud();
       boost::numeric::ublas::matrix<double> M_cov_dd=red->get_cov_dd();
-                                                                 
       boost::numeric::ublas::matrix<double> M_exp=red->get_exp_value();
+      
+      cout<<"Measurement matrix: "<<M_exp.size1()<<"  "<<M_exp.size2() <<endl;
+      cout<<M_exp<<endl;
+      if(M_exp.size1() != observables.size() ) 
+	{
+	  cout<<"Differnet size, what did you fucked up idiot? "<<observables.size()<<" != "<<M_exp.size1()<<endl;
+	  return;
+	}
 
       // We read the measurements, now for the fucking theory part ;(
       
@@ -1093,14 +1103,15 @@ namespace Gambit
       obs_out_60_80.q2_max=8.0;              
       SI_BRBKstarmumu(obs_out_60_80);        
       // we got observables
-      Flav_KstarMuMu_obs obs_out_15_19; 
-      obs_out_15_19.q2_min=15.;         
-      obs_out_15_19.q2_max=19.;         
-      SI_BRBKstarmumu(obs_out_15_19);   
+      
+      
+
+      
       
       // here we got all the observables, now the funcking theory errors
       
-      
+      // including the names:
+      // Nazila stuff, it was decided that for now it's hardcoded ;(
       
       
       
