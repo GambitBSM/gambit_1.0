@@ -38,29 +38,60 @@ motivation, literature review, summary of advances in this paper
 
 \section{Physics background}
 
+
+\subsection{general intro}
+
 phenomenology: from Lagrangian to observables
 
-RGEs (statement on purpose, SUSY specific and non-SUSY examples [vacuum stability, gauge coupling unification, Yukawa unification])
+MSSM superpotential etc to lay out parameters and conventions (a la SLHA 2)
 
-spectrum generators for SUSY and non-SUSY models
- 
-MSSM superpotential etc to lay out conventions (a la SLHA 2)
-
-NMSSM superpotential etc to lay out conventions (a la SLHA 2)
+NMSSM superpotential etc.
 
 other models:
 
-scalar singlet
+- scalar singlet
 
- - spectrum issues (Pat \& student)
+- E6SSM
 
- - DecayBit
 
-E6SSM
+\subsection{SpecBit}
+
+RGEs: statement of purpose
+
+SUSY specific and non-SUSY examples:
+
+- vacuum stability, gauge coupling unification, Yukawa unification
+
+spectrum generators for SUSY and non-SUSY models
+ 
+ 
+\subsection{DecayBit}
+
+purpose: 
+
+- quantum corrections to SM Higgs decays from new physics
+
+- decays of BSM particles (MSSM, Z', ...)
+
+role for LHC: connecting production of exotic particles to observable final states
+
+role for dark matter???: decaying DM
+
+
+\subsection{EWPOBit}
+
+purpose: quantum corrections to SM observables from new physics
+
+- $m_h$, $m_W$, $\sin(\theta_W)$, ...
+
 
 \section{Overview of physics models supported}
 
 MSSM will be most common, just list ones that are fully supported without user modification?
+
+\subsection{SpecBit}
+
+models already implemented: table with RGE codes references?
 
 \begin{itemize} 
 \item MSSM
@@ -83,28 +114,64 @@ MSSM will be most common, just list ones that are fully supported without user m
 \end{itemize}  
 
 interfaced spectrum generators (aspirational list)
-codes already implemented
          
 generator specific BC options for SUSY models
 
+\subsection{DecayBit}
+
+same structure as SpecBit
+
+\subsection{EWPOBit}
+
+same struct as SpecBit
+
+
 \section{User Interface}
 
-\subsection{Scalar singlet setup} 
+general YAML blurb???
+
+\subsection{SpecBit}
+
+\subsubsection{Scalar singlet}
+
+explaining YAML instructions 
+
+- input parameter list and values (as in FlexibleSUSY manual)
 
 [along the line of the MSSM below]
 
-\subsection{MSSM setup} 
+\subsubsection{MSSM}
 
-interfacing to models already implemented:
+explaining YAML instructions 
 
-SpecBit:
+- input parameter list and values (as in FlexibleSUSY manual)
 
-- YAML instructions (input parameter list and values)
+\subsubsection{...}
+
+\subsubsection{How to implement a new model}
+
+\subsubsection{How to implement a new spectrum generator}
 
 - instructions for getters and setters and RGE running
-  $get(Pars:Pole_Mass...)$
+$get(Pars:Pole\_Mass...)$
 
 - specify string names and PDG codes
+
+
+\subsection{DecayBit}
+\subsubsection{Scalar singlet}
+\subsubsection{MSSM}
+\subsubsection{...}
+\subsubsection{How to implement a new model}
+
+\subsection{EWPOBit}
+\subsubsection{Scalar singlet}
+\subsubsection{MSSM}
+\subsubsection{...}
+\subsubsection{How to implement a new model}
+
+\subsection{MSSM setup} 
+
 
 implementing a new model: MSSMSpec.hpp
 
