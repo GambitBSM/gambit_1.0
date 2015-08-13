@@ -194,12 +194,16 @@ namespace Gambit
           std::cout<<"...is silenced? "<<silence<<std::endl;
           //#endif
 
+          cout << LOCAL_INFO << endl;
           // Create the new buffer object
           H5FGPtr loc(NULL);
+          cout << LOCAL_INFO << endl;
           if(printer->getRank()==0)
           {
+          cout << LOCAL_INFO << endl;
              loc = printer->get_location();
           } // else we give the new buffer the default (null) value, and expect that it will not use it.
+          cout << LOCAL_INFO << endl;
 
           local_buffers[key] = BuffType( loc
                                        , label/*deconstruct?*/
@@ -213,20 +217,28 @@ namespace Gambit
                                        , printer->get_Comm()
                                        #endif
                                        );
+          cout << LOCAL_INFO << endl;
 
           // Get the new (possibly silenced) buffer back out of the map
           it = local_buffers.find(key);
+          cout << LOCAL_INFO << endl;
 
           // Add a pointer to the new buffer to the full list as well
           // TODO: is this the correct behaviour?
+          cout << LOCAL_INFO << endl;
           if(not silence) printer->insert_buffer( key, it->second );
+          cout << LOCAL_INFO << endl;
        }
+
+          cout << LOCAL_INFO << endl;
        if( it == local_buffers.end() ) 
        {
           std::ostringstream errmsg;
           errmsg << "Error! Failed to retrieve newly created buffer (label="<<label<<") from local_buffers map! Key was: ("<<vertexID<<","<<aux_i<<")"<<std::endl;
           printer_error().raise(LOCAL_INFO, errmsg.str());
        }
+          cout << LOCAL_INFO << endl;
+
        return it->second; 
     }
   
@@ -760,9 +772,9 @@ namespace Gambit
     {
       if(is_auxilliary_printer())
       {
-	 std::ostringstream errmsg;
-	 errmsg << "Error! synchronise_buffers() called by auxilliary hdf5 printer (name="<<printer_name<<")! Only the primary hdf5 printer is allowed to do this. This is a bug in the HDF5Printer class, please report it."; 
-	 printer_error().raise(LOCAL_INFO, errmsg.str());
+        std::ostringstream errmsg;
+        errmsg << "Error! synchronise_buffers() called by auxilliary hdf5 printer (name="<<printer_name<<")! Only the primary hdf5 printer is allowed to do this. This is a bug in the HDF5Printer class, please report it."; 
+        printer_error().raise(LOCAL_INFO, errmsg.str());
       }
 
       // Determine the desired sync position
