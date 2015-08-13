@@ -539,93 +539,184 @@
 
 #############################################
 
-- name: FL_B0Kstar0mumu_15-19
+- name: FL_B0Kstar0mumu_15-17
   islimit: false
-  value: 0.344
-  stat_error_minus: 0.029
-  sys_error_minus: 0.007
-  stat_error_plus: 0.030
-  sys_error_plus: 0.007
+  value: 0.349
+  stat_error_minus: 0.040
+  sys_error_minus: 0.009
+  stat_error_plus: 0.039
+  sys_error_plus: 0.009
   source: LHCb-CONF-2015-002
   correlation:
   -name: NONE
 
-- name: AFB_B0Kstar0mumu_15-19
+- name: AFB_B0Kstar0mumu_15-17
   islimit: false
-  value: 0.355
-  stat_error_minus: 0.028
+  value: 0.411
+  stat_error_minus: 0.040
   sys_error_minus: 0.008
-  stat_error_plus: 0.027
+  stat_error_plus: 0.035
   sys_error_plus: 0.008
   source: LHCb-CONF-2015-002
   correlation:
   -name: NONE
 
 
-- name: S3_B0Kstar0mumu_15-19
+- name: S3_B0Kstar0mumu_15-17
   islimit: false
-  value: -0.163
-  stat_error_minus: 0.035
-  sys_error_minus: 0.009
-  stat_error_plus: 0.033
-  sys_error_plus: 0.009
-  source: LHCb-CONF-2015-002
-  correlation:
-  -name: NONE
-
-- name: S4_B0Kstar0mumu_15-19
-  islimit: false
-  value: -0.284
-  stat_error_minus: 0.037
+  value: -0.142
+  stat_error_minus: 0.046
   sys_error_minus: 0.007
-  stat_error_plus: 0.040
+  stat_error_plus: 0.047
   sys_error_plus: 0.007
   source: LHCb-CONF-2015-002
   correlation:
   -name: NONE
 
-- name: S5_B0Kstar0mumu_15-19
+- name: S4_B0Kstar0mumu_15-17
   islimit: false
-  value: -0.325
-  stat_error_minus: 0.037
+  value: -0.321
+  stat_error_minus: 0.053
+  sys_error_minus: 0.007
+  stat_error_plus: 0.078
+  sys_error_plus: 0.007
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
+- name: S5_B0Kstar0mumu_15-17
+  islimit: false
+  value: -0.316
+  stat_error_minus: 0.051
   sys_error_minus: 0.009
-  stat_error_plus: 0.038
+  stat_error_plus: 0.058
   sys_error_plus: 0.009
   source: LHCb-CONF-2015-002
   correlation:
   -name: NONE
 
 
-- name: S7_B0Kstar0mumu_15-19
+- name: S7_B0Kstar0mumu_15-17
   islimit: false
-  value: 0.048
-  stat_error_minus: 0.043
-  sys_error_minus: 0.006
-  stat_error_plus: 0.044
-  sys_error_plus: 0.006
+  value: 0.061
+  stat_error_minus: 0.058
+  sys_error_minus: 0.005
+  stat_error_plus: 0.060
+  sys_error_plus: 0.005
   source: LHCb-CONF-2015-002
   correlation:
   -name: NONE
 
 
-- name: S8_B0Kstar0mumu_15-19
+- name: S8_B0Kstar0mumu_15-17
   islimit: false
-  value: 0.028
-  stat_error_minus: 0.044
+  value: 0.003
+  stat_error_minus: 0.060
+  sys_error_minus: 0.003
+  stat_error_plus: 0.060
+  sys_error_plus: 0.003
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
+- name: S9_B0Kstar0mumu_15-17
+  islimit: false
+  value: -0.019
+  stat_error_minus: 0.055
   sys_error_minus: 0.004
-  stat_error_plus: 0.045
+  stat_error_plus: 0.057
   sys_error_plus: 0.004
   source: LHCb-CONF-2015-002
   correlation:
   -name: NONE
 
-- name: S9_B0Kstar0mumu_15-19
+##########################################
+
+- name: FL_B0Kstar0mumu_17-19
   islimit: false
-  value: -0.053
-  stat_error_minus: 0.040
-  sys_error_minus: 0.003
-  stat_error_plus: 0.038
-  sys_error_plus: 0.003
+  value: 0.354
+  stat_error_minus: 0.048
+  sys_error_minus: 0.025
+  stat_error_plus: 0.048
+  sys_error_plus: 0.025
   source: LHCb-CONF-2015-002
   correlation:
   -name: NONE
+
+- name: AFB_B0Kstar0mumu_17-19
+  islimit: false
+  value: 0.305
+  stat_error_minus: 0.048
+  sys_error_minus: 0.013
+  stat_error_plus: 0.046
+  sys_error_plus: 0.013
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
+- name: S3_B0Kstar0mumu_17-19
+  islimit: false
+  value: -0.188
+  stat_error_minus: 0.076
+  sys_error_minus: 0.017
+  stat_error_plus: 0.086
+  sys_error_plus: 0.017
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
+- name: S4_B0Kstar0mumu_17-19
+  islimit: false
+  value: -0.266
+  stat_error_minus: 0.065
+  sys_error_minus: 0.010
+  stat_error_plus: 0.071
+  sys_error_plus: 0.010
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
+- name: S5_B0Kstar0mumu_17-19
+  islimit: false
+  value: -0.323
+  stat_error_minus: 0.062
+  sys_error_minus: 0.009
+  stat_error_plus: 0.069
+  sys_error_plus: 0.009
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
+- name: S7_B0Kstar0mumu_17-19
+  islimit: false
+  value: 0.044
+  stat_error_minus: 0.072
+  sys_error_minus: 0.013
+  stat_error_plus: 0.073
+  sys_error_plus: 0.013
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
+- name: S8_B0Kstar0mumu_17-19
+  islimit: false
+  value: 0.013
+  stat_error_minus: 0.067
+  sys_error_minus: 0.005
+  stat_error_plus: 0.071
+  sys_error_plus: 0.005
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
+- name: S9_B0Kstar0mumu_17-19
+  islimit: false
+  value: -0.094
+  stat_error_minus: 0.067
+  sys_error_minus: 0.004
+  stat_error_plus: 0.069
+  sys_error_plus: 0.004
+  source: LHCb-CONF-2015-002
+  correlation:
+  -name: NONE
+
