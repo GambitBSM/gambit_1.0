@@ -117,7 +117,7 @@ namespace Gambit
       c.corr_val = node["value"].as<double>();
     }
     void operator >> (const YAML::Node& node, Measurement& v) {
-      cout<<"Op"<<endl;
+      //cout<<"Op"<<endl;
       v.name=node["name"].as<std::string>();
       //cout<<"passed"<<endl;
       v.is_limit = node["islimit"].as<bool>();
