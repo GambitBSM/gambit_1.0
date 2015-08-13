@@ -112,7 +112,7 @@ namespace Gambit
       template<> struct get_mpi_data_type<float>             { static MPI_Datatype type() { return MPI_FLOAT;              } };
       template<> struct get_mpi_data_type<double>            { static MPI_Datatype type() { return MPI_DOUBLE;             } };
       template<> struct get_mpi_data_type<long double>       { static MPI_Datatype type() { return MPI_LONG_DOUBLE;        } };
-      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UNSIGNED;           } };
+      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_C_BOOL;             } };
       /// @}
 
       /// Typedef'd types; enabled only where they differ from the true types, and where the relevant constants have been

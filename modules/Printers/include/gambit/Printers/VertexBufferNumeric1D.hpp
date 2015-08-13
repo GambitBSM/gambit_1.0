@@ -629,7 +629,7 @@ namespace Gambit {
         // FIXME bugs here
         cout << msgsize << " " << exp_length << endl;
 
-        printerComm.Recv(&recv_buffer_valid,   msgsize, source, myTags.SYNC_valid);
+        printerComm.Recv(&recv_buffer_valid, msgsize, source, myTags.SYNC_valid);
 
         cout << msgsize << " " << exp_length << endl;
 
