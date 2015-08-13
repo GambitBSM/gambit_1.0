@@ -306,6 +306,7 @@ namespace Gambit {
             }
 
             // Debug dump
+if(myRank==0) {
             #ifdef BUF_DEBUG
             #ifdef MONITOR_BUF
             if(this->get_label()==MONITOR_BUF) {
@@ -320,10 +321,15 @@ namespace Gambit {
             }           
             #endif
             #endif
-      
+      }
             if (myRank == 0) cout << LOCAL_INFO << endl;
             error_if_done(); // make sure buffer hasn't written to the current point already
-            if (myRank == 0) cout << this->get_head_position() << " " << LOCAL_INFO<< endl;
+            if (myRank == 0)
+            {
+              cout << this->get_head_position() << " " << LOCAL_INFO<< endl;
+              cout << buffer_entries[this->get_head_position()] << endl;
+              cout << data << endl;
+            }
 
             buffer_entries[this->get_head_position()] = data;
             if (myRank == 0) cout << LOCAL_INFO<< endl;
