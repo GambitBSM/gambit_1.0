@@ -284,13 +284,12 @@ namespace Gambit
 
         /// List the types for which print functions are defined
         #define HDF5_PRINTABLE_TYPES \
-          (bool)                     \
           (int)(uint)(long)(ulong)   \
           (float)(double)            \
-          (std::vector<bool>)        \
+          (bool)(std::vector<bool>)  \
           (std::vector<int>)         \
           (std::vector<double>)      \
-          (ModelParameters)  
+          (ModelParameters)
 
         #define DECLARE_PRINT(r,data,ELEM) \
           void print(ELEM const& value, const std::string& label, const int IDcode, const int rank, const ulong pointID); \
@@ -333,10 +332,11 @@ namespace Gambit
  
         /// @{ Helper macros to write all the print functions which can use the "easy" template
         #define TEMPLATE_TYPES      \
-         (bool)                     \
          (int)(uint)(long)(ulong)   \
          (float)(double)        
          // Add more as needed
+         // TODO needs to be converted to int to work with MPI
+         // (bool)
 
         // The type of the template print function buffers
         #define TEMPLATE_BUFFTYPE(TYPE) VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>
