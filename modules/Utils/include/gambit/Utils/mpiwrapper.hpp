@@ -197,6 +197,7 @@ namespace Gambit
                                   int source, int tag, 
                                   MPI_Status *in_status=NULL /*out*/)
             {
+              //FIXME something buggy here
               #ifdef MPI_MSG_DEBUG
               std::cout<<"rank "<<Get_rank()<<": Recv() called (count="<<count<<", source="<<source<<", tag="<<tag<<")"<<std::endl;
               #endif 
