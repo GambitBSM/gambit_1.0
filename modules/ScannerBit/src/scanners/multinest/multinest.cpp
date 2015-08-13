@@ -208,6 +208,8 @@ namespace Gambit {
          //if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
          //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
          
+         cout << "rank: " << boundPrinter.get_stream()->getRank() << " at " << LOCAL_INFO << endl;
+
          double lnew = (*boundLogLike)(unitpars); 
 
          // Extract the primary printer from the printer manager
@@ -223,6 +225,7 @@ namespace Gambit {
          primary_stream->print( pointID, "pointID", -8, myrank, pointID);
 
          // Done! (lnew will be used by MultiNest to guide the search)
+         cout << "rank: " << boundPrinter.get_stream()->getRank() << " at " << LOCAL_INFO << endl;
          return lnew;                  
 
          // If we wanted the printer to record anything extra, we could send 
