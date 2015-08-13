@@ -650,6 +650,7 @@ if (myRank==0) cout<<": " << LOCAL_INFO << endl;
 
         for(int i=0; i<msgsize; i++)
         {          
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;
           // Push an element of the received data into the buffer
           if(recv_buffer_valid[i])
           {
@@ -659,6 +660,7 @@ if (myRank==0) cout<<": " << LOCAL_INFO << endl;
           {
             skip_append();
           }         
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;
 
           // Check if we need to do a write to disk 
           // Note; the buffer should have been emptied (if needed)
@@ -673,6 +675,7 @@ if (myRank==0) cout<<": " << LOCAL_INFO << endl;
             #endif
             flush();
           } 
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;
         }
       }
 
