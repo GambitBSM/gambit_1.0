@@ -229,8 +229,6 @@ namespace Gambit
           printer_error().raise(LOCAL_INFO, errmsg.str());
        }
 
-       cout << "rank: " << printer->getRank() << " at " << LOCAL_INFO << endl;
-
        return it->second; 
     }
   

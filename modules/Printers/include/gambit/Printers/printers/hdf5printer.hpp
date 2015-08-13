@@ -311,9 +311,7 @@ namespace Gambit
            BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
 
            // Extract a buffer from the manager corresponding to this 
-       cout << "rank: " << mpirank << " at " << LOCAL_INFO << endl;
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
-       cout << "rank: " << mpirank << " at " << LOCAL_INFO << endl;
 
            #ifdef HDEBUG_MODE
            std::cout<<"printing "<<typeid(T).name()<<": "<<label<<std::endl;
