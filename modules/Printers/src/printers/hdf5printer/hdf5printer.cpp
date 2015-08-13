@@ -1290,15 +1290,18 @@ namespace Gambit
           primary_printer->check_for_new_point(candidate_newpoint, mpirank);
        }
 
-       std::cout<<"rank "<<myRank<<": Checking for new point (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
+       if(myRank==0) std::cout<<"rank "<<myRank<<": Checking for new point (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
 
        // Check if we have changed target PointIDs since the last print call
        if(candidate_newpoint!=lastPointID.at(myRank))
+       {
+       if(myRank==0)
        {
          #ifdef MPI_DEBUG
          std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
          std::cout<<"rank "<<myRank<<": sync_pos="<<get_N_pointIDs()<<std::endl;
          #endif
+       }
 
          // Explicitly check up on the synchronisation of all the buffers and their
          // associated datasets
@@ -1327,17 +1330,21 @@ namespace Gambit
          // to be caught up. Any other state is an error.
          // So, in debug mode, we will check this first.
  
+       if(myRank==0)
+       {
          #ifdef CHECK_SYNC
          check_sync("Prelim check (in check_for_new_point)", 0);
          #endif
-
+}
          // Make sure all the buffers are caught up at the old position.
          synchronise_buffers();          
 
+       if(myRank==0)
+       {
          #ifdef CHECK_SYNC
          check_sync("Post-resync check (in check_for_new_point)", 1);
          #endif
-
+}
          // Yep the scanner has moved on, at least as far as the current process sees
          lastPointID[myRank] = candidate_newpoint;
 
@@ -1345,10 +1352,12 @@ namespace Gambit
          // (this will trigger MPI sends if needed)
          empty_sync_buffers();
           
+       if(myRank==0)
+       {
          #ifdef CHECK_SYNC
          check_sync("Post-buffer-empty check (in check_for_new_point)", 1);
          #endif
-
+}
          #ifdef WITH_MPI
          // Check for buffers waiting to be delivered from other processes
          // (this will insert them into the local buffers BEFORE the first
@@ -1357,22 +1366,22 @@ namespace Gambit
          if(myRank==0) 
          {
            #ifdef DEBUG_MODE
-           std::cout<<"rank "<<myRank<<": calling collect_mpi_buffers() in check_for_new_point()"<<std::endl;
+        if(myRank==0)          std::cout<<"rank "<<myRank<<": calling collect_mpi_buffers() in check_for_new_point()"<<std::endl;
            #endif
            if( collect_mpi_buffers() )
            {
              #ifdef MPI_DEBUG
-             std::cout<<"rank "<<myRank<<": Performing sync after collecting mpi buffers"<<std::endl;
+                    if(myRank==0) std::cout<<"rank "<<myRank<<": Performing sync after collecting mpi buffers"<<std::endl;
              #endif
                
              #ifdef CHECK_SYNC
-             check_sync("Post-mpi-buffer-collect check (in check_for_new_point)", 1);
+       if(myRank==0) check_sync("Post-mpi-buffer-collect check (in check_for_new_point)", 1);
              #endif
 
              synchronise_buffers(); 
 
              #ifdef CHECK_SYNC
-             check_sync("Post-mpi-buffer-collect-resync check (in check_for_new_point)", 1);
+       if(myRank==0)             check_sync("Post-mpi-buffer-collect-resync check (in check_for_new_point)", 1);
              #endif
            }
          }
