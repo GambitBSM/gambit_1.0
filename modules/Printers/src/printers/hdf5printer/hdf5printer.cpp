@@ -179,20 +179,20 @@ namespace Gambit
           // output stream. If so, we relinquish control over it and silence the
           // new output stream.
           bool silence = false;
-          //#ifdef DEBUG_MODE
+          #ifdef DEBUG_MODE
           std::cout<<"Preparing to create new print output stream..."<<std::endl;
           std::cout<<"...label = "<<label<<std::endl;
           std::cout<<"...is stream already managed? "<<printer->is_stream_managed(key)<<std::endl;
           std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
           std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
-          //#endif
+          #endif
           if( printer->is_stream_managed(key) )
           {
             silence = true;
           }
-          //#ifdef DEBUG_MODE
+          #ifdef DEBUG_MODE
           std::cout<<"...is silenced? "<<silence<<std::endl;
-          //#endif
+          #endif
 
           // Create the new buffer object
           H5FGPtr loc(NULL);

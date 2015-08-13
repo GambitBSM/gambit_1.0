@@ -196,10 +196,9 @@ namespace Gambit
                                   int source, int tag, 
                                   MPI_Status *in_status=NULL /*out*/)
             {
-              //FIXME something buggy here
-              //#ifdef MPI_MSG_DEBUG
+              #ifdef MPI_MSG_DEBUG
               std::cout<<"rank "<<Get_rank()<<": Recv() called (count="<<count<<", source="<<source<<", tag="<<tag<<")"<<std::endl;
-              //#endif 
+              #endif 
               int errflag;
               errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, in_status == NULL ? MPI_STATUS_IGNORE : in_status);                
               if(errflag!=0)
@@ -208,9 +207,9 @@ namespace Gambit
                 errmsg << "Error performing MPI_Recv! Received error flag: "<<errflag; 
                 utils_error().raise(LOCAL_INFO, errmsg.str());
               }
-              //#ifdef MPI_MSG_DEBUG
+              #ifdef MPI_MSG_DEBUG
               std::cout<<"rank "<<Get_rank()<<": Recv() finished "<<std::endl;
-              //#endif 
+              #endif 
             }
 
             /// Templated blocking receive to automatically determine types
