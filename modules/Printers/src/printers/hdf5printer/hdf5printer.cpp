@@ -1282,7 +1282,7 @@ namespace Gambit
           primary_printer->check_for_bufftag_deliveries();
        }
 
-          cout << LOCAL_INFO << endl;
+       if(myRank==0)   cout << LOCAL_INFO << endl;
        if(is_auxilliary_printer())
        {
           // Redirect task to primary printer
