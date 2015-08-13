@@ -253,26 +253,25 @@ namespace Gambit
         // 
         // The getter functions serve to both retrieve the buffer matching an
         // output stream, and to handle creation of those buffers.
-        #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME) \
-         template<>                                                               \
+        #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME)                               \
+         template<>                                                                \
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
            HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
           {                                                                        \
-             /* If the buffermanger hasn't been initialised, do so now */        \
-             if( not CAT(hdf5_localbufferman_,NAME).ready() )                    \
-             {                                                                   \
-                CAT(hdf5_localbufferman_,NAME).init(this,synchronised);          \
-             }                                                                   \
-                                                                                 \
-             /* While we are at it, check if the buffers need to be
-                synchronised to a new point. But only if this printer is running
-                in "synchronised" mode. */                                       \
-             if(synchronised) {                                                  \
-           if (mpirank == 0) cout << "line 275 " << LOCAL_INFO << endl;\
-               check_for_new_point(pointID, mpirank);                            \
-             }                                                                   \
-           if (mpirank == 0) cout << "line 278 " << LOCAL_INFO << endl;\
-             return CAT(hdf5_localbufferman_,NAME);                              \
+             /* If the buffermanger hasn't been initialised, do so now */          \
+             if( not CAT(hdf5_localbufferman_,NAME).ready() )                      \
+             {                                                                     \
+                CAT(hdf5_localbufferman_,NAME).init(this,synchronised);            \
+             }                                                                     \
+                                                                                   \
+             /* While we are at it, check if the buffers need to be                \
+                synchronised to a new point. But only if this printer is running   \
+                in "synchronised" mode. */                                         \
+             if(synchronised)                                                      \
+             {                                                                     \
+               check_for_new_point(pointID, mpirank);                              \
+             }                                                                     \
+             return CAT(hdf5_localbufferman_,NAME);                                \
           }
 
         /// @}
@@ -305,20 +304,15 @@ namespace Gambit
         template<class T>
         void template_print(T const& value, const std::string& label, const int IDcode, const uint mpirank, const ulong pointID)
         {
-           if (mpirank == 0) cout << LOCAL_INFO << endl;
-
            // Define what output format will be used for this type (by choosing an appropriate buffer type)  
            typedef VertexBufferNumeric1D_HDF5<T,BUFFERLENGTH> BuffType;
-           if (mpirank == 0) cout << LOCAL_INFO << endl;
           
            // Retrieve the buffer manager for buffers with this type
            typedef H5P_LocalBufferManager<BuffType> BuffMan;
            BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
-           if (mpirank == 0) cout << LOCAL_INFO << endl;
 
            // Extract a buffer from the manager corresponding to this 
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
-           if (mpirank == 0) cout << LOCAL_INFO << endl;
 
            #ifdef HDEBUG_MODE
            std::cout<<"printing "<<typeid(T).name()<<": "<<label<<std::endl;
