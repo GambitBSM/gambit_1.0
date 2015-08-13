@@ -1421,6 +1421,7 @@ namespace Gambit
       
        // Retrieve the buffer manager for buffers with this type
        typedef H5P_LocalBufferManager<BuffType> BuffMan;
+           if (mpirank == 0) cout << "point: " << pointID << " " << LOCAL_INFO << endl;
        BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
            if (mpirank == 0) cout << LOCAL_INFO << endl;
 

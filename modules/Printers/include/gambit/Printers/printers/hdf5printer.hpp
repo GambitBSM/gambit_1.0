@@ -41,7 +41,7 @@
 #include "gambit/Utils/new_mpi_datatypes.hpp"
 
 //#define DEBUG_MODE
-#define HDEBUG_MODE // "High output" debug mode (info with every single print command)
+//#define HDEBUG_MODE // "High output" debug mode (info with every single print command)
 
 // Code!
 namespace Gambit
@@ -259,17 +259,23 @@ namespace Gambit
            HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
           {                                                                        \
              /* If the buffermanger hasn't been initialised, do so now */        \
+           if (mpirank == 0) cout << LOCAL_INFO << endl;\
              if( not CAT(hdf5_localbufferman_,NAME).ready() )                    \
              {                                                                   \
+           if (mpirank == 0) cout << LOCAL_INFO << endl;\
                 CAT(hdf5_localbufferman_,NAME).init(this,synchronised);          \
              }                                                                   \
+           if (mpirank == 0) cout << LOCAL_INFO << endl;\
                                                                                  \
              /* While we are at it, check if the buffers need to be
                 synchronised to a new point. But only if this printer is running
                 in "synchronised" mode. */                                       \
+           if (mpirank == 0) cout << LOCAL_INFO << endl;\
              if(synchronised) {                                                  \
+           if (mpirank == 0) cout << LOCAL_INFO << endl;\
                check_for_new_point(pointID, mpirank);                            \
              }                                                                   \
+           if (mpirank == 0) cout << LOCAL_INFO << endl;\
              return CAT(hdf5_localbufferman_,NAME);                              \
           }
 
