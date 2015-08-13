@@ -20,6 +20,7 @@
 ///  \author Marcin Chrzaszcz
 ///  \date 2015 May
 ///  \date 2015 July
+///  \date 2015 August
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -910,7 +911,7 @@ namespace Gambit
     void SI_BRBKstarmumu( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu;
-      
+
       struct parameters param = *Dep::FlavBit_fill;
       //double S3, S4, S5, AFB, S7, S8, S9, FL;
       //      Flav_KstarMuMu_obs obs_out;
@@ -932,8 +933,8 @@ namespace Gambit
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
 		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
 		result.BR = BEreq::BRBKstarmumu(byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-		
-		
+
+
 	    printf("BR(B->K* mu mu)_lowq2=%.3e\n",result);
 	    printf("AFB(B->K* mu mu)_zero=%.3e\n",obs[0]);
 	    printf("AFB(B->K* mu mu)_lowq2=%.3e\n",obs[1]);
@@ -954,22 +955,22 @@ namespace Gambit
 	    printf("P6prime(B->K* mu mu)_lowq2=%.3e\n",obs[19]);
 	    printf("P8(B->K* mu mu)_lowq2=%.3e\n",obs[20]);
 	    printf("P8prime(B->K* mu mu)_lowq2=%.3e\n",obs[21]);
-	    
-	    
+
+
 	    // nowe we have the Piss, we need to recalculate the S, hate theorists for this
-	    
+
 	    result.FL=obs[2];
 	    double Fl=obs[2];
 	    result.AFB=obs[1];
-	    
+
 	    result.S3=obs[4]; // THIS FOR SURE IS WRONG!!!! send email to Nazila 12 August.
 	    result.S4=obs[17]*sqrt(Fl*(1.-Fl));
 	    result.S5=obs[18]*sqrt(Fl*(1.-Fl));
 	    result.S7=obs[19]*sqrt(Fl*(1.-Fl));
 	    result.S8=obs[21]*sqrt(Fl*(1.-Fl));
 	    result.S9=(-1.)*obs[15]*(1.-Fl);
-	    
-	    
+
+
       }
     }
 
@@ -1040,11 +1041,11 @@ namespace Gambit
     {
       //B2sll
       cout<<"In b2sll_measurements"<<endl;
-      cout<<GAMBIT_DIR  "/FlavBit/Measurements"<<endl;                 
-      Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data"); 
-      cout<<"init the B2sll "<<endl;      
+      cout<<GAMBIT_DIR  "/FlavBit/Measurements"<<endl;
+      Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
+      cout<<"init the B2sll "<<endl;
       vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
-      vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8"};
+      vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
       vector<string> observables;
       for(int i=0;i<observablesq.size();++i)
 	{
@@ -1060,52 +1061,65 @@ namespace Gambit
       //##############################################
       for(int i=0;i<observables.size();++i)
 	{
-	  red->read_yaml_mesurement("example.yaml", observables[i]); 
-	  
+	  red->read_yaml_mesurement("example.yaml", observables[i]);
+
 	}
 
       red->create_global_corr();
       //cov matirces
-                                                                       
+
       boost::numeric::ublas::matrix<double> M_cov_uu=red->get_cov_uu();
       boost::numeric::ublas::matrix<double> M_cov_du=red->get_cov_du();
       boost::numeric::ublas::matrix<double> M_cov_ud=red->get_cov_ud();
       boost::numeric::ublas::matrix<double> M_cov_dd=red->get_cov_dd();
       boost::numeric::ublas::matrix<double> M_exp=red->get_exp_value();
-      
+
       cout<<"Measurement matrix: "<<M_exp.size1()<<"  "<<M_exp.size2() <<endl;
       cout<<M_exp<<endl;
-      if(M_exp.size1() != observables.size() ) 
+      if(M_exp.size1() != observables.size() )
 	{
 	  cout<<"Differnet size, what did you fucked up idiot? "<<observables.size()<<" != "<<M_exp.size1()<<endl;
 	  return;
 	}
 
       // We read the measurements, now for the fucking theory part ;(
-      
+
       Flav_KstarMuMu_obs obs_out_11_25;
       obs_out_11_25.q2_min=1.1;
       obs_out_11_25.q2_max=2.5;
       SI_BRBKstarmumu(obs_out_11_25);
       // we got observables
-      Flav_KstarMuMu_obs obs_out_25_40; 
-      obs_out_25_40.q2_min=2.5;         
-      obs_out_25_40.q2_max=4.0;         
-      SI_BRBKstarmumu(obs_out_25_40);   
-      // we got observables    
-      Flav_KstarMuMu_obs obs_out_40_60;  
-      obs_out_40_60.q2_min=4.;          
-      obs_out_40_60.q2_max=6.;          
-      SI_BRBKstarmumu(obs_out_40_60);    
-      // we got observables   
-      Flav_KstarMuMu_obs obs_out_60_80;      
-      obs_out_60_80.q2_min=6.0;              
-      obs_out_60_80.q2_max=8.0;              
-      SI_BRBKstarmumu(obs_out_60_80);        
+      Flav_KstarMuMu_obs obs_out_25_40;
+      obs_out_25_40.q2_min=2.5;
+      obs_out_25_40.q2_max=4.0;
+      SI_BRBKstarmumu(obs_out_25_40);
+      // we got observables
+      Flav_KstarMuMu_obs obs_out_40_60;
+      obs_out_40_60.q2_min=4.;
+      obs_out_40_60.q2_max=6.;
+      SI_BRBKstarmumu(obs_out_40_60);
+      // we got observables
+      Flav_KstarMuMu_obs obs_out_60_80;
+      obs_out_60_80.q2_min=6.0;
+      obs_out_60_80.q2_max=8.0;
+      SI_BRBKstarmumu(obs_out_60_80);
+      // we got observables
+      Flav_KstarMuMu_obs obs_out_15_17;
+      obs_out_15_17.q2_min=15.0;
+      obs_out_15_17.q2_max=17.0;
+      SI_BRBKstarmumu(obs_out_15_17);
+      // we got observables
+      Flav_KstarMuMu_obs obs_out_17_19;
+      obs_out_17_19.q2_min=17.0;
+      obs_out_17_19.q2_max=19.0;
+      SI_BRBKstarmumu(obs_out_17_19);
+
       // we got observables, now fucking errors
       
+      
+
       Kstarmumu_theory_errr th_reader;
-      boost::numeric::ublas::matrix<double> M_cov_th = th_reader.get_cov_theory(observables);  //(M_exp.size1(),M_exp.size2()); 
+      boost::numeric::ublas::matrix<double> M_cov_th = th_reader.get_cov_theory(observables);  //(M_exp.size1(),M_exp.size2());
       boost::numeric::ublas::matrix<double> M_th(M_cov_th.size1(),1);
       M_th(0,0)=obs_out_11_25.FL;
       M_th(1,0)=obs_out_11_25.AFB;
@@ -1115,138 +1129,153 @@ namespace Gambit
       M_th(5,0)=obs_out_11_25.S7;
       M_th(6,0)=obs_out_11_25.S8;
       M_th(7,0)=obs_out_11_25.S9;
-      
-      M_th(8,0)=obs_out_25_40.FL;       
-      M_th(9,0)=obs_out_25_40.AFB;      
-      M_th(10,0)=obs_out_25_40.S3;       
-      M_th(11,0)=obs_out_25_40.S4;       
-      M_th(12,0)=obs_out_25_40.S5;       
-      M_th(13,0)=obs_out_25_40.S7;       
-      M_th(14,0)=obs_out_25_40.S8;       
-      M_th(15,0)=obs_out_25_40.S9;       
 
-      M_th(16,0)=obs_out_40_60.FL;  
-      M_th(17,0)=obs_out_40_60.AFB; 
-      M_th(18,0)=obs_out_40_60.S3; 
-      M_th(19,0)=obs_out_40_60.S4; 
-      M_th(20,0)=obs_out_40_60.S5; 
-      M_th(21,0)=obs_out_40_60.S7; 
-      M_th(22,0)=obs_out_40_60.S8; 
-      M_th(23,0)=obs_out_40_60.S9; 
+      M_th(8,0)=obs_out_25_40.FL;
+      M_th(9,0)=obs_out_25_40.AFB;
+      M_th(10,0)=obs_out_25_40.S3;
+      M_th(11,0)=obs_out_25_40.S4;
+      M_th(12,0)=obs_out_25_40.S5;
+      M_th(13,0)=obs_out_25_40.S7;
+      M_th(14,0)=obs_out_25_40.S8;
+      M_th(15,0)=obs_out_25_40.S9;
 
-      M_th(24,0)=obs_out_60_80.FL;  
-      M_th(25,0)=obs_out_60_80.AFB; 
-      M_th(26,0)=obs_out_60_80.S3; 
-      M_th(27,0)=obs_out_60_80.S4; 
-      M_th(28,0)=obs_out_60_80.S5; 
-      M_th(29,0)=obs_out_60_80.S7; 
-      M_th(30,0)=obs_out_60_80.S8; 
-      M_th(31,0)=obs_out_60_80.S9; 
+      M_th(16,0)=obs_out_40_60.FL;
+      M_th(17,0)=obs_out_40_60.AFB;
+      M_th(18,0)=obs_out_40_60.S3;
+      M_th(19,0)=obs_out_40_60.S4;
+      M_th(20,0)=obs_out_40_60.S5;
+      M_th(21,0)=obs_out_40_60.S7;
+      M_th(22,0)=obs_out_40_60.S8;
+      M_th(23,0)=obs_out_40_60.S9;
+
+      M_th(24,0)=obs_out_60_80.FL;
+      M_th(25,0)=obs_out_60_80.AFB;
+      M_th(26,0)=obs_out_60_80.S3;
+      M_th(27,0)=obs_out_60_80.S4;
+      M_th(28,0)=obs_out_60_80.S5;
+      M_th(29,0)=obs_out_60_80.S7;
+      M_th(30,0)=obs_out_60_80.S8;
+      M_th(31,0)=obs_out_60_80.S9;
+      
+      M_th(32,0)=obs_out_15_17.FL;   
+      M_th(33,0)=obs_out_15_17.AFB;  
+      M_th(34,0)=obs_out_15_17.S3;   
+      M_th(35,0)=obs_out_15_17.S4;   
+      M_th(36,0)=obs_out_15_17.S5;   
+      M_th(37,0)=obs_out_15_17.S7;   
+      M_th(38,0)=obs_out_15_17.S8;   
+      M_th(39,0)=obs_out_15_17.S9;   
+      
+      M_th(40,0)=obs_out_17_19.FL;   
+      M_th(41,0)=obs_out_17_19.AFB;  
+      M_th(42,0)=obs_out_17_19.S3;   
+      M_th(43,0)=obs_out_17_19.S4;   
+      M_th(44,0)=obs_out_17_19.S5;   
+      M_th(45,0)=obs_out_17_19.S7;   
+      M_th(46,0)=obs_out_17_19.S8;   
+      M_th(47,0)=obs_out_17_19.S9;   
       
       
-      measurement_assym.LL_name="b2ll_likelihood";   
-                                                
-      cout<<"works?"<<endl;                          
-                                                
-      measurement_assym.value_exp=M_exp;             
-      measurement_assym.cov_exp_uu=M_cov_uu;         
-      measurement_assym.cov_exp_du=M_cov_du;         
-      measurement_assym.cov_exp_ud=M_cov_ud;         
-      measurement_assym.cov_exp_dd=M_cov_dd;         
-                                                
-      measurement_assym.value_th=M_th;               
-      measurement_assym.cov_th_uu=M_cov_th;          
-      measurement_assym.cov_th_ud=M_cov_th;          
-      measurement_assym.cov_th_du=M_cov_th;          
-      measurement_assym.cov_th_dd=M_cov_th;          
+      measurement_assym.LL_name="b2ll_likelihood";
+
+      cout<<"works?"<<endl;
+
+      measurement_assym.value_exp=M_exp;
+      measurement_assym.cov_exp_uu=M_cov_uu;
+      measurement_assym.cov_exp_du=M_cov_du;
+      measurement_assym.cov_exp_ud=M_cov_ud;
+      measurement_assym.cov_exp_dd=M_cov_dd;
+
+      measurement_assym.value_th=M_th;
+      measurement_assym.cov_th_uu=M_cov_th;
+      measurement_assym.cov_th_ud=M_cov_th;
+      measurement_assym.cov_th_du=M_cov_th;
+      measurement_assym.cov_th_dd=M_cov_th;
 
       int n_experiments=M_cov_th.size1();
       vector<double> diff;
-      for(int i=0;i<n_experiments;++i)           
-	{                                        
-	  diff.push_back(M_exp(i,0)-M_th(i,0));  
-	}                                        
-      cout<<"diff done"<<endl;                   
-      measurement_assym.diff=diff;               
-      measurement_assym.dim=n_experiments;       
-      
-      
-      
-      
+      for(int i=0;i<n_experiments;++i)
+	{
+	  diff.push_back(M_exp(i,0)-M_th(i,0));
+	}
+      cout<<"diff done"<<endl;
+      measurement_assym.diff=diff;
+      measurement_assym.dim=n_experiments;
 
-      
+
+
     }
     void b2sll_likelihood(double &result)
-    {                                    
-      cout<<"Doing the likelihood for b2sll"<<endl;         
+    {
+      cout<<"Doing the likelihood for b2sll"<<endl;
       Flav_measurement_assym measurement_assym;
-      b2sll_measurements(measurement_assym);       
+      b2sll_measurements(measurement_assym);
       // got everything ;)
-      cout<<"Dimension= "<<measurement_assym.dim<<endl;                                               
-      boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;                      
-      boost::numeric::ublas::matrix<double> cov_du=measurement_assym.cov_exp_du;                      
-      boost::numeric::ublas::matrix<double> cov_ud=measurement_assym.cov_exp_ud;                      
-      boost::numeric::ublas::matrix<double> cov_dd=measurement_assym.cov_exp_dd;                      
-                                                                                                
-      // adding theory and experimenta covariance                                                     
-      cov_uu+=measurement_assym.cov_th_uu;                                                            
-      cov_ud+=measurement_assym.cov_th_ud;                                                            
-      cov_du+=measurement_assym.cov_th_du;                                                            
-      cov_dd+=measurement_assym.cov_th_dd;                                                            
-                                                                                                
-      //calculating a diff                                                                            
-      vector<double> diff;                                                                            
-      diff=measurement_assym.diff;                                                                    
-      cout<<"got here"<<endl;                                                                         
-                                                                                                
-      boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim); 
-      boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim); 
-      boost::numeric::ublas::matrix<double> cov_ud_inv(measurement_assym.dim, measurement_assym.dim); 
-      boost::numeric::ublas::matrix<double> cov_dd_inv(measurement_assym.dim, measurement_assym.dim); 
-                                                                                                
-      cout<<cov_uu<<endl;                                                                             
-                                                                                                
-      InvertMatrix(cov_uu, cov_uu_inv);                                                               
-      InvertMatrix(cov_du, cov_du_inv);                                                               
-      InvertMatrix(cov_ud, cov_ud_inv);                                                               
-      InvertMatrix(cov_dd, cov_dd_inv);                                                               
-                                                                                                
-      cout<<cov_dd<<endl;                                                                             
-      cout<<"inverted"<<endl;                                                                         
-      cout<<cov_dd_inv<<endl;                                                                         
-                                                                                                
-      cout<<"Test: "<< cov_dd_inv(1,1)<<endl;                                                         
-      cout<<"Test2: "<<diff[1]<<endl;                                                                 
-      // calculating the chi2                                                                         
-      double Chi2=0;                                                                                  
-      cout<<"Dimension= "<<measurement_assym.dim<<endl;                                               
-      for(int i=0; i < measurement_assym.dim; ++i)                                                    
-	{                                                                                             
-	  for(int j=0; j<measurement_assym.dim; ++j)                                                  
-	    {                                                                                         
-	      cout<<i<<" "<<j<<endl;                                                                  
-	      if( diff[i] >= 0. && diff[j] >=0.) Chi2+= diff[i] * cov_uu_inv(i,j)*diff[j];            
-	      if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];             
-	      if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];             
-	      if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];              
-                                                                                                
-	    }                                                                                         
-                                                                                                
-	}                                                                                             
-      cout<<"ok?"<<endl;                                                                              
-      Chi2=Chi2/measurement_assym.dim;                                                                
-      result+=0.5*Chi2;                                                                               
-      cout<<0.5*Chi2<<endl;                                                                           
-      cout<<"DONE the likelihood"<<endl;                                                              
-                                           
-    } 
-    
-    
+      cout<<"Dimension= "<<measurement_assym.dim<<endl;
+      boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;
+      boost::numeric::ublas::matrix<double> cov_du=measurement_assym.cov_exp_du;
+      boost::numeric::ublas::matrix<double> cov_ud=measurement_assym.cov_exp_ud;
+      boost::numeric::ublas::matrix<double> cov_dd=measurement_assym.cov_exp_dd;
+
+      // adding theory and experimenta covariance
+      cov_uu+=measurement_assym.cov_th_uu;
+      cov_ud+=measurement_assym.cov_th_ud;
+      cov_du+=measurement_assym.cov_th_du;
+      cov_dd+=measurement_assym.cov_th_dd;
+
+      //calculating a diff
+      vector<double> diff;
+      diff=measurement_assym.diff;
+      cout<<"got here"<<endl;
+
+      boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_ud_inv(measurement_assym.dim, measurement_assym.dim);
+      boost::numeric::ublas::matrix<double> cov_dd_inv(measurement_assym.dim, measurement_assym.dim);
+
+      cout<<cov_uu<<endl;
+
+      InvertMatrix(cov_uu, cov_uu_inv);
+      InvertMatrix(cov_du, cov_du_inv);
+      InvertMatrix(cov_ud, cov_ud_inv);
+      InvertMatrix(cov_dd, cov_dd_inv);
+
+      cout<<cov_dd<<endl;
+      cout<<"inverted"<<endl;
+      cout<<cov_dd_inv<<endl;
+
+      cout<<"Test: "<< cov_dd_inv(1,1)<<endl;
+      cout<<"Test2: "<<diff[1]<<endl;
+      // calculating the chi2
+      double Chi2=0;
+      cout<<"Dimension= "<<measurement_assym.dim<<endl;
+      for(int i=0; i < measurement_assym.dim; ++i)
+	{
+	  for(int j=0; j<measurement_assym.dim; ++j)
+	    {
+	      cout<<i<<" "<<j<<endl;
+	      if( diff[i] >= 0. && diff[j] >=0.) Chi2+= diff[i] * cov_uu_inv(i,j)*diff[j];
+	      if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
+	      if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
+	      if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];
+
+	    }
+
+	}
+      cout<<"ok?"<<endl;
+      Chi2=Chi2/measurement_assym.dim;
+      result+=0.5*Chi2;
+      cout<<0.5*Chi2<<endl;
+      cout<<"DONE the likelihood"<<endl;
+
+    }
 
 
 
 
-                                   
+
+
+
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
     {
 
@@ -1273,7 +1302,7 @@ namespace Gambit
       SI_Bsmumu_untag(theory_bs2mumu);
       double theory_bd2mumu=0;
       SI_Bdmumu(theory_bd2mumu);
-      
+
 
       // now the correlation(no correlation from theory for B->sll)
       //###################################################
