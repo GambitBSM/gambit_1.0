@@ -926,12 +926,16 @@ namespace Gambit
                          // Receive messages from 'source_rank'
                          // Will push all the received print data through the append system
                          // Thus it needs to happen for *every* buffer at once.
+                         if (myRank==0) cout<<": " << LOCAL_INFO << endl;
                          buf->get_sync_mpi_message(source_rank,exp_msgsize);
+                         if (myRank==0) cout<<": " << LOCAL_INFO << endl;
                          N_buffers_with_msg += 1;
                       }
                       N_buffers += 1;
+                         if (myRank==0) cout<<": " << LOCAL_INFO << endl;
                    }
                 }
+                         if (myRank==0) cout<<": " << LOCAL_INFO << endl;
                 // Check if any messages are missing...
                 // (ask the source how many sync buffers were sent; 
                 //  this may be less than the master. If it is
@@ -945,8 +949,10 @@ namespace Gambit
                 std::cout<<"rank "<<myRank<<": Received N_buffers_sent message from process "<<source_rank<<" (number was "<<N_buffers_sent<<")"<<std::endl;
                 #endif
 
+                         if (myRank==0) cout<<": " << LOCAL_INFO << endl;
                 // TODO: Will need to skip ahead any sync buffers that didn't receive data from
                 // the worker.
+                         if (myRank==0) cout<<": " << LOCAL_INFO << endl;
 
                 // Zero messages is not ok, N_BUFFERS_SENT message indicates that at least one must be waiting.
                 if(N_buffers_with_msg!=N_buffers_sent)
@@ -955,6 +961,7 @@ namespace Gambit
                    errmsg << "Error in printer_name = "<<printer_name<<"! Tried to retrieve sync buffers from rank="<<source_rank<<" process via MPI, but some messages were missing! (N_buffers_with_msg ("<<N_buffers_with_msg<<") != N_buffers_sent ("<<N_buffers_sent<<") )";
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                 }
+                         if (myRank==0) cout<<": " << LOCAL_INFO << endl;
 
                 #ifdef MPI_DEBUG
                 std::cout<<"rank "<<myRank<<": Check for worker sync buffer messages complete; received "<<N_buffers_with_msg<<" of expected "<<N_buffers<<" (synchronised) buffers from process "<<source_rank<<std::endl;
