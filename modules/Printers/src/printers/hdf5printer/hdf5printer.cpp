@@ -1413,13 +1413,16 @@ namespace Gambit
   
     void HDF5Printer::print(std::vector<double> const& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
     {
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
        // We will write to several 'double' buffers, rather than a single vector buffer.
        // Change this once a vector buffer is actually available
        typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
       
        // Retrieve the buffer manager for buffers with this type
        typedef H5P_LocalBufferManager<BuffType> BuffMan;
        BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
 
        #ifdef HDEBUG_MODE
        std::cout<<"printing vector<double>: "<<label<<std::endl;
@@ -1432,32 +1435,40 @@ namespace Gambit
          std::stringstream ss;
          ss<<label<<"["<<i<<"]"; 
          //labels.push_back(ss.str());
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
 
          // Write to each buffer
          //buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
          if(synchronised)
          {
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
            // Write the data to the selected buffer ("just works" for simple numeric types)
            buffer_manager.get_buffer(vID, i, ss.str()).append(value[i],PPIDpair(pointID,mpirank));
          }
          else
          {
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
            // Queue up a desynchronised ("random access") dataset write to previous scan iteration
            buffer_manager.get_buffer(vID, i, ss.str()).RA_write(value[i],PPIDpair(pointID,mpirank),primary_printer->global_index_lookup); 
          }
        }
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
     }
    
     void HDF5Printer::print(ModelParameters const& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
     {
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
        // We will write to several 'double' buffers, since modelparameters are often retrieved separately
        typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
       
        // Retrieve the buffer manager for buffers with this type
        typedef H5P_LocalBufferManager<BuffType> BuffMan;
        BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
 
        std::map<std::string, double> parameter_map = value.getValues();
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
  
        uint i=0; // index for each buffer 
        for (std::map<std::string, double>::iterator 
@@ -1465,20 +1476,24 @@ namespace Gambit
        {
          std::stringstream ss;
          ss<<label<<"::"<<it->first;
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
 
          // Write to each buffer
          //buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
          if(synchronised)
          {
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
            // Write the data to the selected buffer ("just works" for simple numeric types)
            buffer_manager.get_buffer(vID, i, ss.str()).append(it->second,PPIDpair(pointID,mpirank));
          }
          else
          {
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
            // Queue up a desynchronised ("random access") dataset write to previous scan iteration
            buffer_manager.get_buffer(vID, i, ss.str()).RA_write(it->second,PPIDpair(pointID,mpirank),primary_printer->global_index_lookup); 
          }
          i++;
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
        }
     }
  

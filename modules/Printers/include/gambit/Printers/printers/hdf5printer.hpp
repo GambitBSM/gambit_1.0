@@ -303,15 +303,20 @@ namespace Gambit
         template<class T>
         void template_print(T const& value, const std::string& label, const int IDcode, const uint mpirank, const ulong pointID)
         {
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
+
            // Define what output format will be used for this type (by choosing an appropriate buffer type)  
            typedef VertexBufferNumeric1D_HDF5<T,BUFFERLENGTH> BuffType;
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
           
            // Retrieve the buffer manager for buffers with this type
            typedef H5P_LocalBufferManager<BuffType> BuffMan;
            BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
 
            // Extract a buffer from the manager corresponding to this 
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
+           if (mpirank == 0) cout << LOCAL_INFO << endl;
 
            #ifdef HDEBUG_MODE
            std::cout<<"printing "<<typeid(T).name()<<": "<<label<<std::endl;
