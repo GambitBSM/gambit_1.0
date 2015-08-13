@@ -594,15 +594,10 @@ namespace Gambit {
         // message. We can also use a blocking receive since we know that a
         // message is already waiting to be sent.
 
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;
-                         
-
         // Buffers to store received message
         bool  recv_buffer_valid[LENGTH];
         T     recv_buffer_entries[LENGTH];
 
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;
-                         
         //#ifdef MPI_DEBUG
         // Double check that a message is actually waiting to be sent
         // There is a code bug if this is not the case
@@ -615,7 +610,6 @@ if (myRank==0) cout<<": " << LOCAL_INFO << endl;
           errmsg << "Error! get_sync_mpi_message called with source="<<source<<", but there is no appropriately tagged message waiting to be delivered from that process! This is a bug, please report it.";
           printer_error().raise(LOCAL_INFO, errmsg.str());
         }
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;                        
         // Double check that the message has the expected number of elements
         // (this must match across all the buffers we are retrieving together)
         int msgsize = GMPI::Get_count<T>(&status);
@@ -626,17 +620,13 @@ if (myRank==0) cout<<": " << LOCAL_INFO << endl;
           printer_error().raise(LOCAL_INFO, errmsg.str());
         }
         //#endif
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;
                          
         #ifdef MPI_DEBUG
         std::cout<<"rank "<<myRank<<": Collecting sync buffer ("<<this->get_label()<<") from process "<<source<<std::endl;
         #endif
 
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;
-                         
         printerComm.Recv(&recv_buffer_valid,   msgsize, source, myTags.SYNC_valid);
         printerComm.Recv(&recv_buffer_entries, msgsize, source, myTags.SYNC_data);
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;
                          
         #ifdef MPI_DEBUG
         std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<" (size="<<msgsize<<"). Appending received data to my sync buffers."<<std::endl;
@@ -650,7 +640,6 @@ if (myRank==0) cout<<": " << LOCAL_INFO << endl;
 
         for(int i=0; i<msgsize; i++)
         {          
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;
           // Push an element of the received data into the buffer
           if(recv_buffer_valid[i])
           {
@@ -660,7 +649,6 @@ if (myRank==0) cout<<": " << LOCAL_INFO << endl;
           {
             skip_append();
           }         
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;
 
           // Check if we need to do a write to disk 
           // Note; the buffer should have been emptied (if needed)
@@ -675,7 +663,6 @@ if (myRank==0) cout<<": " << LOCAL_INFO << endl;
             #endif
             flush();
           } 
-if (myRank==0) cout<<": " << LOCAL_INFO << endl;
         }
       }
 
