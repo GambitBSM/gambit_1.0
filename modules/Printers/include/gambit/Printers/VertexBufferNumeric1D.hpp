@@ -37,7 +37,7 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-#define BUF_DEBUG /* Triggers debugging output */
+//#define BUF_DEBUG /* Triggers debugging output */
 //#define MONITOR_BUF "pointID" /* String ID of buffer to monitor. */
 
    
@@ -288,8 +288,9 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::append(const T& data, const PPIDpair pID)
       {
-         if(not this->is_silenced()) {
-     //if(myRank==0) std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running append()"<<std::endl;
+         if(not this->is_silenced())
+         {
+            //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running append()"<<std::endl;
 
             if(pID!=null_PPID and pID==PPID_of_last_append)
             {
@@ -306,7 +307,6 @@ namespace Gambit {
             }
 
             // Debug dump
-if(myRank==-1) {
             #ifdef BUF_DEBUG
             #ifdef MONITOR_BUF
             if(this->get_label()==MONITOR_BUF) {
@@ -321,15 +321,8 @@ if(myRank==-1) {
             }           
             #endif
             #endif
-      }
-//            if (myRank == 0) cout << LOCAL_INFO << endl;
+
             error_if_done(); // make sure buffer hasn't written to the current point already
-            if (myRank == 0)
-            {
-//              cout << this->get_head_position() << " " << LOCAL_INFO<< endl;
-//              cout << buffer_entries[this->get_head_position()] << endl;
-//              cout << data << endl;
-            }
             buffer_entries[this->get_head_position()] = data;
             buffer_valid[this->get_head_position()] = true;
             this->move_head_to_next_slot();
@@ -647,10 +640,10 @@ if(myRank==-1) {
         // everything through the normal "append" system.
 
         cout << msgsize << " " << exp_length << endl;
+        exit(1);
 
         for(int i=0; i<msgsize; i++)
         {          
-    //if (myRank==0) cout<<"i: " << i << " " << recv_buffer_valid[i] << LOCAL_INFO << endl;
           // Push an element of the received data into the buffer
           if(recv_buffer_valid[i])
           {
