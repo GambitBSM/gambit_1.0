@@ -37,7 +37,7 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-//#define BUF_DEBUG /* Triggers debugging output */
+#define BUF_DEBUG /* Triggers debugging output */
 //#define MONITOR_BUF "pointID" /* String ID of buffer to monitor. */
 
    
@@ -289,7 +289,7 @@ namespace Gambit {
       void VertexBufferNumeric1D<T,L>::append(const T& data, const PPIDpair pID)
       {
          if(not this->is_silenced()) {
-            //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running append()"<<std::endl;
+     if(myRank==0) std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running append()"<<std::endl;
 
             if(pID!=null_PPID and pID==PPID_of_last_append)
             {
@@ -321,13 +321,26 @@ namespace Gambit {
             #endif
             #endif
       
+            if (myRank == 0) cout << LOCAL_INFO << endl;
             error_if_done(); // make sure buffer hasn't written to the current point already
+            if (myRank == 0) cout << this->get_head_position() << " " << LOCAL_INFO<< endl;
+
             buffer_entries[this->get_head_position()] = data;
+            if (myRank == 0) cout << LOCAL_INFO<< endl;
+
             buffer_valid[this->get_head_position()] = true;
+            if (myRank == 0) cout << LOCAL_INFO<< endl;
+
             this->move_head_to_next_slot();
+            if (myRank == 0) cout << LOCAL_INFO<< endl;
+
             this->sync_buffer_empty = false;
+            if (myRank == 0) cout << LOCAL_INFO<< endl;
+
             if(this->get_head_position()==bufferlength) 
             {
+        if (myRank == 0) cout << LOCAL_INFO<< endl;
+
                #ifdef BUF_DEBUG
                #ifdef MONITOR_BUF
                if(this->get_label()==MONITOR_BUF) {
@@ -339,6 +352,8 @@ namespace Gambit {
                #endif
                this->sync_buffer_full = true;
            }
+            if (myRank == 0) cout << LOCAL_INFO<< endl;
+
            PPID_of_last_append = pID;
          }   
       }
@@ -640,6 +655,7 @@ namespace Gambit {
 
         for(int i=0; i<msgsize; i++)
         {          
+    if (myRank==0) cout<<"i: " << i << " " << recv_buffer_valid[i] << LOCAL_INFO << endl;
           // Push an element of the received data into the buffer
           if(recv_buffer_valid[i])
           {
