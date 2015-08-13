@@ -594,21 +594,28 @@ namespace Gambit {
         // message. We can also use a blocking receive since we know that a
         // message is already waiting to be sent.
 
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;
+                         
+
         // Buffers to store received message
         bool  recv_buffer_valid[LENGTH];
         T     recv_buffer_entries[LENGTH];
 
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;
+                         
         //#ifdef MPI_DEBUG
         // Double check that a message is actually waiting to be sent
         // There is a code bug if this is not the case
         MPI_Status status;
         bool message_waiting1 = printerComm.Iprobe(source, myTags.SYNC_valid, &status);
         bool message_waiting2 = printerComm.Iprobe(source, myTags.SYNC_data,  &status);
-        if(not message_waiting1 and not message_waiting2) {
+        if(not message_waiting1 and not message_waiting2)
+        {
           std::ostringstream errmsg;
           errmsg << "Error! get_sync_mpi_message called with source="<<source<<", but there is no appropriately tagged message waiting to be delivered from that process! This is a bug, please report it.";
           printer_error().raise(LOCAL_INFO, errmsg.str());
         }
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;                        
         // Double check that the message has the expected number of elements
         // (this must match across all the buffers we are retrieving together)
         int msgsize = GMPI::Get_count<T>(&status);
@@ -619,14 +626,18 @@ namespace Gambit {
           printer_error().raise(LOCAL_INFO, errmsg.str());
         }
         //#endif
-
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;
+                         
         #ifdef MPI_DEBUG
         std::cout<<"rank "<<myRank<<": Collecting sync buffer ("<<this->get_label()<<") from process "<<source<<std::endl;
         #endif
 
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;
+                         
         printerComm.Recv(&recv_buffer_valid,   msgsize, source, myTags.SYNC_valid);
         printerComm.Recv(&recv_buffer_entries, msgsize, source, myTags.SYNC_data);
-
+if (myRank==0) cout<<": " << LOCAL_INFO << endl;
+                         
         #ifdef MPI_DEBUG
         std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<" (size="<<msgsize<<"). Appending received data to my sync buffers."<<std::endl;
         #endif
