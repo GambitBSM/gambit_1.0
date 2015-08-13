@@ -1440,16 +1440,16 @@ namespace Gambit
          if(synchronised)
          {
            // Write the data to the selected buffer ("just works" for simple numeric types)
-       cout << "rank: " << printer->getRank() << " at " << LOCAL_INFO << endl;         
+       cout << "rank: " << mpirank << " at " << LOCAL_INFO << endl;         
            buffer_manager.get_buffer(vID, i, ss.str()).append(value[i],PPIDpair(pointID,mpirank));
-       cout << "rank: " << printer->getRank() << " at " << LOCAL_INFO << endl;
+       cout << "rank: " << mpirank << " at " << LOCAL_INFO << endl;
          }
          else
          {
            // Queue up a desynchronised ("random access") dataset write to previous scan iteration
-       cout << "rank: " << printer->getRank() << " at " << LOCAL_INFO << endl;
+       cout << "rank: " << mpirank << " at " << LOCAL_INFO << endl;
            buffer_manager.get_buffer(vID, i, ss.str()).RA_write(value[i],PPIDpair(pointID,mpirank),primary_printer->global_index_lookup); 
-       cout << "rank: " << printer->getRank() << " at " << LOCAL_INFO << endl;
+       cout << "rank: " << mpirank << " at " << LOCAL_INFO << endl;
          }
        }
     }
