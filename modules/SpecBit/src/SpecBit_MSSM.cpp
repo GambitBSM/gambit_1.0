@@ -16,6 +16,10 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///    \date 2014 Sep - Dec, 2015 Jan - Mar
 ///  
+///  \author Christopher Rogan
+///          (christophersrogan@gmail.com)
+///  \date 2015 Apr
+///
 ///  *********************************************
 
 #include <string>
@@ -175,12 +179,12 @@ namespace Gambit
       //
       // This object will COPY the interface data members into itself, so it is now the 
       // one-stop-shop for all spectrum information, including the model interface object.
-      static MSSMSpec<MI> mssmspec(model_interface);
+      MSSMSpec<MI> mssmspec(model_interface);
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
-      static QedQcdWrapper qedqcdspec(oneset,sminputs);
+      QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
       {
@@ -208,7 +212,8 @@ namespace Gambit
       // Package pointer to QedQcd SubSpectrum object along with pointer to MSSM SubSpectrum object, 
       // and SMInputs struct.
       // Return pointer to this package.
-      static Spectrum matched_spectra(&qedqcdspec,&mssmspec,sminputs);
+      static Spectrum matched_spectra;
+      matched_spectra = Spectrum(qedqcdspec,mssmspec,sminputs);
       return &matched_spectra;
     }
 
@@ -316,6 +321,14 @@ namespace Gambit
       
       // Dump spectrum information to slha file (for testing...)
       result->get_UV()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
+
+      // TEMPORARY CHECKING!
+      std::cout<<"in get_CMSSM_spectrum"<<std::endl;
+      std::cout<<"Scale: "<<result->get_UV()->GetScale()<<std::endl;
+      // Check scale in SLHAea output
+      SLHAea::Coll slhaea = result->get_UV()->getSLHAea();
+      // 4th element of block definition should be the scale
+      std::cout<<"Scale (slhaea): "<<slhaea.at("MSOFT").find_block_def()->at(3)<<std::endl;
     }
 
     // Runs MSSM spectrum generator with EWSB scale input
@@ -435,21 +448,129 @@ namespace Gambit
  
       // Create MSSMskeleton SubSpectrum object from the SLHAea object
       // (interacts with MSSM blocks)
-      static MSSMskeleton mssmskel(input_slha);
+      MSSMskeleton mssmskel(input_slha);
 
       // Create SMInputs object from the SLHAea object
       SMInputs sminputs(fill_SMInputs_from_SLHAea(input_slha));
 
       // Create SMskeleton SubSpectrum object from the SLHAea object
       // (basically just interacts with SMINPUTS block)
-      static SMskeleton smskel(input_slha);
+      SMskeleton smskel(input_slha);
 
       // Create full Spectrum object from components above
-      static Spectrum matched_spectra(&smskel,&mssmskel,sminputs);
- 
+      static Spectrum matched_spectra;
+      // Note subtlety! There are TWO constructors for the Spectrum object:
+      // If pointers to SubSpectrum objects are passed, it is assumed that
+      // these objects are managed EXTERNALLY! So if we were to do this:
+      //   matched_spectra = Spectrum(&smskel,&mssmskel,sminputs);
+      // then the SubSpectrum objects would end up DELETED at the end of
+      // this scope, and we will get a segfault if we try to access them
+      // later. INSTEAD, we should just pass the objects themselves, and
+      // then they will be CLONED and the Spectrum object will take
+      // possession of them:
+      matched_spectra = Spectrum(smskel,mssmskel,sminputs);
       result = &matched_spectra;
     } 
     
+    /// FeynHiggs SUSY masses and mixings
+    void FH_MSSMMasses(fh_MSSMMassObs &result) 
+    {
+      using namespace Pipes::FH_MSSMMasses;
+
+      cout << "****** calling FH_MSSMMasses ******" << endl;
+   
+      // zero if minimal, non-zero if non-minimal flavour violation
+      int nmfv; 
+
+      // MSf(s,t,g) MFV squark masses with indices
+      // s = 1..2   sfermion index
+      // t = 1..5   sfermion type nu,e,u,d,?
+      // g = 1..3   generation index
+      Farray<fh_real, 1,2, 1,5, 1,3> MSf;
+
+      // USf(s1,s2,t,g) MFV squark mixing matrices with indices
+      // s1 = 1..2  sfermion index (mass eigenstates)
+      // s2 = 1..2  sfermion index (gauge eigenstates, L/R)
+      // t  = 1..5  sfermion type nu,e,u,d,?
+      // g  = 1..3  generation index
+      Farray<fh_complex, 1,2, 1,2, 1,5, 1,3> USf;
+
+      // NMFV squark masses, with indices
+      // a = 1..6   extended sfermion index
+      // t = 1..5   sfermion type
+      Farray<fh_real, 1,6, 1,5> MASf;
+
+      // NMFV squark mixing matrices, with indices
+      // a1 = 1..6  extended sfermion index (mass eigenstates)
+      // a2 = 1..6  extended sfermion index (gauge eigenstates)
+      //  t = 1..5  sftermion type nu,e,u,d,?
+      Farray<fh_complex, 1,36, 1,5> UASf; 
+
+      // chargino masses
+      Farray<fh_real, 1,2> MCha;
+
+      // chargino mixing matrices (mass,gauge) eigenstates (2 x 2)
+      Farray<fh_complex, 1,4> UCha;
+      Farray<fh_complex, 1,4> VCha;
+
+      // neutralino masses
+      Farray<fh_real, 1,4> MNeu;
+
+      // neutralino mixing matrices (mass,gauge) eigenstates (4 x 4)
+      Farray<fh_complex, 1,16> ZNeu; 
+
+      // correction to bottom Yukawa coupling
+      fh_complex DeltaMB;
+
+      // gluino mass
+      fh_real MGl;
+
+      // tree-level Higgs masses (Mh, MH, MA, MHpm)
+      Farray<fh_real, 1,4> MHtree;
+
+      // tree-level Higgs mixing parameters sin alpha
+      fh_real SAtree;
+
+      int error = 1;
+      BEreq::FHGetPara(error, nmfv, MSf, USf, MASf, UASf,
+           MCha, UCha, VCha, MNeu, ZNeu, 
+           DeltaMB, MGl, MHtree, SAtree);
+
+      fh_MSSMMassObs MassObs; 
+      for(int i = 0; i < 2; i++)
+        for(int j = 0; j < 5; j++)
+          for(int k = 0; k < 3; k++)
+            MassObs.MSf[i][j][k] = MSf(i+1,j+1,k+1);
+      for(int i = 0; i < 2; i++)
+        for(int j = 0; j < 2; j++)
+          for(int k = 0; k < 5; k++)
+            for(int l = 0; l < 3; l++)
+              MassObs.USf[i][j][k][l] = USf(i+1,j+1,k+1,l+1);
+      for(int i = 0; i < 6; i++)
+        for(int j = 0; j < 5; j++)
+          MassObs.MASf[i][j] = MASf(i+1,j+1);
+      for(int i = 0; i < 36; i++)
+        for(int j = 0; j < 5; j++)
+          MassObs.UASf[i][j] = UASf(i+1,j+1);
+      for(int i = 0; i < 2; i++)
+        MassObs.MCha[i] = MCha(i+1);
+      for(int i = 0; i < 4; i++)
+      {
+        MassObs.UCha[i] = UCha(i+1);
+        MassObs.VCha[i] = VCha(i+1);
+      }
+      for(int i = 0; i < 4; i++)
+        MassObs.MNeu[i] = MNeu(i+1);
+      for(int i = 0; i < 16; i++)
+        MassObs.ZNeu[i] = ZNeu(i+1);
+      MassObs.deltaMB = DeltaMB;
+      MassObs.MGl = MGl;
+      for(int i = 0; i < 4; i++)
+        MassObs.MHtree[i] = MHtree(i+1);
+      MassObs.SinAlphatree = SAtree;
+
+      result = MassObs; 
+    }
 
 
     /// @} End Gambit module functions

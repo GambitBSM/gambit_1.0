@@ -15,8 +15,13 @@
 #include <string>
 #include "wrapper_Vec4_decl.h"
 #include <vector>
+#include "wrapper_BeamParticle_decl.h"
+#include "wrapper_UserHooks_decl.h"
 #include "wrapper_PartonLevel_decl.h"
+#include "wrapper_SigmaTotal_decl.h"
 #include <istream>
+#include "wrapper_SigmaProcess_decl.h"
+#include "wrapper_ResonanceWidths_decl.h"
 #include <ostream>
 
 #include "identification.hpp"
@@ -73,6 +78,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 bool readFile();
         
                 bool readFile(std::basic_istream<char,std::char_traits<char> >& is, int subrun);
+        
+                bool setUserHooksPtr(WrapperBase< Pythia8::Abstract_UserHooks >* userHooksPtrIn);
+        
+                bool setSigmaPtr(WrapperBase< Pythia8::Abstract_SigmaProcess >* sigmaPtrIn);
+        
+                bool setResonancePtr(WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn);
         
                 bool init();
         

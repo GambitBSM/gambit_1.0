@@ -15,308 +15,31 @@
 ///          (peter.athron@coepp.org.au)
 ///  \date 2015 
 ///
+///  \author Pat Scott  
+///          (p.scott@imperial.ac.uk)
+///  \date 2015 Jul
+///
 ///  *********************************************
 
 #include "gambit/Elements/mssm_slhahelp.hpp"
-
+#include "gambit/Elements/ini_functions.hpp"
 
 namespace Gambit
 {
 
    namespace slhahelp
    {
-
-      /// type defs for pair types etc that we will use in maps
-      typedef std::pair<int,str> p_int_string;
-      typedef std::pair<int,int> pair_ints;
-      typedef std::pair<str,pair_ints> pair_string_ints;
-      typedef std::pair<str,str> pair_strings;
       
-      std::map<str, p_int_string> init_gauge_label_to_index_type() 
-      {
-         std::map<str, p_int_string> gauge_label_to_index_type;
-         
-         gauge_label_to_index_type["~e_L"] = std::make_pair(1,"~e");
-         gauge_label_to_index_type["~mu_L"] = std::make_pair(2,"~e");
-         gauge_label_to_index_type["~tau_L"] = std::make_pair(3,"~e");
-         gauge_label_to_index_type["~e_R"] = std::make_pair(4,"~e");
-         gauge_label_to_index_type["~mu_R"] = std::make_pair(5,"~e");
-         gauge_label_to_index_type["~tau_R"] = std::make_pair(6,"~e");
-
-         gauge_label_to_index_type["~d_L"] = std::make_pair(1,"~d");
-         gauge_label_to_index_type["~s_L"] = std::make_pair(2,"~d");
-         gauge_label_to_index_type["~b_L"] = std::make_pair(3,"~d");
-         gauge_label_to_index_type["~d_R"] = std::make_pair(4,"~d");
-         gauge_label_to_index_type["~s_R"] = std::make_pair(5,"~d");
-         gauge_label_to_index_type["~b_R"] = std::make_pair(6,"~d");   
-
-         gauge_label_to_index_type["~u_L"] = std::make_pair(1,"~u");
-         gauge_label_to_index_type["~c_L"] = std::make_pair(2,"~u");
-         gauge_label_to_index_type["~t_L"] = std::make_pair(3,"~u");
-         gauge_label_to_index_type["~u_R"] = std::make_pair(4,"~u");
-         gauge_label_to_index_type["~c_R"] = std::make_pair(5,"~u");
-         gauge_label_to_index_type["~t_R"] = std::make_pair(6,"~u"); 
-
-         gauge_label_to_index_type["~nu_e_L"] = std::make_pair(1,"~nu");
-         gauge_label_to_index_type["~nu_mu_L"] = std::make_pair(2,"~nu");
-         gauge_label_to_index_type["~nu_tau_L"] = std::make_pair(3,"~nu");
-         
-         return gauge_label_to_index_type;
-      }
-      std::map<str, p_int_string> gauge_label_to_index_type =
-         init_gauge_label_to_index_type();
-
-      std::map<str, p_int_string> init_mass_label_to_index_type()
-      {
-         std::map<str, p_int_string> mass_label_to_index_type;
-         mass_label_to_index_type["~e-_1"] = std::make_pair(1,"~e");
-         mass_label_to_index_type["~e-_2"] = std::make_pair(2,"~e");
-         mass_label_to_index_type["~e-_3"] = std::make_pair(3,"~e");
-         mass_label_to_index_type["~e-_4"] = std::make_pair(4,"~e");
-         mass_label_to_index_type["~e-_5"] = std::make_pair(5,"~e");
-         mass_label_to_index_type["~e-_6"] = std::make_pair(6,"~e");
-
-         mass_label_to_index_type["~d_1"] = std::make_pair(1,"~d");
-         mass_label_to_index_type["~d_2"] = std::make_pair(2,"~d");
-         mass_label_to_index_type["~d_3"] = std::make_pair(3,"~d");
-         mass_label_to_index_type["~d_4"] = std::make_pair(4,"~d");
-         mass_label_to_index_type["~d_5"] = std::make_pair(5,"~d");
-         mass_label_to_index_type["~d_6"] = std::make_pair(6,"~d");   
-
-         mass_label_to_index_type["~u_1"] = std::make_pair(1,"~u");
-         mass_label_to_index_type["~u_2"] = std::make_pair(2,"~u");
-         mass_label_to_index_type["~u_3"] = std::make_pair(3,"~u");
-         mass_label_to_index_type["~u_4"] = std::make_pair(4,"~u");
-         mass_label_to_index_type["~u_5"] = std::make_pair(5,"~u");
-         mass_label_to_index_type["~u_6"] = std::make_pair(6,"~u"); 
-
-         mass_label_to_index_type["~nu_1"] = std::make_pair(1,"~nu");
-         mass_label_to_index_type["~nu_2"] = std::make_pair(2,"~nu");
-         mass_label_to_index_type["~nu_3"] = std::make_pair(3,"~nu");     
-         
-         return  mass_label_to_index_type;
-      }
-      std::map<str, p_int_string> mass_label_to_index_type 
-      = init_mass_label_to_index_type();
-
-      /// map to extract info from family state   
-      std::map<str, pair_string_ints> init_familystate_label() 
-      {
-         std::map<str, pair_string_ints> familystate_label;
-        
-         //pairs labeling family, mass
-         pair_ints const three_one(3,1);
-         pair_ints const three_two(3,2);
-         pair_ints const two_one(3,1);
-         pair_ints const two_two(3,2);
-         pair_ints const one_one(3,1);
-         pair_ints const one_two(3,2);
-      
-         //triple labelling type, generation and mass order of family states
-         pair_string_ints const stop1("~u",three_one);
-         pair_string_ints const stop2("~u",three_two);
-         pair_string_ints const sbot1("~d",three_one);
-         pair_string_ints const sbot2("~d",three_two);
-         pair_string_ints const stau1("~e",three_one);
-         pair_string_ints const stau2("~e",three_two);
-         pair_string_ints const scharm1("~u",two_one);
-         pair_string_ints const scharm2("~u",two_two);
-         pair_string_ints const sstrange1("~d",two_one);
-         pair_string_ints const sstrange2("~d",two_two);
-         pair_string_ints const smuon1("~e",two_one);
-         pair_string_ints const smuon2("~e",two_two);
-         pair_string_ints const sup1("~u",one_one);
-         pair_string_ints const sup2("~u",one_two);
-         pair_string_ints const sdown1("~d",one_one);
-         pair_string_ints const sdown2("~d",one_two);
-         pair_string_ints const selectron1("~e",one_one);
-         pair_string_ints const selectron2("~e",one_two);
-         // only have left handed sneutrinos in MSSM
-         pair_string_ints const snue1("~nu",three_one);
-         pair_string_ints const snumu1("~nu",two_one);
-         pair_string_ints const snutau1("~nu",one_one);
-
-         familystate_label["~t_1"] = stop1; 
-         familystate_label["~t_2"] = stop2;
-         familystate_label["~b_1"] = sbot1; 
-         familystate_label["~b_2"] = sbot2; 
-         familystate_label["~tau_1"] = stau1; 
-         familystate_label["~tau_2"] = stau2;
-         
-         familystate_label["~c_1"] = scharm1; 
-         familystate_label["~c_2"] = scharm2;
-         familystate_label["~s_1"] = sstrange1; 
-         familystate_label["~s_2"] = sstrange2; 
-         familystate_label["~muon_1"] = smuon1; 
-         familystate_label["~muon_2"] = smuon2;
-         
-         //  maybe we shouldn't do first gen it's confusing
-         familystate_label["~u_1"] = sup1; 
-         familystate_label["~u_2"] = sup2;
-         familystate_label["~d_1"] = sdown1; 
-         familystate_label["~d_2"] = sdown2; 
-         familystate_label["~e-_1"] = selectron1; 
-         familystate_label["~e-_2"] = selectron2;
-         // these are even less needed since no l-r mixing without r state
-         familystate_label["~nu_1"] = snue1;
-         familystate_label["~nu_2"] = snumu1;
-         familystate_label["~nu_3"] = snutau1;
-         
-         return familystate_label;
-
-      }
-      std::map<str, pair_string_ints> familystate_label 
-      = init_familystate_label();
-      
-      ///map to obtain left_right gauge_pairs from state info
-      /// helps us reuse other routiones with string arguments 
-      std::map<p_int_string, pair_strings>  init_type_family_to_gauge_states()
-      {
-         std::map<p_int_string, pair_strings> type_family_to_gauge_states;
-        
-         type_family_to_gauge_states[std::make_pair(3,"~u")] 
-            = std::make_pair("~t_L","~t_R");
-         type_family_to_gauge_states[std::make_pair(3,"~d")] 
-            = std::make_pair("~b_L","~b_R");
-         type_family_to_gauge_states[std::make_pair(3,"~e")] 
-            = std::make_pair("~tau_L","~tau_R");
-         type_family_to_gauge_states[std::make_pair(2,"~u")] 
-            = std::make_pair("~c_L","~c_R");
-         type_family_to_gauge_states[std::make_pair(2,"~d")] 
-            = std::make_pair("~s_L","~s_R");
-         type_family_to_gauge_states[std::make_pair(2,"~e")] 
-            = std::make_pair("~mu_L","~mu_R");
-         type_family_to_gauge_states[std::make_pair(1,"~u")] 
-            = std::make_pair("~u_L","~u_R");
-         type_family_to_gauge_states[std::make_pair(1,"~d")] 
-            = std::make_pair("~d_L","~d_R");
-         type_family_to_gauge_states[std::make_pair(1,"~e")] 
-            = std::make_pair("~e_L","~e_R"); 
-         //no sneutrino gauges pairs as no right sneutrino
-         return type_family_to_gauge_states;
- 
-      }    
-      std::map<p_int_string, pair_strings>  type_family_to_gauge_states 
-      = init_type_family_to_gauge_states();
-
-      /// maps directly from family string to left_right gauge_pairs
-      /// helps us reuse other routines that take string arguments 
-      std::map<str, pair_strings> init_family_state_to_gauge_state()
-      {
-         std::map<str, pair_strings> family_state_to_gauge_state;
-         family_state_to_gauge_state["~t_1"] = std::make_pair("~t_L","~t_R");
-         family_state_to_gauge_state["~t_2"] = std::make_pair("~t_L","~t_R");
-         family_state_to_gauge_state["~b_1"] = std::make_pair("~b_L","~b_R");
-         family_state_to_gauge_state["~b_2"] = std::make_pair("~b_L","~b_R");
-         family_state_to_gauge_state["~tau_1"] = std::make_pair("~tau_L","~tau_R");
-         family_state_to_gauge_state["~tau_2"] = std::make_pair("~tau_L","~tau_R");
-         
-         family_state_to_gauge_state["~c_1"] = std::make_pair("~c_L","~c_R");
-         family_state_to_gauge_state["~c_2"] = std::make_pair("~c_L","~c_R");
-         family_state_to_gauge_state["~s_1"] = std::make_pair("~s_L","~s_R");
-         family_state_to_gauge_state["~s_2"] = std::make_pair("~s_L","~s_R");
-         family_state_to_gauge_state["~muon_1"] = std::make_pair("~mu_L","~mu_R");
-         family_state_to_gauge_state["~muon_2"] = std::make_pair("~mu_L","~mu_R");
-         
-         family_state_to_gauge_state["~u_1"] = std::make_pair("~u_L","~u_R");
-         family_state_to_gauge_state["~u_2"] = std::make_pair("~u_L","~u_R");
-         family_state_to_gauge_state["~d_1"] = std::make_pair("~d_L","~d_R");
-         family_state_to_gauge_state["~d_2"] = std::make_pair("~d_L","~d_R");
-         family_state_to_gauge_state["~e-_1"] = std::make_pair("~e_L","~e_R");
-         family_state_to_gauge_state["~e-_2"] = std::make_pair("~e_L","~e_R");
-         
-         return family_state_to_gauge_state;
-
-      }
-      std::map<str, pair_strings>  family_state_to_gauge_state 
-      = init_family_state_to_gauge_state();
-      
-      ///maps directly from gauge_es string to familystates
-      /// helps us reuse other routines that take string arguments 
-      std::map<str, pair_strings>  init_gauge_es_to_family_states()
-      {
-         std::map<str, pair_strings>  gauge_es_to_family_states;
-         
-         gauge_es_to_family_states["~t_L"] = std::make_pair("~t_1","~t_2");
-         gauge_es_to_family_states["~t_R"] = std::make_pair("~t_1","~t_2");
-         gauge_es_to_family_states["~b_L"] = std::make_pair("~b_1","~b_2");
-         gauge_es_to_family_states["~b_R"] = std::make_pair("~b_1","~b_2");
-         gauge_es_to_family_states["~tau_L"] = std::make_pair("~tau_1","~tau_2");
-         gauge_es_to_family_states["~tau_R"] = std::make_pair("~tau_1","~tau_2");
-         gauge_es_to_family_states["~c_L"] = std::make_pair("~c_1","~c_2");
-         gauge_es_to_family_states["~c_R"] = std::make_pair("~c_1","~c_2");
-         gauge_es_to_family_states["~s_L"] = std::make_pair("~s_1","~s_2");
-         gauge_es_to_family_states["~s_R"] = std::make_pair("~s_1","~s_2");
-         gauge_es_to_family_states["~mu_L"] = std::make_pair("~mu_1","~mu_2");
-         gauge_es_to_family_states["~mu_R"] = std::make_pair("~mu_1","~mu_2");
-
-         gauge_es_to_family_states["~u_L"] = std::make_pair("~u_1","~u_2");
-         gauge_es_to_family_states["~u_R"] = std::make_pair("~u_1","~u_2");
-         gauge_es_to_family_states["~d_L"] = std::make_pair("~d_1","~d_2");
-         gauge_es_to_family_states["~d_R"] = std::make_pair("~d_1","~d_2");
-         gauge_es_to_family_states["~e_L"] = std::make_pair("~e-_1","~e-_2");
-         gauge_es_to_family_states["~e_R"] = std::make_pair("~e-_1","~e-_2");
-
-         return gauge_es_to_family_states; 
-         
-      }
-      std::map<str, pair_strings>  gauge_es_to_family_states 
-      = init_gauge_es_to_family_states() ;
-
-      /// map from string representing type (ie up-squars, down-squars or 
-      /// charged selptons) to appropriate set of mass eigenstates 
-      std::map<str,std::vector<str>> init_type_to_vec_of_mass_es() 
-      {
-         std::map<str,std::vector<str>> type_to_vec_of_mass_es;
-         str upsqst[]= {"~u_1", "~u_2", "~u_3", "~u_4", "~u_5", "~u_6"};
-         std::vector<str> up_squark_strs(upsqst, upsqst 
-                                         + sizeof(upsqst) / sizeof(str) ); 
-         str dsqst[]= {"~d_1", "~d_2", "~d_3", "~d_4", "~d_5", "~d_6"};
-         std::vector<str> down_squark_strs(dsqst, dsqst 
-                                           + sizeof(dsqst) / sizeof(str));
-         str cslst[] = {"~e-_1", "~e-_2", "~e-_3", "~e-_4", "~e-_5", "~e-_6"};
-         std::vector<str> ch_slepton_strs(cslst, cslst 
-                                           + sizeof(cslst) / sizeof(str) );
-         str snst[] = {"~nu_1", "~nu_2", "~nu_3"};
-         std::vector<str> sneutrino_strs(snst, snst 
-                                         + sizeof(snst) / sizeof(str) );
-
-         type_to_vec_of_mass_es["~u"] = up_squark_strs;
-         type_to_vec_of_mass_es["~d"] = down_squark_strs; 
-         type_to_vec_of_mass_es["~e"] = ch_slepton_strs;
-         type_to_vec_of_mass_es["~nu"] = sneutrino_strs;
-         
-         return type_to_vec_of_mass_es;
-      }
-      std::map<str,std::vector<str>> type_to_vec_of_mass_es 
-         = init_type_to_vec_of_mass_es();
-      
-      std::map<str,std::vector<str>> init_type_to_vec_of_gauge_es()
-      {
-         std::map<str,std::vector<str>> type_to_vec_of_gauge_es;
-         str upsqgst[] = {"~u_L", "~c_L", "~t_L", "~u_R", "~c_R", "~t_R"};
-         std::vector<str> up_sq_gauge_strs(upsqgst, upsqgst 
-                                         + sizeof(upsqgst) / sizeof(str) );  
-         str dsqgst[] = {"~d_L", "~s_L", "~b_L", "~d_R", "~s_R", "~b_R"};
-         std::vector<str> down_sq_gauge_strs(dsqgst, dsqgst 
-                                           + sizeof(dsqgst) / sizeof(str));
-         str cslgst[] ={"~e_L", "~mu_L", "~tau_L", "~e_R", "~mu_R", "~tau_R"};
-         std::vector<str> ch_sl_gauge_strs(cslgst, cslgst 
-                                           + sizeof(cslgst) / sizeof(str) ); 
-         str sngst[] =  {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
-         std::vector<str> sne_gauge_strs(sngst, sngst 
-                                         + sizeof(sngst) / sizeof(str) ); 
-         
-         type_to_vec_of_gauge_es["~u"] = up_sq_gauge_strs;
-         type_to_vec_of_gauge_es["~d"] = down_sq_gauge_strs; 
-         type_to_vec_of_gauge_es["~e"] = ch_sl_gauge_strs;
-         type_to_vec_of_gauge_es["~nu"] = sne_gauge_strs;
-         
-         return type_to_vec_of_gauge_es;
-
-      }
-      std::map<str,std::vector<str>> type_to_vec_of_gauge_es 
-         = init_type_to_vec_of_gauge_es();
+      /// Known maps filled at initialisation 
+      // FIXME should these be const?
+      std::map<str, p_int_string> gauge_label_to_index_type = init_gauge_label_to_index_type();
+      std::map<str, p_int_string> mass_label_to_index_type = init_mass_label_to_index_type();
+      std::map<str, pair_string_ints> familystate_label = init_familystate_label();
+      std::map<p_int_string, std::vector<str> > type_family_to_gauge_states = init_type_family_to_gauge_states();
+      std::map<str,std::vector<str> > family_state_to_gauge_state = init_family_state_to_gauge_state();
+      std::map<str,std::vector<str> > gauge_es_to_family_states = init_gauge_es_to_family_states() ;
+      std::map<str,std::vector<str> > type_to_vec_of_mass_es = init_type_to_vec_of_mass_es();
+      std::map<str,std::vector<str> > type_to_vec_of_gauge_es = init_type_to_vec_of_gauge_es();
 
       // FIXME: these two should be switched over to members of the sectrum object itself
       /// This will simplify things.
@@ -527,14 +250,15 @@ namespace Gambit
          /// iterate over vector of strings for mass states 
          std::vector<str> gauge_es_vec = type_to_vec_of_gauge_es[type];
          typedef std::vector<str>::iterator iter;
-         for(iter it = gauge_es_vec.begin(); it != gauge_es_vec.end(); ++it){
-            temp_gauge_es = *it;   
-            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm); 
+         for(iter it = gauge_es_vec.begin(); it != gauge_es_vec.end(); ++it)
+            {
+            temp_gauge_es = *it;
+            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm);
             mass_composition.push_back(temp_admix);
             //select largest 
             if(fabs(temp_admix) > fabs(max_mixing)) 
                {
-               max_mixing = temp_admix; 
+               max_mixing = temp_admix;
                gauge_es = temp_gauge_es;
                }
          } //end iteration over temp_mass_es
@@ -612,24 +336,23 @@ namespace Gambit
       /// which is a better defined question when there is family mixing prsesent
       /// and more useful here anyway
       /// returns a pair of strings labling the lighter one first 
-      pair_strings identify_mass_ess_for_family(str type, 
-                                                      int family,
-                                                      const SubSpectrum* mssm)
+      sspair identify_mass_ess_for_family(str type,
+                                          int family,
+                                          const SubSpectrum* mssm)
       {
          /// need to turn type and family into a string
          /// need to simplify the number of translations we do.
          p_int_string gen_type(family,type);
-         pair_strings gauge_states = 
-            type_family_to_gauge_states[gen_type];
-         str gauge_esL=gauge_states.first;
-         str gauge_esR=gauge_states.second;
+         std::vector<str> gauge_states = type_family_to_gauge_states[gen_type];
+         str gauge_esL=gauge_states[0];
+         str gauge_esR=gauge_states[1];
         
          /// finds the mass_es with the largets mixing to
          /// passed gauge_es
          str mass_esL = mass_es_from_gauge_es(gauge_esL, mssm);
          str mass_esR = mass_es_from_gauge_es(gauge_esR, mssm);
          
-         pair_strings answer;
+         sspair answer;
          int mass_index_L = (mass_label_to_index_type[mass_esL]).first;
          int mass_index_R = (mass_label_to_index_type[mass_esR]).first;
          // order pair by mass
@@ -646,10 +369,9 @@ namespace Gambit
       str mass_es_closest_to_family(str familystate,
                                     const SubSpectrum* mssm)
       {
-         pair_strings family_gauge_states = 
-            family_state_to_gauge_state[familystate];
-         str gauge_esL = family_gauge_states.first;
-         str gauge_esR = family_gauge_states.second;
+         std::vector<str> family_gauge_states = family_state_to_gauge_state[familystate];
+         str gauge_esL = family_gauge_states[0];
+         str gauge_esR = family_gauge_states[1];
         
          // finds the mass_es with the largets mixing to
          // passed gauge_es
@@ -705,9 +427,9 @@ namespace Gambit
          //get mass_es using one of our routines
          str mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
-         pair_strings gauge_states = family_state_to_gauge_state[familystate];
-         str gauge_state_L = gauge_states.first;
-         str gauge_state_R = gauge_states.second;
+         std::vector<str> gauge_states = family_state_to_gauge_state[familystate];
+         str gauge_state_L = gauge_states[0];
+         str gauge_state_R = gauge_states[1];
        
          p_int_string gauge_Lindex_type = 
             gauge_label_to_index_type[gauge_state_L];
@@ -797,18 +519,16 @@ namespace Gambit
                                                   const SubSpectrum* mssm) 
       {
          /// get mass_es using one of our routines
-         pair_strings mass_ess =
-            identify_mass_ess_for_family(type, family, mssm);
+         sspair mass_ess = identify_mass_ess_for_family(type, family, mssm);
          mass_es1 = mass_ess.first;
          mass_es2 = mass_ess.second;
 
          /// need to turn type and family into a string
          /// should simplify the number of translations we do!
          p_int_string gen_type(family,type);
-         pair_strings gauge_states = 
-            type_family_to_gauge_states[gen_type];
-         str gauge_es_L=gauge_states.first;
-         str gauge_es_R=gauge_states.second;        
+         std::vector<str> gauge_states = type_family_to_gauge_states[gen_type];
+         str gauge_es_L=gauge_states[0];
+         str gauge_es_R=gauge_states[1];        
          /// get index of right family states (ie gauge states with 
          ///same family as requested family state
          p_int_string gauge_Lindex_type = 
@@ -881,12 +601,12 @@ namespace Gambit
          /// get gauge_es with largest mixing to this mass_es  
          str gauge_es = gauge_es_from_mass_es(mass_es, mass_comp, mssm);
          /// get family states for the same generation as this gauge_es
-         pair_strings family_states = gauge_es_to_family_states[gauge_es];
-         str family_state1 = family_states.first;
-         str family_state2 = family_states.second;
-         pair_strings gauge_states = family_state_to_gauge_state[family_state1];
-         str gauge_es_L = gauge_states.first;
-         str gauge_es_R = gauge_states.second;
+         std::vector<str> family_states = gauge_es_to_family_states[gauge_es];
+         str family_state1 = family_states[0];
+         str family_state2 = family_states[1];
+         std::vector<str> gauge_states = family_state_to_gauge_state[family_state1];
+         str gauge_es_L = gauge_states[0];
+         str gauge_es_R = gauge_states[1];
          str mass_es_other;         
          if(gauge_es == gauge_es_L) 
             mass_es_other = mass_es_from_gauge_es(gauge_es_R, mssm);
@@ -930,8 +650,8 @@ namespace Gambit
                                            std::vector<double> & mass_comp,
                                            const SubSpectrum* mssm)
       {
-         double max_mix;
-         str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
+         double sum_sq_mix;
+         str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, mass_comp,
                                                   mssm);
          return fs;
       }
@@ -942,12 +662,12 @@ namespace Gambit
       str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
                                           double tol, str context)
       {
-         double max_mix;
+         double sum_sq_mix;
          std::vector<double> mass_comp;
-         str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
-                                                  mssm);
+         str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, 
+                                                  mass_comp, mssm);
          str full_context = LOCAL_INFO + " called from " + context;
-         if(max_mix*max_mix <= 1-tol){
+         if(sum_sq_mix <= 1-tol){
             utils_error().raise(full_context, "family_state_closest_to_mass_es "
             "called when family mixing away from closest mass_es is greater than tol"); 
          }

@@ -15,11 +15,12 @@ Scanner:
   use_scanner: toy_mcmc
   
   scanners:
+
     toy_mcmc:
       plugin: toy_mcmc
       point_number: 2
-      output_file:  output
       like:  Likelihood
+
 
 ObsLikes:
 
@@ -71,14 +72,12 @@ ObsLikes:
     capability:   AI_BKstarmumu
   - purpose:      Observable
     capability:   AI_BKstarmumu_zero
-#  - purpose:      Observable
-#    capability:   b2ll_M
+  - purpose:      Observable
+    capability:   b2ll_M
   - purpose:      Likelihood
-    capability:   b2ll_LL      
-#  - purpose:      Likelihood
-#    capability:   b2ll_LL
-#  - purpose:      Observable
-#    capability:   SL_M
+    capability:   b2ll_LL
+  - purpose:      Observable
+    capability:   SL_M
   - purpose:      Likelihood
     capability:   SL_LL
   - purpose:      Likelihood                                                                                       

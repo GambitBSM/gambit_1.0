@@ -21,10 +21,12 @@
 #************************************************
 
 set(source_files src/container_factory.cpp
+                 src/core.cpp
                  src/core_singleton.cpp
                  src/depresolver.cpp
+                 src/diagnostics.cpp
                  src/error_handlers.cpp
-                 src/gambit_core.cpp
+                 src/functors.cpp
                  src/ini_functions.cpp
                  src/likelihood_container.cpp
                  src/modelgraph.cpp
@@ -33,11 +35,11 @@ set(source_files src/container_factory.cpp
 )
 
 set(header_files include/gambit/Core/container_factory.hpp
+                 include/gambit/Core/core.hpp
                  include/gambit/Core/core_singleton.hpp
                  include/gambit/Core/depresolver.hpp
                  include/gambit/Core/error_handlers.hpp
-                 include/gambit/Core/gambit_core.hpp
-                 include/gambit/Core/gambit_main.hpp
+                 include/gambit/Core/gambit.hpp
                  include/gambit/Core/ini_functions.hpp
                  include/gambit/Core/likelihood_container.hpp
                  include/gambit/Core/modelgraph.hpp

@@ -17,7 +17,7 @@
 ///
 ///  \author Pat Scott
 ///          <p.scott@imperial.ac.uk>
-///  \date 2015 May
+///  \date 2015 May, Jul
 ///
 ///  *********************************************
 
@@ -40,17 +40,17 @@ namespace Gambit
         /// Initialize SingletDM object (branching ratios etc)
         SingletDM(
             TH_ProcessCatalog* const catalog,
-            const std::map<std::string, Funk::Funk> & arg_f_vs_mass)
+            const std::map<std::string, Funk::Funk> & arg_f_vs_mass,
+            double vev,
+            double alpha_strong)
+        : v0 (vev),
+          alpha_s (alpha_strong)   
         {
           mh   = catalog->getParticleProperty("h0_1").mass;
-          // FIXME: This should not be hard-coded
-          v0   = 246.0;
-          alpha_s = 0.12;
           mb   = catalog->getParticleProperty("b").mass;
           mc   = catalog->getParticleProperty("c").mass;
           mtau = catalog->getParticleProperty("tau-").mass;
           mt   = catalog->getParticleProperty("t").mass;
-
           f_vs_mass = arg_f_vs_mass;
           Gamma = f_vs_mass["Gamma"]->bind("mass");
           Gamma_mh = Gamma->eval(mh);
@@ -79,14 +79,23 @@ namespace Gambit
           // don't understand how.
           double s = 4*mass*mass/(1-v*v/4);
           double sqrt_s = sqrt(s);
-          if ( sqrt_s < 90 ) 
+          if ( sqrt_s < 90 )
           {
             piped_invalid_point.request(
                 "SingletDM sigmav called with sqrt_s < 90 GeV.");
             return 0;
           }
 
-          if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
+          if ( channel == "hh" )
+          { 
+            if ( sqrt_s > mh*2 )
+            {
+              double GeV2tocm3s1 = gev2cm2*s2cm;
+              return sv_hh(lambda, mass, v)*GeV2tocm3s1;
+            }
+            else return 0;
+          }
+
           if ( sqrt_s < 300 )
           {
             double br = virtual_SMHiggs_widths(channel,sqrt_s);
@@ -99,17 +108,17 @@ namespace Gambit
           }
           else
           {
-            if ( channel == "bb" and sqrt_s > mb )
+            if ( channel == "bb" and sqrt_s > mb*2 )
               return sv_ff(lambda, mass, v, mb, true);
-            if ( channel == "cc" and sqrt_s > mc  )
+            if ( channel == "cc" and sqrt_s > mc*2  )
               return sv_ff(lambda, mass, v, mc, false);
-            if ( channel == "tautau" and sqrt_s > mtau )
+            if ( channel == "tautau" and sqrt_s > mtau*2 )
               return sv_ff(lambda, mass, v, mtau, false);
-            if ( channel == "tt" and sqrt_s > mt )
+            if ( channel == "tt" and sqrt_s > mt*2 )
               return sv_ff(lambda, mass, v, mt, false);
-            if ( channel == "ZZ" and sqrt_s > m_Zboson)
+            if ( channel == "ZZ" and sqrt_s > m_Zboson*2)
               return sv_ZZ(lambda, mass, v);
-            if ( channel == "WW" and sqrt_s > m_Wboson)
+            if ( channel == "WW" and sqrt_s > m_Wboson*2)
               return sv_WW(lambda, mass, v);
           }
           return 0;
@@ -166,7 +175,7 @@ namespace Gambit
             (
              (pow(aR,2)+pow(aI,2))*s*vh*vs
              +4*lambda*pow(v0,2)*(aR-lambda*pow(v0,2)/(s-2*pow(mh,2)))
-             *log(abs(pow(mass,2)-tp)/abs(pow(mass,2)-tm))
+             *log(std::abs(pow(mass,2)-tp)/std::abs(pow(mass,2)-tm))
              +(2*pow(lambda,2)*pow(v0,4)*s*vh*vs)
              /(pow(mass,2)-tm)/(pow(mass,2)-tp));
         }
@@ -189,11 +198,11 @@ namespace Gambit
     void DD_couplings_SingletDM(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_SingletDM;
-      double mass = *Param["mass"];
-      double lambda = *Param["lambda"];
-      // FIXME: It would be cleaner if this actually does not come from the
-      // process catalog, but instead from the Spectrum Object
-      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
+      const Spectrum* spec = *Dep::SingletDM_spectrum;
+      RunningPars& extrapar = spec->get_UV()->runningpars;
+      double mass = spec->get_Pole_Mass("S");
+      double lambda = extrapar.get_mass_parameter("lambda_hS");
+      double mh = spec->get_Pole_Mass("h0_1");
 
       // TODO: Double check expressions (taken from Cline et al. 2013)
       double fp = 2./9. + 7./9.*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
@@ -242,36 +251,34 @@ namespace Gambit
       static std::map<string, Funk::Funk> f_vs_mass = 
         get_f_vs_mass("Elements/data/Higgs_decay_1101.0593.dat");
 
-      // Import model parameters
-      double mS = *Param["mass"];
-      double lambda = *Param["lambda"];
-
       // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
       TH_Process process_ann((string)"S", (string)"S");
 
 
-      ///////////////////////////
-      // Import particle masses
-      ///////////////////////////
+      ///////////////////////////////////////
+      // Import particle masses and couplings
+      ///////////////////////////////////////
       
+      // Convenience macros
+      #define getSMmass(Name, spinX2)                                           \
+       catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
+       (Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)));    
+      #define addParticle(Name, Mass, spinX2)                                   \
+       catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
+       (Name , TH_ParticleProperty(Mass, spinX2)));    
+
       // Import Spectrum objects
       const Spectrum* spec = *Dep::SingletDM_spectrum;
-      const SubSpectrum* spec_uv = spec->get_UV();
+      const RunningPars& extrapar = spec->get_UV()->runningpars;
       const SubSpectrum* SM = spec->get_LE();
       const SMInputs& SMI   = spec->get_SMInputs();
 
-      // FIXME: Update "<H>" etc
-      double mH = spec->get_Pole_Mass("h0_1");
-      double v = spec_uv->runningpars.get_mass_parameter("vev");
+      // Import couplings
+      double lambda = extrapar.get_mass_parameter("lambda_hS");
+      double v = extrapar.get_mass_parameter("vev");
 
       // Get SM pole masses
-#define getSMmass(Name, spinX2)                                                \
-      catalog.particleProperties.insert(                                       \
-          std::pair<string, TH_ParticleProperty>(                              \
-            Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)   \
-            )                                                                  \
-          );    
       getSMmass("e-",     1)
       getSMmass("e+",     1)
       getSMmass("mu-",    1)
@@ -287,14 +294,7 @@ namespace Gambit
       getSMmass("bbar",   1)
       getSMmass("t",      1)
       getSMmass("tbar",   1)
-#undef getSMmass
-      // Get remaining masses
-#define addParticle(Name, Mass, spinX2)                                        \
-      catalog.particleProperties.insert(                                       \
-          std::pair<string, TH_ParticleProperty>(                              \
-            Name , TH_ParticleProperty(Mass, spinX2)                           \
-            )                                                                  \
-          );    
+
       // Pole masses not available for the light quarks.    
       addParticle("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
       addParticle("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
@@ -304,6 +304,7 @@ namespace Gambit
       addParticle("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
       addParticle("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
       addParticle("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+
       // Masses for neutrino flavour eigenstates. Set to zero.
       // FIXME: Is this information required for anything?
       addParticle("nu_e",     0.0, 1)
@@ -312,9 +313,12 @@ namespace Gambit
       addParticle("nubar_mu", 0.0, 1)
       addParticle("nu_tau",   0.0, 1)
       addParticle("nubar_tau",0.0, 1)      
-      addParticle("S",        mS , 0)  // Singlet mass
-      addParticle("h0_1",     mH , 0)  // SM-like Higgs
-      // FIXME: Get Higgs mass from Spec Bit
+
+      // Higgs-sector masses
+      double mS = spec->get_Pole_Mass("S");
+      double mH = spec->get_Pole_Mass("h0_1");
+      addParticle("S",        mS, 0)  // Singlet DM
+      addParticle("h0_1",     mH, 0)  // SM-like Higgs
       
       // FIXME: Get meson masses from somewhere
       addParticle("pi0",      0.135,   0)
@@ -325,7 +329,10 @@ namespace Gambit
       addParticle("rho+",     0.775,   1)       
       addParticle("rho-",     0.775,   1)             
       addParticle("omega",    0.7827,  1)         
-#undef addParticle
+
+      // Get rid of convenience macros
+      #undef getSMmass
+      #undef addParticle
 
 
       /////////////////////////////
@@ -352,7 +359,8 @@ namespace Gambit
 
       // Instantiate new SingletDM object
       // FIXME: Probably this can be speed up f_vs_mass
-      auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass);
+      // FIXME: alpha_s = 0.12 should not be hard-coded, but gotten from the spectrum object; but at what scale?
+      auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass, v, 0.12);
 
       // Populate annihilation channel list and add thresholds to threshold
       // list.
@@ -366,12 +374,13 @@ namespace Gambit
       auto p2 = 
         Funk::vec<string>("bbar","W-", "cbar","tau-", "Z0", "tbar","h0_1");
       {
-        for ( int i = 0; i < channel.size(); i++ )
+        for ( unsigned int i = 0; i < channel.size(); i++ )
         {
           double mtot_final = 
             catalog.particleProperties.at(p1[i]).mass +
             catalog.particleProperties.at(p2[i]).mass;
-          if ( mS*2 > mtot_final )
+          // Include final states that are open for T~m/20
+          if ( mS*2 > mtot_final*0.5 )
           {
             Funk::Funk kinematicFunction = Funk::funcM(singletDM,
                 &SingletDM::sv, channel[i], lambda, mS, Funk::var("v"));

@@ -50,6 +50,20 @@ namespace Gambit
       }
     }
 
+    ini_code(void (*unroll)())
+    {
+      std::set_terminate(terminator);
+      try
+      {
+        (*unroll)();
+      }
+      catch (const std::exception& e)
+      {
+        std::cout << "GAMBIT has failed to initialise due to fatal exception: " << e.what() << std::endl;
+        throw(e);
+      }
+    }
+
   };
   
 }

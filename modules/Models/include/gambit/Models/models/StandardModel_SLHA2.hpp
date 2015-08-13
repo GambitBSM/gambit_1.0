@@ -65,7 +65,7 @@
   DEFINEPARS(mBmB, mT)             // 5,6
 
   // CKM parameters
-  DEFINEPARS(lambda, A, rhobar, etabar)
+  DEFINEPARS(CKM_lambda, CKM_A, CKM_rhobar, CKM_etabar)
 
   // PMNS parameters
   DEFINEPARS(theta12, theta23, theta13)

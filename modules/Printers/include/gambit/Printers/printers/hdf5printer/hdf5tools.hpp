@@ -31,16 +31,13 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
-//#include <boost/multi_array.hpp> // Used in buffers
 
-// HDF5 C++ bindings
-#include "H5Cpp.h" 
- 
-// Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
-
-// MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+
+#include <H5Cpp.h>                      
+#include <boost/utility/enable_if.hpp>
+
 
 /// Provide template specialisation of get_hdf5_data_type only if the requested type hasn't been used to define one already.
 #define SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(TYPE_CATEGORY, TYPEDEFD_TYPE, RETURN_HDF5_TYPE)                                  \

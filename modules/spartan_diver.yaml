@@ -20,10 +20,15 @@ Priors:
 
 #======== Output setup ========
 Printer:
-  printer: ascii
+  #printer: ascii
+  #options:
+  #  output_file: "runs/spartan_diver/samples/gambit_output.data"
+  #  info_file: "runs/spartan_diver/samples/gambit_output.data_info"
+  printer: hdf5
   options:
-    output_file: "runs/spartan_diver/samples/gambit_output.data"
-    info_file: "runs/spartan_diver/samples/gambit_output.data_info"
+     output_file: "runs/spartan_diver/samples/gambit_output.hdf5"
+     group: "/test/test2"
+     delete_file_if_exists: true
 
 #======== Scanner setup ========
 Scanner:
@@ -33,7 +38,7 @@ Scanner:
     de:
       plugin: Diver
       like: Likelihood
-      NP: 10
+      NP: 1000
       path: "runs/spartan_diver/diver_native"
       verbosity: 1
       aux_printer_txt_options:

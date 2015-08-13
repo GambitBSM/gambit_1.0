@@ -56,6 +56,11 @@ namespace Gambit {
            DataSetInterfaceScalar<bool,CHUNKLENGTH>& dsetvalid(); // validity bools
            DataSetInterfaceScalar<T,CHUNKLENGTH>&    dsetdata();  // actual data             
 
+           /// Extendible backup buffers for RA writes that need to be
+           /// postponed due to the original sync writes not having been
+           /// performed yet.
+           std::vector<std::pair<T,PPIDpair>> postpone_write_queue_and_locs;             
+
            /// Dimension-0 index of the next empty hyperslab in the output datasets
            unsigned long nextemptyslab = 0;
 
@@ -92,11 +97,14 @@ namespace Gambit {
            /// Write externally-supplied buffer to HDF5 dataset
            virtual void write_external_to_disk(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH]);
 
-           /// Reset the output (non-synchronised datasets only)
-           virtual void reset();
+           /// Reset the output (non-synchronised datasets only, unless force=true)
+           virtual void reset(bool force=false);
 
            /// Send random access write queue to dataset interfaces for writing
            virtual void RA_write_to_disk(const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
+
+           /// Attempt to write any postponed RA_write attempts to disk
+           void attempt_postponed_RA_write_to_disk(const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
 
            /// Update the variables needed to tracks the currently target dset slot
            /// (really just updates the nextemptyslab variable)
@@ -119,7 +127,14 @@ namespace Gambit {
            /// write to the supplied absolute dataset index (e.g. by inserting
            /// blank entries if need)
            void synchronise_output_to_position(const ulong i);
-         
+        
+           /// Check how many RA writes are waiting in the postpone queue
+           /// (mostly for debugging purposes)
+           std::size_t postponed_RA_queue_length() { return postpone_write_queue_and_locs.size(); }
+
+           // Needed for checking that dataset sizes on disk are consistent
+           ulong get_dataset_length();
+
       };
  
 
@@ -132,22 +147,36 @@ namespace Gambit {
         : VertexBufferNumeric1D<T,CHUNKLENGTH>()
         , _dsetvalid()
         , _dsetdata()
+        , postpone_write_queue_and_locs()
       {}
 
       template<class T, std::size_t CHUNKLENGTH>
-      VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i, bool sync, bool silence
+      VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::VertexBufferNumeric1D_HDF5(
+          H5FGPtr location
+        , const std::string& name
+        , const int vID
+        , const unsigned int i
+        , bool sync
+        , bool silence
         #ifdef WITH_MPI
         , const BuffTags& tags
         , const GMPI::Comm& pComm
         #endif
         )
-        : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i, sync, silence
+        : VertexBufferNumeric1D<T,CHUNKLENGTH>(
+            name
+          , vID
+          , i
+          , sync
+          , silence
           #ifdef WITH_MPI
-          , tags, pComm
+          , tags
+          , pComm
           #endif
           )
         , _dsetvalid()
         , _dsetdata()
+        , postpone_write_queue_and_locs()
       {
         if(location==NULL and this->myRank==0)
         {
@@ -260,7 +289,101 @@ namespace Gambit {
 
       /// Reset the output (non-synchronised datasets only)
       template<class T, std::size_t L>
-      void VertexBufferNumeric1D_HDF5<T,L>::reset() { }
+      void VertexBufferNumeric1D_HDF5<T,L>::reset(bool force) 
+      { 
+         if(not force and this->is_synchronised())
+         {
+            std::ostringstream errmsg;
+            errmsg << "rank "<<this->myRank<<": Error! Tried to reset() a synchronised buffer! This is forbidden unless force=true. (buffer name = "<<this->get_label()<<")";
+            printer_error().raise(LOCAL_INFO, errmsg.str()); 
+         }
+
+         // Clear the sync buffers
+         this->clear();
+
+         /// Empty the queue of postponed writes, because it would now
+         /// be erased had we gotten around to writing it.
+         postpone_write_queue_and_locs.clear();
+
+         if(this->myRank==0) // Can only touch datasets on master process.
+         {
+            /// Invalidate the contents of the linked datasets
+            /// This can be done by simply resetting the all validity bools to "false"
+            dsetvalid().zero();
+            //dsetdata().zero(); // Should work fine, but should be unneccesary.
+         }
+      }
+
+      /// Attempt to write postponed RA entries to disk 
+      template<class T, std::size_t CHUNKLENGTH>
+      void VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::attempt_postponed_RA_write_to_disk(const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
+      {
+         /// Use the provided PPIDpair-->dset_location map to locate the target
+         /// parameter points in the output dataset. 
+         /// (Temp RA buffers for immediate writes)
+         bool valid[CHUNKLENGTH]; 
+         T        now_write_queue[CHUNKLENGTH];             
+         hsize_t  now_abs_write_locations[CHUNKLENGTH];
+         uint     now_i=0; // queue_length
+
+         /// Postponed entries which still cannot be written will be added here.
+         std::vector<std::pair<T,PPIDpair>> failed;
+         
+         /// Need to go through the postponed entries one CHUNKLENGTH at a time
+         typedef typename std::vector<std::pair<T,PPIDpair>>::iterator it_type;
+         it_type itpp = postpone_write_queue_and_locs.begin();
+         while(itpp != postpone_write_queue_and_locs.end())
+         {
+            T&        val = itpp->first;
+            PPIDpair& loc = itpp->second;
+
+            // Convert loc to abs dataset index (if possible)
+            std::map<PPIDpair, ulong>::const_iterator it 
+                = PPID_to_dsetindex.find(loc);
+
+            if(it==PPID_to_dsetindex.end())
+            {
+               // No PPID found
+               failed.push_back(*itpp);
+            }
+            else
+            {
+               // PPID found; convert to absolute dataset index and add to "now" queue
+               now_write_queue[now_i]         = val;
+               now_abs_write_locations[now_i] = it->second;
+               now_i++;
+            }
+
+            // Increment iterator (need to do this before 'if' statement around RA_write call)
+            ++itpp; 
+
+            // Write "now" buffers to disk, if they aren't empty
+            if(now_i != 0)
+            {
+               if(now_i>CHUNKLENGTH)
+               {
+                  std::ostringstream errmsg;
+                  errmsg << "rank "<<this->myRank<<": Error! now_i has exceeded CHUNKLENGTH (now_i=="<<now_i<<") during attempt to perform postponed RA_writes. (buffer name = "<<this->get_label()<<")";
+                  printer_error().raise(LOCAL_INFO, errmsg.str()); 
+               }
+
+               // Do the write only if buffer is full or postpone queue is finished and we
+               // are about to finish looping.
+               if(now_i==CHUNKLENGTH or itpp == postpone_write_queue_and_locs.end())
+               {
+                  std::fill_n(valid, CHUNKLENGTH, false); 
+                  std::fill_n(valid, now_i, true); 
+                  dsetvalid().RA_write(valid,           now_abs_write_locations, now_i); 
+                  dsetdata().RA_write (now_write_queue, now_abs_write_locations, now_i);
+                  //std::cout<<"Wrote "<<now_i<<" postponed RA items to disk"<<std::endl;
+                  now_i = 0; // Reset buffer
+               }
+            }
+         }
+         // put failed write attempts back into the postpone queue
+         postpone_write_queue_and_locs = failed;
+      }
+
 
       /// Send random access write queue to dataset interfaces for writing
       template<class T, std::size_t CHUNKLENGTH>
@@ -275,26 +398,68 @@ namespace Gambit {
             std::cout<<"rank "<<this->myRank<<": Extended RA dset '"<<this->get_label()<<"' to size "<<target_sync_pos<<std::endl; 
             #endif
 
-            if (this->RA_queue_length!=0) 
+            if (this->RA_queue_length!=0 or postpone_write_queue_and_locs.size()!=0) 
             {
-               bool valid[CHUNKLENGTH];
       
                /// Make sure RA datasets are at least the same length as the sync datasets
                #ifdef DEBUG_MODE
                std::cout<<"rank "<<this->myRank<<": Doing RA_write_to_disk for buffer '"<<this->get_label()<<"' (note: target_sync_pos="<<target_sync_pos<<", dset_head_pos()="<<this->dset_head_pos()<<")"<<std::endl;
                #endif 
 
+               // Attempt to write any existing postponed RA write attempts to disk (again)
+               attempt_postponed_RA_write_to_disk(PPID_to_dsetindex);
+
+               //std::cout<<"rank "<<this->myRank<<": Number of items remaining in postpone queue after write attempt = "<<postpone_write_queue_and_locs.size()<<"); buffer is '"<<this->get_label()<<"'"<<std::endl;
+
                /// Use the provided PPIDpair-->dset_location map to locate the target
                /// parameter points in the output dataset. 
-               hsize_t abs_write_locations[CHUNKLENGTH];
+               /// (Temp RA buffers for immediate writes)
+               bool valid[CHUNKLENGTH]; 
+               T        now_write_queue[CHUNKLENGTH];             
+               hsize_t  now_abs_write_locations[CHUNKLENGTH];
+               uint     now_i=0; // queue_length
+
+               // Now go through the current RA_queue and try to write them to disk
                for(ulong i=0; i<this->RA_queue_length; i++)
                {
-                 abs_write_locations[i] = PPID_to_dsetindex.at(this->RA_write_locations[i]);
+                 // Some write locations may not be known yet due to the original
+                 // data not yet having been written to disk from its sync buffer.
+                 // We will have to postpone writing these until the next RA_write
+                 // attempt.
+                 std::map<PPIDpair, ulong>::const_iterator it 
+                     = PPID_to_dsetindex.find(this->RA_write_locations[i]);
+                 if(it==PPID_to_dsetindex.end())
+                 {
+                    // No PPID found; add to "postpone" queue
+                    postpone_write_queue_and_locs.push_back(
+                                  std::make_pair(this->RA_write_queue[i],
+                                                 this->RA_write_locations[i])
+                                  );
+                 }
+                 else
+                 {
+                    // PPID found; convert to absolute dataset index and add to "now" queue
+                    now_write_queue[now_i]         = this->RA_write_queue[i];
+                    now_abs_write_locations[now_i] = it->second;
+                    now_i++;
+                 }
                }               
 
-               std::fill_n(valid, this->RA_queue_length, true); 
-               dsetvalid().RA_write(valid,               abs_write_locations,this->RA_queue_length); 
-               dsetdata().RA_write (this->RA_write_queue,abs_write_locations,this->RA_queue_length);
+               // Write "now" buffers to disk, if they aren't empty
+               if(now_i != 0)
+               {
+                  if(now_i>CHUNKLENGTH)
+                  {
+                     std::ostringstream errmsg;
+                     errmsg << "rank "<<this->myRank<<": Error! now_i has exceeded CHUNKLENGTH (now_i=="<<now_i<<"). (buffer name = "<<this->get_label()<<")";
+                     printer_error().raise(LOCAL_INFO, errmsg.str()); 
+                  }
+                  std::fill_n(valid, CHUNKLENGTH, false); 
+                  std::fill_n(valid, now_i, true); 
+                  dsetvalid().RA_write(valid,           now_abs_write_locations, now_i); 
+                  dsetdata().RA_write (now_write_queue, now_abs_write_locations, now_i);
+               }
+
             }
          }
       }
@@ -387,6 +552,17 @@ namespace Gambit {
          }
       }
  
+      template<class T, std::size_t L>
+      ulong VertexBufferNumeric1D_HDF5<T,L>::get_dataset_length()
+      {
+         if(dsetvalid().dset_length() != dsetdata().dset_length())
+         {
+            std::ostringstream errmsg;
+            errmsg << "rank "<<this->myRank<<": Error! Lengths of 'data' and 'valid' datasets for buffer "<<this->get_label()<<" are different ("<<dsetdata().dset_length()<<" and "<<dsetvalid().dset_length()<<" respectively). This should never happen.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+         return dsetdata().dset_length();
+      }
       /// @} 
   }
 }

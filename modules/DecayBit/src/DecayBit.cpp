@@ -2347,7 +2347,7 @@ namespace Gambit
       const Spectrum* spec = *Dep::SingletDM_spectrum;
       RunningPars& extrapar = spec->get_UV()->runningpars;
       double mass = spec->get_Pole_Mass("S");
-      double lambda = extrapar.get_mass_parameter("lambda");
+      double lambda = extrapar.get_mass_parameter("lambda_hS");
       double v0 = extrapar.get_mass_parameter("vev");
       double mhpole = spec->get_Pole_Mass("h0_1");
 

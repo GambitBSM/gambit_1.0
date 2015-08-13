@@ -35,8 +35,11 @@
 
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
+
+   namespace SpecBit
+   {
 
       // Needed for typename aliases in Spec and MapTypes classes
       struct QedQcdWrapperTraits
@@ -51,7 +54,8 @@ namespace Gambit {
          friend class PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
    
          private:
-            typedef MapTypes<QedQcdWrapperTraits> MT; 
+            typedef MapTypes<QedQcdWrapperTraits,MapTag::Get> MTget; 
+            typedef MapTypes<QedQcdWrapperTraits,MapTag::Set> MTset; 
    
             // Keep copies of Model and Input objects internally
             typename QedQcdWrapperTraits::Model qedqcd;
@@ -86,14 +90,18 @@ namespace Gambit {
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
-            
-            /// RunparDer overrides (access via spectrum.runningpar)
-            static typename MT::fmap_extraM fill_mass_map_extraM();   /*O*/
-            static typename MT::fmap_extraM fill_mass0_map_extraM();  /*O*/
-   
-            /// PhysDer overrides (access via spectrum.phys)
-            static typename MT::fmap        fill_PoleMass_map();        /*O*/
-            static typename MT::fmap_extraI fill_PoleMass_map_extraI(); /*O*/
+            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
+            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
+
+            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
+            static RunningGetterMaps runningpars_fill_getter_maps(); /*O*/
+            //static RunningSetterMaps runningpars_fill_setter_maps(); // We don't currently use this in this wrapper
+ 
+            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            static PhysGetterMaps    phys_fill_getter_maps(); /*O*/
+            static PhysSetterMaps    phys_fill_setter_maps(); /*O*/
     
       };
  

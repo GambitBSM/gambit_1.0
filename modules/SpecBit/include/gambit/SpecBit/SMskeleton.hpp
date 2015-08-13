@@ -60,15 +60,18 @@ namespace Gambit {
       };
 
       /// SM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class SMskeleton : public SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea>> 
+      class SMskeleton : public SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> > 
       {
-         friend class RunparDer<SMskeleton,SLHAskeletonTraits<SMea>>;
-         friend class PhysDer  <SMskeleton,SLHAskeletonTraits<SMea>>;
-
-         private:
-            typedef MapTypes<SLHAskeletonTraits<SMea>> MT; 
-
+         friend class RunparDer<SMskeleton,SLHAskeletonTraits<SMea> >;
+         friend class PhysDer  <SMskeleton,SLHAskeletonTraits<SMea> >;
+        
          public:
+            typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
+            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
+            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
+
             // Constructors/destructors
             SMskeleton();
             SMskeleton(const SLHAea::Coll&);
@@ -80,12 +83,12 @@ namespace Gambit {
          protected:
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
-            
-            /// RunparDer overrides (access via spectrum.runningpar)
-            static typename MT::fmap fill_mass_map();
-
-            /// PhysDer overrides (access via spectrum.phys)
-            static typename MT::fmap fill_PoleMass_map();
+ 
+            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
+            static RunningGetterMaps runningpars_fill_getter_maps();
+ 
+            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            static PhysGetterMaps    phys_fill_getter_maps();
 
       };
  

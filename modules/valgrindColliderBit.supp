@@ -1,0 +1,121 @@
+###
+### Memcheck errors which I might not care about.
+### Either contrib / extern code, or happen infrequently.
+###
+
+##### ROOT #####
+{
+  ROOT's silly conditional jumps
+  Memcheck:Cond
+  ...
+  fun:*ROOT*
+  ...
+}
+
+{
+  More of ROOT's silly conditional jumps
+  Memcheck:Cond
+  ...
+  fun:*TObject*
+  ...
+}
+
+{
+  ROOT's silly leaks
+  Memcheck:Leak
+  ...
+  fun:*ROOT*
+  ...
+}
+
+{
+  More ROOT's silly leaks... Maybe?
+  Memcheck:Leak
+  ...
+  fun:*GLOBAL__*
+  ...
+}
+
+{
+  Also ROOT's silly leaks... Maybe?
+  Memcheck:Leak
+  ...
+  fun:G__*
+  ...
+}
+
+##### Gambit - Core #####
+{
+  Gambit's invalid reads which I don't care about
+  Memcheck:Addr8
+  fun:_ZSt18_Rb_tree_incrementPKSt18_Rb_tree_node_base
+  fun:_ZNSt23_Rb_tree_const_iteratorISt3setISsSt4lessISsESaISsEEEppEv
+  fun:_ZN6Gambit5Utils16type_equivalency3addESsSs
+  ...
+}
+
+##### Gambit - Backends #####
+{
+  Pythia might also have a conditional jump... Check with Pythia's main24 example.
+  Memcheck:Cond
+  ...
+  fun:_ZN7Pythia86Pythia4initEv
+  ...
+}
+
+{
+  Nulike has some conditional jumps also... Tell Pat and Chris.
+  Memcheck:Cond
+  fun:nulike_*
+  ...
+}
+
+
+###
+### Very many Memcheck errors from the Gambit systems below.
+###   However, MOST of these errors are after "GAMBIT has finished successfully!"
+###
+
+
+##### Gambit - Printers #####
+{
+  Printer "use of uninitialized..."  **After Gambit reports finish... does it matter?**
+  Memcheck:Value8
+  ...
+  fun:_ZN6Gambit8Printers*
+  ...
+}
+
+{
+  Printer "conditional jump..."  **After Gambit reports finish... does it matter?**
+  Memcheck:Cond
+  ...
+  fun:_ZN6Gambit8Printers*
+  ...
+}
+
+{
+  Printer "Param write(buf)..."  **After Gambit reports finish... does it matter?**
+  Memcheck:Cond
+  ...
+  fun:_ZN6Gambit8Printers*
+  ...
+}
+
+##### Gambit - Scanner #####
+{
+  Scanner "use of uninitialized..."  **After Gambit reports finish... does it matter?**
+  Memcheck:Value8
+  ...
+  fun:_ZN6Gambit7Scanner*
+  ...
+}
+
+{
+  Scanner "conditional jump..."  **After Gambit reports finish... does it matter?**
+  Memcheck:Value8
+  ...
+  fun:_ZN6Gambit7Scanner*
+  ...
+}
+

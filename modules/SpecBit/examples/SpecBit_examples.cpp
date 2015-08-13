@@ -591,6 +591,33 @@ namespace Gambit
 
          cout << endl; 
 
+         /// NEW! Tests of override setters
+  
+         cout << "Testing set_override functions" << endl;
+
+         cout << "Original M1:" << spec->runningpars.get_mass_parameter("M1") << endl;
+         spec->runningpars.set_override_mass_parameter(-666,"M1");
+         cout << "Override M1:" << spec->runningpars.get_mass_parameter("M1") << endl;
+
+         cout << "Original ~e-(1):" << spec->phys.get_Pole_Mass("~e-",1) << endl;
+         spec->phys.set_override_Pole_Mass(-667,"~e-",1);
+         cout << "Override ~e-(1):" << spec->phys.get_Pole_Mass("~e-",1) << endl;
+
+         cout << "Original ml2(1,1):" << spec->runningpars.get_mass2_parameter("ml2",1,1) << endl;
+         spec->runningpars.set_override_mass2_parameter(-668,"ml2",1,1);
+         cout << "Override ml2(1,1):" << spec->runningpars.get_mass2_parameter("ml2",1,1) << endl;
+
+         /// Now add some entry that didn't exist before
+         cout << "has 'new_entry'? " << spec->runningpars.has_mass_parameter("new_entry") << endl;
+         cout << "..." << endl;
+         /// Note: if we try to do it like this, it should fail:
+         //spec->runningpars.set_override_mass2_parameter(-1234,"new_entry"); // incorrect: safety still on
+         spec->runningpars.set_override_mass_parameter(-1234,"new_entry",false); // correct: safety check turned off
+         cout << "has 'new_entry'? " << spec->runningpars.has_mass_parameter("new_entry") << endl;
+         cout << "new_entry = " << spec->runningpars.get_mass_parameter("new_entry") << endl;
+         cout << endl; 
+
+
          // Things left to add to demo:
          // - Tree-level masses
          // - Standard Model mixings (need to be added to MSSMSpec as well)
