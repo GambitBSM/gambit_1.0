@@ -209,8 +209,8 @@ namespace Gambit {
          //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
          
          cout << "rank: " << boundPrinter.get_stream()->getRank() << " at " << LOCAL_INFO << endl;
-
          double lnew = (*boundLogLike)(unitpars); 
+         cout << "rank: " << boundPrinter.get_stream()->getRank() << " at " << LOCAL_INFO << endl;
 
          // Extract the primary printer from the printer manager
          printer* primary_stream( boundPrinter.get_stream() );
