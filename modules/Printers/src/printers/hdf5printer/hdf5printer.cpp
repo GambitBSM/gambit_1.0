@@ -114,7 +114,8 @@
   #define DBUG(x)
 #endif
 
-//#define CHECK_SYNC 
+#define CHECK_SYNC 
+#define MPI_DEBUG
 
 // Code!
 namespace Gambit
@@ -1271,7 +1272,9 @@ namespace Gambit
        {
           // Master process primary printer checks for tag requests from worker processes
           // I am hoping this check is cheap since it will happen quite a lot.
-          tag_manager->check_for_tag_requests();
+          cout << LOCAL_INFO << endl;
+         tag_manager->check_for_tag_requests();
+          cout << LOCAL_INFO << endl;
        }
        else
        {
@@ -1279,13 +1282,15 @@ namespace Gambit
           primary_printer->check_for_bufftag_deliveries();
        }
 
+          cout << LOCAL_INFO << endl;
        if(is_auxilliary_printer())
        {
           // Redirect task to primary printer
+          cout << LOCAL_INFO << endl;
           primary_printer->check_for_new_point(candidate_newpoint, mpirank);
        }
 
-       //std::cout<<"rank "<<myRank<<": Checking for new point (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
+       std::cout<<"rank "<<myRank<<": Checking for new point (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
 
        // Check if we have changed target PointIDs since the last print call
        if(candidate_newpoint!=lastPointID.at(myRank))
