@@ -626,9 +626,13 @@ namespace Gambit {
         std::cout<<"rank "<<myRank<<": Collecting sync buffer ("<<this->get_label()<<") from process "<<source<<std::endl;
         #endif
 
+        cout << msgsize << " " << exp_length << endl;
+
         printerComm.Recv(&recv_buffer_valid,   msgsize, source, myTags.SYNC_valid);
         printerComm.Recv(&recv_buffer_entries, msgsize, source, myTags.SYNC_data);
                          
+        cout << msgsize << " " << exp_length << endl;
+
         #ifdef MPI_DEBUG
         std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<" (size="<<msgsize<<"). Appending received data to my sync buffers."<<std::endl;
         #endif
