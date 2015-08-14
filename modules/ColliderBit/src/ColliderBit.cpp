@@ -1412,6 +1412,11 @@ namespace Gambit
     void ALEPH_Selectron_Conservative_LLike(double& result)
     {
       static ALEPHSelectronLimitAt208GeV *limitContainer = new ALEPHSelectronLimitAt208GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/ALEPHSelectronLimitAt208GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::ALEPH_Selectron_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -1470,6 +1475,11 @@ namespace Gambit
     void ALEPH_Smuon_Conservative_LLike(double& result)
     {
       static ALEPHSmuonLimitAt208GeV *limitContainer = new ALEPHSmuonLimitAt208GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/ALEPHSmuonLimitAt208GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::ALEPH_Smuon_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -1528,6 +1538,11 @@ namespace Gambit
     void ALEPH_Stau_Conservative_LLike(double& result)
     {
       static ALEPHStauLimitAt208GeV *limitContainer = new ALEPHStauLimitAt208GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/ALEPHStauLimitAt208GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::ALEPH_Stau_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -1586,6 +1601,11 @@ namespace Gambit
     void L3_Selectron_Conservative_LLike(double& result)
     {
       static L3SelectronLimitAt205GeV *limitContainer = new L3SelectronLimitAt205GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/L3SelectronLimitAt205GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::L3_Selectron_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -1644,6 +1664,11 @@ namespace Gambit
     void L3_Smuon_Conservative_LLike(double& result)
     {
       static L3SmuonLimitAt205GeV *limitContainer = new L3SmuonLimitAt205GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/L3SmuonLimitAt205GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::L3_Smuon_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -1702,6 +1727,11 @@ namespace Gambit
     void L3_Stau_Conservative_LLike(double& result)
     {
       static L3StauLimitAt205GeV *limitContainer = new L3StauLimitAt205GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/L3StauLimitAt205GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::L3_Stau_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -1763,6 +1793,11 @@ namespace Gambit
     void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
     {
       static L3NeutralinoAllChannelsLimitAt188pt6GeV *limitContainer = new L3NeutralinoAllChannelsLimitAt188pt6GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::L3_Neutralino_All_Channels_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -1883,6 +1918,11 @@ namespace Gambit
     void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
     {
       static L3NeutralinoLeptonicLimitAt188pt6GeV *limitContainer = new L3NeutralinoLeptonicLimitAt188pt6GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::L3_Neutralino_Leptonic_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -1994,6 +2034,11 @@ namespace Gambit
     void L3_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static L3CharginoAllChannelsLimitAt188pt6GeV *limitContainer = new L3CharginoAllChannelsLimitAt188pt6GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::L3_Chargino_All_Channels_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -2069,6 +2114,11 @@ namespace Gambit
     void L3_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static L3CharginoLeptonicLimitAt188pt6GeV *limitContainer = new L3CharginoLeptonicLimitAt188pt6GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/L3CharginoLeptonicLimitAt188pt6GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::L3_Chargino_Leptonic_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -2150,6 +2200,11 @@ namespace Gambit
     void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
     {
       static OPALCharginoHadronicLimitAt208GeV *limitContainer = new OPALCharginoHadronicLimitAt208GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/OPALCharginoHadronicLimitAt208GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::OPAL_Chargino_Hadronic_Conservative_LLike;
       using std::erf;
       using std::pow;
@@ -2227,6 +2282,11 @@ namespace Gambit
     void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
     {
       static OPALCharginoSemiLeptonicLimitAt208GeV *limitContainer = new OPALCharginoSemiLeptonicLimitAt208GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       using std::erf;
@@ -2351,6 +2411,11 @@ namespace Gambit
     void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static OPALCharginoLeptonicLimitAt208GeV *limitContainer = new OPALCharginoLeptonicLimitAt208GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/OPALCharginoLeptonicLimitAt208GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       using std::erf;
@@ -2449,6 +2514,11 @@ namespace Gambit
     void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static OPALCharginoAllChannelsLimitAt208GeV *limitContainer = new OPALCharginoAllChannelsLimitAt208GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/OPALCharginoAllChannelsLimitAt208GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       using std::erf;
@@ -2541,6 +2611,11 @@ namespace Gambit
     void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
     {
       static OPALNeutralinoHadronicLimitAt208GeV *limitContainer = new OPALNeutralinoHadronicLimitAt208GeV();
+      static bool dumped=false;
+      if(!dumped) {
+        limitContainer->dumpLightPlotData("lepLightLimitData/OPALNeutralinoHadronicLimitAt208GeV.dump");
+        dumped=true;
+      }
       using namespace Pipes::OPAL_Neutralino_Hadronic_Conservative_LLike;
       using std::erf;
       using std::pow;

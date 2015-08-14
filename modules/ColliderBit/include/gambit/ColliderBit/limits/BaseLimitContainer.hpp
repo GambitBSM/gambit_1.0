@@ -3,13 +3,14 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <fstream>
 #include <limits>
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "gambit/Elements/shared_types.hpp"
-#include "gambit/ColliderBit/ColliderBit_macros.hpp"
 #include "gambit/ColliderBit/limits/PointsAndLines.hpp"
 
 namespace Gambit {
@@ -96,6 +97,36 @@ namespace Gambit {
             return average / totalWeight;
           else
             return average;
+        }
+        /// @brief Dump limit average data into a file for limit debugging
+        void dumpPlotData(double xlow, double xhigh, double ylow, double yhigh,
+                          std::string filename, int ngrid=1000) {
+          double x,y;
+          std::ofstream outFile(filename.c_str(), std::ofstream::trunc);
+          for (int xi=0; xi<=ngrid; xi++) {
+            x = xlow + (xhigh - xlow) * xi / ngrid;
+            for (int yi=0; yi<=ngrid; yi++) {
+              y = ylow + (yhigh - ylow) * yi / ngrid;
+              outFile << x << " " << y << " " << limitAverage(x,y) << "\n";
+            }
+          }
+          outFile.close();
+        }
+        /// @brief Dump input limit contour data into a file for limit debugging
+        void dumpLightPlotData(std::string filename, int nperLine=20) {
+          P2 point;
+          std::ofstream outFile(filename.c_str(), std::ofstream::trunc);
+          for (auto limitIter = _limitContours.begin(); limitIter != _limitContours.end(); ++limitIter) {
+            for (auto segmentIter = (*limitIter).second->begin();
+                      segmentIter != (*limitIter).second->end(); ++segmentIter) {
+              for (double t=0.; t<=1.; t+=1./nperLine) {
+                point = (*segmentIter).getp1() * t + (*segmentIter).getp2() * (1. - t);
+                outFile << point.getx() << " " << point.gety() << " "
+                        << (*limitIter).first << "\n";
+              }
+            }
+          }
+          outFile.close();
         }
       //@}
     };
