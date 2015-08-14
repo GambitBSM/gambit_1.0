@@ -241,7 +241,7 @@ namespace Gambit
      
      
     //////////// MSSM /////////////////////   
-    	
+      
     /// FeynHiggs MSSM decays: t
     void FH_t_decays (DecayTable::Entry& result) 
     {
@@ -2335,7 +2335,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(4), 0.0, "~g", "bbar", "b");
     }
 
-	
+  
     //////////// Singlet DM /////////////////////
 
     /// Add the decay of Higgs to singlets for the SingletDM model
@@ -2381,7 +2381,7 @@ namespace Gambit
       using namespace Pipes::all_decays;
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
-      decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
+      decays("Z0") = *Dep::Z_decay_rates;           // Add the Z decays
       decays("W+") = *Dep::W_plus_decay_rates;      // Add the W decays for W+.
       decays("W-") = *Dep::W_minus_decay_rates;     // Add the W decays for W-
 
