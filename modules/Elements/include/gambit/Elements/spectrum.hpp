@@ -133,10 +133,6 @@ namespace Gambit
          static double Wolf2V_tb(double, double, double, double);
          /// @}
    };
-   /// Overloads for PDG types
-   /// These just convert the types and then call the properly defined functions
-   /// (Note; they are inline due to their use in subspectrum.hpp, so need to be in header)
-   DEFINE_PDG_GETTERS(Spectrum,Pole_Mass)
 
 } // end namespace Gambit
 

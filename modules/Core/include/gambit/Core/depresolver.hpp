@@ -29,7 +29,7 @@
 #include <map>
 #include <queue>
 
-#include "gambit/Core/gambit_core.hpp"
+#include "gambit/Core/core.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/yaml_parser.hpp"
 #include "gambit/Printers/baseprinter.hpp"

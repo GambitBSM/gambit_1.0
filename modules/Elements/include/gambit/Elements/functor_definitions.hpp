@@ -524,6 +524,7 @@ namespace Gambit
       fadeRate                 (FUNCTORS_FADE_RATE),              // can be set individually for each functor
       pInvalidation            (FUNCTORS_BASE_INVALIDATION_RATE),
       needs_recalculating      (NULL), 
+      already_printed          (NULL),
       iCanManageLoops          (false),
       iRunNested               (false),
       myLoopManagerCapability  ("none"),
@@ -558,6 +559,7 @@ namespace Gambit
       if (start != NULL)               delete [] start;
       if (end != NULL)                 delete [] end;
       if (needs_recalculating != NULL) delete [] needs_recalculating;      
+      if (already_printed != NULL)     delete [] already_printed;
       if (myCurrentIteration != NULL)  delete [] myCurrentIteration;
     }
 
@@ -573,6 +575,7 @@ namespace Gambit
       init_memory();
       int n = (iRunNested ? globlMaxThreads : 1);
       std::fill(needs_recalculating, needs_recalculating+n, true);
+      std::fill(already_printed, already_printed+n, false);
       if (iCanManageLoops) resetLoop();
       raised_point_exception = NULL;
     }
@@ -582,6 +585,7 @@ namespace Gambit
     {
       init_memory();
       needs_recalculating[thread_num] = true;
+      already_printed[thread_num] = false;
       if (iCanManageLoops) resetLoop();
     }
 
@@ -1399,6 +1403,17 @@ namespace Gambit
           }
         }
       }
+      if(already_printed==NULL)
+      {
+        #pragma omp critical(module_functor_common_init_memory_already_printed)
+        {
+          if(already_printed==NULL)
+          {
+            already_printed = new bool[n];
+            std::fill(already_printed, already_printed+n, false);
+          }
+        }
+      }
     }
 
     /// Do pre-calculate timing things
@@ -1516,14 +1531,19 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int index)
     {
-      if(myPrintFlag)
+      // Only try to print if print flag set to true, and if this functor(+thread) hasn't already been printed
+      // TODO: though actually the printer system will probably cark it if printing from multiple threads is
+      // attempted, because it uses the VertexID to different print streams, and this is shared among threads.
+      // Can fix by requiring a VertexID+thread_num pair, but I am leaving this for later.
+      init_memory();                 // Init memory if this is the first run through.
+      if(myPrintFlag and not already_printed[index])
       {
-        init_memory();                 // Init memory if this is the first run through.
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested.
         int rank = printer->getRank(); // This is "first pass" printing, so use the actual rank of this process.
                                        // In the auxilliary printing system we may tell the printer to overwrite
                                        // the output of other ranks.
         printer->print(myValue[index],myLabel,myVertexID,rank,pointID);
+        already_printed[index] = true;
       }
     }
 

@@ -84,14 +84,23 @@ namespace Gambit
           // don't understand how.
           double s = 4*mass*mass/(1-v*v/4);
           double sqrt_s = sqrt(s);
-          if ( sqrt_s < 90 ) 
+          if ( sqrt_s < 90 )
           {
             piped_invalid_point.request(
                 "SingletDM sigmav called with sqrt_s < 90 GeV.");
             return 0;
           }
 
-          if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
+          if ( channel == "hh" )
+          { 
+            if ( sqrt_s > mh*2 )
+            {
+              double GeV2tocm3s1 = gev2cm2*s2cm;
+              return sv_hh(lambda, mass, v)*GeV2tocm3s1;
+            }
+            else return 0;
+          }
+
           if ( sqrt_s < 300 )
           {
             double br = virtual_SMHiggs_widths(channel,sqrt_s);
@@ -104,17 +113,17 @@ namespace Gambit
           }
           else
           {
-            if ( channel == "bb" and sqrt_s > mb )
+            if ( channel == "bb" and sqrt_s > mb*2 )
               return sv_ff(lambda, mass, v, mb, true);
-            if ( channel == "cc" and sqrt_s > mc  )
+            if ( channel == "cc" and sqrt_s > mc*2  )
               return sv_ff(lambda, mass, v, mc, false);
-            if ( channel == "tautau" and sqrt_s > mtau )
+            if ( channel == "tautau" and sqrt_s > mtau*2 )
               return sv_ff(lambda, mass, v, mtau, false);
-            if ( channel == "tt" and sqrt_s > mt )
+            if ( channel == "tt" and sqrt_s > mt*2 )
               return sv_ff(lambda, mass, v, mt, false);
-            if ( channel == "ZZ" and sqrt_s > m_Zboson)
+            if ( channel == "ZZ" and sqrt_s > m_Zboson*2)
               return sv_ZZ(lambda, mass, v);
-            if ( channel == "WW" and sqrt_s > m_Wboson)
+            if ( channel == "WW" and sqrt_s > m_Wboson*2)
               return sv_WW(lambda, mass, v);
           }
           return 0;
@@ -171,7 +180,7 @@ namespace Gambit
             (
              (pow(aR,2)+pow(aI,2))*s*vh*vs
              +4*lambda*pow(v0,2)*(aR-lambda*pow(v0,2)/(s-2*pow(mh,2)))
-             *log(abs(pow(mass,2)-tp)/abs(pow(mass,2)-tm))
+             *log(std::abs(pow(mass,2)-tp)/std::abs(pow(mass,2)-tm))
              +(2*pow(lambda,2)*pow(v0,4)*s*vh*vs)
              /(pow(mass,2)-tm)/(pow(mass,2)-tp));
         }
@@ -370,12 +379,13 @@ namespace Gambit
       auto p2 = 
         Funk::vec<string>("bbar","W-", "cbar","tau-", "Z0", "tbar","h0_1");
       {
-        for ( int i = 0; i < channel.size(); i++ )
+        for ( unsigned int i = 0; i < channel.size(); i++ )
         {
           double mtot_final = 
             catalog.particleProperties.at(p1[i]).mass +
             catalog.particleProperties.at(p2[i]).mass;
-          if ( mS*2 > mtot_final )
+          // Include final states that are open for T~m/20
+          if ( mS*2 > mtot_final*0.5 )
           {
             Funk::Funk kinematicFunction = Funk::funcM(singletDM,
                 &SingletDM::sv, channel[i], lambda, mS, Funk::var("v"));

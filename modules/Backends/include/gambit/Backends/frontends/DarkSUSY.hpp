@@ -167,24 +167,24 @@ BE_INI_FUNCTION
 
         if (runOptions->hasKey("dddn"))
         {
-        	if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
-        	else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
-        	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
-        				"(only 0 or 1 permitted).");
+            if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
+            else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
+            else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
+                        "(only 0 or 1 permitted).");
         }
 
         if (runOptions->hasKey("ddpole"))
         {
-        	if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
-        	else if (runOptions->getValue<int>("ddpole")==0)
-        	{
-        		ddcom->ddpole = 0;
-        		if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
-        			BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
-        					"by DarkSUSY because dddn = 1.");
-        	}
-        	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
-        				"(only 0 or 1 permitted).");
+            if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
+            else if (runOptions->getValue<int>("ddpole")==0)
+            {
+                ddcom->ddpole = 0;
+                if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
+                    BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
+                            "by DarkSUSY because dddn = 1.");
+            }
+            else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
+                        "(only 0 or 1 permitted).");
         }
 
     }
@@ -284,7 +284,7 @@ BE_NAMESPACE
     std::vector<double> GAMBITparticle_mass;    
     DSparticle_mass.clear();
     GAMBITparticle_mass.clear();
-    for (int i = 0; i < IBfinalstate.size(); i++ )
+    for (unsigned int i = 0; i < IBfinalstate.size(); i++ )
     {
 //      DSparticle_mass.push_back(
 //         mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i])));

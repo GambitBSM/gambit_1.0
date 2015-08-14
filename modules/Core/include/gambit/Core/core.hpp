@@ -93,7 +93,33 @@ namespace Gambit
       bool processed_options;
 
       /// Compute the status of a given backend
-      inline str backend_status(str, str, bool&);
+      str backend_status(str, str, bool&);
+
+      /// Basic diagnostic functions
+      /// @{
+      void module_diagnostic();
+      void backend_diagnostic();
+      void capability_diagnostic();
+      void model_diagnostic();
+      void scanner_diagnostic();
+      void test_function_diagnostic();
+
+      /// Free-form diagnostic functions
+      /// @{
+      void ff_module_diagnostic(str&);
+      void ff_backend_diagnostic(str&);
+      void ff_capability_diagnostic(str&);
+      void ff_model_diagnostic(str&);
+      void ff_scanner_diagnostic(str&);
+      void ff_test_function_diagnostic(str&);
+      /// @}
+ 
+      /// Launch MPI and return the rank, for limiting diagnostic output to master node.
+      int launch_diagnostic_MPI();
+  
+      /// Quit MPI used for diagnostic mode.
+      void quit_diagnostic_MPI();
+
  
     public:
 
@@ -114,7 +140,7 @@ namespace Gambit
       bool found_inifile;
 
       /// Command-line info function
-      void bail();
+      void bail(int mpirank=-1);
 
       /// Process default command line options
       str process_primary_options(int,char**);

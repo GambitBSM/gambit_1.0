@@ -49,7 +49,7 @@ namespace Gambit
         virtual void flush() {}; // TODO: needed?
 
         /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
-        virtual void reset() = 0;
+        virtual void reset(bool force=false) = 0;
 
         /// Retrieve MPI rank
         virtual int getRank() = 0;
