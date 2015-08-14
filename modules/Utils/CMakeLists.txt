@@ -24,6 +24,7 @@ set(source_files src/ascii_table_reader.cpp
                  src/equivalency_singleton.cpp
                  src/exceptions.cpp
                  src/mpiwrapper.cpp
+                 src/new_mpi_datatypes.cpp
                  src/model_parameters.cpp
                  src/standalone_error_handlers.cpp
                  src/stream_overloads.cpp
@@ -39,6 +40,7 @@ set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/equivalency_singleton.hpp
                  include/gambit/Utils/exceptions.hpp
                  include/gambit/Utils/mpiwrapper.hpp
+                 include/gambit/Utils/new_mpi_datatypes.hpp
                  include/gambit/Utils/factory_registry.hpp
                  include/gambit/Utils/model_parameters.hpp
                  include/gambit/Utils/standalone_error_handlers.hpp

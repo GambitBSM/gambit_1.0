@@ -96,6 +96,7 @@ function(add_gambit_library libraryname)
   add_library(${libraryname} ${ARG_OPTION} ${ARG_SOURCES} ${ARG_HEADERS})
   add_dependencies(${libraryname} model_harvest)
   add_dependencies(${libraryname} backend_harvest)
+  add_dependencies(${libraryname} printer_harvest)
   add_dependencies(${libraryname} module_harvest)
 
   if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
@@ -140,6 +141,29 @@ macro(strip_library KEY LIBRARIES)
   set(FOUND_KEY2 "")
 endmacro()
 
+# Function to add a GAMBIT custom command and target
+function(add_gambit_custom target filename HARVESTER HARVESTER_FILES OTHER_DEPS) 
+  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/scratch/${filename}
+                     COMMAND python ${HARVESTER} -x __not_a_real_name__,${itch_with_commas}
+                     COMMAND touch ${PROJECT_SOURCE_DIR}/scratch/${filename}
+                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                     DEPENDS ${HARVESTER}
+                             ${HARVEST_TOOLS}
+                             ${HARVESTER_FILES}
+                             ${PROJECT_BINARY_DIR}/CMakeCache.txt
+                             ${OTHER_DEPS})
+  add_custom_target(${target} DEPENDS ${PROJECT_SOURCE_DIR}/scratch/${filename})
+endfunction()
+
+# Function to remove specific GAMBIT scratch files
+function(remove_scratch_files FILENAMES)
+  foreach (f ${ARGN})
+    if (EXISTS "${PROJECT_SOURCE_DIR}/scratch/${f}")
+      file(REMOVE "${PROJECT_SOURCE_DIR}/scratch/${f}")
+    endif()
+  endforeach()
+endfunction()
+
 # Function to add GAMBIT executable
 function(add_gambit_executable executablename LIBRARIES)
   cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
@@ -177,7 +201,7 @@ function(add_gambit_executable executablename LIBRARIES)
   if (GSL_FOUND)
     if(HDF5_FOUND AND "${USE_MATH_LIBRARY_CHOSEN_BY}" STREQUAL "HDF5")
       strip_library(m GSL_LIBRARIES)
-    endif()					    
+    endif()             
     set(LIBRARIES ${LIBRARIES} ${GSL_LIBRARIES})
   endif()
   if(HDF5_FOUND)
@@ -204,9 +228,9 @@ function(find_python_module module)
   else()
     if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
       message(FATAL_ERROR "-- FAILED to find Python module ${module}.")
-    else()      	
+    else()        
       message(STATUS "FAILED to find Python module ${module}.")
-    endif()	
+    endif() 
   endif()
 endfunction()
 

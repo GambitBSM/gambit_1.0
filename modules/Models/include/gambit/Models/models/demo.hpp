@@ -100,7 +100,6 @@
       USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
 
       double M0  = myparams["M0"];
-      double M12 = myparams["M12"];
       double A0  = myparams["A0"];
       
       /* Play around with the extra info obtained from dependency */

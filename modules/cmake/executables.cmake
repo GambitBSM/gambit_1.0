@@ -71,6 +71,24 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
   endif()
 endif()
 
+# Add the ColliderBit_standalone executable
+if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    set(ColliderBit_XTRA ${flexiblesusy_LDFLAGS})
+  endif()
+  set(ColliderBit_XTRA ${gambit_XTRA} ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  add_gambit_executable(ColliderBit_standalone "${ColliderBit_XTRA}"
+                        SOURCES ${PROJECT_SOURCE_DIR}/ColliderBit/examples/ColliderBit_standalone_example.cpp
+                                ${PROJECT_SOURCE_DIR}/ColliderBit/examples/standalone_functors.cpp
+                                $<TARGET_OBJECTS:ColliderBit>
+                                ${GAMBIT_ALL_COMMON_OBJECTS}
+  )
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    add_dependencies(ColliderBit_standalone flexiblesusy)
+  endif()
+  add_dependencies(ColliderBit_standalone delphes)
+endif()
+
 # Add the ScannerBit standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   if(EXISTS "${PROJECT_SOURCE_DIR}/Elements/") 

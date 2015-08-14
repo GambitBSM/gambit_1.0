@@ -54,14 +54,13 @@ namespace Gambit {
       template<class Derived, class DerivedTraits> 
       class SLHAskeleton : public Spec<Derived,DerivedTraits> 
       {
-         private:
-            typedef MapTypes<DerivedTraits> MT; 
-
          protected:
             // Store SLHAea object internally (via wrapper)
             typename DerivedTraits::Model slhawrap;
 
          public:
+            typedef MapTypes<DerivedTraits,MapTag::Get> MTget; 
+
             // Constructors/destructors
             SLHAskeleton() 
               : Spec<Derived,DerivedTraits>(slhawrap)  
@@ -101,10 +100,12 @@ namespace Gambit {
                return scale;
             }
 
-            virtual void SetScale(double scale)
+            virtual void SetScale(double)
             {
               // this is actually a bit of a drag since one should go through all the blocks
               // that have Q defined and set them accordingly. Leave for now.
+               utils_error().raise(LOCAL_INFO,
+                  "Call made to SetScale function of SLHAskeleton! This is currently not implemented!");
             }
 
             virtual void RunToScale(double)

@@ -37,13 +37,66 @@ motivation, literature review, summary of advances in this paper
 %% This paper is organised as follows. In Section ?? we..., etc. 
 
 \section{Physics background}
-MSSM Superpotential etc to lay out conventions
+
+
+\subsection{general intro}
+
+phenomenology: from Lagrangian to observables
+
+MSSM superpotential etc to lay out parameters and conventions (a la SLHA 2)
+
+NMSSM superpotential etc.
+
+other models:
+
+- scalar singlet
+
+- E6SSM
+
+
+\subsection{SpecBit}
+
+RGEs: statement of purpose
+
+SUSY specific and non-SUSY examples:
+
+- vacuum stability, gauge coupling unification, Yukawa unification
+
+spectrum generators for SUSY and non-SUSY models
+ 
+ 
+\subsection{DecayBit}
+
+purpose: 
+
+- quantum corrections to SM Higgs decays from new physics
+
+- decays of BSM particles (MSSM, Z', ...)
+
+role for LHC: connecting production of exotic particles to observable final states
+
+role for dark matter???: decaying DM
+
+
+\subsection{EWPOBit}
+
+purpose: quantum corrections to SM observables from new physics
+
+- $m_h$, $m_W$, $\sin(\theta_W)$, ...
+
+
 \section{Overview of physics models supported}
+
 MSSM will be most common, just list ones that are fully supported without user modification?
+
+\subsection{SpecBit}
+
+models already implemented: table with RGE codes references?
+
 \begin{itemize} 
 \item MSSM
   \begin{itemize}
-  \item CMSSM  
+  \item CMSSM 
   \item NUHM 
   \item MSSM-25
   \end{itemize} 
@@ -54,24 +107,95 @@ MSSM will be most common, just list ones that are fully supported without user m
   \item NMSSM-30
   \end{itemize}
 \item other models?
+  \begin{itemize}
+  \item scalar singlet
+  \item E6MSSM  
+  \end{itemize}
 \end{itemize}  
+
+interfaced spectrum generators (aspirational list)
+         
+generator specific BC options for SUSY models
+
+\subsection{DecayBit}
+
+same structure as SpecBit
+
+\subsection{EWPOBit}
+
+same struct as SpecBit
+
 
 \section{User Interface}
 
+general YAML blurb???
+
+\subsection{SpecBit}
+
+\subsubsection{Scalar singlet}
+
+explaining YAML instructions 
+
+- input parameter list and values (as in FlexibleSUSY manual)
+
+[along the line of the MSSM below]
+
+\subsubsection{MSSM}
+
+explaining YAML instructions 
+
+- input parameter list and values (as in FlexibleSUSY manual)
+
+\subsubsection{...}
+
+\subsubsection{How to implement a new model}
+
+\subsubsection{How to implement a new spectrum generator}
+
+- instructions for getters and setters and RGE running
+$get(Pars:Pole\_Mass...)$
+
+- specify string names and PDG codes
+
+
+\subsection{DecayBit}
+\subsubsection{Scalar singlet}
+\subsubsection{MSSM}
+\subsubsection{...}
+\subsubsection{How to implement a new model}
+
+\subsection{EWPOBit}
+\subsubsection{Scalar singlet}
+\subsubsection{MSSM}
+\subsubsection{...}
+\subsubsection{How to implement a new model}
+
 \subsection{MSSM setup} 
-         default codes 
+
+
+implementing a new model: MSSMSpec.hpp
+
+default codes 
          (may not want this but softsusy and FS at least 
                          are special to Gambit at some level) 
 
-         codes already implemented
+DecayBit: 
 
-         addding new codes: more advanced options if user adds own decay code
-                            or FeynHiggs alternative
+describe decay table and give MSSM examples
+
+interfacing to the decays
+
+adding new codes: more advanced options if user adds own decay code or FeynHiggs alternative
  
+multi-threading is default option [check this!]
+
 \subsection{NMSSM setup}
+
     quick repeat of MSSM but with MSSM specifics
 
+
 \subsection{Other models}
+ 
     SUSY
 
     Non-SUSY
@@ -84,13 +208,17 @@ Most of this list from ColliderBit actually applies and should be in stuff above
 \item Describe the interface to the models that we include and how to change the input parameters of those models.
 \item Explain how to interface with a new model.
 \item Explain how to run code in single core or multicore form (i.e using the standard OpenMP commands).
-\item Describe parameters that can be varied in yaml file.
+\item Describe parameters that can be varied in yaml file. [included above]
 \end{itemize}
 
 
 
 \section{Code description}
-horrible horrible details
+
+horrible horrible details:
+
+code structure
+
 \subsection{SpecBit}
 \subsection{DeacyBit}
 \subsection{EWPOBit}
