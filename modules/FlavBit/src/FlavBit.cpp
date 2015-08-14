@@ -1652,7 +1652,6 @@ namespace Gambit
             if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];
     
           }
-    
       }
       cout<<"ok?"<<endl;
       Chi2=Chi2/measurement_assym.dim;
