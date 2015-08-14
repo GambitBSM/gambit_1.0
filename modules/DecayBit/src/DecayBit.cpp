@@ -50,9 +50,9 @@ namespace Gambit
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = version;
-      result.width_in_GeV = 2.08;                    
-      result.positive_error = 4.0e-02;
-      result.negative_error = 4.0e-02;
+      result.width_in_GeV = 2.085;                    
+      result.positive_error = 4.2e-02;
+      result.negative_error = 4.2e-02;
       result.set_BF(0.1071, 0.0016, "e+", "nu_e");              
       result.set_BF(0.1063, 0.0015, "mu+", "nu_mu");              
       result.set_BF(0.1138, 0.0021, "tau+", "nu_tau");              
@@ -84,9 +84,9 @@ namespace Gambit
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = version;
-      result.width_in_GeV = 2.0;                    
-      result.positive_error = 5.0e-01;
-      result.negative_error = 5.0e-01;
+      result.width_in_GeV = 2.00;                    
+      result.positive_error = 4.7e-01;
+      result.negative_error = 4.3e-01;
       result.set_BF(0.91, 0.04, "W+", "b");  
     }
 
