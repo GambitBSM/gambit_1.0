@@ -390,14 +390,31 @@ namespace Gambit
         cout << "Information for capability " << *it << "." << endl << endl;
 
         // Retrieve info on this capability from the database file
-        capability_info cap = get_capability_info(*it); 
-
-        cout << "  Available in modules: " << cap.modset << endl;
-        cout << "  Available in backends:" << cap.beset << endl;
+        const capability_info cap = get_capability_info(*it); 
+        std::vector< std::pair<str, std::map<str, std::set<std::pair<str,str> > > > > origins;
+        origins.push_back(std::pair<str, std::map<str, std::set<std::pair<str,str> > > >("modules", cap.modset));
+        origins.push_back(std::pair<str, std::map<str, std::set<std::pair<str,str> > > >("backends", cap.beset));
+        // Loop over {modules, backends}
+        for (std::vector< std::pair<str, std::map<str, std::set<std::pair<str,str> > > > >::const_iterator it = origins.begin(); it != origins.end(); ++it)
+        {  
+          if (not it->second.empty())
+          {
+            cout << "  Available in " << it->first << ": " << endl;
+            // Loop over modules or backends
+            for (std::map<str, std::set<std::pair<str,str> > >::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
+            {
+              cout << "    " << jt->first << ": " << endl;
+              // Loop over matching module/backend functions
+              for (std::set<std::pair<str,str> >::const_iterator kt = jt->second.begin(); kt != jt->second.end(); ++kt)
+              {
+                // Spit out: function name [function type]
+                cout << "      function " << kt->first << " [type " << kt->second << "]" << endl; 
+              }
+            }
+            cout << endl;
+          }
+        }
         cout << "  Description: " << endl << cap.description << endl;
-        ///TODO Hmm need to get the type information still...
-        // available from (type, module/backend, function name)
-
         break;
       }
     }
