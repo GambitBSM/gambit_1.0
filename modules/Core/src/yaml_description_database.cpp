@@ -48,12 +48,12 @@ namespace Gambit
       out << YAML::Key << it->first << YAML::Value << YAML::BeginSeq;
       for (std::map<str, std::set<std::pair<str,str> > >::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
       {
-        out << YAML::Key << jt->first << YAML::Value << YAML::BeginSeq;
+        out << YAML::BeginMap << YAML::Key << jt->first << YAML::Value << YAML::BeginSeq;
         for (std::set<std::pair<str,str> >::const_iterator kt = jt->second.begin(); kt != jt->second.end(); ++kt)
         {
-          out << YAML::Key << kt->first << YAML::Value << kt->second; 
+          out << YAML::BeginMap << YAML::Key << kt->first << YAML::Value << kt->second << YAML::EndMap; 
         }
-        out << YAML::EndSeq;
+        out << YAML::EndSeq << YAML::EndMap;
       }
       out << YAML::EndSeq;
     }
