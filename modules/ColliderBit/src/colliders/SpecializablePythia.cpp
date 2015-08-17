@@ -80,12 +80,13 @@ namespace Gambit {
         if(!_pythiaInstance) throw InitializationError();
 
 	//User makes the matrix elements here
-	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_gg_uvuvx()); 
+	// MJW: need to reintroduce once Anders fixes bossed Pythia
+	/*_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_gg_uvuvx()); 
 	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_uvuvx()); 
 	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_evevx()); 
 	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p2()); 
 	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p2p2()); 
-	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); 
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
 	
         // Send along the SLHAea::Coll pointer, if it exists
         if(slhaea)

@@ -23,6 +23,14 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 int main()
 {
 
+  // CMSSM SUSY example
+  
   cout << "Collide my bits." << endl;
 
+  ModelParameters* CMSSM_primary_parameters = Models::CMSSM_demo::Functown::primary_parameters.getcontentsPtr();
+
+  
+  
+  //
+  
 }
