@@ -43,6 +43,17 @@ namespace Gambit
     void define_particles(partmap* particles)
     {
  
+      // ---- GAMBIT generic particle classes (context = 0) ---- 
+
+      add_particle("boson",    (9900081, 0))
+      add_particle("fermion",  (9900082, 0))
+      add_particle("lepton",   (9900083, 0))
+      add_particle("quark",    (9900084, 0))
+      add_particle("neutrino", (9900085, 0))
+      add_particle("hadron",   (9900086, 0))
+      add_particle("meson",    (9900087, 0))
+      add_particle("penta",    (9900088, 0))
+
       // ---- Standard Model gauge/Higgs bosons (context = 0) ----
 
       add_particle("g",     ( 21, 0) )
@@ -106,7 +117,6 @@ namespace Gambit
       add_particle("rho+",  ( 213, 0) ) 
       add_particle("rho-",  (-213, 0) ) 
       add_particle("omega", ( 223, 0) ) 
-
 
       // ---- MSSM sparticle mass eigenstates (context = 0) ---- (TODO to be extended to NMSSM)
       // Defined according to SLHA2 (http://arxiv.org/pdf/0801.0045v3.pdf, see eq. 28 - 31)
