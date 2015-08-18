@@ -43,8 +43,6 @@ namespace Gambit
     {
       using namespace Pipes::FH_HiggsMasses;
 
-      cout << "****** calling FH_HiggsMasses ******" << endl;
-
       // Higgs mass with
       // 0 - m1 (Mh in rMSSM)
       // 1 - m2 (MH in rMSSM)
@@ -99,8 +97,6 @@ namespace Gambit
     {
       using namespace Pipes::FH_Couplings;
       
-      cout << "****** calling FH_Couplings ******" << endl;
-
       // what to use for internal Higgs mixing
       // (ex. in couplings)
       // (default = 1)

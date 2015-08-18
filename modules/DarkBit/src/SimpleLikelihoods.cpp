@@ -15,6 +15,7 @@
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Utils/statistics.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
 namespace Gambit {
@@ -151,20 +152,37 @@ namespace Gambit {
       logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
 
-    /*! \brief Likelihood for cosmological relic density constraints.
-    */
-    // TODO: Needs to be updated.
+    /// \brief Likelihood for cosmological relic density constraints.
+    /// Default data: 
+    ///   Omega_c h^2 = 0.1188 +/- 0.0010 (1 sigma), Gaussian.  Planck TT,TE,EE+lowP+lensing+ext 2015, arxiv:1502.01589v2
+    ///   theory error: 5% 
     void lnL_oh2_Simple(double &result)
     {
       using namespace Pipes::lnL_oh2_Simple;
-      double oh2 = *Dep::RD_oh2;
-      double oh2_mean, oh2_err;
-      oh2_mean = runOptions->getValueOrDef<double>(0.11, "oh2_mean");
-      oh2_err  = runOptions->getValueOrDef<double>(0.01, "oh2_err");
-      // lnL = -0.5 * chisq
-      result = -0.5*pow(oh2 - oh2_mean, 2)/pow(oh2_err, 2);
+      double oh2_theory = *Dep::RD_oh2;
+      double oh2_theoryerr = oh2_theory*runOptions->getValueOrDef<double>(0.05, "oh2_fractional_theory_err");
+      double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
+      double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
+      result = Stats::gaussian_loglikelihood(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr);
       logger() << "lnL_oh2_Simple yields " << result << std::endl;
     }
+
+    /// \brief Likelihood for cosmological relic density constraints, implemented as an upper limit only
+    /// Default data: 
+    ///   Omega_c h^2 = 0.1188 +/- 0.0010 (1 sigma), Gaussian.  Planck TT,TE,EE+lowP+lensing+ext 2015, arxiv:1502.01589v2
+    ///   theory error: 5% 
+    void lnL_oh2_upperlimit(double &result)
+    {
+      using namespace Pipes::lnL_oh2_upperlimit;
+      double oh2_theory = *Dep::RD_oh2;
+      double oh2_theoryerr = oh2_theory*runOptions->getValueOrDef<double>(0.05, "oh2_fractional_theory_err");
+      double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
+      double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
+      result = Stats::detection_as_upper_limit(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr,
+                                               runOptions->getValueOrDef<str>("simple", "limit_method"));
+      logger() << "lnL_oh2_upperlimit yields " << result << std::endl;
+    }
+
 
     /*! \brief Helper function to dump gamma-ray spectra.
      *

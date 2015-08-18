@@ -20,7 +20,7 @@
 
 
   // Higgs masses and mixings with theoretical uncertainties
-  #define CAPABILITY FH_HiggsMasses
+  #define CAPABILITY prec_HiggsMasses
   START_CAPABILITY
     #define FUNCTION FH_HiggsMasses
     START_FUNCTION(fh_HiggsMassObs)
@@ -37,11 +37,11 @@
   #undef CAPABILITY 
 
   // FeynHiggs Higgs couplings
-  #define CAPABILITY FH_Couplings
+  #define CAPABILITY Higgs_Couplings
   START_CAPABILITY
     #define FUNCTION FH_Couplings
     START_FUNCTION(fh_Couplings)
-    DEPENDENCY(FH_HiggsMasses, fh_HiggsMassObs)
+    DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
     BACKEND_REQ(FHSelectUZ, (libfeynhiggs), void, (int&,int&,int&,int&))
     BACKEND_REQ(FHCouplings, (libfeynhiggs), void, (int&, Farray< fh_complex,1,681>&,
                                                     Farray< fh_complex,1,231>&,

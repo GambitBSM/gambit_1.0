@@ -41,46 +41,46 @@ BE_FUNCTION(FHSetFlags, void, (int&,int&,int&,int&,int&,int&,int&,int&,int&,int&
 BE_FUNCTION(FHSetDebug, void, (int&), "fhsetdebug_", "FHSetDebug")
 
 BE_FUNCTION(FHSetSMPara, void, (int&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
-				fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
-				fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&), "fhsetsmpara_", "FHSetSMPara")
+        fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
+        fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&), "fhsetsmpara_", "FHSetSMPara")
 
 BE_FUNCTION(FHSetPara, void, (int&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
-			      fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
-			      fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
-			      fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
-			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			      fh_ccomplex&,fh_creal&,fh_creal&,fh_creal&), "fhsetpara_", "FHSetPara")
+            fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
+            fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
+            fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
+            fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
+            fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
+            fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
+            fh_ccomplex&,fh_creal&,fh_creal&,fh_creal&), "fhsetpara_", "FHSetPara")
 
 BE_FUNCTION(FHSetNMFV, void, (int&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			      fh_ccomplex&,fh_ccomplex&), "fhsetnmfv_", "FHSetNMFV")
+            fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
+            fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
+            fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
+            fh_ccomplex&,fh_ccomplex&), "fhsetnmfv_", "FHSetNMFV")
 
 BE_FUNCTION(FHSetLFV, void, (int&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			     fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
-			     fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&), "fhsetlfv_", "FHSetLFV")
+           fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
+           fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&), "fhsetlfv_", "FHSetLFV")
 
 BE_FUNCTION(FHConstraints, void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
-				  fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&), "fhconstraints_", "FHConstraints")
+          fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&), "fhconstraints_", "FHConstraints")
 
 BE_FUNCTION(FHFlavour, void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&), "fhflavour_", "FHFlavour")
 
 BE_FUNCTION(FHGetPara, void, (int&,int&,
-			      Farray<fh_real, 1,2, 1,5, 1,3>&, Farray<fh_complex, 1,2, 1,2, 1,5, 1,3>&,
-			      Farray<fh_real, 1,6, 1,5>&, Farray<fh_complex, 1,36, 1,5>&,
-			      Farray< fh_real,1,2>&, Farray< fh_complex,1,4>&,
-			      Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
-			      Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
-			      Farray< fh_real,1,4>&, fh_real&), "fhgetpara_", "FHGetPara")
+            Farray<fh_real, 1,2, 1,5, 1,3>&, Farray<fh_complex, 1,2, 1,2, 1,5, 1,3>&,
+            Farray<fh_real, 1,6, 1,5>&, Farray<fh_complex, 1,36, 1,5>&,
+            Farray< fh_real,1,2>&, Farray< fh_complex,1,4>&,
+            Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
+            Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
+            Farray< fh_real,1,4>&, fh_real&), "fhgetpara_", "FHGetPara")
 
 BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
-				Farray<fh_complex, 1,3, 1,3>&), "fhhiggscorr_", "FHHiggsCorr")
+        Farray<fh_complex, 1,3, 1,3>&), "fhhiggscorr_", "FHHiggsCorr")
 
 BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
-				    Farray<fh_complex, 1,3, 1,3>&), "fhuncertainties_", "FHUncertainties")
+            Farray<fh_complex, 1,3, 1,3>&), "fhuncertainties_", "FHUncertainties")
 
 BE_FUNCTION(FHSelectUZ, void, (int&,int&,int&,int&), "fhselectuz_", "FHSelectUZ")
 
@@ -90,8 +90,8 @@ BE_FUNCTION(FHCouplings, void, (int&, Farray< fh_complex,1,681>&, Farray< fh_com
 BE_FUNCTION(FHHiggsProd, void, (int&, fh_real&, Farray< fh_real,1,52>&), "fhhiggsprod_", "FHHiggsProd")
 
 // Initialisation function (dependencies)
-BE_INI_DEPENDENCY(SMINPUTS, SMInputs)               // Need SLHA2 SMINPUTS to initialize FH
-BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)   // Need MSSM spectrum inputs to initialize FH
+BE_INI_DEPENDENCY(SMINPUTS, SMInputs)                          // Need SLHA2 SMINPUTS to initialize FH
+BE_INI_DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)   // Need MSSM spectrum inputs to initialize FH
 
 BE_INI_FUNCTION{
    int error = 1;
@@ -111,7 +111,7 @@ BE_INI_FUNCTION{
     int tlCplxApprox = 3; // determines how 2-loop corr. are treated with complex param
     
     FHSetFlags(error, mssmpart, fieldren, tanbren, higgsmix,
-	       p2approx, looplevel, runningMT, botResum, tlCplxApprox);
+         p2approx, looplevel, runningMT, botResum, tlCplxApprox);
   }
   scan_level = false;
 
@@ -119,7 +119,7 @@ BE_INI_FUNCTION{
   const SMInputs& sminputs = *Dep::SMINPUTS;
 
   // retrieve MSSM_spectrum dependency
-  const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
+  const Spectrum* fullspectrum = *Dep::unimproved_MSSM_spectrum;
   const SubSpectrum* spec = fullspectrum->get_UV();
   SLHAea::Coll slhaea = fullspectrum->getSLHAea();
 
@@ -151,16 +151,16 @@ BE_INI_FUNCTION{
   fh_real MZ = sminputs.mZ;                        // Z boson mass
 
   // CKM input parameters in Wolfenstein parameterization
-  fh_real CKMlambda = -1;
-  fh_real CKMA = -1;
-  fh_real CKMrhobar = -1;
-  fh_real CKMetabar = -1;
+  fh_real CKMlambda = sminputs.CKM.lambda;
+  fh_real CKMA = sminputs.CKM.A;
+  fh_real CKMrhobar = sminputs.CKM.rhobar;
+  fh_real CKMetabar = sminputs.CKM.etabar;
 
   error = 1;
   FHSetSMPara(error, invAlfa, AlfasMZ, GF,
-	      ME, MU, MD, MM, MC, MS, ML, MB,
-	      MW, MZ,
-	      CKMlambda, CKMA, CKMrhobar, CKMetabar);
+        ME, MU, MD, MM, MC, MS, ML, MB,
+        MW, MZ,
+        CKMlambda, CKMA, CKMrhobar, CKMetabar);
 
   //
   // SM input parameters: -1 gives default value
@@ -236,15 +236,15 @@ BE_INI_FUNCTION{
 
   error = 1;
   FHSetPara(error, scalefactor, MT, TB, MA0, MHp,
-	    M3SL, M3SE, M3SQ, M3SU, M3SD,
-	    M2SL, M2SE, M2SQ, M2SU, M2SD,
-	    M1SL, M1SE, M1SQ, M1SU, M1SD,
-	    MUE,
-	    Atau, At, Ab,
-	    Amu,  Ac, As,
-	    Ae,   Au, Ad,
-	    M_1, M_2, M_3,
-	    Qtau, Qt, Qb);
+      M3SL, M3SE, M3SQ, M3SU, M3SD,
+      M2SL, M2SE, M2SQ, M2SU, M2SD,
+      M1SL, M1SE, M1SQ, M1SU, M1SD,
+      MUE,
+      Atau, At, Ab,
+      Amu,  Ac, As,
+      Ae,   Au, Ad,
+      M_1, M_2, M_3,
+      Qtau, Qt, Qb);
 
   //
   // Set NMFV parameters
@@ -258,13 +258,13 @@ BE_INI_FUNCTION{
   fh_ccomplex deltaDRL12, deltaDRL23, deltaDRL13;
   fh_ccomplex deltaDRR12, deltaDRR23, deltaDRR13;
   FHSetNMFV(error,
-	    deltaQLL12, deltaQLL23, deltaQLL13,
-	    deltaULR12, deltaULR23, deltaULR13,
-	    deltaURL12, deltaURL23, deltaURL13,
-	    deltaURR12, deltaURR23, deltaURR13,
-	    deltaDLR12, deltaDLR23, deltaDLR13,
-	    deltaDRL12, deltaDRL23, deltaDRL13,
-	    deltaDRR12, deltaDRR23, deltaDRR13);
+      deltaQLL12, deltaQLL23, deltaQLL13,
+      deltaULR12, deltaULR23, deltaULR13,
+      deltaURL12, deltaURL23, deltaURL13,
+      deltaURR12, deltaURR23, deltaURR13,
+      deltaDLR12, deltaDLR23, deltaDLR13,
+      deltaDRL12, deltaDRL23, deltaDRL13,
+      deltaDRR12, deltaDRR23, deltaDRR13);
   */
   //
   // Set LFV parameters
@@ -275,10 +275,10 @@ BE_INI_FUNCTION{
   fh_ccomplex deltaERL12, deltaERL23, deltaERL13;
   fh_ccomplex deltaERR12, deltaERR23, deltaERR13;
   FHSetLFV(error,
-	   deltaLLL12, deltaLLL23, deltaLLL13,
-	   deltaELR12, deltaELR23, deltaELR13,
-	   deltaERL12, deltaERL23, deltaERL13,
-	   deltaERR12, deltaERR23, deltaERR13);
+     deltaLLL12, deltaLLL23, deltaLLL13,
+     deltaELR12, deltaELR23, deltaELR13,
+     deltaERL12, deltaERL23, deltaERL13,
+     deltaERR12, deltaERR23, deltaERR13);
   */
   
 }

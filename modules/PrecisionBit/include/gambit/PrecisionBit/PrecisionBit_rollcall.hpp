@@ -42,7 +42,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION FH_PrecisionObs
     START_FUNCTION(fh_PrecisionObs)
-    DEPENDENCY(FH_Couplings, fh_Couplings)
+    DEPENDENCY(Higgs_Couplings, fh_Couplings)
     BACKEND_REQ(FHConstraints, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
                 fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))
     BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
@@ -59,15 +59,58 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, edm_n,          NEW_CAPABILITY, FH_precision_edm_n,    double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, edm_hg,         NEW_CAPABILITY, FH_precision_edm_hg,   double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
 
-  // Precision spectrum manufacturer
-  #define CAPABILITY improved_mssm_spectrum
+  // Precision MSSM spectrum manufacturer
+  #define CAPABILITY MSSM_spectrum
   START_CAPABILITY
-    #define FUNCTION precision_spectrum
+    #define FUNCTION make_MSSM_precision_spectrum
     START_FUNCTION(const Spectrum*)
-    DEPENDENCY(mssm_spectrum, const Spectrum*)
+    DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
     DEPENDENCY(prec_mw, double)
     DEPENDENCY(prec_sinw2_eff, double)
-    DEPENDENCY(prec_mh, double)
+    DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
+    #undef FUNCTION
+  #undef CAPABILITY
+  
+  // Basic mass/coupling extractors for different types of spectra, for use with precision likelihoods
+  QUICK_FUNCTION(PrecisionBit, mw, NEW_CAPABILITY, mw_from_SM_spectrum,   double, (), (SM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_SS_spectrum,   double, (SingletDM), (SingletDM_spectrum, const Spectrum*))
+  QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_MSSM_spectrum, double, (MSSM78atQ, MSSM78atMGUT), (MSSM_spectrum, const Spectrum*))
+
+  // Stopgap function for passing sinthetaW_eff until it is properly implemented in spectrum objects
+  QUICK_FUNCTION(PrecisionBit, sin2w_eff, NEW_CAPABILITY, sin2w_eff, ddpair, (), (prec_sinw2_eff, double))
+
+  // SM nuisance likelihoods
+  QUICK_FUNCTION(PrecisionBit, lnL_Z_mass,   NEW_CAPABILITY, lnL_Z_mass_chi2,   double, (), (SMINPUTS, SMInputs))
+  QUICK_FUNCTION(PrecisionBit, lnL_t_mass,   NEW_CAPABILITY, lnL_t_mass_chi2,   double, (), (SMINPUTS, SMInputs))
+  QUICK_FUNCTION(PrecisionBit, lnL_mbmb,     NEW_CAPABILITY, lnL_mbmb_chi2,     double, (), (SMINPUTS, SMInputs))
+  QUICK_FUNCTION(PrecisionBit, lnL_mcmc,     NEW_CAPABILITY, lnL_mcmc_chi2,     double, (), (SMINPUTS, SMInputs))
+  QUICK_FUNCTION(PrecisionBit, lnL_alpha_em, NEW_CAPABILITY, lnL_alpha_em_chi2, double, (), (SMINPUTS, SMInputs))
+  QUICK_FUNCTION(PrecisionBit, lnL_alpha_s,  NEW_CAPABILITY, lnL_alpha_s_chi2,  double, (), (SMINPUTS, SMInputs))
+
+  // Electroweak precision likelihoods: W mass
+  #define CAPABILITY lnL_W_mass
+  START_CAPABILITY
+    #define FUNCTION lnL_W_mass_chi2
+    START_FUNCTION(double)
+    DEPENDENCY(mw, double) //FIXME -->std::pair<double>
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Electroweak precision likelihoods: effective leptonic weak mixing angle
+  #define CAPABILITY lnL_sin2w_eff
+  START_CAPABILITY
+    #define FUNCTION lnL_sin2w_eff_chi2
+    START_FUNCTION(double)
+    DEPENDENCY(sin2w_eff, ddpair)
+    #undef FUNCTION
+  #undef CAPABILITY
+  
+  // Electroweak precision likelihoods: Delta rho
+  #define CAPABILITY lnL_deltarho
+  START_CAPABILITY
+    #define FUNCTION lnL_deltarho_chi2
+    START_FUNCTION(double)
+    DEPENDENCY(deltarho, double) //FIXME -->std::pair<double>
     #undef FUNCTION
   #undef CAPABILITY
 

@@ -788,7 +788,7 @@ namespace Gambit
 
       result.Mh[0] = spec->phys.get_Pole_Mass(25,0); 
 
-      result.deltaMh[0] = 0.; // Need to get theoretical error on mass
+      result.deltaMh[0] = 0.; // FIXME Need to get theoretical error on mass
       result.hGammaTot[0] = decays->width_in_GeV; 
       result.CP[0] = 1; 
       result.CS_lep_hjZ_ratio[0] = 1.; 
@@ -832,7 +832,7 @@ namespace Gambit
       #define PDB Models::ParticleDB()
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
 
       std::vector<std::string> sHneut;
       sHneut.push_back("h0_1");
@@ -848,7 +848,7 @@ namespace Gambit
       {
         // Higgs masses and errors
         result.Mh[i] = spec->phys.get_Pole_Mass(sHneut[i]); 
-        result.deltaMh[i] = 0.;
+        result.deltaMh[i] = 0.; //FIXME need to get theoretical error on masses
       }
 
       // invisible LSP?
