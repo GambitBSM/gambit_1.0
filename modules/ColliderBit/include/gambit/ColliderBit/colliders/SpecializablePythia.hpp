@@ -55,6 +55,9 @@ namespace Gambit {
         void init(const std::vector<std::string>& externalSettings,
                   const SLHAea::Coll* slhaea=nullptr);
 
+      void init_external(const std::vector<std::string>& externalSettings,
+                  const SLHAea::Coll* slhaea=nullptr);
+      
         /// @brief Specialize this Pythia interface to Gambit with a specialization function.
         void resetSpecialization(const std::string&);
       //@}

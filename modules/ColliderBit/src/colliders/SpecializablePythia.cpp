@@ -3,12 +3,25 @@
 #include "gambit/ColliderBit/colliders/SpecializablePythia.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
+/*#include "Pythia8/Sigma_MC4BSM_2012_UFO_gg_uvuvx.h"
+#include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_uvuvx.h"
+#include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_evevx.h"
+#include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_p1p2.h"
+#include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_p2p2.h"
+#include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_p1p1.h"*/
+
 namespace Gambit {
   namespace ColliderBit {
 
     /// @name Pythia specialization functions
     //@{
       /// @brief No specialization - pure external settings only.
+
+    namespace Pythia_UserModel{
+      void init(SpecializablePythia* specializeMe) {}
+	
+    }
+    
       namespace Pythia_external {
         void init(SpecializablePythia* specializeMe) { }
       }
@@ -42,6 +55,47 @@ namespace Gambit {
       }
     //@}
 
+
+    void SpecializablePythia::init_external(const std::vector<std::string>& externalSettings,
+                                     const SLHAea::Coll* slhaea) {
+
+      // Special version of the init function for user defined models
+      // Needs to directly construct the new matrix elements (rather than use flags)
+      
+        // Settings acquired externally (ex from a gambit yaml file)
+        for(const auto command : externalSettings) {
+          _pythiaSettings.push_back(command);
+        }
+
+        // Specialized settings:
+        _specialInit(this);
+
+        // Use all settings to instantiate and initialize Pythia
+        for(const auto command : _pythiaSettings)
+          if(command.find(":") == (size_t) -1)
+            _pythiaInstance = new Pythia8::Pythia(command, false);
+          else
+            _pythiaInstance->readString(command);
+
+        if(!_pythiaInstance) throw InitializationError();
+
+	//User makes the matrix elements here
+	// MJW: need to reintroduce once Anders fixes bossed Pythia
+	/*_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_gg_uvuvx()); 
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_uvuvx()); 
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_evevx()); 
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p2()); 
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p2p2()); 
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
+	
+        // Send along the SLHAea::Coll pointer, if it exists
+        if(slhaea)
+          _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
+
+	
+	
+        _pythiaInstance->init();
+      }
     
     /// @name SpecializablePythia definitions
     //@{
