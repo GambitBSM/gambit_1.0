@@ -103,9 +103,9 @@ namespace Gambit {
           BuffTags myTags; // Collection of MPI tags needed for passing messages
           GMPI::Comm printerComm; // MPI communicator object from printer
 
-          bool  send_buffer_valid[LENGTH];
-          T     send_buffer_entries[LENGTH];
-          bool  send_buffer_ready = true; // flag to signal if send buffer can be filled with new data.
+          int  send_buffer_valid[LENGTH];
+          T    send_buffer_entries[LENGTH];
+          bool send_buffer_ready = true; // flag to signal if send buffer can be filled with new data.
 
           // Request handles for tracking status of a sent message
           MPI_Request req_valid  =MPI_REQUEST_NULL;
@@ -288,7 +288,8 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::append(const T& data, const PPIDpair pID)
       {
-         if(not this->is_silenced()) {
+         if(not this->is_silenced())
+         {
             //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running append()"<<std::endl;
 
             if(pID!=null_PPID and pID==PPID_of_last_append)
@@ -320,7 +321,7 @@ namespace Gambit {
             }           
             #endif
             #endif
-      
+
             error_if_done(); // make sure buffer hasn't written to the current point already
             buffer_entries[this->get_head_position()] = data;
             buffer_valid[this->get_head_position()] = true;
@@ -539,7 +540,7 @@ namespace Gambit {
          bool is_data_msg  = printerComm.Iprobe(source, myTags.SYNC_data, &status);
          int msgsize_data  = GMPI::Get_count<T>(&status);
          bool is_valid_msg = printerComm.Iprobe(source, myTags.SYNC_valid, &status);
-         int msgsize_valid = GMPI::Get_count<bool>(&status);
+         int msgsize_valid = GMPI::Get_count<int>(&status);
       
          if(msgsize_data != msgsize_valid)
          {
@@ -595,8 +596,8 @@ namespace Gambit {
         // message is already waiting to be sent.
 
         // Buffers to store received message
-        bool  recv_buffer_valid[LENGTH];
-        T     recv_buffer_entries[LENGTH];
+        int recv_buffer_valid[LENGTH];   // Would like to make this bool, but that requires MPI C++ bindings.
+        T   recv_buffer_entries[LENGTH];
 
         //#ifdef MPI_DEBUG
         // Double check that a message is actually waiting to be sent
@@ -604,7 +605,8 @@ namespace Gambit {
         MPI_Status status;
         bool message_waiting1 = printerComm.Iprobe(source, myTags.SYNC_valid, &status);
         bool message_waiting2 = printerComm.Iprobe(source, myTags.SYNC_data,  &status);
-        if(not message_waiting1 and not message_waiting2) {
+        if(not message_waiting1 and not message_waiting2)
+        {
           std::ostringstream errmsg;
           errmsg << "Error! get_sync_mpi_message called with source="<<source<<", but there is no appropriately tagged message waiting to be delivered from that process! This is a bug, please report it.";
           printer_error().raise(LOCAL_INFO, errmsg.str());
@@ -619,14 +621,14 @@ namespace Gambit {
           printer_error().raise(LOCAL_INFO, errmsg.str());
         }
         //#endif
-
+                         
         #ifdef MPI_DEBUG
         std::cout<<"rank "<<myRank<<": Collecting sync buffer ("<<this->get_label()<<") from process "<<source<<std::endl;
         #endif
 
-        printerComm.Recv(&recv_buffer_valid,   msgsize, source, myTags.SYNC_valid);
+        printerComm.Recv(&recv_buffer_valid, msgsize, source, myTags.SYNC_valid);
         printerComm.Recv(&recv_buffer_entries, msgsize, source, myTags.SYNC_data);
-
+                         
         #ifdef MPI_DEBUG
         std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<" (size="<<msgsize<<"). Appending received data to my sync buffers."<<std::endl;
         #endif

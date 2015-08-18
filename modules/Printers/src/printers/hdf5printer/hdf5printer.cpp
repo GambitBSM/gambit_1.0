@@ -179,20 +179,20 @@ namespace Gambit
           // output stream. If so, we relinquish control over it and silence the
           // new output stream.
           bool silence = false;
-          //#ifdef DEBUG_MODE
+          #ifdef DEBUG_MODE
           std::cout<<"Preparing to create new print output stream..."<<std::endl;
           std::cout<<"...label = "<<label<<std::endl;
           std::cout<<"...is stream already managed? "<<printer->is_stream_managed(key)<<std::endl;
           std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
           std::cout<<"...from printer with name = "<<printer->get_printer_name()<<std::endl;
-          //#endif
+          #endif
           if( printer->is_stream_managed(key) )
           {
             silence = true;
           }
-          //#ifdef DEBUG_MODE
+          #ifdef DEBUG_MODE
           std::cout<<"...is silenced? "<<silence<<std::endl;
-          //#endif
+          #endif
 
           // Create the new buffer object
           H5FGPtr loc(NULL);
@@ -221,12 +221,14 @@ namespace Gambit
           // TODO: is this the correct behaviour?
           if(not silence) printer->insert_buffer( key, it->second );
        }
+
        if( it == local_buffers.end() ) 
        {
           std::ostringstream errmsg;
           errmsg << "Error! Failed to retrieve newly created buffer (label="<<label<<") from local_buffers map! Key was: ("<<vertexID<<","<<aux_i<<")"<<std::endl;
           printer_error().raise(LOCAL_INFO, errmsg.str());
        }
+
        return it->second; 
     }
   
@@ -410,7 +412,8 @@ namespace Gambit
 
       // Retrieve the target location for adding new datasets from the primary
       // printer
-      if(myRank==0) {
+      if(myRank==0)
+      {
          location = primary_printer->get_location();
       }
     }
@@ -659,7 +662,8 @@ namespace Gambit
     /// allow a shorter message to be sent.
     void HDF5Printer::send_PPID_lists(bool finalsend)
     {
-      if ( myRank==0 ) {
+      if ( myRank==0 )
+      {
          std::ostringstream errmsg;
          errmsg << "Error! Master process hdf5printer tried to clear its PPID lists! This is not allowed.";
          printer_error().raise(LOCAL_INFO, errmsg.str());
@@ -760,9 +764,9 @@ namespace Gambit
     {
       if(is_auxilliary_printer())
       {
-	 std::ostringstream errmsg;
-	 errmsg << "Error! synchronise_buffers() called by auxilliary hdf5 printer (name="<<printer_name<<")! Only the primary hdf5 printer is allowed to do this. This is a bug in the HDF5Printer class, please report it."; 
-	 printer_error().raise(LOCAL_INFO, errmsg.str());
+        std::ostringstream errmsg;
+        errmsg << "Error! synchronise_buffers() called by auxilliary hdf5 printer (name="<<printer_name<<")! Only the primary hdf5 printer is allowed to do this. This is a bug in the HDF5Printer class, please report it."; 
+        printer_error().raise(LOCAL_INFO, errmsg.str());
       }
 
       // Determine the desired sync position
@@ -1269,7 +1273,7 @@ namespace Gambit
        {
           // Master process primary printer checks for tag requests from worker processes
           // I am hoping this check is cheap since it will happen quite a lot.
-          tag_manager->check_for_tag_requests();
+         tag_manager->check_for_tag_requests();
        }
        else
        {
@@ -1288,6 +1292,7 @@ namespace Gambit
        // Check if we have changed target PointIDs since the last print call
        if(candidate_newpoint!=lastPointID.at(myRank))
        {
+
          #ifdef MPI_DEBUG
          std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
          std::cout<<"rank "<<myRank<<": sync_pos="<<get_N_pointIDs()<<std::endl;
@@ -1355,7 +1360,7 @@ namespace Gambit
            if( collect_mpi_buffers() )
            {
              #ifdef MPI_DEBUG
-             std::cout<<"rank "<<myRank<<": Performing sync after collecting mpi buffers"<<std::endl;
+                    if(myRank==0) std::cout<<"rank "<<myRank<<": Performing sync after collecting mpi buffers"<<std::endl;
              #endif
                
              #ifdef CHECK_SYNC
@@ -1492,7 +1497,6 @@ namespace Gambit
        {
          std::stringstream ss;
          ss<<label<<"::"<<it->first;
-
          // Write to each buffer
          //buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
          if(synchronised)

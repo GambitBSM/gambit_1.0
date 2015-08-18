@@ -45,17 +45,18 @@ namespace Gambit
 
     /////////////// Standard Model ///////////////////
 
-    /// SM decays: W+/W-
+    /// SM decays: W+
     void W_plus_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = version;
-      result.width_in_GeV = 2.08;                    
-      result.positive_error = 4.0e-02;
-      result.negative_error = 4.0e-02;
+      result.width_in_GeV = 2.085;                    
+      result.positive_error = 4.2e-02;
+      result.negative_error = 4.2e-02;
       result.set_BF(0.1071, 0.0016, "e+", "nu_e");              
       result.set_BF(0.1063, 0.0015, "mu+", "nu_mu");              
       result.set_BF(0.1138, 0.0021, "tau+", "nu_tau");              
+      result.set_BF(0.6741, 0.0027, "hadron", "hadron");
     }
 
     /// SM decays: W-
@@ -75,8 +76,7 @@ namespace Gambit
       result.set_BF(0.03363, 0.00004, "e+", "e-");              
       result.set_BF(0.03366, 0.00007, "mu+", "mu-");              
       result.set_BF(0.03370, 0.00008, "tau+", "tau-");              
-      result.set_BF(0.1203, 0.0021, "c", "cbar");        
-      result.set_BF(0.1512, 0.0005, "b", "bbar");        
+      result.set_BF(0.6991, 0.0006, "hadron", "hadron");
     }
 
     /// SM decays: t
@@ -84,9 +84,9 @@ namespace Gambit
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = version;
-      result.width_in_GeV = 2.0;                    
-      result.positive_error = 5.0e-01;
-      result.negative_error = 5.0e-01;
+      result.width_in_GeV = 2.00;                    
+      result.positive_error = 4.7e-01;
+      result.negative_error = 4.3e-01;
       result.set_BF(0.91, 0.04, "W+", "b");  
     }
 
@@ -241,7 +241,7 @@ namespace Gambit
      
      
     //////////// MSSM /////////////////////   
-    	
+      
     /// FeynHiggs MSSM decays: t
     void FH_t_decays (DecayTable::Entry& result) 
     {
@@ -2333,7 +2333,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(4), 0.0, "~g", "bbar", "b");
     }
 
-	
+  
     //////////// Singlet DM /////////////////////
 
     /// Add the decay of Higgs to singlets for the SingletDM model
@@ -2379,7 +2379,7 @@ namespace Gambit
       using namespace Pipes::all_decays;
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
-      decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
+      decays("Z0") = *Dep::Z_decay_rates;           // Add the Z decays
       decays("W+") = *Dep::W_plus_decay_rates;      // Add the W decays for W+.
       decays("W-") = *Dep::W_minus_decay_rates;     // Add the W decays for W-
 

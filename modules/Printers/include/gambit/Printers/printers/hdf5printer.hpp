@@ -253,24 +253,25 @@ namespace Gambit
         // 
         // The getter functions serve to both retrieve the buffer matching an
         // output stream, and to handle creation of those buffers.
-        #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME) \
-         template<>                                                               \
+        #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME)                               \
+         template<>                                                                \
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
            HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
           {                                                                        \
-             /* If the buffermanger hasn't been initialised, do so now */        \
-             if( not CAT(hdf5_localbufferman_,NAME).ready() )                    \
-             {                                                                   \
-                CAT(hdf5_localbufferman_,NAME).init(this,synchronised);          \
-             }                                                                   \
-                                                                                 \
-             /* While we are at it, check if the buffers need to be
-                synchronised to a new point. But only if this printer is running
-                in "synchronised" mode. */                                       \
-             if(synchronised) {                                                  \
-               check_for_new_point(pointID, mpirank);                            \
-             }                                                                   \
-             return CAT(hdf5_localbufferman_,NAME);                              \
+             /* If the buffermanger hasn't been initialised, do so now */          \
+             if( not CAT(hdf5_localbufferman_,NAME).ready() )                      \
+             {                                                                     \
+                CAT(hdf5_localbufferman_,NAME).init(this,synchronised);            \
+             }                                                                     \
+                                                                                   \
+             /* While we are at it, check if the buffers need to be                \
+                synchronised to a new point. But only if this printer is running   \
+                in "synchronised" mode. */                                         \
+             if(synchronised)                                                      \
+             {                                                                     \
+               check_for_new_point(pointID, mpirank);                              \
+             }                                                                     \
+             return CAT(hdf5_localbufferman_,NAME);                                \
           }
 
         /// @}
@@ -283,10 +284,9 @@ namespace Gambit
 
         /// List the types for which print functions are defined
         #define HDF5_PRINTABLE_TYPES \
-          (bool)                     \
           (int)(uint)(long)(ulong)   \
           (float)(double)            \
-          (std::vector<bool>)        \
+          (bool)(std::vector<bool>)  \
           (std::vector<int>)         \
           (std::vector<double>)      \
           (triplet<double>)          \
@@ -333,10 +333,11 @@ namespace Gambit
  
         /// @{ Helper macros to write all the print functions which can use the "easy" template
         #define TEMPLATE_TYPES      \
-         (bool)                     \
          (int)(uint)(long)(ulong)   \
          (float)(double)        
          // Add more as needed
+         // TODO needs to be converted to int to work with MPI
+         // (bool)
 
         // The type of the template print function buffers
         #define TEMPLATE_BUFFTYPE(TYPE) VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>
