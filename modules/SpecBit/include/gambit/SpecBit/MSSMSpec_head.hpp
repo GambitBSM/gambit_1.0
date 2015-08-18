@@ -141,7 +141,7 @@ namespace Gambit {
  
             /// Phys parameter map fillers (access parameters via spectrum.phys)
             static PhysGetterMaps    phys_fill_getter_maps();
-            //static PhysSetterMaps    phys_fill_setter_maps(); // Currently unused
+            static PhysSetterMaps    phys_fill_setter_maps(); // Currently unused
            
 
       };
