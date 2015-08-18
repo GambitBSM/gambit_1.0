@@ -251,7 +251,6 @@ namespace Gambit {
          virtual double soft_lower() const {return 0.;}
          virtual double hard_lower() const {return 0.;}
     
-      protected:
          /// Functions to be overridden in classes derived from Spec<Derived> 
          /// (i.e. the final wrappers)
          /// Not actually called via SubSpectrum object directly; call via 

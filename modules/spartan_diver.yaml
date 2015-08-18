@@ -27,7 +27,7 @@ Printer:
   printer: hdf5
   options:
      output_file: "runs/spartan_diver/samples/gambit_output.hdf5"
-     group: "/"
+     group: "/test/test2"
      delete_file_if_exists: true
 
 #======== Scanner setup ========

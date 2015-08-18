@@ -29,7 +29,6 @@
 
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
-#include "gambit/Printers/new_mpi_datatypes.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/VertexBufferBase.hpp"
 #include "gambit/Printers/VertexBuffer_mpitags.hpp"
@@ -39,6 +38,7 @@
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 //#define DEBUG_MODE
 //#define HDEBUG_MODE // "High output" debug mode (info with every single print command)
@@ -141,7 +141,7 @@ namespace Gambit
         void initialise(const std::vector<int>&);
         void auxilliary_init();
         void flush();
-        void reset();
+        void reset(bool force=false);
         int getRank();
         void finalise();
 
@@ -161,12 +161,25 @@ namespace Gambit
         /// Add PPIDpair to global index list
         void add_PPID_to_list(const PPIDpair&);
 
+        /// Check if PPIDpair exists in global index list
+        bool seen_PPID_before(const PPIDpair& ppid);
+
         #ifdef WITH_MPI
         /// Send PPID lists to the master and clear them (master process should never do this!)
         void send_PPID_lists(bool finalsend=false);
 
         /// Update the master node PPID lists with IDs from a worker node
         void receive_PPID_list(uint source);
+ 
+        /// Master waits until all processes send the specified tag, and monitors
+        /// for tag requests in the meantime. Used during initialise and finalise to
+        /// ensure monitoring for tag requests continues until it is no longer needed
+        /// by the workers.
+        void master_wait_for_tag(Tags tag);
+
+        /// MPI variables to use in the above function;
+        int waitfortag_send_buffer = 0;
+        MPI_Request req_null = MPI_REQUEST_NULL;
         #endif
 
         /// Function to ensure buffers are all synchronised to the same absolute position
@@ -194,6 +207,9 @@ namespace Gambit
  
         /// Check for buffers waiting to be delivered from other processes 
         bool collect_mpi_buffers();
+ 
+        // Check for MPI tag messages waiting to be delivered from the master
+        void check_for_bufftag_deliveries();
         #endif  
 
         // Check if the buffers are full and waiting to be emptied
@@ -216,6 +232,10 @@ namespace Gambit
         /// Get the name of this printer
         std::string get_printer_name() { return printer_name; }
 
+        /// Get the number of pointIDs know to this printer
+        /// (should correspond to the number of "appends" each active buffer has received)
+        ulong get_N_pointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
+
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
         /// BaseBasePrinter, so we need to  
@@ -233,24 +253,25 @@ namespace Gambit
         // 
         // The getter functions serve to both retrieve the buffer matching an
         // output stream, and to handle creation of those buffers.
-        #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME) \
-         template<>                                                               \
+        #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME)                               \
+         template<>                                                                \
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
            HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
           {                                                                        \
-             /* If the buffermanger hasn't been initialised, do so now */        \
-             if( not CAT(hdf5_localbufferman_,NAME).ready() )                    \
-             {                                                                   \
-                CAT(hdf5_localbufferman_,NAME).init(this,synchronised);          \
-             }                                                                   \
-                                                                                 \
-             /* While we are at it, check if the buffers need to be
-                synchronised to a new point. But only if this printer is running
-                in "synchronised" mode. */                                       \
-             if(synchronised) {                                                  \
-               check_for_new_point(pointID, mpirank);                            \
-             }                                                                   \
-             return CAT(hdf5_localbufferman_,NAME);                              \
+             /* If the buffermanger hasn't been initialised, do so now */          \
+             if( not CAT(hdf5_localbufferman_,NAME).ready() )                      \
+             {                                                                     \
+                CAT(hdf5_localbufferman_,NAME).init(this,synchronised);            \
+             }                                                                     \
+                                                                                   \
+             /* While we are at it, check if the buffers need to be                \
+                synchronised to a new point. But only if this printer is running   \
+                in "synchronised" mode. */                                         \
+             if(synchronised)                                                      \
+             {                                                                     \
+               check_for_new_point(pointID, mpirank);                              \
+             }                                                                     \
+             return CAT(hdf5_localbufferman_,NAME);                                \
           }
 
         /// @}
@@ -263,13 +284,12 @@ namespace Gambit
 
         /// List the types for which print functions are defined
         #define HDF5_PRINTABLE_TYPES \
-          (bool)                     \
           (int)(uint)(long)(ulong)   \
           (float)(double)            \
-          (std::vector<bool>)        \
+          (bool)(std::vector<bool>)  \
           (std::vector<int>)         \
           (std::vector<double>)      \
-          (ModelParameters)  
+          (ModelParameters)
 
         #define DECLARE_PRINT(r,data,ELEM) \
           void print(ELEM const& value, const std::string& label, const int IDcode, const int rank, const ulong pointID); \
@@ -301,7 +321,7 @@ namespace Gambit
            if(synchronised)
            {
              // Write the data to the selected buffer ("just works" for simple numeric types)
-             selected_buffer.append(value);
+             selected_buffer.append(value,PPIDpair(pointID,mpirank));
            }
            else
            {
@@ -312,10 +332,11 @@ namespace Gambit
  
         /// @{ Helper macros to write all the print functions which can use the "easy" template
         #define TEMPLATE_TYPES      \
-         (bool)                     \
          (int)(uint)(long)(ulong)   \
          (float)(double)        
          // Add more as needed
+         // TODO needs to be converted to int to work with MPI
+         // (bool)
 
         // The type of the template print function buffers
         #define TEMPLATE_BUFFTYPE(TYPE) VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>
@@ -395,7 +416,7 @@ namespace Gambit
  
         uint mpiSize;
  
-        /// Tag manager object (only the primary printer on the master node has one of these) 
+        /// Tag manager object (only the primary printer has one of these) 
         MPITagManager* tag_manager = NULL;
 
         /// Buffer and flag for tracking the status of the PPIDpair Isend to master (in clear_PPID_lists)
