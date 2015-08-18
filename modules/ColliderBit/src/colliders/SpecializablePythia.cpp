@@ -3,12 +3,12 @@
 #include "gambit/ColliderBit/colliders/SpecializablePythia.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
-#include "Pythia8/Sigma_MC4BSM_2012_UFO_gg_uvuvx.h"
+/*#include "Pythia8/Sigma_MC4BSM_2012_UFO_gg_uvuvx.h"
 #include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_uvuvx.h"
 #include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_evevx.h"
 #include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_p1p2.h"
 #include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_p2p2.h"
-#include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_p1p1.h"
+#include "Pythia8/Sigma_MC4BSM_2012_UFO_qq_p1p1.h"*/
 
 namespace Gambit {
   namespace ColliderBit {
