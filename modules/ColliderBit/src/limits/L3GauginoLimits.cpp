@@ -191,6 +191,7 @@ namespace Gambit {
       corners.push_back(convertPt(1559.00,249.00));
       corners.push_back(convertPt(1653.00,211.00));
       corners.push_back(convertPt(1686.00,188.00));
+      corners.push_back(convertPt(1731.00,172.00));
 
       contoursPointer = new Contours();
       contoursPointer->resize(corners.size() - 1);
