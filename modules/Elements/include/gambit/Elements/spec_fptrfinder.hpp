@@ -40,7 +40,11 @@ namespace Gambit {
           , map0M_(NULL)
           , map0I_(NULL)
           , map1_(NULL)
+          , map1M_(NULL)
+          , map1I_(NULL)
           , map2_(NULL)
+          , map2M_(NULL)
+          , map2I_(NULL)
           , omap0_(NULL)
           , omap1_(NULL)
           , omap2_(NULL)
@@ -50,7 +54,11 @@ namespace Gambit {
          SetMaps& map0M(const typename MapTypes<DT,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
          SetMaps& map0I(const typename MapTypes<DT,MTag>::fmap0_extraI& map0I){ map0I_=&map0I; return *this; }
          SetMaps& map1(const typename MapTypes<DT,MTag>::fmap1&        map1)  { map1_=&map1; return *this; }
+         SetMaps& map1M(const typename MapTypes<DT,MTag>::fmap1_extraM& map1M){ map1M_=&map1M; return *this; }
+         SetMaps& map1I(const typename MapTypes<DT,MTag>::fmap1_extraI& map1I){ map1I_=&map1I; return *this; }
          SetMaps& map2(const typename MapTypes<DT,MTag>::fmap2&        map2)  { map2_=&map2; return *this; }
+         SetMaps& map2M(const typename MapTypes<DT,MTag>::fmap2_extraM& map2M){ map2M_=&map2M; return *this; }
+         SetMaps& map2I(const typename MapTypes<DT,MTag>::fmap2_extraI& map2I){ map2I_=&map2I; return *this; }
          /// base class override maps
          SetMaps& omap0(const std::map<std::string,double>& om0)              { omap0_=&om0; return *this;}
          SetMaps& omap1(const std::map<std::string,std::map<int,double>>& om1){ omap1_=&om1; return *this;}
@@ -66,7 +74,11 @@ namespace Gambit {
          const typename MapTypes<DT,MTag>::fmap0_extraM* map0M_; 
          const typename MapTypes<DT,MTag>::fmap0_extraI* map0I_; 
          const typename MapTypes<DT,MTag>::fmap1*        map1_; 
+         const typename MapTypes<DT,MTag>::fmap1_extraM* map1M_; 
+         const typename MapTypes<DT,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<DT,MTag>::fmap2*        map2_; 
+         const typename MapTypes<DT,MTag>::fmap2_extraM* map2M_; 
+         const typename MapTypes<DT,MTag>::fmap2_extraI* map2I_; 
           
          /// Maps from base class (override maps, only used in getter case)
          const std::map<std::string,double>*                             omap0_;
@@ -105,7 +117,11 @@ namespace Gambit {
          const typename MapTypes<DT,MTag>::fmap0_extraM* map0M_; 
          const typename MapTypes<DT,MTag>::fmap0_extraI* map0I_; 
          const typename MapTypes<DT,MTag>::fmap1*        map1_; 
+         const typename MapTypes<DT,MTag>::fmap1_extraM* map1M_; 
+         const typename MapTypes<DT,MTag>::fmap1_extraI* map1I_; 
          const typename MapTypes<DT,MTag>::fmap2*        map2_; 
+         const typename MapTypes<DT,MTag>::fmap2_extraM* map2M_; 
+         const typename MapTypes<DT,MTag>::fmap2_extraI* map2I_; 
 
          /// Iterators needed for storing locatation of search result
          /// ...for override values
@@ -116,8 +132,12 @@ namespace Gambit {
          typename MapTypes<DT,MTag>::fmap0::const_iterator        it0;  // 3
          typename MapTypes<DT,MTag>::fmap0_extraM::const_iterator it0M; // 4
          typename MapTypes<DT,MTag>::fmap0_extraI::const_iterator it0I; // 5
-         typename MapTypes<DT,MTag>::fmap1::const_iterator       it1; // 6
-         typename MapTypes<DT,MTag>::fmap2::const_iterator       it2; // 7
+         typename MapTypes<DT,MTag>::fmap1::const_iterator        it1;  // 6
+         typename MapTypes<DT,MTag>::fmap1_extraM::const_iterator it1M; // 7
+         typename MapTypes<DT,MTag>::fmap1_extraI::const_iterator it1I; // 8
+         typename MapTypes<DT,MTag>::fmap2::const_iterator        it2;  // 9 //was 7
+         typename MapTypes<DT,MTag>::fmap2_extraM::const_iterator it2M; // 10
+         typename MapTypes<DT,MTag>::fmap2_extraI::const_iterator it2I; // 11
 
          /// Booleans to indicate whether or not it is safe to dereference
          /// the above iterators
@@ -128,7 +148,11 @@ namespace Gambit {
          bool it0M_safe;
          bool it0I_safe;
          bool it1_safe;
+         bool it1M_safe;
+         bool it1I_safe;
          bool it2_safe;
+         bool it2M_safe;
+         bool it2I_safe;
 
          // int which records which iterator points to the search result 
          int whichiter;    
@@ -169,7 +193,11 @@ namespace Gambit {
            , map0M_(params.map0M_)
            , map0I_(params.map0I_)
            , map1_(params.map1_)
+           , map1M_(params.map1M_)
+           , map1I_(params.map1I_)
            , map2_(params.map2_)
+           , map2M_(params.map2M_)
+           , map2I_(params.map2I_)
            , ito0()
            , ito1()
            , ito2()
@@ -177,7 +205,11 @@ namespace Gambit {
            , it0M()
            , it0I()
            , it1()
+           , it1M()
+           , it1I()
            , it2()
+           , it2M()
+           , it2I()
            , ito0_safe (false)
            , ito1_safe(false)
            , ito2_safe(false)
@@ -185,7 +217,11 @@ namespace Gambit {
            , it0M_safe(false)
            , it0I_safe(false)
            , it1_safe(false)
+           , it1M_safe(false)
+           , it1I_safe(false)
            , it2_safe(false) 
+           , it2M_safe(false)
+           , it2I_safe(false)
            , whichiter(-1)
            , index1(-1)
            , index2(-1)
@@ -349,25 +385,27 @@ namespace Gambit {
             // If no override, search the wrapper class maps
             if(not override_found)
             {
-               if( search_map(name,map1_,it1) )
-               {
-                  it1_safe=true; 
-                  /// Switch index convention
-                  int offset = fakethis->parent.get_index_offset();
-                  index1 = i + offset; // set for later use
-                  /// Check that index is in the permitted set
-                  if( not within_bounds(index1, it1->second.iset1) )
-                  {
-                     // index1 out of bounds
-                     found = false;
-                     lastname = name;
-                     error_code = 2;
-                  }
-                  else {
-                     // everything cool. 
-                     whichiter=6;
-                  } 
-               }
+               #define CHECK_INDICES_1(ITER,WHICHITER)   \
+                  CAT(ITER,_safe)=true;   \
+                  /* Switch index convention */ \
+                  int offset = fakethis->parent.get_index_offset(); \
+                  index1 = i + offset; /* set for later use */ \
+                  /* Check that index is in the permitted set */ \
+                  if( not within_bounds(index1, ITER->second.iset1) ) \
+                  { \
+                     /* index1 out of bounds */ \
+                     found = false; \
+                     lastname = name; \
+                     error_code = 2; \
+                  } \
+                  else { \
+                     /* everything cool. */ \
+                     whichiter=WHICHITER; \
+                  }  \
+
+               if( search_map(name,map1_,it1) )       { CHECK_INDICES_1(it1,6)  }
+               else if( search_map(name,map1M_,it1M) ){ CHECK_INDICES_1(it1M,7) }
+               else if( search_map(name,map1I_,it1I) ){ CHECK_INDICES_1(it1I,8) }
                else if( doublecheck and PDB.has_particle(std::make_pair(name,i)) )
                {
                   // Didn't find it in 1-index maps; translate using PDB entry and try 0-index maps
@@ -415,33 +453,36 @@ namespace Gambit {
             // If no override, search the wrapper class maps
             if(not override_found)
             {
-               if( search_map(name,map2_,it2) )
-               {
-                  it2_safe=true; 
-                  /// Switch index convention
-                  int offset = fakethis->parent.get_index_offset();
-                  index1 = i + offset; // set for later use
-                  index2 = j + offset; // set for later use
-                  /// Check that index is in the permitted set
-                  if( not within_bounds(index1, it2->second.iset1) )
-                  {
-                     // index1 out of bounds
-                     found = false;
-                     lastname = name;
-                     error_code = 2;
-                  }
-                  else if( not within_bounds(index2, it2->second.iset2) )
-                  {
-                     // index2 out of bounds
-                     found = false;
-                     lastname = name;
-                     error_code = 3;
-                  }
-                  else {
-                     // everything cool. 
-                     whichiter=7;
-                  } 
-               }
+
+               #define CHECK_INDICES_2(ITER,WHICHITER)   \
+                  CAT(ITER,_safe)=true; \
+                  /* Switch index convention */ \
+                  int offset = fakethis->parent.get_index_offset(); \
+                  index1 = i + offset; /* set for later use */ \
+                  index2 = j + offset; /* set for later use */ \
+                  /* Check that index is in the permitted set */ \
+                  if( not within_bounds(index1, ITER->second.iset1) ) \
+                  { \
+                     /* index1 out of bounds */ \
+                     found = false; \
+                     lastname = name; \
+                     error_code = 2; \
+                  } \
+                  else if( not within_bounds(index2, ITER->second.iset2) ) \
+                  { \
+                     /* index2 out of bounds */ \
+                     found = false; \
+                     lastname = name; \
+                     error_code = 3; \
+                  } \
+                  else { \
+                     /* everything cool. */ \
+                     whichiter=WHICHITER; \
+                  } \
+
+               if( search_map(name,map2_,it2) )       { CHECK_INDICES_2(it2,9)   }
+               else if( search_map(name,map2M_,it2M) ){ CHECK_INDICES_2(it2M,10) }
+               else if( search_map(name,map2I_,it2I) ){ CHECK_INDICES_2(it2I,11) }
                else { 
                  found = false;
                  lastname = name;
@@ -510,11 +551,31 @@ namespace Gambit {
                  result = (model->*f)(ff->index1);
                  break;}
                case 7: {
+                 ff->check(ff->it1M_safe);
+                 typename MT::plainfptrM1 f = ff->it1M->second.fptr;
+                 result = (*f)(*model,ff->index1);
+                 break;}
+               case 8: {
+                 ff->check(ff->it1I_safe);
+                 typename MT::plainfptrI1 f = ff->it1I->second.fptr;
+                 result = (*f)(*input,ff->index1);
+                 break;}
+              case 9: {
                  ff->check(ff->it2_safe);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
                  result = (model->*f)(ff->index1,ff->index2);
                  break;}
-               default:{
+               case 10: {
+                 ff->check(ff->it2M_safe);
+                 typename MT::plainfptrM2 f = ff->it2M->second.fptr;
+                 result = (*f)(*model,ff->index1,ff->index2);
+                 break;}
+               case 11: {
+                 ff->check(ff->it2I_safe);
+                 typename MT::plainfptrI2 f = ff->it2I->second.fptr;
+                 result = (*f)(*input,ff->index1,ff->index2);
+                 break;}
+              default:{
                  std::ostringstream errmsg;
                  errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
                  utils_error().forced_throw(LOCAL_INFO,errmsg.str());  

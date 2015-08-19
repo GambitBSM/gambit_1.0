@@ -234,6 +234,7 @@ namespace Gambit
     {
       Backends::backendInfo().override_path(be, ver, fullname);
     }
+    free(fullname);
   }
 
   /// Register a backend with the logging system

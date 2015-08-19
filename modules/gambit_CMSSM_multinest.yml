@@ -1,0 +1,267 @@
+# Minimal GAMBIT DarkBit test initialization file (in YAML)
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters: 
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+    nuclear_params_fnq: !import NuclearParams_fnq_defaults.yaml
+    #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
+    CMSSM:
+      M0:
+        range: [300, 301]
+        prior_type: flat
+      M12:
+        range: [300, 301]
+        prior_type: flat
+      A0: 0
+      tanb: 10
+      signmu: 1
+
+
+
+##############################
+# Prior setup
+##############################
+
+Priors:
+
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer. 
+  options:
+    # name of output file
+    output_file: "runs/CMSSM_multinest/samples/gambit_output.data"
+    # name of info file (explains content of output file)
+    info_file: "runs/CMSSM_multinest/samples/gambit_output.data_info"
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+  use_scanner: multinest
+  
+  scanners:
+    square_grid:
+      plugin: square_grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 30 #NxN grid
+
+    multinest:
+      plugin: MultiNest
+      options:
+        like:  Likelihood
+        nlive: 100
+        tol: 0.1
+        aux_printer_txt_options:
+          output_file: "runs/CMSSM_multinest/samples/gambit_output.txt"
+          info_file: "runs/CMSSM_multinest/samples/gambit_output.txt_info"
+        aux_printer_stats_options:
+          output_file: "runs/CMSSM_multinest/samples/gambit_output.stats"
+          info_file: "runs/CMSSM_multinest/samples/gambit_output.stats_info"
+        aux_printer_live_options:
+          output_file: "runs/CMSSM_multinest/samples/gambit_output.live"
+          info_file: "runs/CMSSM_multinest/samples/gambit_output.live_info"
+
+
+###############################
+# Observables of interest
+###############################
+
+# Complete list of likelihoods in DarkBit as of 2015-05-10
+ObsLikes:
+#    - capability: IceCube_likelihood
+#      purpose: Likelihood
+
+    - capability: lnL_oh2
+      purpose: Likelihood 
+
+    - capability: RD_oh2
+      purpose: Observable
+
+#    - capability: lnL_FermiLATdwarfs
+#     purpose:  Likelihood
+#   - capability: lnL_FermiGC
+#     purpose:  Likelihood
+#
+    - capability: lnL_XENON100_2012
+      purpose:  Likelihood
+    - capability: lnL_LUX_2013
+      purpose:  Likelihood
+#    - capability: lnL_DARWIN_Ar_2015
+#      purpose:  Observable
+#    - capability: lnL_DARWIN_Xe_2015
+#      purpose:  Observable
+      
+# Complete list of likelihoods in DarkBit as of 2015-05-10
+Rules:
+  - function: get_mass_es_pseudonyms
+    options:
+      hard_error_on_mixing_failure: false
+
+  - capability: decay_rates
+    function: all_decays
+
+  - capability: A0_decay_rates
+    function: A0_decays
+  - capability: Higgs_decay_rates
+    function: MSSM_h0_1_decays
+  - capability: Hplus_decay_rates
+    function: Hplus_decays
+  - capability: h0_2_decay_rates
+    function: h0_2_decays
+  - capability: t_decay_rates
+    function: t_decays
+
+  - capability: SM_spectrum 
+    #function: get_QedQcd_spectrum
+    #function: get_SM_SubSpectrum_from_MSSM_Spectrum
+
+  - capability: lnL_FermiLATdwarfs
+    function: lnL_FermiLATdwarfs_gamLike
+    #function: lnL_FermiLATdwarfsSimple
+
+  - capability: IceCube_likelihood
+    function: IC79_loglike
+    #function: IC_loglike
+
+  - capability: SimYieldTable
+    function: SimYieldTable_DarkSusy
+    #function: SimYieldTable_MicrOmegas
+    #function: SimYieldTable_PPPC
+
+  - capability: RD_oh2
+    #function: RD_oh2_general
+    function: RD_oh2_DarkSUSY
+    options:
+      omtype: 1  # 0: without coann;  1: with coann
+      fast: 1  # 0: standard, 1: fast, 2: dirty, 3: filthy, 4: disgusting, 5: dead
+    #function: RD_oh2_MicrOmegas
+
+#  - capability: MSSM_spectrum
+    #function: get_MSSMatQ_spectrum
+    #function: get_MSSM_spectrum_from_SLHAfile
+    #
+  - capability: MSSM_spectrum 
+    function: get_CMSSM_spectrum  # Use this function to compute this capability
+    options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+#  - capability: Higgs_decay_rates
+#    function: MSSM_h0_1_decays
+    #function: SMHiggs_decays  # Requires MSSM_spectrum (SubSpectrum*) ??
+
+  - capability: MSSM_spectrum
+    options:
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+  - capability: DD_couplings
+    function: DD_couplings_DarkSUSY
+    #function: DD_couplings_MicrOmegas
+
+  - capability: DarkSUSY_PointInit
+    options:
+      use_dsSLHAread: true
+#      debug_SLHA_filenames:
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
+#            - SLHAea_output.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
+
+  prefix : "runs/CMSSM_multinest/logs/"
+  redirection:
+    [Debug] : stdout #"debug.log"
+    [Default] : stdout #"default.log"
+    [Error] : stdout #"errors.log"
+    [Warning] : stdout #"warnings.log"
+    [Core,Error] : stdout #"core_errors.log"
+    [Core,Error,Fatal] : stdout #"fatal_core_errors.log"
+    [Dependency Resolver] : stdout #"stdout"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [BackendIniBit]: "BackendIniBit.log"
+    [LibFirst] : "libfirst.log"
+  #  [Logger, Debug] : "stdout"
+  #  [Core] : "stdout"
+    [Dependency Resolver] : "depres.log"
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: false
+    use_old_routines: false
+    log_runtime: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    ExampleBit_A_error: non-fatal
+
+  enable_testing: false
+

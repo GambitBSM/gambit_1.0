@@ -33,7 +33,7 @@ check_include_files(link.h HAVE_LINK_H)
 # Configure the file
 set(outhdr "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake/cmake_variables.hpp")
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in" ${outhdr})
-message("${BoldYellow}   Updated ${outhdr}${ColourReset}")
+message("${BoldYellow}   Configured ${outhdr}${ColourReset}")
 
 message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
 

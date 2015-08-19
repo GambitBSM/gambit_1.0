@@ -286,7 +286,8 @@ namespace Gambit
             // below (there is also one that takes the model object as an
             // input, as in the getter case)
             //addtomap(("Z0", "Z"),       &softsusy::QedQcd::displayPoleMZ);
-               
+	    addtomap(("Z0", "Z"),       &softsusy::QedQcd::setPoleMZ);
+	    addtomap(("W+", "W-"),       &softsusy::QedQcd::setPoleMW);  
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 
