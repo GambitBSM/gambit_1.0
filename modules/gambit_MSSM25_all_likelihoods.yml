@@ -167,15 +167,15 @@ Rules:
     function: RD_oh2_DarkSUSY
     #function: RD_oh2_MicrOmegas
 
-  - capability: MSSM_spectrum
+  - capability: unimproved_MSSM_spectrum
     function: get_MSSMatQ_spectrum
     #function: get_MSSM_spectrum_from_SLHAfile
 
 #  - capability: Higgs_decay_rates
 #    function: MSSM_h0_1_decays
-    #function: SMHiggs_decays  # Requires MSSM_spectrum (SubSpectrum*) ??
+    #function: SMHiggs_decays
 
-  - capability: MSSM_spectrum
+  - capability: unimproved_MSSM_spectrum
     options:
       precision_goal:        1.0e-4
       max_iterations:        0

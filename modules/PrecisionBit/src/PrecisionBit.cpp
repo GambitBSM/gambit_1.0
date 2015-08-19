@@ -89,16 +89,12 @@ namespace Gambit
       const SubSpectrum* LE = improved_spec.get_LE();
       UV->phys.set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
       LE->phys.set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
-      UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[0], "h0_1");  //FIXME needs to work with PDB names!  need to add uncertainty too *Dep::prec_HiggsMasses.DeltaMH[0]
-      LE->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[0], "h0_1");  //FIXME need to add uncertainty too
-      UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[1], "h0_2");  //FIXME need to add uncertainty too
-      LE->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[1], "h0_2");  //FIXME need to add uncertainty too
-      UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[2], "A0");  //FIXME need to add uncertainty too
-      LE->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[2], "A0");  //FIXME need to add uncertainty too
-      UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[3], "H+");  //FIXME need to add uncertainty too
-      LE->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[3], "H+");  //FIXME need to add uncertainty too
-      //UV->phys.set(Par::sin2w_eff, *Dep::prec_sinw2_eff, "sin2w_eff"); //FIXME need to add uncertainty too
-      //LE->phys.set(Par::sin2w_eff, *Dep::prec_sinw2_eff, "sin2w_eff"); //FIXME need to add uncertainty too
+      //UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[0], "h0_1"); //FIXEM need to add uncertainty too *Dep::prec_HiggsMasses.DeltaMH[0]
+      //UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[1], "h0_2"); //FIXME need to add uncertainty too
+      UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[2], "A0");   //FIXME need to add uncertainty too
+      UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[3], "H+");   //FIXME need to add uncertainty too
+      //UV->phys.set(Par::sin2w_eff, *Dep::prec_sinw2_eff, "sin2w_eff");  //FIXME need to add uncertainty too
+      //LE->phys.set(Par::sin2w_eff, *Dep::prec_sinw2_eff, "sin2w_eff");  //FIXME need to add uncertainty too
       result = &improved_spec;
     }
      
