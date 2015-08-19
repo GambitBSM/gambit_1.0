@@ -1,4 +1,4 @@
-//   GAMBIT: Global and Modular BSM Inference Tool
+//   GAMBIT: G0lobal and Modular BSM Inference Tool
 //   *********************************************
 ///  \file
 ///
@@ -146,6 +146,9 @@ namespace Gambit
     /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)    
     bool check2(const std::string& s1, const std::string& s2);
 
+    /// returns square of double - saves tedious repetition
+    double sqr(double a);
+    
     /// Local GAMBIT definition of isnan.  Could be redefined at a later point, depending on compiler support. 
     using std::isnan;
 
