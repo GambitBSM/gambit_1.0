@@ -1,0 +1,33 @@
+GAMBIT physics paper skeleton
+=============================
+
+Goal: 'compact' paper with emphasis on results
+Essence: the most up-to-date and comprehensive statistical analysis of the model
+
+Introduction
+
+    motivation, literature review, summary of advances in this paper
+
+The physics model(s)
+
+    Lagrangian, parameters, etc. for the particle physics model
+    further major physics assumptions (cosmology, astrophysics, etc.)
+
+Likelihood function
+
+    table of observables including name of observable, type of constrain, experimental value(s)/errors [references], theory errors
+    description of prediction calculations
+
+Priors
+
+Results
+
+    frequentist: profile likelihoods, p values
+    Bayesian: marginalized posteriors, evidences (odds?)
+    discussion: comparison to existing results, new results, future prospects
+
+Conclusions
+
+Acknowledgements
+
+References
