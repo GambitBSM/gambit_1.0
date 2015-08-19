@@ -138,7 +138,6 @@ ExternalProject_Add(darksusy
         COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy  < ../patchISA.dif 
         COMMAND patch -b -p1 -d src < ../patchDS_OMP_src.dif 
         COMMAND patch -b -p1 -d include < ../patchDS_OMP_include.dif 
-#  MESSAGE ( STATUS "Fortran compiler flags: " ${CMAKE_Fortran_FLAGS} )
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND make 
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
