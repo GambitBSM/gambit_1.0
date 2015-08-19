@@ -209,9 +209,9 @@ namespace Gambit
                                         //GMPI::Init(argc,argv);
 #endif
                                         plugin_interface();
-                                        printerInterface->finalise();
+                                        //printerInterface->finalise();
 #ifdef WITH_MPI
-                                        MPI_Finalize(); 
+                                        //MPI_Finalize(); 
 #endif
                                 }
                         }

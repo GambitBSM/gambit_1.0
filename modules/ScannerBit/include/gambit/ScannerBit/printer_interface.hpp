@@ -63,7 +63,8 @@ namespace Gambit
                                 template <typename T>
                                 const T& operator = (const T& in)
                                 {
-                                        stream()->print(in, param, -stream.get_param_id(param), stream()->getRank(), id);
+                                        //std::cout << in << "," << param << "," << -stream.get_param_id(param) << "," << stream()->getRank() << "," << id << std::endl;getchar();
+                                        stream()->print(in, param, stream.get_param_id(param), stream()->getRank(), id);
                                         return in;
                                 }
                         };
@@ -108,8 +109,8 @@ namespace Gambit
                         class point
                         {
                         private:
-                                const unsigned long long int &id;
                                 printer_stream &stream;
+                                const unsigned long long int &id;
                                 
                         public:
                                 point(printer_stream &stream, const unsigned long long int &id) : stream(stream), id(id) {}
@@ -154,6 +155,8 @@ namespace Gambit
                         void flush(){stream->flush();}
                         
                         void reset(){stream->reset();}
+                        
+                        void finalize(){stream->finalise();}
                 };
                 
                 /// aux printer stream wrapper

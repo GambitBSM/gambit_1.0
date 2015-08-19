@@ -103,15 +103,15 @@ objective_plugin(gaussian, version(1, 0, 0))
 
 objective_plugin(EggBox, version(1, 0, 0))
 {
-        std::vector <double> params;
+        std::vector <double> params(2);
         std::pair <double, double> length;
         unsigned int dim;
         
-        main_printer_stream stream;
+        //main_printer_stream stream;
         
         plugin_constructor
         {
-                stream = get_printer().get_stream("");
+                //stream = get_printer().get_stream("");
                 dim = get_keys().size();
                 if (dim != 2)
                 {
@@ -122,6 +122,7 @@ objective_plugin(EggBox, version(1, 0, 0))
         
         double plugin_main(const std::vector<double> &unit)
         {
+                main_printer_stream stream = get_printer().get_stream("");
                 std::vector<double> &params = prior_transform(unit);
                 std::unordered_map<std::string, double> map;
                 prior_transform(unit, map);
@@ -130,7 +131,7 @@ objective_plugin(EggBox, version(1, 0, 0))
                 params[0] *= length.first;
                 params[1] *= length.second;
                 
-                return pow((2.0 + cos(params[0]*M_PI_2)*cos(params[1]*M_PI_2)), 5.0);
+                return 5.0*std::log(2.0 + cos(params[0]*M_PI_2)*cos(params[1]*M_PI_2));
         }
 }
 

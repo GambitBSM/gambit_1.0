@@ -65,7 +65,7 @@ cout << "\nusage: scannerbit [options] [<command>]                              
 int main(int argc, char **argv)
 {
         std::set_terminate(scan_terminator);
-        GMPI::Init(argc,argv);
+        GMPI::Init();
         try
         {
                 if (argc == 1)
@@ -118,6 +118,8 @@ int main(int argc, char **argv)
                         logger() << "Starting scan." << EOM;
                         scan.Run(argc, argv); 
 
+                        MPI_Finalize();
+                        
                         std::cout << "ScannerBit has finished successfully!" << std::endl;
                 }
                 else
