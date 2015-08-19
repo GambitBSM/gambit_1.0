@@ -20,7 +20,7 @@
 #include <iostream>
 
 #include "gambit/Utils/mpiwrapper.hpp"
-
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 
 namespace Gambit
 {
@@ -54,7 +54,7 @@ namespace Gambit
            errmsg << "Error performing MPI_Comm_dup! Received error flag: "<<errflag; 
            utils_error().raise(LOCAL_INFO, errmsg.str());
          }
-     }
+      }
 
       /// @}      
   
@@ -86,8 +86,12 @@ namespace Gambit
 
       /// @{ Helpers for registration of compound datatypes
 
-      /// Vector storing functions to be run when MPI initialises.
-      std::vector<MpiIniFunc> mpi_ini_functions;
+      /// Get vector storing functions to be run when MPI initialises.
+      std::vector<MpiIniFunc>& get_mpi_ini_functions()
+      {
+         static std::vector<MpiIniFunc> mpi_ini_functions;
+         return mpi_ini_functions;
+      }
 
       /// Constructor for AddMpiInitFunc
       ///
@@ -96,13 +100,22 @@ namespace Gambit
       /// cause the functions to be run, just "queues them up" so to speak.
       AddMpiIniFunc::AddMpiIniFunc(std::string local_info, std::string name, void(*func)())
       {
-        mpi_ini_functions.push_back(MpiIniFunc(local_info,name,func));
+         get_mpi_ini_functions().push_back(MpiIniFunc(local_info,name,func));
       }
 
       /// @}
 
       /// Initialise MPI
-      void Init(int argc, char* argv[]) {
+      void Init()
+      {
+        // Dummies; can't rely on being able to use these seriously as the MPI standard doesn't mandate it.
+        int argc = 0;
+        char** argv = NULL;
+
+        // Run any functions needed to queue up MPI datatype definition functions
+        // (still a little hacky, but works)
+        Printers::queue_mpidefs();
+
         // Do basic interrogation
         std::cout << "Hooking up to MPI..." << std::endl;
         if(Is_initialized())
@@ -149,8 +162,8 @@ namespace Gambit
 
         // Run externally defined initialisation functions
         std::cout << "  Running MPI initialisation functions..." << std::endl;
-        for (std::vector<MpiIniFunc>::iterator it=mpi_ini_functions.begin();
-              it != mpi_ini_functions.end(); it++)
+        for (std::vector<MpiIniFunc>::iterator it=get_mpi_ini_functions().begin();
+              it != get_mpi_ini_functions().end(); it++)
         {
           std::cout << "    - Running function '"<<it->myname()<<"'" << std::endl;
           try
@@ -167,13 +180,6 @@ namespace Gambit
         std::cout << "  MPI initialisation complete." << std::endl;
       }
       
-      /// Shut down MPI
-      void Finalize() { 
-        Comm COMM_WORLD;
-        std::cout << "Shutting down MPI (process "<< COMM_WORLD.Get_rank() <<")..." << std::endl;
-        MPI_Finalize(); 
-      }
-
    }
 }
 

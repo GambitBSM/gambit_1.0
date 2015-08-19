@@ -756,8 +756,8 @@ namespace Funk
             std::tuple<typename std::remove_reference<funcargs>::type...> input;
             std::vector<double*> map;
             double (O::* ptr)(funcargs...);
-            O* obj;
             shared_ptr<O> shared_obj;
+            O* obj;
 
             // Digest input parameters 
             // (forwarding everything except Funk::Funk types, which is mapped onto

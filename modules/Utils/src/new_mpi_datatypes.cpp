@@ -3,6 +3,9 @@
 ///  \file
 ///
 ///  Function definitions for new_mpi_datatypes.hpp  
+///
+///  NOTE: These have been moved out of Printers,
+///  and not all names reflect this yet.
 /// 
 ///  *********************************************
 ///
@@ -14,7 +17,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Printers/new_mpi_datatypes.hpp"
+#include "gambit/Utils/new_mpi_datatypes.hpp"
 #include "gambit/Core/error_handlers.hpp" // for LOCAL_INFO
 
 // MPI bindings
@@ -67,7 +70,7 @@ namespace Gambit
      {
         const int nitems=2;
         int          blocklengths[2] = {1,1};
-        MPI_Datatype types[2] = {MPI_INT, MPI_UNSIGNED};
+        MPI_Datatype types[2] = {MPI_INT, MPI_INT};
         MPI_Aint     offsets[2];
 
         offsets[0] = offsetof(VBIDpair, vertexID);
@@ -80,7 +83,7 @@ namespace Gambit
      {
         const int nitems=3;
         int          blocklengths[3] = {1,1,1};
-        MPI_Datatype types[3] = {MPI_INT, MPI_UNSIGNED, MPI_UNSIGNED};
+        MPI_Datatype types[3] = {MPI_INT, MPI_INT, MPI_INT};
         MPI_Aint     offsets[3];
 
         offsets[0] = offsetof(VBIDtrip, vertexID);
@@ -94,7 +97,7 @@ namespace Gambit
      {
         const int nitems=2;
         int          blocklengths[2] = {1,1};
-        MPI_Datatype types[2] = {MPI_UNSIGNED_LONG, MPI_UNSIGNED};
+        MPI_Datatype types[2] = {MPI_LONG, MPI_INT};
         MPI_Aint     offsets[2];
 
         offsets[0] = offsetof(PPIDpair, pointID);
@@ -104,13 +107,16 @@ namespace Gambit
         MPI_Type_commit(&mpi_PPIDpair_type);
      }
 
-     /// Queue up these functiona to run when MPI initialises
-     GMPI::AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
-     GMPI::AddMpiIniFunc prepare_mpiVBIDtrip(LOCAL_INFO, "define_mpiVBIDtrip", &define_mpiVBIDtrip);
-     GMPI::AddMpiIniFunc prepare_mpiPPIDpair(LOCAL_INFO, "define_mpiPPIDpair", &define_mpiPPIDpair);
+     /// Queue up these functions to run when MPI initialises
+     void queue_mpidefs()
+     {
+        GMPI::AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
+        GMPI::AddMpiIniFunc prepare_mpiVBIDtrip(LOCAL_INFO, "define_mpiVBIDtrip", &define_mpiVBIDtrip);
+        GMPI::AddMpiIniFunc prepare_mpiPPIDpair(LOCAL_INFO, "define_mpiPPIDpair", &define_mpiPPIDpair);
+     }
      #endif
 
- }
+  }
 
   /// Definition needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
   /// so that template MPI Send and Receive functions work.

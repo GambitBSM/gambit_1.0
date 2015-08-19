@@ -374,7 +374,7 @@ namespace Gambit
       auto p2 = 
         Funk::vec<string>("bbar","W-", "cbar","tau-", "Z0", "tbar","h0_1");
       {
-        for ( int i = 0; i < channel.size(); i++ )
+        for ( unsigned int i = 0; i < channel.size(); i++ )
         {
           double mtot_final = 
             catalog.particleProperties.at(p1[i]).mass +

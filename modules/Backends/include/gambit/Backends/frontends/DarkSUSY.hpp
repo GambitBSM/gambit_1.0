@@ -140,4 +140,3 @@ BE_CONV_FUNCTION(setMassesForIB, void, (bool), "setMassesForIB")
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
-

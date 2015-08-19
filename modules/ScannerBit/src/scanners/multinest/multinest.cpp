@@ -258,7 +258,7 @@ namespace Gambit {
       /// logZ                                                 = log evidence value
       /// logZerr                                              = error on log evidence value
       /// context                                              = void pointer, any additional information
-      void LogLikeWrapper::dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double *paramConstr, 
+      void LogLikeWrapper::dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double* /*paramConstr*/, 
        double maxLogLike, double logZ, double logZerr)
       {
 
@@ -278,11 +278,10 @@ namespace Gambit {
           // unique for a given quanity to do this.
           // Negative numbers not used by functors, so those are 'safe' to use here
 
-          //                  Quantity    Label         IDcode  MPIrank  pointID
-          // stats file stuff
+          // FIXME this is buggy atm
+          // Stats file
           // For now, MPIrank set to 0 and pointID set to -1, as not needed. Might change how this works later.
-
-          // Disabled while testing hdf5printer...
+          //                  Quantity    Label         IDcode  MPIrank  pointID
           //stats_stream->print(maxLogLike, "maxLogLike", -1,  0,  -1);
           //stats_stream->print(logZ,       "logZ",       -2,  0,  -1);
           //stats_stream->print(logZerr,    "logZerr",    -3,  0,  -1);

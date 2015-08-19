@@ -384,7 +384,7 @@ namespace Gambit {
         DS_RDMGEV *myrdmgev = &(*BEreq::rdmgev); 
 
         myrdmgev->nco=myRDspec.coannihilatingParticles.size();
-        for (std::size_t i=1; i<=((int)myrdmgev->nco); i++) {
+        for (std::size_t i=1; i<=((unsigned int)myrdmgev->nco); i++) {
           myrdmgev->mco(i)=myRDspec.coannihilatingParticles[i-1].mass;
           myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom; 
         }

@@ -112,7 +112,6 @@ namespace Gambit
       template<> struct get_mpi_data_type<float>             { static MPI_Datatype type() { return MPI_FLOAT;              } };
       template<> struct get_mpi_data_type<double>            { static MPI_Datatype type() { return MPI_DOUBLE;             } };
       template<> struct get_mpi_data_type<long double>       { static MPI_Datatype type() { return MPI_LONG_DOUBLE;        } };
-      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UNSIGNED;           } };
       /// @}
 
       /// Typedef'd types; enabled only where they differ from the true types, and where the relevant constants have been
@@ -201,17 +200,16 @@ namespace Gambit
               std::cout<<"rank "<<Get_rank()<<": Recv() called (count="<<count<<", source="<<source<<", tag="<<tag<<")"<<std::endl;
               #endif 
               int errflag;
-               MPI_Status* status = MPI_STATUS_IGNORE; 
-               if(in_status!=NULL) status=in_status;
-               errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, status);
-               if(errflag!=0) {
-                 std::ostringstream errmsg;
-                 errmsg << "Error performing MPI_Recv! Received error flag: "<<errflag; 
-                 utils_error().raise(LOCAL_INFO, errmsg.str());
-               }
-               #ifdef MPI_MSG_DEBUG
-               std::cout<<"rank "<<Get_rank()<<": Recv() finished "<<std::endl;
-               #endif 
+              errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, in_status == NULL ? MPI_STATUS_IGNORE : in_status);                
+              if(errflag!=0)
+              {
+                std::ostringstream errmsg;
+                errmsg << "Error performing MPI_Recv! Received error flag: "<<errflag; 
+                utils_error().raise(LOCAL_INFO, errmsg.str());
+              }
+              #ifdef MPI_MSG_DEBUG
+              std::cout<<"rank "<<Get_rank()<<": Recv() finished "<<std::endl;
+              #endif 
             }
 
             /// Templated blocking receive to automatically determine types
@@ -337,13 +335,7 @@ namespace Gambit
       bool Is_initialized(); 
       
       /// Initialise MPI
-      /// The arguments are required in order to "fix up" the command line 
-      /// arguments so that they match their positions when the "mpirun -n X" 
-      /// wrapper call is absent.
-      void Init(int argc, char* argv[]);
-
-      /// Shut down MPI
-      void Finalize();
+      void Init();
 
       /// Nice wrapper for getting the message size from an MPI_status struct.
       /// Provide the type whose MPI_Datatype you want to retrieve as the
