@@ -389,14 +389,7 @@ namespace Gambit {
        model.get_physical().MVP = mass;
      }
 
-     
-    // template <class Model>
-    //  void set_sinthW2(Model& model, double sthW2)
-    //  {
        
-    //    model.set_ ;
-    //  } 
-     
       /// @{ Fillers for "Running" subclass
  
       // Filler function for getter function pointer maps extractable from "runningpars" container

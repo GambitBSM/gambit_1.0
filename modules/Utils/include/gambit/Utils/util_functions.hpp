@@ -1,4 +1,4 @@
-//   GAMBIT: G0lobal and Modular BSM Inference Tool
+//   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
 ///  \file
 ///
