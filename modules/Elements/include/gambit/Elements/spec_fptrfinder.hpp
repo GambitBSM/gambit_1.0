@@ -616,6 +616,17 @@ namespace Gambit {
             typename DT::Input* input = ff->fakethis->parent.get_Input();
             switch( ff->whichiter )
             {
+               // Override retrieval cases
+               // ABSENT ON PURPOSE. set_override functions don't work via an fptrfinder
+               case 0:
+               case 1:
+               case 2: {
+                 std::ostringstream errmsg;
+                 errmsg << "Error! 'Setter' version of FptrFinder called a map-access case reserved for override maps, however these only work in the 'Getter' version (since SubSpectrum override values are not supposed to be set via an FptrFinder). This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Setter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
+                 utils_error().forced_throw(LOCAL_INFO,errmsg.str());                 
+                 break;
+               }
+               // Wrapper class function call cases
                case 3: {
                  ff->check(ff->it0_safe);
                  typename MT::FSptr f = ff->it0->second;
@@ -634,16 +645,36 @@ namespace Gambit {
                case 6: {
                  ff->check(ff->it1_safe);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
-                 (model->*f)(ff->index1, set_value);
+                 (model->*f)(ff->index1,set_value);
                  break;}
                case 7: {
+                 ff->check(ff->it1M_safe);
+                 typename MT::plainfptrM1 f = ff->it1M->second.fptr;
+                 (*f)(*model,ff->index1,set_value);
+                 break;}
+               case 8: {
+                 ff->check(ff->it1I_safe);
+                 typename MT::plainfptrI1 f = ff->it1I->second.fptr;
+                 (*f)(*input,ff->index1,set_value);
+                 break;}
+               case 9: {
                  ff->check(ff->it2_safe);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
                  (model->*f)(ff->index1,ff->index2,set_value);
                  break;}
+               case 10: {
+                 ff->check(ff->it2M_safe);
+                 typename MT::plainfptrM2 f = ff->it2M->second.fptr;
+                 (*f)(*model,ff->index1,ff->index2,set_value);
+                 break;}
+               case 11: {
+                 ff->check(ff->it2I_safe);
+                 typename MT::plainfptrI2 f = ff->it2I->second.fptr;
+                 (*f)(*input,ff->index1,ff->index2,set_value);
+                 break;}
                default:{
                  std::ostringstream errmsg;
-                 errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
+                 errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Setter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
                  utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
                  }
             }
