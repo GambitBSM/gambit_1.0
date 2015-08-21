@@ -1,0 +1,73 @@
+# Diver version of ultra-minimal GAMBIT Initialization file (in YAML)
+# Only needs ExampleBit_A and Diver.
+#
+# Pat Scot <p.scott@imperial.ac.uk>
+# Jun 2015
+#
+ 
+#======== Input parameter declarations =======
+Parameters: 
+  # In this test file we will simply be fitting the mean and standard deviation of a normal distribution.
+  NormalDist:
+    mu: 
+      range: [-100, 100]      
+    sigma:
+      range: [0, 100]
+
+#======== Prior setup ========
+Priors:
+  # None needed: flat priors automatically generated for mu and sigma
+
+#======== Output setup ========
+Printer:
+  #printer: ascii
+  #options:
+  #  output_file: "runs/spartan_diver/samples/gambit_output.data"
+  #  info_file: "runs/spartan_diver/samples/gambit_output.data_info"
+  printer: hdf5
+  options:
+     output_file: "runs/spartan_diver/samples/gambit_output.hdf5"
+     group: "/test/test2"
+     delete_file_if_exists: true
+
+#======== Scanner setup ========
+Scanner:
+  use_scanner: de
+
+  scanners:
+    de:
+      plugin: Diver
+      like: Likelihood
+      NP: 1000
+      path: "runs/spartan_diver/diver_native"
+      verbosity: 1
+      aux_printer_txt_options:
+        output_file: "runs/spartan_diver/samples/gambit_output.txt"
+        info_file: "runs/spartan_diver/samples/gambit_output.txt_info"
+                    
+#======== Observables of interest ========
+ObsLikes:
+  - purpose:      Likelihood
+    capability:   normaldist_loglike
+    module:       ExampleBit_A
+    type:         double
+
+#======== Rule entries ========
+Rules:
+  # None required
+
+#======== Logging setup ========
+Logger:
+  prefix : "runs/spartan_diver/logs/"
+  redirection:
+    [Default]      : "default.log"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [Scanner]      : "Scanner.log"
+
+#======== Generic Name/Value Section ========
+KeyValues:
+
+  rng: ranlux48
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6

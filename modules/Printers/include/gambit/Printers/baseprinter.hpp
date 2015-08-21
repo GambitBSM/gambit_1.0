@@ -37,53 +37,18 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
-// Macros
-
+// Printable types
 #ifndef STANDALONE
    // If we are in a main gambit executable, we need to know all the potentially printable types.
-   #include "gambit/Elements/all_functor_types.hpp"
+   #define PRINTING_TYPES "gambit/Elements/all_functor_types.hpp"
 #else
    // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
-   #define PRINTABLE_TYPES         \
-     (bool)                        \
-     (int)                         \
-     (double)                      \
-     (std::vector<bool>)           \
-     (std::vector<int>)            \
-     (std::vector<double>)         \
-     (ModelParameters)
-     // Add more as needed
+   #define PRINTING_TYPES "gambit/ScannerBit/printable_types.hpp"
 #endif
-
+#include PRINTING_TYPES
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
 #define LOAD_PRINTER(tag, ...) REGISTER(printer_creators, tag, __VA_ARGS__)
-
-//#pragma message BOOST_PP_STRINGIZE(PRINTABLE_TYPES) //PRINTABLE_TYPES resides in all_functor_types.hpp 
-
-// Virtual print methods for base printer class
-#define VPRINT(r,data,elem)                                 \
-  virtual void print(elem const&, const std::string& label, \
-                     const int vertexID, const int /*rank*/, const int /*pointID*/) \
-  {                                                         \
-    std::ostringstream err;                                 \
-                                                            \
-    err << "No print function override has been "           \
-        << "\ndefined for this type (for whatever printer"  \
-        << "\nclass the current printer comes from)"        \
-        << "\n  Dumping available info..."                  \
-        << "\n   Label      : " << label                    \
-        << "\n   vertexID   : " << vertexID                 \
-        << "\n   Type       : " << STRINGIFY(elem);         \
-    printer_warning().raise(LOCAL_INFO,err.str());          \
-  }                                              
-
-// Creates all necessary virtual print methods for base printer class
-#define ADD_ALL_PRINT_FUNCTIONS \
-  BOOST_PP_SEQ_FOR_EACH(VPRINT, _, PRINTABLE_TYPES)
-
-//#pragma message "Base class print functions:"
-//#pragma message BOOST_PP_STRINGIZE(ADD_ALL_PRINT_FUNCTIONS)
 
 // Code!
 namespace Gambit
@@ -98,57 +63,57 @@ namespace Gambit
     /// BASE PRINTER CLASS
     class BasePrinter: public BaseBasePrinter
     {
-      public:
+      private:
+        BasePrinter* primary_printer = NULL;
+        bool is_aux = false; 
 
+      public:
         /// Destructor
-        // Need this to be virtual so that the PrinterManager can destroy any printer object via a pointer to base
-        // Give it a message so we know if it ever isn't overridden properly
-        //virtual ~BasePrinter() = 0;
-        virtual ~BasePrinter()
-        {
-           /// TODO: convert to actual Gambit warning or error
-           // Actually, this will always run when derived type objects are destructed, so not an error.
-           //std::cout << "Warning! BasePrinter destructor has been called! This should be overridden in the derived printer classes, and never run!" << std::endl;
-        }
+        virtual ~BasePrinter() {}
 
         /// Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true. (TODO: probably extend this to be a list of functors THIS printer is supposed to print, since we may want several printers handling different functors, for SLHA output or some such perhaps).
-        //virtual void initialise(const std::vector<int>&) = 0;
-        virtual void initialise(const std::vector<int>&)
-        {
-           std::cout << "Warning! In BasePrinter::initialise!" << std::endl;
-        }
+        virtual void initialise(const std::vector<int>&) = 0;
 
-        /// Function to signal to the printer to write buffer contents to disk
-        //virtual void flush() = 0;
-        virtual void flush()
-        {
-           std::cout << "Warning! In BasePrinter::flush()!" << std::endl;
-        }
+        /// Helper initialisation for auxilliary printers
+        /// Will be run when the auxilliary printer is
+        /// created by a PrinterManager.
+        // Implementation provided so that pri
+        virtual void auxilliary_init() {};
 
-        /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
-        //virtual void reset() = 0;
-        virtual void reset()
-        {
-           std::cout << "Warning! In BasePrinter::reset()!" << std::endl;
+        void set_primary_printer(BasePrinter* const p)
+        { 
+          primary_printer = p; 
+          is_aux = true;
+          auxilliary_init();
         }
+        BasePrinter* get_primary_printer() 
+        {
+          if(not is_aux)
+          {
+            std::ostringstream err;                               
+            err << "Error! Tried to retrieve pointer to primary printer from a "
+                << "printer object not flagged as auxilliary!";
+            printer_error().raise(LOCAL_INFO,err.str());          
+          }
+          else if(primary_printer==NULL)
+          {
+            std::ostringstream err;                               
+            err << "Error! Tried to retrieve pointer to primary printer, but it "
+                << "is NULL! Something has gone wrong in the initialisation of "
+                << "the printer system.";
+            printer_error().raise(LOCAL_INFO,err.str());          
+          } 
+          return primary_printer; 
+        }
+        bool is_auxilliary_printer() { return is_aux; }
 
-        /// Retrieve MPI rank
-        //virtual int getRank() = 0;
-        virtual int getRank()
-        {
-           std::cout << "Warning! In BasePrinter::getRank()!" << std::endl;
-           return -1;
-        }
 
         // We need to have a virtual print method for EVERY type we ever want to print (i.e. for every type that can be held in the 'myValue' data member of a module functor). Generate these using a macro.
         // Run the macro; add all the print functions
-        ADD_ALL_PRINT_FUNCTIONS
+        ADD_VIRTUAL_PRINTS(PRINTABLE_TYPES) 
 
     };
-
-    // Need to implement the destructor, even though it is pure virtual. Seems like it will be called even if using derived classes, or something.
-    //inline BasePrinter::~BasePrinter() { }
 
     /// Map in which to keep factory functions for the printers (printer_creators)
     // (uses the same machinery as in priors.hpp)
@@ -157,8 +122,6 @@ namespace Gambit
             typedef BasePrinter* create_printer_function(const Options &); //arguments need to match constructor for printer object
             reg_elem <create_printer_function> printer_creators;
     }
-
-    /// Convenience wrapper function for 
 
  
   } //end namespace Printers

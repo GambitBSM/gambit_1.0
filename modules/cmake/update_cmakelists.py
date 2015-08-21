@@ -16,7 +16,6 @@
 #    \date 2014 Nov
 #
 #*********************************************
-import itertools
 import os
 execfile("./Utils/scripts/harvesting_tools.py")
 
@@ -34,22 +33,6 @@ def module_census(verbose,install_dir,excludes):
         break
     return modules
 
-# Check whether or not two files differ in their contents except for the date line
-def same(f1,f2):
-    file1 = open(f1,"r")
-    file2 = open(f2,"r")
-    for l1,l2 in itertools.izip_longest(file1,file2,fillvalue=''): 
-        if l1 != l2 and not l1.startswith("#  \\date "): return False
-    return True
-
-# Compare a candidate file to an existing file, replacing only if they differ.
-def update_only_if_different(existing, candidate):
-    if os.path.isfile(existing) and same(existing, candidate): 
-        os.remove(candidate)
-    else:
-        os.rename(candidate,existing)
-    print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
-
 def hidden(filename):
     return (filename.endswith("~") or filename.startswith("."))
 
@@ -58,6 +41,10 @@ def main(argv):
 
     # Lists of modules to exclude; anything starting with one of these strings is excluded.
     exclude_modules=set(["ScannerBit"])
+
+    # List of printers to exclude; subdirectories within the Printers directory
+    # which match these strings will be ignored.
+    exclude_printers=set([]) # -Ditch'ed printers 
 
     # Handle command line options
     verbose = False
@@ -68,6 +55,8 @@ def main(argv):
         print ' flags:'
         print '        -v                     : More verbose output'  
         print '        -x module1,module2,... : Exclude module1, module2, etc.' 
+        print '        (also applies to printers, e.g.'
+        print '        -x printer1,printer2,... : Exclude printer1, printer2, etc.)' 
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-v','--verbose'):
@@ -75,12 +64,13 @@ def main(argv):
             print 'update_cmakelists.py: verbose=True'
         elif opt in ('-x','--exclude-modules','--exclude-module'):
             exclude_modules.update(neatsplit(",",arg))
+            exclude_printers.update(neatsplit(",",arg))
 
     # Find all the modules.
     modules = module_census(verbose,".",exclude_modules)
 
-    # Add the Backends dir explicitly
-    modules += ["Backends"]
+    # Add the Backends and Printers dirs explicitly
+    modules += ["Backends","Printers"]
 
     # Loop over the found modules.
     for mod in modules:
@@ -88,6 +78,10 @@ def main(argv):
         # Retrieve the list of module source files.
         srcs = []
         for root,dirs,files in os.walk("./"+mod+"/src"):
+            current_dirname =  os.path.basename(os.path.normpath(root))
+            if mod=="Printers" and current_dirname in exclude_printers:
+                if verbose: print "    Ignoring source files for printer {0}".format(current_dirname) 
+                continue # skip this directory
             for name in files:
                 if (name.endswith(".c") or name.endswith(".cc") or name.endswith(".cpp")) and not hidden(name):
                     short_root = re.sub("\\./"+mod+"/src/?","",root)
@@ -98,7 +92,14 @@ def main(argv):
         # Retrieve the list of module header files.
         headers = []
         for root,dirs,files in os.walk("./"+mod+"/include"):
+            current_dirname =  os.path.basename(os.path.normpath(root))
+            if mod=="Printers" and current_dirname in exclude_printers:
+                if verbose: print "    Ignoring header files for printer {0}".format(current_dirname) 
+                continue # skip this directory
             for name in files:
+                if mod=="Printers" and os.path.splitext(name)[0] in exclude_printers:
+                    if verbose: print "    Ignoring {0} header file '{1}'".format(mod,short_root+name)
+                    continue
                 if (name.endswith(".h") or name.endswith(".hh") or name.endswith(".hpp")) and not hidden(name):
                     short_root = re.sub("\\./"+mod+"/include/?","",root)
                     if short_root != "" : short_root += "/" 
@@ -115,6 +116,9 @@ def main(argv):
         if (mod == "Backends"):
             towrite += "\
 #  GAMBIT backends directory.                   \n"
+        elif (mod == "Printers"):
+            towrite += "\
+#  GAMBIT printers directory.                   \n"
         else:
             towrite += "\
 #  GAMBIT module "+mod+".                       \n"

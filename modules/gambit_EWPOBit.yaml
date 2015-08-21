@@ -74,6 +74,9 @@ Rules:
 
   - capability: Hplus_decay_rates
     function: FH_Hplus_decays
+    
+  - capability: decay_rates
+    function: all_decays
       
 ##############################
 # Printer setup

@@ -22,11 +22,10 @@
 #include <string>
 #include <sstream>
 
+#include "gambit/Elements/slhaea_alias.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/partmap.hpp"
-
-#include "SLHAea/slhaea.h"
 
 namespace Gambit
 {
@@ -43,12 +42,19 @@ namespace Gambit
       /// @{
       /// Default constructor
       DecayTable() {}
-      /// Create a DecayTable from an SLHAea DECAY block
-      DecayTable(SLHAea::Block&);
+      /// Create a DecayTable from an SLHAea object containing DECAY blocks
+      DecayTable(const SLHAstruct&, int context = 0);
       /// @}
 
-      /// Output entire decay table as an SLHAea DECAY block
-      SLHAea::Block as_slhaea_block();
+      /// Output entire decay table as an SLHAea file full of DECAY blocks
+      SLHAstruct as_slhaea(bool include_zero_bfs=false) const;
+    
+      /// Output a decay table entry as an SLHAea DECAY block, using input parameter to identify the entry.
+      /// @{
+      SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
+      SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false) const;
+      SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false) const;
+      /// @}
 
       /// Get entry in decay table for a given particle, adding the particle to the table if it is absent.
       /// Three access methods: PDG-context integer pair, full particle name, short particle name + index integer.
@@ -71,7 +77,7 @@ namespace Gambit
       const Entry& at(str) const;
       const Entry& at(str, int) const;
       /// @}
-    
+      
       /// The actual underlying map.  Just iterate over this directly if you need to iterate over all particles in the table.
       std::map< std::pair<int,int>, Entry > particles;
 
@@ -80,6 +86,12 @@ namespace Gambit
       class Entry
       {
         private:
+
+          /// Initialise a DecayTable Entry using an SLHAea DECAY block
+          void init(const SLHAea::Block&, int);
+
+          /// Make sure all particles listed in a set are actually known to the GAMBIT particle database
+          void check_particles_exist(std::multiset< std::pair<int,int> >&) const;
 
           /// Construct a set of particles from a variadic list of full names or short names and indices 
           /// @{
@@ -107,29 +119,30 @@ namespace Gambit
           Entry() :  width_in_GeV(0.0), positive_error(0.0), negative_error(0.0), calculator(""), calculator_version(""), warnings(""), errors("") {}
           /// Constructor taking total width
           Entry(double width) :  width_in_GeV(width), calculator(""), calculator_version(""), warnings(""), errors("") {}
+          /// Constructor creating a DecayTable Entry from an SLHAea DECAY block; full version 
+          Entry(const SLHAea::Block&, int context = 0, str calculator = "", str calculator_version = "");
+          /// Constructor creating a DecayTable Entry from an SLHAea DECAY block; full version; version assuming block def is already known 
+          Entry(const SLHAea::Block&, SLHAea::Block::const_iterator, int context = 0, str calculator = "", str calculator_version = "");
 
           /// Set branching fraction for decay to a given final state.
-          /// Three ways to specify final states: PDG-context integer pairs, full particle names, short particle names + index integers.
           /// Supports arbitrarily many final state particles.
+          /// Four ways to specify final states: 
+          ///  1. PDG-context integer pairs (vector)
+          ///  2. PDG-context integer pairs (arguments)
+          ///  3. full particle names (arguments)
+          ///  4. short particle names + index integers (arguments)
           /// @{
+          void set_BF(double, double, std::vector<std::pair<int,int> >&);
+
           template <typename... Args>
           void set_BF(double BF, double error, std::pair<int,int> p1, Args... args)
           {
             std::pair<int,int> particles[] = {p1, args...};
             std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
-            for (auto final_state = key.begin(); final_state = key.end(); ++final_state)
-            {
-              if (not Models::ParticleDB().has_particle(*final_state))
-              {
-                std::ostringstream err;
-                err << "Particle with PDG code" << final_state->first << " and context integer " << endl
-                    << final_state->second << " is not in the in GAMBIT particle database." << endl
-                    << "Please add such a particle to Models/src/particle_database.cpp and recompile.";
-                model_error().raise(LOCAL_INFO,err.str());
-              }
-            }
+            check_particles_exist(key);
             channels[key] = std::pair<double, double>(BF, error);
           }
+
           template <typename... Args>
           void set_BF(double BF, double error, str p1, Args... args)
           {
@@ -154,6 +167,7 @@ namespace Gambit
             }
             return channels.at(key).first;
           }
+
           template <typename... Args>
           double BF(str p1, Args... args) const
           {
@@ -182,6 +196,7 @@ namespace Gambit
             }
             return channels.at(key).second;
           }
+
           template <typename... Args>
           double BF_error(str p1, Args... args) const
           {
@@ -210,6 +225,7 @@ namespace Gambit
             }
             return channels.at(key);
           }
+
           template <typename... Args>
           std::pair<double, double> BF_with_error(str p1, Args... args) const
           {
@@ -221,6 +237,13 @@ namespace Gambit
             }
             return channels.at(key);
           }
+          /// @}
+
+          /// Output this entry as an SLHAea DECAY block, using input parameter to identify the mother particle.
+          /// @{
+          SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false) const;
+          SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false) const;
+          SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
           /// @}
 
           /// Sum up the partial widths and return the result.

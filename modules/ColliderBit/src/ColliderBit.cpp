@@ -13,10 +13,17 @@
 ///          (a.m.b.krislock@fys.uio.no)
 ///  \author Aldo Saavedra
 ///
+///  \author Chris Rogan
+///          (crogan@cern.ch)
+///  \date 2014 Aug
+///  \date 2015 May
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015 Jul
+///
 ///  *********************************************
 
-// #define HESITATE shallIGoOn
-//
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -27,8 +34,11 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
-namespace Gambit {
-  namespace ColliderBit {
+namespace Gambit
+{
+
+  namespace ColliderBit
+  {
 
 
     /// ********************************************
@@ -36,25 +46,19 @@ namespace Gambit {
     /// ********************************************
 
     /// Event labels
-    enum specialEvents {INIT = -1, END_SUBPROCESS = -2, FINALIZE = -3};
+    enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
+    /// Analysis stuff
+    HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
+    std::vector<std::string> analysisNames;
     /// Delphes stuff
     /// @TODO BOSS delphes? Euthanize delphes?
-    bool resetDelphesFlag = true;
     std::string delphesConfigFilename;
-    /// BuckFast stuff
-    bool resetBuckFastFlag = true;
     /// Pythia stuff
-    bool resetPythiaFlag = true;
     std::vector<std::string> pythiaNames;
-    int pythiaConfigurations, pythiaNumber;
-    std::string slhaFilename;
-    /// Analysis stuff
-    bool resetAnalysisFlag = true;
     std::vector<std::string>::const_iterator iter;
+    int pythiaConfigurations, pythiaNumber;
     /// General collider sim info stuff
-    double* xsecArray;
-    double* xsecerrArray;
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,xsecArray,xsecerrArray
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses
 
 
     /// *************************************************
@@ -62,14 +66,14 @@ namespace Gambit {
     /// *************************************************
     /// *** Loop Managers ***
 
-    void operatePythia() {
+    void operatePythia()
+    {
       using namespace Pipes::operatePythia;
       int nEvents = 0;
+      globalAnalyses->clear();
 
-      logger() << "\n==================\n";
-      logger() << "ColliderBit says,\n";
-      logger() << "\t\"operatePythia() was called.\"\n";
-      logger() << LogTags::info << endl << EOM;
+      // Do the base-level initialisation
+      Loop::executeIteration(BASE_INIT);
 
       #pragma omp critical (runOptions)
       {
@@ -77,30 +81,27 @@ namespace Gambit {
         GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
         /// @todo Subprocess specific nEvents
         GET_COLLIDER_RUNOPTION(nEvents, int);
-        /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
-        GET_COLLIDER_RUNOPTION(slhaFilename, std::string);
       }
 
-      xsecArray = new double[omp_get_max_threads()];
-      xsecerrArray = new double[omp_get_max_threads()];
-      /// For every collider requested in the yaml file:
-      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) {
+      // For every collider requested in the yaml file:
+      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
+      {
         pythiaNumber = 0;
-        /// Defaults to 1 if option unspecified
         #pragma omp critical (runOptions)
         {
+          // Defaults to 1 if option unspecified
           pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
         }
 
-        while (pythiaNumber < pythiaConfigurations) {
+        while (pythiaNumber < pythiaConfigurations)
+        {
           ++pythiaNumber;
           Loop::executeIteration(INIT);
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
+            Loop::executeIteration(START_SUBPROCESS);
             #pragma omp for
-            for (int i = 1; i <= nEvents; ++i) {
-              Loop::executeIteration(i);
-            }
+            for (int i = 1; i <= nEvents; ++i) Loop::executeIteration(i);
             Loop::executeIteration(END_SUBPROCESS);
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
@@ -112,77 +113,98 @@ namespace Gambit {
         }
       }
       Loop::executeIteration(FINALIZE);
-
-      logger() << "==================" << endl;
-      logger() << "ColliderBit says,";
-      logger() << "\"operatePythia() completed.\"" << endl;
-      logger() << LogTags::info << endl << EOM;
     }
 
 
 
     /// *** Hard Scattering Collider Simulators ***
 
-    void getPythia(Gambit::ColliderBit::PythiaBase* &result) {
-      /// @TODO: capabilify xsecArrays
+    void getPythia(Gambit::ColliderBit::SpecializablePythia &result)
+    {
       using namespace Pipes::getPythia;
 
-      if (resetPythiaFlag and *Loop::iteration > INIT) {
+      static bool SLHA_debug_mode = false;
+      static std::vector<std::string> filenames;
+      static unsigned int counter = -1;
 
-        /// Each thread gets its own Pythia instance.
-        /// Thus, the Pythia instantiation is *after* INIT.
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // If there are no debug filenames set, look for them.
+        if (filenames.empty())
+        {
+          #pragma omp_critical (runOptions)
+          {
+            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");
+            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
+          }
+        }
+        // Increment the counter if there are debug SLHA files and this is the first thread.
+        if (SLHA_debug_mode)
+        {
+          if (omp_get_thread_num() == 0) counter++;
+          if (filenames.size() <= counter) invalid_point().raise("No more SLHA files. My work is done.");
+        }
+      }
+
+      else if (*Loop::iteration == START_SUBPROCESS)
+      {
+        // TODO Surely, I must call result.clear()?
+
+        // Each thread gets its own Pythia instance.
+        // Thus, the actual Pythia initialization is
+        // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
 
-        /// Setup new Pythia
-        pythiaConfigName = "pythiaOptions";
-        if (pythiaConfigurations) {
-          pythiaConfigName += "_";
-          pythiaConfigName += std::to_string(pythiaNumber);
-        }
-        /// If the PythiaBase subclass is hard-coded (for some reason), okay with no options.
+        // Setup new Pythia
+        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+
+        // If the SpecializablePythia specialization is hard-coded, okay with no options.
         #pragma omp critical (runOptions)
         {
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
-        pythiaOptions.push_back("SLHA:file = " + slhaFilename);
-        pythiaOptions.push_back("Random:seed = " + std::to_string(12345 + omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
-        /// Memory allocation: Pythia
-        result = mkPythia(*iter, pythiaOptions);
-        pythiaOptions.clear();
-        resetPythiaFlag = false;
+        result.resetSpecialization(*iter);
 
-      } else if (*Loop::iteration == END_SUBPROCESS) {
-
-        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting Py8's mb to pb units
-        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting Py8's mb to pb units
-        /// @todo Hackity hack of a exp(polynomial(mg)) fit to nllfast cross-sections, via a super-hacky mg.dat file... just for testing!
-        // std::cout << "XSEC_PY = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
-        // const double mg = result->pythia()->particleData.particleDataEntryPtr(1000021)->m0();
-        // const double mg = result->pythia()->particleData.m0(1000021);
-        // std::ifstream mgf("mg.dat"); double mg; mgf >> mg; mgf.close();
-        // const double lxs = -1.031e-08*mg*mg*mg + 2.65e-05*mg*mg - 0.03222*mg + 12.24;
-        // const double xs = exp(lxs);
-        // std::cout << "MG = " << mg << " logXS = " << lxs << " XS = " << xs << " pb" << std::endl;
-        // xsecArray[omp_get_thread_num()] = xs;
-        // std::cout << "XSEC_NL = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
-
-        /// Each thread gets its own Pythia instance.
-        /// Thus, the Pythia memory clean-up is *before* FINALIZE.
-        /// Memory clean-up: Pythia
-        delete result;
-        result = 0;
-        resetPythiaFlag = true;
-
-      } else if (*Loop::iteration == FINALIZE) {
-
-        /// Memory clean-up: xsecArrays
-        /// @TODO: where is the matching allocation? Careful with these deletes
-        delete[] xsecArray;
-        delete[] xsecerrArray;
-
+        if (SLHA_debug_mode)
+        {
+          // Run Pythia reading an SLHA file.
+          logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
+          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));
+          result.init(pythiaOptions);
+        }
+        else
+        {
+          // Run Pythia using an SLHAea object constructed from dependencies on the spectrum and decays.
+          SLHAstruct slha = Dep::decay_rates->as_slhaea();
+          if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+          {
+            // MSSM-specific
+            SLHAstruct spectrum;
+            #pragma omp critical (spectrum_as_slhaea)
+            {
+              spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+            }
+            SLHAea::Block block("MODSEL");
+            block.push_back("BLOCK MODSEL              # Model selection");
+            SLHAea::Line line;
+            line << 1 << 0 << "# General MSSM";
+            block.push_back(line);
+            slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
+            slha.push_front(block);
+          }
+          else
+          {
+            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
+          }
+          cout << slha << endl;
+          pythiaOptions.push_back("SLHA:file = slhaea");
+          result.init(pythiaOptions, &slha);
+        }
+        /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
     }
 
@@ -190,44 +212,35 @@ namespace Gambit {
 
     /// *** Detector Simulators ***
 
-    void getDelphes(Gambit::ColliderBit::DelphesBase* &result) {
+    void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
-      if (resetDelphesFlag and *Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT)
+      {
+        result.clear();
         #pragma omp critical (Delphes)
         {
           /// Setup new Delphes
           GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
-          /// Memory allocation: Delphes
-          result = mkDelphes("DelphesVanilla", delphesOptions);
-          resetDelphesFlag = false;
+          result.init(delphesOptions);
         }
-      } else if (*Loop::iteration == FINALIZE) {
-        /// Memory clean-up: Delphes
-        delete result;
-        result = 0;
-        resetDelphesFlag = true;
       }
     }
 
 
-    void getBuckFast(Gambit::ColliderBit::BuckFastBase* &result) {
+    void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result)
+    {
       using namespace Pipes::getBuckFast;
       std::string buckFastOption;
-      if (resetBuckFastFlag and *Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT)
+      {
+        result.clear();
         #pragma omp critical (BuckFast)
         {
           /// Setup new BuckFast
-          GET_COLLIDER_RUNOPTION(buckFastOption, std::string);
-          /// Memory allocation: BuckFast
-          result = mkBuckFast(buckFastOption);
-          resetBuckFastFlag = false;
+          /// @note There's really nothing to do. BuckFast doesn't even have class variables.
+          result.init();
         }
-      } else if (*Loop::iteration == FINALIZE) {
-        /// Memory clean-up: BuckFast
-        delete result;
-        result = 0;
-        resetBuckFastFlag = true;
       }
     }
 
@@ -235,40 +248,43 @@ namespace Gambit {
 
     /// *** Initialization for analyses ***
 
-    void specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*> &result) {
-      using namespace Pipes::specifyAnalysisPointerVector;
-      if (resetAnalysisFlag and *Loop::iteration == INIT) {
-        /// Memory clean-up: Analyses
-        /* while (result.size() > 0) {
-           delete result.front();
-           result.erase(result.begin());
-           } */
-        result.clear();
-        logger() << "\n==================\n";
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"specifyAnalysisPointerVector() was called.\"\n";
-        logger() << LogTags::info << endl << EOM;
-
-        std::vector<std::string> analysisNames;
+    void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+      using namespace Pipes::getAnalysisContainer;
+      if (*Loop::iteration == INIT)
+      {
         #pragma omp critical (runOptions)
         {
           GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
         }
-
-        logger() << "\n==================\n";
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"Setting up analyses...\"\n";
-        for(auto name : analysisNames) {
-          logger() << "\t  Analysis name " << name << endl;
-          /// Memory allocation: Analyses
-          result.push_back( mkAnalysis(name) );
+        #pragma omp critical (access_globalAnalyses)
+        {
+          if(!globalAnalyses->ready) {
+            /// A global Analyses container exists to hold combined results from all threads.
+            globalAnalyses->init(analysisNames);
+          }
         }
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"specifyAnalysisPointerVector() has finished.\"\n";
-        logger() << LogTags::info << endl << EOM;
-        resetAnalysisFlag = false;
-      } else if (*Loop::iteration == FINALIZE) {
-        resetAnalysisFlag = true;
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS)
+      {
+        /// Each thread gets its own Analysis container.
+        /// Thus, their initialization is *after* INIT, within omp parallel.
+        /// @TODO Can we test for xsec veto here? Might be analysis dependent...
+        result.init(analysisNames);
+        return;
+      }
+
+      if (*Loop::iteration == END_SUBPROCESS)
+      {
+        const double xs = Dep::HardScatteringSim->xsec_pb();
+        const double xserr = Dep::HardScatteringSim->xsecErr_pb();
+        result.add_xsec(xs, xserr);
+        #pragma omp critical (access_globalAnalyses)
+        {
+          globalAnalyses->add(result);
+        }
+        return;
       }
     }
 
@@ -276,74 +292,72 @@ namespace Gambit {
 
     /// *** Hard Scattering Event Generators ***
 
-    void generatePythia8Event(Pythia8::Event& result) {
+    void generatePythia8Event(Pythia8::Event& result)
+    {
       using namespace Pipes::generatePythia8Event;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
-      result = (*Dep::HardScatteringSim)->nextEvent();
+      (*Dep::HardScatteringSim).nextEvent(result);
     }
 
 
 
     /// Convert a hadron-level Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
-    void convertPythia8ParticleEvent(HEPUtils::Event& result) {
-      using namespace Pipes::convertPythia8Event;
-      if (*Loop::iteration <= INIT) return;
+    void convertPythia8ParticleEvent(HEPUtils::Event& result)
+    {
+      using namespace Pipes::convertPythia8ParticleEvent;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
-      const auto& pevt = (*Dep::HardScatteringSim)->nextEvent();
+      const Pythia8::Event& pevt = *Dep::HardScatteringEvent;
 
       std::vector<fastjet::PseudoJet> bhadrons; //< for input to FastJet b-tagging
-      std::vector<Particle*> bpartons;
-      std::vector<Particle*> tauCandidates;
-      P4 pout; //< Sum of momenta outside acceptance
+      std::vector<HEPUtils::Particle*> bpartons;
+      std::vector<HEPUtils::Particle*> tauCandidates;
+      HEPUtils::P4 pout; //< Sum of momenta outside acceptance
 
       // Make a first pass of non-final particles to gather b-hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last b-hadrons in b decay chains as the best proxy for b-tagging
-        //if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
-
         if(p.idAbs()==5) {
           std::vector<int> bDaughterList = p.daughterList();
           bool isGoodB=true;
+
           for (size_t daughter = 0; daughter < bDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[bDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
             if(daughterID == 5)isGoodB=false;
           }
-          if(isGoodB){
 
+          if(isGoodB){
             HEPUtils::Particle* tmpB = new HEPUtils::Particle(mk_p4(p.p()), p.id());
             bpartons.push_back(tmpB);
           }
 
         }
 
+        // Veto leptonic taus
         if(p.idAbs()==15) {
-
-          // Veto leptonic taus
-          //bool isLeptonicTau = false;
           std::vector<int> tauDaughterList = p.daughterList();
-          P4 tmpMomentum;
+          HEPUtils::P4 tmpMomentum;
           bool isGoodTau=true;
 
           for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
-            //std::cout << "DAUGHTER ID " << daughterID << std::endl;
-            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)isGoodTau=false;
-
+            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
+                || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
+              isGoodTau=false;
             if(!daughterID == MCUtils::PID::TAU)tmpMomentum+= mk_p4(pDaughter.p());
           }
 
           if(isGoodTau){
-
             HEPUtils::Particle* tmpTau = new HEPUtils::Particle(mk_p4(p.p()), p.id());
             tauCandidates.push_back(tmpTau);
           }
@@ -394,16 +408,8 @@ namespace Gambit {
         /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
         bool isB = false;
 
-        /*for (auto& pb : bhadrons) {
-          if (pj.delta_R(pb) < 0.4) {
-          isB = true;
-          break;
-          }
-          }*/
-        P4 jetMom=HEPUtils::mk_p4(pj);
-
+        HEPUtils::P4 jetMom=HEPUtils::mk_p4(pj);
         for (auto& pb : bpartons) {
-
           if (jetMom.deltaR_eta(pb->mom()) < 0.4) {
             isB = true;
             break;
@@ -412,12 +418,12 @@ namespace Gambit {
 
         bool isTau=false;
         for(auto& ptau : tauCandidates){
-
           if(jetMom.deltaR_eta(ptau->mom()) < 0.5){
             isTau=true;
             break;
           }
         }
+
         // Add to the event (use jet momentum for tau)
         if(isTau){
           HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
@@ -432,7 +438,7 @@ namespace Gambit {
       //
       // From balance of all visible momenta (requires isolation)
       // const std::vector<Particle*> visibles = result.visible_particles();
-      // P4 pvis;
+      // HEPUtils::P4 pvis;
       // for (size_t i = 0; i < visibles.size(); ++i) {
       //   pvis += visibles[i]->mom();
       // }
@@ -450,32 +456,30 @@ namespace Gambit {
 
     /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
     void convertPythia8PartonEvent(HEPUtils::Event& result) {
-      using namespace Pipes::convertPythia8Event;
-      if (*Loop::iteration <= INIT) return;
+      using namespace Pipes::convertPythia8PartonEvent;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
-      std::vector<Particle*> tauCandidates;
-      const auto& pevt = (*Dep::HardScatteringSim)->nextEvent();
+      std::vector<HEPUtils::Particle*> tauCandidates;
+      const auto& pevt = *Dep::HardScatteringEvent;
 
       // Make a first pass of non-final particles to gather taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last tau in prompt tau replica chains as a proxy for tau-tagging
-
         if(p.idAbs()==15) {
-
           std::vector<int> tauDaughterList = p.daughterList();
-          P4 tmpMomentum;
+          HEPUtils::P4 tmpMomentum;
           bool isGoodTau=true;
 
           for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
-
-            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)isGoodTau=false;
-
+            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
+                || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
+              isGoodTau=false;
             if(!daughterID == MCUtils::PID::TAU)tmpMomentum+= mk_p4(pDaughter.p());
           }
 
@@ -487,7 +491,7 @@ namespace Gambit {
       }
 
       std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
-      P4 pout; //< Sum of momenta outside acceptance
+      HEPUtils::P4 pout; //< Sum of momenta outside acceptance
 
       // Make a single pass over the event to gather final leptons, partons, and photons
       for (int i = 0; i < pevt.size(); ++i) {
@@ -536,12 +540,12 @@ namespace Gambit {
         // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
         /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
         const bool isB = HEPUtils::any(pj.constituents(),
-                                       [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
+                 [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
 
         bool isTau=false;
         for(auto& ptau : tauCandidates){
-          P4 jetMom=HEPUtils::mk_p4(pj);
+          HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
           if(jetMom.deltaR_eta(ptau->mom()) < 0.5){
             isTau=true;
             break;
@@ -559,7 +563,7 @@ namespace Gambit {
       //
       // From balance of all visible momenta (requires isolation)
       // const std::vector<Particle*> visibles = result.visible_particles();
-      // P4 pvis;
+      // HEPUtils::P4 pvis;
       // for (size_t i = 0; i < visibles.size(); ++i) {
       //   pvis += visibles[i]->mom();
       // }
@@ -569,39 +573,31 @@ namespace Gambit {
       // set_missingmom(-pvis);
       //
       // From sum of invisibles, including those out of range
-      for (const Particle* p : result.invisible_particles())
+      for (const HEPUtils::Particle* p : result.invisible_particles())
         pout += p->mom();
       result.set_missingmom(pout);
     }
 
 
-    /// Gambit facing interface function
-    void convertPythia8Event(HEPUtils::Event &result) {
-
-      //convertPythia8PartonEvent(result);
-      convertPythia8ParticleEvent(result);
-
-    }
-
     /// *** Standard Event Format Functions ***
 
     void reconstructDelphesEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructDelphesEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       #pragma omp critical (Delphes)
       {
-        (*Dep::DetectorSim)->processEvent(*Dep::HardScatteringEvent, result);
+        (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
       }
     }
 
     void reconstructBuckFastEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructBuckFastEvent;
-      if (*Loop::iteration <= INIT) return;
+      if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
-      (*Dep::SimpleSmearingSim)->processEvent(*Dep::HardScatteringEvent, result);
+      (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
     }
 
 
@@ -611,44 +607,24 @@ namespace Gambit {
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-
-      if (*Loop::iteration == INIT) {
-
-        // for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
-        //   (*anaPtr)->set_xsec(-1, -1);
-        // }
-
-      } else if (*Loop::iteration == END_SUBPROCESS) {
-
-        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-        {
-          /// @TODO Clean this crap up... xsecArrays should be more Gambity.
-          /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
-          /// @todo Shouldn't add_xsec really be set_xsec in this context? (It's not analysis combination)
-          (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
-        }
-
-      } else if (*Loop::iteration == FINALIZE) {
-
+      if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+        for (auto anaPtr = globalAnalyses->analyses.begin();
+             anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
+          // Finalize is currently only used to report a cut flow.... rename?
+          (*anaPtr)->finalize();
           result.push_back((*anaPtr)->get_results());
         }
-
-      } else {
-
-        #pragma omp critical (accumulatorUpdate)
-        {
-          // Loop over analyses and run them
-          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-            (*anaPtr)->analyze(*Dep::ReconstructedEvent);
-        }
-
+        return;
       }
 
+      if (*Loop::iteration <= BASE_INIT) return;
+
+      // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
+      Dep::AnalysisContainer->analyze(*Dep::ReconstructedEvent);
     }
 
 
@@ -709,11 +685,520 @@ namespace Gambit {
           cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
           observedLikelihoods.push_back(result);
-
         } // end SR loop
       } // end ana loop
 
       /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood (ratio) / other combined-as-well-as-we-can LL number
+
+    }
+
+
+    /// *** Higgs physics ***
+
+    /// FeynHiggs Higgs production cross-sections
+    void FH_HiggsProd(fh_HiggsProd &result)
+    {
+      using namespace Pipes::FH_HiggsProd;
+
+      Farray<fh_real, 1,52> prodxs;
+
+      fh_HiggsProd HiggsProd;
+      int error;
+      fh_real sqrts;
+
+      // Tevatron
+      sqrts = 2.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_Tev[i] = prodxs(i+1);
+      // LHC7
+      sqrts = 7.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC7[i] = prodxs(i+1);
+      // LHC8
+      sqrts = 8.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC8[i] = prodxs(i+1);
+
+      result = HiggsProd;
+    }
+
+    /// SM Higgs only model parameters
+    void SMHiggs_ModelParameters(hb_ModelParameters &result)
+    {
+      using namespace Pipes::SMHiggs_ModelParameters;
+
+      for(int i = 0; i < 3; i++)
+      {
+        result.Mh[i] = 0.;
+        result.deltaMh[i] = 0.;
+        result.hGammaTot[i] = 0.;
+        result.CP[i] = 0.;
+        result.CS_lep_hjZ_ratio[i] = 0.;
+        result.CS_lep_bbhj_ratio[i] = 0.;
+        result.CS_lep_tautauhj_ratio[i] = 0.;
+        for(int j = 0; j < 3; j++) result.CS_lep_hjhi_ratio[i][j] = 0.;
+        result.CS_gg_hj_ratio[i] = 0.;
+        result.CS_bb_hj_ratio[i] = 0.;
+        result.CS_bg_hjb_ratio[i] = 0.;
+        result.CS_ud_hjWp_ratio[i] = 0.;
+        result.CS_cs_hjWp_ratio[i] = 0.;
+        result.CS_ud_hjWm_ratio[i] = 0.;
+        result.CS_cs_hjWm_ratio[i] = 0.;
+        result.CS_gg_hjZ_ratio[i] = 0.;
+        result.CS_dd_hjZ_ratio[i] = 0.;
+        result.CS_uu_hjZ_ratio[i] = 0.;
+        result.CS_ss_hjZ_ratio[i] = 0.;
+        result.CS_cc_hjZ_ratio[i] = 0.;
+        result.CS_bb_hjZ_ratio[i] = 0.;
+        result.CS_tev_vbf_ratio[i] = 0.;
+        result.CS_tev_tthj_ratio[i] = 0.;
+        result.CS_lhc7_vbf_ratio[i] = 0.;
+        result.CS_lhc7_tthj_ratio[i] = 0.;
+        result.CS_lhc8_vbf_ratio[i] = 0.;
+        result.CS_lhc8_tthj_ratio[i] = 0.;
+        result.BR_hjss[i] = 0.;
+        result.BR_hjcc[i] = 0.;
+        result.BR_hjbb[i] = 0.;
+        result.BR_hjmumu[i] = 0.;
+        result.BR_hjtautau[i] = 0.;
+        result.BR_hjWW[i] = 0.;
+        result.BR_hjZZ[i] = 0.;
+        result.BR_hjZga[i] = 0.;
+        result.BR_hjgaga[i] = 0.;
+        result.BR_hjgg[i] = 0.;
+        result.BR_hjinvisible[i] = 0.;
+        for(int j = 0; j < 3; j++) result.BR_hjhihi[i][j] = 0.;
+      }
+
+      result.MHplus = 0.;
+      result.deltaMHplus = 0.;
+      result.HpGammaTot = 0.;
+      result.CS_lep_HpjHmi_ratio = 0.;
+      result.BR_tWpb = 0.;
+      result.BR_tHpjb = 0.;
+      result.BR_Hpjcs = 0.;
+      result.BR_Hpjcb = 0.;
+      result.BR_Hptaunu = 0.;
+
+      const Spectrum* fullspectrum = *Dep::SM_spectrum;
+      const SubSpectrum* spec = fullspectrum->get_UV();
+      const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
+
+      result.Mh[0] = spec->phys.get_Pole_Mass(25,0);
+
+      result.deltaMh[0] = 0.; // Need to get theoretical error on mass
+      result.hGammaTot[0] = decays->width_in_GeV;
+      result.CP[0] = 1;
+      result.CS_lep_hjZ_ratio[0] = 1.;
+      result.CS_lep_bbhj_ratio[0] = 1.;
+      result.CS_lep_tautauhj_ratio[0] = 1.;
+      result.CS_gg_hj_ratio[0] = 1.;
+      result.CS_bb_hj_ratio[0] = 1.;
+      result.CS_bg_hjb_ratio[0] = 1.;
+      result.CS_ud_hjWp_ratio[0] = 1.;
+      result.CS_cs_hjWp_ratio[0] = 1.;
+      result.CS_ud_hjWm_ratio[0] = 1.;
+      result.CS_cs_hjWm_ratio[0] = 1.;
+      result.CS_gg_hjZ_ratio[0] = 1.;
+      result.CS_dd_hjZ_ratio[0] = 1.;
+      result.CS_uu_hjZ_ratio[0] = 1.;
+      result.CS_ss_hjZ_ratio[0] = 1.;
+      result.CS_cc_hjZ_ratio[0] = 1.;
+      result.CS_bb_hjZ_ratio[0] = 1.;
+      result.CS_tev_vbf_ratio[0] = 1.;
+      result.CS_tev_tthj_ratio[0] = 1.;
+      result.CS_lhc7_vbf_ratio[0] = 1.;
+      result.CS_lhc7_tthj_ratio[0] = 1.;
+      result.CS_lhc8_vbf_ratio[0] = 1.;
+      result.CS_lhc8_tthj_ratio[0] = 1.;
+      result.BR_hjss[0] = decays->BF("s", "sbar");
+      result.BR_hjcc[0] = decays->BF("c", "cbar");
+      result.BR_hjbb[0] = decays->BF("b", "bbar");
+      result.BR_hjmumu[0] = decays->BF("mu+", "mu-");
+      result.BR_hjtautau[0] = decays->BF("tau+", "tau-");
+      result.BR_hjWW[0] = decays->BF("W+", "W-");
+      result.BR_hjZZ[0] = decays->BF("Z0", "Z0");
+      result.BR_hjZga[0] = decays->BF("gamma", "Z0");
+      result.BR_hjgaga[0] = decays->BF("gamma", "gamma");
+      result.BR_hjgg[0] = decays->BF("g", "g");
+    }
+
+    /// MSSM Higgs model parameters
+    void MSSMHiggs_ModelParameters(hb_ModelParameters &result)
+    {
+      using namespace Pipes::MSSMHiggs_ModelParameters;
+      #define PDB Models::ParticleDB()
+
+      // unpack FeynHiggs Couplings
+      fh_Couplings FH_input = *Dep::FH_Couplings;
+
+      std::vector<std::string> sHneut;
+      sHneut.push_back("h0_1");
+      sHneut.push_back("h0_2");
+      sHneut.push_back("A0");
+
+      const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
+      const SubSpectrum* spec = fullspectrum->get_UV();
+      const DecayTable decaytable = *Dep::decay_rates;
+
+      const DecayTable::Entry* Hneut_decays[3];
+      for(int i = 0; i < 3; i++)
+      {
+        // Higgs masses and errors
+        result.Mh[i] = spec->phys.get_Pole_Mass(sHneut[i]);
+        result.deltaMh[i] = 0.;
+      }
+
+      // invisible LSP?
+      double lsp_mass = spec->phys.get_Pole_Mass("~chi0_1");
+      int i_snu = 0;
+      for(int i = 1; i <= 3; i++)
+      {
+        if(spec->phys.get_Pole_Mass("~nu",i)  < lsp_mass)
+        {
+          i_snu = i;
+          lsp_mass = spec->phys.get_Pole_Mass("~nu",i);
+        }
+      }
+
+      bool inv_lsp = true;
+      if(spec->phys.get_Pole_Mass("~chi+",1) < lsp_mass) inv_lsp = false;
+      if(spec->phys.get_Pole_Mass("~g") < lsp_mass) inv_lsp = false;
+      if(inv_lsp)
+      {
+        for(int i = 1; i <= 6; i++)
+        {
+          if(spec->phys.get_Pole_Mass("~d",i) < lsp_mass)
+          {
+            inv_lsp = false;
+            break;
+          }
+          if(spec->phys.get_Pole_Mass("~u",i) < lsp_mass)
+          {
+            inv_lsp = false;
+            break;
+          }
+          if(spec->phys.get_Pole_Mass("~e-",i) < lsp_mass)
+          {
+            inv_lsp = false;
+            break;
+          }
+        }
+      }
+
+      for(int i = 0; i < 3; i++)
+      {
+        // Branching ratios and total widths
+        Hneut_decays[i] = &(decaytable(sHneut[i]));
+
+        result.hGammaTot[i] = Hneut_decays[i]->width_in_GeV;
+
+        result.BR_hjss[i] = Hneut_decays[i]->BF("s", "sbar");
+        result.BR_hjcc[i] = Hneut_decays[i]->BF("c", "cbar");
+        result.BR_hjbb[i] = Hneut_decays[i]->BF("b", "bbar");
+        result.BR_hjmumu[i] = Hneut_decays[i]->BF("mu+", "mu-");
+        result.BR_hjtautau[i] = Hneut_decays[i]->BF("tau+", "tau-");
+        result.BR_hjWW[i] = Hneut_decays[i]->BF("W+", "W-");
+        result.BR_hjZZ[i] = Hneut_decays[i]->BF("Z0", "Z0");
+        result.BR_hjZga[i] = Hneut_decays[i]->BF("gamma", "Z0");
+        result.BR_hjgaga[i] = Hneut_decays[i]->BF("gamma", "gamma");
+        result.BR_hjgg[i] = Hneut_decays[i]->BF("g", "g");
+        for(int j = 0; j < 3; j++)
+        {
+          if(2.*result.Mh[j] < result.Mh[i])
+          {
+            result.BR_hjhihi[i][j] = Hneut_decays[i]->BF(sHneut[j],sHneut[j]);
+          }
+          else
+          {
+            result.BR_hjhihi[i][j] = 0.;
+          }
+        }
+        result.BR_hjinvisible[i] = 0.;
+        if(inv_lsp)
+        {
+          // sneutrino is LSP - need to figure out how to get correct invisible BF...
+          if(i_snu > 0)
+          {
+            result.BR_hjinvisible[i] += Hneut_decays[i]->BF(PDB.long_name("~nu",i_snu),PDB.long_name("~nubar",i_snu));
+          }
+          else
+          {
+            result.BR_hjinvisible[i] = Hneut_decays[i]->BF("~chi0_1","~chi0_1");
+          }
+        }
+      }
+
+      result.MHplus = spec->phys.get_Pole_Mass("H+");
+      result.deltaMHplus = 0.;
+
+      const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));
+      const DecayTable::Entry* top_decays = &(decaytable("t"));
+
+      result.HpGammaTot = Hplus_decays->width_in_GeV;
+      result.BR_tWpb    = top_decays->BF("W+", "b");
+      result.BR_tHpjb   = top_decays->BF("H+", "b");
+      result.BR_Hpjcs   = Hplus_decays->BF("c", "sbar");
+      result.BR_Hpjcb   = Hplus_decays->BF("c", "bbar");
+      result.BR_Hptaunu = Hplus_decays->BF("tau+", "nu_tau");
+
+      // check SM partial width h0_1 -> b bbar
+      // shouldn't be zero...
+      double g2hjbb[3];
+      for(int i = 0; i < 3; i++)
+      {
+        if(FH_input.gammas_sm[H0FF(i,4,3,3)+4] <= 0.)
+          g2hjbb[i] = 0.;
+        else
+          g2hjbb[i] = FH_input.gammas[H0FF(i,4,3,3)+4]/FH_input.gammas_sm[H0FF(i,4,3,3)+4];
+      }
+
+      // using partial width ratio approximation for
+      // h -> b bbar CS ratios
+      for(int i = 0; i < 3; i++)
+      {
+        result.CS_bg_hjb_ratio[i] = g2hjbb[i];
+        result.CS_bb_hj_ratio[i]  = g2hjbb[i];
+      }
+
+      // cross-section ratios for b bbar and tau+ tau- final states
+      for(int i = 0; i < 3; i++)
+      {
+        fh_complex c_g2hjbb_L = FH_input.couplings[H0FF(i,4,3,3)];
+        fh_complex c_g2hjbb_R = FH_input.couplings[H0FF(i,4,3,3)+Roffset];
+        fh_complex c_g2hjbb_SM_L = FH_input.couplings_sm[H0FF(i,4,3,3)];
+        fh_complex c_g2hjbb_SM_R = FH_input.couplings_sm[H0FF(i,4,3,3)+RSMoffset];
+
+        fh_complex c_g2hjtautau_L = FH_input.couplings[H0FF(i,2,3,3)];
+        fh_complex c_g2hjtautau_R = FH_input.couplings[H0FF(i,2,3,3)+Roffset];
+        fh_complex c_g2hjtautau_SM_L = FH_input.couplings_sm[H0FF(i,2,3,3)];
+        fh_complex c_g2hjtautau_SM_R = FH_input.couplings_sm[H0FF(i,2,3,3)+RSMoffset];
+
+        double R_g2hjbb_L = sqrt(c_g2hjbb_L.re*c_g2hjbb_L.re+
+               c_g2hjbb_L.im*c_g2hjbb_L.im)/
+          sqrt(c_g2hjbb_SM_L.re*c_g2hjbb_SM_L.re+
+               c_g2hjbb_SM_L.im*c_g2hjbb_SM_L.im);
+        double R_g2hjbb_R = sqrt(c_g2hjbb_R.re*c_g2hjbb_R.re+
+               c_g2hjbb_R.im*c_g2hjbb_R.im)/
+          sqrt(c_g2hjbb_SM_R.re*c_g2hjbb_SM_R.re+
+               c_g2hjbb_SM_R.im*c_g2hjbb_SM_R.im);
+
+        double R_g2hjtautau_L = sqrt(c_g2hjtautau_L.re*c_g2hjtautau_L.re+
+                   c_g2hjtautau_L.im*c_g2hjtautau_L.im)/
+          sqrt(c_g2hjtautau_SM_L.re*c_g2hjtautau_SM_L.re+
+               c_g2hjtautau_SM_L.im*c_g2hjtautau_SM_L.im);
+        double R_g2hjtautau_R = sqrt(c_g2hjtautau_R.re*c_g2hjtautau_R.re+
+                   c_g2hjtautau_R.im*c_g2hjtautau_R.im)/
+          sqrt(c_g2hjtautau_SM_R.re*c_g2hjtautau_SM_R.re+
+               c_g2hjtautau_SM_R.im*c_g2hjtautau_SM_R.im);
+
+        double g2hjbb_s = (R_g2hjbb_L+R_g2hjbb_R)*(R_g2hjbb_L+R_g2hjbb_R)/4.;
+        double g2hjbb_p = (R_g2hjbb_L-R_g2hjbb_R)*(R_g2hjbb_L-R_g2hjbb_R)/4.;
+        double g2hjtautau_s = (R_g2hjtautau_L+R_g2hjtautau_R)*(R_g2hjtautau_L+R_g2hjtautau_R)/4.;
+        double g2hjtautau_p = (R_g2hjtautau_L-R_g2hjtautau_R)*(R_g2hjtautau_L-R_g2hjtautau_R)/4.;
+
+        // check CP of state
+        if(g2hjbb_p < 1e-10)
+          result.CP[i] = 1;
+        else if(g2hjbb_s < 1e-10)
+          result.CP[i] = -1;
+        else
+          result.CP[i] = 0.;
+
+        result.CS_lep_bbhj_ratio[i]     = g2hjbb_s + g2hjbb_p;
+        result.CS_lep_tautauhj_ratio[i] = g2hjtautau_s + g2hjtautau_p;
+      }
+
+      // cross-section ratios for di-boson final states
+      for(int i = 0; i < 3; i++)
+      {
+        fh_complex c_gWW = FH_input.couplings[H0VV(i,4)];
+        fh_complex c_gWW_SM = FH_input.couplings_sm[H0VV(i,4)];
+        fh_complex c_gZZ = FH_input.couplings[H0VV(i,3)];
+        fh_complex c_gZZ_SM = FH_input.couplings_sm[H0VV(i,3)];
+
+        double g2hjWW = (c_gWW.re*c_gWW.re+c_gWW.im*c_gWW.im)/
+          (c_gWW_SM.re*c_gWW_SM.re+c_gWW_SM.im*c_gWW_SM.im);
+
+        double g2hjZZ = (c_gZZ.re*c_gZZ.re+c_gZZ.im*c_gZZ.im)/
+          (c_gZZ_SM.re*c_gZZ_SM.re+c_gZZ_SM.im*c_gZZ_SM.im);
+
+        result.CS_lep_hjZ_ratio[i] = g2hjZZ;
+
+        result.CS_gg_hjZ_ratio[i] = 0.;
+        result.CS_dd_hjZ_ratio[i] = g2hjZZ;
+        result.CS_uu_hjZ_ratio[i] = g2hjZZ;
+        result.CS_ss_hjZ_ratio[i] = g2hjZZ;
+        result.CS_cc_hjZ_ratio[i] = g2hjZZ;
+        result.CS_bb_hjZ_ratio[i] = g2hjZZ;
+
+        result.CS_ud_hjWp_ratio[i] = g2hjWW;
+        result.CS_cs_hjWp_ratio[i] = g2hjWW;
+        result.CS_ud_hjWm_ratio[i] = g2hjWW;
+        result.CS_cs_hjWm_ratio[i] = g2hjWW;
+
+        result.CS_tev_vbf_ratio[i]   = g2hjWW;
+        result.CS_lhc7_vbf_ratio[i]  = g2hjWW;
+        result.CS_lhc8_tthj_ratio[i] = g2hjWW;
+      }
+
+      // higgs to higgs + V xsection ratios
+      // retrive SMInputs dependency
+      const SMInputs& sminputs = *Dep::SMINPUTS;
+
+      double norm = sminputs.GF*sqrt(2.)*sminputs.mZ*sminputs.mZ;
+      for(int i = 0; i < 3; i++)
+      for(int j = 0; j < 3; j++)
+      {
+        fh_complex c_gHV = FH_input.couplings[H0HV(i,j)];
+        double g2HV = c_gHV.re*c_gHV.re+c_gHV.im*c_gHV.im;
+        result.CS_lep_hjhi_ratio[i][j] = g2HV/norm;
+      }
+
+      // gluon fusion x-section ratio
+      for(int i = 0; i < 3; i++)
+      {
+        if(FH_input.gammas_sm[H0VV(i,5)] <= 0.)
+          result.CS_gg_hj_ratio[i] = 0.;
+        else
+          result.CS_gg_hj_ratio[i] = FH_input.gammas[H0VV(i,5)]/
+            FH_input.gammas_sm[H0VV(i,5)];
+      }
+
+      // unpack FeynHiggs x-sections
+      fh_HiggsProd FH_prod = *Dep::FH_HiggsProd;
+
+      // h t tbar xsection ratios
+      for(int i = 0; i < 3; i++)
+      {
+        result.CS_tev_tthj_ratio[i] = 0.;
+        result.CS_lhc7_tthj_ratio[i] = 0.;
+        result.CS_lhc8_tthj_ratio[i] = 0.;
+        if(FH_prod.prodxs_Tev[i+30] > 0.)
+          result.CS_tev_tthj_ratio[i]  = FH_prod.prodxs_Tev[i+27]/FH_prod.prodxs_Tev[i+30];
+        if(FH_prod.prodxs_Tev[i+30] > 0.)
+          result.CS_lhc7_tthj_ratio[i] = FH_prod.prodxs_LHC7[i+27]/FH_prod.prodxs_LHC7[i+30];
+        if(FH_prod.prodxs_Tev[i+30] > 0.)
+          result.CS_lhc8_tthj_ratio[i] = FH_prod.prodxs_LHC8[i+27]/FH_prod.prodxs_LHC8[i+30];
+      }
+      // LEP H+ H- x-section ratio
+      result.CS_lep_HpjHmi_ratio = 1.;
+    }
+
+    /// Get a LEP chisq from HiggsBounds
+    void HB_LEPchisq(double &result)
+    {
+      using namespace Pipes::HB_LEPchisq;
+
+      hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
+
+      Farray<double, 1,3, 1,3> CS_lep_hjhi_ratio;
+      Farray<double, 1,3, 1,3> BR_hjhihi;
+      for(int i = 0; i < 3; i++) for(int j = 0; j < 3; j++)
+      {
+        CS_lep_hjhi_ratio(i+1,j+1) = ModelParam.CS_lep_hjhi_ratio[i][j];
+        BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
+      }
+
+      BEreq::HiggsBounds_neutral_input_part(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0],
+              &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0],
+              &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio,
+              &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
+              &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
+              &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
+              &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
+              &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
+              &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
+              &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
+              &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
+              &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
+              &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
+              &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0],
+              &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
+              &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0],
+              &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
+              &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
+
+      BEreq::HiggsBounds_charged_input(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
+               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
+               &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+
+      BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus);
+
+      // run Higgs bounds 'classic'
+      double HBresult, obsratio;
+      int chan, ncombined;
+      BEreq::run_HiggsBounds_classic(HBresult,chan,obsratio,ncombined);
+
+      // extract the LEP chisq
+      double chisq_withouttheory,chisq_withtheory;
+      int chan2;
+      double theor_unc = 1.5; // theory uncertainty
+      BEreq::HB_calc_stats(theor_unc,chisq_withouttheory,chisq_withtheory,chan2);
+
+      result = chisq_withouttheory;
+      std::cout << "Calculating LEP chisq: " << chisq_withouttheory << " (no theor), " << chisq_withtheory << " (with theor)" << endl;
+
+    }
+
+    /// Get an LHC chisq from HiggsSignals
+    void HS_LHCchisq(double &result)
+    {
+      using namespace Pipes::HS_LHCchisq;
+
+      hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
+
+      Farray<double, 1,3, 1,3> CS_lep_hjhi_ratio;
+      Farray<double, 1,3, 1,3> BR_hjhihi;
+      for(int i = 0; i < 3; i++) for(int j = 0; j < 3; j++)
+      {
+        CS_lep_hjhi_ratio(i+1,j+1) = ModelParam.CS_lep_hjhi_ratio[i][j];
+        BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
+      }
+
+      BEreq::HiggsBounds_neutral_input_part_HS(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0],
+                 &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0],
+                 &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio,
+                 &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
+                 &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
+                 &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
+                 &ModelParam.CS_cs_hjWm_ratio[0], &ModelParam.CS_gg_hjZ_ratio[0],
+                 &ModelParam.CS_dd_hjZ_ratio[0], &ModelParam.CS_uu_hjZ_ratio[0],
+                 &ModelParam.CS_ss_hjZ_ratio[0], &ModelParam.CS_cc_hjZ_ratio[0],
+                 &ModelParam.CS_bb_hjZ_ratio[0], &ModelParam.CS_tev_vbf_ratio[0],
+                 &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
+                 &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
+                 &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
+                 &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0],
+                 &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
+                 &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0],
+                 &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
+                 &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
+
+      BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
+            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
+            &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
+
+      BEreq::HiggsSignals_neutral_input_MassUncertainty(&ModelParam.deltaMh[0]);
+
+      // add uncertainties to cross-sections and branching ratios
+      // double dCS[5];
+      // double dBR[5];
+      // BEreq::setup_rate_uncertainties(dCS,dBR);
+
+      // run HiggsSignals
+      int mode = 1;
+      double csqmu, csqmh, csqtot, Pvalue;
+      int nobs;
+      BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
+
+
+      result = csqtot;
+      std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";
+      std::cout << csqtot << " (both), Nobs: " << nobs << ", Pvalue: " << Pvalue << endl;
 
     }
 

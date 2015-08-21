@@ -54,11 +54,13 @@ namespace Gambit
                                 std::string full_string;
                                 std::string path;
                                 const printer_interface *printer;
+                                YAML::Node flags;
                                 YAML::Node node;
                                 
                                 Plugin_Interface_Details(){}
                                 Plugin_Interface_Details(const Plugin_Details &details, printer_interface *printer, const YAML::Node &node) 
-                                        : full_string(details.full_string), path(details.path), printer(printer), node(node) {}
+                                        : full_string(details.full_string), path(details.path), printer(printer), flags(details.flags), node(node) 
+                                        {}
                         };
                 
                         ///container class for the actual plugins detected my ScannerBit
@@ -72,10 +74,11 @@ namespace Gambit
                                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> excluded_plugin_map;
                                 std::vector<Plugin_Details> total_plugins;
                                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> total_plugin_map;
+                                YAML::Node flags_node;
                                 
                         public:
                                 Plugin_Loader();
-                                void process(const std::string &, const std::string &);
+                                void process(const std::string &, const std::string &, const std::string &);
                                 const std::vector<Plugin_Details> &getPluginsVec() const {return total_plugins;}
                                 const std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> &getPluginsMap() const {return total_plugin_map;}
                                 void loadExcluded(const std::string &);

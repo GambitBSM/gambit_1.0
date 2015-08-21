@@ -21,7 +21,7 @@
 #include <sstream>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/Spectrum.hpp"
+#include "gambit/Elements/spectrum.hpp"
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
@@ -118,10 +118,10 @@ namespace Gambit
          sminputs.mT       = *myPipe::Param["mT"      ];
 
          // CKM
-         sminputs.CKM.lambda   = *myPipe::Param["lambda" ];
-         sminputs.CKM.A        = *myPipe::Param["A" ];
-         sminputs.CKM.rhobar   = *myPipe::Param["rhobar" ];
-         sminputs.CKM.etabar   = *myPipe::Param["etabar" ];
+         sminputs.CKM.lambda   = *myPipe::Param["CKM_lambda" ];
+         sminputs.CKM.A        = *myPipe::Param["CKM_A" ];
+         sminputs.CKM.rhobar   = *myPipe::Param["CKM_rhobar" ];
+         sminputs.CKM.etabar   = *myPipe::Param["CKM_etabar" ];
                
          // PMNS 
          sminputs.PMNS.theta12 = *myPipe::Param["theta12"];
@@ -168,6 +168,9 @@ namespace Gambit
  
       // Create a Spectrum object to wrap the qedqcd object
       static QedQcdWrapper qedqcdspec(oneset,sminputs);
+      // TODO: This probably doesn't work, and only gets us one copy of the object once.
+      // Unfortunately we cannot copy SubSpectrum objects, so this is a little tricky to
+      // solve...
 
       result = &qedqcdspec;
     }
@@ -191,7 +194,7 @@ namespace Gambit
       // Create a SubSpectrum object to wrap the qedqcd object
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
-      static QedQcdWrapper qedqcdspec(oneset,sminputs);
+      QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Initialise an object to carry Higgs sector information
       SMHiggsModel higgsmodel;
@@ -199,11 +202,13 @@ namespace Gambit
       higgsmodel.HiggsVEV      = *myPipe::Param.at("vev");
 
       // Create a SubSpectrum object to wrap the EW sector information
-      static SMHiggsContainer higgsspec(higgsmodel);
+      SMHiggsContainer higgsspec(higgsmodel);
 
       // Create full Spectrum object from components above
-      static Spectrum full_spectrum(&qedqcdspec,&higgsspec,sminputs);
- 
+      // (SubSpectrum objects will be "cloned" into the Spectrum object)
+      static Spectrum full_spectrum;
+      full_spectrum = Spectrum(qedqcdspec,higgsspec,sminputs);
+
       result = &full_spectrum;
     }
 

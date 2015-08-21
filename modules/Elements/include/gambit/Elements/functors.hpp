@@ -112,8 +112,6 @@ namespace Gambit
       void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
       void setVertexID(int);
-      /// Setter for label (used in printer system)
-      void setLabel(str);  
  
       /// Getter for the wrapped function's name
       str name() const;
@@ -261,8 +259,8 @@ namespace Gambit
       /// Bound model functor claw, for checking relationships between models
       const Models::ModelFunctorClaw* myClaw;
 
-      /// String label, used to label functor results in printer system
-      str myLabel;
+      /// String label, used to label functor results for printer system
+      const str myLabel;
       /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
@@ -500,6 +498,9 @@ namespace Gambit
 
       /// Needs recalculating or not?
       bool* needs_recalculating;
+
+      /// Has result already been sent to the printer?
+      bool* already_printed;
 
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;

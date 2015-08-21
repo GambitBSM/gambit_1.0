@@ -17,7 +17,7 @@
 #ifndef __MSSMskeleton_hpp__
 #define __MSSMskeleton_hpp__
 
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/SpecBit/SLHAskeleton.hpp"
 
 namespace Gambit {
@@ -92,13 +92,14 @@ namespace Gambit {
       };
 
       /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class MSSMskeleton : public SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea>> 
+      class MSSMskeleton : public SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> > 
       {
-         friend class RunparDer<MSSMskeleton,SLHAskeletonTraits<MSSMea>>;
-         friend class PhysDer  <MSSMskeleton,SLHAskeletonTraits<MSSMea>>;
+         friend class RunparDer<MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
+         friend class PhysDer  <MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
 
          private:
-            typedef MapTypes<SLHAskeletonTraits<MSSMea>> MT; 
+            typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MTget; 
+
             typedef MSSMea Model; 
 
          public:
@@ -114,16 +115,21 @@ namespace Gambit {
  
          protected:
             /// Map fillers
-            static typename MT::fmap  fill_mass2_map(); 
-            static typename MT::fmap2 fill_mass2_map2(); 
-            static typename MT::fmap  fill_mass_map(); 
-            static typename MT::fmap2 fill_mass_map2(); 
-            static typename MT::fmap  fill_mass0_map(); 
-            static typename MT::fmap2 fill_mass0_map2(); 
-            static typename MT::fmap  fill_PoleMass_map();
-            static typename MT::fmap1 fill_PoleMass_map1();
-            static typename MT::fmap2 fill_PoleMixing_map2();
-      };
+            /// Used to initialise maps in the RunparDer and PhysDer classes
+            /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
+            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
+            //typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
+            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
+            //typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
+
+            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
+            static RunningGetterMaps runningpars_fill_getter_maps();
+            //static RunningSetterMaps runningpars_fill_setter_maps();
+ 
+            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            static PhysGetterMaps    phys_fill_getter_maps();
+            //static PhysSetterMaps    phys_fill_setter_maps();
+       };
 
    } // end SpecBit namespace
 } // end Gambit namespace

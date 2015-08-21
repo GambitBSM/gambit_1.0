@@ -63,7 +63,7 @@
 #define MODULE FlavBit
 START_MODULE
  
-  /// Initialization capabilities (initialisation is done in BackendIniBit now, with functions declared in frontend headers)
+  /// Initialization capability
   #define CAPABILITY FlavBit_fill               // Fill the structure
   
   START_CAPABILITY
@@ -367,6 +367,17 @@ START_MODULE
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY FH_FlavorObs           // FeynHiggs flavor observables
+  START_CAPABILITY
+    #define FUNCTION FH_FlavorObs
+    START_FUNCTION(fh_FlavorObs)
+    DEPENDENCY(FH_HiggsMasses, fh_HiggsMassObs)
+      BACKEND_REQ(FHFlavour, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))
+      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+  #undef CAPABILITY 
 
 #undef MODULE
 

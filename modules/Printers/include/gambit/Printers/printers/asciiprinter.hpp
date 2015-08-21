@@ -34,6 +34,9 @@
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
+// MPI bindings
+#include "gambit/Utils/mpiwrapper.hpp"
+
 // Code!
 namespace Gambit
 {
@@ -80,8 +83,8 @@ namespace Gambit
         /// Constructor (for construction via inifile options)
         asciiPrinter(const Options&);
 
-        /// Auxilliary mode constructor (for construction in scanner plugins)
-        asciiPrinter(const Options&, std::string&, bool global=0);
+        // /// Auxilliary mode constructor (for construction in scanner plugins)
+        // asciiPrinter(const Options&, std::string&, bool global=0);
 
         /// Tasks common to the various constructors
         void common_constructor();
@@ -96,9 +99,9 @@ namespace Gambit
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         void initialise(const std::vector<int>&);
-        void flush();
-        void reset();
+        void reset(bool force=false);
         int getRank();
+        void finalise();
 
         ///@}
       
@@ -124,23 +127,23 @@ namespace Gambit
         // for all types that have a << operator already defined.
 
         // Scanner-friendly types to print
-        void print(int const&,                 const std::string& label, const int IDcode, const int rank, const int pointID);
-        void print(double const&,              const std::string& label, const int IDcode, const int rank, const int pointID);
-        void print(std::vector<double> const&, const std::string& label, const int IDcode, const int rank, const int pointID);
-        void print(ModelParameters const&,     const std::string& label, const int IDcode, const int rank, const int pointID);
+        void print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
 
         // Scanner-unfriendly print functions
         #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
         // unsigned int is chosen somewhat arbitrarily just to demonstrate this requirement. Will be more important if other
         // fancier types need to be disabled.
-        void print(unsigned int const&,        const std::string& label, const int IDcode, const int rank, const int pointID);         
+        void print(unsigned int const&,        const std::string& label, const int IDcode, const uint rank, const ulong pointID); 
         #endif      
 
         /// Helper print functions
         // Used to reduce repetition in definitions of virtual function overloads 
         // (useful since there is no automatic type conversion possible)
         template<class T>
-        void template_print(T const&, const std::string&, const int, const int, const int);
+        void template_print(T const&, const std::string&, const int, const uint, const ulong);
 
       private:
         /// Output file
@@ -157,11 +160,17 @@ namespace Gambit
         /// Number of lines to store in buffer before printing
         unsigned int bufferlength;
 
-        /// MPI rank (currently not hooked up to MPI, just hardcoded to 0)
-        int myRank;
-
+        /// MPI rank
+        uint myRank;  // Needed even without MPI available, for some default behaviour.
+        #ifdef WITH_MPI
+        // Gambit MPI communicator context for use within the printer system
+        GMPI::Comm myComm;
+ 
+        uint mpiSize;
+        #endif
+ 
         /// Number of digits of precision to use in output columns
-        int precision;
+        int precision = 10;
  
         /// Full buffer of output to be printed
         // Key is <int rank, int pointID>; value is a Record (for a single model point)
@@ -179,7 +188,7 @@ namespace Gambit
 
         /// Record a set of labels for each printer item: used to write "info" file explain what is in each column
         std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
-        bool info_file_written; // Flag to let us know that the info file has been written
+        bool info_file_written = false; // Flag to let us know that the info file has been written
 
         /// Flag to trigger "global" print mode. 
         // In this mode, the output file will be *overwritten* when reset() is 

@@ -18,7 +18,7 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Sept
-///  \date 2015 Jan,Feb
+///  \date 2015 Jan,Feb,June
 ///
 ///  *********************************************
 
@@ -78,6 +78,8 @@ BE_FUNCTION(DDCalc0_Init, void, (), "C_DDCALC0_ddcalc0_init", "DDCalc0_Initializ
 // limits (not necessary for likelihoods).
 BE_FUNCTION(DDCalc0_XENON100_2012_Init,  void, (bool*), "C_DDCALC0_xenon100_2012_init",  "XENON100_2012_Initialize")
 BE_FUNCTION(DDCalc0_LUX_2013_Init,       void, (bool*), "C_DDCALC0_lux_2013_init",       "LUX_2013_Initialize")
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_Init, void, (bool*), "C_DDCALC0_supercdms_2014_init", "SuperCDMS_2014_Initialize")
+BE_FUNCTION(DDCalc0_SIMPLE_2014_Init,    void, (bool*), "C_DDCALC0_simple_2014_init",    "SIMPLE_2014_Initialize")
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Init, void, (bool*), "C_DDCALC0_darwin_ar_2015_init", "DARWIN_Ar_2015_Initialize")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Init, void, (bool*), "C_DDCALC0_darwin_xe_2015_init", "DARWIN_Xe_2015_Initialize")
 
@@ -87,10 +89,12 @@ BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Init, void, (bool*), "C_DDCALC0_darwin_xe_201
 // setting this to 0 keV (the default behavior when initialization is
 // performed) does not imply that very low energy recoils actually
 // contribute to the signal.
-BE_FUNCTION(DDCalc0_XENON100_2012_SetEmin,  void, (bool*), "C_DDCALC0_xenon100_2012_setemin",  "XENON100_2012_SetEmin")
-BE_FUNCTION(DDCalc0_LUX_2013_SetEmin,       void, (bool*), "C_DDCALC0_lux_2013_setemin",       "LUX_2013_SetEmin")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SetEmin, void, (bool*), "C_DDCALC0_darwin_ar_2015_setemin", "DARWIN_Ar_2015_SetEmin")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SetEmin, void, (bool*), "C_DDCALC0_darwin_xe_2015_setemin", "DARWIN_Xe_2015_SetEmin")
+BE_FUNCTION(DDCalc0_XENON100_2012_SetEmin,  void, (double*), "C_DDCALC0_xenon100_2012_setemin",  "XENON100_2012_SetEmin")
+BE_FUNCTION(DDCalc0_LUX_2013_SetEmin,       void, (double*), "C_DDCALC0_lux_2013_setemin",       "LUX_2013_SetEmin")
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_SetEmin, void, (double*), "C_DDCALC0_supercdms_2014_setemin", "SuperCDMS_2014_SetEmin")
+BE_FUNCTION(DDCalc0_SIMPLE_2014_SetEmin,    void, (double*), "C_DDCALC0_simple_2014_setemin",    "SIMPLE_2014_SetEmin")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SetEmin, void, (double*), "C_DDCALC0_darwin_ar_2015_setemin", "DARWIN_Ar_2015_SetEmin")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SetEmin, void, (double*), "C_DDCALC0_darwin_xe_2015_setemin", "DARWIN_Xe_2015_SetEmin")
 
 // Set halo parameters (Standard Halo Model):
 //   rho [GeV/cm^3], vrot [km/s], v0 [km/s], vesc [km/s]
@@ -132,6 +136,8 @@ BE_FUNCTION(DDCalc0_GetWIMP_msigma, void, (double*,double*,double*,double*,doubl
 // likelihood routines below.
 BE_FUNCTION(DDCalc0_XENON100_2012_CalcRates,  void, (), "C_DDCALC0_xenon100_2012_calcrates",  "DDCalc0_XENON100_2012_CalcRates")
 BE_FUNCTION(DDCalc0_LUX_2013_CalcRates,       void, (), "C_DDCALC0_lux_2013_calcrates",       "DDCalc0_LUX_2013_CalcRates")
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_CalcRates, void, (), "C_DDCALC0_supercdms_2014_calcrates", "DDCalc0_SuperCDMS_2014_CalcRates")
+BE_FUNCTION(DDCalc0_SIMPLE_2014_CalcRates,    void, (), "C_DDCALC0_simple_2014_calcrates",    "DDCalc0_SIMPLE_2014_CalcRates")
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_CalcRates, void, (), "C_DDCALC0_darwin_ar_2015_calcrates", "DDCalc0_DARWIN_Ar_2015_CalcRates")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_CalcRates, void, (), "C_DDCALC0_darwin_xe_2015_calcrates", "DDCalc0_DARWIN_Xe_2015_CalcRates")
 
@@ -142,33 +148,47 @@ BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_CalcRates, void, (), "C_DDCALC0_darwin_xe_201
 //   SignalSI:   average signal expectation (spin-independent only)
 //   SignalSD:   average signal expectation (spin-dependent only)
 // XENON100 2012
-BE_FUNCTION(DDCalc0_XENON100_2012_Events,     int,    (), "C_DDCALC0_xenon100_2012_events",     "XENON100_2012_Events")
-BE_FUNCTION(DDCalc0_XENON100_2012_Background, double, (), "C_DDCALC0_xenon100_2012_background", "XENON100_2012_Background")
-BE_FUNCTION(DDCalc0_XENON100_2012_Signal,     double, (), "C_DDCALC0_xenon100_2012_signal",     "XENON100_2012_Signal")
-BE_FUNCTION(DDCalc0_XENON100_2012_SignalSI,   double, (), "C_DDCALC0_xenon100_2012_signalsi",   "XENON100_2012_SignalSI")
-BE_FUNCTION(DDCalc0_XENON100_2012_SignalSD,   double, (), "C_DDCALC0_xenon100_2012_signalsd",   "XENON100_2012_SignalSD")
+BE_FUNCTION(DDCalc0_XENON100_2012_Events,     int,    (), "C_DDCALC0_xenon100_2012_events",     "DDCalc0_XENON100_2012_Events")
+BE_FUNCTION(DDCalc0_XENON100_2012_Background, double, (), "C_DDCALC0_xenon100_2012_background", "DDCalc0_XENON100_2012_Background")
+BE_FUNCTION(DDCalc0_XENON100_2012_Signal,     double, (), "C_DDCALC0_xenon100_2012_signal",     "DDCalc0_XENON100_2012_Signal")
+BE_FUNCTION(DDCalc0_XENON100_2012_SignalSI,   double, (), "C_DDCALC0_xenon100_2012_signalsi",   "DDCalc0_XENON100_2012_SignalSI")
+BE_FUNCTION(DDCalc0_XENON100_2012_SignalSD,   double, (), "C_DDCALC0_xenon100_2012_signalsd",   "DDCalc0_XENON100_2012_SignalSD")
 // LUX 2013
-BE_FUNCTION(DDCalc0_LUX_2013_Events,     int,    (), "C_DDCALC0_lux_2013_events",     "LUX_2013_Events")
-BE_FUNCTION(DDCalc0_LUX_2013_Background, double, (), "C_DDCALC0_lux_2013_background", "LUX_2013_Background")
-BE_FUNCTION(DDCalc0_LUX_2013_Signal,     double, (), "C_DDCALC0_lux_2013_signal",     "LUX_2013_Signal")
-BE_FUNCTION(DDCalc0_LUX_2013_SignalSI,   double, (), "C_DDCALC0_lux_2013_signalsi",   "LUX_2013_SignalSI")
-BE_FUNCTION(DDCalc0_LUX_2013_SignalSD,   double, (), "C_DDCALC0_lux_2013_signalsd",   "LUX_2013_SignalSD")
+BE_FUNCTION(DDCalc0_LUX_2013_Events,     int,    (), "C_DDCALC0_lux_2013_events",     "DDCalc0_LUX_2013_Events")
+BE_FUNCTION(DDCalc0_LUX_2013_Background, double, (), "C_DDCALC0_lux_2013_background", "DDCalc0_LUX_2013_Background")
+BE_FUNCTION(DDCalc0_LUX_2013_Signal,     double, (), "C_DDCALC0_lux_2013_signal",     "DDCalc0_LUX_2013_Signal")
+BE_FUNCTION(DDCalc0_LUX_2013_SignalSI,   double, (), "C_DDCALC0_lux_2013_signalsi",   "DDCalc0_LUX_2013_SignalSI")
+BE_FUNCTION(DDCalc0_LUX_2013_SignalSD,   double, (), "C_DDCALC0_lux_2013_signalsd",   "DDCalc0_LUX_2013_SignalSD")
+// SuperCDMS 2014
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_Events,     int,    (), "C_DDCALC0_supercdms_2014_events",     "DDCalc0_SuperCDMS_2014_Events")
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_Background, double, (), "C_DDCALC0_supercdms_2014_background", "DDCalc0_SuperCDMS_2014_Background")
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_Signal,     double, (), "C_DDCALC0_supercdms_2014_signal",     "DDCalc0_SuperCDMS_2014_Signal")
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_SignalSI,   double, (), "C_DDCALC0_supercdms_2014_signalsi",   "DDCalc0_SuperCDMS_2014_SignalSI")
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_SignalSD,   double, (), "C_DDCALC0_supercdms_2014_signalsd",   "DDCalc0_SuperCDMS_2014_SignalSD")
+// SIMPLE 2014
+BE_FUNCTION(DDCalc0_SIMPLE_2014_Events,     int,    (), "C_DDCALC0_simple_2014_events",     "DDCalc0_SIMPLE_2014_Events")
+BE_FUNCTION(DDCalc0_SIMPLE_2014_Background, double, (), "C_DDCALC0_simple_2014_background", "DDCalc0_SIMPLE_2014_Background")
+BE_FUNCTION(DDCalc0_SIMPLE_2014_Signal,     double, (), "C_DDCALC0_simple_2014_signal",     "DDCalc0_SIMPLE_2014_Signal")
+BE_FUNCTION(DDCalc0_SIMPLE_2014_SignalSI,   double, (), "C_DDCALC0_simple_2014_signalsi",   "DDCalc0_SIMPLE_2014_SignalSI")
+BE_FUNCTION(DDCalc0_SIMPLE_2014_SignalSD,   double, (), "C_DDCALC0_simple_2014_signalsd",   "DDCalc0_SIMPLE_2014_SignalSD")
 // DARWIN 2015 proposal (argon-based)
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Events,     int,    (), "C_DDCALC0_darwin_ar_2015_events",     "DARWIN_Ar_2015_Events")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Background, double, (), "C_DDCALC0_darwin_ar_2015_background", "DARWIN_Ar_2015_Background")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Signal,     double, (), "C_DDCALC0_darwin_ar_2015_signal",     "DARWIN_Ar_2015_Signal")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SignalSI,   double, (), "C_DDCALC0_darwin_ar_2015_signalsi",   "DARWIN_Ar_2015_SignalSI")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SignalSD,   double, (), "C_DDCALC0_darwin_ar_2015_signalsd",   "DARWIN_Ar_2015_SignalSD")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Events,     int,    (), "C_DDCALC0_darwin_ar_2015_events",     "DDCalc0_DARWIN_Ar_2015_Events")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Background, double, (), "C_DDCALC0_darwin_ar_2015_background", "DDCalc0_DARWIN_Ar_2015_Background")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Signal,     double, (), "C_DDCALC0_darwin_ar_2015_signal",     "DDCalc0_DARWIN_Ar_2015_Signal")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SignalSI,   double, (), "C_DDCALC0_darwin_ar_2015_signalsi",   "DDCalc0_DARWIN_Ar_2015_SignalSI")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SignalSD,   double, (), "C_DDCALC0_darwin_ar_2015_signalsd",   "DDCalc0_DARWIN_Ar_2015_SignalSD")
 // DARWIN 2015 proposal (xenon-based)
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Events,     int,    (), "C_DDCALC0_darwin_xe_2015_events",     "DARWIN_Xe_2015_Events")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Background, double, (), "C_DDCALC0_darwin_xe_2015_background", "DARWIN_Xe_2015_Background")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Signal,     double, (), "C_DDCALC0_darwin_xe_2015_signal",     "DARWIN_Xe_2015_Signal")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SignalSI,   double, (), "C_DDCALC0_darwin_xe_2015_signalsi",   "DARWIN_Xe_2015_SignalSI")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SignalSD,   double, (), "C_DDCALC0_darwin_xe_2015_signalsd",   "DARWIN_Xe_2015_SignalSD")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Events,     int,    (), "C_DDCALC0_darwin_xe_2015_events",     "DDCalc0_DARWIN_Xe_2015_Events")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Background, double, (), "C_DDCALC0_darwin_xe_2015_background", "DDCalc0_DARWIN_Xe_2015_Background")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Signal,     double, (), "C_DDCALC0_darwin_xe_2015_signal",     "DDCalc0_DARWIN_Xe_2015_Signal")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SignalSI,   double, (), "C_DDCALC0_darwin_xe_2015_signalsi",   "DDCalc0_DARWIN_Xe_2015_SignalSI")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SignalSD,   double, (), "C_DDCALC0_darwin_xe_2015_signalsd",   "DDCalc0_DARWIN_Xe_2015_SignalSD")
 
 // Likelihoods
 BE_FUNCTION(DDCalc0_XENON100_2012_LogLikelihood,  double, (), "C_DDCALC0_xenon100_2012_loglikelihood",  "DDCalc0_XENON100_2012_LogLikelihood")
 BE_FUNCTION(DDCalc0_LUX_2013_LogLikelihood,       double, (), "C_DDCALC0_lux_2013_loglikelihood",       "DDCalc0_LUX_2013_LogLikelihood")
+BE_FUNCTION(DDCalc0_SuperCDMS_2014_LogLikelihood, double, (), "C_DDCALC0_supercdms_2014_loglikelihood", "DDCalc0_SuperCDMS_2014_LogLikelihood")
+BE_FUNCTION(DDCalc0_SIMPLE_2014_LogLikelihood,    double, (), "C_DDCALC0_simple_2014_loglikelihood",    "DDCalc0_SIMPLE_2014_LogLikelihood")
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_LogLikelihood, double, (), "C_DDCALC0_darwin_ar_2015_loglikelihood", "DDCalc0_DARWIN_Ar_2015_LogLikelihood")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_LogLikelihood, double, (), "C_DDCALC0_darwin_xe_2015_loglikelihood", "DDCalc0_DARWIN_Xe_2015_LogLikelihood")
 
@@ -197,6 +217,14 @@ BE_INI_FUNCTION
     if (*InUse::DDCalc0_LUX_2013_CalcRates) {
       std::cout << "  * LUX 2013 result" << std::endl;
       DDCalc0_LUX_2013_Init(&flag);
+    }
+    if (*InUse::DDCalc0_SuperCDMS_2014_CalcRates) {
+      std::cout << "  * SuperCDMS 2014 result" << std::endl;
+      DDCalc0_SuperCDMS_2014_Init(&flag);
+    }
+    if (*InUse::DDCalc0_SIMPLE_2014_CalcRates) {
+      std::cout << "  * SIMPLE 2014 result" << std::endl;
+      DDCalc0_SIMPLE_2014_Init(&flag);
     }
     if (*InUse::DDCalc0_DARWIN_Ar_2015_CalcRates) {
       std::cout << "  * Argon-based DARWIN proposal (2015 estimate)" << std::endl;

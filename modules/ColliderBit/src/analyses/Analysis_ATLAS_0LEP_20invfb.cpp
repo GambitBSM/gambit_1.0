@@ -3,7 +3,7 @@
 #include <memory>
 #include <iomanip>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 
 using namespace std;
@@ -15,7 +15,7 @@ using namespace std;
 namespace Gambit {
   namespace ColliderBit {
 
-    class Analysis_ATLAS_0LEP_20invfb : public Analysis {
+    class Analysis_ATLAS_0LEP_20invfb : public HEPUtilsAnalysis {
     private:
 
       // Numbers passing cuts
@@ -47,39 +47,39 @@ namespace Gambit {
       }
 
 
-      void analyze(const Event* event) {
-        Analysis::analyze(event);
+      void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
-        P4 ptot = event->missingmom();
+        HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
         // Now define vectors of baseline objects
-        vector<Particle*> baselineElectrons;
-        for (Particle* electron : event->electrons()) {
+        vector<HEPUtils::Particle*> baselineElectrons;
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
         }
-        vector<Particle*> baselineMuons;
-        for (Particle* muon : event->muons()) {
+        vector<HEPUtils::Particle*> baselineMuons;
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
-        vector<Jet*> baselineJets;
-        for (Jet* jet : event->jets()) {
+        vector<HEPUtils::Jet*> baselineJets;
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
         }
 
         // Overlap removal: only applied to jets with |eta|<2.8
-        vector<Particle*> signalElectrons;
-        vector<Particle*> signalMuons;
-        vector<Jet*> signalJets;
+        vector<HEPUtils::Particle*> signalElectrons;
+        vector<HEPUtils::Particle*> signalMuons;
+        vector<HEPUtils::Jet*> signalJets;
 
         // Remove any jet within dR=0.2 of an electrons
         for (size_t iJet=0;iJet<baselineJets.size();iJet++) {
           bool overlap=false;
-          P4 jetVec=baselineJets.at(iJet)->mom();
+          HEPUtils::P4 jetVec=baselineJets.at(iJet)->mom();
           if(fabs(jetVec.eta())<2.8){
             for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
-              P4 elVec=baselineElectrons.at(iEl)->mom();
+              HEPUtils::P4 elVec=baselineElectrons.at(iEl)->mom();
               if (fabs(elVec.deltaR_eta(jetVec))<0.2)overlap=true;
             }
           }
@@ -89,9 +89,9 @@ namespace Gambit {
         // Remove electrons with dR=0.4 or surviving jets
         for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
           bool overlap=false;
-          P4 elVec=baselineElectrons.at(iEl)->mom();
+          HEPUtils::P4 elVec=baselineElectrons.at(iEl)->mom();
           for (size_t iJet=0;iJet<signalJets.size();iJet++) {
-            P4 jetVec=signalJets.at(iJet)->mom();
+            HEPUtils::P4 jetVec=signalJets.at(iJet)->mom();
             if (fabs(elVec.deltaR_eta(jetVec))<0.4 && fabs(jetVec.eta())<2.8)overlap=true;
           }
           if (!overlap)signalElectrons.push_back(baselineElectrons.at(iEl));
@@ -100,9 +100,9 @@ namespace Gambit {
         // Remove muons with dR=0.4 or surviving jets
         for (size_t iMu=0;iMu<baselineMuons.size();iMu++) {
           bool overlap=false;
-          P4 muVec=baselineMuons.at(iMu)->mom();
+          HEPUtils::P4 muVec=baselineMuons.at(iMu)->mom();
           for (size_t iJet=0;iJet<signalJets.size();iJet++) {
-            P4 jetVec=signalJets.at(iJet)->mom();
+            HEPUtils::P4 jetVec=signalJets.at(iJet)->mom();
             if (fabs(muVec.deltaR_eta(jetVec))<0.4 && fabs(jetVec.eta())<2.8)overlap=true;
           }
           if (!overlap)signalMuons.push_back(baselineMuons.at(iMu));
@@ -122,7 +122,7 @@ namespace Gambit {
         bool metCut = (met > 160.);
         double meff_incl = met;
         double HT=0;
-        for (const Jet* j : signalJets)
+        for (const HEPUtils::Jet* j : signalJets)
           if (j->pT() > 40) {
             meff_incl += j->pT();
             HT  += j->pT();
@@ -312,13 +312,32 @@ namespace Gambit {
       }
 
 
-      void add(const Analysis* a) {
-        const Analysis_ATLAS_0LEP_20invfb* aa = dynamic_cast<const Analysis_ATLAS_0LEP_20invfb*>(a);
-        add_xsec(aa->xsec(), aa->xsec_err());
-        /// @todo Need more?
-        // double tmp = _numAT;
-        //const double weight = (xsec() > 0) ? aa->xsec_per_event() / xsec_per_event() : 1;
-        // cout << tmp << " -> " << _numAT << endl;
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_0LEP_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_0LEP_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] += specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+        _num2jl += specificOther->_num2jl;
+        _num2jm += specificOther->_num2jm;
+        _num2jt += specificOther->_num2jt;
+        _num3j += specificOther->_num3j;
+        _num4jlm += specificOther->_num4jlm;
+        _num4jl += specificOther->_num4jl;
+        _num4jm += specificOther->_num4jm;
+        _num4jt += specificOther->_num4jt;
+        _num5j += specificOther->_num5j;
+        _num6jl += specificOther->_num6jl;
+        _num6jm += specificOther->_num6jm;
+        _num6jt += specificOther->_num6jt;
+        _num6jtp += specificOther->_num6jtp;
       }
 
 
@@ -343,14 +362,7 @@ namespace Gambit {
       }
 
 
-      double loglikelihood() {
-        return 0;
-      }
-
-
       void collect_results() {
-        finalize();
-
         // const double scale = xsec() * 20.3*1000 / num_events();
         const double scale = xsec() * 20.3*1000 / cutFlowVector[0];
 
@@ -465,7 +477,7 @@ namespace Gambit {
       ///////////////////
 
 
-      double SmallestdPhi(vector<Jet*> jets,double phi_met) {
+      double SmallestdPhi(vector<HEPUtils::Jet*> jets,double phi_met) {
         if (jets.size()<2) return 999;
         double dphi1 = acos(cos(jets.at(0)->phi()-phi_met));
         double dphi2 = acos(cos(jets.at(1)->phi()-phi_met));
@@ -476,7 +488,7 @@ namespace Gambit {
         return min(min1, dphi3);
       }
 
-      double SmallestRemainingdPhi(const vector<Jet *> jets,double phi_met) {
+      double SmallestRemainingdPhi(const vector<HEPUtils::Jet*> jets,double phi_met) {
         double remainingDPhi = 999;
         double dphiMin = 999;
         for (size_t i = 0; i < jets.size(); i++) {

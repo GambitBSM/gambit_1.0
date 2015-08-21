@@ -9,12 +9,13 @@
 ///  Authors:
 ///   
 ///  \author The GAMBIT Collaboration
-///  \date 2012 Oct --> ??
+///  \date 2012 Oct onwards
 ///
 ///  *********************************************
 
-#include "gambit/Core/gambit_main.hpp"
+#include "gambit/Core/gambit.hpp"
 
+// FIXME this shouldn't be needed after the call to GMPI::Init() below is shifted to scannerbit
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
@@ -26,18 +27,17 @@ int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
 
-  #ifdef WITH_MPI
-    /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
-    /// can fix up the command line arguments to match the non-mpi'd call. 
-    GMPI::Init(argc,argv);
-  #endif
-
   try
   {
     // Parse command line arguments, launching into the appropriate diagnostic mode
     // if the argument passed warrants it. Otherwise just get the filename.
     const str filename = Core().run_diagnostic(argc,argv);
 
+    // FIXME this is to be shifted to ScannerBit
+    #ifdef WITH_MPI
+      GMPI::Init();
+    #endif
+  
     cout << endl << "Starting GAMBIT" << endl;
     cout << "----------" << endl;
     if(Core().found_inifile) cout << "YAML file: "<< filename << endl;
@@ -105,6 +105,13 @@ int main(int argc, char* argv[])
 
       cout << "GAMBIT has finished successfully!" << endl;
 
+      // FIXME to be done in ScannerBit
+      #ifdef WITH_MPI
+        GMPI::Comm COMM_WORLD;
+        std::cout << "Shutting down MPI (process "<< COMM_WORLD.Get_rank() <<")..." << std::endl;
+        MPI_Finalize();
+      #endif
+
     }
   
   }
@@ -115,8 +122,14 @@ int main(int argc, char* argv[])
     {
       cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
       cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
-    }
-      
+      #ifdef WITH_MPI
+        if (GMPI::Is_initialized())
+        {
+          GMPI::Comm COMM_WORLD;
+          COMM_WORLD.Abort();
+        }
+      #endif     
+    } 
   }
 
   catch (str& e)
@@ -126,17 +139,19 @@ int main(int argc, char* argv[])
     cout << "thrown from a backend code.  Due to poor code design in " << e << endl;
     cout << "the backend, the exception has been thrown as a string. " << endl;
     cout << "If you are the author of the backend, please throw only " << endl;
-    cout << "exceptions that inheret from std::exception.  Error string: " << endl;
+    cout << "exceptions that inherit from std::exception.  Error string: " << endl;
     cout << e << endl;
+    #ifdef WITH_MPI
+      if (GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        COMM_WORLD.Abort();
+      }
+    #endif     
   }
 
   // Free the memory held by the RNG
   Random::delete_rng_engine();
-
-  #ifdef WITH_MPI
-    /// Shut down MPI
-    GMPI::Finalize();
-  #endif
 
   return 0;
 

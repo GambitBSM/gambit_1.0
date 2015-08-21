@@ -9,11 +9,46 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{amssymb, amsmath}
+\usepackage{listings}
+\usepackage{fullpage}
 %\pagestyle{fancy}
 
-\newcommand{\mail}[1]{\href{mailto:#1}{#1}}
+% source code highlighting
+\lstset{breaklines=true,
+    breakatwhitespace=true,
+    stepnumber=1,
+    basicstyle=\ttfamily\footnotesize,
+    commentstyle=\ttfamily\color{gray},
+    prebreak={\textbackslash},
+    breakindent=10pt,
+    breakautoindent=false,
+    showspaces=false,
+    showstringspaces=false,
+    frame=single,
+    abovecaptionskip=0em,
+    aboveskip=1.5em,
+    belowcaptionskip=0.5em,
+    belowskip=1em,
+}
+\lstnewenvironment{numlstlisting}[1][]{%
+    \lstset{%
+        #1,
+        numbers=left,
+        firstnumber=auto,
+        numberstyle=\tiny\sffamily}%
+    \csname\@lst @SetFirstNumber\endcsname
+}{%
+\csname \@lst @SaveFirstNumber\endcsname
+}
 
-\title{SpecBit: GAMBIT modules for linking and running spectrum genetaors, decay codes and EWPO calculators}
+\newcommand{\mail}[1]{\href{mailto:#1}{#1}}
+\newcommand{\Ben}[1]{{\bf\color{magenta}Ben #1}}
+\newcommand{\Csaba}[1]{{\bf\color{orange}Csaba #1}}
+\newcommand{\Chris}[1]{{\bf\color{yellow}Chris #1}}
+\newcommand{\Pat}[1]{{\bf\color{cyan}Pat #1}}
+\newcommand{\Peter}[1]{{\bf\color{green}Peter #1}}
+
+\title{SpecBit: GAMBIT modules for linking and running spectrum generators, decay codes and EWPO calculators}
 
 \author{The GAMBIT Collaboration: Alphabetical author list} % will presumably have a standard author list
 
@@ -22,28 +57,129 @@
 \maketitle
 
 \begin{abstract}
-We present a new code which can link all publically available spectrum generators, decay codes and electroweak precision observable calculators together without writing to any files internally [this may be too ambitious]. Describe novel features, FeynHiggs linking, easy to replace any code. Mention link to GAMBIT framework, but emphasise that the package presents a standalone solution to the problem of linking these codes together and maybe physics problem of matching too FeynHiggs.
+We present a new computer code which can link all publicly available spectrum generators, decay codes and electroweak precision observable calculators together 
+% without the need of an uniformly agreed 
+% without writing to any files internally 
+[this may be too ambitious].
+Describe novel features, FeynHiggs linking, easy to replace any code. Mention link to GAMBIT framework, but emphasise that the package presents a standalone solution to the problem of linking these codes together and maybe physics problem of matching too FeynHiggs.
 \end{abstract}
 
 \tableofcontents
 
 
-\section{Introduction}
+\section{Introduction \Csaba{} \Ben{} \Chris{} \Pat{} \Peter{}}
+
 motivation, literature review, summary of advances in this paper
+
 %% Wealth of recent LHC data provides strong constraints on new physics models. It remains difficult to apply LHC constraints to generic physics models in a rigorous fashion. Various attempts have been made to automate the process (SmodelS, CheckMATE, etc). No attempt has attacked the problem in a fully rigorous way, and neither have any existing attempts been integrated into a fully general framework for statistical fits of generic BSM theories. 
 
 %% We present a new, fully general solution based on parallelised Monte Carlo simulation, fast detector simulation and fast cross-section calculations for SUSY processes. Part of the Global and Module BSM Inference Tool, which will include, etc. 
 
 %% This paper is organised as follows. In Section ?? we..., etc. 
 
-\section{Physics background}
-MSSM Superpotential etc to lay out conventions
-\section{Overview of physics models supported}
+Describe interface to GAMBIT framework? 
+
+\section{Quick Start Guide \Peter{}}
+
+\subsection*{Requirements}
+
+\begin{itemize}
+\item C++11 compatible compiler (g++ 4.4.7 or higher, clang++ 3.1 or higher, icpc 12.1 or higher)
+\item \Csaba{CHECK:} Boost library, version 1.37.0 or higher
+\url{http://www.boost.org}
+\item \Csaba{CHECK:} GNU scientific library \url{http://www.gnu.org/software/gsl}
+\item requirements of specific backends: check manual for the given code
+\end{itemize}
+
+\subsection*{Downloading}
+
+\Csaba{confirm at GAMBIT meeting: links to stand-alone Bits}
+- link to https://gambit.hepforge.org/.../SpecBit.tar.gz 
+
+\subsection*{Compiling}
+
+\Csaba{discuss at GAMBIT meeting: how to make stand-alone Bits}
+To build SpecBit:
+\begin{lstlisting}[language=bash]
+$ mkdir modules/build
+$ cd modules/build/
+$ cmake ..
+$ make backends    # If backends not already installed
+$ make -jn         # Ordering of make commands is unimportant
+                   # n is the number of parallel makes
+\end{lstlisting}
+
+Optionally, to choose compilers, change the cmake step to, e.g. FC=gfortran CC=gcc CXX=g++ cmake ..
+
+\subsection*{Running}
+
+To run SpecBit:
+\begin{lstlisting}[language=bash]
+$ ./gambit -file SpecBit.yaml
+\end{lstlisting}
+
+
+\section{Physics background \Csaba{}}
+
+
+\subsection{general intro \Csaba{}}
+
+phenomenology: from Lagrangian to observables 
+
+MSSM superpotential etc to lay out parameters and conventions (a la SLHA 2)
+
+NMSSM superpotential etc.
+
+other models:
+
+- scalar singlet
+
+- E6SSM
+
+
+\subsection{SpecBit \Peter{} \Ben{}}
+
+RGEs: statement of purpose
+
+SUSY specific and non-SUSY examples:
+
+- vacuum stability, gauge coupling unification, Yukawa unification
+
+spectrum generators for SUSY and non-SUSY models
+ 
+ 
+\subsection{DecayBit \Csaba{} \Pat{} \Peter{} \Chris{}}
+
+purpose: 
+
+- quantum corrections to SM Higgs decays from new physics
+
+- decays of BSM particles (MSSM, Z', ...)
+
+role for LHC: connecting production of exotic particles to observable final states
+
+role for dark matter???: decaying DM
+
+
+\subsection{EWPOBit \Chris{} \Peter{} \Pat{}}
+
+purpose: quantum corrections to SM observables from new physics
+
+- $m_h$, $m_W$, $\sin(\theta_W)$, ...
+
+
+\section{Overview of physics models supported \Peter{} \Ben{} \Pat{}}
+
 MSSM will be most common, just list ones that are fully supported without user modification?
+
+\subsection{SpecBit}
+
+models already implemented: table with RGE codes references?
+
 \begin{itemize} 
 \item MSSM
   \begin{itemize}
-  \item CMSSM  
+  \item CMSSM 
   \item NUHM 
   \item MSSM-25
   \end{itemize} 
@@ -54,47 +190,130 @@ MSSM will be most common, just list ones that are fully supported without user m
   \item NMSSM-30
   \end{itemize}
 \item other models?
+  \begin{itemize}
+  \item scalar singlet
+  \item E6MSSM  
+  \end{itemize}
 \end{itemize}  
+
+interfaced spectrum generators (aspirational list)
+         
+generator specific BC options for SUSY models
+
+\subsection{DecayBit}
+
+same structure as SpecBit
+
+\subsection{EWPOBit}
+
+same struct as SpecBit
+
 
 \section{User Interface}
 
-\subsection{MSSM setup} 
-         default codes 
-         (may not want this but softsusy and FS at least 
-                         are special to Gambit at some level) 
+In this section we describe the standalone interface, how to configure and run the package, what the defaults are.
 
-         codes already implemented
+Describe the interface to the models that we include and how to change the input parameters of those models.
 
-         addding new codes: more advanced options if user adds own decay code
-                            or FeynHiggs alternative
- 
-\subsection{NMSSM setup}
+Describe parameters that can be varied in yaml file. [included above]
+
+general YAML blurb???
+
+\subsection{General settings}
+
+Explain how to run code in single core or multicore form (i.e using the standard OpenMP commands).
+- multi-threading is default option [check this!]
+
+\subsection{SpecBit}
+
+\subsubsection{Scalar singlet}
+
+explaining YAML instructions 
+
+- input parameter list and values (as in FlexibleSUSY manual)
+
+[along the line of the MSSM below]
+
+\subsubsection{MSSM}
+
+- explaining YAML instructions 
+
+- input parameter list and values (as in FlexibleSUSY manual)
+
+- default codes 
+(may not want this but softsusy and FS at least 
+are special to Gambit at some level) 
+
+\subsubsection{NMSSM}
+
     quick repeat of MSSM but with MSSM specifics
 
-\subsection{Other models}
-    SUSY
+\subsubsection{...}
 
-    Non-SUSY
+\subsection{DecayBit}
+
+interfacing to the decays
+
+\subsubsection{Scalar singlet \Peter{}}
+
+\subsubsection{MSSM \Csaba{}}
+
+describe decay table and give MSSM examples
+
+\subsubsection{NMSSM}
+\subsubsection{...}
+
+- DecayTable
+
+\subsection{EWPOBit}
+\subsubsection{Scalar singlet}
+\subsubsection{MSSM}
+\subsubsection{NMSSM}
+\subsubsection{...}
+ 
+
+\section{Implementing new models and/or backends}
+
+Explain how to interface with a new model.
+
+\subsection{SpecBit \Peter{} \Ben{}}
+
+- instructions for getters and setters and RGE running
+$get(Pars:Pole\_Mass...)$
+
+- specify string names and PDG codes
+
+implementing a new model: equivalent of MSSMSpec.hpp
 
 
-Most of this list from ColliderBit actually applies and should be in stuff above or just below them.
-\begin{itemize}
-\item Describe interface to GAMBIT framework.
-\item Describe standalone interface (how to configure and run the package, what the defaults are).
-\item Describe the interface to the models that we include and how to change the input parameters of those models.
-\item Explain how to interface with a new model.
-\item Explain how to run code in single core or multicore form (i.e using the standard OpenMP commands).
-\item Describe parameters that can be varied in yaml file.
-\end{itemize}
+\subsection{DecayBit}
+
+adding new codes: more advanced options if user adds own decay code or FeynHiggs alternative
+
+\subsection{EWPOBit}
 
 
 
 \section{Code description}
-horrible horrible details
-\subsection{SpecBit}
-\subsection{DeacyBit}
+
+horrible horrible details:
+
+code structure
+
+\subsection{SpecBit \Ben{} \Peter{}}
+
+- Spectrum, subspectrum object (structure based on headers?)
+
+- simplified diagrams 
+
+\subsection{DecayBit}
+
+
 \subsection{EWPOBit}
+
 \subsection{All together now}
+
+- SLHA helpers
 
 %%\subsection{User interface}
 
@@ -118,7 +337,5 @@ May not be possible in time
 \section{Conclusions}
 Gambit SpecBit,DeacyBayBit and EWPOBit will rule the world.  the rest of gambit is kind of useful too.
 \section{Acknowledgements}
-
-\section{Appendix A: Quick Start}
 
 \end{document}

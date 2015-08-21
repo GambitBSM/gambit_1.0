@@ -20,10 +20,11 @@
 #
 #************************************************
 
-set(source_files src/ASCIItableReader.cpp
+set(source_files src/ascii_table_reader.cpp
                  src/equivalency_singleton.cpp
                  src/exceptions.cpp
                  src/mpiwrapper.cpp
+                 src/new_mpi_datatypes.cpp
                  src/model_parameters.cpp
                  src/standalone_error_handlers.cpp
                  src/stream_overloads.cpp
@@ -33,12 +34,13 @@ set(source_files src/ASCIItableReader.cpp
                  src/yaml_parser_base.cpp
 )                 
 
-set(header_files include/gambit/Utils/ASCIItableReader.hpp
+set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/boost_fallbacks.hpp
                  include/gambit/Utils/cats.hpp
                  include/gambit/Utils/equivalency_singleton.hpp
                  include/gambit/Utils/exceptions.hpp
                  include/gambit/Utils/mpiwrapper.hpp
+                 include/gambit/Utils/new_mpi_datatypes.hpp
                  include/gambit/Utils/factory_registry.hpp
                  include/gambit/Utils/model_parameters.hpp
                  include/gambit/Utils/standalone_error_handlers.hpp
@@ -51,6 +53,7 @@ set(header_files include/gambit/Utils/ASCIItableReader.hpp
                  include/gambit/Utils/util_functions.hpp
                  include/gambit/Utils/util_macros.hpp
                  include/gambit/Utils/util_types.hpp
+                 include/gambit/Utils/version.hpp
                  include/gambit/Utils/variadic_functions.hpp
                  include/gambit/Utils/yaml_options.hpp
                  include/gambit/Utils/yaml_parser_base.hpp

@@ -774,6 +774,7 @@ namespace Gambit
       //Err does that make sense? There is nothing in masterGraph at that point surely... maybe put this back.
       //Ok well it does seem to work in the constructor, not sure why though...
 
+      logger() << LogTags::dependency_resolver;
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
@@ -786,8 +787,17 @@ namespace Gambit
         if( masterGraph[*vi]->requiresPrinting() and (masterGraph[*vi]->status()==2) )
         {
           functors_to_print.push_back(index[*vi]);
-        }
+
+          // Trigger a dummy print call for all printable functors. This is used by some printers
+          // to set up buffers for each of these output streams.
+          logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << std::endl;
+          masterGraph[*vi]->print(boundPrinter,0);     
+        }    
       }
+      logger() << EOM;
+      // Force-reset the printer to erase the dummy calls
+      boundPrinter->reset(true);
+
       // sent vector of ID's of functors to be printed to printer.
       // (if we want to only print functor output sometimes, and dynamically
       // switch this on and off, we'll have to rethink the strategy here a
@@ -796,7 +806,7 @@ namespace Gambit
       // Similarly for extra results, i.e. from any functors not in this
       // initial list, whose "requiresPrinting" flag later gets set to 'true'
       // somehow.)
-      boundPrinter->initialise(functors_to_print);
+      boundPrinter->initialise(functors_to_print); 
     }
 
     std::vector<DRes::VertexID> DependencyResolver::closestCandidateForModel(std::vector<DRes::VertexID> candidates)
@@ -1035,9 +1045,10 @@ namespace Gambit
         }
       }
 
-      logger()<<"Number of identified rules (weak rules): "
-        <<rules.size()<< " ("<<rules.size() - strong_rules.size()<<")"
-        <<endl<<endl;
+      logger()<<"Number of identified rules: "
+        <<rules.size()<< endl;
+      logger()<<"Number of these rules that are marked as !weak: "
+        <<rules.size()-strong_rules.size()<<endl<<endl;
 
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator 

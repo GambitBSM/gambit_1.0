@@ -72,11 +72,11 @@ namespace Gambit
     {
       // Delete all the printer objects
       DBUG( std::cout << "PrinterManager: Destructing printers..." << std::endl; )
-      delete printerptr;
       typedef std::map<std::string, BasePrinter*>::iterator it_type;
       for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
          delete it->second; // Delete the printer to which this pointer points.
       } 
+      delete printerptr;
     }
 
     // Create new printer object (of the same type as the primary printer)
@@ -86,7 +86,14 @@ namespace Gambit
        //TODO need some way for the scanners to change the options
        //for the auxiliary printers, e.g. so we can print to a different file
        DBUG( std::cout << "PrinterManager: Creating Auxilliary printer \"" << tag << "\" with name \"" << streamname << "\"" << std::endl; )
-       auxprinters[streamname] = printer_creators.at(tag)(options);
+       Options mod_options = options;
+       mod_options.setValue("auxilliary",true);
+       mod_options.setValue("name",streamname);
+       auxprinters[streamname] = printer_creators.at(tag)(mod_options);
+       // Provide the new printer with a pointer to the primary printer so that
+       // they can interact with each other. Also flags the new printer as "auxilliary"
+       // for the purposes of its own internal logic.
+       auxprinters.at(streamname)->set_primary_printer(printerptr);
     }
 
     // Retrieve pointer to named printer object
@@ -95,6 +102,10 @@ namespace Gambit
       DBUG( std::cout << "PrinterManager: Retrieving printer stream \"" << streamname << "\"" << std::endl; )
       if(streamname=="")
       {
+        if(printerptr==NULL)
+        {
+           printer_error().raise(LOCAL_INFO,"Error retrieving primary printer from PrinterManager! printerptr==NULL! Must be a bug in the PrinterManager initialisation.");
+        }
         return printerptr;
       }
       else
@@ -106,6 +117,16 @@ namespace Gambit
       }
     }
 
+    /// Instruct all printers that scan has finished and to perform cleanup
+    void PrinterManager::finalise()
+    {
+      typedef std::map<std::string, BasePrinter*>::iterator it_type;
+      for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
+         it->second->finalise();
+      } 
+      printerptr->finalise();
+    }
+ 
   }
 }
 

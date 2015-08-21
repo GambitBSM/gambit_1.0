@@ -2,7 +2,7 @@
 #include <cmath>
 #include <memory>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 
 /// @todo ditch ROOT classes
 #ifdef MKHISTOS
@@ -18,10 +18,9 @@ using namespace std;
 namespace Gambit {
   namespace ColliderBit {
 
-    /// Rename as Analysis_ATLAS_0LEP_XXinvfb when lumi known
-    class Analysis_ATLAS_0LEP : public Analysis {
+    /// TODO: Rename as Analysis_ATLAS_0LEP_XXinvfb when lumi known
+    class Analysis_ATLAS_0LEP : public HEPUtilsAnalysis {
     private:
-
       // Numbers passing cuts
       double _numAM, _numAL, _numBT, _numBM,
         _numCT, _numCM, _numD, _numET, _numEM, _numEL;
@@ -30,6 +29,8 @@ namespace Gambit {
       #ifdef MKHISTOS
       unique_ptr<TFile> _f;
       unique_ptr<TH1> _njets, _nelecs, _nmuons, _jetpt_1, _jetpt_all, _meff_all, _met, _cutflow;
+      static bool _openTFile;
+      bool _hasTFile;
       #endif
 
 
@@ -43,7 +44,12 @@ namespace Gambit {
         _numET = 0; _numEM = 0; _numEL = 0;
 
         #ifdef MKHISTOS
-        _f.reset( new TFile("Analysis_ATLAS_0LEP_debug.root", "RECREATE") );
+        _hasTFile = false;
+        if(!Analysis_ATLAS_0LEP::_openTFile) {
+          _f.reset( new TFile("Analysis_ATLAS_0LEP_debug.root", "RECREATE") );
+          Analysis_ATLAS_0LEP::_openTFile = true;
+          _hasTFile = true;
+        }
         _njets.reset( new TH1F("njets", "Num jets", 21, -0.5, 20.5) );
         _nelecs.reset( new TH1F("nelecs", "Num electrons", 6, -0.5, 5.5) );
         _nmuons.reset( new TH1F("nmuons", "Num muons", 6, -0.5, 5.5) );
@@ -56,38 +62,38 @@ namespace Gambit {
       }
 
 
-      void analyze(const Event* event) {
-        Analysis::analyze(event);
+      void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
-        P4 ptot = event->missingmom();
+        HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
         // Now define vectors of baseline objects
-        vector<Particle*> baselineElectrons;
-        for (Particle* electron : event->electrons()) {
+        vector<HEPUtils::Particle*> baselineElectrons;
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
         }
-        vector<Particle*> baselineMuons;
-        for (Particle* muon : event->muons()) {
+        vector<HEPUtils::Particle*> baselineMuons;
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
-        vector<Jet*> baselineJets;
-        for (Jet* jet : event->jets()) {
+        vector<HEPUtils::Jet*> baselineJets;
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 2.8) baselineJets.push_back(jet);
         }
 
         // Overlap removal
-        vector<Particle*> signalElectrons;
-        vector<Particle*> signalMuons;
-        vector<Jet*> signalJets;
+        vector<HEPUtils::Particle*> signalElectrons;
+        vector<HEPUtils::Particle*> signalMuons;
+        vector<HEPUtils::Jet*> signalJets;
 
         // Remove any jet within dR=0.2 of an electrons
         for (size_t iJet=0;iJet<baselineJets.size();iJet++) {
           bool overlap=false;
-          P4 jetVec=baselineJets.at(iJet)->mom();
+          HEPUtils::P4 jetVec=baselineJets.at(iJet)->mom();
           for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
-            P4 elVec=baselineElectrons.at(iEl)->mom();
+            HEPUtils::P4 elVec=baselineElectrons.at(iEl)->mom();
             if (elVec.deltaR_eta(jetVec)<0.2)overlap=true;
           }
           if (!overlap)signalJets.push_back(baselineJets.at(iJet));
@@ -96,9 +102,9 @@ namespace Gambit {
         // Remove electrons with dR=0.4 or surviving jets
         for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
           bool overlap=false;
-          P4 elVec=baselineElectrons.at(iEl)->mom();
+          HEPUtils::P4 elVec=baselineElectrons.at(iEl)->mom();
           for (size_t iJet=0;iJet<signalJets.size();iJet++) {
-            P4 jetVec=signalJets.at(iJet)->mom();
+            HEPUtils::P4 jetVec=signalJets.at(iJet)->mom();
             if (elVec.deltaR_eta(jetVec)<0.4)overlap=true;
           }
           if (!overlap)signalElectrons.push_back(baselineElectrons.at(iEl));
@@ -107,9 +113,9 @@ namespace Gambit {
         // Remove muons with dR=0.4 or surviving jets
         for (size_t iMu=0;iMu<baselineMuons.size();iMu++) {
           bool overlap=false;
-          P4 muVec=baselineMuons.at(iMu)->mom();
+          HEPUtils::P4 muVec=baselineMuons.at(iMu)->mom();
           for (size_t iJet=0;iJet<signalJets.size();iJet++) {
-            P4 jetVec=signalJets.at(iJet)->mom();
+            HEPUtils::P4 jetVec=signalJets.at(iJet)->mom();
             if (muVec.deltaR_eta(jetVec)<0.4)overlap=true;
           }
           if (!overlap)signalMuons.push_back(baselineMuons.at(iMu));
@@ -130,7 +136,7 @@ namespace Gambit {
         bool metCut = (met > 160.);
         double meff_incl = met;
         double HT=0;
-        for (const Jet* j : signalJets)
+        for (const HEPUtils::Jet* j : signalJets)
           if (j->pT() > 40) {
             meff_incl += j->pT();
             HT  += j->pT();
@@ -245,18 +251,37 @@ namespace Gambit {
       }
 
 
-      void add(const Analysis* a) {
-        const Analysis_ATLAS_0LEP* aa = dynamic_cast<const Analysis_ATLAS_0LEP*>(a);
-        add_xsec(aa->xsec(), aa->xsec_err());
-        // double tmp = _numAT;
-        const double weight = (xsec() > 0) ? aa->xsec_per_event() / xsec_per_event() : 1;
-        #define ADD(NAME) NAME += weight * aa->NAME
-        ADD(_numAM); ADD(_numAL);
-        ADD(_numBT); ADD(_numBM); ADD(_numCT); ADD(_numCM);
-        ADD(_numD);  ADD(_numET); ADD(_numEM); ADD(_numEL);
-        #undef ADD
-        // cout << tmp << " -> " << _numAT << endl;
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+    /// TODO: Rename as Analysis_ATLAS_0LEP_XXinvfb when lumi known
+        Analysis_ATLAS_0LEP* specificOther
+                = dynamic_cast<Analysis_ATLAS_0LEP*>(other);
+
+        // Here we will add the subclass member variables:
+        _numAM += specificOther->_numAM;
+        _numAL += specificOther->_numAL;
+        _numBT += specificOther->_numBT;
+        _numBM += specificOther->_numBM;
+        _numCT += specificOther->_numCT;
+        _numCM += specificOther->_numCM;
+        _numD += specificOther->_numD;
+        _numET += specificOther->_numET;
+        _numEM += specificOther->_numEM;
+        _numEL += specificOther->_numEL;
+        #ifdef MKHISTOS
+        _njets->Add(specificOther->_njets);
+        _nelecs->Add(specificOther->_nelecs);
+        _nmuons->Add(specificOther->_nmuons);
+        _jetpt_1->Add(specificOther->_jetpt_1);
+        _jetpt_all->Add(specificOther->_jetpt_all);
+        _meff_all->Add(specificOther->_meff_all);
+        _met->Add(specificOther->_met);
+        _cutflow->Add(specificOther->_cutflow);
+        #endif
       }
+
 
       void finalize() {
         cout << "NUMEVENTS: " << _numAM << " " << _numAL << " "
@@ -264,13 +289,11 @@ namespace Gambit {
              << _numD << " " << _numET << " " << _numEM << " " << _numEL << endl;
 
         #ifdef MKHISTOS
-        cout << "Writing ROOT file" << endl;
-        _f->Write();
+        if(_hasTFile) {
+          cout << "Writing ROOT file" << endl;
+          _f->Write();
+        }
         #endif
-      }
-
-      double loglikelihood() {
-        return 0;
       }
 
       void collect_results() {
@@ -369,7 +392,7 @@ namespace Gambit {
       ///////////////////
 
 
-      double SmallestdPhi(std::vector<Jet*> jets,double phi_met) {
+      double SmallestdPhi(std::vector<HEPUtils::Jet*> jets,double phi_met) {
         if (jets.size()<2) return(999);
         double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
         double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
@@ -380,7 +403,7 @@ namespace Gambit {
         return std::min(min1, dphi3);
       }
 
-      double SmallestRemainingdPhi(const std::vector<Jet *> jets,double phi_met) {
+      double SmallestRemainingdPhi(const std::vector<HEPUtils::Jet*> jets,double phi_met) {
         double remainingDPhi = 999;
         double dphiMin = 999;
         for (size_t i = 0; i < jets.size(); i++) {
@@ -398,6 +421,10 @@ namespace Gambit {
     // Factory fn
     DEFINE_ANALYSIS_FACTORY(ATLAS_0LEP)
 
+    #ifdef MKHISTOS
+    // Weird, but necessary, static member initialization:
+    bool Analysis_ATLAS_0LEP::_openTFile = false;
+    #endif
 
   }
 }

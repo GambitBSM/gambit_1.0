@@ -15,7 +15,7 @@
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@desy.de) 
 ///  \date 2013 Jun
-///  \date 2014 Mar [RD interface to DS finally working]
+///  \date 2014 Mar
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -51,15 +51,8 @@ namespace Gambit {
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
     void mwimp_generic(double &result) { 
-      result = 
-        Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty(
-          Pipes::mwimp_generic::Dep::DarkMatter_ID->singleID()).mass; 
-    }
-
-    /// Retrieve the DM mass in GeV for the scalar singlet model (GeV)
-    void mwimp_SingletDM(double &result) 
-    { 
-      result = *Pipes::mwimp_SingletDM::Param["mass"]; 
+      using namespace Pipes::mwimp_generic;
+      result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
     }
 
     /*! \brief Retrieve the total thermally-averaged annihilation cross-section
@@ -70,7 +63,7 @@ namespace Gambit {
     void sigmav_late_universe(double &result)
     {
       using namespace Pipes::sigmav_late_universe;
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       result = 0.0;
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
@@ -105,14 +98,15 @@ namespace Gambit {
 
       static unsigned int counter = 0;
 
-      double M_DM = (*Dep::DD_couplings).M_DM;
+      double M_DM = 
+        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
       double Gps = (*Dep::DD_couplings).gps;
       double Gpa = (*Dep::DD_couplings).gpa;
       double Gns = (*Dep::DD_couplings).gns;
       double Gna = (*Dep::DD_couplings).gna;
       double oh2 = *Dep::RD_oh2;
 
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
       Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 
