@@ -212,7 +212,7 @@ namespace Gambit {
       }
 
      template <class Model>
-     double get_sinthWDR2(const Model& model)
+     double get_sinthW2_DRbar(const Model& model)
      {
        double sthW2 = Utils::sqr(model.get_g1()) * 0.6
 	 / (0.6 * Utils::sqr(model.get_g1()) +   Utils::sqr(model.get_g2()));
@@ -220,7 +220,6 @@ namespace Gambit {
        return sthW2;
      }
 
-     
       template <class Model>
       void set_MSu_pole_slha(Model& model, double mass,int i)
      {
@@ -323,8 +322,6 @@ namespace Gambit {
        model.get_physical_slha().UP(i,j) = mass;
      }
 
-    
-     
       template <class Model>
       void set_MAh1_pole_slha(Model& model, double mass)
       {
@@ -493,8 +490,8 @@ namespace Gambit {
          {
             typename MTget::fmap0_extraM tmp_map;
             tmp_map["tanbeta"] = &get_tanbeta<Model>;
-	    tmp_map["sinthetaW2"] = &get_sinthWDR2<Model>;
-	    tmp_map["sinthW2"] = &get_sinthWDR2<Model>;
+	    tmp_map["sinthetaW2"] = &get_sinthW2_DRbar<Model>;
+	    tmp_map["sinthW2"] = &get_sinthW2_DRbar<Model>;
             map_collection[Par::dimensionless].map0_extraM = tmp_map;
          }
 

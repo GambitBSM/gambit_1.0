@@ -23,7 +23,7 @@
 #include "gambit/Elements/sminputs.hpp"
 #include "gambit/Elements/spectrum.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-
+#include "gambit/Utils/util_functions.hpp"
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
@@ -168,7 +168,11 @@ namespace Gambit
       double get_Pole_mPhoton  (const SMInputs&) { return 0.; }
       double get_Pole_mGluon   (const SMInputs&) { return 0.; }
 
-      // Filler function for getter function pointer maps extractable from "runningpars" container
+     double get_sinthW2_pole(const softsusy::QedQcd &qedqcd)
+     {
+       	return (1 - Utils::sqr(qedqcd.displayPoleMW()) / Utils::sqr(qedqcd.displayPoleMZ()));
+     }
+     // Filler function for getter function pointer maps extractable from "runningpars" container
       RunningGetterMaps QedQcdWrapper::runningpars_fill_getter_maps()
       {
          RunningGetterMaps map_collection; 
@@ -215,6 +219,9 @@ namespace Gambit
          return map_collection;
       }
 
+
+
+     
       // Filler function for getter function pointer maps extractable from "phys" container
       PhysGetterMaps QedQcdWrapper::phys_fill_getter_maps()
       {
@@ -259,7 +266,19 @@ namespace Gambit
 
             map_collection[Par::Pole_Mass].map0_extraI = tmp_map;
          }
-         /// @}
+	  {  
+            // Functions utilising the "extraM" function signature
+            // (Zero index, model object as argument)
+
+            MTget::fmap0_extraM tmp_map;
+	    
+	    tmp_map["sinthW2"] = &get_sinthW2_pole;
+
+            map_collection[Par::Pole_Mixing].map0_extraM = tmp_map;
+         }
+
+
+	 /// @}
          return map_collection;
       } 
 
