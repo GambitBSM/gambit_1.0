@@ -64,6 +64,7 @@ namespace Gambit
       /// default values so I guess it is ok.
       oneset.setMass(mElectron, sminputs.mE);
       oneset.setMass(mMuon,     sminputs.mMu);
+      oneset.setPoleMZ(sminputs.mZ);
     }
 
     /// @} End module convenience functions
