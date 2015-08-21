@@ -22,7 +22,7 @@
 #include "gambit/SpecBit/external_examples.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"
 #define IN_SPECBIT // Output tests to logger() rather than std::cout when run through SpecBit.
-#include "gambit/SpecBit/SpecBit_tests.hpp"
+#include "gambit/SpecBit/SpecBit_externaltests.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "gambit/SpecBit/model_files_and_boxes.hpp"

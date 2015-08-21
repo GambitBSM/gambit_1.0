@@ -18,18 +18,6 @@
 #ifndef __SpecBit_SM_hpp__
 #define __SpecBit_SM_hpp__
 
-  /// Produce an SMInputs object (SLHA2 conventions)
-  // i.e. provide Standard Model parameters in SLHA2 input conventions
-  #define CAPABILITY SMINPUTS
-  START_CAPABILITY
-
-    #define FUNCTION get_SMINPUTS            
-    START_FUNCTION(SMInputs)                  
-    ALLOW_MODELS(StandardModel_SLHA2)
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
   #define CAPABILITY qedqcd_subspectrum
   START_CAPABILITY                          
 

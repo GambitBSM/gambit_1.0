@@ -20,7 +20,7 @@
 #ifndef __SpecFptrFinder_hpp__
 #define __SpecFptrFinder_hpp__
 
-#include "gambit/Elements/subspectrum_decl.hpp"
+#include "gambit/Elements/subspectrum_head.hpp"
 #include "gambit/Models/partmap.hpp"
 
 // Particle database access

@@ -181,6 +181,13 @@ namespace Gambit
       // one-stop-shop for all spectrum information, including the model interface object.
       MSSMSpec<MI> mssmspec(model_interface);
 
+      // Add extra information about the scales used to the wrapper object
+      // (last parameter turns the 'safety' check for the override setter off, which allows
+      //  us to set parameters that don't previously exist)
+      mssmspec.runningpars.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+      mssmspec.runningpars.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+      mssmspec.runningpars.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)

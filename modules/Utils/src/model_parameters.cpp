@@ -27,6 +27,7 @@
 ///                   incorporated the proper error 
 ///                   handling system; put class 
 ///                   definitions into a seperate source file.
+///  \date 2015 Aug:  Added copy_all function
 ///
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
@@ -52,7 +53,9 @@ namespace Gambit
    {
      if(_values.count(inkey)!=1) 
      { 
-       model_error().raise(LOCAL_INFO, "No throwing functor in invalid_point_exception.");
+       //??? this message doesn't seem to make sense, so I am changing it.
+       //model_error().raise(LOCAL_INFO, "No throwing functor in invalid_point_exception.");
+       model_error().raise(LOCAL_INFO, "ModelParameters object does not contain the requested parameter '"+inkey+"'.");
      }
    }
 
@@ -129,7 +132,15 @@ namespace Gambit
        // used, etc.
      }
    }
-   
+  
+   /// Copy all the parameters from one ModelParameters object into another
+   /// (useful, for example, if the target contains a superset of the original parameter set)
+   /// Will throw an error if there is a match failure.
+   void ModelParameters::copy_parameters_from(const ModelParameters& in_params)
+   {
+     setValues(in_params.getValues());
+   }
+ 
    /// Get parameter keys (names), probably for external iteration
    std::vector<std::string> ModelParameters::getKeys() const
    {

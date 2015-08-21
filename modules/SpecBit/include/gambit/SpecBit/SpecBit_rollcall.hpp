@@ -23,6 +23,22 @@
 #define MODULE SpecBit
 START_MODULE
 
+  /// @{ Functions defined in SpecBit.cpp
+
+  /// Produce an SMInputs object (SLHA2 conventions)
+  // i.e. provide Standard Model parameters in SLHA2 input conventions
+  #define CAPABILITY SMINPUTS
+  START_CAPABILITY
+
+    #define FUNCTION get_SMINPUTS            
+    START_FUNCTION(SMInputs)                  
+    ALLOW_MODELS(StandardModel_SLHA2)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  /// @}
+
   // Capabilities used in more than one of the headers
   // below need to be declared up-front (and then not
   // declared in the header)
@@ -36,10 +52,10 @@ START_MODULE
   /// Module function declarations for SpecBit_SingletDM.cpp
   #include "gambit/SpecBit/SpecBit_SingletDM.hpp"
 
-  /// Module function declarations for SpecBit_Higgs.cpp
-  #include "gambit/SpecBit/SpecBit_Higgs.hpp"
+  /// Module function declarations for SpecBit_tests.cpp (new tests)
+  #include "gambit/SpecBit/SpecBit_tests.hpp"
 
-  /// For SpecBit testing only
+  /// For SpecBit testing only (old tests)
   //#include "gambit/SpecBit/SpecBit_sandbox.hpp"
 
   // Functions to changes the capability associated with a Spectrum object to "SM_spectrum"

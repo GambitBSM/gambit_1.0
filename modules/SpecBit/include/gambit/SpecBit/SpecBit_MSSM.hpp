@@ -132,6 +132,40 @@
     #undef FUNCTION
   #undef CAPABILITY 
 
+  // Higgs masses and mixings with theoretical uncertainties
+  #define CAPABILITY prec_HiggsMasses
+  START_CAPABILITY
+    #define FUNCTION FH_HiggsMasses
+    START_FUNCTION(fh_HiggsMassObs)
+    DEPENDENCY(FH_MSSMMasses, fh_MSSMMassObs)
+    BACKEND_REQ(FHHiggsCorr, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&, 
+                Farray<fh_complex, 1,3, 1,3>&, 
+                Farray<fh_complex, 1,3, 1,3>&))
+    BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&, 
+                Farray<fh_complex, 1,3, 1,3>&, 
+                Farray<fh_complex, 1,3, 1,3>&))
+    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+  #undef CAPABILITY 
+
+  // FeynHiggs Higgs couplings
+  #define CAPABILITY Higgs_Couplings
+  START_CAPABILITY
+    #define FUNCTION FH_Couplings
+    START_FUNCTION(fh_Couplings)
+    DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
+    BACKEND_REQ(FHSelectUZ, (libfeynhiggs), void, (int&,int&,int&,int&))
+    BACKEND_REQ(FHCouplings, (libfeynhiggs), void, (int&, Farray< fh_complex,1,681>&,
+                                                    Farray< fh_complex,1,231>&,
+                                                    Farray< fh_real,1,978>&,
+                                                    Farray< fh_real,1,250>&, int&))
+    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   /// @}
 
 #endif
