@@ -17,6 +17,25 @@ if PROC == "cmssm":
     # my_range = np.arange(300,  871, 30)
     mx_range = np.arange(300, 5801, 250)
     my_range = np.arange(300, 841, 60)
+    pt_x_y = (4050, 420)
+elif PROC == "crap1000":
+    MX_LABEL = "$M_0$"
+    MY_LABEL = "$M_{1/2}$"
+    mx_range = np.array([1000])
+    my_range = np.arange(450, 701, 50)
+    pt_x_y = (1000,550)
+elif PROC == "crap2000":
+    MX_LABEL = "$M_0$"
+    MY_LABEL = "$M_{1/2}$"
+    mx_range = np.array([2000])
+    my_range = np.arange(250, 551, 50)
+    pt_x_y = (2000,400)
+elif PROC == "crap4000":
+    MX_LABEL = "$M_0$"
+    MY_LABEL = "$M_{1/2}$"
+    mx_range = np.array([4000])
+    my_range = np.arange(300, 501, 50)
+    pt_x_y = (4000,400)
 elif PROC == "ggdcpl":
     MX_LABEL = "$M_{\\tilde{g}}$"
     MY_LABEL = "$M_{\\tilde{\\chi}}$"
@@ -40,8 +59,9 @@ import os, glob
 for i, mx in enumerate(mx_range):
     for j, my in enumerate(my_range):
         fglob = "results*-*_{0:04d}_{1:04d}*.dat".format(mx, my)
-        if PROC == "cmssm": #< Martin's naming
+        if PROC == "cmssm": #< Martin's naming...
             fglob = "result*-*{0:d}_{1:d}*.dat".format(mx, my)
+        #print fglob
         resfiles = glob.glob(os.path.join(DIR, fglob))
         if resfiles:
             with open(resfiles[0], "r") as rf:
@@ -90,7 +110,6 @@ for i in xrange(exp_best_srs.shape[0]):
 
 
 ## Define a single point whose LL values are to be printed out in detail
-pt_x_y = (4050, 420)
 idx_x_y = (mx_range.tolist().index(pt_x_y[0]), my_range.tolist().index(pt_x_y[1]))
 
 
@@ -144,6 +163,7 @@ for i in xrange(exp_best_srs.shape[0]):
 #print "\ndLL map:\n", limit_dlls
 
 print "\nLimit dLL at", pt_x_y, "=", limit_dlls[idx_x_y]
+print "\nLimit dLLs =", limit_dlls
 
 
 # print
