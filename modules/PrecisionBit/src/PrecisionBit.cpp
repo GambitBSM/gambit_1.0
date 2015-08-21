@@ -73,7 +73,7 @@ namespace Gambit
     void FH_precision_gm2     (double &result) { result = Pipes::FH_precision_gm2::Dep::FH_Precision->gmu2;          }
     void FH_precision_deltarho(double &result) { result = Pipes::FH_precision_deltarho::Dep::FH_Precision->deltaRho; }
     void FH_precision_mw      (double &result) { result = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;        }
-    void FH_precision_sinw2   (double &result) { result = Pipes::FH_precision_sinw2::Dep::FH_Precision->sinW2_MSSM;  }
+    void FH_precision_sinW2   (double &result) { result = Pipes::FH_precision_sinW2::Dep::FH_Precision->sinW2_MSSM;  }
     void FH_precision_edm_e   (double &result) { result = Pipes::FH_precision_edm_e::Dep::FH_Precision->edm_ele;     }
     void FH_precision_edm_n   (double &result) { result = Pipes::FH_precision_edm_n::Dep::FH_Precision->edm_neu;     }
     void FH_precision_edm_hg  (double &result) { result = Pipes::FH_precision_edm_hg::Dep::FH_Precision->edm_Hg;     }
@@ -93,8 +93,8 @@ namespace Gambit
       UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[1], "h0_2"); //FIXME need to add uncertainty too
       UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[2], "A0");   //FIXME need to add uncertainty too
       UV->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[3], "H+");   //FIXME need to add uncertainty too
-      //UV->phys.set(Par::sin2w_eff, *Dep::prec_sinw2_eff, "sin2w_eff");  //FIXME need to add uncertainty too
-      //LE->phys.set(Par::sin2w_eff, *Dep::prec_sinw2_eff, "sin2w_eff");  //FIXME need to add uncertainty too
+      //UV->phys.set(Par::sinW2_eff, *Dep::prec_sinW2_eff, "sinW2_eff");  //FIXME need to add uncertainty too
+      //LE->phys.set(Par::sinW2_eff, *Dep::prec_sinW2_eff, "sinW2_eff");  //FIXME need to add uncertainty too
       result = &improved_spec;
     }
      
@@ -102,15 +102,15 @@ namespace Gambit
     void mw_from_MSSM_spectrum(double &result) { result = (*Pipes::mw_from_MSSM_spectrum::Dep::MSSM_spectrum)   ->get_Pole_Mass("W-");  } //FIXME add uncerts
     void mw_from_SM_spectrum  (double &result) { result = (*Pipes::mw_from_SM_spectrum::Dep::SM_spectrum)       ->get_Pole_Mass("W-");  } //FIXME add uncerts
     void mw_from_SS_spectrum  (double &result) { result = (*Pipes::mw_from_SS_spectrum::Dep::SingletDM_spectrum)->get_Pole_Mass("W-");  } //FIXME add uncerts
-    //void sin2w_eff_from_MSSM_spectrum(double &result) { result = (*Pipes::sin2w_eff_from_MSSM_spectrum::Dep::MSSM_spectrum)   ->get_sin2w_eff; } //FIXME add uncerts
-    //void sin2w_eff_from_SM_spectrum  (double &result) { result = (*Pipes::sin2w_eff_from_SM_spectrum::Dep::SM_spectrum)       ->get_sin2w_eff; } //FIXME add uncerts
-    //void sin2w_eff_from_SS_spectrum  (double &result) { result = (*Pipes::sin2w_eff_from_SS_spectrum::Dep::SingletDM_spectrum)->get_sin2w_eff; } //FIXME add uncerts
+    //void sinW2_eff_from_MSSM_spectrum(double &result) { result = (*Pipes::sinW2_eff_from_MSSM_spectrum::Dep::MSSM_spectrum)   ->get_sinW2_eff; } //FIXME add uncerts
+    //void sinW2_eff_from_SM_spectrum  (double &result) { result = (*Pipes::sinW2_eff_from_SM_spectrum::Dep::SM_spectrum)       ->get_sinW2_eff; } //FIXME add uncerts
+    //void sinW2_eff_from_SS_spectrum  (double &result) { result = (*Pipes::sinW2_eff_from_SS_spectrum::Dep::SingletDM_spectrum)->get_sinW2_eff; } //FIXME add uncerts
 
-    // FIXME this is just a stopgap until sin2w is in the spectrum objects properly
-    void sin2w_eff(std::pair<double, double> &result)
+    // FIXME this is just a stopgap until sinW2 is in the spectrum objects properly
+    void sinW2_eff(std::pair<double, double> &result)
     {
-      using namespace Pipes::sin2w_eff;
-      result.first = *Dep::prec_sinw2_eff;
+      using namespace Pipes::sinW2_eff;
+      result.first = *Dep::prec_sinW2_eff;
       result.second = result.first * 0.05;
     }
 
@@ -180,11 +180,11 @@ namespace Gambit
     /// Effective leptonic sin^2(theta_W) likelihood
     /// sin^2theta_W^leptonic_effective~ sin^2theta_W(mZ)^MSbar + 0.00029 = 0.23155 +/- 0.00005    (1 sigma), Gaussian.  (PDG global SM fit)
     /// Reference: http://pdg.lbl.gov/2014/reviews/rpp2014-rev-standard-model.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
-    void lnL_sin2w_eff_chi2(double &result)
+    void lnL_sinW2_eff_chi2(double &result)
     {
-      using namespace Pipes::lnL_sin2w_eff_chi2;
-      double central = Dep::sin2w_eff->first;
-      double theory_uncert = Dep::sin2w_eff->second;
+      using namespace Pipes::lnL_sinW2_eff_chi2;
+      double central = Dep::sinW2_eff->first;
+      double theory_uncert = Dep::sinW2_eff->second;
       result = Stats::gaussian_loglikelihood(central, 0.23155, theory_uncert, 0.00005);
     }
     

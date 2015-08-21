@@ -54,7 +54,7 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, muon_gm2,       NEW_CAPABILITY, FH_precision_gm2,      double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, deltarho,       NEW_CAPABILITY, FH_precision_deltarho, double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, prec_mw,        NEW_CAPABILITY, FH_precision_mw,       double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
-  QUICK_FUNCTION(PrecisionBit, prec_sinw2_eff, NEW_CAPABILITY, FH_precision_sinw2,    double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, prec_sinW2_eff, NEW_CAPABILITY, FH_precision_sinW2,    double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, edm_e,          NEW_CAPABILITY, FH_precision_edm_e,    double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, edm_n,          NEW_CAPABILITY, FH_precision_edm_n,    double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
   QUICK_FUNCTION(PrecisionBit, edm_hg,         NEW_CAPABILITY, FH_precision_edm_hg,   double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
@@ -66,7 +66,7 @@ START_MODULE
     START_FUNCTION(const Spectrum*)
     DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
     DEPENDENCY(prec_mw, double)
-    DEPENDENCY(prec_sinw2_eff, double)
+    DEPENDENCY(prec_sinW2_eff, double)
     DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
     #undef FUNCTION
   #undef CAPABILITY
@@ -77,7 +77,7 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, mw, OLD_CAPABILITY, mw_from_MSSM_spectrum, double, (MSSM78atQ, MSSM78atMGUT), (MSSM_spectrum, const Spectrum*))
 
   // Stopgap function for passing sinthetaW_eff until it is properly implemented in spectrum objects
-  QUICK_FUNCTION(PrecisionBit, sin2w_eff, NEW_CAPABILITY, sin2w_eff, ddpair, (), (prec_sinw2_eff, double))
+  QUICK_FUNCTION(PrecisionBit, sinW2_eff, NEW_CAPABILITY, sinW2_eff, ddpair, (), (prec_sinW2_eff, double))
 
   // SM nuisance likelihoods
   QUICK_FUNCTION(PrecisionBit, lnL_Z_mass,   NEW_CAPABILITY, lnL_Z_mass_chi2,   double, (), (SMINPUTS, SMInputs))
@@ -97,11 +97,11 @@ START_MODULE
   #undef CAPABILITY
 
   // Electroweak precision likelihoods: effective leptonic weak mixing angle
-  #define CAPABILITY lnL_sin2w_eff
+  #define CAPABILITY lnL_sinW2_eff
   START_CAPABILITY
-    #define FUNCTION lnL_sin2w_eff_chi2
+    #define FUNCTION lnL_sinW2_eff_chi2
     START_FUNCTION(double)
-    DEPENDENCY(sin2w_eff, ddpair)
+    DEPENDENCY(sinW2_eff, ddpair)
     #undef FUNCTION
   #undef CAPABILITY
   
