@@ -272,7 +272,7 @@ namespace Gambit
 
             MTget::fmap0_extraM tmp_map;
 	    
-	    tmp_map["sinthW2"] = &get_sinthW2_pole;
+	    tmp_map["sinW2"] = &get_sinthW2_pole;
 
             map_collection[Par::Pole_Mixing].map0_extraM = tmp_map;
          }
