@@ -37,6 +37,8 @@
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 
+//#define DUMP_LIMIT_PLOT_DATA
+
 namespace Gambit
 {
 
@@ -47,6 +49,23 @@ namespace Gambit
     /// ********************************************
     /// Non-rollcalled Functions and Local Variables
     /// ********************************************
+
+    /// LEP limit likelihood function
+    double limitLike(double x, double x95, double sigma) {
+      static double p95 = 1.;
+      using std::erf;
+      using std::sqrt;
+
+      if (p95 < 1.01) {
+        for (int i=0; i<20000; i++) {
+          static double step = 0.1;
+          if (0.5 * (1 - erf(p95 + step)) > 0.05) p95 += step;
+          else step /= 10.;
+        }
+      }
+
+      return 0.5 * (1 - erf(p95 + (x - x95) / sigma / sqrt(2.)));
+    }
 
     /// Event labels
     enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
@@ -1412,15 +1431,16 @@ namespace Gambit
     void ALEPH_Selectron_Conservative_LLike(double& result)
     {
       static ALEPHSelectronLimitAt208GeV *limitContainer = new ALEPHSelectronLimitAt208GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/ALEPHSelectronLimitAt208GeV.dump");
+        limitContainer->dumpPlotData(45., 115., 0., 100.,
+                                     "lepLimitPlanev2/ALEPHSelectronLimitAt208GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::ALEPH_Selectron_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -1443,13 +1463,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // se_R, se_R
@@ -1461,13 +1477,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -1475,15 +1487,16 @@ namespace Gambit
     void ALEPH_Smuon_Conservative_LLike(double& result)
     {
       static ALEPHSmuonLimitAt208GeV *limitContainer = new ALEPHSmuonLimitAt208GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/ALEPHSmuonLimitAt208GeV.dump");
+        limitContainer->dumpPlotData(45., 115., 0., 100.,
+                                     "lepLimitPlanev2/ALEPHSmuonLimitAt208GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::ALEPH_Smuon_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -1491,7 +1504,7 @@ namespace Gambit
       const double mass_smuL = spec->get_Pole_Mass(1000013, 0); 
       const double mass_smuR = spec->get_Pole_Mass(2000013, 0); 
       triplet<double> xsecWithError;
-      double xsecLimit, mass_slepton;
+      double xsecLimit;
 
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
@@ -1506,13 +1519,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // smu_R, smu_R
@@ -1524,13 +1533,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -1538,15 +1543,16 @@ namespace Gambit
     void ALEPH_Stau_Conservative_LLike(double& result)
     {
       static ALEPHStauLimitAt208GeV *limitContainer = new ALEPHStauLimitAt208GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/ALEPHStauLimitAt208GeV.dump");
+        limitContainer->dumpPlotData(45., 115., 0., 100.,
+                                     "lepLimitPlanev2/ALEPHStauLimitAt208GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::ALEPH_Stau_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -1554,7 +1560,7 @@ namespace Gambit
       const double mass_stau1 = spec->get_Pole_Mass(1000015, 0); 
       const double mass_stau2 = spec->get_Pole_Mass(2000015, 0); 
       triplet<double> xsecWithError;
-      double xsecLimit, mass_slepton;
+      double xsecLimit;
 
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
@@ -1569,13 +1575,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // stau_2, stau_2
@@ -1587,13 +1589,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -1601,15 +1599,16 @@ namespace Gambit
     void L3_Selectron_Conservative_LLike(double& result)
     {
       static L3SelectronLimitAt205GeV *limitContainer = new L3SelectronLimitAt205GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/L3SelectronLimitAt205GeV.dump");
+        limitContainer->dumpPlotData(45., 115., 0., 100.,
+                                     "lepLimitPlanev2/L3SelectronLimitAt205GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::L3_Selectron_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -1617,7 +1616,7 @@ namespace Gambit
       const double mass_seL = spec->get_Pole_Mass(1000011, 0); 
       const double mass_seR = spec->get_Pole_Mass(2000011, 0); 
       triplet<double> xsecWithError;
-      double xsecLimit, mass_slepton;
+      double xsecLimit;
 
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
@@ -1632,13 +1631,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // se_R, se_R
@@ -1650,13 +1645,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -1664,15 +1655,16 @@ namespace Gambit
     void L3_Smuon_Conservative_LLike(double& result)
     {
       static L3SmuonLimitAt205GeV *limitContainer = new L3SmuonLimitAt205GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/L3SmuonLimitAt205GeV.dump");
+        limitContainer->dumpPlotData(45., 115., 0., 100.,
+                                     "lepLimitPlanev2/L3SmuonLimitAt205GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::L3_Smuon_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -1680,7 +1672,7 @@ namespace Gambit
       const double mass_smuL = spec->get_Pole_Mass(1000013, 0); 
       const double mass_smuR = spec->get_Pole_Mass(2000013, 0); 
       triplet<double> xsecWithError;
-      double xsecLimit, mass_slepton;
+      double xsecLimit;
 
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
@@ -1695,13 +1687,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // smu_R, smu_R
@@ -1713,13 +1701,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -1727,15 +1711,16 @@ namespace Gambit
     void L3_Stau_Conservative_LLike(double& result)
     {
       static L3StauLimitAt205GeV *limitContainer = new L3StauLimitAt205GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/L3StauLimitAt205GeV.dump");
+        limitContainer->dumpPlotData(45., 115., 0., 100.,
+                                     "lepLimitPlanev2/L3StauLimitAt205GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::L3_Stau_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -1743,7 +1728,7 @@ namespace Gambit
       const double mass_stau1 = spec->get_Pole_Mass(1000015, 0); 
       const double mass_stau2 = spec->get_Pole_Mass(2000015, 0); 
       triplet<double> xsecWithError;
-      double xsecLimit, mass_slepton;
+      double xsecLimit;
 
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
@@ -1758,13 +1743,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // stau_2, stau_2
@@ -1776,13 +1757,9 @@ namespace Gambit
       xsecWithError.lower *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -1793,15 +1770,16 @@ namespace Gambit
     void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
     {
       static L3NeutralinoAllChannelsLimitAt188pt6GeV *limitContainer = new L3NeutralinoAllChannelsLimitAt188pt6GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
+        limitContainer->dumpPlotData(0., 200., 0., 100.,
+                                     "lepLimitPlanev2/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::L3_Neutralino_All_Channels_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -1840,13 +1818,9 @@ namespace Gambit
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // neut3, neut1
@@ -1872,13 +1846,9 @@ namespace Gambit
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // neut4, neut1
@@ -1904,13 +1874,9 @@ namespace Gambit
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -1918,15 +1884,16 @@ namespace Gambit
     void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
     {
       static L3NeutralinoLeptonicLimitAt188pt6GeV *limitContainer = new L3NeutralinoLeptonicLimitAt188pt6GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
+        limitContainer->dumpPlotData(0., 200., 0., 100.,
+                                     "lepLimitPlanev2/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::L3_Neutralino_Leptonic_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -1962,13 +1929,9 @@ namespace Gambit
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // neut3, neut1
@@ -1991,13 +1954,9 @@ namespace Gambit
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // neut4, neut1
@@ -2020,13 +1979,9 @@ namespace Gambit
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -2034,15 +1989,16 @@ namespace Gambit
     void L3_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static L3CharginoAllChannelsLimitAt188pt6GeV *limitContainer = new L3CharginoAllChannelsLimitAt188pt6GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
+        limitContainer->dumpPlotData(45., 100., 0., 100.,
+                                     "lepLimitPlanev2/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::L3_Chargino_All_Channels_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -2074,13 +2030,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // char2, neut1
@@ -2100,13 +2052,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -2114,15 +2062,16 @@ namespace Gambit
     void L3_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static L3CharginoLeptonicLimitAt188pt6GeV *limitContainer = new L3CharginoLeptonicLimitAt188pt6GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/L3CharginoLeptonicLimitAt188pt6GeV.dump");
+        limitContainer->dumpPlotData(45., 100., 0., 100.,
+                                     "lepLimitPlanev2/L3CharginoLeptonicLimitAt188pt6GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::L3_Chargino_Leptonic_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -2157,13 +2106,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // char2, neut1
@@ -2186,13 +2131,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -2200,15 +2141,16 @@ namespace Gambit
     void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
     {
       static OPALCharginoHadronicLimitAt208GeV *limitContainer = new OPALCharginoHadronicLimitAt208GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/OPALCharginoHadronicLimitAt208GeV.dump");
+        limitContainer->dumpPlotData(75., 105., 0., 105.,
+                                     "lepLimitPlanev2/OPALCharginoHadronicLimitAt208GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::OPAL_Chargino_Hadronic_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -2229,9 +2171,7 @@ namespace Gambit
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
-      totalBR = 0;
-      totalBR += decays->at("W+").BF("u", "dbar");
-      totalBR += decays->at("W+").BF("c", "sbar");
+      totalBR = decays->at("W+").BF("hadron", "hadron");
       totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
 
       totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
@@ -2241,13 +2181,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // char2, neut1
@@ -2256,9 +2192,7 @@ namespace Gambit
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
-      totalBR = 0;
-      totalBR += decays->at("W+").BF("u", "dbar");
-      totalBR += decays->at("W+").BF("c", "sbar");
+      totalBR = decays->at("W+").BF("hadron", "hadron");
       totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
 
       totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
@@ -2268,13 +2202,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -2282,16 +2212,17 @@ namespace Gambit
     void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
     {
       static OPALCharginoSemiLeptonicLimitAt208GeV *limitContainer = new OPALCharginoSemiLeptonicLimitAt208GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
+        limitContainer->dumpPlotData(75., 105., 0., 105.,
+                                     "lepLimitPlanev2/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -2337,9 +2268,7 @@ namespace Gambit
 
       // ALSO, total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
-      totalBR = 0;
-      totalBR += decays->at("W+").BF("u", "dbar");
-      totalBR += decays->at("W+").BF("c", "sbar");
+      totalBR = decays->at("W+").BF("hadron", "hadron");
       totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
 
       totalBR += decays->at("~chi+_1").BF("~chi0_1", "u", "dbar");
@@ -2349,13 +2278,9 @@ namespace Gambit
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // char2, neut1
@@ -2385,9 +2310,7 @@ namespace Gambit
 
       // ALSO, total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
-      totalBR = 0;
-      totalBR += decays->at("W+").BF("u", "dbar");
-      totalBR += decays->at("W+").BF("c", "sbar");
+      totalBR = decays->at("W+").BF("hadron", "hadron");
       totalBR = decays->at("~chi+_2").BF("~chi0_1", "W+") * totalBR;
 
       totalBR += decays->at("~chi+_2").BF("~chi0_1", "u", "dbar");
@@ -2397,13 +2320,9 @@ namespace Gambit
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -2411,16 +2330,17 @@ namespace Gambit
     void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
     {
       static OPALCharginoLeptonicLimitAt208GeV *limitContainer = new OPALCharginoLeptonicLimitAt208GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/OPALCharginoLeptonicLimitAt208GeV.dump");
+        limitContainer->dumpPlotData(75., 105., 0., 105.,
+                                     "lepLimitPlanev2/OPALCharginoLeptonicLimitAt208GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -2465,13 +2385,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // char2, neut1
@@ -2500,13 +2416,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -2514,16 +2426,17 @@ namespace Gambit
     void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
     {
       static OPALCharginoAllChannelsLimitAt208GeV *limitContainer = new OPALCharginoAllChannelsLimitAt208GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/OPALCharginoAllChannelsLimitAt208GeV.dump");
+        limitContainer->dumpPlotData(75., 105., 0., 105.,
+                                     "lepLimitPlanev2/OPALCharginoAllChannelsLimitAt208GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -2565,13 +2478,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // char2, neut1
@@ -2597,13 +2506,9 @@ namespace Gambit
       xsecWithError.lower *= pow(totalBR, 2);
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }
@@ -2611,15 +2516,16 @@ namespace Gambit
     void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
     {
       static OPALNeutralinoHadronicLimitAt208GeV *limitContainer = new OPALNeutralinoHadronicLimitAt208GeV();
+#ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpLightPlotData("lepLightLimitData/OPALNeutralinoHadronicLimitAt208GeV.dump");
+        limitContainer->dumpPlotData(0., 200., 0., 100.,
+                                     "lepLimitPlanev2/OPALNeutralinoHadronicLimitAt208GeV.dump");
         dumped=true;
       }
+#endif
       using namespace Pipes::OPAL_Neutralino_Hadronic_Conservative_LLike;
-      using std::erf;
       using std::pow;
-      using std::sqrt;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
@@ -2640,31 +2546,21 @@ namespace Gambit
 
       xsecWithError = *Dep::LEP208_xsec_chi00_12;
       // Total up all channels which look like Z* decays
-      totalBR = 0;
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "Z0");
+      totalBR = decays->at("Z0").BF("hadron", "hadron");
+      totalBR = decays->at("~chi0_2").BF("~chi0_1", "Z0") * totalBR;
       totalBR += decays->at("~chi0_2").BF("~chi0_1", "ubar", "u");
       totalBR += decays->at("~chi0_2").BF("~chi0_1", "dbar", "d");
       totalBR += decays->at("~chi0_2").BF("~chi0_1", "cbar", "c");
       totalBR += decays->at("~chi0_2").BF("~chi0_1", "sbar", "s");
       totalBR += decays->at("~chi0_2").BF("~chi0_1", "bbar", "b");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "tau+", "tau-");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_e", "nu_e");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_mu", "nu_mu");
-      totalBR += decays->at("~chi0_2").BF("~chi0_1", "nubar_tau", "nu_tau");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // neut3, neut1
@@ -2672,31 +2568,21 @@ namespace Gambit
 
       xsecWithError = *Dep::LEP208_xsec_chi00_13;
       // Total up all channels which look like Z* decays
-      totalBR = 0;
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "Z0");
+      totalBR = decays->at("Z0").BF("hadron", "hadron");
+      totalBR = decays->at("~chi0_3").BF("~chi0_1", "Z0") * totalBR;
       totalBR += decays->at("~chi0_3").BF("~chi0_1", "ubar", "u");
       totalBR += decays->at("~chi0_3").BF("~chi0_1", "dbar", "d");
       totalBR += decays->at("~chi0_3").BF("~chi0_1", "cbar", "c");
       totalBR += decays->at("~chi0_3").BF("~chi0_1", "sbar", "s");
       totalBR += decays->at("~chi0_3").BF("~chi0_1", "bbar", "b");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "tau+", "tau-");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_e", "nu_e");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_mu", "nu_mu");
-      totalBR += decays->at("~chi0_3").BF("~chi0_1", "nubar_tau", "nu_tau");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
       // neut4, neut1
@@ -2704,31 +2590,21 @@ namespace Gambit
 
       xsecWithError = *Dep::LEP208_xsec_chi00_14;
       // Total up all channels which look like Z* decays
-      totalBR = 0;
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "Z0");
+      totalBR = decays->at("Z0").BF("hadron", "hadron");
+      totalBR = decays->at("~chi0_4").BF("~chi0_1", "Z0") * totalBR;
       totalBR += decays->at("~chi0_4").BF("~chi0_1", "ubar", "u");
       totalBR += decays->at("~chi0_4").BF("~chi0_1", "dbar", "d");
       totalBR += decays->at("~chi0_4").BF("~chi0_1", "cbar", "c");
       totalBR += decays->at("~chi0_4").BF("~chi0_1", "sbar", "s");
       totalBR += decays->at("~chi0_4").BF("~chi0_1", "bbar", "b");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "e+", "e-");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "mu+", "mu-");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "tau+", "tau-");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_e", "nu_e");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_mu", "nu_mu");
-      totalBR += decays->at("~chi0_4").BF("~chi0_1", "nubar_tau", "nu_tau");
       xsecWithError.upper *= totalBR;
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
       if (xsecWithError.central < xsecLimit) {
-        // Tend to accept this point, so Likelihood > 1/2
-        // Error function with mu = xsecLimit, sigma = upper - central, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.upper - xsecWithError.central) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central));
       } else {
-        // Tend to reject this point, so Likelihood <= 1/2
-        // Error function with mu = xsecLimit, sigma = central - lower, x = central
-        result += log(0.5 * ( 1. + erf((xsecWithError.central - xsecLimit) / (xsecWithError.central - xsecWithError.lower) / sqrt(2.))));
+        result += log(limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower));
       }
 
     }

@@ -103,7 +103,7 @@ namespace Gambit {
       //@{
       public:
         /// Coordinate initializer / recycler
-        void init(double x1, double y1, double x2, double y2, double extendFrac=0.) {
+        void init(double x1, double y1, double x2, double y2, double extendFrac=-1.) {
           P2 rawpt1, rawpt2, extendEnds;
           if (x1 > x2 or (x1 == x2 and y1 > y2)) {
             rawpt2.setxy(x1, y1);
@@ -112,14 +112,19 @@ namespace Gambit {
             rawpt1.setxy(x1, y1);
             rawpt2.setxy(x2, y2);
           }
-          extendEnds = (rawpt2 - rawpt1) * extendFrac;
-          _p2 = rawpt2 + extendEnds;
-          _p1 = rawpt1 - extendEnds;
+          if(extendFrac > 0.) {
+            extendEnds = (rawpt2 - rawpt1) * extendFrac;
+            _p2 = rawpt2 + extendEnds;
+            _p1 = rawpt1 - extendEnds;
+          } else {
+            _p2 = rawpt2;
+            _p1 = rawpt1;
+          }
           _diff = _p2 - _p1;
         }
 
         /// Point initializer / recycler
-        void init(const P2& p1, const P2& p2, double extendFrac=0.) {
+        void init(const P2& p1, const P2& p2, double extendFrac=-1.) {
           init(p1.getx(), p1.gety(), p2.getx(), p2.gety(), extendFrac);
         }
 
@@ -129,7 +134,7 @@ namespace Gambit {
         }
 
         /// Coordinate constructor
-        LineSegment(double x1, double y1, double x2, double y2, double extendFrac=0.) {
+        LineSegment(double x1, double y1, double x2, double y2, double extendFrac=-1.) {
           init(x1, y1, x2, y2, extendFrac);
         }
 

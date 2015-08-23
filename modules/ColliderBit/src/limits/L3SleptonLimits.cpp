@@ -15,41 +15,69 @@ namespace Gambit {
       return (y <= x and x <= 104.);
     }
     L3SelectronLimitAt205GeV::L3SelectronLimitAt205GeV() {
+      ///// Limit values /////
+      _limitValuesSorted.push_back(0.03);
+      _limitValuesSorted.push_back(0.06);
+      _limitValuesSorted.push_back(0.2);
+
+      ///// Limit Contours /////
       Corners corners;
       ContoursPointer contoursPointer;
       size_t oldSize;
 
-      ///// 0.2pb /////
-      corners.clear();
-      corners.push_back(convertPt(159.00,378.00));
-      corners.push_back(convertPt(330.00,282.00));
-      corners.push_back(convertPt(360.00,260.00));
-      corners.push_back(convertPt(400.00,251.00));
-      corners.push_back(convertPt(613.00,126.00));
-      corners.push_back(convertPt(641.00,100.00));
-      corners.push_back(convertPt(650.00,110.00));
-      corners.push_back(convertPt(655.00,108.00));
-      corners.push_back(convertPt(681.00,93.00));
-      corners.push_back(convertPt(710.00,73.00));
-      corners.push_back(convertPt(727.00,66.00));
-      corners.push_back(convertPt(728.00,258.00));
-      corners.push_back(convertPt(728.00,378.00));
-      corners.push_back(convertPt(729.00,392.00));
-      corners.push_back(convertPt(729.00,565.00));
-      corners.push_back(convertPt(719.00,575.00));
-      corners.push_back(convertPt(718.00,610.00));
-      corners.push_back(convertPt(251.00,610.00));
-      corners.push_back(convertPt(227.00,586.00));
-      corners.push_back(convertPt(199.83,583.96));
-      corners.push_back(convertPt(181.00,565.00));
-      corners.push_back(convertPt(159.00,559.00));
-      corners.push_back(convertPt(159.00,378.00));
-
+      ///// 0.03pb /////
       contoursPointer = new Contours();
-      contoursPointer->resize(corners.size() - 1);
+
+      corners.clear();
+      oldSize = contoursPointer->size();
+      corners.push_back(convertPt(512.00,298.00));
+      corners.push_back(convertPt(542.00,270.00));
+      corners.push_back(convertPt(640.00,207.00));
+      corners.push_back(convertPt(673.00,208.00));
+      corners.push_back(convertPt(680.00,220.00));
+      corners.push_back(convertPt(707.00,218.00));
+      corners.push_back(convertPt(705.00,237.00));
+      corners.push_back(convertPt(679.00,253.00));
+      corners.push_back(convertPt(679.00,272.00));
+      corners.push_back(convertPt(691.00,274.00));
+      corners.push_back(convertPt(685.00,288.00));
+      corners.push_back(convertPt(685.00,300.00));
+      corners.push_back(convertPt(699.00,291.00));
+      corners.push_back(convertPt(697.00,337.00));
+      corners.push_back(convertPt(628.00,354.00));
+      corners.push_back(convertPt(575.00,341.00));
+      corners.push_back(convertPt(561.00,307.00));
+      corners.push_back(convertPt(512.00,301.00));
+      corners.push_back(convertPt(512.00,298.00));
+      contoursPointer->resize(oldSize + corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
-                     contoursPointer->begin(), makeLine);
-      _limitContours.insert(LimitContourEntry(0.2, contoursPointer));
+                     contoursPointer->begin() + oldSize, makeLine);
+
+      corners.clear();
+      oldSize = contoursPointer->size();
+      corners.push_back(convertPt(510.00,218.00));
+      corners.push_back(convertPt(562.00,185.00));
+      corners.push_back(convertPt(564.00,178.00));
+      corners.push_back(convertPt(634.00,138.00));
+      corners.push_back(convertPt(645.00,123.00));
+      corners.push_back(convertPt(650.00,123.00));
+      corners.push_back(convertPt(651.00,137.00));
+      corners.push_back(convertPt(659.00,139.00));
+      corners.push_back(convertPt(675.00,124.00));
+      corners.push_back(convertPt(682.00,130.00));
+      corners.push_back(convertPt(682.00,154.00));
+      corners.push_back(convertPt(657.00,164.00));
+      corners.push_back(convertPt(650.00,183.00));
+      corners.push_back(convertPt(588.00,201.00));
+      corners.push_back(convertPt(578.00,201.00));
+      corners.push_back(convertPt(539.00,218.00));
+      corners.push_back(convertPt(513.00,221.00));
+      corners.push_back(convertPt(510.00,218.00));
+      contoursPointer->resize(oldSize + corners.size() - 1);
+      std::transform(corners.begin(), --corners.end(), ++corners.begin(),
+                     contoursPointer->begin() + oldSize, makeLine);
+
+      _limitContours.insert(LimitContourEntry(0, contoursPointer));
 
       ///// 0.06pb /////
       corners.clear();
@@ -129,61 +157,39 @@ namespace Gambit {
       contoursPointer->resize(corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
                      contoursPointer->begin(), makeLine);
-      _limitContours.insert(LimitContourEntry(0.06, contoursPointer));
+      _limitContours.insert(LimitContourEntry(1, contoursPointer));
 
-      ///// 0.03pb /////
+      ///// 0.2pb /////
+      corners.clear();
+      corners.push_back(convertPt(159.00,378.00));
+      corners.push_back(convertPt(330.00,282.00));
+      corners.push_back(convertPt(360.00,260.00));
+      corners.push_back(convertPt(400.00,251.00));
+      corners.push_back(convertPt(613.00,126.00));
+      corners.push_back(convertPt(641.00,100.00));
+      corners.push_back(convertPt(650.00,110.00));
+      corners.push_back(convertPt(655.00,108.00));
+      corners.push_back(convertPt(681.00,93.00));
+      corners.push_back(convertPt(710.00,73.00));
+      corners.push_back(convertPt(727.00,66.00));
+      corners.push_back(convertPt(728.00,258.00));
+      corners.push_back(convertPt(728.00,378.00));
+      corners.push_back(convertPt(729.00,392.00));
+      corners.push_back(convertPt(729.00,565.00));
+      corners.push_back(convertPt(719.00,575.00));
+      corners.push_back(convertPt(718.00,610.00));
+      corners.push_back(convertPt(251.00,610.00));
+      corners.push_back(convertPt(227.00,586.00));
+      corners.push_back(convertPt(199.83,583.96));
+      corners.push_back(convertPt(181.00,565.00));
+      corners.push_back(convertPt(159.00,559.00));
+      corners.push_back(convertPt(159.00,378.00));
+
       contoursPointer = new Contours();
-
-      corners.clear();
-      oldSize = contoursPointer->size();
-      corners.push_back(convertPt(512.00,298.00));
-      corners.push_back(convertPt(542.00,270.00));
-      corners.push_back(convertPt(640.00,207.00));
-      corners.push_back(convertPt(673.00,208.00));
-      corners.push_back(convertPt(680.00,220.00));
-      corners.push_back(convertPt(707.00,218.00));
-      corners.push_back(convertPt(705.00,237.00));
-      corners.push_back(convertPt(679.00,253.00));
-      corners.push_back(convertPt(679.00,272.00));
-      corners.push_back(convertPt(691.00,274.00));
-      corners.push_back(convertPt(685.00,288.00));
-      corners.push_back(convertPt(685.00,300.00));
-      corners.push_back(convertPt(699.00,291.00));
-      corners.push_back(convertPt(697.00,337.00));
-      corners.push_back(convertPt(628.00,354.00));
-      corners.push_back(convertPt(575.00,341.00));
-      corners.push_back(convertPt(561.00,307.00));
-      corners.push_back(convertPt(512.00,301.00));
-      corners.push_back(convertPt(512.00,298.00));
-      contoursPointer->resize(oldSize + corners.size() - 1);
+      contoursPointer->resize(corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
-                     contoursPointer->begin() + oldSize, makeLine);
-
-      corners.clear();
-      oldSize = contoursPointer->size();
-      corners.push_back(convertPt(510.00,218.00));
-      corners.push_back(convertPt(562.00,185.00));
-      corners.push_back(convertPt(564.00,178.00));
-      corners.push_back(convertPt(634.00,138.00));
-      corners.push_back(convertPt(645.00,123.00));
-      corners.push_back(convertPt(650.00,123.00));
-      corners.push_back(convertPt(651.00,137.00));
-      corners.push_back(convertPt(659.00,139.00));
-      corners.push_back(convertPt(675.00,124.00));
-      corners.push_back(convertPt(682.00,130.00));
-      corners.push_back(convertPt(682.00,154.00));
-      corners.push_back(convertPt(657.00,164.00));
-      corners.push_back(convertPt(650.00,183.00));
-      corners.push_back(convertPt(588.00,201.00));
-      corners.push_back(convertPt(578.00,201.00));
-      corners.push_back(convertPt(539.00,218.00));
-      corners.push_back(convertPt(513.00,221.00));
-      corners.push_back(convertPt(510.00,218.00));
-      contoursPointer->resize(oldSize + corners.size() - 1);
-      std::transform(corners.begin(), --corners.end(), ++corners.begin(),
-                     contoursPointer->begin() + oldSize, makeLine);
-
-      _limitContours.insert(LimitContourEntry(0.03, contoursPointer));
+                     contoursPointer->begin(), makeLine);
+      _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
     //@}
@@ -198,30 +204,61 @@ namespace Gambit {
       return (y <= x and x <= 104.);
     }
     L3SmuonLimitAt205GeV::L3SmuonLimitAt205GeV() {
+      ///// Limit values /////
+      _limitValuesSorted.push_back(0.04);
+      _limitValuesSorted.push_back(0.07);
+      _limitValuesSorted.push_back(0.15);
+
+      ///// Limit Contours /////
       Corners corners;
       ContoursPointer contoursPointer;
 
-      ///// 0.15pb /////
+      ///// 0.04pb /////
       corners.clear();
-      corners.push_back(convertPt(1672.00,610.0));
-      corners.push_back(convertPt(1092.00,610.0));
-      corners.push_back(convertPt(1092.00,369.0));
-      corners.push_back(convertPt(1159.00,330.0));
-      corners.push_back(convertPt(1168.00,340.0));
-      corners.push_back(convertPt(1196.00,328.0));
-      corners.push_back(convertPt(1203.00,306.0));
-      corners.push_back(convertPt(1590.00,88.00));
-      corners.push_back(convertPt(1599.00,96.00));
-      corners.push_back(convertPt(1638.00,71.00));
-      corners.push_back(convertPt(1666.00,60.00));
-      corners.push_back(convertPt(1672.00,61.00));
-      corners.push_back(convertPt(1672.00,610.0));
+      corners.push_back(convertPt(1226.00,351.00));
+      corners.push_back(convertPt(1414.00,235.00));
+      corners.push_back(convertPt(1531.00,175.00));
+      corners.push_back(convertPt(1620.00,134.00));
+      corners.push_back(convertPt(1630.00,137.00));
+      corners.push_back(convertPt(1647.00,128.00));
+      corners.push_back(convertPt(1659.00,117.00));
+      corners.push_back(convertPt(1663.00,167.00));
+      corners.push_back(convertPt(1655.00,172.00));
+      corners.push_back(convertPt(1654.00,198.00));
+      corners.push_back(convertPt(1644.00,199.00));
+      corners.push_back(convertPt(1643.00,248.00));
+      corners.push_back(convertPt(1595.00,277.00));
+      corners.push_back(convertPt(1592.61,297.00));
+      corners.push_back(convertPt(1595.00,360.00));
+      corners.push_back(convertPt(1578.00,378.00));
+      corners.push_back(convertPt(1469.00,374.00));
+      corners.push_back(convertPt(1450.00,380.00));
+      corners.push_back(convertPt(1445.00,380.00));
+      corners.push_back(convertPt(1447.00,368.00));
+      corners.push_back(convertPt(1508.00,334.00));
+      corners.push_back(convertPt(1535.00,329.00));
+      corners.push_back(convertPt(1549.00,322.00));
+      corners.push_back(convertPt(1520.00,322.00));
+      corners.push_back(convertPt(1488.00,330.00));
+      corners.push_back(convertPt(1455.00,331.00));
+      corners.push_back(convertPt(1426.00,329.00));
+      corners.push_back(convertPt(1337.00,360.00));
+      corners.push_back(convertPt(1328.00,360.00));
+      corners.push_back(convertPt(1326.00,353.00));
+      corners.push_back(convertPt(1340.00,333.00));
+      corners.push_back(convertPt(1324.00,335.00));
+      corners.push_back(convertPt(1311.00,343.00));
+      corners.push_back(convertPt(1291.00,351.00));
+      corners.push_back(convertPt(1265.00,358.00));
+      corners.push_back(convertPt(1233.00,357.00));
+      corners.push_back(convertPt(1226.00,354.00));
+      corners.push_back(convertPt(1226.00,351.00));
 
       contoursPointer = new Contours();
       contoursPointer->resize(corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
                      contoursPointer->begin(), makeLine);
-      _limitContours.insert(LimitContourEntry(0.15, contoursPointer));
+      _limitContours.insert(LimitContourEntry(0, contoursPointer));
 
       ///// 0.07pb /////
       corners.clear();
@@ -287,54 +324,29 @@ namespace Gambit {
       contoursPointer->resize(corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
                      contoursPointer->begin(), makeLine);
-      _limitContours.insert(LimitContourEntry(0.07, contoursPointer));
+      _limitContours.insert(LimitContourEntry(1, contoursPointer));
 
-      ///// 0.04pb /////
+      ///// 0.15pb /////
       corners.clear();
-      corners.push_back(convertPt(1226.00,351.00));
-      corners.push_back(convertPt(1414.00,235.00));
-      corners.push_back(convertPt(1531.00,175.00));
-      corners.push_back(convertPt(1620.00,134.00));
-      corners.push_back(convertPt(1630.00,137.00));
-      corners.push_back(convertPt(1647.00,128.00));
-      corners.push_back(convertPt(1659.00,117.00));
-      corners.push_back(convertPt(1663.00,167.00));
-      corners.push_back(convertPt(1655.00,172.00));
-      corners.push_back(convertPt(1654.00,198.00));
-      corners.push_back(convertPt(1644.00,199.00));
-      corners.push_back(convertPt(1643.00,248.00));
-      corners.push_back(convertPt(1595.00,277.00));
-      corners.push_back(convertPt(1592.61,297.00));
-      corners.push_back(convertPt(1595.00,360.00));
-      corners.push_back(convertPt(1578.00,378.00));
-      corners.push_back(convertPt(1469.00,374.00));
-      corners.push_back(convertPt(1450.00,380.00));
-      corners.push_back(convertPt(1445.00,380.00));
-      corners.push_back(convertPt(1447.00,368.00));
-      corners.push_back(convertPt(1508.00,334.00));
-      corners.push_back(convertPt(1535.00,329.00));
-      corners.push_back(convertPt(1549.00,322.00));
-      corners.push_back(convertPt(1520.00,322.00));
-      corners.push_back(convertPt(1488.00,330.00));
-      corners.push_back(convertPt(1455.00,331.00));
-      corners.push_back(convertPt(1426.00,329.00));
-      corners.push_back(convertPt(1337.00,360.00));
-      corners.push_back(convertPt(1328.00,360.00));
-      corners.push_back(convertPt(1326.00,353.00));
-      corners.push_back(convertPt(1340.00,333.00));
-      corners.push_back(convertPt(1324.00,335.00));
-      corners.push_back(convertPt(1311.00,343.00));
-      corners.push_back(convertPt(1291.00,351.00));
-      corners.push_back(convertPt(1265.00,358.00));
-      corners.push_back(convertPt(1233.00,357.00));
-      corners.push_back(convertPt(1226.00,354.00));
-      corners.push_back(convertPt(1226.00,351.00));
+      corners.push_back(convertPt(1672.00,610.0));
+      corners.push_back(convertPt(1092.00,610.0));
+      corners.push_back(convertPt(1092.00,369.0));
+      corners.push_back(convertPt(1159.00,330.0));
+      corners.push_back(convertPt(1168.00,340.0));
+      corners.push_back(convertPt(1196.00,328.0));
+      corners.push_back(convertPt(1203.00,306.0));
+      corners.push_back(convertPt(1590.00,88.00));
+      corners.push_back(convertPt(1599.00,96.00));
+      corners.push_back(convertPt(1638.00,71.00));
+      corners.push_back(convertPt(1666.00,60.00));
+      corners.push_back(convertPt(1672.00,61.00));
+      corners.push_back(convertPt(1672.00,610.0));
 
       contoursPointer = new Contours();
       contoursPointer->resize(corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
                      contoursPointer->begin(), makeLine);
-      _limitContours.insert(LimitContourEntry(0.04, contoursPointer));
+      _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
     //@}
@@ -349,49 +361,81 @@ namespace Gambit {
       return (y <= x and x <= 104.);
     }
     L3StauLimitAt205GeV::L3StauLimitAt205GeV() {
+      ///// Limit values /////
+      _limitValuesSorted.push_back(0.1);
+      _limitValuesSorted.push_back(0.15);
+      _limitValuesSorted.push_back(0.2);
+
+      ///// Limit Contours /////
       Corners corners;
       ContoursPointer contoursPointer;
 
-      ///// 0.2pb /////
+      ///// 0.1pb /////
       corners.clear();
-      corners.push_back(convertPt(1202.00,1518.0));
-      corners.push_back(convertPt(625.00,1518.00));
-      corners.push_back(convertPt(625.00,1298.00));
-      corners.push_back(convertPt(682.00,1266.00));
-      corners.push_back(convertPt(705.00,1262.00));
-      corners.push_back(convertPt(713.00,1258.00));
-      corners.push_back(convertPt(758.00,1223.00));
-      corners.push_back(convertPt(775.00,1218.00));
-      corners.push_back(convertPt(786.00,1214.00));
-      corners.push_back(convertPt(807.00,1209.00));
-      corners.push_back(convertPt(816.00,1206.00));
-      corners.push_back(convertPt(842.00,1186.00));
-      corners.push_back(convertPt(862.00,1176.00));
-      corners.push_back(convertPt(981.00,1109.00));
-      corners.push_back(convertPt(998.00,1103.00));
-      corners.push_back(convertPt(1039.00,1085.0));
-      corners.push_back(convertPt(1081.00,1058.0));
-      corners.push_back(convertPt(1113.00,1049.0));
-      corners.push_back(convertPt(1156.00,1047.0));
-      corners.push_back(convertPt(1190.00,1050.0));
-      corners.push_back(convertPt(1194.00,1057.0));
-      corners.push_back(convertPt(1199.00,1062.0));
-      corners.push_back(convertPt(1206.00,1062.0));
-      corners.push_back(convertPt(1205.00,1086.0));
-      corners.push_back(convertPt(1198.00,1097.0));
-      corners.push_back(convertPt(1197.00,1108.0));
-      corners.push_back(convertPt(1196.00,1174.0));
-      corners.push_back(convertPt(1198.00,1181.0));
-      corners.push_back(convertPt(1206.00,1181.0));
-      corners.push_back(convertPt(1206.00,1369.0));
-      corners.push_back(convertPt(1202.00,1391.0));
-      corners.push_back(convertPt(1202.00,1518.0));
+      corners.push_back(convertPt(835.00,1216.00));
+      corners.push_back(convertPt(930.00,1168.00));
+      corners.push_back(convertPt(956.00,1165.00));
+      corners.push_back(convertPt(955.00,1147.00));
+      corners.push_back(convertPt(1030.00,1110.0));
+      corners.push_back(convertPt(1044.00,1110.0));
+      corners.push_back(convertPt(1086.00,1076.0));
+      corners.push_back(convertPt(1107.00,1079.0));
+      corners.push_back(convertPt(1116.00,1082.0));
+      corners.push_back(convertPt(1122.00,1108.0));
+      corners.push_back(convertPt(1150.00,1121.0));
+      corners.push_back(convertPt(1126.00,1155.0));
+      corners.push_back(convertPt(1122.00,1168.0));
+      corners.push_back(convertPt(1139.00,1185.0));
+      corners.push_back(convertPt(1154.00,1188.0));
+      corners.push_back(convertPt(1159.00,1192.0));
+      corners.push_back(convertPt(1153.00,1207.0));
+      corners.push_back(convertPt(1152.00,1228.0));
+      corners.push_back(convertPt(1123.00,1236.0));
+      corners.push_back(convertPt(1119.00,1261.0));
+      corners.push_back(convertPt(1094.00,1287.0));
+      corners.push_back(convertPt(1064.00,1287.0));
+      corners.push_back(convertPt(1044.00,1284.0));
+      corners.push_back(convertPt(1044.00,1281.0));
+      corners.push_back(convertPt(1073.00,1267.0));
+      corners.push_back(convertPt(1062.00,1254.0));
+      corners.push_back(convertPt(1036.00,1267.0));
+      corners.push_back(convertPt(1003.00,1272.0));
+      corners.push_back(convertPt(992.00,1278.00));
+      corners.push_back(convertPt(960.00,1278.00));
+      corners.push_back(convertPt(939.00,1277.00));
+      corners.push_back(convertPt(957.00,1265.00));
+      corners.push_back(convertPt(995.00,1243.00));
+      corners.push_back(convertPt(1010.00,1232.0));
+      corners.push_back(convertPt(1008.00,1212.0));
+      corners.push_back(convertPt(1029.00,1203.0));
+      corners.push_back(convertPt(1029.00,1189.0));
+      corners.push_back(convertPt(1004.00,1202.0));
+      corners.push_back(convertPt(989.00,1204.00));
+      corners.push_back(convertPt(973.00,1208.00));
+      corners.push_back(convertPt(958.00,1214.00));
+      corners.push_back(convertPt(950.00,1214.00));
+      corners.push_back(convertPt(946.00,1210.00));
+      corners.push_back(convertPt(958.00,1205.00));
+      corners.push_back(convertPt(993.00,1188.00));
+      corners.push_back(convertPt(1008.00,1177.0));
+      corners.push_back(convertPt(1016.00,1169.0));
+      corners.push_back(convertPt(1026.00,1155.0));
+      corners.push_back(convertPt(1026.00,1146.0));
+      corners.push_back(convertPt(989.00,1167.00));
+      corners.push_back(convertPt(979.00,1180.00));
+      corners.push_back(convertPt(976.00,1181.00));
+      corners.push_back(convertPt(963.00,1182.00));
+      corners.push_back(convertPt(922.00,1211.00));
+      corners.push_back(convertPt(904.00,1216.00));
+      corners.push_back(convertPt(874.00,1222.00));
+      corners.push_back(convertPt(843.00,1222.00));
+      corners.push_back(convertPt(835.00,1216.00));
 
       contoursPointer = new Contours();
       contoursPointer->resize(corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
                      contoursPointer->begin(), makeLine);
-      _limitContours.insert(LimitContourEntry(0.2, contoursPointer));
+      _limitContours.insert(LimitContourEntry(0, contoursPointer));
 
       ///// 0.15pb /////
       corners.clear();
@@ -487,74 +531,48 @@ namespace Gambit {
       contoursPointer->resize(corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
                      contoursPointer->begin(), makeLine);
-      _limitContours.insert(LimitContourEntry(0.15, contoursPointer));
+      _limitContours.insert(LimitContourEntry(1, contoursPointer));
 
-      ///// 0.1pb /////
+      ///// 0.2pb /////
       corners.clear();
-      corners.push_back(convertPt(835.00,1216.00));
-      corners.push_back(convertPt(930.00,1168.00));
-      corners.push_back(convertPt(956.00,1165.00));
-      corners.push_back(convertPt(955.00,1147.00));
-      corners.push_back(convertPt(1030.00,1110.0));
-      corners.push_back(convertPt(1044.00,1110.0));
-      corners.push_back(convertPt(1086.00,1076.0));
-      corners.push_back(convertPt(1107.00,1079.0));
-      corners.push_back(convertPt(1116.00,1082.0));
-      corners.push_back(convertPt(1122.00,1108.0));
-      corners.push_back(convertPt(1150.00,1121.0));
-      corners.push_back(convertPt(1126.00,1155.0));
-      corners.push_back(convertPt(1122.00,1168.0));
-      corners.push_back(convertPt(1139.00,1185.0));
-      corners.push_back(convertPt(1154.00,1188.0));
-      corners.push_back(convertPt(1159.00,1192.0));
-      corners.push_back(convertPt(1153.00,1207.0));
-      corners.push_back(convertPt(1152.00,1228.0));
-      corners.push_back(convertPt(1123.00,1236.0));
-      corners.push_back(convertPt(1119.00,1261.0));
-      corners.push_back(convertPt(1094.00,1287.0));
-      corners.push_back(convertPt(1064.00,1287.0));
-      corners.push_back(convertPt(1044.00,1284.0));
-      corners.push_back(convertPt(1044.00,1281.0));
-      corners.push_back(convertPt(1073.00,1267.0));
-      corners.push_back(convertPt(1062.00,1254.0));
-      corners.push_back(convertPt(1036.00,1267.0));
-      corners.push_back(convertPt(1003.00,1272.0));
-      corners.push_back(convertPt(992.00,1278.00));
-      corners.push_back(convertPt(960.00,1278.00));
-      corners.push_back(convertPt(939.00,1277.00));
-      corners.push_back(convertPt(957.00,1265.00));
-      corners.push_back(convertPt(995.00,1243.00));
-      corners.push_back(convertPt(1010.00,1232.0));
-      corners.push_back(convertPt(1008.00,1212.0));
-      corners.push_back(convertPt(1029.00,1203.0));
-      corners.push_back(convertPt(1029.00,1189.0));
-      corners.push_back(convertPt(1004.00,1202.0));
-      corners.push_back(convertPt(989.00,1204.00));
-      corners.push_back(convertPt(973.00,1208.00));
-      corners.push_back(convertPt(958.00,1214.00));
-      corners.push_back(convertPt(950.00,1214.00));
-      corners.push_back(convertPt(946.00,1210.00));
-      corners.push_back(convertPt(958.00,1205.00));
-      corners.push_back(convertPt(993.00,1188.00));
-      corners.push_back(convertPt(1008.00,1177.0));
-      corners.push_back(convertPt(1016.00,1169.0));
-      corners.push_back(convertPt(1026.00,1155.0));
-      corners.push_back(convertPt(1026.00,1146.0));
-      corners.push_back(convertPt(989.00,1167.00));
-      corners.push_back(convertPt(979.00,1180.00));
-      corners.push_back(convertPt(976.00,1181.00));
-      corners.push_back(convertPt(963.00,1182.00));
-      corners.push_back(convertPt(922.00,1211.00));
-      corners.push_back(convertPt(904.00,1216.00));
-      corners.push_back(convertPt(874.00,1222.00));
-      corners.push_back(convertPt(843.00,1222.00));
-      corners.push_back(convertPt(835.00,1216.00));
+      corners.push_back(convertPt(1202.00,1518.0));
+      corners.push_back(convertPt(625.00,1518.00));
+      corners.push_back(convertPt(625.00,1298.00));
+      corners.push_back(convertPt(682.00,1266.00));
+      corners.push_back(convertPt(705.00,1262.00));
+      corners.push_back(convertPt(713.00,1258.00));
+      corners.push_back(convertPt(758.00,1223.00));
+      corners.push_back(convertPt(775.00,1218.00));
+      corners.push_back(convertPt(786.00,1214.00));
+      corners.push_back(convertPt(807.00,1209.00));
+      corners.push_back(convertPt(816.00,1206.00));
+      corners.push_back(convertPt(842.00,1186.00));
+      corners.push_back(convertPt(862.00,1176.00));
+      corners.push_back(convertPt(981.00,1109.00));
+      corners.push_back(convertPt(998.00,1103.00));
+      corners.push_back(convertPt(1039.00,1085.0));
+      corners.push_back(convertPt(1081.00,1058.0));
+      corners.push_back(convertPt(1113.00,1049.0));
+      corners.push_back(convertPt(1156.00,1047.0));
+      corners.push_back(convertPt(1190.00,1050.0));
+      corners.push_back(convertPt(1194.00,1057.0));
+      corners.push_back(convertPt(1199.00,1062.0));
+      corners.push_back(convertPt(1206.00,1062.0));
+      corners.push_back(convertPt(1205.00,1086.0));
+      corners.push_back(convertPt(1198.00,1097.0));
+      corners.push_back(convertPt(1197.00,1108.0));
+      corners.push_back(convertPt(1196.00,1174.0));
+      corners.push_back(convertPt(1198.00,1181.0));
+      corners.push_back(convertPt(1206.00,1181.0));
+      corners.push_back(convertPt(1206.00,1369.0));
+      corners.push_back(convertPt(1202.00,1391.0));
+      corners.push_back(convertPt(1202.00,1518.0));
 
       contoursPointer = new Contours();
       contoursPointer->resize(corners.size() - 1);
       std::transform(corners.begin(), --corners.end(), ++corners.begin(),
                      contoursPointer->begin(), makeLine);
-      _limitContours.insert(LimitContourEntry(0.1, contoursPointer));
+      _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
     //@}
