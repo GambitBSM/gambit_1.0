@@ -490,8 +490,8 @@ namespace Gambit {
          {
             typename MTget::fmap0_extraM tmp_map;
             tmp_map["tanbeta"] = &get_tanbeta<Model>;
-	    tmp_map["sinthetaW2"] = &get_sinthW2_DRbar<Model>;
-	    tmp_map["sinthW2"] = &get_sinthW2_DRbar<Model>;
+	    tmp_map["sinW2"] = &get_sinthW2_DRbar<Model>;
+	  
             map_collection[Par::dimensionless].map0_extraM = tmp_map;
          }
 
