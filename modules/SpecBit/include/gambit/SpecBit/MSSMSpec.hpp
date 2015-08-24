@@ -51,8 +51,7 @@ namespace Gambit {
       // (i.e. it should be declared first)
       template <class MI>
       MSSMSpec<MI>::MSSMSpec(MI mi, bool switch_index_convention)
-         : Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>(model_interface.model)
-         , index_offset(-1)
+         : index_offset(-1)
          , model_interface(mi)
       {
          if (switch_index_convention) index_offset = 0;
@@ -61,21 +60,12 @@ namespace Gambit {
       
       // Default constructor
       template <class MI>
-      MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
-         : Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>()
-         , index_offset(-1)
+      MSSMSpec<MI>::MSSMSpec(bool switch_index_convention /*optional*/)
+         : index_offset(-1)
       {
          if (switch_index_convention) index_offset = 0;
       }
   
-      /// We also need a copy constructor so that the clone() function will do a deep copy properly
-      template <class MI>
-      MSSMSpec<MI>::MSSMSpec(const MSSMSpec<MI>& other)
-         : Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>(model_interface.model)
-         , index_offset(other.index_offset)
-         , model_interface(other.model_interface)
-      {}
- 
       template <class MI>
       MSSMSpec<MI>::~MSSMSpec()
       {}

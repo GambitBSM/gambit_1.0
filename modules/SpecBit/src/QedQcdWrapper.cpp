@@ -62,29 +62,15 @@ namespace Gambit
       
       ///   @{ Constructors
       QedQcdWrapper::QedQcdWrapper() 
-         : Spec<QedQcdWrapper,QedQcdWrapperTraits>()
-         , qedqcd()
+         : qedqcd()
          , sminputs()
       {}
 
       QedQcdWrapper::QedQcdWrapper(const softsusy::QedQcd& model, const SMInputs& input)
-         : Spec<QedQcdWrapper,QedQcdWrapperTraits>(qedqcd, sminputs) /***/
-         , qedqcd(model)
+         : qedqcd(model)
          , sminputs(input)        /***/
          , softup(phys.get_Pole_Mass("t")) // Set top quark pole mass as soft upper limit of running. /***/
-         , hardup(phys.get_Pole_Mass("t")) // QedQcd object will throw its own error if we try to run above this, so set this as the      , qedqcd(model) /***/
-      {}
-
-      /// Copy constructor
-      /// Needed so that the clone() function will do a deep copy properly. Cannot
-      /// just call Spec<T> copy constructor, because we need to change the base
-      /// class references to the "connected" qedqcd_msbar_pars and qedqcd_ph objects.
-      QedQcdWrapper::QedQcdWrapper(const QedQcdWrapper& other)
-         : Spec<QedQcdWrapper,QedQcdWrapperTraits>(qedqcd, sminputs)   /***/
-         , qedqcd(other.qedqcd)
-         , sminputs(other.sminputs)
-         , softup(other.softup)
-         , hardup(other.hardup)
+         , hardup(phys.get_Pole_Mass("t")) // QedQcd object will throw an error if we try to run above this, so set this as the limit /***/
       {}
 
       ///   @}

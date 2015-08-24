@@ -65,9 +65,12 @@ namespace Gambit
             // Constructors/destructors
             QedQcdWrapper();
             QedQcdWrapper(const softsusy::QedQcd&, const SMInputs&);
-            QedQcdWrapper(const QedQcdWrapper&);
             virtual ~QedQcdWrapper();        /***/
-    
+   
+            // Functions to interface Model and Input objects with the base 'Spec' class
+            QedQcdWrapperTraits::Model& get_Model() { return qedqcd; }
+            QedQcdWrapperTraits::Input& get_Input() { return sminputs; }
+ 
             virtual int get_index_offset() const;  /***/   
             virtual int get_numbers_stable_particles() const;  /***/
    

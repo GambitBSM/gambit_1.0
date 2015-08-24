@@ -806,11 +806,7 @@ namespace Gambit {
          /// Internal instances of specialised running and physical parameter classes   
          RunparDer<D,DT> rp;
          PhysDer<D,DT> pp;
-         /// Model object on which to call function pointers
-         Model* model; 
-         /// Contains extra data input on SubSpectrum object creation
-         Input* input;
-     
+
       protected:
          /// @{ Map filler functions
          /// Override as needed in derived classes
@@ -858,45 +854,12 @@ namespace Gambit {
          
       public: 
          /// Minimal constructor used in default constructors of derived classes
-         /// Assumes that "Model" and "Input" classes have default constructors
          Spec()
            : SubSpectrum(rp,pp)
            , rp(*this)
            , pp(*this)
-           , model()
-           , input()
          {}
       
-         /// Constructor initialising just "model" member (Input unused (e.g. no special computations))
-         Spec(Model& m)
-           : SubSpectrum(rp,pp)
-           , rp(*this)
-           , pp(*this)
-           , model(&m)
-           , input()
-         {}
-      
-         /// Constructor initialising just "input" member (Model unused (e.g. no RGEs))
-         Spec(Input& i)
-           : SubSpectrum(rp,pp)
-           , rp(*this)
-           , pp(*this)
-           , model()
-           , input(&i)
-         {}
-      
-         /// Full constructor
-         Spec(Model& m, Input& i)
-           : SubSpectrum(rp,pp)
-           , rp(*this)
-           , pp(*this)
-           , model(&m)
-           , input(&i)
-         {}
-     
-         Model* get_Model(){ return model; } 
-         Input* get_Input(){ return input; }
-
  
          /// CRTP-style polymorphic clone function
          /// Now derived classes will not need to re-implement the clone function.
@@ -906,7 +869,20 @@ namespace Gambit {
               new DerivedSpec(static_cast<DerivedSpec const &>(*this))
               );
          }
-       
+ 
+         /// @{ Getters for wrapped data; be sure to define the 'get_Model' and
+         ///    'get_Input' functions in the wrappers (with public access)
+         ///    Might as well use static polymorphism rather than virtual functions,
+         ///    since we are using the CRTP already anyway.
+
+         /// Get model object on which to call function pointers
+ 	 Model& model() { return static_cast<DerivedSpec*>(this)->get_Model(); }
+
+         /// Get struct containing any extra data input on SubSpectrum object creation
+         Input& input() { return static_cast<DerivedSpec*>(this)->get_Input(); }
+
+         /// @}
+      
    };
   
    /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
