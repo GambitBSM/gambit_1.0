@@ -66,12 +66,13 @@ namespace Gambit
 
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
-      // FIXME should these be in terms of DRbar parameters at Q_SUSY, DRbar at q = sqrts, or just in terms of MSbar at Q=mZ?
-      // Should we use the precision sin2theta_W?  Is it at the right scale?
-      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
       const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
-      const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
-      const double alpha = 0.25*sin2thetaW*g2*g2/pi; 
+      // FIXME sinW2 should be gotten from the spectrum object once that is possible (where it is calculated from DRbar parameters at Q_SUSY)
+      // ***replace
+      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
+      const double sinW2 = g1*g1/(g2*g2+g1*g1);
+      // ***end replace
+      const double alpha = 0.25*sinW2*g2*g2/pi; 
 
       // MSSM parameters
       const double tanb = mssm->runningpars.get_dimensionless_parameter("tanbeta");
@@ -131,22 +132,22 @@ namespace Gambit
       for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->phys.get_Pole_Mixing("~chi0",i+1,j+1);
 
       // Convert neutralino mixing matrix to BFM convention
-      SLHA2BFM_NN(neutmix, tanb, sin2thetaW);
+      SLHA2BFM_NN(neutmix, tanb, sinW2);
       
       // Calculate the cross-section
-      result.central = xsec_sleislej(id1, id2, sqrts, m1, m2, sleptonmix, neutmix, neutmass, alpha, mZ, gammaZ, sin2thetaW);
+      result.central = xsec_sleislej(id1, id2, sqrts, m1, m2, sleptonmix, neutmix, neutmass, alpha, mZ, gammaZ, sinW2);
 
       // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
       std::vector<double> xsecs;
       xsecs.push_back(result.central);
       xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first), sleptonmix, neutmix,
-                                   neutmass, alpha, mZ, gammaZ, sin2thetaW, false));
+                                   neutmass, alpha, mZ, gammaZ, sinW2, false));
       xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.+m2_uncerts.first), sleptonmix, neutmix,
-                                   neutmass, alpha, mZ, gammaZ, sin2thetaW, false));
+                                   neutmass, alpha, mZ, gammaZ, sinW2, false));
       xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.-m2_uncerts.second), sleptonmix, neutmix,
-                                   neutmass, alpha, mZ, gammaZ, sin2thetaW, false));
+                                   neutmass, alpha, mZ, gammaZ, sinW2, false));
       xsecs.push_back(xsec_sleislej(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.-m2_uncerts.second), sleptonmix, neutmix,
-                                   neutmass, alpha, mZ, gammaZ, sin2thetaW, false));
+                                   neutmass, alpha, mZ, gammaZ, sinW2, false));
       result.upper = *std::max_element(xsecs.begin(), xsecs.end());
       result.lower = *std::min_element(xsecs.begin(), xsecs.end());
 
@@ -166,12 +167,13 @@ namespace Gambit
 
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
-      // FIXME should these be in terms of DRbar parameters at Q_SUSY, DRbar at q = sqrts, or just in terms of MSbar at Q=mZ?
-      // Should we use the precision sin2theta_W?  Is it at the right scale?
-      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
       const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
-      const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
-      const double alpha = 0.25*sin2thetaW*g2*g2/pi; 
+      // FIXME sinW2 should be gotten from the spectrum object once that is possible (where it is calculated from DRbar parameters at Q_SUSY)
+      // ***replace
+      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
+      const double sinW2 = g1*g1/(g2*g2+g1*g1);
+      // ***end replace
+      const double alpha = 0.25*sinW2*g2*g2/pi; 
 
       // MSSM parameters
       const double tanb = mssm->runningpars.get_dimensionless_parameter("tanbeta");
@@ -206,22 +208,22 @@ namespace Gambit
       for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->phys.get_Pole_Mixing("~chi0",i+1,j+1);
 
       // Convert neutralino mixing matrix to BFM convention
-      SLHA2BFM_NN(neutmix, tanb, sin2thetaW);
+      SLHA2BFM_NN(neutmix, tanb, sinW2);
       
       // Calculate the cross-section
-      result.central = xsec_neuineuj(id1, id2, sqrts, m1, m2, neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW);
+      result.central = xsec_neuineuj(id1, id2, sqrts, m1, m2, neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sinW2);
 
       // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
       std::vector<double> xsecs;
       xsecs.push_back(result.central);
       xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first),
-                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
+                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sinW2));
       xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.-m2_uncerts.second),
-                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
+                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sinW2));
       xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.+m2_uncerts.first),
-                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
+                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sinW2));
       xsecs.push_back(xsec_neuineuj(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.-m2_uncerts.second),
-                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sin2thetaW));
+                                    neutmix, mS, 1./tanb, alpha, mZ, gammaZ, sinW2));
       result.upper = *std::max_element(xsecs.begin(), xsecs.end());
       result.lower = *std::min_element(xsecs.begin(), xsecs.end());
 
@@ -240,12 +242,13 @@ namespace Gambit
 
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
-      // FIXME should these be in terms of DRbar parameters at Q_SUSY, DRbar at q = sqrts, or just in terms of MSbar at Q=mZ?
-      // Should we use the precision sin2theta_W?  Is it at the right scale?
-      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
       const double g2 = mssm->runningpars.get_dimensionless_parameter("g2");
-      const double sin2thetaW = g1*g1/(g2*g2+g1*g1);
-      const double alpha = 0.25*sin2thetaW*g2*g2/pi; 
+      // FIXME sinW2 should be gotten from the spectrum object once that is possible (where it is calculated from DRbar parameters at Q_SUSY)
+      // ***replace
+      const double g1 = mssm->runningpars.get_dimensionless_parameter("g1") * sqrt(3./5.);
+      const double sinW2 = g1*g1/(g2*g2+g1*g1);
+      // ***end replace
+      const double alpha = 0.25*sinW2*g2*g2/pi; 
 
       // MSSM parameters
       // Get the mass eigenstates best corresponding to ~nu_e_L.
@@ -288,19 +291,19 @@ namespace Gambit
       
       // Calculate the cross-section
       result.central = xsec_chaichaj(id1, id2, sqrts, m1, m2, charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW);
+                                     msn, alpha, mZ, gammaZ, sinW2);
 
       // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
       std::vector<double> xsecs;
       xsecs.push_back(result.central);
       xsecs.push_back(xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.+m2_uncerts.first), charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW));
+                                     msn, alpha, mZ, gammaZ, sinW2));
       xsecs.push_back(xsec_chaichaj(id1, id2, sqrts, m1*(1.+m1_uncerts.first), m2*(1.-m2_uncerts.second), charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW));
+                                     msn, alpha, mZ, gammaZ, sinW2));
       xsecs.push_back(xsec_chaichaj(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.+m2_uncerts.first), charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW));
+                                     msn, alpha, mZ, gammaZ, sinW2));
       xsecs.push_back(xsec_chaichaj(id1, id2, sqrts, m1*(1.-m1_uncerts.second), m2*(1.-m2_uncerts.second), charginomixV, charginomixU, 
-                                     msn, alpha, mZ, gammaZ, sin2thetaW));
+                                     msn, alpha, mZ, gammaZ, sinW2));
       result.upper = *std::max_element(xsecs.begin(), xsecs.end());
       result.lower = *std::min_element(xsecs.begin(), xsecs.end());
 
