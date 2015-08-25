@@ -117,32 +117,32 @@ namespace Gambit
 
       // Test run functions
       std::cout << "SubSpectrum via MSSMSpec" << std::endl;
-      std::cout << "mssm.runningpars.GetScale() =" 
-          << mssm.runningpars.GetScale() << std::endl;
+      std::cout << "mssm.runningpars().GetScale() =" 
+          << mssm.runningpars().GetScale() << std::endl;
       std::cout << "mHd2 = "  
-          << mssm.runningpars.get_mass2_parameter("mHd2") << std::endl;
+          << mssm.runningpars().get_mass2_parameter("mHd2") << std::endl;
       std::cout << "mHu2 = "  
-          << mssm.runningpars.get_mass2_parameter("mHu2") << std::endl;
+          << mssm.runningpars().get_mass2_parameter("mHu2") << std::endl;
 
       // Do it again using a SubSpectrum base pointer
       SubSpectrum* spec = &mssm;
       std::cout << "SubSpectrum via SubSpectrum*" << std::endl;
-      std::cout << "spec->runningpars.GetScale() =" 
-          << spec->runningpars.GetScale() << std::endl;
+      std::cout << "spec->runningpars().GetScale() =" 
+          << spec->runningpars().GetScale() << std::endl;
       std::cout << "mHd2 = "  
-          << spec->runningpars.get_mass2_parameter("mHd2") << std::endl;
+          << spec->runningpars().get_mass2_parameter("mHd2") << std::endl;
       std::cout << "mHu2 = "  
-          << spec->runningpars.get_mass2_parameter("mHu2") << std::endl;
+          << spec->runningpars().get_mass2_parameter("mHu2") << std::endl;
 
       // Fill the model and do it again
       std::cout << "SubSpectrum via SubSpectrum* (filled)" << std::endl;
       setup(mssm.model_interface.model);
-      std::cout << "spec->runningpars.GetScale() =" 
-          << spec->runningpars.GetScale() << std::endl;
+      std::cout << "spec->runningpars().GetScale() =" 
+          << spec->runningpars().GetScale() << std::endl;
       std::cout << "mHd2 = "  
-          << spec->runningpars.get_mass2_parameter("mHd2") << std::endl;
+          << spec->runningpars().get_mass2_parameter("mHd2") << std::endl;
       std::cout << "mHu2 = "  
-          << spec->runningpars.get_mass2_parameter("mHu2") << std::endl;
+          << spec->runningpars().get_mass2_parameter("mHu2") << std::endl;
 
     }
 
@@ -207,7 +207,7 @@ namespace Gambit
       const Spectrum* spec = *Dep::SingletDM_spectrum;
       logger() << "Parameters from SingletDM_spectrum:" << std::endl;
       logger() << "Higgs pole mass  : " << spec->get_Pole_Mass("h0") << std::endl; 
-      logger() << "Higgs VEV        : " << spec->get_UV()->runningpars.get_mass_parameter("v0") << std::endl; 
+      logger() << "Higgs VEV        : " << spec->get_UV()->runningpars().get_mass_parameter("v0") << std::endl; 
       logger() << "Singlet pole mass: " << spec->get_Pole_Mass("S") << std::endl; 
       logger() << EOM;
 

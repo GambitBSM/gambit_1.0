@@ -524,8 +524,8 @@ namespace Gambit {
          double result(-1); // should not be returned in this state
          if(ff->error_code==0)
          {
-            typename DT::Model* model = ff->fakethis->parent.get_Model();
-            typename DT::Input* input = ff->fakethis->parent.get_Input();
+            typename DT::Model& model = ff->fakethis->parent.model();
+            typename DT::Input& input = ff->fakethis->parent.input();
             switch( ff->whichiter )
             {
                // Override retrieval cases
@@ -548,56 +548,56 @@ namespace Gambit {
                case 3: {
                  ff->check(ff->it0_safe);
                  typename MT::FSptr f = ff->it0->second;
-                 result = (model->*f)();
+                 result = (model.*f)();
                  break;}
                case 4: {
                  ff->check(ff->it0M_safe);
                  typename MT::plainfptrM f = ff->it0M->second;
-                 result = (*f)(*model);
+                 result = (*f)(model);
                  break;}
                case 5: {
                  ff->check(ff->it0I_safe);
                  typename MT::plainfptrI f = ff->it0I->second;
-                 result = (*f)(*input);
+                 result = (*f)(input);
                  break;}
                case 6: {
                  ff->check(ff->it1_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
-                 result = (model->*f)(ff->index1);
+                 result = (model.*f)(ff->index1);
                  break;}
                case 7: {
                  ff->check(ff->it1M_safe);
                  typename MT::plainfptrM1 f = ff->it1M->second.fptr;
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
-                 result = (*f)(*model,ff->index1);
+                 result = (*f)(model,ff->index1);
                  break;}
                case 8: {
                  ff->check(ff->it1I_safe);
                  typename MT::plainfptrI1 f = ff->it1I->second.fptr;
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
-                 result = (*f)(*input,ff->index1);
+                 result = (*f)(input,ff->index1);
                  break;}
               case 9: {
                  ff->check(ff->it2_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
-                 result = (model->*f)(ff->index1,ff->index2);
+                 result = (model.*f)(ff->index1,ff->index2);
                  break;}
                case 10: {
                  ff->check(ff->it2M_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrM2 f = ff->it2M->second.fptr;
-                 result = (*f)(*model,ff->index1,ff->index2);
+                 result = (*f)(model,ff->index1,ff->index2);
                  break;}
                case 11: {
                  ff->check(ff->it2I_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;
-                 result = (*f)(*input,ff->index1,ff->index2);
+                 result = (*f)(input,ff->index1,ff->index2);
                  break;}
               default:{
                  std::ostringstream errmsg;
@@ -636,8 +636,8 @@ namespace Gambit {
       {
          if(ff->error_code==0)
          {
-            typename DT::Model* model = ff->fakethis->parent.get_Model();
-            typename DT::Input* input = ff->fakethis->parent.get_Input();
+            typename DT::Model& model = ff->fakethis->parent.model();
+            typename DT::Input& input = ff->fakethis->parent.input();
             switch( ff->whichiter )
             {
                // Override retrieval cases
@@ -654,56 +654,56 @@ namespace Gambit {
                case 3: {
                  ff->check(ff->it0_safe);
                  typename MT::FSptr f = ff->it0->second;
-                 (model->*f)(set_value);
+                 (model.*f)(set_value);
                  break;}
                case 4: {
                  ff->check(ff->it0M_safe);
                  typename MT::plainfptrM f = ff->it0M->second;
-                 (*f)(*model,set_value);
+                 (*f)(model,set_value);
                  break;}
                case 5: {
                  ff->check(ff->it0I_safe);
                  typename MT::plainfptrI f = ff->it0I->second;
-                 (*f)(*input,set_value);
+                 (*f)(input,set_value);
                  break;}
                case 6: {
                  ff->check(ff->it1_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
-                 (model->*f)(set_value,ff->index1);
+                 (model.*f)(set_value,ff->index1);
                  break;}
                case 7: {
                  ff->check(ff->it1M_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::plainfptrM1 f = ff->it1M->second.fptr;
-                 (*f)(*model,set_value,ff->index1);
+                 (*f)(model,set_value,ff->index1);
                  break;}
                case 8: {
                  ff->check(ff->it1I_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::plainfptrI1 f = ff->it1I->second.fptr;
-                 (*f)(*input,set_value,ff->index1);
+                 (*f)(input,set_value,ff->index1);
                  break;}
                case 9: {
                  ff->check(ff->it2_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
-                 (model->*f)(set_value,ff->index1,ff->index2);
+                 (model.*f)(set_value,ff->index1,ff->index2);
                  break;}
                case 10: {
                  ff->check(ff->it2M_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrM2 f = ff->it2M->second.fptr;
-                 (*f)(*model,set_value,ff->index1,ff->index2);
+                 (*f)(model,set_value,ff->index1,ff->index2);
                  break;}
                case 11: {
                  ff->check(ff->it2I_safe);
                  ff->check_index_initd(LOCAL_INFO,ff->index1);
                  ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;
-                 (*f)(*input,set_value,ff->index1,ff->index2);
+                 (*f)(input,set_value,ff->index1,ff->index2);
                  break;}
                default:{
                  std::ostringstream errmsg;

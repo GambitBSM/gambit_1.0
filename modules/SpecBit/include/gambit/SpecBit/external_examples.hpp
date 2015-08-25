@@ -132,42 +132,42 @@ void setpars(Model& mssm)
       
 void spec_print(Gambit::SubSpectrum& spec){
 
-   PRINTOUT << "spec.runningpars.GetScale() =" 
-          << spec.runningpars.GetScale() << std::endl;
+   PRINTOUT << "spec.runningpars().GetScale() =" 
+          << spec.runningpars().GetScale() << std::endl;
    PRINTOUT << "mHd2 = "  
-          << spec.runningpars.get_mass2_parameter("mHd2") 
+          << spec.runningpars().get_mass2_parameter("mHd2") 
           <<std::endl;
-   PRINTOUT << " mHu2 = "  << spec.runningpars.get_mass2_parameter("mHu2") 
+   PRINTOUT << " mHu2 = "  << spec.runningpars().get_mass2_parameter("mHu2") 
           <<std::endl;
-   PRINTOUT << "BMu ="  << spec.runningpars.get_mass2_parameter("BMu") 
+   PRINTOUT << "BMu ="  << spec.runningpars().get_mass2_parameter("BMu") 
                 <<std::endl; 
    
    PRINTOUT << "mq2(1,1) = " 
-          << spec.runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
+          << spec.runningpars().get_mass2_parameter("mq2",1,1) << std::endl;
 
    PRINTOUT << "mu2(1,2) = " 
-          << spec.runningpars.get_mass2_parameter("mq2",1,2) << std::endl;
+          << spec.runningpars().get_mass2_parameter("mq2",1,2) << std::endl;
    
    PRINTOUT << "me2(3,3) = " 
-          << spec.runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
+          << spec.runningpars().get_mass2_parameter("mq2",3,3) << std::endl;
 
    /// TODO: Ben: Used to be this, but "Mu" is in a no-index map so it's an error
    /// Peter, was this this way for a reason?
    //PRINTOUT << "Mu = " 
-   //       << spec.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
+   //       << spec.runningpars().get_mass_parameter("Mu",3,3) << std::endl;
    PRINTOUT << "Mu = " 
-          << spec.runningpars.get_mass_parameter("Mu") << std::endl;
+          << spec.runningpars().get_mass_parameter("Mu") << std::endl;
 
    //what not to do here...
    // Ben: these now throw errors, so cannot continue test if we do them.
    //PRINTOUT << "mistake mq2(1) =  " 
-   //       <<  spec.runningpars.get_mass2_parameter("mq2",1) << std::endl;
+   //       <<  spec.runningpars().get_mass2_parameter("mq2",1) << std::endl;
    //PRINTOUT << "mistake 2 mq2(1) =  " 
-   //       <<  spec.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
+   //       <<  spec.runningpars().get_mass2_parameter("mqL2",1,1) << std::endl;
    //PRINTOUT << "mistake 3 mq2(1) =  " 
-   //       <<  spec.runningpars.get_mass_parameter("mq2",1) << std::endl;
+   //       <<  spec.runningpars().get_mass_parameter("mq2",1) << std::endl;
 
-   double mgluino = spec.phys.get_Pole_Mass("~g");
+   double mgluino = spec.phys().get_Pole_Mass("~g");
    PRINTOUT << "mgluino = " << mgluino<< std::endl;
 }
 
@@ -175,37 +175,37 @@ template <class M>
 void mssm_print(Gambit::SpecBit::MSSMSpec<M> & mssm)
 {
    
-   PRINTOUT << "mssm.runningpars.GetScale() =" 
-          << mssm.runningpars.GetScale() << std::endl;
+   PRINTOUT << "mssm.runningpars().GetScale() =" 
+          << mssm.runningpars().GetScale() << std::endl;
    PRINTOUT << "map mHd2 "  
-          << mssm.runningpars.get_mass2_parameter("mHd2") <<std::endl;
+          << mssm.runningpars().get_mass2_parameter("mHd2") <<std::endl;
    PRINTOUT << "map mHu2 "  
-          << mssm.runningpars.get_mass2_parameter("mHu2") <<std::endl;
+          << mssm.runningpars().get_mass2_parameter("mHu2") <<std::endl;
    PRINTOUT << "map BMu "  
-          << mssm.runningpars.get_mass2_parameter("BMu") <<std::endl; 
+          << mssm.runningpars().get_mass2_parameter("BMu") <<std::endl; 
    
    PRINTOUT << "mq2(1,1) = " 
-          << mssm.runningpars.get_mass2_parameter("mq2",1,1) 
+          << mssm.runningpars().get_mass2_parameter("mq2",1,1) 
           << std::endl;
      PRINTOUT << "mu2(1,2) = " 
-          <<  mssm.runningpars.get_mass2_parameter("mq2",1,2) << std::endl;
+          <<  mssm.runningpars().get_mass2_parameter("mq2",1,2) << std::endl;
    
    PRINTOUT << "me2(3,3) = " 
-          <<   mssm.runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
+          <<   mssm.runningpars().get_mass2_parameter("mq2",3,3) << std::endl;
 
    PRINTOUT << "Mu = " 
-          << mssm.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
+          << mssm.runningpars().get_mass_parameter("Mu",3,3) << std::endl;
 
    //what not to do
    PRINTOUT << "mistake  mq2(1) = " 
-          << mssm.runningpars.get_mass2_parameter("mq2",1) 
+          << mssm.runningpars().get_mass2_parameter("mq2",1) 
           << std::endl;
    PRINTOUT << "mistake 2 mq2(1) =  " 
-          <<  mssm.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
+          <<  mssm.runningpars().get_mass2_parameter("mqL2",1,1) << std::endl;
     PRINTOUT << "mistake 3 mq2(1) =  " 
-          <<  mssm.runningpars.get_mass_parameter("mq2",1) << std::endl;
+          <<  mssm.runningpars().get_mass_parameter("mq2",1) << std::endl;
    
-    double mgluino = mssm.phys.get_Pole_Mass("MGluino");
+    double mgluino = mssm.phys().get_Pole_Mass("MGluino");
    PRINTOUT << "mgluino = " << mgluino<< std::endl;
    
 }
@@ -214,18 +214,18 @@ void mssm_print(Gambit::SpecBit::MSSMSpec<M> & mssm)
 void spec_manipulate(Gambit::SubSpectrum& spec) 
 {
    PRINTOUT << "inside spectrum_manipulate" <<std::endl;
-   double lowscale = spec.runningpars.GetScale();
+   double lowscale = spec.runningpars().GetScale();
    double highscale = 1e+15;
    PRINTOUT << "lowscale  = " << lowscale << std::endl;
    PRINTOUT << "highscale = " << highscale << std::endl;
    spec_print(spec);
    PRINTOUT << "Testing stability after running..." << std::endl;
-   spec.runningpars.RunToScale(highscale);
+   spec.runningpars().RunToScale(highscale);
    PRINTOUT << "after run scale to high scale" << std::endl;
    spec_print(spec);
-   spec.runningpars.RunToScale(lowscale);
+   spec.runningpars().RunToScale(lowscale);
    PRINTOUT << "After run scale back to low scale" 
-          << spec.runningpars.GetScale() << std::endl;
+          << spec.runningpars().GetScale() << std::endl;
    spec_print(spec);
    
 }
@@ -234,16 +234,16 @@ template <class M>
 void mssm_manipulate(Gambit::SpecBit::MSSMSpec<M> & mssm) 
 {
    PRINTOUT << "inside mssm_manipulate" <<std::endl;
-   double lowscale = mssm.runningpars.GetScale();
+   double lowscale = mssm.runningpars().GetScale();
    //setting to same scale to test
-   mssm.runningpars.SetScale(lowscale);
+   mssm.runningpars().SetScale(lowscale);
    double highscale = 1e+15;
    PRINTOUT << "Mssm start at lowscale = " << lowscale << std::endl;
    mssm_print(mssm);
-   mssm.runningpars.RunToScale(highscale);
+   mssm.runningpars().RunToScale(highscale);
    PRINTOUT << "after run to highscale" << std::endl;
    mssm_print(mssm);
-   mssm.runningpars.RunToScale(lowscale);
+   mssm.runningpars().RunToScale(lowscale);
    PRINTOUT << "after run scale back top low scale" <<  std::endl;
    mssm_print(mssm);
    
@@ -253,65 +253,65 @@ void SM_checks(Gambit::SubSpectrum& SM) {
    PRINTOUT << "In specbit_test_func3: " 
           << " testing retrieval from SubSpectrum*"
           << " with capability SM_spectrum..." << endl;
-   PRINTOUT << "  Scale: " << SM.runningpars.GetScale() << endl;
+   PRINTOUT << "  Scale: " << SM.runningpars().GetScale() << endl;
    // *** This is stuff from an MSSMSpec object. Now testing QedQcdWrapper instead.
    // PRINTOUT << "  Gauge couplings:" << endl;
    // PRINTOUT << "  g1: " 
-   //        << spec.runningpars.get_dimensionless_parameter("g1") << endl;
+   //        << spec.runningpars().get_dimensionless_parameter("g1") << endl;
    // PRINTOUT << "  g2: " 
-   //        << spec.runningpars.get_dimensionless_parameter("g2") << endl;
+   //        << spec.runningpars().get_dimensionless_parameter("g2") << endl;
    // PRINTOUT << "  g3: " 
-   //        << spec.runningpars.get_dimensionless_parameter("g3") << endl;
+   //        << spec.runningpars().get_dimensionless_parameter("g3") << endl;
    // PRINTOUT << "  Yukawa couplings:" << endl;
    // 
    // for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-   //       PRINTOUT << "  Yu("<<i<<","<<j<<"): " << spec.runningpars.get_dimensionless_parameter("Yu", i, j) << endl;
+   //       PRINTOUT << "  Yu("<<i<<","<<j<<"): " << spec.runningpars().get_dimensionless_parameter("Yu", i, j) << endl;
    //    }
    // }
    // for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-   //       PRINTOUT << "  Yd("<<i<<","<<j<<"): " << spec.runningpars.get_dimensionless_parameter("Yd", i, j) << endl;
+   //       PRINTOUT << "  Yd("<<i<<","<<j<<"): " << spec.runningpars().get_dimensionless_parameter("Yd", i, j) << endl;
    //    }
    // }
    // for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-   //       PRINTOUT << "  Ye("<<i<<","<<j<<"): " << spec.runningpars.get_dimensionless_parameter("Ye", i, j) << endl;
+   //       PRINTOUT << "  Ye("<<i<<","<<j<<"): " << spec.runningpars().get_dimensionless_parameter("Ye", i, j) << endl;
    //    }
    // }
    // ***
 
    // Pole masses
    PRINTOUT << "SM pole masses:" << endl;
-   PRINTOUT << "Z:     " << SM.phys.get_Pole_Mass("Z0")    << endl;     
-   PRINTOUT << "gamma: " << SM.phys.get_Pole_Mass("gamma") << endl;  
-   PRINTOUT << "W:     " << SM.phys.get_Pole_Mass("W+")    << endl;       
-   PRINTOUT << "g:     " << SM.phys.get_Pole_Mass("g")     << endl;       
-   PRINTOUT << "t:     " << SM.phys.get_Pole_Mass("t")     << endl; // i.e. top
-   PRINTOUT << "u(3):  " << SM.phys.get_Pole_Mass("u",3)   << endl; // i.e. top
-   PRINTOUT << "b:     " << SM.phys.get_Pole_Mass("b")     << endl; // i.e. bottom
-   PRINTOUT << "d(3):  " << SM.phys.get_Pole_Mass("d",3)   << endl; // i.e. bottom
-   PRINTOUT << "e-(1): " << SM.phys.get_Pole_Mass("e-",1)  << endl; // i.e. electron
-   PRINTOUT << "e-:    " << SM.phys.get_Pole_Mass("e-")    << endl; // i.e. electron
-   PRINTOUT << "e-(2): " << SM.phys.get_Pole_Mass("e-",2)  << endl; // i.e. muon
-   PRINTOUT << "mu-:   " << SM.phys.get_Pole_Mass("mu-")   << endl; // i.e. muon
-   PRINTOUT << "e-(3): " << SM.phys.get_Pole_Mass("e-",3)  << endl; // i.e. tau
-   PRINTOUT << "tau-:  " << SM.phys.get_Pole_Mass("tau-")  << endl; // i.e. tau
-   PRINTOUT << "nu(1): " << SM.phys.get_Pole_Mass("nu",1)  << endl; // Just mass ordered (if there is mixing)
-   PRINTOUT << "nu(2): " << SM.phys.get_Pole_Mass("nu",2)  << endl;       
-   PRINTOUT << "nu(3): " << SM.phys.get_Pole_Mass("nu",3)  << endl;      
+   PRINTOUT << "Z:     " << SM.phys().get_Pole_Mass("Z0")    << endl;     
+   PRINTOUT << "gamma: " << SM.phys().get_Pole_Mass("gamma") << endl;  
+   PRINTOUT << "W:     " << SM.phys().get_Pole_Mass("W+")    << endl;       
+   PRINTOUT << "g:     " << SM.phys().get_Pole_Mass("g")     << endl;       
+   PRINTOUT << "t:     " << SM.phys().get_Pole_Mass("t")     << endl; // i.e. top
+   PRINTOUT << "u(3):  " << SM.phys().get_Pole_Mass("u",3)   << endl; // i.e. top
+   PRINTOUT << "b:     " << SM.phys().get_Pole_Mass("b")     << endl; // i.e. bottom
+   PRINTOUT << "d(3):  " << SM.phys().get_Pole_Mass("d",3)   << endl; // i.e. bottom
+   PRINTOUT << "e-(1): " << SM.phys().get_Pole_Mass("e-",1)  << endl; // i.e. electron
+   PRINTOUT << "e-:    " << SM.phys().get_Pole_Mass("e-")    << endl; // i.e. electron
+   PRINTOUT << "e-(2): " << SM.phys().get_Pole_Mass("e-",2)  << endl; // i.e. muon
+   PRINTOUT << "mu-:   " << SM.phys().get_Pole_Mass("mu-")   << endl; // i.e. muon
+   PRINTOUT << "e-(3): " << SM.phys().get_Pole_Mass("e-",3)  << endl; // i.e. tau
+   PRINTOUT << "tau-:  " << SM.phys().get_Pole_Mass("tau-")  << endl; // i.e. tau
+   PRINTOUT << "nu(1): " << SM.phys().get_Pole_Mass("nu",1)  << endl; // Just mass ordered (if there is mixing)
+   PRINTOUT << "nu(2): " << SM.phys().get_Pole_Mass("nu",2)  << endl;       
+   PRINTOUT << "nu(3): " << SM.phys().get_Pole_Mass("nu",3)  << endl;      
    // MSbar parameters                                  
    PRINTOUT << "SM running parameters:" << endl;
-   PRINTOUT << "Current scale: " << SM.runningpars.GetScale() << endl; 
-   PRINTOUT << "alpha: " << SM.runningpars.get_dimensionless_parameter("alpha")  << endl;
-   PRINTOUT << "alphaS:" << SM.runningpars.get_dimensionless_parameter("alphaS") << endl;
-   PRINTOUT << "d:     " << SM.runningpars.get_mass_parameter("d")       << endl;
-   PRINTOUT << "u:     " << SM.runningpars.get_mass_parameter("u")       << endl;
-   PRINTOUT << "s:     " << SM.runningpars.get_mass_parameter("s")       << endl;
-   PRINTOUT << "c:     " << SM.runningpars.get_mass_parameter("c")       << endl;
-   PRINTOUT << "b:     " << SM.runningpars.get_mass_parameter("b")       << endl;
-   PRINTOUT << "t:     " << SM.runningpars.get_mass_parameter("t")       << endl;
-   PRINTOUT << "e:     " << SM.runningpars.get_mass_parameter("e")       << endl;
-   PRINTOUT << "mu:    " << SM.runningpars.get_mass_parameter("mu")      << endl;
-   PRINTOUT << "tau:   " << SM.runningpars.get_mass_parameter("tau")     << endl;
-   PRINTOUT << "gamma: " << SM.runningpars.get_mass_parameter("gamma")   << endl;
-   PRINTOUT << "g:     " << SM.runningpars.get_mass_parameter("g")       << endl;
+   PRINTOUT << "Current scale: " << SM.runningpars().GetScale() << endl; 
+   PRINTOUT << "alpha: " << SM.runningpars().get_dimensionless_parameter("alpha")  << endl;
+   PRINTOUT << "alphaS:" << SM.runningpars().get_dimensionless_parameter("alphaS") << endl;
+   PRINTOUT << "d:     " << SM.runningpars().get_mass_parameter("d")       << endl;
+   PRINTOUT << "u:     " << SM.runningpars().get_mass_parameter("u")       << endl;
+   PRINTOUT << "s:     " << SM.runningpars().get_mass_parameter("s")       << endl;
+   PRINTOUT << "c:     " << SM.runningpars().get_mass_parameter("c")       << endl;
+   PRINTOUT << "b:     " << SM.runningpars().get_mass_parameter("b")       << endl;
+   PRINTOUT << "t:     " << SM.runningpars().get_mass_parameter("t")       << endl;
+   PRINTOUT << "e:     " << SM.runningpars().get_mass_parameter("e")       << endl;
+   PRINTOUT << "mu:    " << SM.runningpars().get_mass_parameter("mu")      << endl;
+   PRINTOUT << "tau:   " << SM.runningpars().get_mass_parameter("tau")     << endl;
+   PRINTOUT << "gamma: " << SM.runningpars().get_mass_parameter("gamma")   << endl;
+   PRINTOUT << "g:     " << SM.runningpars().get_mass_parameter("g")       << endl;
 }
 

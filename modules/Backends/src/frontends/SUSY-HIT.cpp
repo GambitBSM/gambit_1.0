@@ -585,13 +585,13 @@ BE_INI_FUNCTION
   {
     // Check whether the spectrum object is already at the SUSY scale
     //double msusy = (*Dep::MSSM_spectrum)->get_DRBar_parameter("M_SUSY");  FIXME when M_SUSY is available from the spectrum object.
-    double msusy = (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();
-    if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
+    double msusy = (*Dep::MSSM_spectrum)->get_HE()->runningpars().GetScale();
+    if (fabs(msusy - (*Dep::MSSM_spectrum)->get_HE()->runningpars().GetScale()) > scale_tol)
     {
       // Take a local copy to allow running.
-      std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
+      std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_HE()->clone();
       // Run to SUSY scale.
-      local_mssm_copy->runningpars.RunToScale(msusy);
+      local_mssm_copy->runningpars().RunToScale(msusy);
       slha = local_mssm_copy->getSLHAea();
     }
     else 

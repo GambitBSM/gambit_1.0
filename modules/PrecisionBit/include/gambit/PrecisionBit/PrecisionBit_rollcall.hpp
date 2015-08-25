@@ -46,18 +46,18 @@ START_MODULE
     BACKEND_REQ(FHConstraints, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
                 fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))
     BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM25atQ, MSSM25atMGUT)
+    ALLOW_MODELS(MSSM30DatQ, MSSM30DatMGUT)
     #undef FUNCTION
   #undef CAPABILITY
   
   // Extractors for FeynHiggs EWK precision observables
-  QUICK_FUNCTION(PrecisionBit, muon_gm2,       NEW_CAPABILITY, FH_precision_gm2,      double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
-  QUICK_FUNCTION(PrecisionBit, deltarho,       NEW_CAPABILITY, FH_precision_deltarho, double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
-  QUICK_FUNCTION(PrecisionBit, prec_mw,        NEW_CAPABILITY, FH_precision_mw,       double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
-  QUICK_FUNCTION(PrecisionBit, prec_sinW2_eff, NEW_CAPABILITY, FH_precision_sinW2,    double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
-  QUICK_FUNCTION(PrecisionBit, edm_e,          NEW_CAPABILITY, FH_precision_edm_e,    double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
-  QUICK_FUNCTION(PrecisionBit, edm_n,          NEW_CAPABILITY, FH_precision_edm_n,    double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
-  QUICK_FUNCTION(PrecisionBit, edm_hg,         NEW_CAPABILITY, FH_precision_edm_hg,   double, (MSSM25atQ, MSSM25atMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, muon_gm2,       NEW_CAPABILITY, FH_precision_gm2,      double, (MSSM30DatQ, MSSM30DatMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, deltarho,       NEW_CAPABILITY, FH_precision_deltarho, double, (MSSM30DatQ, MSSM30DatMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, prec_mw,        NEW_CAPABILITY, FH_precision_mw,       double, (MSSM30DatQ, MSSM30DatMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, prec_sinW2_eff, NEW_CAPABILITY, FH_precision_sinW2,    double, (MSSM30DatQ, MSSM30DatMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, edm_e,          NEW_CAPABILITY, FH_precision_edm_e,    double, (MSSM30DatQ, MSSM30DatMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, edm_n,          NEW_CAPABILITY, FH_precision_edm_n,    double, (MSSM30DatQ, MSSM30DatMGUT), (FH_Precision, fh_PrecisionObs))
+  QUICK_FUNCTION(PrecisionBit, edm_hg,         NEW_CAPABILITY, FH_precision_edm_hg,   double, (MSSM30DatQ, MSSM30DatMGUT), (FH_Precision, fh_PrecisionObs))
 
   // Precision MSSM spectrum manufacturer
   #define CAPABILITY MSSM_spectrum
@@ -123,7 +123,7 @@ START_MODULE
                                                         Farray<Fdouble,1,35>&,
                                                         Farray<Fdouble,1,35>&))
     BACKEND_OPTION( (SUSYPOPE, 0.2), (libSUSYPOPE) )
-    ALLOW_MODELS(MSSM25atQ, MSSM25atMGUT)
+    ALLOW_MODELS(MSSM30DatQ, MSSM30DatMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
 
