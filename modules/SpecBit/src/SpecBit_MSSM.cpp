@@ -184,9 +184,9 @@ namespace Gambit
       // Add extra information about the scales used to the wrapper object
       // (last parameter turns the 'safety' check for the override setter off, which allows
       //  us to set parameters that don't previously exist)
-      mssmspec.runningpars.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      mssmspec.runningpars.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      mssmspec.runningpars.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
@@ -327,13 +327,13 @@ namespace Gambit
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
       
       // Dump spectrum information to slha file (for testing...)
-      result->get_UV()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
+      result->get_HE()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
 
       // TEMPORARY CHECKING!
       std::cout<<"in get_CMSSM_spectrum"<<std::endl;
-      std::cout<<"Scale: "<<result->get_UV()->GetScale()<<std::endl;
+      std::cout<<"Scale: "<<result->get_HE()->GetScale()<<std::endl;
       // Check scale in SLHAea output
-      SLHAea::Coll slhaea = result->get_UV()->getSLHAea();
+      SLHAea::Coll slhaea = result->get_HE()->getSLHAea();
       // 4th element of block definition should be the scale
       std::cout<<"Scale (slhaea): "<<slhaea.at("MSOFT").find_block_def()->at(3)<<std::endl;
     }
@@ -375,7 +375,7 @@ namespace Gambit
     {
       namespace myPipe = Pipes::get_MSSM_SubSpectrum_from_MSSM_Spectrum;
       const Spectrum* matched_spectra(*myPipe::Dep::MSSM_spectrum);
-      result = matched_spectra->get_UV();
+      result = matched_spectra->get_HE();
     }
 
     /// @} 

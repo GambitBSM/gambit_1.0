@@ -226,9 +226,12 @@ namespace Gambit {
          //Phys& phys;
          //RunningPars& runningpars;
 
-         virtual Phys& phys() = 0
-         virtual RunningPars& runningpars() = 0
-        
+         virtual Phys& phys() = 0;
+         virtual RunningPars& runningpars() = 0;
+         // const versions       
+         virtual const Phys& phys() const = 0;
+         virtual const RunningPars& runningpars() const = 0;
+
          /// Member object containing low-energy effective Standard Model parameters
          //SMLowEnergyEffective& SMeff;
    
@@ -703,8 +706,16 @@ namespace Gambit {
  
       public:
          // During construction, link the object to its "parent"
-         PhysDer(Spec<D,DT>& s) : parent(s) {}
+         PhysDer(Spec<D,DT>& p) : parent(p) {}
          virtual ~PhysDer() {}    
+
+         // "Semi" copy constructor to copy all members, but then assign the "parent" reference.
+         // (Compiler should see it as just a regular constructor, I think)
+         PhysDer(const PhysDer& other, Spec<D,DT>& p)
+           : Phys(other)                        /* Call copy constructors of  base classes */
+           , CommonDer<Self, Par::Phys>(other)  /*         "                 "             */
+           , parent(p)
+         {}
 
    };
    /// Initialise maps (using filler overrides from DerivedSpec if defined)
@@ -757,7 +768,16 @@ namespace Gambit {
 
       public:
          // During construction, link the object to its "parent"
-         RunparDer(Spec<D,DT>& s) : parent(s) {}
+         RunparDer(Spec<D,DT>& p) : parent(p) {}
+
+         // "Semi" copy constructor to copy all members, but then assign the "parent" reference.
+         // (Compiler should see it as just a regular constructor, I think)
+         RunparDer(const RunparDer& other, Spec<D,DT>& p)
+           : RunningPars(other)                    /* Call copy constructors of  base classes */
+           , CommonDer<Self, Par::Running>(other)  /*         "                 "             */
+           , parent(p)
+         {}
+
          virtual ~RunparDer() {}
    
          /// Functions to connect to overrides defined in classes derived from SubSpectrum
@@ -857,12 +877,39 @@ namespace Gambit {
          /// @}
          
       public: 
-         /// Implicit constructors are fine 
+         /// Minimal constructor used in default constructors of derived classes
+         Spec()
+           : rp(*this)
+           , pp(*this)
+         {}
+
+         /// Need special copy constructor to properly copy the "nested" Phys
+         /// and RunningPars classes, but replace their "parent" reference.
+         Spec(const Spec<D,DT>& other)
+           : rp(other.rp, *this)
+           , pp(other.pp, *this)
+         {}
+ 
+         /// Copy-assignment
+         // Spec& operator=(Spec<D,DT> other)
+         //   : rp(other.rp, *this)
+         //   , pp(other.pp, *this)
+         // {}
+    
+         // /// Move constructor
+         // Spec(Spec<D,DT>&& other)
+         //   : rp(other.rp, *this)
+         //   , pp(other.pp, *this)
+         // {}
+          
 
          /// Functions to access parameter-containing objects     
          virtual Phys& phys() { return pp; }
          virtual RunningPars& runningpars() { return rp; }
- 
+         // const versions 
+         virtual const Phys& phys() const { return pp; }
+         virtual const RunningPars& runningpars() const { return rp; }
+
          /// CRTP-style polymorphic clone function
          /// Now derived classes will not need to re-implement the clone function.
          virtual std::unique_ptr<SubSpectrum> clone() const       

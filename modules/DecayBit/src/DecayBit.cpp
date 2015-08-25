@@ -2345,7 +2345,7 @@ namespace Gambit
 
       // Get the spectrum information
       const Spectrum* spec = *Dep::SingletDM_spectrum;
-      RunningPars& extrapar = spec->get_UV()->runningpars;
+      const RunningPars& extrapar = spec->get_HE()->runningpars();
       double mass = spec->get_Pole_Mass("S");
       double lambda = extrapar.get_mass_parameter("lambda_hS");
       double v0 = extrapar.get_mass_parameter("vev");
@@ -2505,7 +2505,7 @@ namespace Gambit
     void get_mass_es_pseudonyms(mass_es_pseudonyms& result)
     {
       using namespace Pipes::get_mass_es_pseudonyms;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
       double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");

@@ -272,8 +272,10 @@ namespace Gambit {
                               .map0(  mapcoll.map0 )       
                               .map0M( mapcoll.map0_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 );     
-      if( finder.find(name,i) ){ result = finder.callfcn(); }
+                              .map1(  mapcoll.map1 )
+                              .map1M( mapcoll.map1_extraM )
+                              .map1I( mapcoll.map1_extraI );
+     if( finder.find(name,i) ){ result = finder.callfcn(); }
       else { finder.raise_error(LOCAL_INFO); }
       return result;
    }                                                                        
@@ -292,8 +294,10 @@ namespace Gambit {
                               .map0(  mapcoll.map0 )       
                               .map0M( mapcoll.map0_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 );     
-      if( finder.find(name,i) ){ finder.callfcn(set_value); }
+                              .map1( mapcoll.map1 ) 
+                              .map1M( mapcoll.map1_extraM )
+                              .map1I( mapcoll.map1_extraI );
+     if( finder.find(name,i) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
    }                                                                        
 

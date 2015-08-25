@@ -58,7 +58,7 @@ BE_INI_FUNCTION
     std::string mass_es1, mass_es2;
     double tol = runOptions->getValueOrDef<double>(.01, "flavour_mixing_tolerance");
 
-    mix_matrix_stop = Gambit::slhahelp::family_state_mix_matrix("~u", 3, mass_es1, mass_es2, mySpec->get_UV());
+    mix_matrix_stop = Gambit::slhahelp::family_state_mix_matrix("~u", 3, mass_es1, mass_es2, mySpec->get_HE());
 
     mySLHA["STOPMIX"][""] << "Block"<< "STOPMIX";
     mySLHA["STOPMIX"][""] << 1 << 1 << mix_matrix_stop[0];
@@ -66,7 +66,7 @@ BE_INI_FUNCTION
     mySLHA["STOPMIX"][""] << 2 << 1 << mix_matrix_stop[2];
     mySLHA["STOPMIX"][""] << 2 << 2 << mix_matrix_stop[3];
 
-    mix_matrix_sbottom = Gambit::slhahelp::family_state_mix_matrix("~d", 3, mass_es1, mass_es2, mySpec->get_UV());
+    mix_matrix_sbottom = Gambit::slhahelp::family_state_mix_matrix("~d", 3, mass_es1, mass_es2, mySpec->get_HE());
 
     mySLHA["SBOTMIX"][""] << "Block"<< "SBOTMIX";
     mySLHA["SBOTMIX"][""] << 1 << 1 << mix_matrix_sbottom[0];
@@ -74,7 +74,7 @@ BE_INI_FUNCTION
     mySLHA["SBOTMIX"][""] << 2 << 1 << mix_matrix_sbottom[2];
     mySLHA["SBOTMIX"][""] << 2 << 2 << mix_matrix_sbottom[3];
 
-    mix_matrix_stau = Gambit::slhahelp::family_state_mix_matrix("~e", 3, mass_es1, mass_es2, mySpec->get_UV());
+    mix_matrix_stau = Gambit::slhahelp::family_state_mix_matrix("~e", 3, mass_es1, mass_es2, mySpec->get_HE());
 
     mySLHA["STAUMIX"][""] << "Block"<< "STAUMIX";
     mySLHA["STAUXMIX"][""] << 1 << 1 << mix_matrix_stau[0];

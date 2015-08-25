@@ -102,7 +102,7 @@ namespace Gambit
             static RunningGetterMaps runningpars_fill_getter_maps(); /*O*/
             //static RunningSetterMaps runningpars_fill_setter_maps(); // We don't currently use this in this wrapper
  
-            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            /// Phys parameter map fillers (access parameters via spectrum.phys())
             static PhysGetterMaps    phys_fill_getter_maps(); /*O*/
             static PhysSetterMaps    phys_fill_setter_maps(); /*O*/
     

@@ -123,7 +123,7 @@ namespace Gambit
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
             {
                pass = test_getters("get_mass2_parameter", iter->first,  
-                                   spec->runningpars.
+                                   spec->runningpars().
                                    get_mass2_parameter(iter->first), 
                                    iter->second);
                if(immediate_exit == true && pass == false) return pass; 
@@ -148,7 +148,7 @@ namespace Gambit
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
             {
                pass = test_getters("get_mass2_parameter", iter->first,  
-                                   mssm.runningpars.
+                                   mssm.runningpars().
                                    get_mass2_parameter(iter->first), 
                                    iter->second);
                if(immediate_exit == true && pass == false) return pass; 
@@ -181,7 +181,7 @@ namespace Gambit
              for(iter=name_value.begin(); iter != name_value.end(); ++iter)
                 {
                    pass = test_getters("get_mass2_parameter", iter->first,  
-                                       spec->runningpars.
+                                       spec->runningpars().
                                        get_mass2_parameter(iter->first,i,j), 
                                        iter->second, i, j);
                    if(immediate_exit == true && pass == false) return pass; 
@@ -213,7 +213,7 @@ namespace Gambit
              for(iter=name_value.begin(); iter != name_value.end(); ++iter)
                 {
                    pass = test_getters("get_mass2_parameter", iter->first,  
-                                       mssm.runningpars.
+                                       mssm.runningpars().
                                        get_mass2_parameter(iter->first,i,j), 
                                        iter->second, i, j);
                    if(immediate_exit == true && pass == false) return pass; 
@@ -241,7 +241,7 @@ namespace Gambit
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
             {
                pass = test_getters("get_mass_parameter", iter->first,  
-                                   spec->runningpars.
+                                   spec->runningpars().
                                    get_mass_parameter(iter->first), 
                                    iter->second);
                if(immediate_exit == true && pass == false) return pass; 
@@ -267,7 +267,7 @@ namespace Gambit
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
             {
                pass = test_getters("get_mass_parameter", iter->first,  
-                                   mssm.runningpars.
+                                   mssm.runningpars().
                                    get_mass_parameter(iter->first), 
                                    iter->second);
                if(immediate_exit == true && pass == false) return pass; 
@@ -294,7 +294,7 @@ namespace Gambit
                 for(iter=name_value.begin(); iter != name_value.end(); ++iter)
                 {
                    pass = test_getters("get_mass_parameter", iter->first,  
-                                       spec->runningpars.
+                                       spec->runningpars().
                                        get_mass_parameter(iter->first,i,j), 
                                        iter->second, i, j);
                    if(immediate_exit == true && pass == false) return pass; 
@@ -321,7 +321,7 @@ namespace Gambit
                 for(iter=name_value.begin(); iter != name_value.end(); ++iter)
                 {
                    pass = test_getters("get_mass_parameter", iter->first,  
-                                       mssm.runningpars.
+                                       mssm.runningpars().
                                        get_mass_parameter(iter->first,i,j), 
                                        iter->second, i, j);
                    if(immediate_exit == true && pass == false) return pass; 
@@ -345,7 +345,7 @@ namespace Gambit
        for(iter=name_value.begin(); iter != name_value.end(); ++iter)
        {
           pass = test_getters("get_dimensionless_parameter", iter->first,  
-                              spec->runningpars.
+                              spec->runningpars().
                               get_dimensionless_parameter(iter->first), 
                               iter->second);
           if(immediate_exit == true && pass == false) return pass; 
@@ -369,7 +369,7 @@ namespace Gambit
        for(iter=name_value.begin(); iter != name_value.end(); ++iter)
        {
           pass = test_getters("get_dimensionless_parameter", iter->first,  
-                              mssm.runningpars.
+                              mssm.runningpars().
                               get_dimensionless_parameter(iter->first), 
                               iter->second);
           if(immediate_exit == true && pass == false) return pass; 
@@ -396,7 +396,7 @@ namespace Gambit
              {
                 pass = test_getters("get_dimensionless_parameter", 
                                     iter->first,  
-                                    spec->runningpars.
+                                    spec->runningpars().
                                     get_dimensionless_parameter(iter->first,
                                                                 i,j), 
                                     iter->second, i, j);
@@ -426,7 +426,7 @@ namespace Gambit
              {
                 pass = test_getters("get_dimensionless_parameter", 
                                     iter->first,  
-                                    mssm.runningpars.
+                                    mssm.runningpars().
                                     get_dimensionless_parameter(iter->first,
                                                                 i,j), 
                                     iter->second, i, j);
@@ -454,7 +454,7 @@ namespace Gambit
        for(iter=name_value.begin(); iter != name_value.end(); ++iter)
        {
           pass = test_getters("get_Pole_Mass", iter->first,  
-                              spec->phys.get_Pole_Mass(iter->first), 
+                              spec->phys().get_Pole_Mass(iter->first), 
                               iter->second);
           if(immediate_exit == true && pass == false) return pass; 
        }
@@ -479,7 +479,7 @@ namespace Gambit
        for(iter=name_value.begin(); iter != name_value.end(); ++iter)
        {
           pass = test_getters("get_Pole_Mass", iter->first,  
-                              mssm.phys.get_Pole_Mass(iter->first), 
+                              mssm.phys().get_Pole_Mass(iter->first), 
                               iter->second);
           if(immediate_exit == true && pass == false) return pass; 
        }
@@ -504,7 +504,7 @@ namespace Gambit
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
          {
             pass = test_getters("get_Pole_Mass", iter->first,  
-                                spec->phys.get_Pole_Mass(iter->first,i),
+                                spec->phys().get_Pole_Mass(iter->first,i),
                                 iter->second, i);
             if(immediate_exit == true && pass == false) return pass; 
          } 
@@ -522,7 +522,7 @@ namespace Gambit
           for(iter=name_value.begin(); iter != name_value.end(); ++iter)
           {
              pass = test_getters("get_Pole_Mass", iter->first,  
-                                 spec->phys.get_Pole_Mass(iter->first,i),
+                                 spec->phys().get_Pole_Mass(iter->first,i),
                                  iter->second, i);
              if(immediate_exit == true && pass == false) return pass; 
           } 
@@ -531,12 +531,12 @@ namespace Gambit
        for(int i=1; i<=2; i++){ 
           std::string name = "Mh0";
           pass = test_getters("get_Pole_Mass", name,  
-                                      spec->phys.get_Pole_Mass(name,i),
+                                      spec->phys().get_Pole_Mass(name,i),
                                       FSmssm.get_physical().Mhh(i-1), i);
           if(immediate_exit == true && pass == false) return pass; 
           name = "MCha";
           pass = test_getters("get_Pole_Mass", name,  
-                              spec->phys.get_Pole_Mass(name,i),
+                              spec->phys().get_Pole_Mass(name,i),
                               FSmssm.get_physical_slha().MCha(i-1), i);
           if(immediate_exit == true && pass == false) return pass; 
        }
@@ -547,7 +547,7 @@ namespace Gambit
        for(int i=1; i<=4; i++){
           std::string name = "MChi";
           pass = test_getters("get_Pole_Mass", name,  
-                              spec->phys.get_Pole_Mass(name,i),
+                              spec->phys().get_Pole_Mass(name,i),
                               FSmssm.get_physical_slha().MChi(i-1), i);
           if(immediate_exit == true && pass == false) return pass;
        }
@@ -571,7 +571,7 @@ namespace Gambit
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
          {
             pass = test_getters("get_Pole_Mass", iter->first,  
-                                mssm.phys.get_Pole_Mass(iter->first,i),
+                                mssm.phys().get_Pole_Mass(iter->first,i),
                                 iter->second, i);
             if(immediate_exit == true && pass == false) return pass; 
          } 
@@ -589,7 +589,7 @@ namespace Gambit
           for(iter=name_value.begin(); iter != name_value.end(); ++iter)
           {
              pass = test_getters("get_Pole_Mass", iter->first,  
-                                 mssm.phys.get_Pole_Mass(iter->first,i),
+                                 mssm.phys().get_Pole_Mass(iter->first,i),
                                  iter->second, i);
              if(immediate_exit == true && pass == false) return pass; 
           } 
@@ -598,12 +598,12 @@ namespace Gambit
        for(int i=1; i<=2; i++){ 
           std::string name = "Mh0";
           pass = test_getters("get_Pole_Mass", name,  
-                                      mssm.phys.get_Pole_Mass(name,i),
+                                      mssm.phys().get_Pole_Mass(name,i),
                                       FSmssm.get_physical().Mhh(i-1), i);
           if(immediate_exit == true && pass == false) return pass; 
           name = "MCha";
           pass = test_getters("get_Pole_Mass", name,  
-                              mssm.phys.get_Pole_Mass(name,i),
+                              mssm.phys().get_Pole_Mass(name,i),
                               FSmssm.get_physical_slha().MCha(i-1), i);
           if(immediate_exit == true && pass == false) return pass; 
        }
@@ -614,7 +614,7 @@ namespace Gambit
        for(int i=1; i<=4; i++){
           std::string name = "MChi";
           pass = test_getters("get_Pole_Mass", name,  
-                              mssm.phys.get_Pole_Mass(name,i),
+                              mssm.phys().get_Pole_Mass(name,i),
                               FSmssm.get_physical_slha().MChi(i-1), i);
           if(immediate_exit == true && pass == false) return pass;
        }
@@ -638,7 +638,7 @@ namespace Gambit
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
               {
                  pass = test_getters("get_Pole_Mixing", iter->first,  
-                                     spec->phys.
+                                     spec->phys().
                                      get_Pole_Mixing(iter->first,i,j), 
                                      iter->second, i, j);
                  if(immediate_exit == true && pass == false) return pass; 
@@ -651,7 +651,7 @@ namespace Gambit
            for(int j=1; j<=3; j++){
               string name = "~nu";
               pass = test_getters("get_Pole_Mixing", name,  
-                                  spec->phys.get_Pole_Mixing(name,i,j),
+                                  spec->phys().get_Pole_Mixing(name,i,j),
                                   FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
               if(immediate_exit == true && pass == false) return pass; 
              
@@ -675,7 +675,7 @@ namespace Gambit
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
               {
                  pass = test_getters("get_Pole_Mixing", iter->first,  
-                                     spec->phys.
+                                     spec->phys().
                                      get_Pole_Mixing(iter->first,i,j), 
                                      iter->second, i, j);
                  if(immediate_exit == true && pass == false) return pass; 
@@ -703,7 +703,7 @@ namespace Gambit
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
               {
                  pass = test_getters("get_Pole_Mixing", iter->first,  
-                                     mssm.phys.
+                                     mssm.phys().
                                      get_Pole_Mixing(iter->first,i,j), 
                                      iter->second, i, j);
                  if(immediate_exit == true && pass == false) return pass; 
@@ -716,7 +716,7 @@ namespace Gambit
            for(int j=1; j<=3; j++){
               string name = "~nu";
               pass = test_getters("get_Pole_Mixing", name,  
-                                  mssm.phys.get_Pole_Mixing(name,i,j),
+                                  mssm.phys().get_Pole_Mixing(name,i,j),
                                   FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
               if(immediate_exit == true && pass == false) return pass; 
              
@@ -739,7 +739,7 @@ namespace Gambit
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
               {
                  pass = test_getters("get_Pole_Mixing", iter->first,  
-                                     mssm.phys.
+                                     mssm.phys().
                                      get_Pole_Mixing(iter->first,i,j), 
                                      iter->second, i, j);
                  if(immediate_exit == true && pass == false) return pass; 
@@ -981,7 +981,7 @@ namespace Gambit
        bool running_test(MSSMSpec<MI> & mssm, typename MI::Model & FS_model_slha, double tol)
       {
          double highscale = 1e+16;
-         double lowscale = mssm.runningpars.GetScale();
+         double lowscale = mssm.runningpars().GetScale();
          double lowscale2 = FS_model_slha.get_scale();
          bool pass = flexiblesusy::is_equal(lowscale,lowscale2);
          if(!pass) {
@@ -991,7 +991,7 @@ namespace Gambit
             return pass;              
          }
          
-         mssm.runningpars.RunToScale(highscale);
+         mssm.runningpars().RunToScale(highscale);
          FS_model_slha.run_to(highscale);
          pass = test_exact(mssm, FS_model_slha);
           if(!pass) {
@@ -1000,7 +1000,7 @@ namespace Gambit
                    << std::endl;
             return pass;              
          }
-         mssm.runningpars.RunToScale(lowscale);
+         mssm.runningpars().RunToScale(lowscale);
          FS_model_slha.run_to(lowscale);
          pass = test_exact(mssm, FS_model_slha);
           if(!pass) {
@@ -1019,7 +1019,7 @@ namespace Gambit
                    double tol)
       {
          double highscale = 1e+16;
-         double lowscale = spec->runningpars.GetScale();
+         double lowscale = spec->runningpars().GetScale();
          double lowscale2 = FS_model_slha.get_scale();
          bool pass = flexiblesusy::is_equal(lowscale,lowscale2);
          if(!pass) {
@@ -1029,7 +1029,7 @@ namespace Gambit
             return pass;              
          }
          
-         spec->runningpars.RunToScale(highscale);
+         spec->runningpars().RunToScale(highscale);
          FS_model_slha.run_to(highscale);
          pass = test_exact(spec, FS_model_slha);
           if(!pass) {
@@ -1038,7 +1038,7 @@ namespace Gambit
                    << std::endl;
             return pass;              
          }
-         spec->runningpars.RunToScale(lowscale);
+         spec->runningpars().RunToScale(lowscale);
          FS_model_slha.run_to(lowscale);
          pass = test_exact(spec, FS_model_slha);
           if(!pass) {
@@ -1113,76 +1113,76 @@ namespace Gambit
          // double mC;        // 21: c quark running mass in the MSbar scheme at mC      
         
          // First check pole masses          
-         test_within_tol( sminputs.mZ,   SM->phys.get_Pole_Mass("Z"), tol, "Z pole" );
-         //test_within_tol( sminputs.mW,   SM->phys.get_Pole_Mass("W"), tol, "W pole" ); // Whoops, no mW in sminputs.
-         test_within_tol( sminputs.mT,   SM->phys.get_Pole_Mass("t"), tol, "top pole" );
-         test_within_tol( sminputs.mTau, SM->phys.get_Pole_Mass("tau"), tol, "tau pole" );
-         test_within_tol( sminputs.mMu,  SM->phys.get_Pole_Mass("mu"), tol, "mu pole" );
-         test_within_tol( sminputs.mE,   SM->phys.get_Pole_Mass("e"), tol, "e pole" );
-         //test_within_tol( sminputs.mNu3, SM->phys.get_Pole_Mass(""), tol );
-         //test_within_tol( sminputs.mNu2, SM->phys.get_Pole_Mass(""), tol );
-         //test_within_tol( sminputs.mNu1, SM->phys.get_Pole_Mass(""), tol );
+         test_within_tol( sminputs.mZ,   SM->phys().get_Pole_Mass("Z"), tol, "Z pole" );
+         //test_within_tol( sminputs.mW,   SM->phys().get_Pole_Mass("W"), tol, "W pole" ); // Whoops, no mW in sminputs.
+         test_within_tol( sminputs.mT,   SM->phys().get_Pole_Mass("t"), tol, "top pole" );
+         test_within_tol( sminputs.mTau, SM->phys().get_Pole_Mass("tau"), tol, "tau pole" );
+         test_within_tol( sminputs.mMu,  SM->phys().get_Pole_Mass("mu"), tol, "mu pole" );
+         test_within_tol( sminputs.mE,   SM->phys().get_Pole_Mass("e"), tol, "e pole" );
+         //test_within_tol( sminputs.mNu3, SM->phys().get_Pole_Mass(""), tol );
+         //test_within_tol( sminputs.mNu2, SM->phys().get_Pole_Mass(""), tol );
+         //test_within_tol( sminputs.mNu1, SM->phys().get_Pole_Mass(""), tol );
 
          // Next check running quantities evaluated at Z pole
          // Note, numerical errors might creep in depending on how we do the running
          // back and forth. Might need to consider some method to "reset" object back
          // to original condition (keep a copy of itself inside?)
-         //SM->runningpars.RunToScale(sminputs.mZ);
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         OUTPUT << "Z pole mass  : " << SM->phys.get_Pole_Mass("Z") << std::endl;
-         if(not SLHAonly) test_within_tol( sminputs.alphainv, 1./ SM->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
-         if(not SLHAonly) test_within_tol( sminputs.alphaS,       SM->runningpars.get_dimensionless_parameter("alphaS"), tol, "alphaS(mZ)" );
+         //SM->runningpars().RunToScale(sminputs.mZ);
+         OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
+         OUTPUT << "Z pole mass  : " << SM->phys().get_Pole_Mass("Z") << std::endl;
+         if(not SLHAonly) test_within_tol( sminputs.alphainv, 1./ SM->runningpars().get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
+         if(not SLHAonly) test_within_tol( sminputs.alphaS,       SM->runningpars().get_dimensionless_parameter("alphaS"), tol, "alphaS(mZ)" );
 
          // Check running quantities evaluated at 2 GeV
-         if(not SLHAonly) SM->runningpars.RunToScale(2);
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         test_within_tol( sminputs.mU, SM->runningpars.get_mass_parameter("u"), tolm, "mu(2)" );
-         test_within_tol( sminputs.mD, SM->runningpars.get_mass_parameter("d"), tolm, "md(2)" );
-         test_within_tol( sminputs.mS, SM->runningpars.get_mass_parameter("s"), tolm, "ms(2)" );
+         if(not SLHAonly) SM->runningpars().RunToScale(2);
+         OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
+         test_within_tol( sminputs.mU, SM->runningpars().get_mass_parameter("u"), tolm, "mu(2)" );
+         test_within_tol( sminputs.mD, SM->runningpars().get_mass_parameter("d"), tolm, "md(2)" );
+         test_within_tol( sminputs.mS, SM->runningpars().get_mass_parameter("s"), tolm, "ms(2)" );
 
          // Check mC(mC) and mB(mB)
          if(not SLHAonly){
-           SM->runningpars.RunToScale(sminputs.mCmC);
-           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-           OUTPUT << "mC (MSbar)   : " << SM->runningpars.get_mass_parameter("c") << std::endl;
-           test_within_tol( sminputs.mCmC, SM->runningpars.get_mass_parameter("c"), tolm, "mc(mc)" );
-           SM->runningpars.RunToScale(sminputs.mBmB);
-           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-           OUTPUT << "mB (MSbar)   : " << SM->runningpars.get_mass_parameter("b") << std::endl;
-           test_within_tol( sminputs.mBmB, SM->runningpars.get_mass_parameter("b"), tolm, "mb(mb)" );
+           SM->runningpars().RunToScale(sminputs.mCmC);
+           OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
+           OUTPUT << "mC (MSbar)   : " << SM->runningpars().get_mass_parameter("c") << std::endl;
+           test_within_tol( sminputs.mCmC, SM->runningpars().get_mass_parameter("c"), tolm, "mc(mc)" );
+           SM->runningpars().RunToScale(sminputs.mBmB);
+           OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
+           OUTPUT << "mB (MSbar)   : " << SM->runningpars().get_mass_parameter("b") << std::endl;
+           test_within_tol( sminputs.mBmB, SM->runningpars().get_mass_parameter("b"), tolm, "mb(mb)" );
            OUTPUT << EOM;
          }
 
          // Check that pre-extracted SM SubSpectrum* and the one from Spectrum object match
-         if(not SLHAonly) SM->runningpars.RunToScale(sminputs.mZ);
-         if(not SLHAonly) smin->runningpars.RunToScale(sminputs.mZ);
+         if(not SLHAonly) SM->runningpars().RunToScale(sminputs.mZ);
+         if(not SLHAonly) smin->runningpars().RunToScale(sminputs.mZ);
          OUTPUT << "Checking match between SM SubSpectrum* retrieved in different ways..." << std::endl;
-         test_within_tol(SM->phys.get_Pole_Mass("Z"),
-                         smin->phys.get_Pole_Mass("Z"),                          tol, "Z pole" );
-         test_within_tol(SM->phys.get_Pole_Mass("W"),
-                         smin->phys.get_Pole_Mass("W"),                          tol, "W pole" );
-         test_within_tol(SM->phys.get_Pole_Mass("t"),
-                         smin->phys.get_Pole_Mass("t"),                          tol, "top pole" );
-         test_within_tol(SM->phys.get_Pole_Mass("tau"),
-                         smin->phys.get_Pole_Mass("tau"),                        tol, "tau pole" );
-         test_within_tol(SM->phys.get_Pole_Mass("mu"),
-                         smin->phys.get_Pole_Mass("mu"),                         tol, "mu pole" );
-         test_within_tol(SM->phys.get_Pole_Mass("e"), 
-                         smin->phys.get_Pole_Mass("e"),                          tol, "e pole" );
-         if(not SLHAonly) test_within_tol(SM->runningpars.get_dimensionless_parameter("alpha"),
-                         smin->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
-         if(not SLHAonly) test_within_tol(SM->runningpars.get_dimensionless_parameter("alphaS"), 
-                         smin->runningpars.get_dimensionless_parameter("alphaS"),tol, "alphaS(mZ)" );
-         test_within_tol(SM->runningpars.get_mass_parameter("u"), 
-                         smin->runningpars.get_mass_parameter("u"),              tolm, "mu(2)" );
-         test_within_tol(SM->runningpars.get_mass_parameter("d"),   
-                         smin->runningpars.get_mass_parameter("d"),              tolm, "md(2)" );
-         test_within_tol(SM->runningpars.get_mass_parameter("s"),   
-                         smin->runningpars.get_mass_parameter("s"),              tolm, "ms(2)" );
-         if(not SLHAonly) test_within_tol(SM->runningpars.get_mass_parameter("c"),           
-                         smin->runningpars.get_mass_parameter("c"),              tolm, "mc(mc)" );
-         if(not SLHAonly) test_within_tol(SM->runningpars.get_mass_parameter("b"),   
-                         smin->runningpars.get_mass_parameter("b"),              tolm, "mb(mb)" );
+         test_within_tol(SM->phys().get_Pole_Mass("Z"),
+                         smin->phys().get_Pole_Mass("Z"),                          tol, "Z pole" );
+         test_within_tol(SM->phys().get_Pole_Mass("W"),
+                         smin->phys().get_Pole_Mass("W"),                          tol, "W pole" );
+         test_within_tol(SM->phys().get_Pole_Mass("t"),
+                         smin->phys().get_Pole_Mass("t"),                          tol, "top pole" );
+         test_within_tol(SM->phys().get_Pole_Mass("tau"),
+                         smin->phys().get_Pole_Mass("tau"),                        tol, "tau pole" );
+         test_within_tol(SM->phys().get_Pole_Mass("mu"),
+                         smin->phys().get_Pole_Mass("mu"),                         tol, "mu pole" );
+         test_within_tol(SM->phys().get_Pole_Mass("e"), 
+                         smin->phys().get_Pole_Mass("e"),                          tol, "e pole" );
+         if(not SLHAonly) test_within_tol(SM->runningpars().get_dimensionless_parameter("alpha"),
+                         smin->runningpars().get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
+         if(not SLHAonly) test_within_tol(SM->runningpars().get_dimensionless_parameter("alphaS"), 
+                         smin->runningpars().get_dimensionless_parameter("alphaS"),tol, "alphaS(mZ)" );
+         test_within_tol(SM->runningpars().get_mass_parameter("u"), 
+                         smin->runningpars().get_mass_parameter("u"),              tolm, "mu(2)" );
+         test_within_tol(SM->runningpars().get_mass_parameter("d"),   
+                         smin->runningpars().get_mass_parameter("d"),              tolm, "md(2)" );
+         test_within_tol(SM->runningpars().get_mass_parameter("s"),   
+                         smin->runningpars().get_mass_parameter("s"),              tolm, "ms(2)" );
+         if(not SLHAonly) test_within_tol(SM->runningpars().get_mass_parameter("c"),           
+                         smin->runningpars().get_mass_parameter("c"),              tolm, "mc(mc)" );
+         if(not SLHAonly) test_within_tol(SM->runningpars().get_mass_parameter("b"),   
+                         smin->runningpars().get_mass_parameter("b"),              tolm, "mb(mb)" );
 
 
          // Check light quark mass ratios 
@@ -1197,11 +1197,11 @@ namespace Gambit
 
          for(std::vector<double>::iterator it = scales.begin(); it != scales.end(); ++it) 
          {
-            if(not SLHAonly) SM->runningpars.RunToScale(*it);
-            double Q = SM->runningpars.GetScale();
-            double mu = SM->runningpars.get_mass_parameter("u");
-            double md = SM->runningpars.get_mass_parameter("d");
-            double ms = SM->runningpars.get_mass_parameter("s");
+            if(not SLHAonly) SM->runningpars().RunToScale(*it);
+            double Q = SM->runningpars().GetScale();
+            double mu = SM->runningpars().get_mass_parameter("u");
+            double md = SM->runningpars().get_mass_parameter("d");
+            double ms = SM->runningpars().get_mass_parameter("s");
 
             OUTPUT << "---------------------------------" << std::endl;
             OUTPUT << "Current scale: " << Q << std::endl;
@@ -1253,11 +1253,11 @@ namespace Gambit
             // Clone to avoid buildup of errors
             std::unique_ptr<SubSpectrum> SMloop = matched_spectra->clone_LE();
 
-            SMloop->runningpars.RunToScale(*it);
-            double Q = SMloop->runningpars.GetScale();
-            double mu = SMloop->runningpars.get_mass_parameter("u");
-            double md = SMloop->runningpars.get_mass_parameter("d");
-            double ms = SMloop->runningpars.get_mass_parameter("s");
+            SMloop->runningpars().RunToScale(*it);
+            double Q = SMloop->runningpars().GetScale();
+            double mu = SMloop->runningpars().get_mass_parameter("u");
+            double md = SMloop->runningpars().get_mass_parameter("d");
+            double ms = SMloop->runningpars().get_mass_parameter("s");
 
             // Write to file
             Qout << Q << ", " << md << ", " << mu << ", " << ms << std::endl;
@@ -1276,18 +1276,18 @@ namespace Gambit
          OUTPUT << std::endl;
          OUTPUT << "Testing non-const access to Spectrum object:" << std::endl;
          if(not SLHAonly) nonconst_spectra.RunBothToScale(sminputs.mT); // This is the only non-const function atm.
-         OUTPUT << "Current SM SubSpectrum* scale: " << nonconst_spectra.get_LE()->runningpars.GetScale() << std::endl;
-         OUTPUT << "Current UV SubSpectrum* scale: " << nonconst_spectra.get_UV()->runningpars.GetScale() << std::endl;
+         OUTPUT << "Current SM SubSpectrum* scale: " << nonconst_spectra.get_LE()->runningpars().GetScale() << std::endl;
+         OUTPUT << "Current UV SubSpectrum* scale: " << nonconst_spectra.get_UV()->runningpars().GetScale() << std::endl;
          // Make sure nothing happened to the original objects
-         OUTPUT << "Old SM SubSpectrum* scale: " << matched_spectra->get_LE()->runningpars.GetScale() << std::endl;
-         OUTPUT << "Old UV SubSpectrum* scale: " << matched_spectra->get_UV()->runningpars.GetScale() << std::endl;
+         OUTPUT << "Old SM SubSpectrum* scale: " << matched_spectra->get_LE()->runningpars().GetScale() << std::endl;
+         OUTPUT << "Old UV SubSpectrum* scale: " << matched_spectra->get_UV()->runningpars().GetScale() << std::endl;
          // Check some other numbers
-         OUTPUT << "Current SM SubSpectrum* mu :" << nonconst_spectra.get_LE()->runningpars.get_mass_parameter("u") << std::endl;
-         OUTPUT << "Current SM Spectrum* md :" << nonconst_spectra.get_LE()->runningpars.get_mass_parameter("d") << std::endl;
-         OUTPUT << "Current SM Spectrum* ms :" << nonconst_spectra.get_LE()->runningpars.get_mass_parameter("s") << std::endl;
-         OUTPUT << "Old SM Spectrum* mu :" << matched_spectra->get_LE()->runningpars.get_mass_parameter("u") << std::endl;
-         OUTPUT << "Old SM Spectrum* md :" << matched_spectra->get_LE()->runningpars.get_mass_parameter("d") << std::endl;
-         OUTPUT << "Old SM Spectrum* ms :" << matched_spectra->get_LE()->runningpars.get_mass_parameter("s") << std::endl;
+         OUTPUT << "Current SM SubSpectrum* mu :" << nonconst_spectra.get_LE()->runningpars().get_mass_parameter("u") << std::endl;
+         OUTPUT << "Current SM Spectrum* md :" << nonconst_spectra.get_LE()->runningpars().get_mass_parameter("d") << std::endl;
+         OUTPUT << "Current SM Spectrum* ms :" << nonconst_spectra.get_LE()->runningpars().get_mass_parameter("s") << std::endl;
+         OUTPUT << "Old SM Spectrum* mu :" << matched_spectra->get_LE()->runningpars().get_mass_parameter("u") << std::endl;
+         OUTPUT << "Old SM Spectrum* md :" << matched_spectra->get_LE()->runningpars().get_mass_parameter("d") << std::endl;
+         OUTPUT << "Old SM Spectrum* ms :" << matched_spectra->get_LE()->runningpars().get_mass_parameter("s") << std::endl;
          OUTPUT << EOM;
 
          // Check running beyond soft and hard limits (assumes QedQcdWrapper for SM)
@@ -1301,10 +1301,10 @@ namespace Gambit
            // behave=0 (default)
            // Running halted at soft limit
            OUTPUT << "behave=0" << std::endl;
-           SM->runningpars.RunToScale(sminputs.mT);   // Soft limit (and hard limit)
-           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-           SM->runningpars.RunToScale(1.5*sminputs.mT);
-           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           SM->runningpars().RunToScale(sminputs.mT);   // Soft limit (and hard limit)
+           OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
+           SM->runningpars().RunToScale(1.5*sminputs.mT);
+           OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
            OUTPUT << EOM;
 
            // behave=2
@@ -1312,18 +1312,18 @@ namespace Gambit
            // EDIT: Whoops, so QedQcd object itself will throw an error if you try
            // to run above mT. Remove comments to observe this behaviour.
            OUTPUT << "behave=2" << std::endl;
-           SM->runningpars.RunToScale(sminputs.mT,2);   // Soft limit (and hard limit)
-           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-           //SM->runningpars.RunToScale(1.5*sminputs.mT,2);
-           //OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           SM->runningpars().RunToScale(sminputs.mT,2);   // Soft limit (and hard limit)
+           OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
+           //SM->runningpars().RunToScale(1.5*sminputs.mT,2);
+           //OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
            OUTPUT << EOM;
 
            // behave=1
            OUTPUT << "behave=1" << std::endl;
-           SM->runningpars.RunToScale(sminputs.mT,1);   // Soft limit (and hard limit)
-           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-           SM->runningpars.RunToScale(1.5*sminputs.mT,1); // Beyond hard limit (error)
-           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           SM->runningpars().RunToScale(sminputs.mT,1);   // Soft limit (and hard limit)
+           OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
+           SM->runningpars().RunToScale(1.5*sminputs.mT,1); // Beyond hard limit (error)
+           OUTPUT << "Current scale: " << SM->runningpars().GetScale() << std::endl;
            OUTPUT << EOM;
          }
       }

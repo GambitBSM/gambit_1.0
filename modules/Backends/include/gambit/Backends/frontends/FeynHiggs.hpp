@@ -120,7 +120,7 @@ BE_INI_FUNCTION{
 
   // retrieve MSSM_spectrum dependency
   const Spectrum* fullspectrum = *Dep::unimproved_MSSM_spectrum;
-  const SubSpectrum* spec = fullspectrum->get_UV();
+  const SubSpectrum* spec = fullspectrum->get_HE();
   SLHAea::Coll slhaea = fullspectrum->getSLHAea();
 
   SLHAea::Block spinfo = slhaea.at("SPINFO");
@@ -212,20 +212,20 @@ BE_INI_FUNCTION{
   Atau.re = SLHAea::to<double>( slhaea.at("Ae").at(3,3).at(2) );
 
   fh_complex MUE;  // Higgs mixing parameter mu
-  MUE.re = spec->runningpars.get_mass_parameter("Mu"); 
+  MUE.re = spec->runningpars().get_mass_parameter("Mu"); 
   MUE.im = 0;
   // gaugino mass parameters. M_1 == 0 => GUT relation is used
   fh_complex M_1, M_2, M_3; 
-  M_1.re = spec->runningpars.get_mass_parameter("M1");   
+  M_1.re = spec->runningpars().get_mass_parameter("M1");   
   M_1.im = 0;
-  M_2.re = spec->runningpars.get_mass_parameter("M2"); 
+  M_2.re = spec->runningpars().get_mass_parameter("M2"); 
   M_2.im = 0;
-  M_3.re = spec->runningpars.get_mass_parameter("M3"); 
+  M_3.re = spec->runningpars().get_mass_parameter("M3"); 
   M_3.im = 0;
 
   // the scales at which the sfermion input parameters M3S are given
   // 0 indicates on-shell parameters
-  double SCALE = spec->runningpars.GetScale();
+  double SCALE = spec->runningpars().GetScale();
   
   fh_real Qtau = SCALE;
   fh_real Qt = SCALE;

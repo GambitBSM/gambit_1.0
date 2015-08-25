@@ -87,7 +87,7 @@ namespace Gambit {
             /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
             static RunningGetterMaps runningpars_fill_getter_maps();
  
-            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            /// Phys parameter map fillers (access parameters via spectrum.phys())
             static PhysGetterMaps    phys_fill_getter_maps();
 
       };
