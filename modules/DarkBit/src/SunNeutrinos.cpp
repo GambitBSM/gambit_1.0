@@ -342,9 +342,11 @@ namespace Gambit
       int totobs;
       char experiment[300] = "IC-22";
       void* context = NULL;
+      bool threadsafe = false; //FIXME
+      double theoryError = 0.05; //FIXME
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(*Dep::nuyield_ptr), sigpred, bgpred, totobs, lnLike, pval, 4,
-          true, false, 0.0, 0.0, context);
+          theoryError, true, false, 0.0, 0.0, context, threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -375,9 +377,11 @@ namespace Gambit
       int totobs;
       char experiment[300] = "IC-79 WH";
       void* context = NULL;
+      bool threadsafe = false; //FIXME
+      double theoryError = 0.05; //FIXME
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
-          totobs, lnLike, pval, 4, true, false, 0.0, 0.0, context);
+          totobs, lnLike, pval, 4, theoryError, true, false, 0.0, 0.0, context, threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -408,9 +412,11 @@ namespace Gambit
       int totobs;
       char experiment[300] = "IC-79 WL";
       void* context = NULL;
+      bool threadsafe = false; //FIXME
+      double theoryError = 0.05; //FIXME
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(*Dep::nuyield_ptr), sigpred, bgpred, totobs, lnLike, pval, 4,
-          true, false, 0.0, 0.0, context);
+          theoryError, true, false, 0.0, 0.0, context, threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -440,9 +446,11 @@ namespace Gambit
       int totobs;
       char experiment[300] = "IC-79 SL";
       void* context = NULL;
+      bool threadsafe = false; //FIXME
+      double theoryError = 0.05; //FIXME
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
-          totobs, lnLike, pval, 4, true, false, 0.0, 0.0, context);
+          totobs, lnLike, pval, theoryError, 4, true, false, 0.0, 0.0, context, threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
