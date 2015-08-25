@@ -214,7 +214,7 @@ namespace Gambit {
          virtual int get_index_offset() const { vfcn_error(LOCAL_INFO); return 0; }
       
          /// Constructors/destructors
-         SubSpectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
+         // implicit default constructor is fine
          virtual ~SubSpectrum() {} 
    
          //Models::partmap& particle_database;
@@ -222,9 +222,13 @@ namespace Gambit {
          //SubSpectrum(RunningPars& rp, Phys& p, Models::partmap& pdb) : phys(p), runningpars(rp), particle_database(pdb) {}
       
          /// Member objects containing physical and running parameters
-         Phys& phys;
-         RunningPars& runningpars;
-   
+         /// UPDATE:  This makes copying objects a nightmare, so we will use virtual functions instead
+         //Phys& phys;
+         //RunningPars& runningpars;
+
+         virtual Phys& phys() = 0
+         virtual RunningPars& runningpars() = 0
+        
          /// Member object containing low-energy effective Standard Model parameters
          //SMLowEnergyEffective& SMeff;
    
@@ -853,13 +857,11 @@ namespace Gambit {
          /// @}
          
       public: 
-         /// Minimal constructor used in default constructors of derived classes
-         Spec()
-           : SubSpectrum(rp,pp)
-           , rp(*this)
-           , pp(*this)
-         {}
-      
+         /// Implicit constructors are fine 
+
+         /// Functions to access parameter-containing objects     
+         virtual Phys& phys() { return pp; }
+         virtual RunningPars& runningpars() { return rp; }
  
          /// CRTP-style polymorphic clone function
          /// Now derived classes will not need to re-implement the clone function.

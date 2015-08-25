@@ -49,6 +49,9 @@ void MODEL_NAMESPACE::MSSM78atMGUT_to_MSSM78atQ (const ModelParameters &myP, Mod
    const Spectrum* spec = *Dep::unimproved_MSSM_spectrum;
 
    // Make sure the high-scale value was correctly added to the spectrum wrapper object
+   spec->get_UV();
+   spec->get_UV()->runningpars;
+   spec->get_UV()->runningpars.has(Par::mass1,"high_scale");
    if( spec->get_UV()->runningpars.has(Par::mass1,"high_scale") )
    {
       targetP.setValue("Qin", spec->get_UV()->runningpars.get(Par::mass1,"high_scale") );
