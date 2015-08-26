@@ -64,7 +64,7 @@ ObsLikes:
   - purpose:  Likelihood
     capability:  lnL_W_mass
   - purpose:  Likelihood
-    capability:  lnL_sin2w_eff
+    capability:  lnL_sinW2_eff
   - purpose:  Likelihood
     capability:  lnL_deltarho
     
