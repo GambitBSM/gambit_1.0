@@ -100,10 +100,14 @@ namespace Gambit
                                         {
                                                 std::multimap<std::string, std::string> linked_libs_temp;
                                                 if (libNode[lib]["linked_libs"].IsMap())
-                                                        for (auto it = libNode[lib]["linked_libs"].begin(), end = libNode[lib]["linked_libs"].end(); it != end; it++)
+                                                {
+                                                        for (auto it = libNode[lib]["linked_libs"].begin(), end = libNode[lib]["linked_libs"].end(); it != end; ++it)
+                                                        {
                                                                linked_libs_temp.insert(std::pair<std::string, std::string>(it->first.as<std::string>(), it->second.as<std::string>()));
+                                                        }
+                                                }
                                                         
-                                                for (auto it = linked_libs_plug.begin(), end = linked_libs_plug.end(); it != end; it++)
+                                                for (auto it = linked_libs_plug.begin(), end = linked_libs_plug.end(); it != end; ++it)
                                                 {
                                                         auto range = linked_libs_temp.equal_range(*it);
                                                         if (range.first != range.second)
@@ -111,7 +115,7 @@ namespace Gambit
                                                 }
                                                 
                                                 std::vector<std::string> linked_temp;
-                                                for (auto it = reqd_not_linked_libs.begin(), end = reqd_not_linked_libs.end(); it != end; it++)
+                                                for (auto it = reqd_not_linked_libs.begin(), end = reqd_not_linked_libs.end(); it != end; ++it)
                                                 {
                                                         auto range = linked_libs_temp.equal_range(*it);
                                                         if (range.first == range.second)
@@ -128,8 +132,10 @@ namespace Gambit
                                                 
                                                 std::multimap<std::string, std::string> found_incs_temp;
                                                 if (libNode[lib]["found_incs"].IsMap())
-                                                        for (auto it = libNode[lib]["found_incs"].begin(), end = libNode[lib]["found_incs"].end(); it != end; it++)
+                                                {
+                                                        for (auto it = libNode[lib]["found_incs"].begin(), end = libNode[lib]["found_incs"].end(); it != end; ++it)
                                                                 found_incs_temp.insert(std::pair<std::string, std::string>(it->first.as<std::string>(), it->second.as<std::string>()));
+                                                }
                                                         
                                                 for (auto it = found_incs_plug.begin(), end = found_incs_plug.end(); it != end; it++)
                                                 {
@@ -137,7 +143,7 @@ namespace Gambit
                                                 }
                                                 
                                                 std::vector<std::string> found_temp;
-                                                for (auto it = reqd_incs_not_found.begin(), end = reqd_incs_not_found.end(); it != end; it++)
+                                                for (auto it = reqd_incs_not_found.begin(), end = reqd_incs_not_found.end(); it != end; ++it)
                                                 {
                                                         auto range = found_incs_temp.equal_range(*it);
                                                         if (range.first == range.second)
@@ -193,15 +199,16 @@ namespace Gambit
                                 const int maxlen1 = 20;
                                 const int maxlen2 = 20;
                                 // Default, list-format output header
-                                out << type << " plugin" << spacing(type.length() + 7, maxlen1) << "version" << spacing(7, maxlen2) << "status" << std::endl;
-                                out << "----------------------------------------------------------------------------" << std::endl;
+                                out << "\x1b[01m\x1b[04m" << type << " plugin" << spacing(type.length() + 7, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
+                                //out << "----------------------------------------------------------------------------" << std::endl;
                                 out << plugin << spacing(plugin.length(), maxlen1) << version << spacing(version.length(), maxlen2) << status << std::endl;
+                                out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
                                 out << "\nrequired inifile entries:  " << reqd_inifile_entries << std::endl;
-                                out << "\nlink status" << std::endl;
-                                out << "-----------" << std::endl;
-                                out << "missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
-                                out << "missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
-                                out << "linked libraries:";
+                                out << "\n\x1b[04mlink status\x1b[0m:" << std::endl;
+                                //out << "-----------" << std::endl;
+                                out << "    missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
+                                out << "    missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
+                                out << "    linked libraries:";
                                 if (linked_libs.size() == 0)
                                 {
                                         out << " none" << std::endl;
@@ -209,15 +216,15 @@ namespace Gambit
                                 else
                                 {
                                         out << std::endl;
-                                        for (auto it = linked_libs.begin(), end = linked_libs.end(); it != end; it++)
-                                                out << "    " << it->first << ": " << it->second << std::endl;
+                                        for (auto it = linked_libs.begin(), end = linked_libs.end(); it != end; ++it)
+                                                out << "        " << it->first << ": " << it->second << std::endl;
                                 }
                                 
-                                out << "\ninclude header status" << std::endl;
-                                out << "---------------------" << std::endl;
-                                out << "missing headers requested by plugin: " << reqd_incs_not_found << std::endl;
-                                out << "missing headers specified in inifile: " << ini_incs_not_found << std::endl;
-                                out << "headers found:";
+                                out << "\n\x1b[04minclude header status\x1b[0m:" << std::endl;
+                                //out << "---------------------" << std::endl;
+                                out << "    missing headers requested by plugin: " << reqd_incs_not_found << std::endl;
+                                out << "    missing headers specified in inifile: " << ini_incs_not_found << std::endl;
+                                out << "    headers found:";
                                 if (found_incs.size() == 0)
                                 {
                                         out << " none" << std::endl;
@@ -225,9 +232,36 @@ namespace Gambit
                                 else
                                 {
                                         out << std::endl;
-                                        for (auto it = found_incs.begin(), end = found_incs.end(); it != end; it++)
-                                                out << "    " << it->first << ": " << it->second << std::endl;
+                                        for (auto it = found_incs.begin(), end = found_incs.end(); it != end; ++it)
+                                                out << "        " << it->first << ": " << it->second << std::endl;
                                 }
+                                
+                                out << "\n\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n" << std::endl;
+                                
+                                std::string p_str, description;
+                                std::string path = GAMBIT_DIR "/config/";
+                                if (FILE* p_f = popen((std::string("ls ") + path + std::string(" | grep \".dat\" | grep \""+ type + "\"")).c_str(), "r"))
+                                {
+                                        char path_buffer[1024];
+                                        int p_n;
+                                        while ((p_n = fread(path_buffer, 1, sizeof path_buffer, p_f)) > 0)
+                                        {
+                                                std::stringstream p_ss(std::string(path_buffer, p_n));
+                                                while (p_ss >> p_str)
+                                                {
+                                                        YAML::Node node = YAML::LoadFile(path + p_str);
+                                                        if (node[plugin])
+                                                        {
+                                                                description = node[plugin].as<std::string>();
+                                                                break;
+                                                        }
+                                                }
+                                        }
+                                        
+                                        pclose(p_f);
+                                }
+                                
+                                out << description << std::endl;
                                 
                                 return out.str();
                         }

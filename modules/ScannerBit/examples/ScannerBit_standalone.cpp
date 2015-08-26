@@ -17,6 +17,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <cstdlib>
 
 #include "gambit/Logs/log.hpp"
 #include "gambit/Printers/printermanager.hpp"
@@ -73,26 +74,65 @@ int main(int argc, char **argv)
                         bail();
                         return 0;
                 }
+                else if (std::string(argv[1]) == "scanner")
+                {
+                        if (argc > 2)
+                        {
+                                Scanner::Plugins::plugin_info().print_plugin_to_screen("scanner", argv[2]);
+                        }
+                        else
+                        {
+                                bail();
+                        }
+                        
+                        return 0;
+                }
+                else if (std::string(argv[1]) == "objective")
+                {
+                        if (argc > 2)
+                        {
+                                Scanner::Plugins::plugin_info().print_plugin_to_screen("objective", argv[2]);
+                        }
+                        else
+                        {
+                                bail();
+                        }
+                        
+                        return 0;
+                }
                 else if (std::string(argv[1]) == "scanners")
                 {
-                        Plugins::plugin_info().print("scanner");
+                        if (Plugins::plugin_info().print_all_to_screen("scanner"))
+                        {
+                                bail();
+                        }
+                        
                         return 0;
                 }
                 else if (std::string(argv[1]) == "plugins")
                 {
                         if (argc > 2)
                         {
-                                Plugins::plugin_info().print(argv[2]);
+                                if (Plugins::plugin_info().print_all_to_screen(argv[2]))
+                                {
+                                        bail();
+                                }
                         }
                         else
                         {
-                                Plugins::plugin_info().print();
+                                if (Plugins::plugin_info().print_all_to_screen())
+                                {
+                                        bail();
+                                }
                         }
                         return 0;
                 }
                 else if (std::string(argv[1]) == "objectives")
                 {
-                        Plugins::plugin_info().print("objective");
+                        if (Plugins::plugin_info().print_all_to_screen("objective"))
+                        {
+                                bail();
+                        }
                         return 0;
                 }
                 else if (std::string(argv[1]) == "-f" && argc > 2)
@@ -124,32 +164,9 @@ int main(int argc, char **argv)
                 }
                 else
                 {
-                        for (int i = 1; i < argc; i++)
+                        if (Plugins::plugin_info().print_plugin_to_screen(std::vector<std::string>( argv+1, argv + argc)))
                         {
-                                std::vector<Scanner::Plugins::Plugin_Details> vec;
-                                for (auto it_map = Scanner::Plugins::plugin_info().getPluginsMap().begin(), end = Scanner::Plugins::plugin_info().getPluginsMap().end(); it_map!= end; it_map++)
-                                {
-                                        
-                                        auto it = it_map->second.find(argv[i]);
-                                        if (it != it_map->second.end())
-                                        {
-                                                vec.insert(vec.begin(), it->second.begin(), it->second.end());
-                                        }
-                                }
-                                
-                                if (vec.size() == 0)
-                                {
-                                        std::cout << "Command \"" << argv[i] << "\" not known." << std::endl;
-                                        bail();
-                                        return 0;
-                                }
-                                else
-                                {
-                                        for (auto it = vec.begin(), end = vec.end(); it != end; it++)
-                                        {
-                                                std::cout << it->printFull() << std::endl;
-                                        }
-                                }
+                                bail();
                         }
                         
                         return 0;

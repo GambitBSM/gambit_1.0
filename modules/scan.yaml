@@ -68,7 +68,7 @@ Scanner:
 
   use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: twalk
+  use_scanner: twalk, hdf5
   #find_shift
   #find_kernel
   #object_detection
@@ -81,6 +81,9 @@ Scanner:
     twalk:
       plugin: twalk
       options:
+        tolorance: 1.001
+        thread_number: 10
+        projection_dimension: 4
         aux_printer_txt_options:
           output_file: "runs/spartan_multinest/samples/gambit_output.txt"
           info_file: "runs/spartan_multinest/samples/gambit_output.txt_info"
@@ -162,6 +165,24 @@ Scanner:
         
 ##########################################
     
+    hdf5:
+      plugin: bin_grid
+      options:
+        use_hdf5: true
+        input_files: ["runs/test_hdf5/samples/gambit_output.hdf5"]
+        groups: ["/test/test2"]
+        output_file: "output_hdf5"
+        #xrange: [2.0, 6.0]
+        xrange: [0, 1]
+        yrange: [0, 1]
+        grid: [100, 100]
+        selected_pts: 
+          - "EggBox::param_0"
+          - "EggBox::param_1"
+        mult: ["mult"]
+        #loglike: 1
+        flags: ["linear"]
+        #flags: ["linear", "noadjx", "logx"]
         
     gal_0:
       plugin: bin_grid
@@ -366,12 +387,12 @@ Scanner:
     gaussian:
       plugin: gaussian
       purpose: Likelihood
-      options:
-        cov: [[0.01, 0.0], [0.0, 0.01]]
-        mean: [1.5, 1.5]
+      #options:
+      #  cov: [[0.01, 0.0], [0.0, 0.01]]
+      #  mean: [1.5, 1.5]
       parameters:
-        param...2:
-          range: [1, 2]
+        param...6:
+          range: [-5, 5]
       
     test:
       plugin: test_plug

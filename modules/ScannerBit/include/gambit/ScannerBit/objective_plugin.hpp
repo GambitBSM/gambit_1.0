@@ -80,6 +80,7 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         const static PriorTransform &prior = get_input_value<PriorTransform>(1);                                        \
         static std::unordered_map<std::string, double> key_map;                                                         \
         static std::vector<double> ret(key.size());                                                                     \
+        const static int rank = get_printer().get_stream()->getRank();                                                  \
                                                                                                                         \
         prior.transform(in, key_map);                                                                                   \
                                                                                                                         \
@@ -87,6 +88,7 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         for (auto it = key.begin(), end = key.end(); it != end; it++, it_ret++)                                         \
         {                                                                                                               \
                 *it_ret = key_map[*it];                                                                                 \
+                get_printer().get_stream()->print(*it_ret, *it, get_main_param_id(*it), rank, get_point_id());          \
         }                                                                                                               \
                                                                                                                         \
         return ret;                                                                                                     \

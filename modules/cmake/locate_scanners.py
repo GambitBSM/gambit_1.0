@@ -215,7 +215,7 @@ def main(argv):
                             splitline = neatsplit(r'\(|\)|,|\s|\{',find[2])
                             if len(splitline) != 0:
                                 plugin_name = splitline[1]
-                                mod_version = ["0","","",""]
+                                mod_version = ["0","0","0",""]
                                 plugin_type = plug_type[find[1]];
                                 if splitline[2] == "version": mod_version[0:len(splitline[3:])] = splitline[3:]
                                 token = plugin_name+"__t__"+plugin_type+"__v__"+"_".join([x for x in mod_version])
@@ -328,11 +328,11 @@ def main(argv):
             if yaml_file:
                 if plugin_name in yaml_file and plugin[1] == plugin_type:
                     version_bits = plugin[2]
-                    maj_version = int(".".join([x for x in version_bits[0:1] if x != ""]))
-                    min_version = float(".".join([x for x in version_bits[0:2] if x != ""]))
-                    pat_version = ".".join([x for x in version_bits[0:3] if x != ""])
+                    maj_version = int(".".join([x for x in version_bits[0:1]]))
+                    min_version = float(".".join([x for x in version_bits[0:2]]))
+                    pat_version = ".".join([x for x in version_bits[0:3]])
                     ful_version = "-".join([pat_version, version_bits[3]])
-                    version = ".".join([x for x in version_bits[0:3] if x != ""])
+                    version = ".".join([x for x in version_bits[0:3]])
                     if (version_bits[3] != ""):
                         version = "-".join([version, version_bits[3]])
                     ini_version = ""
@@ -346,7 +346,7 @@ def main(argv):
                         ini_version = maj_version
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
-                        
+                    
                     if ini_version != "":
                         options_list = yaml_file[plugin_name][ini_version]
                         if type(options_list) is dict: #not list:

@@ -74,8 +74,8 @@ namespace Gambit
                         {
                         private:
                                 printer_stream &stream;
-                                const std::vector<std::string> &params;
-                                const unsigned long long int &id;
+                                const std::vector<std::string> params;
+                                const unsigned long long int id;
                                 
                         public:
                                 vector(printer_stream &stream, const std::vector<std::string> &params, const unsigned long long int &id)
@@ -110,7 +110,7 @@ namespace Gambit
                         {
                         private:
                                 printer_stream &stream;
-                                const unsigned long long int &id;
+                                const unsigned long long int id;
                                 
                         public:
                                 point(printer_stream &stream, const unsigned long long int &id) : stream(stream), id(id) {}
@@ -131,6 +131,12 @@ namespace Gambit
                         printer_stream(const printer_stream & stream_in) : stream(stream_in.stream), get_param_id(stream_in.get_param_id) {}
                         
                         printer_stream(Gambit::Scanner::printer *stream, int (*get_param_id)(const std::string &)) : stream(stream), get_param_id(get_param_id) {}
+                        
+                        template <typename T>
+                        void print (const T& in, const std::string &param, int rank, unsigned long long int id)
+                        {
+                                stream->print(in, param, get_param_id(param), rank, id);
+                        }
                         
                         printer_stream &operator = (Gambit::Scanner::printer *stream_in)
                         {

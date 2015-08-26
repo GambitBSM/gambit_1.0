@@ -82,8 +82,15 @@ namespace Gambit
                                 const std::vector<Plugin_Details> &getPluginsVec() const {return total_plugins;}
                                 const std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> &getPluginsMap() const {return total_plugin_map;}
                                 void loadExcluded(const std::string &);
-                                void loadLibrary (const std::string &, const std::string & = "");                        
-                                void print (const std::string &plug_type = "") const;
+                                void loadLibrary (const std::string &, const std::string & = "");
+                                std::vector<std::string> print_plugin_names(const std::string & = "") const;
+                                std::string print_all (const std::string &plug_type = "") const;
+                                int print_all_to_screen (const std::string &plug_type = "") const;
+                                std::string print_plugin (const std::string &) const;
+                                std::string print_plugin (const std::string &, const std::string &) const;
+                                int print_plugin_to_screen (const std::string &) const;
+                                int print_plugin_to_screen (const std::string &, const std::string &) const;
+                                int print_plugin_to_screen (const std::vector<std::string> &) const;
                                 Plugin_Details find (const std::string &, const std::string &, const std::string &, const std::string &) const;
                         };
                         
