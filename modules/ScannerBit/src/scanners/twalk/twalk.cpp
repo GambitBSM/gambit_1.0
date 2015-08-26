@@ -27,8 +27,10 @@ scanner_plugin(twalk, version(0, 0, 1, beta))
                 int rank = get_printer().get_stream()->getRank(); // mpi rank of this process
                 
                 
-                Gambit::Options txt_options = get_inifile_node("aux_printer_txt_options");
+                Gambit::Options txt_options;
                 txt_options.setValue("synchronised",false);
+                txt_options.setValue("output_file", "output");
+                txt_options.setValue("info_file", "info");
                 get_printer().new_stream("txt", txt_options);
 
                 std::cout << "rank = " << rank <<std::endl;
