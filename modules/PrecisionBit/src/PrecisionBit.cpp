@@ -87,14 +87,14 @@ namespace Gambit
       improved_spec = **Dep::unimproved_MSSM_spectrum;
       SubSpectrum* HE = improved_spec.get_HE();
       SubSpectrum* LE = improved_spec.get_LE();
-      HE->phys.set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
-      LE->phys.set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
-      HE->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[0], "h0_1"); //FIXEM need to add uncertainty too *Dep::prec_HiggsMasses.DeltaMH[0]
-      HE->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[1], "h0_2"); //FIXME need to add uncertainty too
-      HE->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[2], "A0");   //FIXME need to add uncertainty too
-      HE->phys.set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[3], "H+");   //FIXME need to add uncertainty too
-      //UV->phys.set(Par::sinW2_eff, *Dep::prec_sinW2_eff, "sinW2_eff");  //FIXME need to add uncertainty too
-      //LE->phys.set(Par::sinW2_eff, *Dep::prec_sinW2_eff, "sinW2_eff");  //FIXME need to add uncertainty too
+      HE->phys().set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
+      LE->phys().set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
+      HE->phys().set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[0], "h0_1"); //FIXEM need to add uncertainty too *Dep::prec_HiggsMasses.DeltaMH[0]
+      HE->phys().set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[1], "h0_2"); //FIXME need to add uncertainty too
+      HE->phys().set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[2], "A0");   //FIXME need to add uncertainty too
+      HE->phys().set(Par::Pole_Mass, Dep::prec_HiggsMasses->MH[3], "H+");   //FIXME need to add uncertainty too
+      //UV->phys().set(Par::sinW2_eff, *Dep::prec_sinW2_eff, "sinW2_eff");  //FIXME need to add uncertainty too
+      //LE->phys().set(Par::sinW2_eff, *Dep::prec_sinW2_eff, "sinW2_eff");  //FIXME need to add uncertainty too
       result = &improved_spec;
     }
      
