@@ -49,7 +49,7 @@ namespace Gambit
                                 typedef std::map<std::string, plugin_map> plugin_mapmap;
 
                                 // Default, list-format output header
-                                out << "\x1b[01m\x1b[04m" << plugins->first << " plugins" << spacing(plugins->first.length() + 8, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
+                                out << "\n\x1b[01m\x1b[04m" << plugins->first << " plugins" << spacing(plugins->first.length() + 8, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
                                 //out << "----------------------------------------------------------------------------" << std::endl;
 
                                 // Loop over all entries in the plugins map map

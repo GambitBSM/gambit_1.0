@@ -199,7 +199,7 @@ namespace Gambit
                                 const int maxlen1 = 20;
                                 const int maxlen2 = 20;
                                 // Default, list-format output header
-                                out << "\x1b[01m\x1b[04m" << type << " plugin" << spacing(type.length() + 7, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
+                                out << "\n\x1b[01m\x1b[04m" << type << " plugin" << spacing(type.length() + 7, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
                                 //out << "----------------------------------------------------------------------------" << std::endl;
                                 out << plugin << spacing(plugin.length(), maxlen1) << version << spacing(version.length(), maxlen2) << status << std::endl;
                                 out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
