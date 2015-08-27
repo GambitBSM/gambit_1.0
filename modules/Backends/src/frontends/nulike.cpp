@@ -92,7 +92,7 @@ BE_INI_FUNCTION
       Utils::strcpy2f(eventf_79SL, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2015/IC79_Events_SL_llhInput_60Deg.txt", "IC79SL_event_file"));
       Utils::strcpy2f(BGf_79SL, clen, runOptions->getValueOrDef<str>(backendDir +
-       "/../data/IceCube/likelihood2015/IC79_Background_distributions_WH.txt", "IC79SL_BG_file"));
+       "/../data/IceCube/likelihood2015/IC79_Background_distributions_SL.txt", "IC79SL_BG_file"));
       Utils::strcpy2f(effareaf_79SL, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2015/IC79_Effective_Area_SL.txt", "IC79SL_effective_area_file"));
       Utils::strcpy2f(partiald_79SL, clen, runOptions->getValueOrDef<str>(backendDir +

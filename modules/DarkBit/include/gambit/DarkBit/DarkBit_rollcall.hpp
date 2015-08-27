@@ -1095,6 +1095,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY IC79WH_bgloglike 
+  START_CAPABILITY
+    #define FUNCTION IC79WH_bgloglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WH_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY IC79WH_pvalue 
   START_CAPABILITY
     #define FUNCTION IC79WH_pvalue
@@ -1145,6 +1153,14 @@ START_MODULE
   #define CAPABILITY IC79WL_loglike 
   START_CAPABILITY
     #define FUNCTION IC79WL_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY IC79WL_bgloglike 
+  START_CAPABILITY
+    #define FUNCTION IC79WL_bgloglike
     START_FUNCTION(double)
     DEPENDENCY(IC79WL_data, nudata)
     #undef FUNCTION
@@ -1205,6 +1221,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY IC79SL_bgloglike 
+  START_CAPABILITY
+    #define FUNCTION IC79SL_bgloglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79SL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY IC79SL_pvalue 
   START_CAPABILITY
     #define FUNCTION IC79SL_pvalue
@@ -1229,14 +1253,15 @@ START_MODULE
     DEPENDENCY(IC79WH_loglike, double)
     DEPENDENCY(IC79WL_loglike, double)
     DEPENDENCY(IC79SL_loglike, double)
+    DEPENDENCY(IC79WH_bgloglike, double)
+    DEPENDENCY(IC79WL_bgloglike, double)
+    DEPENDENCY(IC79SL_bgloglike, double)
     #undef FUNCTION
 
     #define FUNCTION IC_loglike
     START_FUNCTION(double)
     DEPENDENCY(IC22_loglike, double)
-    DEPENDENCY(IC79WH_loglike, double)
-    DEPENDENCY(IC79WL_loglike, double)
-    DEPENDENCY(IC79SL_loglike, double)
+    DEPENDENCY(IC79_loglike, double)
     #undef FUNCTION
 
   #undef CAPABILITY

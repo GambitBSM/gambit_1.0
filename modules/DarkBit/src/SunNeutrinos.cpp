@@ -336,9 +336,8 @@ namespace Gambit
 
     }
 
-    /*! \brief 22-string IceCube sample: predicted signal and background
-     * counts, observed counts and likelihoods.
-     */
+    /// \brief 22-string IceCube sample: predicted signal and background
+    /// counts, observed counts and likelihoods.
     void IC22_full(nudata &result)
     {
       using namespace Pipes::IC22_full;
@@ -356,6 +355,98 @@ namespace Gambit
       result.loglike = lnLike;
       result.pvalue = pval;
     }
+    
+    /// \brief Likelihood calculators for different IC79 event samples  
+    /// These functions all include the likelihood of the background-only model for the respective sameple.
+    /// We define the final log-likelihood as delta = sum over analyses of (lnL_model - lnL_BG), conservatively
+    /// forbidding delta > 0 in order to always just use the neutrino likelihood as a limit.  This ignores small 
+    /// low-E excesses caused by impending breakdown of approximations used in IceCube response data and the nulike 
+    /// likelihood at very low E. This implies conditioning on all but one parameter (e.g. the cross-section), 
+    /// such that including any combination of IC79 data adds just *one* additional degree of freedom to the fit.  
+    /// @{
+    
+    /// \brief 79-string IceCube WH sample: predicted signal and background
+    /// counts, observed counts and likelihoods.
+    void IC79WH_full(nudata &result)
+    {
+      static bool first = true;
+      using namespace Pipes::IC79WH_full;
+      const double bgloglike = -11874.8689;
+      double sigpred, bgpred, lnLike, pval;
+      int totobs;
+      char experiment[300] = "IC-79 WH";
+      void* context = NULL;
+      double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
+          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
+          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      result.signal = sigpred;
+      result.bg = bgpred;
+      result.nobs = totobs;
+      result.loglike = lnLike;  
+      result.pvalue = pval;
+      if (first)
+      {
+        result.bgloglike = bgloglike;
+        first = false;
+      }
+    }
+
+    /// \brief 79-string IceCube WL sample: predicted signal and background
+    /// counts, observed counts and likelihoods.
+    void IC79WL_full(nudata &result)
+    {
+      static bool first = true;
+      using namespace Pipes::IC79WL_full;
+      const double bgloglike = -1813.4503; 
+      double sigpred, bgpred, lnLike, pval;
+      int totobs;
+      char experiment[300] = "IC-79 WL";
+      void* context = NULL;
+      double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
+          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
+          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      result.signal = sigpred;
+      result.bg = bgpred;
+      result.nobs = totobs;
+      result.loglike = lnLike;  
+      result.pvalue = pval;
+      if (first)
+      {
+        result.bgloglike = bgloglike;
+        first = false;
+      }
+    }
+
+    /// \brief 79-string IceCube SL sample: predicted signal and background
+    /// counts, observed counts and likelihoods.
+    void IC79SL_full(nudata &result)
+    {
+      static bool first = true;
+      using namespace Pipes::IC79SL_full;
+      const double bgloglike = -5015.6474;
+      double sigpred, bgpred, lnLike, pval;
+      int totobs;
+      char experiment[300] = "IC-79 SL";
+      void* context = NULL;
+      double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
+          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4, 
+          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      result.signal = sigpred;
+      result.bg = bgpred;
+      result.nobs = totobs;
+      result.loglike = lnLike;  
+      result.pvalue = pval;
+      if (first)
+      {
+        result.bgloglike = bgloglike;
+        first = false;
+      }
+    }
+    /// @}
+
     /// 22-string extractor module functions
     /// @{
     void IC22_signal (double &result) { 
@@ -370,121 +461,69 @@ namespace Gambit
       result = Pipes::IC22_pvalue ::Dep::IC22_data->pvalue;  }
     /// @}
 
-    /*! \brief 79-string IceCube WH sample: predicted signal and background
-     * counts, observed counts and likelihoods.
-     */
-    void IC79WH_full(nudata &result)
-    {
-      using namespace Pipes::IC79WH_full;
-      double sigpred, bgpred, lnLike, pval;
-      int totobs;
-      char experiment[300] = "IC-79 WH";
-      void* context = NULL;
-      double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
-          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
-          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
-      result.signal = sigpred;
-      result.bg = bgpred;
-      result.nobs = totobs;
-      result.loglike = lnLike;
-      result.pvalue = pval;
-    }
     /// 79-string WH extractor module functions
     /// @{
-    void IC79WH_signal (double &result) { 
-      result = Pipes::IC79WH_signal ::Dep::IC79WH_data->signal;  }
-    void IC79WH_bg     (double &result) { 
-      result = Pipes::IC79WH_bg     ::Dep::IC79WH_data->bg;      }
-    void IC79WH_nobs   (int    &result) { 
-      result = Pipes::IC79WH_nobs   ::Dep::IC79WH_data->nobs;    }
-    void IC79WH_loglike(double &result) { 
-      result = Pipes::IC79WH_loglike::Dep::IC79WH_data->loglike; }
-    void IC79WH_pvalue (double &result) { 
-      result = Pipes::IC79WH_pvalue ::Dep::IC79WH_data->pvalue;  }
+    void IC79WH_signal (double &result)   { 
+      result = Pipes::IC79WH_signal ::Dep::IC79WH_data->signal;    }
+    void IC79WH_bg     (double &result)   { 
+      result = Pipes::IC79WH_bg     ::Dep::IC79WH_data->bg;        }
+    void IC79WH_nobs   (int    &result)   { 
+      result = Pipes::IC79WH_nobs   ::Dep::IC79WH_data->nobs;      }
+    void IC79WH_loglike(double &result)   { 
+      result = Pipes::IC79WH_loglike::Dep::IC79WH_data->loglike;   }
+    void IC79WH_bgloglike(double &result) { 
+      result = Pipes::IC79WH_loglike::Dep::IC79WH_data->bgloglike; }
+    void IC79WH_pvalue (double &result)   { 
+      result = Pipes::IC79WH_pvalue ::Dep::IC79WH_data->pvalue;    }
     /// @}
-
-    /*! \brief 79-string IceCube WL sample: predicted signal and background
-     * counts, observed counts and likelihoods.
-     */
-    void IC79WL_full(nudata &result)
-    {
-      using namespace Pipes::IC79WL_full;
-      double sigpred, bgpred, lnLike, pval;
-      int totobs;
-      char experiment[300] = "IC-79 WL";
-      void* context = NULL;
-      double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
-          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
-          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
-      result.signal = sigpred;
-      result.bg = bgpred;
-      result.nobs = totobs;
-      result.loglike = lnLike;
-      result.pvalue = pval;
-    }
+    
     /// 79-string WL extractor module functions
-    void IC79WL_signal (double &result) { 
-      result = Pipes::IC79WL_signal ::Dep::IC79WL_data->signal;  }
-    void IC79WL_bg     (double &result) { 
-      result = Pipes::IC79WL_bg     ::Dep::IC79WL_data->bg;      }
-    void IC79WL_nobs   (int    &result) { 
-      result = Pipes::IC79WL_nobs   ::Dep::IC79WL_data->nobs;    }
-    void IC79WL_loglike(double &result) { 
-      result = Pipes::IC79WL_loglike::Dep::IC79WL_data->loglike; }
-    void IC79WL_pvalue (double &result) { 
-      result = Pipes::IC79WL_pvalue ::Dep::IC79WL_data->pvalue;  }
+    /// @{
+    void IC79WL_signal (double &result)   { 
+      result = Pipes::IC79WL_signal ::Dep::IC79WL_data->signal;    }
+    void IC79WL_bg     (double &result)   { 
+      result = Pipes::IC79WL_bg     ::Dep::IC79WL_data->bg;        }
+    void IC79WL_nobs   (int    &result)   { 
+      result = Pipes::IC79WL_nobs   ::Dep::IC79WL_data->nobs;      }
+    void IC79WL_loglike(double &result)   { 
+      result = Pipes::IC79WL_loglike::Dep::IC79WL_data->loglike;   }
+    void IC79WL_bgloglike(double &result) { 
+      result = Pipes::IC79WL_loglike::Dep::IC79WL_data->bgloglike; }
+    void IC79WL_pvalue (double &result)   { 
+      result = Pipes::IC79WL_pvalue ::Dep::IC79WL_data->pvalue;    }
     /// @}
 
-    /*! \brief 79-string IceCube SL sample: predicted signal and background
-     * counts, observed counts and likelihoods.
-     */
-    void IC79SL_full(nudata &result)
-    {
-      using namespace Pipes::IC79SL_full;
-      double sigpred, bgpred, lnLike, pval;
-      int totobs;
-      char experiment[300] = "IC-79 SL";
-      void* context = NULL;
-      double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
-          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4, 
-          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
-      result.signal = sigpred;
-      result.bg = bgpred;
-      result.nobs = totobs;
-      result.loglike = lnLike;
-      result.pvalue = pval;
-    }
     /// 79-string SL extractor module functions
     /// @{
-    void IC79SL_signal (double &result) { 
-      result = Pipes::IC79SL_signal ::Dep::IC79SL_data->signal;  }
-    void IC79SL_bg     (double &result) { 
-      result = Pipes::IC79SL_bg     ::Dep::IC79SL_data->bg;      }
-    void IC79SL_nobs   (int    &result) { 
-      result = Pipes::IC79SL_nobs   ::Dep::IC79SL_data->nobs;    }
-    void IC79SL_loglike(double &result) { 
-      result = Pipes::IC79SL_loglike::Dep::IC79SL_data->loglike; }
-    void IC79SL_pvalue (double &result) { 
-      result = Pipes::IC79SL_pvalue ::Dep::IC79SL_data->pvalue;  }
+    void IC79SL_signal (double &result)   { 
+      result = Pipes::IC79SL_signal ::Dep::IC79SL_data->signal;    }
+    void IC79SL_bg     (double &result)   { 
+      result = Pipes::IC79SL_bg     ::Dep::IC79SL_data->bg;        }
+    void IC79SL_nobs   (int    &result)   { 
+      result = Pipes::IC79SL_nobs   ::Dep::IC79SL_data->nobs;      }
+    void IC79SL_loglike(double &result)   { 
+      result = Pipes::IC79SL_loglike::Dep::IC79SL_data->loglike;   }
+    void IC79SL_bgloglike(double &result) { 
+      result = Pipes::IC79SL_loglike::Dep::IC79SL_data->bgloglike; }
+    void IC79SL_pvalue (double &result)   { 
+      result = Pipes::IC79SL_pvalue ::Dep::IC79SL_data->pvalue;    }
     /// @}
 
     /// Composite IceCube 79-string likelihood function.
     void IC79_loglike(double &result)
     {
       using namespace Pipes::IC79_loglike;
-      result = 
-        *Dep::IC79WH_loglike + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
+      result = *Dep::IC79SL_loglike - *Dep::IC79SL_bgloglike +
+               *Dep::IC79WL_loglike - *Dep::IC79WL_bgloglike +
+               *Dep::IC79WH_loglike - *Dep::IC79WH_bgloglike;
+      if (result > 0.0) result = 0.0;
     }
 
     /// Complete composite IceCube likelihood function.
     void IC_loglike(double &result)
     {
       using namespace Pipes::IC_loglike;
-      result = *Dep::IC22_loglike + *Dep::IC79WH_loglike 
-        + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
+      result = *Dep::IC79_loglike + *Dep::IC22_loglike;
     }
   }
 }

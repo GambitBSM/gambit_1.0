@@ -441,6 +441,7 @@ namespace Gambit
         double signal;
         double bg;
         double loglike;
+        double bgloglike;
         double pvalue;
     };
 
