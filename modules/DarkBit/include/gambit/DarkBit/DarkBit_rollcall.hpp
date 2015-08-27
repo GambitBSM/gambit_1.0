@@ -1040,6 +1040,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY IC22_bgloglike 
+  START_CAPABILITY
+    #define FUNCTION IC22_bgloglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC22_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY IC22_pvalue 
   START_CAPABILITY
     #define FUNCTION IC22_pvalue
@@ -1245,9 +1253,8 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY IceCube_likelihood
+  #define CAPABILITY IC79_loglike
   START_CAPABILITY
-
     #define FUNCTION IC79_loglike
     START_FUNCTION(double)
     DEPENDENCY(IC79WH_loglike, double)
@@ -1257,13 +1264,21 @@ START_MODULE
     DEPENDENCY(IC79WL_bgloglike, double)
     DEPENDENCY(IC79SL_bgloglike, double)
     #undef FUNCTION
+  #undef CAPABILITY
 
+  #define CAPABILITY IceCube_likelihood
+  START_CAPABILITY
     #define FUNCTION IC_loglike
     START_FUNCTION(double)
     DEPENDENCY(IC22_loglike, double)
-    DEPENDENCY(IC79_loglike, double)
+    DEPENDENCY(IC79WH_loglike, double)
+    DEPENDENCY(IC79WL_loglike, double)
+    DEPENDENCY(IC79SL_loglike, double)
+    DEPENDENCY(IC22_bgloglike, double)
+    DEPENDENCY(IC79WH_bgloglike, double)
+    DEPENDENCY(IC79WL_bgloglike, double)
+    DEPENDENCY(IC79SL_bgloglike, double)
     #undef FUNCTION
-
   #undef CAPABILITY
 
   #define CAPABILITY UnitTest_DarkBit
