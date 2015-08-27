@@ -30,18 +30,18 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_ParticleData : virtual public AbstractBase
         {
             private:
-                // IGNORED: Field  -- Name: modeBreitWigner  -- XML id: _23164
-                // IGNORED: Field  -- Name: maxEnhanceBW  -- XML id: _23165
-                // IGNORED: Field  -- Name: mQRun  -- XML id: _23166
-                // IGNORED: Field  -- Name: Lambda5Run  -- XML id: _23167
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _23168
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _23169
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _23170
-                // IGNORED: Field  -- Name: couplingsPtr  -- XML id: _23171
-                // IGNORED: Field  -- Name: pdt  -- XML id: _23172
-                // IGNORED: Field  -- Name: particlePtr  -- XML id: _23173
-                // IGNORED: Field  -- Name: isInit  -- XML id: _23174
-                // IGNORED: Field  -- Name: readingFailedSave  -- XML id: _23175
+                // IGNORED: Field  -- Name: modeBreitWigner  -- XML id: _23526
+                // IGNORED: Field  -- Name: maxEnhanceBW  -- XML id: _23527
+                // IGNORED: Field  -- Name: mQRun  -- XML id: _23528
+                // IGNORED: Field  -- Name: Lambda5Run  -- XML id: _23529
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _23530
+                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _23531
+                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _23532
+                // IGNORED: Field  -- Name: couplingsPtr  -- XML id: _23533
+                // IGNORED: Field  -- Name: pdt  -- XML id: _23534
+                // IGNORED: Field  -- Name: particlePtr  -- XML id: _23535
+                // IGNORED: Field  -- Name: isInit  -- XML id: _23536
+                // IGNORED: Field  -- Name: readingFailedSave  -- XML id: _23537
             public:
     
                 virtual void initPtr__BOSS(Pythia8::Abstract_Info*, Pythia8::Abstract_Settings*, Pythia8::Abstract_Rndm*, Pythia8::Abstract_Couplings*) =0;

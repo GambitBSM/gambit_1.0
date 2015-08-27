@@ -94,9 +94,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->setResonancePtr__BOSS((*resonancePtrIn).BEptr);
         }
         
+        inline bool Pythia::init(std::basic_ostream<char,std::char_traits<char> >& os)
+        {
+            return wrapperbase::BEptr->init(os);
+        }
+        
         inline bool Pythia::init()
         {
-            return wrapperbase::BEptr->init();
+            return wrapperbase::BEptr->init__BOSS();
         }
         
         inline bool Pythia::next()

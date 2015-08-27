@@ -30,6 +30,7 @@
 #include <fstream>
 #include <memory>
 #include <numeric>
+#include <sstream>
 #include <vector>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -78,9 +79,10 @@ namespace Gambit
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
+    bool allProcessesVetoed;
     int pythiaConfigurations, pythiaNumber;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses,allProcessesVetoed
 
 
     /// *************************************************
@@ -92,6 +94,7 @@ namespace Gambit
     {
       using namespace Pipes::operatePythia;
       int nEvents = 0;
+      allProcessesVetoed = true;
       globalAnalyses->clear();
 
       // Do the base-level initialisation   
@@ -104,6 +107,9 @@ namespace Gambit
         /// @todo Subprocess specific nEvents
         GET_COLLIDER_RUNOPTION(nEvents, int);
       }
+
+      /// @note: Much of the loop below designed for splitting up the subprocesses to be generated.
+      /// @note: For our first run, we will just run all SUSY subprocesses.
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) 
@@ -118,13 +124,22 @@ namespace Gambit
         while (pythiaNumber < pythiaConfigurations)
         {
           ++pythiaNumber;
+          Loop::reset();
           Loop::executeIteration(INIT);
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             Loop::executeIteration(START_SUBPROCESS);
-            #pragma omp for
-            for (int i = 1; i <= nEvents; ++i) Loop::executeIteration(i);
-            Loop::executeIteration(END_SUBPROCESS);
+            if(*Loop::done) {
+              std::cout << "\n\n THIS SUBPROCESS WAS VETOED " << std::endl;
+              Loop::executeIteration(END_SUBPROCESS);
+            } else {
+              allProcessesVetoed = false;
+              #pragma omp for
+              for (int i = 1; i <= nEvents; ++i) {
+                Loop::executeIteration(i);
+              }
+              Loop::executeIteration(END_SUBPROCESS);
+            }
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
                     << " number " << std::to_string(pythiaNumber) << " has finished." << std::endl;
@@ -148,6 +163,12 @@ namespace Gambit
       static bool SLHA_debug_mode = false;      
       static std::vector<std::string> filenames;
       static unsigned int counter = -1;               
+      // variables for xsec veto
+      std::stringstream processLevelOutput;
+      std::string _junk, line;
+      std::istringstream* issPtr;
+      int code;
+      double xsec, totalxsec;
 
       if (*Loop::iteration == BASE_INIT)
       {      
@@ -170,8 +191,7 @@ namespace Gambit
 
       else if (*Loop::iteration == START_SUBPROCESS)
       {
-        // TODO Surely, I must call result.clear()?
-
+        result.clear();
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is 
         // *after* INIT, within omp parallel.
@@ -196,7 +216,10 @@ namespace Gambit
           // Run Pythia reading an SLHA file.
           logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
           pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
-          result.init(pythiaOptions);
+          if (omp_get_thread_num() == 0)
+            result.init(pythiaOptions, processLevelOutput);
+          else
+            result.init(pythiaOptions);
         }
         else
         {
@@ -219,16 +242,34 @@ namespace Gambit
             slha.push_front(block);
           }
           else
-          {
             ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
-          }
           cout << slha << endl;
           pythiaOptions.push_back("SLHA:file = slhaea");
-          result.init(pythiaOptions, &slha);
+
+          if (omp_get_thread_num() == 0)
+            result.init(pythiaOptions, &slha, processLevelOutput);
+          else
+            result.init(pythiaOptions, &slha);
         }
-        /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
-        // For now, just use the total cross section from SUSY:all
+
+        /// xsec veto
+        if (omp_get_thread_num() == 0) {
+          code = -1;
+          totalxsec = 0.;
+          while(code < 2026) {
+            std::getline(processLevelOutput, line);
+            issPtr = new std::istringstream(line);
+            issPtr->seekg(47, issPtr->beg);
+            if ((*issPtr) >> code >> _junk >> xsec) totalxsec += xsec;
+            delete issPtr;
+          }
+          std::cout << "$$$$ Total xsec (fb) = " << xsec * 1e12 << "\n";
+          
+          /// TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
+          if (totalxsec * 1e12 * 20. < 1.) Loop::wrapup();
+        }
       }
+
     }
 
 
@@ -656,6 +697,11 @@ namespace Gambit
     /// @todo Don't we also need to return a reference LL, or just the deltaLL?
     void calcLogLike(double& result) {
       using namespace Pipes::calcLogLike;
+      // xsec veto
+      if (allProcessesVetoed) {
+        result = 0.;
+        return;
+      }
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
       cout << "In calcLogLike" << endl;
 

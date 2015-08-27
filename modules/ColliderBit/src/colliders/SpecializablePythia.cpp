@@ -57,7 +57,7 @@ namespace Gambit {
 
 
     void SpecializablePythia::init_external(const std::vector<std::string>& externalSettings,
-                                     const SLHAea::Coll* slhaea) {
+                                     const SLHAea::Coll* slhaea, std::ostream& os) {
 
       // Special version of the init function for user defined models
       // Needs to directly construct the new matrix elements (rather than use flags)
@@ -94,13 +94,13 @@ namespace Gambit {
 
 	
 	
-        _pythiaInstance->init();
+        _pythiaInstance->init(os);
       }
     
     /// @name SpecializablePythia definitions
     //@{
       void SpecializablePythia::init(const std::vector<std::string>& externalSettings,
-                                     const SLHAea::Coll* slhaea) {
+                                     const SLHAea::Coll* slhaea, std::ostream& os) {
         // Settings acquired externally (ex from a gambit yaml file)
         for(const auto command : externalSettings) {
           _pythiaSettings.push_back(command);
@@ -122,7 +122,7 @@ namespace Gambit {
         if(slhaea)
           _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
 
-        _pythiaInstance->init();
+        _pythiaInstance->init(os);
       }
 
       void SpecializablePythia::resetSpecialization(const std::string& specName) {
