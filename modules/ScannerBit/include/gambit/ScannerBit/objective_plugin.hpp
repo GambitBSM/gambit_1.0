@@ -51,11 +51,14 @@ namespace Gambit
 ///Used only if the plugin is doing to be used as a prior.
 ///Sets the sub-hypercube size that is need by the prior.
 #define set_dimension(...)              SET_DIMENSION(__VA_ARGS__)
+///Gets the point id.
+#define get_point_id()                  GET_POINT_ID()
 ///Objective plugin declaration.  Is of the form:  objective_plugin(name, version)
 #define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
 ///@}
 
 #define GET_KEYS()                      get_input_value<std::vector<std::string>>(0)
+#define GET_POINT_ID()                  get_input_value<unsigned long long int>(2)
 #define SET_DIMENSION(...)              get_input_value<unsigned int>(1) = __VA_ARGS__
 
 #define OBJECTIVE_SETUP                                                                                                 \
@@ -77,6 +80,7 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         const static PriorTransform &prior = get_input_value<PriorTransform>(1);                                        \
         static std::unordered_map<std::string, double> key_map;                                                         \
         static std::vector<double> ret(key.size());                                                                     \
+        const static int rank = get_printer().get_stream()->getRank();                                                  \
                                                                                                                         \
         prior.transform(in, key_map);                                                                                   \
                                                                                                                         \
@@ -84,6 +88,7 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         for (auto it = key.begin(), end = key.end(); it != end; it++, it_ret++)                                         \
         {                                                                                                               \
                 *it_ret = key_map[*it];                                                                                 \
+                get_printer().get_stream()->print(*it_ret, *it, get_main_param_id(*it), rank, get_point_id());          \
         }                                                                                                               \
                                                                                                                         \
         return ret;                                                                                                     \

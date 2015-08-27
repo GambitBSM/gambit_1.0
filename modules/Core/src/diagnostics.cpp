@@ -171,45 +171,13 @@ namespace Gambit
   void gambit_core::scanner_diagnostic()
   {
     // Import scanner plugin info from ScannerBit 
-    Scanner::Plugins::plugin_info().print("scanner");
+    Scanner::Plugins::plugin_info().print_all_to_screen("scanner");
   }
 
   /// Basic test function diagnostic function
   void gambit_core::test_function_diagnostic()
   { 
-    const int maxlen1 = 20;
-    const int maxlen2 = 20;
-    typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
-    typedef std::map<std::string, plugin_map> plugin_mapmap;
-
-    // Import scanner plugin info from ScannerBit 
-    plugin_mapmap scanners = Scanner::Plugins::plugin_info().getPluginsMap();
-
-    // Default, list-format output header
-    cout << "Test Functions           Version                  Accepted options" << endl;
-    cout << "----------------------------------------------------------------------------" << endl;
-
-    // Loop over all entries in the plugins map map
-    for (plugin_mapmap::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
-    {
-      if (it->first == "like")  // Only bother with scanners here          
-      {
-        // Loop over the different scanners
-        for (plugin_map::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
-        {
-          // Loop over the available versions of the scanner 
-          for (auto kt = jt->second.begin(); kt != jt->second.end(); ++kt)
-          {
-            // Print the scanner name if this is the first version, otherwise just space
-            const str firstentry = (kt == jt->second.begin() ? jt->first : "");
-            cout << firstentry << spacing(firstentry.length(),maxlen1); 
-            // Print the scanner info.
-            cout << kt->version << spacing(kt->version.length(),maxlen2) << "<no info available>" << endl;
-          }
-        }
-        cout << endl;
-      }
-    }
+    Scanner::Plugins::plugin_info().print_all_to_screen("objective");
   }
   
   /// Free-form module diagnostic function
@@ -406,30 +374,13 @@ namespace Gambit
   /// Free-form scanner diagnostic function
   void gambit_core::ff_scanner_diagnostic(str& command)
   {
-    cout << "Here GAMBIT would search through all the scanners to see if " << command << " is one of them." << endl;
-    cout << "...but Greg hasn't implemented that yet.  Please report this to gregory.david.martinez@gmail.com" << endl;
-    cout << "Raised at: " << LOCAL_INFO << endl;
-    //Iterate over all scanners to see if command matches one of them
-    //for (std::set<str>::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
-    {
-      //if (command == *it)
-      //{
-      //  cout << "Information for scanner " << model << "." << endl << endl;;
-      
-        // stuff about the scanner
-
-        //is_yaml = false;
-        //break;
-      //}
-    }       
+    Scanner::Plugins::plugin_info().print_plugin_to_screen("scanner", command);     
   }
 
   /// Free-form test function diagnostic function
   void gambit_core::ff_test_function_diagnostic(str& command)
   {
-    cout << "Here GAMBIT would search through all the test functions to see if " << command << " is one of them." << endl;
-    cout << "...but Greg hasn't implemented that yet.  Please report this to gregory.david.martinez@gmail.com" << endl;
-    cout << "Raised at: " << LOCAL_INFO << endl;
+    Scanner::Plugins::plugin_info().print_plugin_to_screen("objective", command);
   }
 
 }

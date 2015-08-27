@@ -27,6 +27,7 @@
 #include "gambit/ScannerBit/scan.hpp"
 #include "gambit/ScannerBit/plugin_interface.hpp"
 #include "gambit/ScannerBit/plugin_factory.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
 
 namespace Gambit
 {
@@ -170,7 +171,7 @@ namespace Gambit
 
                 }
                 
-                int Scan_Manager::Run()
+                int Scan_Manager::Run(int argc, char* argv[])
                 {
                         std::vector<std::string> pluginNames;
                         if (options.hasKey("use_scanner") && options.getNode("use_scanner").IsScalar())
@@ -188,12 +189,31 @@ namespace Gambit
                         {
                                 Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
                                 
-                                if(plugin_interface["initialize_mpi"] && plugin_interface["initialize_mpi"].as<bool>())
+                                //if(plugin_interface["initialize_mpi"] && !plugin_interface["initialize_mpi"].as<bool>())
+                                if (false)
                                 {
-                                        std::cout << "do mpi stuff ..." << std::endl;
+                                        plugin_interface();
+                                        printerInterface->finalise();
                                 }
-                                
-                                plugin_interface();
+                                else
+                                {
+#ifdef WITH_MPI
+                                        if(GMPI::Is_initialized())
+                                        {
+                                                //scan_err << "Error initialising MPI! It is already initialised!" << scan_end; 
+                                        } 
+                                        else
+                                        {
+                                                //MPI_Init(&argc,&argv); 
+                                        }
+                                        //GMPI::Init(argc,argv);
+#endif
+                                        plugin_interface();
+                                        //printerInterface->finalise();
+#ifdef WITH_MPI
+                                        //MPI_Finalize(); 
+#endif
+                                }
                         }
  
                         /// From Ben: To Greg: This is a command I added to the 
@@ -202,7 +222,7 @@ namespace Gambit
                         /// to file and so on). It just needs to happen
                         /// when the scan is done; feel free to move it to
                         /// wherever you like.
-                        printerInterface->finalise();
+                        
 
                         return 0;
                 }

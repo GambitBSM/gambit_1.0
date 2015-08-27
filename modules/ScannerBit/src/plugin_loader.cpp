@@ -19,6 +19,7 @@
 ///
 ///  *********************************************
 
+#include <cstdlib>
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
@@ -39,16 +40,17 @@ namespace Gambit
                                 return std::string(offset+5,' ');
                         }
 
-                        inline void print_plugins(std::map< std::string, std::map<std::string, std::vector<Plugin_Details> > >::const_iterator plugins)
+                        inline std::string print_plugins(std::map< std::string, std::map<std::string, std::vector<Plugin_Details> > >::const_iterator plugins)
                         {
+                                std::stringstream out;
                                 const int maxlen1 = 20;
                                 const int maxlen2 = 20;
                                 typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
                                 typedef std::map<std::string, plugin_map> plugin_mapmap;
 
                                 // Default, list-format output header
-                                std::cout << plugins->first << " plugins" << spacing(plugins->first.length() + 8, maxlen1) << "version" << spacing(7, maxlen2) << "status" << std::endl;
-                                std::cout << "----------------------------------------------------------------------------" << std::endl;
+                                out << "\n\x1b[01m\x1b[04m" << plugins->first << " plugins" << spacing(plugins->first.length() + 8, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
+                                //out << "----------------------------------------------------------------------------" << std::endl;
 
                                 // Loop over all entries in the plugins map map
                                 for (auto it = plugins->second.begin(); it != plugins->second.end(); ++it)
@@ -57,14 +59,26 @@ namespace Gambit
                                         {
                                                 // Print the scanner name if this is the first version, otherwise just space
                                                 const str firstentry = (jt == it->second.begin() ? it->first : "");
-                                                std::cout << firstentry << spacing(firstentry.length(),maxlen1); 
+                                                out << firstentry << spacing(firstentry.length(),maxlen1); 
                                                 // Print the scanner info.
-                                                std::cout << jt->version << spacing(jt->version.length(),maxlen2);
-                                                std::cout << jt->status << std::endl;
+                                                out << jt->version << spacing(jt->version.length(),maxlen2);
+                                                out << jt->status << std::endl;
                                         }
                                         
-                                        std::cout << std::endl;
+                                        out << std::endl;
                                 }
+                                
+                                return out.str();
+                        }
+                        
+                        inline void print_to_screen(const std::string &file, const std::string &name)
+                        {
+                                char temp_file[20] = "_gambit_temp_XXXXXX";
+                                mkstemp(temp_file);
+                                std::ofstream out(temp_file);
+                                out << file << std::flush;
+                                std::system((std::string("less -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\" ") + std::string(temp_file)).c_str());
+                                //std::system((std::string("cat ")+std::string(temp_file) + std::string(" | less -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\"")).c_str());
                         }
                         
                         Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")
@@ -182,28 +196,163 @@ namespace Gambit
                                 }
                         }
                         
-                        void Plugin_Loader::print(const std::string &plug_type) const
+                        std::vector<std::string> Plugin_Loader::print_plugin_names(const std::string &plug_type) const
                         {
+                                std::vector<std::string> vec;
+                                
                                 if (plug_type != "")
                                 {
                                         auto plugins = total_plugin_map.find(plug_type);
                                         if (plugins == total_plugin_map.end())
                                         {
-                                                scan_err << "Plugin type \"" << plug_type << "\" does not exist." << scan_end;
-                                                return;
+                                                return vec;
                                         }
                                         else
                                         {
-                                                print_plugins(plugins);
+                                                for (auto it = plugins->second.begin(), end = plugins->second.end(); it != end; ++it)
+                                                {
+                                                        vec.push_back(it->first);
+                                                }
                                         }
                                 }
                                 else
                                 {
                                         for (auto it = total_plugin_map.begin(), end = total_plugin_map.end(); it != end; it++)
                                         {
-                                                print_plugins(it);
+                                                for (auto it2 = it->second.begin(), end2 = it->second.end(); it2 != end2; ++it2)
+                                                {
+                                                        vec.push_back(it2->first);
+                                                }
                                         }
                                 }
+                                
+                                return vec;
+                        }
+                        
+                        std::string Plugin_Loader::print_all(const std::string &plug_type) const
+                        {
+                                if (plug_type != "")
+                                {
+                                        auto plugins = total_plugin_map.find(plug_type);
+                                        if (plugins == total_plugin_map.end())
+                                        {
+                                                return "";
+                                        }
+                                        else
+                                        {
+                                                return print_plugins(plugins);
+                                        }
+                                }
+                                else
+                                {
+                                        for (auto it = total_plugin_map.begin(), end = total_plugin_map.end(); it != end; it++)
+                                        {
+                                                return print_plugins(it);
+                                        }
+                                }
+                        }
+                        
+                        int Plugin_Loader::print_all_to_screen (const std::string &name) const
+                        {
+                                std::string output = print_all(name);
+                                if (output == "")
+                                        return 1;
+                                
+                                print_to_screen(output, name);
+                                return 0;
+                        }
+                        
+                        std::string Plugin_Loader::print_plugin(const std::string &name) const
+                        {
+                                std::vector<Scanner::Plugins::Plugin_Details> vec;
+                                std::stringstream output;
+                                for (auto it_map = getPluginsMap().begin(), end = getPluginsMap().end(); it_map!= end; it_map++)
+                                {
+                                        auto it = it_map->second.find(name);
+                                        if (it != it_map->second.end())
+                                        {
+                                                vec.insert(vec.begin(), it->second.begin(), it->second.end());
+                                        }
+                                }
+                                
+                                if (vec.size() == 0)
+                                {
+                                        return "";
+                                }
+                                else
+                                {
+                                        for (auto it = vec.begin(), end = vec.end(); it != end; it++)
+                                        {
+                                                output << it->printFull() << std::endl;
+                                        }
+                                }
+                                
+                                return output.str();
+                        }
+                        
+                        std::string Plugin_Loader::print_plugin(const std::string &type, const std::string &plugin) const
+                        {
+                                std::stringstream output;
+                                std::vector<Scanner::Plugins::Plugin_Details> vec;
+                                
+                                if((plugin_map.find(type) == plugin_map.end()) || (plugin_map.at(type).find(plugin) == plugin_map.at(type).end()))
+                                {
+                                        return "";
+                                }
+                                
+                                for (auto it = plugin_map.at(type).at(plugin).begin(), end = plugin_map.at(type).at(plugin).end(); it != end; it++)
+                                {
+                                        vec.push_back(*it);
+                                }
+                                
+                                if (vec.size() == 0)
+                                {
+                                        return "";
+                                }
+                                else
+                                {
+                                        for (auto it = vec.begin(), end = vec.end(); it != end; it++)
+                                        {
+                                                output << it->printFull() << std::endl;
+                                        }
+                                }
+                                
+                                return output.str();
+                        }
+                        
+                        int Plugin_Loader::print_plugin_to_screen (const std::string &name) const
+                        {
+                                std::string output = print_plugin(name);
+                                if (output == "")
+                                        return 1;
+                                
+                                print_to_screen(output, name);
+                                return 0;
+                        }
+                        
+                        int Plugin_Loader::print_plugin_to_screen (const std::string &type, const std::string &name) const
+                        {
+                                std::string output = print_plugin(type, name);
+                                if (output == "")
+                                        return 1;
+                                
+                                print_to_screen(output, name);
+                                return 0;
+                        }
+                        
+                        int Plugin_Loader::print_plugin_to_screen (const std::vector<std::string> &names) const
+                        {
+                                std::string output;
+                                for (auto it = names.begin(), end = names.end(); it != end; ++it)
+                                {
+                                        output += print_plugin(*it) + "\n";
+                                }
+                                
+                                if (output == "")
+                                        return 1;
+                                
+                                print_to_screen(output, names[0]);
+                                return 0;
                         }
                         
                         Plugin_Details Plugin_Loader::find (const std::string &type, const std::string &plugin, const std::string &version, const std::string &lib) const

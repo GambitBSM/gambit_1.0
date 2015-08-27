@@ -28,6 +28,7 @@
 #include "gambit/Core/core.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/yaml_description_database.hpp"
+#include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"
@@ -582,7 +583,11 @@ namespace Gambit
         valid_commands.insert(valid_commands.end(), modules.begin(), modules.end());
         valid_commands.insert(valid_commands.end(), capabilities.begin(), capabilities.end());
         for (auto it = backend_versions.begin(); it != backend_versions.end(); ++it) valid_commands.push_back(it->first);      
-        for (auto it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it) valid_commands.push_back((*it)->origin());             
+        for (auto it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it) valid_commands.push_back((*it)->origin());
+        std::vector<std::string> scanner_names = Scanner::Plugins::plugin_info().print_plugin_names("scanner");
+        std::vector<std::string> objective_names = Scanner::Plugins::plugin_info().print_plugin_names("objective");
+        valid_commands.insert(valid_commands.end(), scanner_names.begin(), scanner_names.end());
+        valid_commands.insert(valid_commands.end(), objective_names.begin(), objective_names.end());
 
         // If the user hasn't asked for a diagnostic at all, process the command line options for the standard run mode and get out.
         if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())

@@ -9,6 +9,10 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{amssymb, amsmath}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{lineno}
+\newcommand{\tab}{${}$\ \ \ \ }
 %\pagestyle{fancy}
 
 \newcommand{\mail}[1]{\href{mailto:#1}{#1}}
@@ -57,7 +61,127 @@ including plugin design and handles for interface with ScannerBit + interface to
 \section{Acknowledgements}
 
 \appendix
+
+\section{Scanner Example}
+
+Below is code that declares the scanner plugin ``random'', version ``1.0.0-example''.
+This scanner enters ``\texttt{number}'' random points in the functor corresponding to
+the purpose ``\texttt{Likelihood}''.
+
+\begin{linenumbers}
+\texttt{\#include "scanner\_plugin.hpp"\\
+\\
+scanner\_plugin(random, version(1, 0, 0, example))\\
+\{\\
+\tab reqd\_inifile\_entries("number");\\
+%\tab reqd\_libraries("my\_cool\_library");\\
+%\tab reqd\_include\_paths("my\_cool\_header.h");\\
+\tab scan\_ptr <double (const std::vector<double> \&)> loglike;
+\\
+\tab int num, dim;\\
+\\
+\tab plugin\_constructor\\
+\tab \{\\
+\tab \tab likelihood = get\_functor("Likelihood");\\
+\tab \tab num = get\_inifile\_value<int>("number");\\
+\tab \tab dim = get\_dimension();\\
+\tab \}\\
+\\
+\tab int plugin\_main(void)\\
+\tab \{\\
+\tab \tab std::vector<double> a(dim);\\
+\tab \tab for (int j = 0; j < num; j++)\\
+\tab \tab \{\\
+\tab \tab \tab for (int i = 0; i < dim; i++)\\
+\tab \tab \tab \{\\
+\tab \tab \tab \tab a[i] = Gambit::Random::draw();\\
+\tab \tab \tab \}\\
+\tab \tab \tab loglike(a);\\
+\tab \tab \}\\
+\\
+\tab \tab return 0;\\
+\tab \}\\
+\\
+\tab plugin\_deconstructor\\
+\tab \{\\
+\tab \tab std::cout << "no more plugin" << std::endl;\\
+\tab \}\\
+\}}
+\end{linenumbers}
+
+\section{Objective Example}
+
+\begin{linenumbers}
+\texttt{objective\_plugin(simple\_gaussian, version(1,0,0))\\
+\{\\
+\tab double plugin\_main (const std::vector<double> \&vec)\\
+\tab \{\\
+\tab \tab std::vector<double> params = prior\_transform(vec);\\
+\\
+\tab \tab return 0;\\
+\tab \}\\
+\}}
+\end{linenumbers}
+
 \section{Input file options}
+
+\section{Plugin Commands}
+Here are the different macros and functions that can be used:
+
+\texttt{scanner\_plugin(plugin\_name, version) \{...\}}\\
+-- declared a plugin with the name "plugin\_name".
+   
+\texttt{objective\_plugin(plugin\_name, version) \{...\}}
+-- same as above, except declares an "objective" plugin.
+   Used as test functions and prior plugins.
+   
+\texttt{version(majar, minor, patch, release)}
+-- declares the version number to be "major.minor.patch-release"
+   major, minor, and patch must be integers.  release is optional.
+   
+\texttt{ret plugin\_main(args... params) \{...\}}
+-- The function that is called when the plugin is ran.  For the
+   scanner, it must be of the form "int plugin\_name(void)"
+   
+\texttt{plugin\_constructor \{...\}}
+-- This function will be ran when the plugin to loaded.
+
+\texttt{plugin\_deconstructor \{...\}}
+-- This function will be ran when the plugin to closed.
+
+\texttt{get\_inifile\_value<ret\_type>("tag", default)}
+-- Gets the inifile value corresponding to the tag "tag".
+   If "tag" is not specified, then the results defaults
+   to "default".  The default entry is optional. If
+   the default entry and the "tag" infile entry is not
+   specified, ScannerBit will throw an error.
+   
+\texttt{get\_dimension()}
+-- Gets the dimension of the unit hypercube being explored.
+
+\texttt{get\_purpose("purpose")}
+-- gets the functor corresponding to the purpose "purpose"
+
+\texttt{scan\_ptr<ret (args...)>}
+-- a container functor of the form "ret scan\_ptr(args ...)".
+   Used to contain the output of "get\_functor".
+   
+\texttt{set\_dimension(...)}
+-- For objective plugins that will be used as priors.
+   Set the hypercube dimension that will be operator
+   over by the prior.
+   
+\texttt{reqd\_inifile\_entries(...)}
+-- Tells ScannerBit that there entries must be in the inifile
+   in order to load the plugin
+   
+\texttt{reqd\_libraries(...)}
+-- Tells ScannerBit to search for and link these libraries
+
+\texttt{reqd\_headers(...)}
+-- Tells ScannerBit that these headers are required to exist
+   in order for the plugin to compile.
+
 \section{Dependencies}
 
 \end{document}
