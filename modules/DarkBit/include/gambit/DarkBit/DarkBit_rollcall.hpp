@@ -40,7 +40,7 @@
 ///  \author Pat Scott
 ///          (pscott@imperial.ac.uk)
 ///  \date 2014 Mar
-///  \date 2015 Mar
+///  \date 2015 Mar, Aug
 ///
 ///  *********************************************
 
@@ -983,7 +983,7 @@ START_MODULE
   #define CAPABILITY nuyield_ptr
   START_CAPABILITY
     #define FUNCTION nuyield_from_DS
-    START_FUNCTION(nuyield_functype)
+    START_FUNCTION(nuyield_info)
     DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
     DEPENDENCY(mwimp, double) 
     DEPENDENCY(sigmav, double)
@@ -994,7 +994,7 @@ START_MODULE
      const double(&)[29][3], const double(&)[15], const double(&)[3], const double&, 
      const double&, const double&, const double&, const double&))
     BACKEND_REQ(nuyield, (needs_DS), double, (const double&, const int&, void*&))
-    BACKEND_OPTION((DarkSUSY, 5.1.1), (needs_DS))
+    BACKEND_OPTION((DarkSUSY, 5.1.1, 5.1.2, 5.1.3), (needs_DS))
     #undef FUNCTION
   #undef CAPABILITY
     
@@ -1007,7 +1007,7 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield_ptr, nuyield_functype)  
+      DEPENDENCY(nuyield_ptr, nuyield_info)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
@@ -1059,7 +1059,7 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield_ptr, nuyield_functype)  
+      DEPENDENCY(nuyield_ptr, nuyield_info)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
@@ -1111,7 +1111,7 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield_ptr, nuyield_functype)  
+      DEPENDENCY(nuyield_ptr, nuyield_info)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
@@ -1163,7 +1163,7 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield_ptr, nuyield_functype)  
+      DEPENDENCY(nuyield_ptr, nuyield_info)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION

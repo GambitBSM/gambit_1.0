@@ -328,7 +328,11 @@ namespace Gambit
           *Dep::sigma_SI_p, *Dep::sigma_SD_p);
 
       // Hand back the pointer to the DarkSUSY neutrino yield function
-      result = BEreq::nuyield.pointer();
+      result.pointer = BEreq::nuyield.pointer();
+
+      //FIXME change below to >= when version numbers are available as ints
+      // Treat the yield function as threadsafe only if the loaded verison of DarkSUSY supports it.
+      result.threadsafe = (BEreq::nuyield.version() == "5.1.3")
 
     }
 
@@ -342,11 +346,10 @@ namespace Gambit
       int totobs;
       char experiment[300] = "IC-22";
       void* context = NULL;
-      bool threadsafe = false; //FIXME
-      double theoryError = 0.05; //FIXME
+      double theoryError = 0.05*(max(1.0, sqrt(*Dep::mwimp*0.01));
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
-          byVal(*Dep::nuyield_ptr), sigpred, bgpred, totobs, lnLike, pval, 4,
-          theoryError, true, false, 0.0, 0.0, context, threadsafe);
+          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
+          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -377,11 +380,10 @@ namespace Gambit
       int totobs;
       char experiment[300] = "IC-79 WH";
       void* context = NULL;
-      bool threadsafe = false; //FIXME
-      double theoryError = 0.05; //FIXME
+      double theoryError = 0.05*(max(1.0, sqrt(*Dep::mwimp*0.01));
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
-          byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
-          totobs, lnLike, pval, 4, theoryError, true, false, 0.0, 0.0, context, threadsafe);
+          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
+          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -412,11 +414,10 @@ namespace Gambit
       int totobs;
       char experiment[300] = "IC-79 WL";
       void* context = NULL;
-      bool threadsafe = false; //FIXME
-      double theoryError = 0.05; //FIXME
+      double theoryError = 0.05*(max(1.0, sqrt(*Dep::mwimp*0.01));
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(*Dep::nuyield_ptr), sigpred, bgpred, totobs, lnLike, pval, 4,
-          theoryError, true, false, 0.0, 0.0, context, threadsafe);
+          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -446,11 +447,10 @@ namespace Gambit
       int totobs;
       char experiment[300] = "IC-79 SL";
       void* context = NULL;
-      bool threadsafe = false; //FIXME
-      double theoryError = 0.05; //FIXME
+      double theoryError = 0.05*(max(1.0, sqrt(*Dep::mwimp*0.01));
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
-          byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
-          totobs, lnLike, pval, theoryError, 4, true, false, 0.0, 0.0, context, threadsafe);
+          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4, 
+          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
