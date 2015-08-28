@@ -55,32 +55,44 @@ namespace Gambit {
         protected:
             typedef MapTypes<DerivedTraits,MapTag::Get> MTget; 
             typedef typename DerivedTraits::Model Model;
- 
+            typedef typename DerivedTraits::Input Input;
+
             /// Actual model object stored here
             /// In classes derived from this one, pass the derived model object
             /// into the constructor for this object, don't store it in the
             /// derived class, or else we will have two copies of it.
             typename DerivedTraits::Model model; 
+            typename DerivedTraits::Input input; 
 
          public:
             /// @{ Constructors/destructors
             BaseHiggsContainer() 
-              : Spec<Derived,DerivedTraits>(model)  
+              : model()
+              , input()  
             {}
 
             BaseHiggsContainer(const Model& m)
-              : Spec<Derived,DerivedTraits>(model)
-              , model(m)
+              : model(m)
+              , input()
             {}
 
-            BaseHiggsContainer(const BaseHiggsContainer& other)
-              : Spec<Derived,DerivedTraits>(model)
-              , model(other.model)
-            {} 
+            BaseHiggsContainer(const Input& i)
+              : model()
+              , input(i)
+            {}
+
+            BaseHiggsContainer(const Model& m, const Input& i)
+              : model(m)
+              , input(i)
+            {}
 
             virtual ~BaseHiggsContainer() {};
             /// @}
  
+            // Functions to interface Model and Input objects with the base 'Spec' class
+            typename DerivedTraits::Model& get_Model() { return model; }
+            typename DerivedTraits::Input& get_Input() { return input; }
+
             // virtual int get_numbers_stable_particles() const;
 
             /// Offset from user-input indices (user assumes 1,2,3 indexed, e.g. use offset=-1 for zero-indexing)
@@ -162,11 +174,7 @@ namespace Gambit {
             SMHiggsContainer(const typename Traits::Model& model)
               : BaseHiggsContainer<This,Traits>(model)
             {}
-
-            SMHiggsContainer(const This& other)
-              : BaseHiggsContainer<This,Traits>(other)
-            {} 
-
+  
             virtual ~SMHiggsContainer() {};
             /// @}
  

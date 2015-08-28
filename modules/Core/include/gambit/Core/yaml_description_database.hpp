@@ -39,24 +39,37 @@ namespace Gambit
   /// Helper struct to carry around capability information
   struct capability_info
   {
-     std::string name; // capability name
-     std::set<std::string> modset; // Set of modules in which capability is used
-     std::set<std::string> beset;  // Set of backends in which capability is used
-     std::string description; // Full description of capability
-     bool has_description; // Flag to check if description is missing
+     /// Capability name
+     str name;
+     /// Set of modules and module functions in which capability is used, along with corresponding result types
+     std::map<str, std::set<std::pair<str,str> > > modset;
+     /// Set of backends and backend functions in which capability is used, along with corresponding type signatures
+     std::map<str, std::set<std::pair<str,str> > > beset;
+     /// Full description of capability
+     str description;
+     /// Flag to check if description is missing
+     bool has_description;
   };
 
   /// Helper struct to carry around model information
   struct model_info
   {
-     std::string name; // model name
-     std::vector<std::string> parameters; // Parameter names
-     int nparams; // Number of parameters ( parameters.size() )
-     std::string parent; // Parent model name
-     std::vector<std::string> lineage;     // Parent and all ancestor models
-     std::vector<std::string> descendants; // all child and higher order descendants
-     std::string description; // Full description of capability
-     bool has_description; // Flag to check if description is missing
+     /// Model name
+     str name; 
+     /// Parameter names
+     std::vector<str> parameters; 
+     /// Number of parameters ( parameters.size() )
+     int nparams;
+     /// Parent model name
+     str parent; 
+     /// Parent and all ancestor models
+     std::vector<str> lineage;     
+     /// All children and later descendants
+     std::vector<str> descendants;
+     /// Full description of capability 
+     str description;
+     /// Flag to check if description is missing
+     bool has_description;
   };
 
   /// Emitter for the capability_info struct
@@ -136,69 +149,6 @@ namespace Gambit
   };
 
 } // end Gambit namespace
-
-/// Decoder for YAML node into capability struct
-// As it turns out, this isn't actually needed for anything at the moment, since I ended up keeping a copy of the whole database in memory while constructing it. I therefore have not written an equivalent decoder for the model database. Keeping this for now in case this situation changes...
-namespace YAML {
-  template<> struct convert<Gambit::capability_info>
-  {
-    static bool decode(const Node& node, Gambit::capability_info& rhs)
-    {
-
-      #define READ(NAME) \
-      if (node[#NAME].IsDefined()) \
-      {\
-        rhs.NAME = node[#NAME].as<std::string>();\
-      }\
-      else\
-      {\
-        std::ostringstream errmsg; \
-        errmsg << "Error decoding capability_info struct from YAML file. Could not find key '" STRINGIFY(#NAME) "'"; \
-        Gambit::utils_error().raise(LOCAL_INFO,errmsg.str()); \
-      }\
-
-      READ(name)
-      READ(description)
-
-      #undef READ
-
-      if(rhs.description=="Missing!") rhs.has_description=false;
-      else rhs.has_description=true;
-
-      if (node["modules"].IsDefined())
-      {
-         for(YAML::const_iterator it=node["modules"].begin();
-          it!=node["modules"].end(); ++it)
-         {
-           rhs.modset.insert((*it).as<std::string>());
-         }
-      }
-      else
-      {
-        std::ostringstream errmsg;
-        errmsg << "Error decoding capability_info struct from YAML file. Could not find key 'modules'";
-        Gambit::utils_error().raise(LOCAL_INFO,errmsg.str());
-      }
-
-      if (node["backends"].IsDefined())
-      {
-         for(YAML::const_iterator it=node["backends"].begin();
-          it!=node["backends"].end(); ++it)
-         {
-           rhs.beset.insert((*it).as<std::string>());
-         }
-      }
-      else
-      {
-        std::ostringstream errmsg;
-        errmsg << "Error decoding capability_info struct from YAML file. Could not find key 'backends'";
-        Gambit::utils_error().raise(LOCAL_INFO,errmsg.str());
-      }
-     
-      return true;
-    }
-  };
-}
 
 
 #endif //defined __yaml_description_database_hpp__

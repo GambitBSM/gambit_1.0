@@ -37,7 +37,7 @@ Rules:
     options:
       output_slha_filename: "SpecBit/MSSM_benchmark_points/gambit.LesHouches.out.MSSM_1"
 
-  - capability: MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum 
     function: get_MSSMatQ_spectrum  # Use this function to compute this capability
     options:
       # Set to match benchmark point specified in

@@ -783,12 +783,12 @@ namespace Gambit
       result.BR_Hptaunu = 0.;
 
       const Spectrum* fullspectrum = *Dep::SM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_UV(); 
+      const SubSpectrum* spec = fullspectrum->get_HE(); 
       const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
 
-      result.Mh[0] = spec->phys.get_Pole_Mass(25,0); 
+      result.Mh[0] = spec->phys().get_Pole_Mass(25,0); 
 
-      result.deltaMh[0] = 0.; // Need to get theoretical error on mass
+      result.deltaMh[0] = 0.; // FIXME Need to get theoretical error on mass
       result.hGammaTot[0] = decays->width_in_GeV; 
       result.CP[0] = 1; 
       result.CS_lep_hjZ_ratio[0] = 1.; 
@@ -832,7 +832,7 @@ namespace Gambit
       #define PDB Models::ParticleDB()
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
 
       std::vector<std::string> sHneut;
       sHneut.push_back("h0_1");
@@ -840,47 +840,47 @@ namespace Gambit
       sHneut.push_back("A0");
 
       const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_UV(); 
+      const SubSpectrum* spec = fullspectrum->get_HE(); 
       const DecayTable decaytable = *Dep::decay_rates;
 
       const DecayTable::Entry* Hneut_decays[3];
       for(int i = 0; i < 3; i++)
       {
         // Higgs masses and errors
-        result.Mh[i] = spec->phys.get_Pole_Mass(sHneut[i]); 
-        result.deltaMh[i] = 0.;
+        result.Mh[i] = spec->phys().get_Pole_Mass(sHneut[i]); 
+        result.deltaMh[i] = 0.; //FIXME need to get theoretical error on masses
       }
 
       // invisible LSP?
-      double lsp_mass = spec->phys.get_Pole_Mass("~chi0_1");
+      double lsp_mass = spec->phys().get_Pole_Mass("~chi0_1");
       int i_snu = 0;
       for(int i = 1; i <= 3; i++)
       {
-        if(spec->phys.get_Pole_Mass("~nu",i)  < lsp_mass)
+        if(spec->phys().get_Pole_Mass("~nu",i)  < lsp_mass)
         {
           i_snu = i;
-          lsp_mass = spec->phys.get_Pole_Mass("~nu",i);
+          lsp_mass = spec->phys().get_Pole_Mass("~nu",i);
         }
       }
 
       bool inv_lsp = true;
-      if(spec->phys.get_Pole_Mass("~chi+",1) < lsp_mass) inv_lsp = false;
-      if(spec->phys.get_Pole_Mass("~g") < lsp_mass) inv_lsp = false;
+      if(spec->phys().get_Pole_Mass("~chi+",1) < lsp_mass) inv_lsp = false;
+      if(spec->phys().get_Pole_Mass("~g") < lsp_mass) inv_lsp = false;
       if(inv_lsp)
       {
         for(int i = 1; i <= 6; i++)
         {
-          if(spec->phys.get_Pole_Mass("~d",i) < lsp_mass)
+          if(spec->phys().get_Pole_Mass("~d",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys.get_Pole_Mass("~u",i) < lsp_mass)
+          if(spec->phys().get_Pole_Mass("~u",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys.get_Pole_Mass("~e-",i) < lsp_mass)
+          if(spec->phys().get_Pole_Mass("~e-",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
@@ -931,7 +931,7 @@ namespace Gambit
         }
       }
 
-      result.MHplus = spec->phys.get_Pole_Mass("H+"); 
+      result.MHplus = spec->phys().get_Pole_Mass("H+"); 
       result.deltaMHplus = 0.;
       
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));

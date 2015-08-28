@@ -134,7 +134,6 @@ BE_NAMESPACE
         sd_leshouches2->massval(i) = (mass[slha_indices[i-1]].is_data_line()) ? to<double>(mass[slha_indices[i-1]][1]) : unlikely();
       }
       for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0;   // zeroing
-      sd_leshouches2->massval(34) = 4.87877839E+00;  // b pole mass FIXME when available from slhaea object!!
  
       // NMIX
       for (int i=1; i<=4; ++i) for (int j=1; j<=4; ++j) sd_leshouches2->nmixval(i,j) = (nmix[initVector<int>(i,j)].is_data_line()) ? to<double>(nmix.at(i,j)[2]) : 0.0;
@@ -552,13 +551,6 @@ BE_NAMESPACE
     // Run SUSY-HIT
     sdecay();
 
-    // Questions for SUSY-HIT authors (read paper first!!)
-    // ms_1Gev? mc pole?
-    // q values -- repeated 11, 14, assignment of selmix to 21 vs < 20; are these bugs?
-    // safety of just skipping sd_mbmb calculation
-    // safety of running over with FV.
-    // stop decay common block entries
-      
   }
 }
 END_BE_NAMESPACE
@@ -586,18 +578,20 @@ BE_INI_FUNCTION
     SLHAea_add(slha, "VCKMIN", 2, 0.814, "A", false);
     SLHAea_add(slha, "VCKMIN", 3, 0.117, "rhobar", false);
     SLHAea_add(slha, "VCKMIN", 4, 0.353, "etabar", false);
+    // If the b pole mass is missing from the SLHA file, fill it in with a default.
+    SLHAea_add(slha, "MASS",   5, 4.87878, "mb (pole)", false);
   }
   else // Use the actual spectrum object.
   {
     // Check whether the spectrum object is already at the SUSY scale
     //double msusy = (*Dep::MSSM_spectrum)->get_DRBar_parameter("M_SUSY");  FIXME when M_SUSY is available from the spectrum object.
-    double msusy = (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();
-    if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
+    double msusy = (*Dep::MSSM_spectrum)->get_HE()->runningpars().GetScale();
+    if (fabs(msusy - (*Dep::MSSM_spectrum)->get_HE()->runningpars().GetScale()) > scale_tol)
     {
       // Take a local copy to allow running.
-      std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
+      std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_HE()->clone();
       // Run to SUSY scale.
-      local_mssm_copy->runningpars.RunToScale(msusy);
+      local_mssm_copy->runningpars().RunToScale(msusy);
       slha = local_mssm_copy->getSLHAea();
     }
     else 
@@ -605,8 +599,10 @@ BE_INI_FUNCTION
       // Calculate decay rates using the spectrum 'as is'.
       slha = (*Dep::MSSM_spectrum)->getSLHAea();
     }
+    // If the b pole mass is missing from the SLHAea object file, get it and fill it in.
+    SLHAea_add(slha, "MASS", 5, (*Dep::MSSM_spectrum)->get_Pole_Mass("b"), "mb (pole)", false);
   }
-  
+
   // Get the W and Z widths.
   double W_width = 0.5*(Dep::W_plus_decay_rates->width_in_GeV + Dep::W_minus_decay_rates->width_in_GeV);
   double Z_width = Dep::Z_decay_rates->width_in_GeV;

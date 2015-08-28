@@ -20,7 +20,7 @@
 #ifndef __SpecFptrFinder_hpp__
 #define __SpecFptrFinder_hpp__
 
-#include "gambit/Elements/subspectrum_decl.hpp"
+#include "gambit/Elements/subspectrum_head.hpp"
 #include "gambit/Models/partmap.hpp"
 
 // Particle database access
@@ -253,6 +253,18 @@ namespace Gambit {
            errmsg << "No "<<label<<" with string reference '"<<lastname<<"' exists!" <<std::endl;
            errmsg << "Search failed with error_code "<<error_code<<" from FptrFinder with label "<<label<<": "<<get_error_message();
            utils_error().forced_throw(origin,errmsg.str());  
+         }
+         // Check if an index has been set, and raise error if not
+         void check_index_initd(const std::string& origin, const int index)
+         {
+           if(index==-1)
+           {
+             std::ostringstream errmsg;
+             errmsg << "Error retrieving particle spectrum data!" << std::endl;
+             errmsg << "An index was not set when retrieving item of type '"<<label<<"' with string reference '"<<lastname<<"'!" <<std::endl;
+             errmsg << "This is a bug in the FptrFinder class, please report it."<<std::endl;
+             utils_error().forced_throw(origin,errmsg.str());  
+           }
          }
          /// @}
  
@@ -512,8 +524,8 @@ namespace Gambit {
          double result(-1); // should not be returned in this state
          if(ff->error_code==0)
          {
-            typename DT::Model* model = ff->fakethis->parent.get_Model();
-            typename DT::Input* input = ff->fakethis->parent.get_Input();
+            typename DT::Model& model = ff->fakethis->parent.model();
+            typename DT::Input& input = ff->fakethis->parent.input();
             switch( ff->whichiter )
             {
                // Override retrieval cases
@@ -523,57 +535,69 @@ namespace Gambit {
                  break;}
                case 1: {
                  ff->check(ff->ito1_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  result = (ff->ito1->second).at(ff->index1);
                  break;}
                case 2: {
                  ff->check(ff->ito2_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  result = (ff->ito2->second).at(ff->index1).at(ff->index2);
                  break;}
                // Wrapper class function call cases
                case 3: {
                  ff->check(ff->it0_safe);
                  typename MT::FSptr f = ff->it0->second;
-                 result = (model->*f)();
+                 result = (model.*f)();
                  break;}
                case 4: {
                  ff->check(ff->it0M_safe);
                  typename MT::plainfptrM f = ff->it0M->second;
-                 result = (*f)(*model);
+                 result = (*f)(model);
                  break;}
                case 5: {
                  ff->check(ff->it0I_safe);
                  typename MT::plainfptrI f = ff->it0I->second;
-                 result = (*f)(*input);
+                 result = (*f)(input);
                  break;}
                case 6: {
                  ff->check(ff->it1_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
-                 result = (model->*f)(ff->index1);
+                 result = (model.*f)(ff->index1);
                  break;}
                case 7: {
                  ff->check(ff->it1M_safe);
                  typename MT::plainfptrM1 f = ff->it1M->second.fptr;
-                 result = (*f)(*model,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 result = (*f)(model,ff->index1);
                  break;}
                case 8: {
                  ff->check(ff->it1I_safe);
                  typename MT::plainfptrI1 f = ff->it1I->second.fptr;
-                 result = (*f)(*input,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 result = (*f)(input,ff->index1);
                  break;}
               case 9: {
                  ff->check(ff->it2_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
-                 result = (model->*f)(ff->index1,ff->index2);
+                 result = (model.*f)(ff->index1,ff->index2);
                  break;}
                case 10: {
                  ff->check(ff->it2M_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrM2 f = ff->it2M->second.fptr;
-                 result = (*f)(*model,ff->index1,ff->index2);
+                 result = (*f)(model,ff->index1,ff->index2);
                  break;}
                case 11: {
                  ff->check(ff->it2I_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;
-                 result = (*f)(*input,ff->index1,ff->index2);
+                 result = (*f)(input,ff->index1,ff->index2);
                  break;}
               default:{
                  std::ostringstream errmsg;
@@ -612,38 +636,78 @@ namespace Gambit {
       {
          if(ff->error_code==0)
          {
-            typename DT::Model* model = ff->fakethis->parent.get_Model();
-            typename DT::Input* input = ff->fakethis->parent.get_Input();
+            typename DT::Model& model = ff->fakethis->parent.model();
+            typename DT::Input& input = ff->fakethis->parent.input();
             switch( ff->whichiter )
             {
+               // Override retrieval cases
+               // ABSENT ON PURPOSE. set_override functions don't work via an fptrfinder
+               case 0:
+               case 1:
+               case 2: {
+                 std::ostringstream errmsg;
+                 errmsg << "Error! 'Setter' version of FptrFinder called a map-access case reserved for override maps, however these only work in the 'Getter' version (since SubSpectrum override values are not supposed to be set via an FptrFinder). This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Setter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
+                 utils_error().forced_throw(LOCAL_INFO,errmsg.str());                 
+                 break;
+               }
+               // Wrapper class function call cases
                case 3: {
                  ff->check(ff->it0_safe);
                  typename MT::FSptr f = ff->it0->second;
-                 (model->*f)(set_value);
+                 (model.*f)(set_value);
                  break;}
                case 4: {
                  ff->check(ff->it0M_safe);
                  typename MT::plainfptrM f = ff->it0M->second;
-                 (*f)(*model,set_value);
+                 (*f)(model,set_value);
                  break;}
                case 5: {
                  ff->check(ff->it0I_safe);
                  typename MT::plainfptrI f = ff->it0I->second;
-                 (*f)(*input,set_value);
+                 (*f)(input,set_value);
                  break;}
                case 6: {
                  ff->check(ff->it1_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
-                 (model->*f)(ff->index1, set_value);
+                 (model.*f)(set_value,ff->index1);
                  break;}
                case 7: {
+                 ff->check(ff->it1M_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 typename MT::plainfptrM1 f = ff->it1M->second.fptr;
+                 (*f)(model,set_value,ff->index1);
+                 break;}
+               case 8: {
+                 ff->check(ff->it1I_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 typename MT::plainfptrI1 f = ff->it1I->second.fptr;
+                 (*f)(input,set_value,ff->index1);
+                 break;}
+               case 9: {
                  ff->check(ff->it2_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
-                 (model->*f)(ff->index1,ff->index2,set_value);
+                 (model.*f)(set_value,ff->index1,ff->index2);
+                 break;}
+               case 10: {
+                 ff->check(ff->it2M_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
+                 typename MT::plainfptrM2 f = ff->it2M->second.fptr;
+                 (*f)(model,set_value,ff->index1,ff->index2);
+                 break;}
+               case 11: {
+                 ff->check(ff->it2I_safe);
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
+                 typename MT::plainfptrI2 f = ff->it2I->second.fptr;
+                 (*f)(input,set_value,ff->index1,ff->index2);
                  break;}
                default:{
                  std::ostringstream errmsg;
-                 errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
+                 errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Setter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
                  utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
                  }
             }

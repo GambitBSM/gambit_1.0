@@ -4,8 +4,8 @@
 ///
 ///  This class is used to deliver both information defined in the Standard
 ///  Model (or potentially just QED X QCD) as a low-energy effective theory (as
-///  opposed to correspending information defined in a UV model) as well as a
-///  corresponding UV theory. Parameters defined in the low-energy model are
+///  opposed to correspending information defined in a high-energy model) as well as a
+///  corresponding high-energy theory. Parameters defined in the low-energy model are
 ///  often used as input to a physics calculators. In addition, parameters used
 ///  to define the Standard Model, in SLHA2 format, are provided in the 
 ///  SMINPUTS data member.
@@ -13,7 +13,7 @@
 ///  Access to the pole masses of either SubSpectrum is provided by the
 ///  "get_Pole_Mass" function, which will search both subspectra for a match.
 ///  For running parameters, one should access them via the getters of "LE" or 
-///  "UV" subspectra.
+///  "HE" subspectra.
 ///
 ///  *********************************************
 ///
@@ -43,14 +43,14 @@
 namespace Gambit
 {
 
-   /// Standard Model plus UV Model container class
+   /// "Standard Model" (low-energy) plus high-energy model container class
    class Spectrum
    {
       private:
          std::unique_ptr<SubSpectrum> LE_new; // low energy model
-         std::unique_ptr<SubSpectrum> UV_new; // UV model
+         std::unique_ptr<SubSpectrum> HE_new; // high energy model
          SubSpectrum* LE;
-         SubSpectrum* UV;
+         SubSpectrum* HE;
          SMInputs SMINPUTS;
          bool initialised;
          void check_init() const;
@@ -70,10 +70,10 @@ namespace Gambit
          /// Default constructor
          Spectrum();
          /// Construct new object, cloning the SubSpectrum objects supplied and taking possession of them.
-         Spectrum(const SubSpectrum& le, const SubSpectrum& uv, const SMInputs& smi);
+         Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi);
          /// Construct new object, wrapping existing SubSpectrum objects
          ///  Make sure the original objects don't get deleted before this wrapper does!
-         Spectrum(SubSpectrum* const le, SubSpectrum* const uv, const SMInputs& smi);
+         Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi);
          /// Copy constructor, clones SubSpectrum objects.
          /// Make a non-const copy in order to use e.g. RunBothToScale function.
          Spectrum(const Spectrum& other);
@@ -92,20 +92,24 @@ namespace Gambit
          /// @{ Standard SubSpectrum getters
          /// Return non-owning pointers. Make sure original Spectrum object doesn't
          /// get destroyed before you finish using these or you will cause a segfault.
+         SubSpectrum* get_LE();
+         SubSpectrum* get_HE();
+         SMInputs&    get_SMInputs();
+         // const versions
          const SubSpectrum* get_LE() const; 
-         const SubSpectrum* get_UV() const; 
+         const SubSpectrum* get_HE() const; 
          const SMInputs& get_SMInputs() const;
          /// @}
    
          /// @{ Clone SubSpectrum getters
          /// To clone whole object, just use copy constructor. 
          std::unique_ptr<SubSpectrum> clone_LE() const; 
-         std::unique_ptr<SubSpectrum> clone_UV() const; 
+         std::unique_ptr<SubSpectrum> clone_HE() const; 
          /// @}
    
          /// @{ Pole mass getters
          /// "Shortcut" getters to access pole masses in hosted SubSpectrum objects.
-         /// UV object given higher priority; if no match found, LE object will be 
+         /// HE object given higher priority; if no match found, LE object will be 
          /// checked. If still no match, error is thrown.
          bool   has_Pole_Mass(const std::string& mass) const; 
          double get_Pole_Mass(const std::string& mass) const; 
@@ -115,7 +119,7 @@ namespace Gambit
          /// @}
    
          /// SLHAea object getter
-         /// "Shortcut" getter. Tries to retrieve SLHAea object from UV SubSpectrum. If this fails,
+         /// "Shortcut" getter. Tries to retrieve SLHAea object from HE SubSpectrum. If this fails,
          /// attempts to get it from the LE SubSpectrum (though probably this will never work).
          /// Error raised if this still fails.
          SLHAea::Coll getSLHAea() const;

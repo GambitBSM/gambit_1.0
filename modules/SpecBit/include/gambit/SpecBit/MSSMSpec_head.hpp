@@ -79,16 +79,23 @@ namespace Gambit {
             //constructors
             MSSMSpec(bool switch_index_convention=false);
             MSSMSpec(MI, bool switch_index_convention=false);
-            MSSMSpec(const MSSMSpec&);
+            //MSSMSpec(const MSSMSpec&); // default copy constructor should now be fine...
 
             //Could more constructors to interface with other generators   
              
             // These are public for now so that SpecBit_tests.cpp can access them
             MI model_interface;
 
+            // Dummy placeholder for potential Inputs object
+            DummyInput dummyinput;
+
             //Destructor
             virtual ~MSSMSpec();
-            
+
+            // Functions to interface Model and Input objects with the base 'Spec' class
+            typename MSSMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
+            typename MSSMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+
             //some model independent stuff
             virtual double get_lsp_mass(int & particle_type, 
                                         int & row, int & col) const;
@@ -139,7 +146,7 @@ namespace Gambit {
             static RunningGetterMaps runningpars_fill_getter_maps();
             static RunningSetterMaps runningpars_fill_setter_maps();
  
-            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            /// Phys parameter map fillers (access parameters via spectrum.phys())
             static PhysGetterMaps    phys_fill_getter_maps();
             static PhysSetterMaps    phys_fill_setter_maps(); // Currently unused
            

@@ -78,7 +78,7 @@ Rules:
   - capability: t_decay_rates
     function: t_decays
 
-#  - capability: MSSM_spectrum 
+#  - capability: unimproved_MSSM_spectrum 
 #    function: get_MSSMatQ_spectrum
 #    options:
 #      invalid_point_fatal: false
@@ -120,7 +120,7 @@ Rules:
           nbins: 100
 
 
-  - capability: MSSM_spectrum
+  - capability: unimproved_MSSM_spectrum
     function: get_MSSM_spectrum_from_SLHAfile
     options:
         filenames: !import debug_SLHA_filenames.yaml

@@ -45,7 +45,7 @@ START_MODULE
 
     #define FUNCTION FH_t_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(FH_Couplings, fh_Couplings)
+    DEPENDENCY(Higgs_Couplings, fh_Couplings)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -71,7 +71,7 @@ START_MODULE
 
     #define FUNCTION FH_MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(FH_Couplings, fh_Couplings)
+    DEPENDENCY(Higgs_Couplings, fh_Couplings)
      DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
@@ -101,7 +101,7 @@ START_MODULE
     #define FUNCTION FH_h0_2_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
-    DEPENDENCY(FH_Couplings, fh_Couplings)
+    DEPENDENCY(Higgs_Couplings, fh_Couplings)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -121,7 +121,7 @@ START_MODULE
 
     #define FUNCTION FH_A0_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(FH_Couplings, fh_Couplings)
+    DEPENDENCY(Higgs_Couplings, fh_Couplings)
     DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
@@ -144,7 +144,7 @@ START_MODULE
     #define FUNCTION FH_Hplus_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
-    DEPENDENCY(FH_Couplings, fh_Couplings)
+    DEPENDENCY(Higgs_Couplings, fh_Couplings)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
