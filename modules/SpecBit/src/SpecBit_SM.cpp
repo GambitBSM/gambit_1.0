@@ -168,6 +168,9 @@ namespace Gambit
  
       // Create a Spectrum object to wrap the qedqcd object
       static QedQcdWrapper qedqcdspec(oneset,sminputs);
+      // TODO: This probably doesn't work, and only gets us one copy of the object once.
+      // Unfortunately we cannot copy SubSpectrum objects, so this is a little tricky to
+      // solve...
 
       result = &qedqcdspec;
     }
@@ -191,7 +194,7 @@ namespace Gambit
       // Create a SubSpectrum object to wrap the qedqcd object
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
-      static QedQcdWrapper qedqcdspec(oneset,sminputs);
+      QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Initialise an object to carry Higgs sector information
       SMHiggsModel higgsmodel;
@@ -199,11 +202,13 @@ namespace Gambit
       higgsmodel.HiggsVEV      = *myPipe::Param.at("vev");
 
       // Create a SubSpectrum object to wrap the EW sector information
-      static SMHiggsContainer higgsspec(higgsmodel);
+      SMHiggsContainer higgsspec(higgsmodel);
 
       // Create full Spectrum object from components above
-      static Spectrum full_spectrum(&qedqcdspec,&higgsspec,sminputs);
- 
+      // (SubSpectrum objects will be "cloned" into the Spectrum object)
+      static Spectrum full_spectrum;
+      full_spectrum = Spectrum(qedqcdspec,higgsspec,sminputs);
+
       result = &full_spectrum;
     }
 

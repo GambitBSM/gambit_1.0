@@ -189,7 +189,11 @@ namespace Gambit {
       typename MapTypes::fmap0_extraM map0_extraM;
       typename MapTypes::fmap0_extraI map0_extraI;
       typename MapTypes::fmap1        map1;    
+      typename MapTypes::fmap1_extraM map1_extraM;
+      typename MapTypes::fmap1_extraI map1_extraI;
       typename MapTypes::fmap2        map2;    
+      typename MapTypes::fmap2_extraM map2_extraM;
+      typename MapTypes::fmap2_extraI map2_extraI;
    };
 
    /// Virtual base class for interacting with spectrum generator output
@@ -247,7 +251,6 @@ namespace Gambit {
          virtual double soft_lower() const {return 0.;}
          virtual double hard_lower() const {return 0.;}
     
-      protected:
          /// Functions to be overridden in classes derived from Spec<Derived> 
          /// (i.e. the final wrappers)
          /// Not actually called via SubSpectrum object directly; call via 
@@ -550,29 +553,27 @@ namespace Gambit {
       typedef double(Model::*FSptr1)(int) const; /* Function pointer signature for Model object member functions with one argument */
       typedef double(Model::*FSptr2)(int,int) const; /* Function pointer signature for Model object member functions with two arguments */
       typedef double(*plainfptrM)(const Model&); /* Function pointer for plain functions; used for custom functions */
-      typedef double(*plainfptrI)(const Input&); /* Function pointer for plain functions; used for custom functions */
+      typedef double(*plainfptrM1)(const Model&,int); /* ... with one index */
+      typedef double(*plainfptrM2)(const Model&,int,int); /* ... with two indices */
+      typedef double(*plainfptrI)(const Input&);     /* Function pointer for plain functions; used for custom functions */
+      typedef double(*plainfptrI1)(const Input&,int); /* ... with one index */
+      typedef double(*plainfptrI2)(const Input&,int,int); /* with two indices */
       typedef FcnInfo1<FSptr1> FInfo1; // Structs to help specify valid indices for functions
       typedef FcnInfo2<FSptr2> FInfo2; //    "              " 
+      typedef FcnInfo1<plainfptrM1> FInfo1M; //    "              " 
+      typedef FcnInfo2<plainfptrM2> FInfo2M; //    "              " 
+      typedef FcnInfo1<plainfptrI1> FInfo1I; //    "              " 
+      typedef FcnInfo2<plainfptrI2> FInfo2I; //    "              " 
       typedef std::map<std::string, FSptr> fmap0; /* Typedef for map of strings to function pointers */
       typedef std::map<std::string, FInfo1> fmap1;/*with an index*/
       typedef std::map<std::string, FInfo2> fmap2; /*with 2 indices */
       typedef std::map<std::string, plainfptrM> fmap0_extraM;  /* map of plain function pointers */
+      typedef std::map<std::string, FInfo1M> fmap1_extraM;  /* map of plain function pointers */
+      typedef std::map<std::string, FInfo2M> fmap2_extraM;  /* map of plain function pointers */
       typedef std::map<std::string, plainfptrI> fmap0_extraI; /* map of plain function pointers */
-   
-      // Empty maps for default return values
-      static const fmap0        map0_empty;
-      static const fmap1        map1_empty;
-      static const fmap2        map2_empty;
-      static const fmap0_extraM map0_extraM_empty;
-      static const fmap0_extraI map0_extraI_empty;   
+      typedef std::map<std::string, FInfo1I> fmap1_extraI; /* map of plain function pointers */
+      typedef std::map<std::string, FInfo2I> fmap2_extraI; /* map of plain function pointers */
    };
-   // Need to initialise the maps above or else we get "undefined reference to..."
-   // errors when we try to access them.
-   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap0        MapTypes<DT,MapTag::Get>::map0_empty;
-   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap1        MapTypes<DT,MapTag::Get>::map1_empty;
-   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap2        MapTypes<DT,MapTag::Get>::map2_empty;
-   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap0_extraM MapTypes<DT,MapTag::Get>::map0_extraM_empty;
-   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap0_extraI MapTypes<DT,MapTag::Get>::map0_extraI_empty;
 
    /// Types needed for function pointer maps
    /// Partial specialisation for "setter" maps
@@ -586,30 +587,27 @@ namespace Gambit {
       typedef void(Model::*FSptr1)(int,double); /* Function pointer signature for Model object member functions with one argument */
       typedef void(Model::*FSptr2)(int,int,double); /* Function pointer signature for Model object member functions with two arguments */
       typedef void(*plainfptrM)(Model&, double); /* Function pointer for plain functions; used for custom functions */
+      typedef void(*plainfptrM1)(Model&, double, int); /* Function pointer for plain functions; used for custom functions */
+      typedef void(*plainfptrM2)(Model&, double, int, int); /* Function pointer for plain functions; used for custom functions */
       typedef void(*plainfptrI)(Input&, double); /* Function pointer for plain functions; used for custom functions */
+      typedef void(*plainfptrI1)(Input&, double, int); /* Function pointer for plain functions; used for custom functions */
+      typedef void(*plainfptrI2)(Input&, double, int, int); /* Function pointer for plain functions; used for custom functions */
       typedef FcnInfo1<FSptr1> FInfo1; // Structs to help specify valid indices for functions
       typedef FcnInfo2<FSptr2> FInfo2; //    "              " 
+      typedef FcnInfo1<plainfptrM1> FInfo1M; //    "              " 
+      typedef FcnInfo2<plainfptrM2> FInfo2M; //    "              " 
+      typedef FcnInfo1<plainfptrI1> FInfo1I; //    "              " 
+      typedef FcnInfo2<plainfptrI2> FInfo2I; //    "              " 
       typedef std::map<std::string, FSptr> fmap0; /* Typedef for map of strings to function pointers */
       typedef std::map<std::string, FInfo1> fmap1;/*with an index*/
       typedef std::map<std::string, FInfo2> fmap2; /*with 2 indices */
       typedef std::map<std::string, plainfptrM> fmap0_extraM;  /* map of plain function pointers */
+      typedef std::map<std::string, FInfo1M> fmap1_extraM;  /* map of plain function pointers */
+      typedef std::map<std::string, FInfo2M> fmap2_extraM;  /* map of plain function pointers */
       typedef std::map<std::string, plainfptrI> fmap0_extraI; /* map of plain function pointers */
-   
-      // Empty maps for default return values
-      static const fmap0        map0_empty;
-      static const fmap1        map1_empty;
-      static const fmap2        map2_empty;
-      static const fmap0_extraM map0_extraM_empty;
-      static const fmap0_extraI map0_extraI_empty;   
+      typedef std::map<std::string, FInfo1I> fmap1_extraI; /* map of plain function pointers */
+      typedef std::map<std::string, FInfo2I> fmap2_extraI; /* map of plain function pointers */
    };
-   // Need to initialise the maps above or else we get "undefined reference to..."
-   // errors when we try to access them.
-   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap0        MapTypes<DT,MapTag::Set>::map0_empty;
-   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap1        MapTypes<DT,MapTag::Set>::map1_empty;
-   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap2        MapTypes<DT,MapTag::Set>::map2_empty;
-   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap0_extraM MapTypes<DT,MapTag::Set>::map0_extraM_empty;
-   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap0_extraI MapTypes<DT,MapTag::Set>::map0_extraI_empty;
- 
 
    /// @}
    

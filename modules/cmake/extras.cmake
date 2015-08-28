@@ -199,7 +199,7 @@ ExternalProject_Add(gamlike
 )
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/gamLike/gamLike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so")
 
-# MicrOmegas
+# MicrOmegas for MSSM
 ExternalProject_Add(micromegas
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/micromegas
   BUILD_IN_SOURCE 1
@@ -208,6 +208,16 @@ ExternalProject_Add(micromegas
   INSTALL_COMMAND cp <SOURCE_DIR>/micromegas_3.5.5/MSSM/libmicromegas.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmicromegas.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegas.so")
+
+# MicrOmegas for SingletDM
+ExternalProject_Add(micromegasSingletDM
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/micromegasSingletDM
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
+  INSTALL_COMMAND cp <SOURCE_DIR>/micromegas_3.5.5/SingletDM/libmicromegasSingletDM.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegasSingletDM/libmicromegasSingletDM.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegasSingletDM.so")
 
 
 # Pythia
@@ -383,7 +393,7 @@ set_property(TARGET higgssignals PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/HiggsSignals/lib/higgssignals.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgssignals.so")
 
 
-set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim  
+set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit diver multinest PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia darksusy superiso susyhit) #fastsim micromegas

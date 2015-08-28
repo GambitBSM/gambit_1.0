@@ -177,7 +177,9 @@ namespace Gambit {
                               .map0(  mapcoll.map0 )       
                               .map0M( mapcoll.map0_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 );     
+                              .map1( mapcoll.map1 )
+                              .map1M( mapcoll.map1_extraM )
+                              .map1I( mapcoll.map1_extraI );
       return finder.find(name);                                             
    }                                                                        
 
@@ -199,7 +201,9 @@ namespace Gambit {
                               .map0(  mapcoll.map0 )       
                               .map0M( mapcoll.map0_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 );     
+                              .map1( mapcoll.map1 )
+                              .map1M( mapcoll.map1_extraM )
+                              .map1I( mapcoll.map1_extraI );
       if( finder.find(name) ){ result = finder.callfcn(); }
       else { finder.raise_error(LOCAL_INFO); }
       return result;
@@ -219,8 +223,10 @@ namespace Gambit {
                               .map0(  mapcoll.map0 )       
                               .map0M( mapcoll.map0_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 );     
-      if( finder.find(name) ){ finder.callfcn(set_value); }
+                              .map1( mapcoll.map1 )
+                              .map1M( mapcoll.map1_extraM )
+                              .map1I( mapcoll.map1_extraI );
+     if( finder.find(name) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
    }                                                                        
    /// @}
@@ -242,7 +248,9 @@ namespace Gambit {
                               .map0(  mapcoll.map0 )       
                               .map0M( mapcoll.map0_extraM )
                               .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 );     
+                              .map1( mapcoll.map1 )
+                              .map1M( mapcoll.map1_extraM )
+                              .map1I( mapcoll.map1_extraI );
       return finder.find(name,i);                                             
    }                                                                        
 
@@ -305,8 +313,10 @@ namespace Gambit {
       FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
                        SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
                               .omap2( overridecoll.m2 )
-                              .map2( mapcoll.map2 );
-      return finder.find(name,i,j);
+                              .map2( mapcoll.map2 )
+                              .map2M( mapcoll.map2_extraM )
+                              .map2I( mapcoll.map2_extraI );
+     return finder.find(name,i,j);
    }                                                                        
 
    template <class PhysOrRun, class PT>
@@ -323,7 +333,9 @@ namespace Gambit {
       FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
                        SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
                               .omap2( overridecoll.m2 )
-                              .map2( mapcoll.map2 );
+                              .map2( mapcoll.map2 )
+                              .map2M( mapcoll.map2_extraM )
+                              .map2I( mapcoll.map2_extraI );
       if( finder.find(name,i,j) ){ result = finder.callfcn(); }
       else { finder.raise_error(LOCAL_INFO); }
       return result;
@@ -340,7 +352,9 @@ namespace Gambit {
       const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
       FptrFinder<DT,PhysOrRun,MapTag::Set> finder =                                
                        SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
-                              .map2( mapcoll.map2 );
+                              .map2( mapcoll.map2 )
+                              .map2M( mapcoll.map2_extraM )
+                              .map2I( mapcoll.map2_extraI );
       if( finder.find(name,i,j) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
    }                                                                        

@@ -225,7 +225,13 @@ namespace Gambit
       return true;
     }
 
-     
+    /// returns square of double - saves tedious repetition
+    double sqr(double a)
+    {
+      return a * a;
+    }
+    
+    
   }
 
 }
