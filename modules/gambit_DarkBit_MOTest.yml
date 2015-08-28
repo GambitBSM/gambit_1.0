@@ -301,7 +301,6 @@ ObsLikes:
 # 79-string IceCube likelihood
 #    - capability: IceCube_likelihood
 #      purpose: Likelihood
-#      function: IC79_loglike
 
 # This function dumps gamma-ray spectra into a ASCII table file.  The filename
 # is specified as option in the Rules section.
@@ -403,7 +402,7 @@ Rules:
     #function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
-	
+  
   - capability: UnitTest_DarkBit
     options:
         #fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
