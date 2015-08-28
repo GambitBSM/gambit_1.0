@@ -1,0 +1,320 @@
+%%%%%%%%%%%%%%%%%%%%%%% file template.tex %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This is a  template file for the LaTeX package SVJour3 width change file svepjc3.clo
+% for Springer journal:
+% The European Physical Journal C
+%
+% Copy it to a new file with a new name and use it as the basis
+% for your article. Delete % signs as needed.
+%
+% This template includes a few options for different layouts and
+% content for various journals. Please consult a previous issue of
+% your journal as needed.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% First comes an example EPS file -- just ignore it and
+% proceed on the \documentclass line
+% your LaTeX will extract the file if required
+%\begin{filecontents*}{example.eps}
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 19 19 221 221
+%%CreationDate: Mon Sep 29 1997
+%%Creator: programmed by hand (JK)
+%%EndComments
+%gsave
+%newpath
+%  20 20 moveto
+%  20 220 lineto
+%  220 220 lineto
+%  220 20 lineto
+%closepath
+%2 setlinewidth
+%gsave
+%  .4 setgray fill
+%grestore
+%stroke
+%grestore
+%\end{filecontents*}
+%
+\RequirePackage{fix-cm}
+%
+\documentclass[twocolumn,epjc3]{svjour3}  
+%
+\smartqed  % flush right qed marks, e.g. at end of proof
+%
+\RequirePackage{graphicx}
+%
+% \RequirePackage{mathptmx}      % use Times fonts if available on your TeX system
+%
+% insert here the call for the packages your document requires
+\RequirePackage{latexsym}
+%\RequirePackage[numbers,sort&compress]{natbib}
+%\RequirePackage[colorlinks,citecolor=blue,urlcolor=blue,linkcolor=blue]{hyperref}
+% etc.
+%
+% please place your own definitions here and don't use \def but
+% \newcommand{}{}
+%
+\journalname{Eur. Phys. J. C}
+%
+\begin{document}
+
+\title{DarkBit -- a Modular Tool and Interface to Compute Dark Matter Properties%\thanksref{t1}
+}
+%\subtitle{Do you have a subtitle?\\ If so, write it here}
+
+\titlerunning{DarkBit}        % if too long for running head
+
+\author{Torsten Bringmann, Jan Conrad, Jonathan M.~Cornell, Lars A.~Dal, Joakim Edsj\"o, Miguel Pato, Antje Putze, Christopher Savage, Pat Scott, Christoph Weniger + XXX\thanksref{e1,addr1,addr2}
+%        \and
+%        Second Author\thanksref{e2,addr2,addr3} %etc.
+}
+
+\thankstext{e1}{e-mail: resistanceisfutile@gambit.com}
+
+%\authorrunning{Short form of author list} % if too long for running head
+
+\institute{First address \label{addr1}
+           \and
+           Second address \label{addr2}
+%           \and
+%           \emph{Present Address:} if needed\label{addr3}
+}
+
+\date{\today}
+
+
+\newcommand{\DB}{\mbox{\sf DarkBit}}
+\newcommand{\GB}{\mbox{\sf GAMBIT}}
+
+
+\maketitle
+
+\begin{abstract}
+
+Introducing \DB, physics motivation, main features (flexible and efficient interface; more realistic likelihoods
+than typically implemented; further new features?). Mention link to \GB\ but emphasize standalone character. 
+List examples for illustration...
+
+%\keywords{First keyword \and Second keyword \and More}
+% \PACS{PACS code1 \and PACS code2 \and more}
+% \subclass{MSC code1 \and MSC code2 \and more}
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction [TB/AP/XXX]}
+\label{intro}
+
+\begin{itemize}
+\item intro to physics: DM and WIMPs; motivation, production + detection methods
+\item outline scope of \DB; relations to backends \& genuinely new aspects
+\item relation to \GB
+\end{itemize}
+
+This article is organized as follows. In Section \ref{phys} we  briefly introduce the general physics 
+context and the main  observables to be calculated, before describing in Section \ref{code} the corresponding 
+implementation details for the various modules of \DB. Validation tests and illustrative examples of typical
+\DB\ usage are presented in Section \ref{examples}. We continue with an outlook on planned code expansions 
+with future releases in Section \ref{out}, and conclude in Section \ref{conc}. In \ref{code_init} we provide a quick 
+guide for how to install \DB\ and get started with a simple test example.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Physics framework}
+\label{phys}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Relic density {\bf [JE]}}
+\label{phys_rd}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Direct detection {\bf [CS]}}
+\label{phys_dd}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Indirect detection {\bf [TB]}}
+\label{phys_id}
+
+$\to$ general physics \& concepts; specifics go to next two subsections 
+(including descriptions of respective likelihood)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Indirect detection with gamma rays {\bf [CW]}}
+\label{phys_ga}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Indirect detection with neutrinos {\bf [PS/JE]}}
+\label{phys_nu}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Module description}
+\label{code}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{General code framework {\bf [CW]}}
+\label{code_gen}
+
+\begin{itemize}
+\item connection to \GB, introduce concept of backends, setup and initialization of particle models
+\item briefly describe which backends are used, and what they contribute 
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Relic density {\bf [JE/TB]}}
+\label{code_rd}
+\begin{itemize}
+\item two possibilities: $W_\mathrm{eff}$ directly from DS or built from process catalogue (as introduced below)
+\item...
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Direct detection {\bf [CS]}}
+\label{code_dd}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Indirect detection {\bf [CW/TB]}}
+\label{code_id}
+
+$\to$ general physics \& concepts; specifics go to next two subsections
+\begin{itemize}
+\item Describe process catalogue 
+\item Different final states: "basic" 2-body vs. cascade {\bf [LD]} vs higher-order corrections
+\item...
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Indirect detection with gamma rays {\bf [CW]}}
+\label{code_ga}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Indirect detection with neutrinos {\bf [PS]}}
+\label{code_nu}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Validation and  Examples}
+\label{examples}
+
+In this Section we present a few selected  examples that illustrate scope and
+potential applications of \DB. At the same time, these examples serve as validation
+tests of the code.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Setting up an effective WIMP model {\bf [CW]}}
+
+$\to$ Briefly describe what we did in Geilo, and maybe reproduce Fig.5 in 1204.3622
+
+\medskip
+...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Comparing {\sf DarkSUSY} and {\sf micrOMEGAs} {\bf [JE/JC]}}
+
+\DB\ offers the unique possibility to easily compare different numerical codes for the computation of DM properties
+in a well-defined and consistent way. Here, we focus for illustration on the most widely used packages, {\sf DarkSUSY} 
+\cite{xxx} and {\sf micrOMEGAs} \cite{xxx}. We stress, however, that it is straightforward for users to 
+perform similar comparisons for essentially any other numerical code, simply by adding it as a backend to \DB.
+
+\medskip
+$\to$ focus on relic density, DD couplings, maybe spectra
+
+\medskip
+...
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gamma-ray spectra from cascade decays {\bf [LD/MP]}}
+
+One of the main new features of this first \DB\ release is a novel way of calculating the cosmic-ray spectra that result from 
+cascade decays of the primary products of DM annihilation or decay. For illustration we focus here on gamma
+rays as final states, and compare in some detail the spectra obtained with \DB\ with those from other codes
+as well as analytical expectations.
+
+\medskip
+...
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Benchmark points for DM models {\bf [all]}}
+
+\subsubsection{MSSM}
+...
+
+\subsubsection{Scalar Singlet DM}
+...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{more examples ?}
+...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Outlook {\bf [all]}}
+\label{out}
+
+...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions {\bf [all]} }
+\label{conc}
+
+...
+
+\begin{acknowledgements}
+...
+\end{acknowledgements}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\label{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Getting started  {\bf [AP/XXX]}}
+\label{code_init}
+
+$\to$ Installation, how to run test example
+
+\medskip
+...
+
+
+% BibTeX users please use one of
+%\bibliographystyle{spbasic}      % basic style, author-year citations
+%\bibliographystyle{spmpsci}      % mathematics and physical sciences
+%\bibliographystyle{spphys}       % APS-like style for physics
+%\bibliography{}   % name your BibTeX data base
+
+% Non-BibTeX users please use
+\begin{thebibliography}{}
+%
+% and use \bibitem to create references. Consult the Instructions
+% for authors for reference list style.
+%
+\bibitem{RefJ}
+% Format for Journal Reference
+Author, Article title, Journal, Volume, page numbers (year)
+% Format for books
+\bibitem{RefB}
+Author, Book title, page numbers. Publisher, place (year)
+% etc
+\end{thebibliography}
+
+\end{document}
+% end of file template.tex
+
