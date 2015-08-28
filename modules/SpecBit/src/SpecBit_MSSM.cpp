@@ -451,7 +451,7 @@ namespace Gambit
       MSSMskeleton mssmskel(input_slha);
 
       // Create SMInputs object from the SLHAea object
-      SMInputs sminputs(fill_SMInputs_from_SLHAea(input_slha));
+      SMInputs sminputs(input_slha);
 
       // Create SMskeleton SubSpectrum object from the SLHAea object
       // (basically just interacts with SMINPUTS block)
