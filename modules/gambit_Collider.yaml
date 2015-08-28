@@ -207,8 +207,8 @@ Rules:
       #                    "HadronLevel:all = off",
       #                    "SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004",
       #                    "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
-      #debug_SLHA_filenames:
-      #  - ColliderBit/data/sps1aWithDecays.spc
+      debug_SLHA_filenames:
+        - ColliderBit/data/sps1aWithDecays.spc
 
   - capability: LogLikelihood
     function: calcLogLike

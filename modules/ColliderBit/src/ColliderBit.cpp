@@ -263,7 +263,7 @@ namespace Gambit
             if ((*issPtr) >> code >> _junk >> xsec) totalxsec += xsec;
             delete issPtr;
           }
-          std::cout << "$$$$ Total xsec (fb) = " << xsec * 1e12 << "\n";
+          std::cout << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << "\n";
           
           /// TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
           if (totalxsec * 1e12 * 20. < 1.) Loop::wrapup();
