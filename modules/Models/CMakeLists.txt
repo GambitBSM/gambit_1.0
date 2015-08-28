@@ -24,8 +24,8 @@ set(source_files src/claw_singleton.cpp
                  src/partmap.cpp
                  src/models.cpp
                  src/models/MSSM78atMGUT.cpp
-                 src/models/MSSM30DatMGUT.cpp
-                 src/models/MSSM30DatQ.cpp
+                 src/models/MSSM30atMGUT.cpp
+                 src/models/MSSM30atQ.cpp
                  src/models/MSSM25atQ.cpp
                  src/models/CMSSM.cpp
                  src/models/extraCMSSM.cpp
@@ -40,8 +40,8 @@ set(header_files include/gambit/Models/claw_singleton.hpp
                  include/gambit/Models/orphan.hpp
                  include/gambit/Models/models/MSSM78atMGUT.hpp
                  include/gambit/Models/models/MSSM78atQ.hpp
-                 include/gambit/Models/models/MSSM30DatMGUT.hpp
-                 include/gambit/Models/models/MSSM30DatQ.hpp
+                 include/gambit/Models/models/MSSM30atMGUT.hpp
+                 include/gambit/Models/models/MSSM30atQ.hpp
                  include/gambit/Models/models/MSSM25atQ.hpp
                  include/gambit/Models/models/CMSSM.hpp
                  include/gambit/Models/models/extraCMSSM.hpp

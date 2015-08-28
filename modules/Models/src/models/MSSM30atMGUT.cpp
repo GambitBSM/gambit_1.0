@@ -27,18 +27,18 @@
 #include "gambit/Logs/log.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
-#include "gambit/Models/models/MSSM30DatMGUT.hpp"
+#include "gambit/Models/models/MSSM30atMGUT.hpp"
 
 
 // Activate debug output
-//#define MSSM30DatMGUT_DBUG
+//#define MSSM30atMGUT_DBUG
 
 using namespace Gambit::Utils;
 
-#define MODEL MSSM30DatMGUT
-  void MODEL_NAMESPACE::MSSM30DatMGUT_to_MSSM78atMGUT (const ModelParameters &myP, ModelParameters &targetP)
+#define MODEL MSSM30atMGUT
+  void MODEL_NAMESPACE::MSSM30atMGUT_to_MSSM78atMGUT (const ModelParameters &myP, ModelParameters &targetP)
   {
-     logger()<<"Running interpret_as_parent calculations for MSSM30DatMGUT --> MSSM78atMGUT..."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for MSSM30atMGUT --> MSSM78atMGUT..."<<LogTags::info<<EOM;
     
      targetP.setValue("TanBeta", myP["TanBeta"] );
      targetP.setValue("SignMu",  myP["SignMu"] );
@@ -167,8 +167,8 @@ using namespace Gambit::Utils;
      targetP.setValue("Au_33",  myP["Au_3"] );
 
      // Whew, done!
-     #ifdef MSSM30DatMGUT_DBUG
-       std::cout << "MSSM30DatMGUT parameters:" << myP << std::endl;
+     #ifdef MSSM30atMGUT_DBUG
+       std::cout << "MSSM30atMGUT parameters:" << myP << std::endl;
        std::cout << "MSSM78atMGUT parameters:" << targetP << std::endl;
      #endif
   }

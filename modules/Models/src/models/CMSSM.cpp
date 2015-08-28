@@ -28,10 +28,10 @@
 using namespace Gambit::Utils;
 
 #define MODEL CMSSM 
-  void MODEL_NAMESPACE::CMSSM_to_MSSM30DatMGUT (const ModelParameters &myP, ModelParameters &targetP)
+  void MODEL_NAMESPACE::CMSSM_to_MSSM30atMGUT (const ModelParameters &myP, ModelParameters &targetP)
   {
 
-     logger()<<"Running interpret_as_X calculations for CMSSM --> MSSM30DatMGUT..."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_X calculations for CMSSM --> MSSM30atMGUT..."<<LogTags::info<<EOM;
      
      targetP.setValue("TanBeta", myP["tanb"] );
      targetP.setValue("SignMu",  myP["signmu"] );

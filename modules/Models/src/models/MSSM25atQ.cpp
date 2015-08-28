@@ -32,9 +32,9 @@
 using namespace Gambit::Utils;
 
 #define MODEL MSSM25atQ
-  void MODEL_NAMESPACE::MSSM25atQ_to_MSSM30DatQ (const ModelParameters &myP, ModelParameters &targetP)
+  void MODEL_NAMESPACE::MSSM25atQ_to_MSSM30atQ (const ModelParameters &myP, ModelParameters &targetP)
   {
-     logger()<<"Running interpret_as_parent calculations for MSSM25atQ --> MSSM30DatQ..."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for MSSM25atQ --> MSSM30atQ..."<<LogTags::info<<EOM;
     
      targetP.setValue("Qin",     myP["Qin"] );
      targetP.setValue("TanBeta", myP["TanBeta"] );
@@ -103,7 +103,7 @@ using namespace Gambit::Utils;
      // Whew, done!
      #ifdef MSSM25atQ_DBUG
        std::cout << "MSSM25atQ parameters:" << myP << std::endl;
-       std::cout << "MSSM30DatQ parameters:" << targetP << std::endl;
+       std::cout << "MSSM30atQ parameters:" << targetP << std::endl;
      #endif
   }
 

@@ -1,7 +1,7 @@
 ///  GAMBIT: Global and Modular BSM Inference Tool
 ///  *********************************************
 ///
-///  MSSM30DatQ model definition
+///  MSSM30atMGUT model definition
 ///
 ///  Specialisation of MSSM78atQ with all 
 ///  off-diagonal m and A terms set to zero.
@@ -18,17 +18,17 @@
 ///
 ///  *********************************************
 
-#ifndef __MSSM30DatQ_hpp__
-#define __MSSM30DatQ_hpp__
+#ifndef __MSSM30atMGUT_hpp__
+#define __MSSM30atMGUT_hpp__
 
-#include "gambit/Models/models/MSSM78atQ.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
+#include "gambit/Models/models/MSSM78atMGUT.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
 
 /// FlexibleSUSY compatible general (78 parameters plus sign) MSSM parameterisation
-#define MODEL MSSM30DatQ
-#define PARENT MSSM78atQ
+#define MODEL MSSM30atMGUT
+#define PARENT MSSM78atMGUT
   START_MODEL
 
-  DEFINEPARS(Qin,TanBeta,SignMu,
+  DEFINEPARS(TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
 
   DEFINEPARS(mq2_1, mq2_2, mq2_3)
@@ -47,7 +47,7 @@
 
   DEFINEPARS(Au_1, Au_2, Au_3)
 
-  INTERPRET_AS_PARENT__FUNCTION(MSSM30DatQ_to_MSSM78atQ)
+  INTERPRET_AS_PARENT__FUNCTION(MSSM30atMGUT_to_MSSM78atMGUT)
 
 #undef PARENT
 #undef MODEL
