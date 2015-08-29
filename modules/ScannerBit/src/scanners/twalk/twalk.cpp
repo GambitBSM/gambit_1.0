@@ -43,7 +43,6 @@ scanner_plugin(twalk, version(0, 0, 1, beta))
                                 get_inifile_value<double>("walk_distance", 2.5),
                                 get_inifile_value<double>("transverse_distance", 6.0),
                                 get_inifile_value<long long>("ran_seed", 0),
-                                get_inifile_value<std::string>("file_name", "output_file").c_str(),
                                 get_inifile_value<double>("tolorance", 1.01),
                                 get_inifile_value<int>("thread_number", 5),
                                 get_inifile_value<int>("cut", 1000));
@@ -52,7 +51,7 @@ scanner_plugin(twalk, version(0, 0, 1, beta))
         }
 }
 
-void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const char *name, const double tol, const int NThreads, const int cut)
+void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const int cut)
 {
         //const int NThreads = Threads > ma ? Threads : 2*ma + 1;
         std::vector<double> chisq(NThreads);
@@ -86,7 +85,6 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         MPI_Barrier(MPI_COMM_WORLD);
-        bool test = true;
         //Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
         //if (rank == 0)
                 //out_stream.reset();
@@ -174,8 +172,11 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                 else if (ran < b2)
                 {
                         std::vector<std::vector<double>> temp = a0;
-                        for (int i = 0; i < numtasks; i++)
-                                temp.erase(temp.begin()+talls[i]);
+                        for (int i = numtasks, end = talls.size(); i < end; i++)
+                        {
+                                temp.push_back(a0[talls[i]]);
+                        }
+                        
                         if (!gDev[t]->EnterMat(calcCov(temp)))
                         {
                                 gDev[t]->EnterMat(calcIndent(temp));
@@ -186,9 +187,12 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                 }
                 else
                 {
-                        std::vector<std::vector<double>> temp = a0;
-                        for (int i = 0; i < numtasks; i++)
-                                temp.erase(temp.begin()+talls[i]);
+                        std::vector<std::vector<double>> temp;
+                        for (int i = numtasks, end = talls.size(); i < end; i++)
+                        {
+                                temp.push_back(a0[talls[i]]);
+                        }
+                        
                         if (!gDev[t]->EnterMat(calcCov(temp)))
                         {
                                 gDev[t]->EnterMat(calcIndent(temp));
@@ -305,8 +309,12 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         }
         while((cont));
         
+        for (t = 0; t < NThreads; t++)
+        {
+                delete gDev[t];
+        }
+        
         MPI_Barrier(MPI_COMM_WORLD);
-        //out_stream.flush();
-        //out_stream.finalize();
+        
         return;
 }

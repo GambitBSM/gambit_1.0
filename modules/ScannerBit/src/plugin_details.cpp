@@ -203,11 +203,17 @@ namespace Gambit
                                 //out << "----------------------------------------------------------------------------" << std::endl;
                                 out << plugin << spacing(plugin.length(), maxlen1) << version << spacing(version.length(), maxlen2) << status << std::endl;
                                 out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
-                                out << "\nrequired inifile entries:  " << reqd_inifile_entries << std::endl;
+                                out << "\nrequired inifile entries:  ";
+                                if (reqd_inifile_entries.size() == 0)
+                                        out << "none" << std::endl;
+                                else
+                                        out << reqd_inifile_entries << std::endl;
                                 out << "\n\x1b[04mlink status\x1b[0m:" << std::endl;
                                 //out << "-----------" << std::endl;
-                                out << "    missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
-                                out << "    missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
+                                if (reqd_not_linked_libs.size() != 0)
+                                        out << "    missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
+                                if (ini_libs_not_found.size() != 0)
+                                        out << "    missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
                                 out << "    linked libraries:";
                                 if (linked_libs.size() == 0)
                                 {
@@ -222,8 +228,10 @@ namespace Gambit
                                 
                                 out << "\n\x1b[04minclude header status\x1b[0m:" << std::endl;
                                 //out << "---------------------" << std::endl;
-                                out << "    missing headers requested by plugin: " << reqd_incs_not_found << std::endl;
-                                out << "    missing headers specified in inifile: " << ini_incs_not_found << std::endl;
+                                if (reqd_incs_not_found.size() != 0)
+                                        out << "    missing headers requested by plugin: " << reqd_incs_not_found << std::endl;
+                                if (ini_incs_not_found.size() != 0)
+                                        out << "    missing headers specified in inifile: " << ini_incs_not_found << std::endl;
                                 out << "    headers found:";
                                 if (found_incs.size() == 0)
                                 {

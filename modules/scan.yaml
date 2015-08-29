@@ -82,7 +82,7 @@ Scanner:
       plugin: twalk
       options:
         tolorance: 1.001
-        thread_number: 10
+        thread_number: 8
         projection_dimension: 4
       
     ransample:

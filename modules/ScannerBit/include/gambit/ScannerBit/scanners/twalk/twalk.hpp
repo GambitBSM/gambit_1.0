@@ -43,7 +43,7 @@ inline std::vector<std::vector<double>> calcCov(const std::vector<std::vector<do
 {
         static size_t dim = pts[0].size();
         static size_t N = pts.size();
-        
+
         std::vector<std::vector<double>> covar(dim, std::vector<double>(dim, 0.0));
         std::vector<double> avg(dim, 0.0);
         size_t i, j;
@@ -77,10 +77,11 @@ inline std::vector<std::vector<double>> calcIndent (const std::vector<std::vecto
         
         std::vector<std::vector<double>> covar(dim, std::vector<double>(dim, 0.0));
         std::vector<double> hi(dim, 1.0), low(dim, 0.0);
+        size_t i;
         
         for (auto it = pts.begin(), end = pts.end(); it != end; ++it)
         {
-                for (int i = 0; i < dim; i++)
+                for (i = 0; i < dim; i++)
                 {
                         if (hi[i] < (*it)[i])
                         {
@@ -94,7 +95,7 @@ inline std::vector<std::vector<double>> calcIndent (const std::vector<std::vecto
                 }
         }
         
-        for (int i = 0; i < dim; i++)
+        for (i = 0; i < dim; i++)
         {
                 covar[i][i] = (hi[i] - low[i])*(hi[i] - low[i])/12.0;
         }
@@ -102,6 +103,6 @@ inline std::vector<std::vector<double>> calcIndent (const std::vector<std::vecto
         return covar;
 }
 
-void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const char *name, const double tol, const int NThreads, const int cut);
+void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const int cut);
 
 #endif

@@ -77,7 +77,10 @@ namespace Gambit
                                 mkstemp(temp_file);
                                 std::ofstream out(temp_file);
                                 out << file << std::flush;
-                                std::system((std::string("less -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\" ") + std::string(temp_file)).c_str());
+                                if (std::system("command -v less >/dev/null"))
+                                        std::system((std::string("more -d ") + std::string(temp_file)).c_str());
+                                else  
+                                        std::system((std::string("less -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\" ") + std::string(temp_file)).c_str());
                                 //std::system((std::string("cat ")+std::string(temp_file) + std::string(" | less -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\"")).c_str());
                         }
                         
