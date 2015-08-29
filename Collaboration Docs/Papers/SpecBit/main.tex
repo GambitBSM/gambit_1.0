@@ -9,9 +9,44 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{amssymb, amsmath}
+\usepackage{listings}
+\usepackage{fullpage}
 %\pagestyle{fancy}
 
+% source code highlighting
+\lstset{breaklines=true,
+    breakatwhitespace=true,
+    stepnumber=1,
+    basicstyle=\ttfamily\footnotesize,
+    commentstyle=\ttfamily\color{gray},
+    prebreak={\textbackslash},
+    breakindent=10pt,
+    breakautoindent=false,
+    showspaces=false,
+    showstringspaces=false,
+    frame=single,
+    abovecaptionskip=0em,
+    aboveskip=1.5em,
+    belowcaptionskip=0.5em,
+    belowskip=1em,
+}
+\lstnewenvironment{numlstlisting}[1][]{%
+    \lstset{%
+        #1,
+        numbers=left,
+        firstnumber=auto,
+        numberstyle=\tiny\sffamily}%
+    \csname\@lst @SetFirstNumber\endcsname
+}{%
+\csname \@lst @SaveFirstNumber\endcsname
+}
+
 \newcommand{\mail}[1]{\href{mailto:#1}{#1}}
+\newcommand{\Ben}[1]{{\bf\color{magenta}Ben #1}}
+\newcommand{\Csaba}[1]{{\bf\color{orange}Csaba #1}}
+\newcommand{\Chris}[1]{{\bf\color{yellow}Chris #1}}
+\newcommand{\Pat}[1]{{\bf\color{cyan}Pat #1}}
+\newcommand{\Peter}[1]{{\bf\color{green}Peter #1}}
 
 \title{SpecBit: GAMBIT modules for linking and running spectrum generators, decay codes and EWPO calculators}
 
@@ -32,7 +67,7 @@ Describe novel features, FeynHiggs linking, easy to replace any code. Mention li
 \tableofcontents
 
 
-\section{Introduction}
+\section{Introduction \Csaba{} \Ben{} \Chris{} \Pat{} \Peter{}}
 
 motivation, literature review, summary of advances in this paper
 
@@ -42,17 +77,54 @@ motivation, literature review, summary of advances in this paper
 
 %% This paper is organised as follows. In Section ?? we..., etc. 
 
-Describe interface to GAMBIT framework. (technical details toward the end of the paper)
+Describe interface to GAMBIT framework? 
 
-\section{Quick Start Guide}
+\section{Quick Start Guide \Peter{}}
+
+\subsection*{Requirements}
+
+\begin{itemize}
+\item C++11 compatible compiler (g++ 4.4.7 or higher, clang++ 3.1 or higher, icpc 12.1 or higher)
+\item \Csaba{CHECK:} Boost library, version 1.37.0 or higher
+\url{http://www.boost.org}
+\item \Csaba{CHECK:} GNU scientific library \url{http://www.gnu.org/software/gsl}
+\item requirements of specific backends: check manual for the given code
+\end{itemize}
+
+\subsection*{Downloading}
+
+\Csaba{confirm at GAMBIT meeting: links to stand-alone Bits}
+- link to https://gambit.hepforge.org/.../SpecBit.tar.gz 
+
+\subsection*{Compiling}
+
+\Csaba{discuss at GAMBIT meeting: how to make stand-alone Bits}
+To build SpecBit:
+\begin{lstlisting}[language=bash]
+$ mkdir modules/build
+$ cd modules/build/
+$ cmake ..
+$ make backends    # If backends not already installed
+$ make -jn         # Ordering of make commands is unimportant
+                   # n is the number of parallel makes
+\end{lstlisting}
+
+Optionally, to choose compilers, change the cmake step to, e.g. FC=gfortran CC=gcc CXX=g++ cmake ..
+
+\subsection*{Running}
+
+To run SpecBit:
+\begin{lstlisting}[language=bash]
+$ ./gambit -file SpecBit.yaml
+\end{lstlisting}
 
 
-\section{Physics background}
+\section{Physics background \Csaba{}}
 
 
-\subsection{general intro}
+\subsection{general intro \Csaba{}}
 
-phenomenology: from Lagrangian to observables
+phenomenology: from Lagrangian to observables 
 
 MSSM superpotential etc to lay out parameters and conventions (a la SLHA 2)
 
@@ -65,7 +137,7 @@ other models:
 - E6SSM
 
 
-\subsection{SpecBit}
+\subsection{SpecBit \Peter{} \Ben{}}
 
 RGEs: statement of purpose
 
@@ -76,7 +148,7 @@ SUSY specific and non-SUSY examples:
 spectrum generators for SUSY and non-SUSY models
  
  
-\subsection{DecayBit}
+\subsection{DecayBit \Csaba{} \Pat{} \Peter{} \Chris{}}
 
 purpose: 
 
@@ -89,14 +161,14 @@ role for LHC: connecting production of exotic particles to observable final stat
 role for dark matter???: decaying DM
 
 
-\subsection{EWPOBit}
+\subsection{EWPOBit \Chris{} \Peter{} \Pat{}}
 
 purpose: quantum corrections to SM observables from new physics
 
 - $m_h$, $m_W$, $\sin(\theta_W)$, ...
 
 
-\section{Overview of physics models supported}
+\section{Overview of physics models supported \Peter{} \Ben{} \Pat{}}
 
 MSSM will be most common, just list ones that are fully supported without user modification?
 
@@ -182,9 +254,9 @@ are special to Gambit at some level)
 
 interfacing to the decays
 
-\subsubsection{Scalar singlet}
+\subsubsection{Scalar singlet \Peter{}}
 
-\subsubsection{MSSM}
+\subsubsection{MSSM \Csaba{}}
 
 describe decay table and give MSSM examples
 
@@ -204,7 +276,7 @@ describe decay table and give MSSM examples
 
 Explain how to interface with a new model.
 
-\subsection{SpecBit}
+\subsection{SpecBit \Peter{} \Ben{}}
 
 - instructions for getters and setters and RGE running
 $get(Pars:Pole\_Mass...)$
@@ -228,7 +300,7 @@ horrible horrible details:
 
 code structure
 
-\subsection{SpecBit}
+\subsection{SpecBit \Ben{} \Peter{}}
 
 - Spectrum, subspectrum object (structure based on headers?)
 
