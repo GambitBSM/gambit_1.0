@@ -71,20 +71,23 @@ namespace Gambit
             virtual int get_index_offset() const;  /***/   
             virtual int get_numbers_stable_particles() const;  /***/
    
+            /// Add QEDQCD information to an SLHAea object
+            virtual void add_to_SLHAea(SLHAstruct& slha) const;
+
             /// RunningPars interface overrides
             virtual double GetScale() const;      /***/
             virtual void SetScale(double scale);  /***/
             virtual void RunToScale(double);      /***/
    
-            // Limits for running
+            /// Limits for running
+            /// @{
             double softup;
             double hardup; // Be careful of order in constructor!
-   
-            // Limits for running
             virtual double hard_upper() const {return hardup;} /*O*/
             virtual double soft_upper() const {return softup;} /*O*/
             virtual double soft_lower() const {return 0.;}     /*O*/
             virtual double hard_lower() const {return 0.;}     /*O*/
+            /// @}
    
          protected:
             /// Map fillers

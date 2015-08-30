@@ -377,13 +377,13 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
     for root,dirs,files in os.walk(install_dir):
         if (not core_exists and root == install_dir+"/Core/include/gambit/Core"): core_exists = True 
         for name in files:
+            prefix = re.sub("_rollcall\.h.*", "", name)
             if ( (name.lower().endswith("_rollcall.hpp") or
                   name.lower().endswith("_rollcall.h")   or
-                  name.lower().endswith("_rollcall.hh")     ) and name.lower().find("bit") != -1):
+                  name.lower().endswith("_rollcall.hh")     ) and name.lower().find("bit") != -1 and root.endswith(prefix) ):
                 exclude = False
-                bare_name = re.sub(".*_rollcall\\.[h|hpp|hh]$","",name)
                 for x in excludes:
-                    if bare_name.startswith(x): exclude = True
+                    if name.startswith(x): exclude = True
                 if (not exclude): 
                     if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))

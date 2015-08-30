@@ -24,8 +24,8 @@
 #ifndef __slha_helpers_hpp__
 #define __slha_helpers_hpp__
 
-#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Elements/spectrum_helpers.hpp"
 
 #include "SLHAea/slhaea.h"
 

@@ -2,7 +2,8 @@
 //   *********************************************
 ///  \file
 ///
-///  Abstract class for accessing general spectrum information.
+///  Abstract class for accessing general spectrum
+///  information.
 ///
 ///  *********************************************
 ///
@@ -29,23 +30,18 @@
 
 #include "gambit/Utils/cats.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Elements/slhaea_helpers.hpp"
+#include "gambit/Elements/spectrum_helpers.hpp"
 #include "gambit/Models/partmap.hpp"
 
-#include "SLHAea/slhaea.h"
 
 // Particle database access
 #define PDB Models::ParticleDB()        
 
-namespace Gambit {
+namespace Gambit
+{
 
-   /// Helper function for checking if indices are valid
-   inline bool within_bounds(const int i, const std::set<int> allowed)
-   {
-     return ( allowed.find(i) != allowed.end() );
-   }
-   
    /// Helper macro for throwing errors in base class versions of virtual functions
-   ///TODO: probably want a Gambit error here
    #define vfcn_error(local_info) \
      utils_error().forced_throw(local_info,"This virtual function (of SubSpectrum object) has not been overridden in the derived class!")
    
@@ -148,39 +144,6 @@ namespace Gambit {
    class RunningPars;
    class Phys;
  
-   /// List of parameter types used to classify spectrum contents
-   namespace Par
-   {
-     enum Phys {
-         Pole_Mass = 0,
-         Pole_Mixing
-     };
-     enum Running {
-         mass4 = 2,
-         mass3,
-         mass2,
-         mass1,
-         dimensionless,
-         mass_eigenstate
-      };
-
-      /// Map from enum value to string, for error messages
-      static std::map<int,std::string> fill_map()
-      {
-         std::map<int,std::string> name;
-         name[Pole_Mass]       = "Pole_Mass";
-         name[Pole_Mixing]     = "Pole_Mixing";
-         name[mass4]           = "mass4";
-         name[mass3]           = "mass3";
-         name[mass2]           = "mass2";
-         name[mass1]           = "mass1";
-         name[dimensionless]   = "dimensionless";
-         name[mass_eigenstate] = "mass4";
-         return name;
-      }
-      static const std::map<int,std::string> toString = fill_map();
-   }
-
    /// Struct to hold collections of function pointer maps to be filled by derived classes
    template <class MapTypes>
    struct MapCollection
@@ -198,7 +161,8 @@ namespace Gambit {
 
    /// Virtual base class for interacting with spectrum generator output
    // Includes facilities for running RGEs
-   class SubSpectrum {
+   class SubSpectrum
+   {
       public:
          /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
          virtual void dump2slha(const std::string&) const { vfcn_error(LOCAL_INFO); }
@@ -207,8 +171,10 @@ namespace Gambit {
          virtual std::unique_ptr<SubSpectrum> clone() const = 0;
       
          /// Get spectrum information in SLHAea format (if possible)
-         SLHAea::Coll empty_SLHAea;  // never used; just to avoid "no return statement in function returning non-void" warnings
-         virtual SLHAea::Coll getSLHAea() const { vfcn_error(LOCAL_INFO); return empty_SLHAea; }
+         virtual SLHAstruct getSLHAea() const;
+
+         /// Add spectrum information to an SLHAea object (if possible)
+         virtual void add_to_SLHAea(SLHAstruct&) const {}
    
          /// Get integer offset convention used by internal model class (needed by getters which take indices) 
          virtual int get_index_offset() const { vfcn_error(LOCAL_INFO); return 0; }
@@ -444,20 +410,20 @@ namespace Gambit {
          /// @{ Old interface; remove eventually
 
          /// getters using map (and "checkers")
-	 DECLARE_GETTERS(mass4_parameter,Par::mass4)
-	 DECLARE_GETTERS(mass3_parameter,Par::mass3)
-	 DECLARE_GETTERS(mass2_parameter,Par::mass2)
-	 DECLARE_GETTERS(mass_parameter,Par::mass1)
-	 DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
-	 DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
-	
-	 /// setters (and parameter overrides)
-	 DECLARE_SETTERS(mass4_parameter,Par::mass4)
-	 DECLARE_SETTERS(mass3_parameter,Par::mass3)
-	 DECLARE_SETTERS(mass2_parameter,Par::mass2)
-	 DECLARE_SETTERS(mass_parameter,Par::mass1)
-	 DECLARE_SETTERS(dimensionless_parameter,Par::dimensionless)
-	 DECLARE_SETTERS(mass_eigenstate,Par::mass_eigenstate)
+   DECLARE_GETTERS(mass4_parameter,Par::mass4)
+   DECLARE_GETTERS(mass3_parameter,Par::mass3)
+   DECLARE_GETTERS(mass2_parameter,Par::mass2)
+   DECLARE_GETTERS(mass_parameter,Par::mass1)
+   DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
+   DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
+  
+   /// setters (and parameter overrides)
+   DECLARE_SETTERS(mass4_parameter,Par::mass4)
+   DECLARE_SETTERS(mass3_parameter,Par::mass3)
+   DECLARE_SETTERS(mass2_parameter,Par::mass2)
+   DECLARE_SETTERS(mass_parameter,Par::mass1)
+   DECLARE_SETTERS(dimensionless_parameter,Par::dimensionless)
+   DECLARE_SETTERS(mass_eigenstate,Par::mass_eigenstate)
          /// @}
    };
 
@@ -484,12 +450,12 @@ namespace Gambit {
          /// @{ Old interface; remove eventually
 
          /// getters using map (and "checkers")
-	 DECLARE_GETTERS(Pole_Mass,Par::Pole_Mass)
-	 DECLARE_GETTERS(Pole_Mixing,Par::Pole_Mixing)
-	
-	 /// setters (and parameter overrides)
-	 DECLARE_SETTERS(Pole_Mass,Par::Pole_Mass)
-	 DECLARE_SETTERS(Pole_Mixing,Par::Pole_Mixing)
+   DECLARE_GETTERS(Pole_Mass,Par::Pole_Mass)
+   DECLARE_GETTERS(Pole_Mixing,Par::Pole_Mixing)
+  
+   /// setters (and parameter overrides)
+   DECLARE_SETTERS(Pole_Mass,Par::Pole_Mass)
+   DECLARE_SETTERS(Pole_Mixing,Par::Pole_Mixing)
          /// @}
    };
    

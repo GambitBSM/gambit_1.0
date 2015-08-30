@@ -51,8 +51,6 @@ namespace Gambit
       mS       = SLHAea_get_or_def(data,"SMINPUTS",23, 9.50000000E-02);   // ms(2 GeV)^MSbar @
       mCmC     = SLHAea_get_or_def(data,"SMINPUTS",24, 1.27400000E+00);   // mc(mc)^MSbar *
  
-      /// TODO: should I also add sin(theta_W) and Higgs pole mass? Not in SLHA, they are considered as derived parameters.
- 
       /// CKM parameters
       // from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-ckm-matrix.pdf
       CKM.lambda = SLHAea_get_or_def(data,"VCKMIN",1, 0.22537);

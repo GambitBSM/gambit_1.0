@@ -99,9 +99,6 @@ namespace Gambit {
             // Write spectrum information in slha format (not including input parameters etc.)
             virtual void dump2slha(const std::string&) const;
 
-            // Return a fresh SLHAea object containing spectrum information
-            virtual SLHAea::Coll getSLHAea() const;
-            
             // Fill an SLHAea object with spectrum information
             virtual void add_to_SLHAea(SLHAstruct& slha) const;
 

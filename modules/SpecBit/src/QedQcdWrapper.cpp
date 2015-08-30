@@ -86,18 +86,29 @@ namespace Gambit
          , softup(other.softup)
          , hardup(other.hardup)
       {}
-
       ///   @}
 
       /// Destructor
       QedQcdWrapper::~QedQcdWrapper() {}
 
       /// Currently unused virtual functions
+      ///     @{
       int QedQcdWrapper::get_index_offset() const {return 0;}   
       int QedQcdWrapper::get_numbers_stable_particles() const {return -1;} 
+      ///     @}
 
-      /// @}
-
+      /// Add QED x QCD information to an SLHAea object
+      void QedQcdWrapper::add_to_SLHAea(SLHAstruct& slha) const
+      {
+        // Here we assume that all SMINPUTS defined in SLHA2 are provided by the
+        // SMINPUTS object, so we don't bother repeating them here.  We also assume
+        // that the HE spectrum is going to provide the gauge couplings, so we don't
+        // bother with those either.
+        
+        // Add the b pole mass
+        SLHAea_add_block(slha, "MASS");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO, this->phys, Par::Pole_Mass,"b","MASS",5,"# mb (pole)");
+      }
 
       /// Run masses and couplings to end_scale
       void QedQcdWrapper::RunToScale(double end_scale) 
@@ -112,6 +123,8 @@ namespace Gambit
 
       /// Manually define the current renormalisation scale (do this at own risk!)
       void QedQcdWrapper::SetScale(double scale) { qedqcd.setMu(scale); }
+      
+      /// @}
 
       /// Plain C-function wrappers for QedQcd running mass getters
       double get_mUp      (const softsusy::QedQcd& model) { return model.displayMass(softsusy::mUp); }
@@ -170,7 +183,7 @@ namespace Gambit
 
      double get_sinthW2_pole(const softsusy::QedQcd &qedqcd)
      {
-       	return (1 - Utils::sqr(qedqcd.displayPoleMW()) / Utils::sqr(qedqcd.displayPoleMZ()));
+        return (1 - Utils::sqr(qedqcd.displayPoleMW()) / Utils::sqr(qedqcd.displayPoleMZ()));
      }
      // Filler function for getter function pointer maps extractable from "runningpars" container
       RunningGetterMaps QedQcdWrapper::runningpars_fill_getter_maps()
@@ -266,19 +279,19 @@ namespace Gambit
 
             map_collection[Par::Pole_Mass].map0_extraI = tmp_map;
          }
-	  {  
+    {  
             // Functions utilising the "extraM" function signature
             // (Zero index, model object as argument)
 
             MTget::fmap0_extraM tmp_map;
-	    
-	    tmp_map["sinW2"] = &get_sinthW2_pole;
+      
+      tmp_map["sinW2"] = &get_sinthW2_pole;
 
             map_collection[Par::Pole_Mixing].map0_extraM = tmp_map;
          }
 
 
-	 /// @}
+   /// @}
          return map_collection;
       } 
 
@@ -305,8 +318,8 @@ namespace Gambit
             // below (there is also one that takes the model object as an
             // input, as in the getter case)
             //addtomap(("Z0", "Z"),       &softsusy::QedQcd::displayPoleMZ);
-	    addtomap(("Z0", "Z"),       &softsusy::QedQcd::setPoleMZ);
-	    addtomap(("W+", "W-"),       &softsusy::QedQcd::setPoleMW);  
+      addtomap(("Z0", "Z"),       &softsusy::QedQcd::setPoleMZ);
+      addtomap(("W+", "W-"),       &softsusy::QedQcd::setPoleMW);  
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 

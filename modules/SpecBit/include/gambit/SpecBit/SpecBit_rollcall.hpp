@@ -28,16 +28,16 @@ START_MODULE
   // declared in the header)
 
   /// Module function declarations for SpecBit_SM.cpp
-  #include "gambit/SpecBit/SpecBit_SM.hpp"
+  #include "gambit/SpecBit/SpecBit_SM_rollcall.hpp"
 
   /// Module function declarations for SpecBit_MSSM.cpp
-  #include "gambit/SpecBit/SpecBit_MSSM.hpp"
+  #include "gambit/SpecBit/SpecBit_MSSM_rollcall.hpp"
 
   /// Module function declarations for SpecBit_SingletDM.cpp
-  #include "gambit/SpecBit/SpecBit_SingletDM.hpp"
+  #include "gambit/SpecBit/SpecBit_SingletDM_rollcall.hpp"
 
   /// Module function declarations for SpecBit_Higgs.cpp
-  #include "gambit/SpecBit/SpecBit_Higgs.hpp"
+  #include "gambit/SpecBit/SpecBit_Higgs_rollcall.hpp"
 
   /// For SpecBit testing only
   //#include "gambit/SpecBit/SpecBit_sandbox.hpp"
@@ -77,7 +77,7 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
-
+  
 
 #undef MODULE
 

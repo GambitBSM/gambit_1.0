@@ -90,19 +90,13 @@ namespace Gambit
         model_interface.dump2slha(filename);
       }
       
-      // Return a fresh SLHAea object containing spectrum information
-      template <class MI>
-      SLHAstruct MSSMSpec<MI>::getSLHAea() const
-      {
-        SLHAstruct slha;
-        this->add_to_SLHAea(slha);
-        return slha;
-      }
-
       // Fill an SLHAea object with spectrum information
       template <class MI>
       void MSSMSpec<MI>::add_to_SLHAea(SLHAstruct& slha) const
       {
+
+        // Here we assume that all SM input info comes from the SMINPUT object, 
+        // and all low-E stuff (quark pole masses and the like) come from the LE subspectrum.
 
         SLHAea_add_block(slha, "GAUGE",this->runningpars.GetScale());
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"g1","GAUGE",1,"# gY DRbar",false); // optional parameter to disable error if entry missing from spectrum object. Probably only useful for stuff you know may be added later by a set_override call.
@@ -120,26 +114,6 @@ namespace Gambit
             SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,Y[k].second,i,j,Y[k].first,i,j,comment.str());
           }
         }
-
-   
-/*
- * 
- * 
- *         writer.add_block("SMINPUTS");
-        writer.output["SMINPUTS"][""] << 1 << sminputs.alphainv << "alpha_em^-1(M_Z)^MSbar";
-        writer.output["SMINPUTS"][""] << 2 << sminputs.GF       << "G_F [GeV^-2]";
-        writer.output["SMINPUTS"][""] << 3 << sminputs.alphaS   << "alpha_S(M_Z)^MSbar";
-        writer.output["SMINPUTS"][""] << 4 << sminputs.mZ       << "M_Z (pole)";
-        writer.output["SMINPUTS"][""] << 5 << sminputs.mBmB     << "mb(mb)^MSbar";
-        writer.output["SMINPUTS"][""] << 6 << sminputs.mT       << "m_t (pole)";
-        writer.output["SMINPUTS"][""] << 7 << sminputs.mTau     << "m_tau (pole)";
-  fh_real ME = sminputs.mE;      // electron mass
-  fh_real MU = sminputs.mU;      // up quark mass @ 2 GeV
-  fh_real MD = sminputs.mD;      // down quark mass @ 2 GeV
-  fh_real MM = sminputs.mMu;     // muon mass
-  fh_real MC = sminputs.mCmC;    // charm mass at m_c
-  fh_real MS = sminputs.mS;      // stange mass @ 2 GeV
-  */  
 
       }
       

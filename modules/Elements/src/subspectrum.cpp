@@ -22,19 +22,28 @@
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/spec_fptrfinder.hpp"
 
-namespace Gambit {
+namespace Gambit
+{
 
-   /// @{ Remnants of old interface (PDG overloads for getter functions)
-   DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
+  /// @{ Remnants of old interface (PDG overloads for getter functions)
+  DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
 
-   DEFINE_PDG_GETTERS(Phys,Pole_Mass)
-   DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
-   /// @}
+  DEFINE_PDG_GETTERS(Phys,Pole_Mass)
+  DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
+  /// @}
+
+  /// Get spectrum information in SLHAea format (if possible)
+  SLHAstruct SubSpectrum::getSLHAea() const
+  {
+    SLHAstruct slha;
+    this->add_to_SLHAea(slha);
+    return slha;    
+  }
 
 }
 
