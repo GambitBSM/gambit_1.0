@@ -35,7 +35,7 @@ twalk: |
                                of processes.
     
   Convergence inifile options:
-    tolerance (1.01):  The accuracy of the second order moment (1 is perfect).
+    tolerance (1.001): The accuracy of the second order moment (1 is perfect).
     cut: (1000):       Number of burn-in points that are not considered.
     
 MultiNest: |
