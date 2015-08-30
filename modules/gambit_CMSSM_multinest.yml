@@ -133,10 +133,6 @@ Rules:
     function: lnL_FermiLATdwarfs_gamLike
     #function: lnL_FermiLATdwarfsSimple
 
-  - capability: IceCube_likelihood
-    function: IC79_loglike
-    #function: IC_loglike
-
   - capability: SimYieldTable
     function: SimYieldTable_DarkSusy
     #function: SimYieldTable_MicrOmegas

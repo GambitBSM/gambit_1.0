@@ -40,7 +40,7 @@
 ///  \author Pat Scott
 ///          (pscott@imperial.ac.uk)
 ///  \date 2014 Mar
-///  \date 2015 Mar
+///  \date 2015 Mar, Aug
 ///
 ///  *********************************************
 
@@ -983,7 +983,7 @@ START_MODULE
   #define CAPABILITY nuyield_ptr
   START_CAPABILITY
     #define FUNCTION nuyield_from_DS
-    START_FUNCTION(nuyield_functype)
+    START_FUNCTION(nuyield_info)
     DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
     DEPENDENCY(mwimp, double) 
     DEPENDENCY(sigmav, double)
@@ -994,7 +994,7 @@ START_MODULE
      const double(&)[29][3], const double(&)[15], const double(&)[3], const double&, 
      const double&, const double&, const double&, const double&))
     BACKEND_REQ(nuyield, (needs_DS), double, (const double&, const int&, void*&))
-    BACKEND_OPTION((DarkSUSY, 5.1.1), (needs_DS))
+    BACKEND_OPTION((DarkSUSY, 5.1.1, 5.1.2, 5.1.3), (needs_DS))
     #undef FUNCTION
   #undef CAPABILITY
     
@@ -1007,9 +1007,12 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield_ptr, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
+      DEPENDENCY(nuyield_ptr, nuyield_info)
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, 
+                                       nuyield_function_pointer, double&, double&, int&,
+                                       double&, double&, const int&, const double&, 
+                                       const bool&, const bool&, const double&, 
+                                       const double&, void*&, const bool&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1037,6 +1040,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY IC22_bgloglike 
+  START_CAPABILITY
+    #define FUNCTION IC22_bgloglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC22_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY IC22_pvalue 
   START_CAPABILITY
     #define FUNCTION IC22_pvalue
@@ -1059,9 +1070,12 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield_ptr, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
+      DEPENDENCY(nuyield_ptr, nuyield_info)  
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, 
+                                       nuyield_function_pointer, double&, double&, int&,
+                                       double&, double&, const int&, const double&, 
+                                       const bool&, const bool&, const double&, 
+                                       const double&, void*&, const bool&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1089,6 +1103,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY IC79WH_bgloglike 
+  START_CAPABILITY
+    #define FUNCTION IC79WH_bgloglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WH_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY IC79WH_pvalue 
   START_CAPABILITY
     #define FUNCTION IC79WH_pvalue
@@ -1111,9 +1133,12 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield_ptr, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
+      DEPENDENCY(nuyield_ptr, nuyield_info)  
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, 
+                                       nuyield_function_pointer, double&, double&, int&,
+                                       double&, double&, const int&, const double&, 
+                                       const bool&, const bool&, const double&, 
+                                       const double&, void*&, const bool&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1141,6 +1166,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY IC79WL_bgloglike 
+  START_CAPABILITY
+    #define FUNCTION IC79WL_bgloglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY IC79WL_pvalue 
   START_CAPABILITY
     #define FUNCTION IC79WL_pvalue
@@ -1163,9 +1196,12 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield_ptr, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
+      DEPENDENCY(nuyield_ptr, nuyield_info)  
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, 
+                                       nuyield_function_pointer, double&, double&, int&,
+                                       double&, double&, const int&, const double&, 
+                                       const bool&, const bool&, const double&, 
+                                       const double&, void*&, const bool&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1193,6 +1229,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY IC79SL_bgloglike 
+  START_CAPABILITY
+    #define FUNCTION IC79SL_bgloglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79SL_data, nudata)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY IC79SL_pvalue 
   START_CAPABILITY
     #define FUNCTION IC79SL_pvalue
@@ -1209,24 +1253,32 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY IceCube_likelihood
+  #define CAPABILITY IC79_loglike
   START_CAPABILITY
-
     #define FUNCTION IC79_loglike
     START_FUNCTION(double)
     DEPENDENCY(IC79WH_loglike, double)
     DEPENDENCY(IC79WL_loglike, double)
     DEPENDENCY(IC79SL_loglike, double)
+    DEPENDENCY(IC79WH_bgloglike, double)
+    DEPENDENCY(IC79WL_bgloglike, double)
+    DEPENDENCY(IC79SL_bgloglike, double)
     #undef FUNCTION
+  #undef CAPABILITY
 
+  #define CAPABILITY IceCube_likelihood
+  START_CAPABILITY
     #define FUNCTION IC_loglike
     START_FUNCTION(double)
     DEPENDENCY(IC22_loglike, double)
     DEPENDENCY(IC79WH_loglike, double)
     DEPENDENCY(IC79WL_loglike, double)
     DEPENDENCY(IC79SL_loglike, double)
+    DEPENDENCY(IC22_bgloglike, double)
+    DEPENDENCY(IC79WH_bgloglike, double)
+    DEPENDENCY(IC79WL_bgloglike, double)
+    DEPENDENCY(IC79SL_bgloglike, double)
     #undef FUNCTION
-
   #undef CAPABILITY
 
   #define CAPABILITY UnitTest_DarkBit
