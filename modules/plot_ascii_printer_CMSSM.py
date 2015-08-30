@@ -7,7 +7,7 @@ from scipy.interpolate import griddata
 
 def plot():
   # Load data
-  data = genfromtxt('gambit_output.data')
+  data = genfromtxt('gambit_output.data', invalid_raise = False)
 
   # Remove 'none' (or 'nan') entries
   data = data[logical_not(isnan(data.sum(axis=1)))]
