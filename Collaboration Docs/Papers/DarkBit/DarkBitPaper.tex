@@ -145,6 +145,63 @@ $\to$ general physics \& concepts; specifics go to next two subsections
 \subsubsection{Indirect detection with gamma rays {\bf [CW]}}
 \label{phys_ga}
 
+In this section, we will describe the experimental data, approach and
+likelihood functions that we use in \GB\ to account for the most relevant
+limits from gamma-ray observations.  A description of the code can be found
+below in section~\ref{code_id}.
+
+\paragraph{Dwarf spheroidal galaxies with Fermi.}
+Some of the most stringent and robust limits on the dark matter annihilation
+cross-section come from the (non-)observation of gamma-ray emission from dwarf
+spheroidal Galaxies (dSphs).  These are satellite galaxies of the Milky Way,
+with masses between $XXX$--$YYY M_\odot$, and with mass-to-light ratios up to
+$XXX M_\odot/L_\odot$.  Besides the 12 `classical dSphs' and a number of
+ultrafaint dSphs are know, which were mostly found by SDSS.\footnote{Very
+recently, a number of dSph candidates were identified using DES
+data~\cite{123}.  However, spectral follow-up observations to
+determine the dark matter content of these candidates (and to
+confirm them as dSphs) are still pending in most cases.}  
+
+The distribution of dark matter in dSphs relies on a Jeans analysis of the
+kinematic of member stars.  This distribution can then be used to calculate the
+$J$-value (see definition above) of the dSph.  Following
+Ref.~\cite{FermiDwarfs}, we will model associated uncertainties as a log-normal
+distribution in $J$.  The full likelihood function reads then
+%
+\begin{equation}
+  \mathcal{L} = \prod_i P_{\rm dwarf} P_{\rm J}
+\end{equation}
+%
+
+\paragraph{Galactic center with Fermi.}
+Gamma-ray observations of the Galactic center with Fermi have identified an
+extended excess emission at energies around 2 GeV, which remarkably well
+resembles a signal from dark matter annihilation (a very plausible alternative
+which recently gained observational support~\cite{123} is the
+unresolved emission from a large number of milli-second pulsars).  Assuming
+that \emph{all} of the excess emission from the inner Galaxy is due to dark
+matter annihilation, a likelihood function that takes into account realistic
+estimates for the systematics introduced by foreground subtraction was derived
+in Ref.~\cite{123}.  The associated likelihood function for the excess energy
+spectrum features errors that are correltaed in energy, and reads
+\begin{equation}
+  \mathcal{L} = ...
+\end{equation}
+
+The derivation of best-fit cross-sections for dark matter models hinges on the
+dark matter content in the inner 2 kpc of our Galaxy.  Associated uncertainties
+were derived in Ref.~\cite{123}, and are included in the likelihood function as
+a log-normal distribution.
+
+\paragraph{Gamma-ray line limits from HESS.}
+
+The limits on gamma-ray lines obtained by the HESS satellite at energies above
+500 GeV are included in an effective way.  We interpolate flux upper limits
+presented in Ref.~\cite{123} (linearly in $\log m_\chi$ and $\log \Phi$).  The
+likelihood function that underlies the presented one-sided limits is assumed to
+be XYZ.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Indirect detection with neutrinos {\bf [PS/JE]}}
@@ -163,17 +220,49 @@ $\to$ general physics \& concepts; specifics go to next two subsections
 \subsection{General code framework {\bf [CW]}}
 \label{code_gen}
 
+\GB\ is build around the idea that \emph{all} calculations that are required to
+get from experimental data and model parameters to likelihood functions are
+perfomed in \GB\ \emph{module functions}.  As the name suggests, these
+functions are grouped into various modules.  Each module function is able to
+calculate exactly one parameter, its \emph{capability}.  The \emph{type} of
+this capability can be just about anything, from a simple integer to any
+complex C++ structure that is required to carry the calculational result.
+Examples for capabilities are model parameters, structures carrying particle
+spectra or experimental data, and the values of likelihood fucntions.  Most
+module functions will also have \emph{dependencies} on capabilities that were
+calculated by other module functions.  These dependencies will be resolved at
+run time, based on choices of the user for what particle physics model to
+analyse, what observables to include etc.  In general, the dependency tree of
+the subset of module functions that are used for a specific scan will form a
+directed a-cyclic graph.  Details can be found in the main \GB\
+paper~\cite{123}.
+
+In many cases, the calculations of module functions will actually require
+functionality of external independent codes, like DarkSUSY or MircOmegas.
+These codes provide a lot of functionaility that can be often used beyond the
+scope of these codes (examples are Boltzmann solvers, tabulated particle
+yields, routines to calculate J-values etc).  These codes from the perspective
+of \GB\ \emph{backends}.  They are coupled to \GB\ by compiling them as shared
+libraries, which are loaded by \GB\ at runtime if the user configuration
+requires this.  The interface to these backends is provided by convenient
+\emph{frontends}, which specify the form and subset of functionaility of the
+backend that is accessible by \GB.
+
+The whole setup is illustrated in Fig.~\ref{cartoon_definitions}.
+
 \begin{itemize}
-\item connection to \GB, introduce concept of backends, setup and initialization of particle models
-\item briefly describe which backends are used, and what they contribute 
+  \item connection to \GB, introduce concept of backends, setup and
+    initialization of particle models
+  \item briefly describe which backends are used, and what they contribute 
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Relic density {\bf [JE/TB]}}
 \label{code_rd}
 \begin{itemize}
-\item two possibilities: $W_\mathrm{eff}$ directly from DS or built from process catalogue (as introduced below)
-\item...
+  \item two possibilities: $W_\mathrm{eff}$ directly from DS or built from
+    process catalogue (as introduced below)
+  \item...
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
