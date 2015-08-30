@@ -65,9 +65,12 @@ namespace Gambit
             // Constructors/destructors
             QedQcdWrapper();
             QedQcdWrapper(const softsusy::QedQcd&, const SMInputs&);
-            QedQcdWrapper(const QedQcdWrapper&);
             virtual ~QedQcdWrapper();        /***/
-    
+   
+            // Functions to interface Model and Input objects with the base 'Spec' class
+            QedQcdWrapperTraits::Model& get_Model() { return qedqcd; }
+            QedQcdWrapperTraits::Input& get_Input() { return sminputs; }
+ 
             virtual int get_index_offset() const;  /***/   
             virtual int get_numbers_stable_particles() const;  /***/
    
@@ -99,7 +102,7 @@ namespace Gambit
             static RunningGetterMaps runningpars_fill_getter_maps(); /*O*/
             //static RunningSetterMaps runningpars_fill_setter_maps(); // We don't currently use this in this wrapper
  
-            /// Phys parameter map fillers (access parameters via spectrum.phys)
+            /// Phys parameter map fillers (access parameters via spectrum.phys())
             static PhysGetterMaps    phys_fill_getter_maps(); /*O*/
             static PhysSetterMaps    phys_fill_setter_maps(); /*O*/
     

@@ -43,7 +43,8 @@ Printer:
 
   # Select printer to use via string tag
   # (currently only ascii printer available)
-  printer: ascii
+  #printer: ascii
+  printer: hdf5
 
   # This options node is passed on wholesale to
   # the printer object; required options may
@@ -51,9 +52,13 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/spartan/samples/gambit_output.txt"
+    #output_file: "runs/spartan/samples/gambit_output2.txt"
     # name of info file (explains content of output file)
-    info_file: "runs/spartan/samples/gambit_output.info"
+    #info_file: "runs/spartan/samples/gambit_output2.info"
+
+    output_file: "runs/test_hdf5/samples/gambit_output.hdf5"
+    group: "/test/test2"
+    delete_file_if_exists: true
 
 ##############################
 # Scanner setup
@@ -63,7 +68,9 @@ Scanner:
 
   use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: find_kernel
+  use_scanner: twalk
+  #find_shift
+  #find_kernel
   #object_detection
   #use_scanner: gal_1
   #find_kernel
@@ -71,6 +78,13 @@ Scanner:
 
   scanners:
   
+    twalk:
+      plugin: twalk
+      options:
+        tolorance: 1.001
+        thread_number: 10
+        projection_dimension: 4
+      
     ransample:
       plugin: random_sampler
       options:
@@ -148,6 +162,24 @@ Scanner:
         
 ##########################################
     
+    hdf5:
+      plugin: bin_grid
+      options:
+        use_hdf5: true
+        input_files: ["runs/test_hdf5/samples/gambit_output.hdf5"]
+        groups: ["/test/test2"]
+        output_file: "output_hdf5"
+        #xrange: [2.0, 6.0]
+        xrange: [0, 1]
+        yrange: [0, 1]
+        grid: [100, 100]
+        selected_pts: 
+          - "EggBox::param_0"
+          - "EggBox::param_1"
+        mult: ["mult"]
+        #loglike: 1
+        flags: ["linear"]
+        #flags: ["linear", "noadjx", "logx"]
         
     gal_0:
       plugin: bin_grid
@@ -282,6 +314,7 @@ Scanner:
         #opt: "average"
         opt: "median"
         labels: [M, x0, y0, vx, vy, vz, R0, Omega, omega, i, P, T0, e]
+        joints: [[0, 6], [1, 2], [3, 4], [0, 3], [0, 4], [0, 1], [0, 2], [6, 3], [6, 4], [6, 1], [6, 2]]
         
     find_kernel:
       plugin: find_kernel
@@ -339,6 +372,11 @@ Scanner:
       plugin: EggBox
       purpose: Likelihood
       options:
+        Printer:
+          printer: ascii
+          #options:
+          output_file: "runs/spartan/samples/gambit_output2.txt"
+          info_file: "runs/spartan/samples/gambit_output2.info"
       parameters:
         param...2:
           range: [0, 1]
@@ -346,12 +384,12 @@ Scanner:
     gaussian:
       plugin: gaussian
       purpose: Likelihood
-      options:
-        cov: [[0.01, 0.0], [0.0, 0.01]]
-        mean: [1.5, 1.5]
+      #options:
+      #  cov: [[0.01, 0.0], [0.0, 0.01]]
+      #  mean: [1.5, 1.5]
       parameters:
-        param...2:
-          range: [1, 2]
+        param...6:
+          range: [-5, 5]
       
     test:
       plugin: test_plug
@@ -388,26 +426,26 @@ Scanner:
 ObsLikes:
 
 
-  # Test CMSSM_I, ExampleBit_A and ExampleBit_B
-  - purpose:      Likelihood
-    capability:   lnL_ExampleBitB
-    type:         double
-    function:     ""
-    module:       ""
+  ## Test CMSSM_I, ExampleBit_A and ExampleBit_B
+  #- purpose:      Likelihood
+    #capability:   lnL_ExampleBitB
+    #type:         double
+    #function:     ""
+    #module:       ""
 
-  # Test array and -> operators in safety buckets.
-  - purpose:      Observable
-    capability:   ptrmeth_arr_tester
+  ## Test array and -> operators in safety buckets.
+  #- purpose:      Observable
+    #capability:   ptrmeth_arr_tester
 
-  # Test loop manager
-  - purpose:      Likelihood
-    capability:   nevents_like
-    type:         double
+  ## Test loop manager
+  #- purpose:      Likelihood
+    #capability:   nevents_like
+    #type:         double
 
-  # Test vector output of printer
-  - purpose:      Observable
-    capability:   test_vector
-    type:         std::vector<double>
+  ## Test vector output of printer
+  #- purpose:      Observable
+    #capability:   test_vector
+    #type:         std::vector<double>
 
 
 #########################

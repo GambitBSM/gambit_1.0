@@ -215,7 +215,7 @@ def main(argv):
                             splitline = neatsplit(r'\(|\)|,|\s|\{',find[2])
                             if len(splitline) != 0:
                                 plugin_name = splitline[1]
-                                mod_version = ["0","","",""]
+                                mod_version = ["0","0","0",""]
                                 plugin_type = plug_type[find[1]];
                                 if splitline[2] == "version": mod_version[0:len(splitline[3:])] = splitline[3:]
                                 token = plugin_name+"__t__"+plugin_type+"__v__"+"_".join([x for x in mod_version])
@@ -328,11 +328,11 @@ def main(argv):
             if yaml_file:
                 if plugin_name in yaml_file and plugin[1] == plugin_type:
                     version_bits = plugin[2]
-                    maj_version = int(".".join([x for x in version_bits[0:1] if x != ""]))
-                    min_version = float(".".join([x for x in version_bits[0:2] if x != ""]))
-                    pat_version = ".".join([x for x in version_bits[0:3] if x != ""])
+                    maj_version = int(".".join([x for x in version_bits[0:1]]))
+                    min_version = float(".".join([x for x in version_bits[0:2]]))
+                    pat_version = ".".join([x for x in version_bits[0:3]])
                     ful_version = "-".join([pat_version, version_bits[3]])
-                    version = ".".join([x for x in version_bits[0:3] if x != ""])
+                    version = ".".join([x for x in version_bits[0:3]])
                     if (version_bits[3] != ""):
                         version = "-".join([version, version_bits[3]])
                     ini_version = ""
@@ -346,7 +346,7 @@ def main(argv):
                         ini_version = maj_version
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
-                        
+                    
                     if ini_version != "":
                         options_list = yaml_file[plugin_name][ini_version]
                         if type(options_list) is dict: #not list:
@@ -516,6 +516,11 @@ def main(argv):
 #************************************************\n\n"                                                
     towrite += cmakelist_txt_out
 
+    if sys.platform == "darwin":
+        cflags = "-dynamiclib"
+    else:
+        cflags = "-rdynamic"
+
     towrite += "\
 # Add the ScannerBit linking flag utility        \n\
 add_executable(scanlibs ${scanner_scanlibs_sources} ${scanner_scanlibs_headers})\n\
@@ -539,6 +544,8 @@ set( PLUGIN_INCLUDE_DIRECTORIES                  \n\
                 ${GSL_INCLUDE_DIRS}              \n\
                 ${ROOT_INCLUDE_DIR}              \n\
                 ${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit\n\
+                ${MPI_C_INCLUDE_PATH}            \n\
+                ${MPI_CXX_INCLUDE_PATH}          \n\
 )                                                \n\n\
 if( ${PLUG_VERBOSE} )                            \n\
     message(\"*** begin PLUG_INCLUDE_DIRECTORIES ***\")\n\
@@ -549,7 +556,13 @@ if( ${PLUG_VERBOSE} )                            \n\
 endif()                                          \n\
                                                  \n\
 set( reqd_lib_output )                           \n\
-set( exclude_lib_output )                        \n\n"
+set( exclude_lib_output )                        \n\n\
+set( PLUGIN_COMPILE_FLAGS                        \n\
+                ${MPI_C_COMPILE_FLAGS}           \n\
+                ${MPI_CXX_COMPILE_FLAGS}         \n"
+                
+    towrite += "                \"" + cflags + "\""
+    towrite += ")\n\n"
 
 
     # now link the shared libraries to their respective plugin libraries
@@ -721,7 +734,7 @@ set( exclude_lib_output )                        \n\n"
             towrite += "endif()\n\n"
 
             towrite += "if ( " + plug_type[i] + "_compile_flag_" + directory + " STREQUAL \"\" )\n"
-            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${"
+            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION MODULE SOURCES ${"
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
@@ -731,19 +744,13 @@ set( exclude_lib_output )                        \n\n"
             else:
                 towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
                 towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-               
-            if sys.platform == "darwin":
-                cflags = "-dynamiclib"
-            else:
-                cflags = "-rdynamic"
                 
             #if scanbit_static_links.has_key(plug_type[i]):
             #    if scanbit_static_links[plug_type[i]].has_key(directory):
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
             #            cflags = "-static " + scanbit_static_links[plug_type[i]][directory]
 
-            if cflags != "":
-                towrite += " "*23 + "COMPILE_FLAGS \"" + cflags + "\"\n"
+            towrite += " "*23 + "COMPILE_FLAGS ${PLUGIN_COMPILE_FLAGS}\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"

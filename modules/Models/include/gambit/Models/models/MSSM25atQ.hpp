@@ -1,7 +1,7 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  MSSM25 model definition
+//  MSSM25atQ model definition
 //
 //  *********************************************
 //
@@ -18,11 +18,10 @@
 #ifndef __MSSM25atQ_hpp__
 #define __MSSM25atQ_hpp__
 
-#include "gambit/Models/models/MSSM78atQ.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
+#include "gambit/Models/models/MSSM30atQ.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
 
-/// FlexibleSUSY compatible general (78 parameters plus sign) MSSM parameterisation
 #define MODEL MSSM25atQ
-#define PARENT MSSM78atQ
+#define PARENT MSSM30atQ
   START_MODEL
 
   DEFINEPARS(Qin,TanBeta,SignMu,
@@ -44,7 +43,7 @@
 
   DEFINEPARS(Au_3)
 
-  INTERPRET_AS_PARENT__FUNCTION(MSSM25atQ_to_MSSM78atQ)
+  INTERPRET_AS_PARENT__FUNCTION(MSSM25atQ_to_MSSM30atQ)
   //INTERPRET_AS_X__FUNCTION(MSSM78atQ, MSSM25atQ_to_MSSM78atQ)
 
 #undef PARENT

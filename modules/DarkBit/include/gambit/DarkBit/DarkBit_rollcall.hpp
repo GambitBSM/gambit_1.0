@@ -411,6 +411,10 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_oh2, double)
     #undef FUNCTION
+    #define FUNCTION lnL_oh2_upperlimit
+      START_FUNCTION(double)
+      DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
   #undef CAPABILITY
 
 

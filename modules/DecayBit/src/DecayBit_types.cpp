@@ -160,7 +160,7 @@ namespace Gambit
         {
           std::cout << "     " << i << j << " = "  
                     << std::scientific << std::setw(10)  
-                    <<  mssm->phys.get_Pole_Mixing("~d", i, j);
+                    <<  mssm->phys().get_Pole_Mixing("~d", i, j);
         }
         std::cout << std::endl;
       }
@@ -171,7 +171,7 @@ namespace Gambit
         for(int j = 1; j <=6; j++)
         {
           std::cout << "     " << i << j << " = "  
-                    << mssm->phys.get_Pole_Mixing("~u", i, j);
+                    << mssm->phys().get_Pole_Mixing("~u", i, j);
         }
         std::cout << std::endl;
       }
@@ -182,7 +182,7 @@ namespace Gambit
         for(int j = 1; j <=6; j++)
         {
           std::cout << "     " << i << j << " = "  
-                    << mssm->phys.get_Pole_Mixing("~e", i, j);
+                    << mssm->phys().get_Pole_Mixing("~e", i, j);
         }
         std::cout << std::endl;
       }
@@ -193,7 +193,7 @@ namespace Gambit
         for(int j = 1; j <=3; j++)
         {
          std::cout << "     " << i << j << " = "  
-                   << mssm->phys.get_Pole_Mixing("~nu", i, j);
+                   << mssm->phys().get_Pole_Mixing("~nu", i, j);
         }
         std::cout << std::endl;
       }

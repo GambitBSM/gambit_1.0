@@ -146,11 +146,11 @@ Rules:
       fast: 1  # 0: standard, 1: fast, 2: dirty, 3: filthy, 4: disgusting, 5: dead
     #function: RD_oh2_MicrOmegas
 
-#  - capability: MSSM_spectrum
+#  - capability: unimproved_MSSM_spectrum
     #function: get_MSSMatQ_spectrum
     #function: get_MSSM_spectrum_from_SLHAfile
     #
-  - capability: MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum 
     function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:
       # Set to match benchmark point specified in
@@ -170,8 +170,8 @@ Rules:
 
 #  - capability: Higgs_decay_rates
 #    function: MSSM_h0_1_decays
-    #function: SMHiggs_decays  # Requires MSSM_spectrum (SubSpectrum*) ??
-
+    #function: SMHiggs_decays
+    
   - capability: MSSM_spectrum
     options:
       precision_goal:        1.0e-4

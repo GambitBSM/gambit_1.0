@@ -58,27 +58,27 @@ namespace Gambit {
             // Store SLHAea object internally (via wrapper)
             typename DerivedTraits::Model slhawrap;
 
+            // Dummy placeholder for potential Inputs object
+            DummyInput dummyinput;
+
          public:
             typedef MapTypes<DerivedTraits,MapTag::Get> MTget; 
 
             // Constructors/destructors
             SLHAskeleton() 
-              : Spec<Derived,DerivedTraits>(slhawrap)  
-              , slhawrap()
+              : slhawrap()
             {}
 
             SLHAskeleton(const SLHAea::Coll& input)
-              : Spec<Derived,DerivedTraits>(slhawrap)
-              , slhawrap(input)
+              : slhawrap(input)
             {}
-
-            SLHAskeleton(const SLHAskeleton& other)
-              : Spec<Derived,DerivedTraits>(slhawrap)
-              , slhawrap(other.slhawrap)
-            {} 
 
             virtual ~SLHAskeleton() {};
  
+            // Functions to interface Model and Input objects with the base 'Spec' class
+            typename DerivedTraits::Model& get_Model() { return slhawrap; }
+            typename DerivedTraits::Input& get_Input() { return dummyinput; /*unused, but needs to be defined for the interface*/ }
+
             // virtual int get_index_offset() const; 
             // virtual int get_numbers_stable_particles() const;
 

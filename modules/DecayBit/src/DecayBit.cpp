@@ -245,14 +245,14 @@ namespace Gambit
     /// FeynHiggs MSSM decays: t
     void FH_t_decays (DecayTable::Entry& result) 
     {
-      fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::FH_Couplings;
+      fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::Higgs_Couplings;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       result.width_in_GeV = 2.0;                    
-      result.positive_error = 5.0e-01;
-      result.negative_error = 5.0e-01;
+      result.positive_error = 4.7e-01;
+      result.negative_error = 4.3e-01;
       result.set_BF(FH_input.gammas[tBF(1)-1], 0.0, "W+", "b"); 
       result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
     }
@@ -331,7 +331,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
       
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about h0_1
@@ -512,7 +512,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about h0_2
@@ -673,7 +673,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about A0
@@ -827,7 +827,7 @@ namespace Gambit
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about H+
@@ -2345,7 +2345,7 @@ namespace Gambit
 
       // Get the spectrum information
       const Spectrum* spec = *Dep::SingletDM_spectrum;
-      RunningPars& extrapar = spec->get_UV()->runningpars;
+      const RunningPars& extrapar = spec->get_HE()->runningpars();
       double mass = spec->get_Pole_Mass("S");
       double lambda = extrapar.get_mass_parameter("lambda_hS");
       double v0 = extrapar.get_mass_parameter("vev");
@@ -2505,7 +2505,7 @@ namespace Gambit
     void get_mass_es_pseudonyms(mass_es_pseudonyms& result)
     {
       using namespace Pipes::get_mass_es_pseudonyms;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
       double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");

@@ -365,7 +365,7 @@ Rules:
   - capability: t_decay_rates
     function: t_decays
 
-  - capability: MSSM_spectrum
+  - capability: unimproved_MSSM_spectrum
     options:
       precision_goal:        1.0e-4
       max_iterations:        0

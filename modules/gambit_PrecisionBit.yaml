@@ -1,9 +1,10 @@
-# EWPOBit/HiggsBit test file (in YAML)
-# Only needs EWPOBit, HiggsBit and backends FeynHiggs, HiggsBounds and HiggsSignals.
+# PrecisionBit test file (in YAML)
 #
 # Chris Rogan <crogan@cern.ch>
 # Apr 2015
- 
+# Pat Scott <p.scott@imperial.ac.uk>
+# Aug 2015
+
 ###################################
 # Input parameter declarations
 ###################################
@@ -36,7 +37,7 @@ ObsLikes:
   # Uncomment to test FeynHiggs-related module functions
   #- purpose:  whatever
   #  capability:  FH_HiggsMasses
-  #- purpose:  whatever		
+  #- purpose:  whatever   
   #  capability:  FH_PrecisionObs
   #- purpose:  whatever
   #  capability:  FH_FlavorObs
@@ -47,15 +48,30 @@ ObsLikes:
   #- purpose:  whatever
   #  capability:  FH_HiggsProd
 
-  # Uncomment to test HiggsBit
+  # Uncomment to test precision likelihoods and nuisances
   - purpose:  Likelihood
-    capability:  HB_LEPchisq
+    capability:  lnL_Z_mass
   - purpose:  Likelihood
-    capability:  HS_LHCchisq
+    capability:  lnL_t_mass
+  - purpose:  Likelihood
+    capability:  lnL_mcmc
+  - purpose:  Likelihood
+    capability:  lnL_mbmb
+  - purpose:  Likelihood
+    capability:  lnL_alpha_em
+  - purpose:  Likelihood
+    capability:  lnL_alpha_s
+  - purpose:  Likelihood
+    capability:  lnL_W_mass
+  - purpose:  Likelihood
+    capability:  lnL_sinW2_eff
+  - purpose:  Likelihood
+    capability:  lnL_deltarho
+    
 
 Rules:
 
-  - capability: MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum 
     function: get_MSSMatQ_spectrum  
     options:
       invalid_point_fatal: true
@@ -85,7 +101,6 @@ Rules:
 Printer:
 
   # Select printer to use via string tag
-  # (currently only ascii printer available)
   printer: ascii
 
   # This options node is passed on wholesale to
@@ -94,9 +109,9 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/EWPOBit_test/samples/gambit_output.txt"
+    output_file: "runs/PrecisionBit_test/samples/gambit_output.txt"
     # name of info file (explains content of output file)
-    info_file: "runs/EWPOBit_test/samples/gambit_output.info"
+    info_file: "runs/PrecisionBit_test/samples/gambit_output.info"
 
 #########################
 # Logging setup
@@ -109,7 +124,7 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/EWPOBit_test/logs/"
+  prefix : "runs/PrecisionBit_test/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -120,7 +135,7 @@ Logger:
     [Dependency Resolver] : "dependency_resolver.log"
     [ExampleBit_A] : "ExampleBit_A.log"
     [ExampleBit_B] : "ExampleBit_B.log"
-    [EWPOBit] : "EWPOBit.log"
+    [PrecisionBit] : "PrecisionBit.log"
 
 
 ##########################

@@ -30,6 +30,9 @@
 [std::string, str]
 ["std::pair<str, str>", sspair]
 
+# Floating point conveniences
+["std::pair<double, double>", ddpair]
+
 # Fortran data types
 [bool, Flogical, Flogical1]
 [char, Fcharacter]

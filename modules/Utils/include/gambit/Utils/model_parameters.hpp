@@ -26,6 +26,7 @@
 ///                   incorporated the proper error 
 ///                   handling system; put class 
 ///                   definitions into a seperate source file.
+///  \date 2015 Aug:  Added copy_parameters_from function
 ///
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
@@ -92,7 +93,12 @@ namespace Gambit {
   
       /// Set many parameter values using a map
       void setValues(std::map<std::string,double> const &params_map);
-    
+
+      /// Copy all the parameters from one ModelParameters object into another
+      /// (useful, for example, if the target contains a superset of the original parameter set)
+      /// Will throw an error if there is a match failure.
+      void copy_parameters_from(const ModelParameters&);   
+ 
       /// Get parameter keys (names), probably for external iteration
       std::vector<std::string> getKeys() const;
 

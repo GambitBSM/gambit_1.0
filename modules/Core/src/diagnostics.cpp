@@ -171,45 +171,13 @@ namespace Gambit
   void gambit_core::scanner_diagnostic()
   {
     // Import scanner plugin info from ScannerBit 
-    Scanner::Plugins::plugin_info().print("scanner");
+    Scanner::Plugins::plugin_info().print_all_to_screen("scanner");
   }
 
   /// Basic test function diagnostic function
   void gambit_core::test_function_diagnostic()
   { 
-    const int maxlen1 = 20;
-    const int maxlen2 = 20;
-    typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
-    typedef std::map<std::string, plugin_map> plugin_mapmap;
-
-    // Import scanner plugin info from ScannerBit 
-    plugin_mapmap scanners = Scanner::Plugins::plugin_info().getPluginsMap();
-
-    // Default, list-format output header
-    cout << "Test Functions           Version                  Accepted options" << endl;
-    cout << "----------------------------------------------------------------------------" << endl;
-
-    // Loop over all entries in the plugins map map
-    for (plugin_mapmap::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
-    {
-      if (it->first == "like")  // Only bother with scanners here          
-      {
-        // Loop over the different scanners
-        for (plugin_map::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
-        {
-          // Loop over the available versions of the scanner 
-          for (auto kt = jt->second.begin(); kt != jt->second.end(); ++kt)
-          {
-            // Print the scanner name if this is the first version, otherwise just space
-            const str firstentry = (kt == jt->second.begin() ? jt->first : "");
-            cout << firstentry << spacing(firstentry.length(),maxlen1); 
-            // Print the scanner info.
-            cout << kt->version << spacing(kt->version.length(),maxlen2) << "<no info available>" << endl;
-          }
-        }
-        cout << endl;
-      }
-    }
+    Scanner::Plugins::plugin_info().print_all_to_screen("objective");
   }
   
   /// Free-form module diagnostic function
@@ -390,14 +358,31 @@ namespace Gambit
         cout << "Information for capability " << *it << "." << endl << endl;
 
         // Retrieve info on this capability from the database file
-        capability_info cap = get_capability_info(*it); 
-
-        cout << "  Available in modules: " << cap.modset << endl;
-        cout << "  Available in backends:" << cap.beset << endl;
+        const capability_info cap = get_capability_info(*it); 
+        std::vector< std::pair<str, std::map<str, std::set<std::pair<str,str> > > > > origins;
+        origins.push_back(std::pair<str, std::map<str, std::set<std::pair<str,str> > > >("modules", cap.modset));
+        origins.push_back(std::pair<str, std::map<str, std::set<std::pair<str,str> > > >("backends", cap.beset));
+        // Loop over {modules, backends}
+        for (std::vector< std::pair<str, std::map<str, std::set<std::pair<str,str> > > > >::const_iterator it = origins.begin(); it != origins.end(); ++it)
+        {  
+          if (not it->second.empty())
+          {
+            cout << "  Available in " << it->first << ": " << endl;
+            // Loop over modules or backends
+            for (std::map<str, std::set<std::pair<str,str> > >::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
+            {
+              cout << "    " << jt->first << ": " << endl;
+              // Loop over matching module/backend functions
+              for (std::set<std::pair<str,str> >::const_iterator kt = jt->second.begin(); kt != jt->second.end(); ++kt)
+              {
+                // Spit out: function name [function type]
+                cout << "      function " << kt->first << " [type " << kt->second << "]" << endl; 
+              }
+            }
+            cout << endl;
+          }
+        }
         cout << "  Description: " << endl << cap.description << endl;
-        ///TODO Hmm need to get the type information still...
-        // available from (type, module/backend, function name)
-
         break;
       }
     }
@@ -406,30 +391,13 @@ namespace Gambit
   /// Free-form scanner diagnostic function
   void gambit_core::ff_scanner_diagnostic(str& command)
   {
-    cout << "Here GAMBIT would search through all the scanners to see if " << command << " is one of them." << endl;
-    cout << "...but Greg hasn't implemented that yet.  Please report this to gregory.david.martinez@gmail.com" << endl;
-    cout << "Raised at: " << LOCAL_INFO << endl;
-    //Iterate over all scanners to see if command matches one of them
-    //for (std::set<str>::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
-    {
-      //if (command == *it)
-      //{
-      //  cout << "Information for scanner " << model << "." << endl << endl;;
-      
-        // stuff about the scanner
-
-        //is_yaml = false;
-        //break;
-      //}
-    }       
+    Scanner::Plugins::plugin_info().print_plugin_to_screen("scanner", command);     
   }
 
   /// Free-form test function diagnostic function
   void gambit_core::ff_test_function_diagnostic(str& command)
   {
-    cout << "Here GAMBIT would search through all the test functions to see if " << command << " is one of them." << endl;
-    cout << "...but Greg hasn't implemented that yet.  Please report this to gregory.david.martinez@gmail.com" << endl;
-    cout << "Raised at: " << LOCAL_INFO << endl;
+    Scanner::Plugins::plugin_info().print_plugin_to_screen("objective", command);
   }
 
 }

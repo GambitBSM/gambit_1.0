@@ -48,6 +48,8 @@ namespace Gambit
   typedef std::string str;
   /// Shorthand for a pair of standard strings
   typedef std::pair<str, str> sspair;
+  /// Shorthand for a pair of doubles
+  typedef std::pair<double, double> ddpair;
 
   // Useful unqualified functions
   using std::cout;

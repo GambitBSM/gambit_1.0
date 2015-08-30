@@ -96,6 +96,8 @@ objective_plugin(gaussian, version(1, 0, 0))
         double plugin_main(const std::vector<double> &vec)
         {
                 std::vector<double> &params = prior_transform(vec);
+                std::unordered_map<std::string, double> map;
+                prior_transform(vec, map);
                 
                 return -chol.Square(params, mean)/2.0;
         }
@@ -103,7 +105,7 @@ objective_plugin(gaussian, version(1, 0, 0))
 
 objective_plugin(EggBox, version(1, 0, 0))
 {
-        std::vector <double> params;
+        std::vector <double> params(2);
         std::pair <double, double> length;
         unsigned int dim;
         
@@ -123,7 +125,7 @@ objective_plugin(EggBox, version(1, 0, 0))
                 params[0] *= length.first;
                 params[1] *= length.second;
                 
-                return pow((2.0 + cos(params[0]*M_PI_2)*cos(params[1]*M_PI_2)), 5.0);
+                return 5.0*std::log(2.0 + cos(params[0]*M_PI_2)*cos(params[1]*M_PI_2));
         }
 }
 
