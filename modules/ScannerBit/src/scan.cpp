@@ -171,7 +171,7 @@ namespace Gambit
 
                 }
                 
-                int Scan_Manager::Run(int argc, char* argv[])
+                int Scan_Manager::Run()
                 {
                         std::vector<std::string> pluginNames;
                         if (options.hasKey("use_scanner") && options.getNode("use_scanner").IsScalar())

@@ -20,6 +20,7 @@
 ///  *********************************************
 
 #include <cstdlib>
+#include <iomanip>
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
@@ -43,13 +44,12 @@ namespace Gambit
                         inline std::string print_plugins(std::map< std::string, std::map<std::string, std::vector<Plugin_Details> > >::const_iterator plugins)
                         {
                                 std::stringstream out;
-                                const int maxlen1 = 20;
-                                const int maxlen2 = 20;
+                                const int out_len = 25;
                                 typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
                                 typedef std::map<std::string, plugin_map> plugin_mapmap;
-
-                                // Default, list-format output header
-                                out << "\n\x1b[01m\x1b[04m" << plugins->first << " plugins" << spacing(plugins->first.length() + 8, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
+                                
+                                out << std::setiosflags(std::ios::left);
+                                out << "\n\x1b[01m\x1b[04m"  << std::setw (out_len) << stringToUpper(plugins->first) + " PLUGINS"  << std::setw (out_len) << "VERSION"  << std::setw (out_len) << "STATUS" << "\x1b[0m\n" << std::endl;
                                 //out << "----------------------------------------------------------------------------" << std::endl;
 
                                 // Loop over all entries in the plugins map map
@@ -59,14 +59,16 @@ namespace Gambit
                                         {
                                                 // Print the scanner name if this is the first version, otherwise just space
                                                 const str firstentry = (jt == it->second.begin() ? it->first : "");
-                                                out << firstentry << spacing(firstentry.length(),maxlen1); 
+                                                out << std::setw (out_len) << firstentry; 
                                                 // Print the scanner info.
-                                                out << jt->version << spacing(jt->version.length(),maxlen2);
-                                                out << jt->status << std::endl;
+                                                out << std::setw (out_len) << jt->version;
+                                                out << std::setw (out_len) << jt->status << std::endl;
                                         }
                                         
                                         out << std::endl;
                                 }
+                                
+                                out << std::resetiosflags(std::ios::left);
                                 
                                 return out.str();
                         }
@@ -253,6 +255,8 @@ namespace Gambit
                                                 return print_plugins(it);
                                         }
                                 }
+                                
+                                return "";
                         }
                         
                         int Plugin_Loader::print_all_to_screen (const std::string &name) const

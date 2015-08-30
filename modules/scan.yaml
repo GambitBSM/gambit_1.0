@@ -81,8 +81,8 @@ Scanner:
     twalk:
       plugin: twalk
       options:
-        tolorance: 1.001
-        thread_number: 8
+        tolerance: 1.001
+        #chain_number: 8
         projection_dimension: 4
       
     ransample:

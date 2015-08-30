@@ -23,10 +23,12 @@
 #include <string>
 #include <ostream>
 #include <sstream>
+#include <iomanip>
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
+
 namespace Gambit
 {
 
@@ -196,12 +198,14 @@ namespace Gambit
                         std::string Plugin_Details::printFull() const
                         {
                                 std::stringstream out;
-                                const int maxlen1 = 20;
-                                const int maxlen2 = 20;
-                                // Default, list-format output header
-                                out << "\n\x1b[01m\x1b[04m" << type << " plugin" << spacing(type.length() + 7, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
+                                const int out_len = 25;
+                                
+                                out << std::setiosflags(std::ios::left);
+                                out << "\n\x1b[01m\x1b[04m"  << std::setw (out_len) << stringToUpper(type) + " PLUGIN"  << std::setw (out_len) << "VERSION"  << std::setw (out_len) << "STATUS" << "\x1b[0m\n" << std::endl;
                                 //out << "----------------------------------------------------------------------------" << std::endl;
-                                out << plugin << spacing(plugin.length(), maxlen1) << version << spacing(version.length(), maxlen2) << status << std::endl;
+                                out << std::setw (out_len) << plugin << std::setw (out_len) << version << std::setw (out_len) << status << std::endl;
+                                out << std::resetiosflags(std::ios::left);
+                                
                                 out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
                                 out << "\nrequired inifile entries:  ";
                                 if (reqd_inifile_entries.size() == 0)

@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 
                         //Do the scan!
                         logger() << "Starting scan." << EOM;
-                        scan.Run(argc, argv); 
+                        scan.Run(); 
 
                         MPI_Finalize();
                         
