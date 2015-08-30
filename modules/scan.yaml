@@ -82,13 +82,13 @@ Scanner:
       plugin: twalk
       options:
         tolerance: 1.001
-        #chain_number: 8
+        #chain_number: 20
         projection_dimension: 4
       
     ransample:
       plugin: random_sampler
       options:
-        point_number: 20
+        #point_number: 20
         output_file:  output
         like:  Likelihood
         files:
@@ -172,7 +172,7 @@ Scanner:
         #xrange: [2.0, 6.0]
         xrange: [0, 1]
         yrange: [0, 1]
-        grid: [100, 100]
+        grid: [50, 50]
         selected_pts: 
           - "EggBox::param_0"
           - "EggBox::param_1"

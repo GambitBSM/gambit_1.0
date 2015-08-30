@@ -88,6 +88,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         RandomPlane gDev(proj, ma, din, alim, alimt, rand);
         
         MPI_Barrier(MPI_COMM_WORLD);
+        Gambit::Scanner::assign_aux_numbers("LogLike", "id", "rank", "mult", "chain");
        
         Gambit::Scanner::aux_printer_stream out_stream(printer.get_stream("txt"));
         Gambit::Scanner::aux_printer_stream main_stream(printer.get_stream(""));
@@ -100,9 +101,9 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         chisq[t] = -LogLike(a0[t]);
                         ids[t] = LogLike->getPtID();
                         ranks[t] = rank;
-                        main_stream[ids[t]]["LogLike"] = -chisq[t];
-                        main_stream[ids[t]]["id"] = int(ids[t]);
-                        main_stream[ids[t]]["rank"] = int(rank);
+                        main_stream.print(-chisq[t], "LogLike", rank, ids[t]);
+                        main_stream.print(int(ids[t]), "id", rank, ids[t]);
+                        main_stream.print(rank, "rank", rank, ids[t]);
                 }
                 MPI_Barrier(MPI_COMM_WORLD);
                 MPI_Bcast (c_ptr(a0[t]), a0[t].size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -198,14 +199,14 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         chisqnext = -LogLike(aNext);
                         ans = chisqnext - chisq[t] - logZ;
                         next_id = LogLike->getPtID();
-                        main_stream[next_id]["LogLike"] = -chisqnext;
-                        main_stream[next_id]["id"] = int(next_id);
-                        main_stream[next_id]["rank"] = int(rank);
+                        main_stream.print(-chisqnext, "LogLike", rank, next_id);
+                        main_stream.print(int(next_id), "id", rank, next_id);
+                        main_stream.print(rank, "rank", rank, next_id);
                         
                         if ((ans <= 0.0)||(gDev.ExpDev() >= ans))
                         {
-                                out_stream.print(mult[t], "mult", rank, ids[t]);
-                                out_stream.print(t, "chain", rank, ids[t]);
+                                out_stream.print(mult[t], "mult", ranks[t], ids[t]);
+                                out_stream.print(t, "chain", ranks[t], ids[t]);
                                 ids[t] = next_id;
                                 a0[t] = aNext;
                                 chisq[t] = chisqnext;
@@ -215,7 +216,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         }
                         else
                         {
-                                out_stream.print(-1, "chain", rank, ids[t]);
+                                out_stream.print(-1, "chain", ranks[t], ids[t]);
                         }
                 }
                 
