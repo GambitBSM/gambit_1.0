@@ -66,6 +66,8 @@ namespace Gambit {
             typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
    
          private:
+            str backend_name;
+            str backend_version;
             int index_offset;
             virtual int get_index_offset() const {return index_offset;}
 
@@ -78,7 +80,7 @@ namespace Gambit {
 
             //constructors
             MSSMSpec(bool switch_index_convention=false);
-            MSSMSpec(MI, bool switch_index_convention=false);
+            MSSMSpec(MI, str backend_name, str backend_version, bool switch_index_convention=false);
             MSSMSpec(const MSSMSpec&);
 
             //Could more constructors to interface with other generators   
@@ -95,9 +97,6 @@ namespace Gambit {
             virtual int get_numbers_stable_particles() const; 
             //may use something like this to pass error to Gambit
             virtual std::string AccessError(std::string state) const;
-
-            // Write spectrum information in slha format (not including input parameters etc.)
-            virtual void dump2slha(const std::string&) const;
 
             // Fill an SLHAea object with spectrum information
             virtual void add_to_SLHAea(SLHAstruct& slha) const;

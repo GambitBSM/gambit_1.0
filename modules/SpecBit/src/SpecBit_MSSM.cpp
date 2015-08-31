@@ -179,7 +179,7 @@ namespace Gambit
       //
       // This object will COPY the interface data members into itself, so it is now the 
       // one-stop-shop for all spectrum information, including the model interface object.
-      MSSMSpec<MI> mssmspec(model_interface);
+      MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.1.0");
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
@@ -320,13 +320,13 @@ namespace Gambit
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
       
       // Dump spectrum information to slha file (for testing...)
-      result->get_UV()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
+      result->get_UV()->getSLHA("SpecBit/CMSSM_fromSpectrumObject.slha");
 
       // TEMPORARY CHECKING!
       std::cout<<"in get_CMSSM_spectrum"<<std::endl;
       std::cout<<"Scale: "<<result->get_UV()->GetScale()<<std::endl;
       // Check scale in SLHAea output
-      SLHAstruct slhaea = result->get_UV()->getSLHAea();
+      SLHAstruct slhaea = result->getSLHAea();
       // 4th element of block definition should be the scale
       std::cout<<"Scale (slhaea): "<<slhaea.at("MSOFT").find_block_def()->at(3)<<std::endl;
     }
@@ -375,7 +375,7 @@ namespace Gambit
       namespace myPipe = Pipes::dump_spectrum;
       const SubSpectrum* spec(*myPipe::Dep::SM_subspectrum);
       std::string filename(myPipe::runOptions->getValue<std::string>("filename"));
-      spec->dump2slha(filename);
+      spec->getSLHA(filename);
       result = 1;
     }
 

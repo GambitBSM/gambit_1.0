@@ -30,7 +30,7 @@ namespace Gambit {
          public:
            /// @{ Constructors
            MSSMea();
-           MSSMea(const SLHAea::Coll& input);
+           MSSMea(const SLHAstruct& input);
            /// @}
 
            /// @{ Getters for MSSM information 
@@ -105,13 +105,12 @@ namespace Gambit {
          public:
             // Constructors/destructors
             MSSMskeleton();
-            MSSMskeleton(const SLHAea::Coll&);
+            MSSMskeleton(const SLHAstruct&);
             MSSMskeleton(const MSSMskeleton&);
             virtual ~MSSMskeleton() {};
 
             virtual int get_index_offset() const;
-            virtual SLHAea::Coll getSLHAea() const;
-            virtual void dump2slha(const std::string& filename) const;
+            virtual SLHAstruct getSLHAea() const;
  
          protected:
             /// Map fillers

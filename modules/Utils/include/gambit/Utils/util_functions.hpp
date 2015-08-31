@@ -60,6 +60,9 @@ namespace Gambit
   template <typename T>
   T byVal(T t) { return t; }
 
+  template <typename T> 
+  int sgn(T val) { return (T(0) < val) - (val < T(0)); }
+
   namespace Utils
   {
 

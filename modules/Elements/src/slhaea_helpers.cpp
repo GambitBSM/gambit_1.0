@@ -29,7 +29,7 @@ namespace Gambit
 {
 
   /// Get an entry from an SLHAea object as a double, with some error checking
-  double SLHAea_get(const SLHAstruct& slha, const std::string& block, const int index)
+  double SLHAea_get(const SLHAstruct& slha, const str& block, const int index)
   {
     double output;
     try
@@ -48,7 +48,7 @@ namespace Gambit
   }
 
   /// Get an entry from an SLHAea object as a double; raise a warning and use a default value if the entry is missing
-  double SLHAea_get_or_def(const SLHAstruct& slha, const std::string& block, const int index, const double defvalue)
+  double SLHAea_get_or_def(const SLHAstruct& slha, const str& block, const int index, const double defvalue)
   {
     double output;
     try
@@ -66,7 +66,7 @@ namespace Gambit
   }
   
   /// Add a new block to an SLHAea object, with our without a scale
-  void SLHAea_add_block(SLHAstruct& slha, const std::string& name, const double scale)
+  void SLHAea_add_block(SLHAstruct& slha, const str& name, const double scale)
   {
     if(scale==-1)
     {
@@ -78,9 +78,8 @@ namespace Gambit
     }
   }
 
-  /// Add an entry to an SLHAea object (if overwrite=false, only if it doesn't already exist)
-  void SLHAea_add(SLHAstruct& slha /*modify*/, const std::string& block, const int index,
-   const double value, const std::string& comment, const bool overwrite)
+  /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
+  bool check_block(SLHAstruct& slha, const str& block, const int index, const bool overwrite)
   {
     // Check if block exists
     try
@@ -99,19 +98,31 @@ namespace Gambit
       {
         slha.at(block).at(index).at(1);
         // Entry exists, no further action required
-        return;
+        return true;
       }
       catch (const std::out_of_range& e)
       {
         // entry doesn't exist; continue with writing
       } 
     }
-    std::ostringstream commentwhash;
-    commentwhash << "# " << comment;
-    //std::cout << "Adding entry to block "<<block<<": "<<index<<"\t"<<value<<"\t"<<commentwhash.str()<<std::endl;
-    slha[block][""] << index << value << commentwhash.str();
-    return;
+    return false;
   }
+
+  /// Add an entry to an SLHAea object (if overwrite=false, only if it doesn't already exist)
+  /// @{
+  void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
+   const double value, const str& comment, const bool overwrite)
+  {
+    if (check_block(slha, block, index, overwrite)) return;
+    slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
+  }
+  void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
+   const str& value, const str& comment, const bool overwrite)
+  {
+    if (check_block(slha, block, index, overwrite)) return;
+    slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
+  }
+  /// @}
 
 }
 

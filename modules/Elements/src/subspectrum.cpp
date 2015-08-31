@@ -19,6 +19,8 @@
 ///
 ///  *********************************************
 
+#include <fstream>
+
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/spec_fptrfinder.hpp"
 
@@ -37,6 +39,22 @@ namespace Gambit
   DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
   /// @}
 
+  /// Dump out spectrum information to an SLHA file (if possible)
+  void SubSpectrum::getSLHA(const str& filename) const
+  {
+    std::ofstream ofs(filename);
+    if (ofs)
+    { 
+      ofs << getSLHAea();
+    }
+    else
+    { 
+      utils_error().raise(LOCAL_INFO,"Could not open file '"+filename+
+       "' for writing. Please check that the path exists!"); 
+    }     
+    ofs.close();
+  }
+           
   /// Get spectrum information in SLHAea format (if possible)
   SLHAstruct SubSpectrum::getSLHAea() const
   {

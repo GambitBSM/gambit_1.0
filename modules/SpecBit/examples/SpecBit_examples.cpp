@@ -94,7 +94,7 @@ namespace Gambit
          
          // Write to file so we can check it
          std::string filename(myPipe::runOptions->getValue<std::string>("output_slha_filename"));
-         spec->dump2slha(filename);
+         spec->getSLHA(filename);
 
          // ---------------------------------------------------------
          // BEGIN DEMO OF SPECTRUM OBJECT AND PARTICLE DATABASE
