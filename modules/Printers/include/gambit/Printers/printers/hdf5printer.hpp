@@ -121,13 +121,14 @@ namespace Gambit
     {
       public:
         /// Constructor (for construction via inifile options)
-        HDF5Printer(const Options&);
+        HDF5Printer(const Options&, BasePrinter* const primary = NULL);
 
-        /// Auxilliary mode constructor (for construction in scanner plugins)
-        HDF5Printer(const Options&, std::string&, bool synchronised);
+        /// Auxilliary mode constructor (for construction in scanner plugins) 
+        // **deprecated**
+        //HDF5Printer(const Options&, std::string&, bool synchronised);
 
         /// Tasks common to the various constructors
-        //void common_constructor();
+        void common_constructor(const Options&);
 
         /// Destructor
         // Overload the base class virtual destructor
@@ -139,7 +140,6 @@ namespace Gambit
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         void initialise(const std::vector<int>&);
-        void auxilliary_init();
         void flush();
         void reset(bool force=false);
         int getRank();

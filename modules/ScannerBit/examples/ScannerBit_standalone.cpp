@@ -144,7 +144,8 @@ int main(int argc, char **argv)
                         Random::create_rng_engine(iniFile.getValueOrDef<std::string>("default", "rng"));
                 
                         // Set up the printer (redirection of scan output)
-                        Printers::PrinterManager printerManager(iniFile.getPrinterNode());
+                        bool resume = true; // TODO: Greg I just added this here to fix a compile error, modify as you like.
+                        Printers::PrinterManager printerManager(iniFile.getPrinterNode(),resume);
                         Printers::BasePrinter& printer (*printerManager.printerptr); 
                         //Printers::BasePrinter printerManager();
                 

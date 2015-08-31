@@ -238,19 +238,25 @@ namespace Gambit
     /// @{ HDF5Printer member functions
      
     // Constructor
-    HDF5Printer::HDF5Printer(const Options& options)
-      : printer_name("Primary printer")
+    HDF5Printer::HDF5Printer(const Options& options, BasePrinter* const primary)
+      : BasePrinter(primary,options.getValueOrDef<bool>(false,"auxilliary"))
+      , printer_name("Primary printer")
       , myRank(0)
       #ifdef WITH_MPI
       , myComm() // initially attaches to MPI_COMM_WORLD
       , mpiSize(1)
       #endif
     {
+      common_constructor(options);
+    }
+
+    void HDF5Printer::common_constructor(const Options& options)
+    {
       #ifdef WITH_MPI
       myRank = myComm.Get_rank();
       #endif
 
-      if(not options.getValueOrDef<bool>(false,"auxilliary"))
+      if(not this->is_auxilliary_printer())
       {
         // Set up this printer in primary mode
         DBUG( std::cout << "Constructing Primary HDF5Printer object..." << std::endl; )
@@ -302,6 +308,22 @@ namespace Gambit
         printer_name = ss.str();
         synchronised = options.getValueOrDef<bool>(true,"synchronised");
         DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" synchronised="<<synchronised<<")..." << std::endl; )
+
+        primary_printer = dynamic_cast<HDF5Printer*>(this->get_primary_printer());
+
+        // Fix up mpi communicator (need to copy the one created by the
+        // primary printer)
+        #ifdef WITH_MPI
+        myComm = primary_printer->get_Comm();
+        #endif
+
+        // Retrieve the target location for adding new datasets from the primary
+        // printer
+        if(myRank==0)
+        {
+           location = primary_printer->get_location();
+        }
+
       } 
       // Now that communicator is set up, get its properties.
       #ifdef WITH_MPI
@@ -391,31 +413,6 @@ namespace Gambit
        #endif
 
        return;
-    }
-
-
-    /// Initialisation for the auxilliary printer
-    void HDF5Printer::auxilliary_init()
-    {
-      // Get a pointer to the primary printer
-      // Need to cast it to the derived type, but this should always be safe 
-      // for the auxilliary printers.
-      primary_printer = dynamic_cast<HDF5Printer*>(this->get_primary_printer());
-
-      // Fix up mpi communicator (need to copy the one created by the
-      // primary printer)
-      #ifdef WITH_MPI
-      myComm = primary_printer->get_Comm();
-      myRank = myComm.Get_rank();
-      mpiSize = myComm.Get_size();
-      #endif
-
-      // Retrieve the target location for adding new datasets from the primary
-      // printer
-      if(myRank==0)
-      {
-         location = primary_printer->get_location();
-      }
     }
 
     /// Destructor
