@@ -51,28 +51,20 @@
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/DarkSUSY.hpp"
 
-// FIXME: CW: JE, this should be replaced by whatever you hear from Peter/Ben
-// etc
-typedef double double_complex;
-
 #define square(x) ((x) * (x))  // square a number
 
 // Copied from SUSY-HIT.cpp.
 // JE FIX: Make this work here
+// PS: don't use these, use the updated (non-macro) versions in the SUSY-HIT.cpp file in the ColliderBit_development branch (also sent by email).
 // #define REQUIRED_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); else backend_error().raise(LOCAL_INFO, "Missing SLHA block: " NAME); 
 // #define OPTIONAL_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); else BLOCK.push_back ("BLOCK " NAME);
-
-// JE FIX: Is the following two BE_INI_* declaration needed?
-// Initialisation function (dependencies)
-BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)   // Need MSSM spectrum inputs to initialize DS
 
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-    using namespace SLHAea;
-
     // Initialize DarkSUSY if run for the first time
     bool static scan_level = true;
+
     if (scan_level)
     {
         std::cout << "DarkSUSY initialization" << std::endl;
@@ -97,24 +89,24 @@ BE_INI_FUNCTION
          * CW: TODO FIXME Fix BackendIniBit_error problems
         if (runOptions->hasKey("dddn"))
         {
-        	if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
-        	else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
-        	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
-        				"(only 0 or 1 permitted).");
+          if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
+          else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
+          else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
+                "(only 0 or 1 permitted).");
         }
 
         if (runOptions->hasKey("ddpole"))
         {
-        	if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
-        	else if (runOptions->getValue<int>("ddpole")==0)
-        	{
-        		ddcom->ddpole = 0;
-        		if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
-        			BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
-        					"by DarkSUSY because dddn = 1.");
-        	}
-        	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
-        				"(only 0 or 1 permitted).");
+          if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
+          else if (runOptions->getValue<int>("ddpole")==0)
+          {
+            ddcom->ddpole = 0;
+            if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
+              BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
+                  "by DarkSUSY because dddn = 1.");
+          }
+          else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
+                "(only 0 or 1 permitted).");
         }
         */
 
@@ -192,14 +184,117 @@ BE_NAMESPACE
     if (istat != 0) invalid_point().raise("Model point failed neutrino flux calculation.");
   }
 
-  // JE FIX
-  // The following is just a dummy routine. Replace with the real
-  // thing from  git/modules/DarkBit/src/DarkBit_utils.cpp
-  int DSparticle_code(std::string particleID) 
+  /// Translates GAMBIT string identifiers to the SUSY
+  /// particle codes used internally in DS (as stored in common block /pacodes/)          
+  //TODO: add channel codes!
+  int DSparticle_code(const str& particleID) 
   {
-    return 1;
+    int kpart;
+    if (particleID=="nu_e" or particleID=="nubar_e"){
+     kpart=1;
+    }else if (particleID=="e-" or particleID=="e+"){
+     kpart=2;
+    }else if (particleID=="nu_mu" or particleID=="nubar_mu"){
+     kpart=3;
+    }else if (particleID=="mu-" or particleID=="mu+"){
+     kpart=4;
+    }else if (particleID=="nu_tau" or particleID=="nubar_tau"){
+     kpart=5;
+    }else if (particleID=="tau-" or particleID=="tau+"){
+     kpart=6;
+    }else if (particleID=="u" or particleID=="ubar"){
+     kpart=7;
+    }else if (particleID=="d" or particleID=="dbar"){
+     kpart=8;
+    }else if (particleID=="c" or particleID=="cbar"){
+     kpart=9;
+    }else if (particleID=="s" or particleID=="sbar"){
+     kpart=10;
+    }else if (particleID=="t" or particleID=="tbar"){
+     kpart=11;
+    }else if (particleID=="b" or particleID=="bbar"){
+     kpart=12;
+    }else if (particleID=="gamma"){
+     kpart=13;
+    }else if (particleID=="W+" or particleID=="W-"){
+     kpart=14;
+    }else if (particleID=="Z0"){
+     kpart=15;
+    }else if (particleID=="g"){
+     kpart=16;
+    }else if (particleID=="h0_2"){ //FIXME: check w/ Joakim whether this is always true!
+     kpart=17;
+    }else if (particleID=="h0_1"){ //FIXME: check w/ Joakim whether this is always true!
+     kpart=18;
+    }else if (particleID=="A0"){
+     kpart=19;
+    }else if (particleID=="H+" or particleID=="H-"){
+     kpart=20;
+    }else if (particleID=="~nu_1" or particleID=="~nubar_1"){
+     kpart=21;
+    }else if (particleID=="~e-_1" or particleID=="~e+_1"){
+     kpart=22;
+    }else if (particleID=="~e-_4" or particleID=="~e+_4"){ //FIXME: someone should check this...
+     kpart=23;
+    }else if (particleID=="~nu_2" or particleID=="~nubar_2"){
+     kpart=24;
+    }else if (particleID=="~e-_2" or particleID=="~e+_2"){
+     kpart=25;
+    }else if (particleID=="~e-_5" or particleID=="~e+_5"){
+     kpart=26;
+    }else if (particleID=="~nu_3" or particleID=="~nubar_3"){
+     kpart=27;
+    }else if (particleID=="~e-_3" or particleID=="~e+_3"){
+     kpart=28;
+    }else if (particleID=="~e-_6" or particleID=="~e+_6"){
+     kpart=29;
+    }else if (particleID=="~u_1" or particleID=="~ubar_1"){
+     kpart=30;
+    }else if (particleID=="~u_4" or particleID=="~ubar_4"){
+     kpart=31;
+    }else if (particleID=="~d_1" or particleID=="~dbar_1"){
+     kpart=32;
+    }else if (particleID=="~d_4" or particleID=="~dbar_4"){
+     kpart=33;
+    }else if (particleID=="~u_2" or particleID=="~ubar_2"){
+     kpart=34;
+    }else if (particleID=="~u_5" or particleID=="~ubar_5"){
+     kpart=35;
+    }else if (particleID=="~d_2" or particleID=="~dbar_2"){
+     kpart=36;
+    }else if (particleID=="~d_5" or particleID=="~dbar_5"){
+     kpart=37;
+    }else if (particleID=="~u_3" or particleID=="~ubar_3"){
+     kpart=38;
+    }else if (particleID=="~u_6" or particleID=="~ubar_6"){
+     kpart=39;
+    }else if (particleID=="~d_3" or particleID=="~dbar_3"){
+     kpart=40;
+    }else if (particleID=="~d_6" or particleID=="~dbar_6"){
+     kpart=41;
+    }else if (particleID=="~chi0_1"){
+     kpart=42;
+    }else if (particleID=="~chi0_2"){
+     kpart=43;
+    }else if (particleID=="~chi0_3"){
+     kpart=44;
+    }else if (particleID=="~chi0_4"){
+     kpart=45;
+    }else if (particleID=="~chi+_1" or particleID=="~chi-_1"){
+     kpart=46;
+    }else if (particleID=="~chi+_2" or particleID=="~chi-_2"){
+     kpart=47;
+    }else if (particleID=="~g"){
+     kpart=48;
+    } else {  
+     std::cout << "ERROR: translation into DS particle code not implemented "
+               << "for string identifier " << particleID << std::endl;
+     kpart=-100;
+    }
+    return kpart;
   }
 
+  /// Initialise an MSSM model in DarkSUSY from an SLHAea object.
   int initFromSLHA(SLHAstruct mySLHA)
   {
     // JE's Initialization routine JEHERE
@@ -266,10 +361,10 @@ BE_NAMESPACE
     // If VCKM block is available, this would be the best way of doing this instead
     /* for (int i=1; i<=3; i++)
       {
-    	for (int j=1; j<=3; j++)
-	  {	    
+      for (int j=1; j<=3; j++)
+    {     
             mixing->ckm(i,j) = to<double_complex>(mySLHA.at("VCKM").at(i,j).at(2));
-	  }
+    }
        } 
     */
 
@@ -377,111 +472,110 @@ BE_NAMESPACE
     // Block NMIX
     for (int i=1; i<=4; i++)
       {
-	for (int j=1; j<=4; j++)
-	  {
-	    mssmmixing->neunmx(i,j)=to<double_complex>(mySLHA.at("NMIX").at(i,j).at(2));
-	  }
+  for (int j=1; j<=4; j++)
+    {
+      mssmmixing->neunmx(i,j)=to<double>(mySLHA.at("NMIX").at(i,j).at(2));
+    }
       }
-    // Make NMIX complex if mass eigenvalue is negative
+    // Make NMIX imaginary if mass eigenvalue is negative
     for (int i=1; i<=4; i++)
       {
-	for (int j=1; j<=4; j++)
-	  {
-	    // FIXME: CW: JE, please double-check that this works.  I am
-	    // typecasting the neunmx back to a std::complex, then multiply,
-	    // and then again to FcomplexT.  One could do this probably more
-	    // elegantly.
-	    if (mspctm->mass(DSpart->kn(i)) < 0) mssmmixing->neunmx(i,j)=(FcomplexT<double>)
-	      (std::complex<double>(mssmmixing->neunmx(i,j).re, mssmmixing->neunmx(i,j).im) * imagi);
-	  }
-	mspctm->mass(DSpart->kn(i)) = abs(mspctm->mass(DSpart->kn(i)));
+  for (int j=1; j<=4; j++)
+    {
+      if (mspctm->mass(DSpart->kn(i)) < 0)
+      {
+        mssmmixing->neunmx(i,j).im = mssmmixing->neunmx(i,j).re;
+        mssmmixing->neunmx(i,j).re = 0.0;
+      }  
+    }
+  mspctm->mass(DSpart->kn(i)) = abs(mspctm->mass(DSpart->kn(i)));
       }
     
     // Block UMIX
     for (int i=1; i<=2; i++)
       {
-	for (int j=1; j<=2; j++)
-	  {
-	    mssmmixing->chaumx(i,j)=to<double_complex>(mySLHA.at("UMIX").at(i,j).at(2));
-	  }
+  for (int j=1; j<=2; j++)
+    {
+      mssmmixing->chaumx(i,j)=to<double>(mySLHA.at("UMIX").at(i,j).at(2));
+    }
       }
 
     // Block VMIX
     for (int i=1; i<=2; i++)
       {
-	for (int j=1; j<=2; j++)
-	  {
-	    mssmmixing->chavmx(i,j)=to<double_complex>(mySLHA.at("VMIX").at(i,j).at(2));
-	  }
+  for (int j=1; j<=2; j++)
+    {
+      mssmmixing->chavmx(i,j)=to<double>(mySLHA.at("VMIX").at(i,j).at(2));
+    }
       }
 
     // Block YE, YU, YD - Yukawas
-    // JE FIX, can I trust that all Yukawas are set?
+    // JE FIX, can I trust that all Yukawas are set? PS: yes, but safest to make sure with required_block()
     for (int i=1; i<=3; i++)
       {
-	couplingconstants->yukawa(DSpart->kl(i))=to<double>(mySLHA.at("YE").at(i,i).at(2));
-	couplingconstants->yukawa(DSpart->kqu(i))=to<double>(mySLHA.at("YU").at(i,i).at(2));
-	couplingconstants->yukawa(DSpart->kqd(i))=to<double>(mySLHA.at("YD").at(i,i).at(2));
+  couplingconstants->yukawa(DSpart->kl(i))=to<double>(mySLHA.at("YE").at(i,i).at(2));
+  couplingconstants->yukawa(DSpart->kqu(i))=to<double>(mySLHA.at("YU").at(i,i).at(2));
+  couplingconstants->yukawa(DSpart->kqd(i))=to<double>(mySLHA.at("YD").at(i,i).at(2));
       }
 
     // Block MSL2, MSE2, MSQ2, MSU2, MSD2
     // JE FIX. We here replace whatever was read from MSOFT. Can we trust
-    // that the blocks are always there
+    // that the blocks are always there PS: yes, but safest to make sure with required_block()
     for (int i=1; i<=3; i++)
       {
-        mssmpar->mass2l(i) = to<double>(mySLHA.at("MSL2").at(i,i).at(2));	
-        mssmpar->mass2e(i) = to<double>(mySLHA.at("MSE2").at(i,i).at(2));	
-        mssmpar->mass2q(i) = to<double>(mySLHA.at("MSQ2").at(i,i).at(2));	
-        mssmpar->mass2u(i) = to<double>(mySLHA.at("MSU2").at(i,i).at(2));	
-        mssmpar->mass2d(i) = to<double>(mySLHA.at("MSD2").at(i,i).at(2));	
+        mssmpar->mass2l(i) = to<double>(mySLHA.at("MSL2").at(i,i).at(2)); 
+        mssmpar->mass2e(i) = to<double>(mySLHA.at("MSE2").at(i,i).at(2)); 
+        mssmpar->mass2q(i) = to<double>(mySLHA.at("MSQ2").at(i,i).at(2)); 
+        mssmpar->mass2u(i) = to<double>(mySLHA.at("MSU2").at(i,i).at(2)); 
+        mssmpar->mass2d(i) = to<double>(mySLHA.at("MSD2").at(i,i).at(2)); 
       }
 
     // Block SNUMIX
     for (int i=1; i<=3; i++)
       {
-	for (int j=1; j<=3; j++)
-	  {
-	    mssmmixing->slulmx(i,j) = to<double_complex>(mySLHA.at("SNUMIX").at(i,j).at(2));
-	  }
+  for (int j=1; j<=3; j++)
+    {
+      mssmmixing->slulmx(i,j) = to<double>(mySLHA.at("SNUMIX").at(i,j).at(2));
+    }
       }
 
     // Block SELMIX
     for (int i=1; i<=6; i++)
       {
-	for (int j=1; j<=3; j++)
-	  {
-	    mssmmixing->sldlmx(i,j) = to<double_complex>(mySLHA.at("SELMIX").at(i,j).at(2));
-	    mssmmixing->sldrmx(i,j) = to<double_complex>(mySLHA.at("SELMIX").at(i,j+3).at(2));
-	  }
+  for (int j=1; j<=3; j++)
+    {
+      mssmmixing->sldlmx(i,j) = to<double>(mySLHA.at("SELMIX").at(i,j).at(2));
+      mssmmixing->sldrmx(i,j) = to<double>(mySLHA.at("SELMIX").at(i,j+3).at(2));
+    }
       }
 
     // Block USQMIX
     for (int i=1; i<=6; i++)
       {
-	for (int j=1; j<=3; j++)
-	  {
-	    mssmmixing->squlmx(i,j) = to<double_complex>(mySLHA.at("USQMIX").at(i,j).at(2));
-	    mssmmixing->squrmx(i,j) = to<double_complex>(mySLHA.at("USQMIX").at(i,j+3).at(2));
-	  }
+  for (int j=1; j<=3; j++)
+    {
+      mssmmixing->squlmx(i,j) = to<double>(mySLHA.at("USQMIX").at(i,j).at(2));
+      mssmmixing->squrmx(i,j) = to<double>(mySLHA.at("USQMIX").at(i,j+3).at(2));
+    }
       }
     
     // Block DSQMIX
     for (int i=1; i<=6; i++)
       {
-	for (int j=1; j<=3; j++)
-	  {
-	    mssmmixing->sqdlmx(i,j) = to<double_complex>(mySLHA.at("DSQMIX").at(i,j).at(2));
-	    mssmmixing->sqdrmx(i,j) = to<double_complex>(mySLHA.at("DSQMIX").at(i,j+3).at(2));
-	  }
+  for (int j=1; j<=3; j++)
+    {
+      mssmmixing->sqdlmx(i,j) = to<double>(mySLHA.at("DSQMIX").at(i,j).at(2));
+      mssmmixing->sqdrmx(i,j) = to<double>(mySLHA.at("DSQMIX").at(i,j+3).at(2));
+    }
       }
 
     // BLOCK TE, TU and TD. JE CHECK: I am assuming TE, TU, TD are here instead
     // of AE, AU, AD. OK?
     for (int i=1; i<=3; i++)
       {
-	mssmpar->asofte(i)=to<double>(mySLHA.at("TE").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kl(i));
-	mssmpar->asoftu(i)=to<double>(mySLHA.at("TU").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqu(i));
-	mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
+  mssmpar->asofte(i)=to<double>(mySLHA.at("TE").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kl(i));
+  mssmpar->asoftu(i)=to<double>(mySLHA.at("TU").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqu(i));
+  mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
       } 
     return 0;  // everything OK
   }
