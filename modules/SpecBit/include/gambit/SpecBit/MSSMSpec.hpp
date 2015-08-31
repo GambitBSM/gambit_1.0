@@ -159,12 +159,12 @@ namespace Gambit
         double vu = this->runningpars.get(Par::mass1,"vu");
         double vd = this->runningpars.get(Par::mass1,"vd");        
         slha["HMIX"][""] << 3 << sqrt(vu*vu + vd*vd) << "# v = sqrt(vd^2 + vu^2) DRbar";
-        // FIXME this is wrong
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys, Par::Pole_Mass, std::pair<int, int>(36,0), "HMIX", "m^2_A (tree)");
+        // FIXME this is wrong, should be tree not pole like this
+        slha["HMIX"][""] << 4 << this->phys.get(Par::Pole_Mass,"A0")*this->phys.get(Par::Pole_Mass,"A0") << "# m^2_A (tree)";        
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass2,"BMu","HMIX",101,"# Bmu DRbar");
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
-        // FIXME this is wrong
+        // FIXME this is wrong, should be at scale mZ, not be at scale Q like this
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
         slha["MINPAR"][""] << 4 << sgn(this->runningpars.get(Par::mass1,"Mu")) << "# sign(mu)";
 
