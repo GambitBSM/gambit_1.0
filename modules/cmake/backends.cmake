@@ -2,12 +2,12 @@
 #************************************************
 # \file                                          
 #                                                
-#  Cmake configuration script for obtaining,
+#  Cmake configuration scripts for obtaining,
 #  configuring, compiling and installing 
-#  'extra' non-GAMBIT packages.
+#  backends.
 #  
-#  Note that this is not the canonical
-#  way to manage the compilation of backends,
+#  Note that this is not necessarily the canonical
+#  way to manage the compilation of all backends,
 #  and GAMBIT support for backend compilation is
 #  minimal, even with this method -- so please
 #  contact the authors of the respective codes
@@ -15,8 +15,8 @@
 #    
 #************************************************
 #                                                
-#  Authors (add name and date if you modify):                                    
-#                                                
+#  Authors (add name and date if you modify):
+#
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)              
 #  \date 2014 Sep, Oct, Nov
@@ -36,86 +36,6 @@
 #                                               
 #************************************************
 
-include(ExternalProject)
-
-
-########### Utility commands #################
-
-# Define the sed command to use differently for OSX and linux
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(dashi "-i ''")
-else()
-  set(dashi "-i")
-endif()
-
-# Define the newline strings to use for OSX-safe substitution.
-set(nl "___totally_unlikely_to_occur_naturally___")
-set(true_nl \"\\n\")
-
-# Define the module location switch differently depending on compiler
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
-  set(FMODULE "module")         
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
-  set(FMODULE "J")          
-endif()                                                 
-
-
-########### Scanners #########################
-
-# Diver
-set(diver_ver "1\\.0\\.0")
-set(diver_lib "libdiver")
-set(diver_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/Diver")
-set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
-if(MPI_Fortran_FOUND)
-  set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
-else()
-  set(diverFFLAGS "${CMAKE_Fortran_FLAGS}")
-endif()
-ExternalProject_Add(diver
-  #URL 
-  #URL_MD5 
-  #DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/ScannerBit/downloaded
-  SOURCE_DIR ${diver_dir}
-  BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
-  INSTALL_COMMAND "" 
-)
-set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
-
-# MultiNest
-set(mn_ver "3\\.9")
-set(mn_lib "libnest3")
-set(mn_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/MultiNest_v3.9")
-set(mnLAPACK "${LAPACK_LINKLIBS}")
-set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS} ${mnLAPACK}")
-if(MPI_Fortran_FOUND)
-  set(mnFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
-else()
-  set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
-endif()
-ExternalProject_Add(multinest 
-  #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask CCPForge for a solution.
-  #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
-  #URL_MD5 6c0c9e9ee0ac3c906109675302fb30f0
-  #DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/ScannerBit/downloaded
-  SOURCE_DIR ${mn_dir}
-  BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
-                                 -e "s#-o[[:space:]]*\\(\\$\\)(LIBS)[[:space:]]*\\$@#-o \\$\\(LIBS\\)\\$@#g"
-                                 <SOURCE_DIR>/Makefile 
-            COMMAND sed ${dashi} -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
-                                 -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g"
-                                 <SOURCE_DIR>/cwrapper.f90
-  BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LAPACKLIB=${mnLAPACK} LIBS=${mn_dir}/ 
-  INSTALL_COMMAND "" 
-)
-set_property(TARGET multinest PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${mn_dir}/${mn_lib}.so")
-
-########### Backends #########################
 
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
@@ -131,8 +51,8 @@ set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE
 ExternalProject_Add(darksusy
   URL http://www.fysik.su.se/~edsjo/darksusy/tars/darksusy-5.1.1.tar.gz
   URL_MD5 ebeb0e1cfb4d834858e120190e423f62
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/downloaded
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY_5_1_1
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -b -p1 -d src < ../patchDS.dif COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy  < ../patchISA.dif
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
@@ -142,14 +62,14 @@ ExternalProject_Add(darksusy
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so 
 )
 set_property(TARGET darksusy PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/lib/libdarksusy.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY_5_1_1/lib/libdarksusy.so")
 
 # SuperIso
 ExternalProject_Add(superiso
   URL http://superiso.in2p3.fr/download/superiso_v3.4.tgz
   URL_MD5 ae4ecc45e7f608d9faf91ba8e5780053
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/downloaded
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso_3_4
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile 
@@ -162,17 +82,17 @@ ExternalProject_Add(superiso
   INSTALL_COMMAND ""
 )
 set_property(TARGET superiso PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/libsuperiso.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso_3_4/libsuperiso.so")
 
 # DDCalc
 ExternalProject_Add(ddcalc
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/DDCalc0
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/DDCalc0
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/DDCalc0/libDDCalc0.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/DDCalc0/libDDCalc0.so")
 
 # Gamlike
 if(GSL_FOUND)
@@ -190,33 +110,33 @@ if (NOT GSL_INCLUDE_DIRS STREQUAL "")
   set(gamlike_CXXFLAGS "${gamlike_CXXFLAGS} -I${GSL_INCLUDE_DIRS}")
 endif()
 ExternalProject_Add(gamlike
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/gamLike
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/gamLike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/gamLike/gamLike.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/gamLike/gamLike.so")
 
 # MicrOmegas for MSSM
 ExternalProject_Add(micromegas
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegas
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/micromegas
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../micromegas_3.5.5/MSSM/libmicromegas.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/micromegas_3.5.5/MSSM/libmicromegas.so")
 
 # MicrOmegas for SingletDM
 ExternalProject_Add(micromegasSingletDM
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegasSingletDM
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/micromegasSingletDM
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegas_3.5.5/SingletDM/libmicromegasSingletDM.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/micromegas_3.5.5/SingletDM/libmicromegasSingletDM.so")
 
 
 # Pythia
@@ -233,7 +153,7 @@ endif()
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 # - Actual configure and compile commands
 ExternalProject_Add(pythia
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so" ${pythia_CONFIGURE_EXTRAS}
   COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
@@ -243,23 +163,23 @@ ExternalProject_Add(pythia
   BUILD_COMMAND make CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so")
 
 # Fastsim
 ExternalProject_Add(fastsim
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/fast_sim
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/fast_sim
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
   INSTALL_COMMAND cp ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/fast_sim/lib/libfastsim.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/fast_sim/lib/libfastsim.so")
 
 # Nulike
 set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
-set(nulike_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/nulike")
-set(nulike_short_dir "./../gambit_internal/extras/nulike")
+set(nulike_dir "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/nulike")
+set(nulike_short_dir "./../../gambit_internal/extras/nulike")
 set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   #URL 
@@ -278,7 +198,7 @@ set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 set(susyhit_ver "1\\.5")
 set(susyhit_lib "libsusyhit")
 set(susyhit_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SUSY-HIT")
-set(susyhit_short_dir "./../gambit_internal/extras/SUSY-HIT")
+set(susyhit_short_dir "./Backends/installed/SUSY-HIT")
 ExternalProject_Add(susyhit
   URL http://www.itp.kit.edu/~maggie/SUSY-HIT/susyhit.tar.gz
   URL_MD5 493c7ba3a07e192918d3412875fb386a
@@ -336,7 +256,7 @@ ExternalProject_Add(feynhiggs
   INSTALL_COMMAND ""
 )
 set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/FeynHiggs/FeynHiggs/lib/libFH.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/lib/libFH.so")
 
 # HiggsBounds
 ExternalProject_Add(higgsbounds_tables
@@ -358,7 +278,7 @@ ExternalProject_Add(higgsbounds
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
-            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${PROJECT_SOURCE_DIR}/../gambit_internal/extras/HiggsBounds/\"|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/HiggsBounds/\"|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
@@ -392,7 +312,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSi
 
 
 set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
-                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit diver multinest PROPERTIES EXCLUDE_FROM_ALL 1)
+                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia darksusy superiso susyhit) #fastsim micromegas
-
+add_custom_target(backends COMMAND make ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
+                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit) #fastsim

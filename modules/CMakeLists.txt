@@ -241,7 +241,7 @@ message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - 
 # Include other cmake scripts
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
-include(cmake/extras.cmake)
+include(cmake/externals.cmake)
 
 # Add GAMBIT subdirectories.
 add_subdirectory(Logs)
