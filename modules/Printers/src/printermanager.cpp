@@ -42,9 +42,9 @@ namespace Gambit
 
     /// Manager class for creating printer objects  
     PrinterManager::PrinterManager(const Options& printerNode, bool resume_mode)
-      : tag(printerNode.getValue<std::string>("printer"))
+      : BasePrinterManager(resume_mode)
+      , tag(printerNode.getValue<std::string>("printer"))
       , options(printerNode.getNode("options"))
-      , resume(resume_mode)
       , printerptr(NULL)
     {
       // Change printer pointer to actually point to the printer object
@@ -55,7 +55,7 @@ namespace Gambit
 
          // pass on the "resume" flag to the printer
          Options mod_options = options;
-         mod_options.setValue("resume",resume);
+         mod_options.setValue("resume",resume_mode);
 
          BasePrinter* null(NULL);
          printerptr = printer_creators.at(tag)(mod_options,null);
@@ -94,7 +94,7 @@ namespace Gambit
        //for the auxiliary printers, e.g. so we can print to a different file
        DBUG( std::cout << "PrinterManager: Creating Auxilliary printer \"" << tag << "\" with name \"" << streamname << "\"" << std::endl; )
        Options mod_options = options;
-       mod_options.setValue("resume",resume);
+       mod_options.setValue("resume",this->resume_mode());
        mod_options.setValue("auxilliary",true);
        mod_options.setValue("name",streamname);
        // To construct printer as an auxilliary printer, a pointer to the primary printer is supplied as well as the options.
@@ -123,9 +123,6 @@ namespace Gambit
         return auxprinters.at(streamname);
       }
     }
-
-    /// Getter for "resume" mode flag
-    bool PrinterManager::resume_mode() { return resume; }
 
     /// Instruct all printers that scan has finished and to perform cleanup
     void PrinterManager::finalise()

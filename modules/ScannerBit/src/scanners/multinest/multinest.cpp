@@ -72,6 +72,13 @@ scanner_plugin(MultiNest, version(3, 9))
       // Retrieve the external likelihood calculator
       scanPtr LogLike = get_purpose(get_inifile_value<std::string>("like"));
 
+      /// ************
+      /// TODO: Replace with some wrapper? Maybe not, this is already pretty straightforward,
+      /// though perhaps a little counterintuitive that the printer is the place to get this
+      /// information.
+      bool resume_mode = get_printer().resume_mode();
+      /// ************
+
       // Retrieve the dimensionality of the scan.
       int ma = get_dimension();
 
@@ -90,8 +97,8 @@ scanner_plugin(MultiNest, version(3, 9))
       int maxModes (get_inifile_value<int>("maxModes", 100) );  // expected max no. of modes (used only for memory allocation)
       int seed (get_inifile_value<int>("seed", -1) );           // random no. generator seed, if < 0 then take the seed from system clock
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
-      int resume (get_inifile_value<int>("resume", 1) );        // resume from a previous job?
-      int outfile (get_inifile_value<int>("outfile", 0) );      // write output files?
+      int resume ( resume_mode );                               // resume from a previous job?
+      int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
       double logZero (get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest

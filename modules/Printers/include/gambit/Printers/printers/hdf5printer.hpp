@@ -443,6 +443,11 @@ namespace Gambit
         // but will be "global" data about the whole scan (e.g. max log likelihood 
         // found, scan statistics, etc.)
         bool global = false;
+
+        /// Flag to trigger "resume" mode.
+        /// i.e. during initialisation, we attempt to read the output file and
+        /// work out where to write new data.
+        bool resume;
  
       protected:
         /// Things which other printers need access to

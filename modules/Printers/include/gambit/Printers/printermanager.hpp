@@ -47,9 +47,6 @@ namespace Gambit
         /// Storage for printer options (needed for creating new streams)
         Options options;
 
-        /// Flag for "resume" mode
-        bool resume;
-
       public:
         /// Pointer to main printer object 
         BasePrinter* printerptr;
@@ -66,9 +63,6 @@ namespace Gambit
         /// Getter for auxiliary printer objects
         BaseBasePrinter* get_stream(const std::string& = "");
   
-        /// Getter for "resume" mode flag
-        bool resume_mode();
-
         /// Instruct printers that scan has finished and to perform cleanup
         void finalise();
 

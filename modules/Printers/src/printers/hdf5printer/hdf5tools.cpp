@@ -33,7 +33,8 @@ namespace Gambit {
 
     namespace HDF5 { 
       /// Create or open hdf5 file
-      H5FilePtr openFile(const std::string& fname, bool overwrite)
+      /// third argument "oldfile" is used to report whether an existing file was opened (true if yes)
+      H5FilePtr openFile(const std::string& fname, bool overwrite, bool& oldfile)
       {
           // Switch error printing back on when debugging by commenting this out
           H5::Exception::dontPrint();
@@ -54,9 +55,11 @@ namespace Gambit {
 
           try {
               file = new H5::H5File(fname.c_str(), H5F_ACC_RDWR);
+              oldfile = true; /* successfully opened existing file */
           } catch(const H5::FileIException&) {
               try {
-                  file = new H5::H5File(fname.c_str(), H5F_ACC_TRUNC);
+                  file = new H5::H5File(fname.c_str(), H5F_ACC_EXCL);
+                  oldfile = false; /* successfully created and opened new file */
               } catch(const H5::FileIException& e) {
                   std::ostringstream errmsg;
                   errmsg << "Error creating or opening HDF5 file '"<<fname<<"'. Message was: "<<e.getDetailMsg();
@@ -68,6 +71,39 @@ namespace Gambit {
           return H5FilePtr(file);
       }
 
+      /// Check if hdf5 file exists and can be opened in read/write mode
+      bool checkFileReadable(const std::string& fname, std::string& msg)
+      {
+          bool readable(false);
+          H5::H5File* file = NULL;
+          try {
+              file = new H5::H5File(fname.c_str(), H5F_ACC_RDWR);
+              file->close();
+              readable=true;
+          } catch(const H5::FileIException& e) {
+              /* get the error message */
+              msg = e.getDetailMsg(); 
+              readable=false;              
+          }  
+          return readable;
+      } 
+
+      /// Check if a group exists and can be accessed
+      bool checkGroupReadable(H5FGPtr location, const std::string& groupname, std::string& msg)   
+      {
+          bool readable(false);
+          H5::Group* group = NULL;
+          try {
+             group = new H5::Group(location->openGroup(groupname.c_str()));
+             group->close();
+             readable=true;
+          } catch(const H5::FileIException& e) {
+             msg = e.getDetailMsg();
+             readable=false;
+          }
+          return readable;
+      }
+ 
       /// Create hdf5 file (always overwrite existing files)
       H5FilePtr createFile(const std::string& fname)
       {
@@ -75,7 +111,7 @@ namespace Gambit {
           H5::H5File* file = NULL;
 
           try {
-              file = new H5::H5File(fname.c_str(), H5F_ACC_RDWR);       
+              file = new H5::H5File(fname.c_str(), H5F_ACC_TRUNC);       
           } catch(const H5::FileIException& e) {
               std::ostringstream errmsg;
               errmsg << "Error creating HDF5 file '"<<fname<<"'. Message was: "<<e.getDetailMsg();

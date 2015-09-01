@@ -246,6 +246,7 @@ namespace Gambit
       , myComm() // initially attaches to MPI_COMM_WORLD
       , mpiSize(1)
       #endif
+      , resume(options.getValue<bool>("resume"))
     {
       common_constructor(options);
     }
@@ -270,19 +271,58 @@ namespace Gambit
         tag_manager = new MPITagManager(myComm,FIRST_EMPTY_TAG,TAG_REQ,BuffTags::NTAGS);
         #endif
 
-        if(myRank==0) // Only master node will actuall write to file
+        if(myRank==0) // Only master node will actually write to file
         {  
            printer_name = "Master primary printer";
 
            std::string file = options.getValue<std::string>("output_file");
            std::string group = options.getValueOrDef<std::string>("/","group");
-           bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+           bool overwrite = false;
+           if(not resume) /* No overwrite allowed when resuming */
+           {
+              overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+           }
 
-           std::cout<<"overwrite? "<<overwrite<<std::endl;
+           if(resume)
+           {
+             /// Check if hdf5 file exists and can be opened in read/write mode
+             std::string msg;
+             if(not HDF5::checkFileReadable(file, msg))
+             {
+               // We are supposed to be resuming, but no readable output file was found, so we can't.
+               std::ostringstream errmsg;
+               errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate any existing (and readable) output file. Resuming is therefore not possible; aborting run... (see below for IO error message)";
+               errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
+               errmsg << std::endl << "IO error message: " << msg;
+               printer_error().raise(LOCAL_INFO, errmsg.str()); 
+             }
+           }
 
            // Open HDF5 file (create if non-existant)
+           bool oldfile; 
            Utils::ensure_path_exists(file);
-           fileptr = HDF5::openFile(file,overwrite);
+           fileptr = HDF5::openFile(file,overwrite,oldfile);
+           if(resume and not oldfile)
+           {
+               std::ostringstream errmsg;
+               errmsg << "Error! New output file was created, but we are in resume mode and needed an old output file. But this problem should already have been caught, so this is a bug in the HDF5Printer, please fix it.";
+               printer_error().raise(LOCAL_INFO, errmsg.str()); 
+           }
+
+           if(resume)
+           {
+             // Check that group is readable
+             std::string msg;
+             if(not HDF5::checkGroupReadable(fileptr, group, msg))   
+             {
+               // We are supposed to be resuming, but specified group was not readable in the output file, so we can't.
+               std::ostringstream errmsg;
+               errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) was unable to open the specified group ("<<group<<") within the existing output file ("<<file<<"). Resuming is therefore not possible; aborting run... (see below for IO error message)";
+               errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
+               errmsg << std::endl << "IO error message: " << msg;
+               printer_error().raise(LOCAL_INFO, errmsg.str()); 
+             }
+           }
  
            // Open requested group (creating it plus parents if needed)
            groupptr = HDF5::openGroup(fileptr,group);

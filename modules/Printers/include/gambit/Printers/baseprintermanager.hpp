@@ -34,7 +34,17 @@ namespace Gambit
     /// Manager class for creating printer objects  
     class BasePrinterManager 
     {
+      private:
+        /// Flag for "resume" mode
+        bool resume;
+
       public:
+        BasePrinterManager() : resume(false) {}
+        BasePrinterManager(bool r) : resume(r) {}
+
+        /// Getter for "resume" mode flag
+        bool resume_mode() { return resume; }
+
         /// Create auxiliary printer object
         virtual void new_stream(const std::string&, const Options&) = 0;
 

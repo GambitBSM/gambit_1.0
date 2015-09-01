@@ -76,7 +76,14 @@ namespace Gambit
       namespace HDF5 { 
          /// Create or open hdf5 file
          // If overwrite=true then any existing file will be deleted and replaced. USE CAREFULLY!!!
-         H5FilePtr openFile(const std::string& fname, bool overwrite=false);
+         // third argument "oldfile" is used to report whether an existing file was opened (true if yes)
+         H5FilePtr openFile(const std::string& fname, bool overwrite, bool& oldfile);
+
+         /// Check if hdf5 file exists and can be opened in read/write mode
+         bool checkFileReadable(const std::string& fname, std::string& msg);
+
+         /// Check if a group exists and can be accessed
+         bool checkGroupReadable(H5FGPtr location, const std::string& groupname, std::string& msg);   
 
          /// Create hdf5 file (always overwrite existing files)
          H5FilePtr createFile(const std::string& fname);
