@@ -127,12 +127,12 @@ BE_VARIABLE(DS_DDCOM, ddcom, "ddcom_",    "ddcom")
 // Neutrino detection common block
 BE_VARIABLE(DS_NUCOM, wabranch, "wabranch_", "nu_common_block")
 
-
 // Convenience functions (registration)
 BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "nuyield")
 BE_CONV_FUNCTION(dsgenericwimp_nusetup, void, (const double(&)[29], const double(&)[29][3], const double(&)[15], 
                                                const double(&)[3], const double&, const double&, const double&,
                                                const double&, const double&), "nuyield_setup")
+BE_CONV_FUNCTION(DSparticle_code, int, (const str&), "particle_code")
 BE_CONV_FUNCTION(initFromSLHA, int, (SLHAstruct), "initFromSLHA")
 BE_CONV_FUNCTION(registerMassesForIB, 
     void, (std::map<std::string, DarkBit::TH_ParticleProperty>&), "registerMassesForIB")

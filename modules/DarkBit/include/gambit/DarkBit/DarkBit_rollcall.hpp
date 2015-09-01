@@ -103,6 +103,7 @@ START_MODULE
       BACKEND_REQ(widths, (), DS_WIDTHS)
       BACKEND_REQ(intdof, (), DS_INTDOF)
       BACKEND_REQ(pacodes, (), DS_PACODES)
+      BACKEND_REQ(particle_code, (), int, (const str&))
     #undef FUNCTION
     #define FUNCTION RD_spectrum_from_ProcessCatalog
       START_FUNCTION(DarkBit::RD_spectrum_type)
@@ -154,6 +155,7 @@ START_MODULE
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
       BACKEND_REQ(dsrdeqn, (), void, (double(*)(double&),double&,double&,double&,double&,int&))
       BACKEND_REQ(dsrdwintp, (), double, (double&))
+      BACKEND_REQ(particle_code, (), int, (const str&))
       BACKEND_REQ(widths, (), DS_WIDTHS)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
       BACKEND_REQ(rdpth, (), DS_RDPTH)
