@@ -89,12 +89,14 @@
 \newcommand{\DB}{\mbox{\sf DarkBit}}
 \newcommand{\GB}{\mbox{\sf GAMBIT}}
 
+\newcommand{\tb}[1]{{\color{green}\textbf{[TB: #1]}}}
+
 
 \maketitle
 
 \begin{abstract}
 
-The identity of dark matter remains one of the biggest open questions in fundamental 
+{\bf [TB]} The identity of dark matter remains one of the biggest open questions in fundamental 
 science. A plethora of possible candidates exists, though, in terms of new elementary 
 particles that are predicted in extensions of the standard model of particle physics. Here, 
 we introduce  \DB, an advanced numerical framework to compute the properties of dark 
@@ -167,12 +169,50 @@ guide for how to install \DB\ and get started with a simple test example.
 \subsection{Indirect detection {\bf [TB]}}
 \label{phys_id}
 
-$\to$ general physics \& concepts; specifics go to next two subsections 
-(including descriptions of respective likelihood)\\
+The third traditional way of looking for DM is to test the particle hypothesis {\it in situ}, by 
+identifying the (standard model) products that result from DM annihilation or decay
+at places with large DM densities. {\it Locally}, the injection rate of a standard model 
+particle type $f$, per volume and energy, is given by
 
+\begin{equation}
+\frac{d\mathcal{Q}(E_f,\mathbf{x})}{dE_f}= \frac1{N_\chi} \frac{\rho_\chi^2(\mathbf{x})}{m_\chi^2} \sum_i \left\langle \sigma_i v \frac{dN_i}{dE_f}\right\rangle\,.
+\end{equation}
+Here, $\sigma_i$ is the annihilation cross section into final state $i$,  $v$ the relative 
+velocity of the DM particles, $\langle...\rangle$ denotes an ensemble average over 
+velocities, and $dN_i/dE_f$ is the (differential) number of particles $f$ that result per
+annihilation into final state $i$. The dark matter density is given by $\rho_\chi$  and its 
+mass by $m_\chi$; $N_\chi$, finally, denotes a symmetry factor that depends on the 
+nature of the DM particle, e.g.~$N_\chi=2$ (4) for Majorana (Dirac) fermions.
+For {\it decaying} DM, one simply has to replace 
+$\langle \sigma_i v\rangle \rho_\chi^2/N_f\to m_\chi \Gamma_i \rho_\chi$ in the above 
+expression, where $\Gamma_i$ is the partial decay width.
+
+The multiplicities are typically not significantly affected by the ensemble average, allowing 
+to write $\langle \sigma_i v$ $ {dN_i}/{dE_f}\rangle=\langle \sigma_i v \rangle \, {dN_i}/{dE_f}$ 
+(and correspondingly for the decaying case)
+and therefore to tabulate $\left.{dN_i}/{dE_f}\right|_{v=0}$ for a pre-defined set of DM 
+masses; interpolating between these tables rather than running event generators such as 
+{\sf Pythia} \cite{pythia} for every model point constitutes a significant gain in performance. 
+In extreme cases, the multiplicities thus implemented in different DM codes can differ 
+substantially -- mostly due to being based on different (versions of) event 
+generators, but also due to different ways of (or a lack of) including contributions from 
+higher-order  processes. \DB\ offers a flexible and convenient way to choose the desired 
+multiplicities and switch between them for detailed comparisons (see Section \ref{code_id} 
+for more details).
+
+\medskip
+
+
+Propgation, difference of species ...
+
+\medskip
+
+
+$\to$ general physics \& concepts; specifics go to next two subsections 
+(including descriptions of respective likelihood).
+{\color{red} To be completed...}
 \smallskip
-{\color{red} !!! TO DO !!!}
-\smallskip
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -181,7 +221,8 @@ $\to$ general physics \& concepts; specifics go to next two subsections
 
 In this section, we will describe the experimental data, approach and
 likelihood functions that we use in \GB\ to account for the most relevant
-limits from gamma-ray observations.  A description of the code can be found
+limits from gamma-ray observations \tb{at the beginning, I would also add a brief description of the expected
+signal (continuum vs spectral features, spatial distribution, etc.)}.  A description of the code can be found
 below in section~\ref{code_id}.
 
 \paragraph{Dwarf spheroidal galaxies with Fermi.}
@@ -252,15 +293,13 @@ be XYZ.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Module description}
 \label{code}
-\smallskip
-{\color{red} !!! TO DO !!!}
-\smallskip
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{General code framework {\bf [CW]}}
 \label{code_gen}
+
+\tb{While this section must somehow introduce the \GB\ framework, it must also become  clear that \DB\ is a standalone. So this relation should be spelled out a bit more (e.g.~by adding short introductory and trailing paragraphs, containing an complete list of all (\DB\ !)backends that are included in the first release!?)...}
 
 \GB\ is build around the idea that \emph{all} calculations that are required to
 get from experimental data and model parameters to likelihood functions are
@@ -361,10 +400,6 @@ $\to$ general physics \& concepts; specifics go to next two subsections
 In this Section we present a few selected  examples that illustrate scope and
 potential applications of \DB. At the same time, these examples serve as validation
 tests of the code.
-
-\smallskip
-{\color{red} !!! TO DO !!!}
-\smallskip
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
