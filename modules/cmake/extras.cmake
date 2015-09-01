@@ -53,10 +53,10 @@ set(nl "___totally_unlikely_to_occur_naturally___")
 set(true_nl \"\\n\")
 
 # Define the module location switch differently depending on compiler
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")	
-  set(FMODULE "module")					
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")	
-  set(FMODULE "J")					
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
+  set(FMODULE "module")         
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
+  set(FMODULE "J")          
 endif()                                                 
 
 
@@ -231,7 +231,7 @@ endif()
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
 # - Suppress warnings from -Wextra when building Pythia with gcc
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")	
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra")
 endif()                                                 
 # - Set include directories
@@ -266,7 +266,6 @@ set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/../extras/nulike")
 set(nulike_short_dir "./../extras/nulike")
-set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   #URL 
   #URL_MD5 
@@ -274,7 +273,7 @@ ExternalProject_Add(nulike
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
+  BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FOPT=${CMAKE_Fortran_FLAGS} MODULE=${FMODULE} 
   INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 set_property(TARGET nulike PROPERTY _EP_DOWNLOAD_ALWAYS 0)
