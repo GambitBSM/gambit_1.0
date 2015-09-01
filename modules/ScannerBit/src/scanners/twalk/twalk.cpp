@@ -17,14 +17,15 @@
 #include "scanner_plugin.hpp"
 #include "twalk.hpp"
 
-scanner_plugin(twalk, version(0, 0, 1, beta))
+scanner_plugin(twalk, version(1, 0, 0, beta))
 {
         int plugin_main ()
         {
                 scan_ptr<double (const std::vector<double>&)> LogLike = get_purpose("Likelihood");
                 int dim = get_dimension();
                 
-                int rank = get_printer().get_stream()->getRank(); // mpi rank of this process
+                int numtasks;
+                MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
                 
                 
                 Gambit::Options txt_options;
@@ -33,8 +34,6 @@ scanner_plugin(twalk, version(0, 0, 1, beta))
                 txt_options.setValue("info_file", "info");
                 get_printer().new_stream("txt", txt_options);
 
-                std::cout << "rank = " << rank <<std::endl;
-                
                 TWalk(LogLike, get_printer(),
                                 dim,
                                 get_inifile_value<double>("kwalk_ratio", 0.9836),
@@ -43,32 +42,27 @@ scanner_plugin(twalk, version(0, 0, 1, beta))
                                 get_inifile_value<double>("walk_distance", 2.5),
                                 get_inifile_value<double>("transverse_distance", 6.0),
                                 get_inifile_value<long long>("ran_seed", 0),
-                                get_inifile_value<std::string>("file_name", "output_file").c_str(),
-                                get_inifile_value<double>("tolorance", 1.01),
-                                get_inifile_value<int>("thread_number", 5),
+                                get_inifile_value<double>("tolerance", 1.001),
+                                get_inifile_value<int>("chain_number", 5 + numtasks),
+                                get_inifile_value<bool>("hyper_grid", true),
                                 get_inifile_value<int>("cut", 1000));
                 
                 return 0;
         }
 }
 
-void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const char *name, const double tol, const int NThreads, const int cut)
+void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
 {
-        //const int NThreads = Threads > ma ? Threads : 2*ma + 1;
         std::vector<double> chisq(NThreads);
         std::vector<double> aNext(ma, 0.0);
         std::vector<std::vector<double>> a0 = std::vector<std::vector<double>> (NThreads, std::vector<double>(ma, 0.0));
         double ans, chisqnext;
-        std::vector<int> mult(NThreads, 0);
+        std::vector<int> mult(NThreads, 1);
         std::vector<int> totN(NThreads, 0);
         std::vector<int> count(NThreads, 1);
         int total = 1, ttotal = 0, Nlength = 1;
         int i, j, t, tt;
-        std::vector<RandomPlane *>gDev(NThreads);
-        //MultiNormDev *gDev[NThreads];
-        //AdvanceDevs *gDev[NThreads];
-        //MultiNormDev gDev(cvar, ma, 2.4, rand);
-        //MultiNormalDev gDev(cvar, 2.4/sqrt(ma), rand, ma);
+        //std::vector<RandomPlane *>gDev(NThreads);
         
         std::vector<std::vector<double>> covT(NThreads, std::vector<double>(ma, 0.0));
         std::vector<std::vector<double>> avgT(NThreads, std::vector<double>(ma, 0.0));
@@ -79,27 +73,20 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         std::vector<unsigned long long int> ids(NThreads);
         std::vector<int> ranks(NThreads);
         unsigned long long int next_id;
-        double logZ;
+        double logZ, Ravg = 0.0;
         
         int rank;
         int numtasks;
         MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         MPI_Barrier(MPI_COMM_WORLD);
-        bool test = true;
         //Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
         //if (rank == 0)
                 //out_stream.reset();
-        
-        for (t = 0; t < NThreads; t++)
-        {
-                mult[t] = 1;
-                //gDev[t] = new RandomPlane(4, ma, 2.4, 2.5, 6.0, rand);//MultiNormDev(cvar, ma, 2.4, powl(rand, t));
-                gDev[t] = new RandomPlane(proj, ma, din, alim, alimt, rand);
-                //gDev[t] = new AdvanceDevs(cvar, ma, 2.4, pow(rand, t));
-        }
+        RandomPlane gDev(proj, ma, din, alim, alimt, rand);
         
         MPI_Barrier(MPI_COMM_WORLD);
+        Gambit::Scanner::assign_aux_numbers("LogLike", "id", "rank", "mult", "chain");
        
         Gambit::Scanner::aux_printer_stream out_stream(printer.get_stream("txt"));
         Gambit::Scanner::aux_printer_stream main_stream(printer.get_stream(""));
@@ -108,21 +95,24 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                 if (rank == 0)
                 {
                         for (j = 0; j < ma; j++)
-                                a0[t][j] = (gDev[0]->Doub());
+                                a0[t][j] = (gDev.Doub());
                         chisq[t] = -LogLike(a0[t]);
                         ids[t] = LogLike->getPtID();
                         ranks[t] = rank;
-                        main_stream[ids[t]]["LogLike"] = -chisq[t];
-                        main_stream[ids[t]]["id"] = int(ids[t]);
-                        main_stream[ids[t]]["rank"] = int(rank);
+                        main_stream.print(-chisq[t], "LogLike", rank, ids[t]);
+                        main_stream.print(int(ids[t]), "id", rank, ids[t]);
+                        main_stream.print(rank, "rank", rank, ids[t]);
                 }
                 MPI_Barrier(MPI_COMM_WORLD);
                 MPI_Bcast (c_ptr(a0[t]), a0[t].size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
+        
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast (c_ptr(chisq), chisq.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast (c_ptr(ids), ids.size(), MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast (c_ptr(ranks), ranks.size(), MPI_UNSIGNED_LONG_LONG, 0, MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Bcast (c_ptr(ids), ids.size(), MPI_UNSIGNED_LONG_LONG, 0, MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Bcast (c_ptr(ranks), ranks.size(), MPI_INT, 0, MPI_COMM_WORLD);
                 
         std::cout << "Metropolis Hastings/TWalk Algorthm Started"  << std::endl;
         //std::cout << "Metropolis Hastings Algorthm Started\n" << "\tpoints = " << "\n\taccept ratio = " << "\n\tR = "  << std::endl;//double div = 0.9836;
@@ -133,9 +123,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         for (int i = 0; i < NThreads; i++) tints[i] = i;
         std::vector<int> talls(2*numtasks);
         do
-        {
-                double Ravg = 0.0;
-                
+        {       
                 //t = int((NThreads - rank)*gDev[0]->Doub());
                 //tt = int((NThreads - 1)*gDev[t]->Doub());
                 //if (tt >= t) tt++;
@@ -144,7 +132,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                 {
                         for(int i = 0, j = NThreads; i < numtasks; i++)
                         {
-                                int temp = int((j--)*gDev[0]->Doub());
+                                int temp = int((j--)*gDev.Doub());
                                 talls[i] = tints[temp];
                                 tints[temp] = tints[j];
                                 tints[j] = talls[i];
@@ -152,65 +140,71 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         
                         for(int i = numtasks, end = talls.size(); i < end; i++)
                         {
-                                talls[i] = tints[numtasks*int(gDev[0]->Doub())];
+                                talls[i] = tints[numtasks*int(gDev.Doub())];
                         }
                 }
-                
+
                 MPI_Barrier(MPI_COMM_WORLD);
                 MPI_Bcast (c_ptr(talls), talls.size(), MPI_INT, 0, MPI_COMM_WORLD);
                 
                 t = talls[rank];
                 tt = talls[rank + numtasks];
 
-                double ran = gDev[t]->Doub();
+                double ran = gDev.Doub();
                 if (ran < b0)
                 {
-                        logZ = gDev[t]->WalkDev(c_ptr(aNext), c_ptr(a0[t]), c_ptr(a0[tt]));
+                        logZ = gDev.WalkDev(c_ptr(aNext), c_ptr(a0[t]), c_ptr(a0[tt]));
                 }
                 else if (ran < b1)
                 {
-                        logZ = gDev[t]->TransDev(c_ptr(aNext), c_ptr(a0[t]), c_ptr(a0[tt]));
+                        logZ = gDev.TransDev(c_ptr(aNext), c_ptr(a0[t]), c_ptr(a0[tt]));
                 }
                 else if (ran < b2)
                 {
                         std::vector<std::vector<double>> temp = a0;
-                        for (int i = 0; i < numtasks; i++)
-                                temp.erase(temp.begin()+talls[i]);
-                        if (!gDev[t]->EnterMat(calcCov(temp)))
+                        for (int i = numtasks, end = talls.size(); i < end; i++)
                         {
-                                gDev[t]->EnterMat(calcIndent(temp));
+                                temp.push_back(a0[talls[i]]);
+                        }
+                        
+                        if (!gDev.EnterMat(calcCov(temp)))
+                        {
+                                gDev.EnterMat(calcIndent(temp));
                         }
                                 
-                        gDev[t]->MultiDev(c_ptr(aNext), c_ptr(a0[t]));
+                        gDev.MultiDev(c_ptr(aNext), c_ptr(a0[t]));
                         logZ = 0.0;
                 }
                 else
                 {
-                        std::vector<std::vector<double>> temp = a0;
-                        for (int i = 0; i < numtasks; i++)
-                                temp.erase(temp.begin()+talls[i]);
-                        if (!gDev[t]->EnterMat(calcCov(temp)))
+                        std::vector<std::vector<double>> temp;
+                        for (int i = numtasks, end = talls.size(); i < end; i++)
                         {
-                                gDev[t]->EnterMat(calcIndent(temp));
+                                temp.push_back(a0[talls[i]]);
                         }
                         
-                        gDev[t]->MultiDev(c_ptr(aNext), c_ptr(a0[tt]));
+                        if (!gDev.EnterMat(calcCov(temp)))
+                        {
+                                gDev.EnterMat(calcIndent(temp));
+                        }
+                        
+                        gDev.MultiDev(c_ptr(aNext), c_ptr(a0[tt]));
                         logZ = 0.0;
                 }
                 
-                if(!notUnit(aNext))
+                if(!(hyper_grid && notUnit(aNext)))
                 {
                         chisqnext = -LogLike(aNext);
                         ans = chisqnext - chisq[t] - logZ;
                         next_id = LogLike->getPtID();
-                        main_stream[next_id]["LogLike"] = -chisqnext;
-                        main_stream[next_id]["id"] = int(next_id);
-                        main_stream[next_id]["rank"] = int(rank);
+                        main_stream.print(-chisqnext, "LogLike", rank, next_id);
+                        main_stream.print(int(next_id), "id", rank, next_id);
+                        main_stream.print(rank, "rank", rank, next_id);
                         
-                        if ((ans <= 0.0)||(gDev[t]->ExpDev() >= ans))
+                        if ((ans <= 0.0)||(gDev.ExpDev() >= ans))
                         {
-                                out_stream.print(mult[t], "mult", rank, ids[t]);
-                                out_stream.print(t, "chain", rank, ids[t]);
+                                out_stream.print(mult[t], "mult", ranks[t], ids[t]);
+                                out_stream.print(t, "chain", ranks[t], ids[t]);
                                 ids[t] = next_id;
                                 a0[t] = aNext;
                                 chisq[t] = chisqnext;
@@ -220,7 +214,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         }
                         else
                         {
-                                out_stream.print(-1, "chain", rank, ids[t]);
+                                out_stream.print(-1, "chain", ranks[t], ids[t]);
                         }
                 }
                 
@@ -228,10 +222,16 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                 {
                         MPI_Barrier(MPI_COMM_WORLD);
                         MPI_Bcast (c_ptr(a0[talls[i]]), a0[talls[i]].size(), MPI_DOUBLE, i, MPI_COMM_WORLD);
+                        MPI_Barrier(MPI_COMM_WORLD);
                         MPI_Bcast (&chisq[talls[i]], 1, MPI_DOUBLE, i, MPI_COMM_WORLD);
+                        MPI_Barrier(MPI_COMM_WORLD);
                         MPI_Bcast (&mult[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
+                        MPI_Barrier(MPI_COMM_WORLD);
                         MPI_Bcast (&count[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
+                        MPI_Barrier(MPI_COMM_WORLD);
                         MPI_Bcast (&ranks[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
+                        MPI_Barrier(MPI_COMM_WORLD);
+                        MPI_Bcast (&ids[talls[i]], 1, MPI_UNSIGNED_LONG_LONG, i, MPI_COMM_WORLD);
                 }
                 
                 for (int l = 0; l < NThreads; l++)
@@ -248,7 +248,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                                 cnt += *it;
                         }
                         
-                        if (true)//(cnt >= cut*NThreads && total%NThreads == 0) 
+                        if (total%NThreads == 0) //cnt >= cut*NThreads && 
                         {
                                 for (int t = 0; t < NThreads; t++) for (i = 0; i < ma; i++)
                                 {
@@ -306,7 +306,6 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         while((cont));
         
         MPI_Barrier(MPI_COMM_WORLD);
-        //out_stream.flush();
-        //out_stream.finalize();
+        
         return;
 }

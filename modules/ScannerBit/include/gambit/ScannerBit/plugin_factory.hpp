@@ -44,7 +44,7 @@ namespace Gambit
                 registry
                 {
                         typedef void* func_type(const std::vector<std::string> &, const Priors::BasePrior &, const std::string &);
-                        typedef void* multi_func_type(const std::map<std::string, std::vector<std::string>> &, const Priors::BasePrior &, const std::vector<std::string> &);
+                        typedef void* multi_func_type(const std::map<std::string, std::vector<std::string>> &, const Priors::BasePrior &, const std::vector<std::pair<std::string, std::string>> &);
                         std::unordered_map<type_index, func_type *, Gambit::type_hasher, Gambit::type_equal_to> __functions__;
                         std::unordered_map<type_index, multi_func_type *> __multi_functions__;
                 }
@@ -98,11 +98,11 @@ namespace Gambit
                         std::vector< Scanner_Plugin_Function<ret (args...)> > functions;
                         
                 public:
-                        Multi_Scanner_Plugin_Function(const std::map< std::string, std::vector<std::string> > &params, const Priors::BasePrior &prior, const std::vector<std::string> &names)
+                        Multi_Scanner_Plugin_Function(const std::map< std::string, std::vector<std::string> > &params, const Priors::BasePrior &prior, const std::vector<std::pair<std::string, std::string>> &names)
                         {
                                 for (auto it = names.begin(), end = names.end(); it != end; it++)
                                 {
-                                        functions.emplace_back(params.at(*it), prior, *it);
+                                        functions.emplace_back(params.at(it->second), prior, it->first);
                                 }
                         }
                         
@@ -121,13 +121,13 @@ namespace Gambit
                 class Plugin_Function_Factory : public Factory_Base
                 {
                 private:
-                        std::map< std::string, std::vector<std::string> > names;
+                        std::map< std::string, std::vector<std::pair<std::string, std::string> > > names;
                         std::map< std::string, std::vector<std::string> > parameters;
                         const Priors::CompositePrior &prior;
                         std::unordered_map<std::string, Gambit::type_index> purpose_index;
                         
                 public:
-                        Plugin_Function_Factory(const Priors::CompositePrior &prior, const std::map< std::string, std::vector<std::string> > &names) 
+                        Plugin_Function_Factory(const Priors::CompositePrior &prior, const std::map< std::string, std::vector<std::pair<std::string, std::string>> > &names) 
                                 : names(names), prior(prior)
                         {
                                 parameters = convert_to_map(prior.getParameters());
@@ -146,7 +146,7 @@ namespace Gambit
                                 }
                                 else if (it->second.size() == 1)
                                 {
-                                        return __functions__.at(purpose_index.at(purpose))(parameters.at(it->second.at(0)), prior, it->second.at(0));
+                                        return __functions__.at(purpose_index.at(purpose))(parameters.at(it->second.at(0).second), prior, it->second.at(0).first);
                                 }
                                 else if (it->second.size() > 1)
                                 {

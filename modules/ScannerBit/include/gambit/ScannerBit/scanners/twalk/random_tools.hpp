@@ -216,7 +216,7 @@ class Cholesky
 		{
 			double sum = 0;
 			int i, j, k;
-			//ofstream out1("cov.dat");
+			
 			for (i = 0; i < num; i++)
 			{
 				for (j = 0; j < num; j++)
@@ -674,7 +674,7 @@ class AdvanceDevs : public BasicDevs, public Cholesky
 			int i;
 			double dist = 0.0;
 
-			double vec[num];
+			std::vector<double> vec(num);
 			double norm = 0.0;
 			for (i = 0; i < num; i++)
 			{
@@ -696,7 +696,7 @@ class AdvanceDevs : public BasicDevs, public Cholesky
 				dist = sqrt(dist/2.0);
 			}
 
-			ElMult(vec, pin);
+			ElMult(&vec[0], pin);
 			for (i = 0; i < num; i++)
 			{
 				pin[i] = fac*dist*pin[i]/norm + p0[i];
@@ -924,7 +924,7 @@ public:
         
         void Mult2(double *ptrOut, double *ptr, double *ptr0, const double Z)
         {
-                double z[proj];
+                std::vector<double> z(proj);
                 for (int i = 0; i < proj; i++)
                 {
                         z[i] = 0.0;
@@ -960,7 +960,7 @@ public:
         {
                 RandRot(0, proj);
                 
-                double z[proj];
+                std::vector<double> z(proj);
                 for (int i = 0; i < proj; i++)
                 {
                         z[i] = 0.0;
@@ -983,7 +983,7 @@ public:
         void RandRot(const int start = 0)
         {
                 double temp;
-                double vec[num];
+                std::vector<double> vec(num);
                 int i, j, k;
                         
                 for (i = start; i < num; i++)
@@ -1012,7 +1012,7 @@ public:
         void RandRot(const int start, const int end)
         {
                 double temp;
-                double vec[num];
+                std::vector<double> vec(num);
                 int i, j, k;
                         
                 for (i = start; i < end; i++)

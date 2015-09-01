@@ -81,14 +81,14 @@ Scanner:
     twalk:
       plugin: twalk
       options:
-        tolorance: 1.001
-        thread_number: 10
+        tolerance: 1.001
+        #chain_number: 20
         projection_dimension: 4
       
     ransample:
       plugin: random_sampler
       options:
-        point_number: 20
+        #point_number: 20
         output_file:  output
         like:  Likelihood
         files:
@@ -172,10 +172,15 @@ Scanner:
         #xrange: [2.0, 6.0]
         xrange: [0, 1]
         yrange: [0, 1]
-        grid: [100, 100]
+        #xrange: [-5, 5]
+        #yrange: [-5, 5]
+        grid: [50, 50]
         selected_pts: 
           - "EggBox::param_0"
           - "EggBox::param_1"
+        #selected_pts: 
+        #  - "gaussian::param_0"
+        #  - "gaussian::param_1"
         mult: ["mult"]
         #loglike: 1
         flags: ["linear"]
@@ -388,7 +393,7 @@ Scanner:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
       parameters:
-        param...6:
+        param...100:
           range: [-5, 5]
       
     test:
