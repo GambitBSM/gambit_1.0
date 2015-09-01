@@ -28,7 +28,7 @@
 # Diver
 set(diver_ver "1\\.0\\.0")
 set(diver_lib "libdiver")
-set(diver_dir "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/Diver")
+set(diver_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/Diver")
 set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
 if(MPI_Fortran_FOUND)
   set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
@@ -51,7 +51,7 @@ set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
 # MultiNest
 set(mn_ver "3\\.9")
 set(mn_lib "libnest3")
-set(mn_dir "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/MultiNest_v3.9")
+set(mn_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/MultiNest_v3.9")
 set(mnLAPACK "${LAPACK_LINKLIBS}")
 set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS} ${mnLAPACK}")
 if(MPI_Fortran_FOUND)

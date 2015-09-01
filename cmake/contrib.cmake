@@ -93,8 +93,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   message("${BoldYellow}-- Determined FlexibleSUSY compiler library dependencies: ${flexiblesusy_extralibs}${ColourReset}")
   set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} ${flexiblesusy_extralibs}")
 
-  # We need to include some stuff from the eigen3 library. FIXME this needs to be installed in future, not taken from extras.
-  set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/../extras/eigen3")
+  # We need to include some stuff from the eigen3 library.  Just ship it until we can get rid of FlexibleSUSY.
+  set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
   include_directories("${EIGEN3_DIR}")
 
   # The flexiblesusy configure script doesn't always find all the lapack libs, so use CMake to find them instead

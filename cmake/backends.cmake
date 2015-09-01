@@ -86,13 +86,13 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIs
 
 # DDCalc
 ExternalProject_Add(ddcalc
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/DDCalc0
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/DDCalc0
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/DDCalc0/libDDCalc0.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/DDCalc0/libDDCalc0.so")
 
 # Gamlike
 if(GSL_FOUND)
@@ -110,33 +110,33 @@ if (NOT GSL_INCLUDE_DIRS STREQUAL "")
   set(gamlike_CXXFLAGS "${gamlike_CXXFLAGS} -I${GSL_INCLUDE_DIRS}")
 endif()
 ExternalProject_Add(gamlike
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/gamLike
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/gamLike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/gamLike/gamLike.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/gamLike/gamLike.so")
 
 # MicrOmegas for MSSM
 ExternalProject_Add(micromegas
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/micromegas
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegas
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/micromegas_3.5.5/MSSM/libmicromegas.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegas_3.5.5/MSSM/libmicromegas.so")
 
 # MicrOmegas for SingletDM
 ExternalProject_Add(micromegasSingletDM
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/micromegasSingletDM
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegasSingletDM
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/micromegas_3.5.5/SingletDM/libmicromegasSingletDM.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegas_3.5.5/SingletDM/libmicromegasSingletDM.so")
 
 
 # Pythia
@@ -153,7 +153,7 @@ endif()
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 # - Actual configure and compile commands
 ExternalProject_Add(pythia
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/boss/bossed_pythia_source
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so" ${pythia_CONFIGURE_EXTRAS}
   COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
@@ -163,23 +163,23 @@ ExternalProject_Add(pythia
   BUILD_COMMAND make CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so")
 
 # Fastsim
 ExternalProject_Add(fastsim
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/fast_sim
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/fast_sim
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
   INSTALL_COMMAND cp ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/fast_sim/lib/libfastsim.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/fast_sim/lib/libfastsim.so")
 
 # Nulike
 set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
-set(nulike_dir "${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/nulike")
-set(nulike_short_dir "./../../gambit_internal/extras/nulike")
+set(nulike_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/nulike")
+set(nulike_short_dir "./../gambit_internal/extras/nulike")
 set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   #URL 
@@ -278,7 +278,7 @@ ExternalProject_Add(higgsbounds
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
-            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${PROJECT_SOURCE_DIR}/../../gambit_internal/extras/HiggsBounds/\"|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${PROJECT_SOURCE_DIR}/../gambit_internal/extras/HiggsBounds/\"|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
