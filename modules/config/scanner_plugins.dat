@@ -29,10 +29,12 @@ twalk: |
     kwalk_ratio (0.9836):      The ratio of kwalk jumps to Gaussian jumps. 
     projection_dimension (4):  The dimension of the space being projected onto.
     gaussian_distance (2.4):   The distance of the Gaussian jump.
-    walk_distance: (2.5):      The distance of the kwalk jump over an point.
-    transverse_distance (6.0): The distance of the kwalk jumo away from an point.
+    walk_distance: (2.5):      The distance of the kwalk jump over a point.
+    transverse_distance (6.0): The distance of the kwalk jump away from a point.
     chain_number (5+proc_num): The number of MCMC chains.  Default is 5 + number
                                of processes.
+    hyper_grid (true):         Confines the search to the hypercube defined by
+                               the priors.
     
   Convergence inifile options:
     tolerance (1.001): The accuracy of the second order moment (1 is perfect).

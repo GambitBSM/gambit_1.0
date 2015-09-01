@@ -24,7 +24,6 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                 scan_ptr<double (const std::vector<double>&)> LogLike = get_purpose("Likelihood");
                 int dim = get_dimension();
                 
-                int rank = get_printer().get_stream()->getRank(); // mpi rank of this process
                 int numtasks;
                 MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
                 
@@ -35,8 +34,6 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                 txt_options.setValue("info_file", "info");
                 get_printer().new_stream("txt", txt_options);
 
-                std::cout << "rank = " << rank <<std::endl;
-                
                 TWalk(LogLike, get_printer(),
                                 dim,
                                 get_inifile_value<double>("kwalk_ratio", 0.9836),
@@ -47,13 +44,14 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                                 get_inifile_value<long long>("ran_seed", 0),
                                 get_inifile_value<double>("tolerance", 1.001),
                                 get_inifile_value<int>("chain_number", 5 + numtasks),
+                                get_inifile_value<bool>("hyper_grid", true),
                                 get_inifile_value<int>("cut", 1000));
                 
                 return 0;
         }
 }
 
-void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const int cut)
+void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
 {
         std::vector<double> chisq(NThreads);
         std::vector<double> aNext(ma, 0.0);
@@ -194,7 +192,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         logZ = 0.0;
                 }
                 
-                if(!notUnit(aNext))
+                if(!(hyper_grid && notUnit(aNext)))
                 {
                         chisqnext = -LogLike(aNext);
                         ans = chisqnext - chisq[t] - logZ;

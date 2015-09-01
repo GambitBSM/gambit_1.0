@@ -18,6 +18,7 @@
 #include <vector>
 #include <string>
 #include <cstdlib>
+#include <csignal>
 
 #include "gambit/Logs/log.hpp"
 #include "gambit/Printers/printermanager.hpp"
@@ -31,10 +32,21 @@
 using namespace Gambit;
 using namespace Gambit::Scanner; 
 
+Printers::PrinterManager * printerInterface = NULL;
+
 void scan_terminator()
 {
   std::cout << std::endl << "This is The ScannerBit Terminator.  Sleep faster." << std::endl << std::endl;
   exit(1);
+}
+
+void sighandler(int sig)
+{
+        if (printerInterface != NULL)
+                printerInterface->finalise();
+        //MPI_Finalize();
+        std::cout << "ScannerBit has finished early!" << std::endl;
+        exit(sig);
 }
 
 void bail()
@@ -66,6 +78,10 @@ cout << "\nusage: scannerbit [options] [<command>]                              
 int main(int argc, char **argv)
 {
         std::set_terminate(scan_terminator);
+        signal(SIGABRT, sighandler);
+        signal(SIGTERM, sighandler);
+        signal(SIGINT, sighandler);
+        
         GMPI::Init();
         try
         {
@@ -147,7 +163,7 @@ int main(int argc, char **argv)
                         Printers::PrinterManager printerManager(iniFile.getPrinterNode());
                         Printers::BasePrinter& printer (*printerManager.printerptr); 
                         //Printers::BasePrinter printerManager();
-                
+                        printerInterface = &printerManager;
                         //Define the prior
                         Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
         

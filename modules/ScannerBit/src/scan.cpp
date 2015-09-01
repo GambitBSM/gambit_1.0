@@ -87,7 +87,7 @@ namespace Gambit
                         
                         if (options.hasKey("use_objectives"))
                         {
-                                std::map< std::string, std::vector<std::string> > names;
+                                std::map< std::string, std::vector<std::pair<std::string, std::string>> > names;
                                 std::map< std::string, YAML::Node > nodes;
                                 std::vector <std::string> plugs = get_infile_values(options.getNode("use_objectives"));
                                         
@@ -95,16 +95,17 @@ namespace Gambit
                                 {
                                         if (options.hasKey("objectives") && options.hasKey("objectives", *it))
                                         {
-                                                if (options.hasKey("objectives", *it, "purpose"))
+                                                std::string plugin_name;
+                                                if (options.hasKey("objectives", *it, "purpose") && options.hasKey("objectives", *it, "plugin"))
                                                 {
                                                         std::vector <std::string> purposes = get_infile_values(options.getNode("objectives", *it, "purpose"));
-                                                        
+                                                        plugin_name = options.getValue<std::string>("objectives", *it, "plugin");
                                                         for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
-                                                                names[*it2].push_back(*it);
+                                                                names[*it2].push_back(std::pair<std::string, std::string>(*it, plugin_name));
                                                 }
                                                 else
                                                 {
-                                                        scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
+                                                        scan_err << "Must specify a plugin and a purpose under the plugin tag \"" << *it << "\"." << scan_end;
                                                 }
                                                 
                                                 if (options.hasKey("objectives", *it, "parameters"))
@@ -115,7 +116,9 @@ namespace Gambit
                                                                         << "both the \"parameters\" section and the \"plugins\" "
                                                                         << "section in the inifile." << scan_end;
                                                         }
-                                                        nodes[*it] = options.getNode("objectives", *it, "parameters");
+                                                        
+                                                        nodes[plugin_name] = options.getNode("objectives", *it, "parameters");
+                                                        //nodes[*it] = options.getNode("objectives", *it, "parameters");
                                                 }
                                         }
                                         else

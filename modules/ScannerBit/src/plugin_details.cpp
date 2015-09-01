@@ -120,11 +120,12 @@ namespace Gambit
                                                 for (auto it = reqd_not_linked_libs.begin(), end = reqd_not_linked_libs.end(); it != end; ++it)
                                                 {
                                                         auto range = linked_libs_temp.equal_range(*it);
+                                                        auto range2 = linked_libs.equal_range(*it);
                                                         if (range.first == range.second)
                                                         {
                                                                 linked_temp.push_back(*it);
                                                         }
-                                                        else
+                                                        else if (range2.first == range2.second)
                                                         {
                                                                 linked_libs.insert(range.first, range.second);
                                                         }
