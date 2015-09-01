@@ -94,7 +94,7 @@ namespace Gambit {
    double CommonFuncs<PT>::get(const PT partype, 
                         const std::pair<str,int> shortpr) const
    {
-      return has( partype, shortpr.first, shortpr.second);
+      return get( partype, shortpr.first, shortpr.second);
    }
 
    /// @}
