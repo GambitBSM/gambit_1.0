@@ -102,45 +102,7 @@ namespace Gambit
         //     3     can't currently get tanbeta DRbar at mZ (input) scale
         //  HMIX
         //     4     can't currently get m^2_A = m3/(sinbeta cosbeta) input parameter (tree-level A0 mass)  
-        //  MASS
-        //     almost all sparticle masses are missing; should match
-        /*
-   Block MASS
-   1000021     2.70010267E+02   # Glu
-        24     8.06279936E+01   # VWm
-   1000024     3.83989043E+01   # Cha(1)
-   1000037     2.03941786E+02   # Cha(2)
-        25     8.25299850E+01   # hh(1)
-        35     1.81626878E+02   # hh(2)
-        37     1.88780709E+02   # Hpm(2)
-        36     1.70805332E+02   # Ah(2)
-   1000012     3.73903287E+01   # Sv(1)
-   1000014     3.74685504E+01   # Sv(2)
-   1000016     4.11984287E+01   # Sv(3)
-   1000022     1.81704134E+01   # Chi(1)
-   1000023     5.21654333E+01   # Chi(2)
-   1000025    -1.65729389E+02   # Chi(3)
-   1000035     2.05813251E+02   # Chi(4)
-   1000001     2.31622352E+02   # Sd(1)
-   1000003     2.39944725E+02   # Sd(2)
-   1000005     2.40436340E+02   # Sd(3)
-   2000001     2.41742105E+02   # Sd(4)
-   2000003     2.51843717E+02   # Sd(5)
-   2000005     2.52247967E+02   # Sd(6)
-   1000011     5.28609101E+01   # Se(1)
-   1000013     5.43565105E+01   # Se(2)
-   1000015     5.68362834E+01   # Se(3)
-   2000011     8.09775976E+01   # Se(4)
-   2000013     8.15472008E+01   # Se(5)
-   2000015     8.32335943E+01   # Se(6)
-   1000002     1.68228007E+02   # Su(1)
-   1000004     2.37369550E+02   # Su(2)
-   1000006     2.37824367E+02   # Su(3)
-   2000002     2.41354441E+02   # Su(4)
-   2000004     2.41775305E+02   # Su(5)
-   2000006     3.32171443E+02   # Su(6)
-        */ 
-
+        
         // Here we assume that all SM input info comes from the SMINPUT object, 
         // and all low-E stuff (quark pole masses and the like) come from the LE subspectrum.
 
