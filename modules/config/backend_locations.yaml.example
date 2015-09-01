@@ -12,17 +12,16 @@
 
 
 DarkSUSY: 
-  5.1.1:       ./Backends/lib/libdarksusy.so
-  6.0.0:        /sometime/soon/maybe
+  5.1.1:       ./Backends/installed/DarkSUSY/lib/libdarksusy.so
 
 DDCalc0:
   0.0:         ./Backends/lib/libDDCalc0.so
 
 HiggsBounds:
-  4.1:         ./Backends/lib/libhiggsbounds.so
+  4.1:         ./Backends/installed/HiggsBounds/lib/libhiggsbounds.so
 
 HiggsSignals:
-  1.2:         ./Backends/lib/libhiggssignals.so
+  1.2:         ./Backends/installed/HiggsSignals/lib/libhiggssignals.so
 
 FeynHiggs:
   2.10:        ./Backends/lib/libFH.so

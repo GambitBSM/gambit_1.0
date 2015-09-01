@@ -140,10 +140,9 @@ ExternalProject_Add(darksusy
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so 
-          COMMAND cp <SOURCE_DIR>/lib/libdarksusy.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 set_property(TARGET darksusy PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/lib/libdarksusy.so")
 
 # SuperIso
 ExternalProject_Add(superiso
@@ -160,10 +159,10 @@ ExternalProject_Add(superiso
         COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh
         COMMAND chmod u+x make_so.sh
         COMMAND ./make_so.sh
-  INSTALL_COMMAND cp <SOURCE_DIR>/libsuperiso.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND ""
 )
 set_property(TARGET superiso PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/SuperIso/SuperIso/libsuperiso.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libsuperiso.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/libsuperiso.so")
 
 # DDCalc
 ExternalProject_Add(ddcalc
@@ -171,9 +170,9 @@ ExternalProject_Add(ddcalc
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
-  INSTALL_COMMAND cp libDDCalc0.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/DDCalc0/libDDCalc0.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libDDCalc0.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/DDCalc0/libDDCalc0.so")
 
 # Gamlike
 if(GSL_FOUND)
@@ -195,9 +194,9 @@ ExternalProject_Add(gamlike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
-  INSTALL_COMMAND "" #cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so
+  INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/gamLike/gamLike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/gamLike/gamLike.so")
 
 # MicrOmegas for MSSM
 ExternalProject_Add(micromegas
@@ -205,9 +204,9 @@ ExternalProject_Add(micromegas
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
-  INSTALL_COMMAND cp <SOURCE_DIR>/micromegas_3.5.5/MSSM/libmicromegas.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegas/libmicromegas.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegas.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../micromegas_3.5.5/MSSM/libmicromegas.so")
 
 # MicrOmegas for SingletDM
 ExternalProject_Add(micromegasSingletDM
@@ -215,9 +214,9 @@ ExternalProject_Add(micromegasSingletDM
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
-  INSTALL_COMMAND cp <SOURCE_DIR>/micromegas_3.5.5/SingletDM/libmicromegasSingletDM.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegasSingletDM/libmicromegasSingletDM.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegasSingletDM.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/micromegas_3.5.5/SingletDM/libmicromegasSingletDM.so")
 
 
 # Pythia
@@ -242,10 +241,9 @@ ExternalProject_Add(pythia
   COMMAND echo "OSX DEBUG: pythia_CONFIGURE_EXTRAS = ${pythia_CONFIGURE_EXTRAS}"
   COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
   BUILD_COMMAND make CXX="${CMAKE_CXX_COMPILER}"
-  INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
+  INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so")
-
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so")
 
 # Fastsim
 ExternalProject_Add(fastsim
@@ -253,9 +251,9 @@ ExternalProject_Add(fastsim
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
-  INSTALL_COMMAND cp lib/libfastsim.so ${PROJECT_SOURCE_DIR}/Backends/lib/libfastsim.so
+  INSTALL_COMMAND cp ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/fast_sim/lib/libfastsim.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libfastsim.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/fast_sim/lib/libfastsim.so")
 
 # Nulike
 set(nulike_ver "1\\.0\\.0")
@@ -335,10 +333,10 @@ ExternalProject_Add(feynhiggs
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
-  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libFH.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND ""
 )
 set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/FeynHiggs/FeynHiggs/lib/libFH.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libFH.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/FeynHiggs/FeynHiggs/lib/libFH.so")
 
 # HiggsBounds
 ExternalProject_Add(higgsbounds_tables
@@ -366,10 +364,10 @@ ExternalProject_Add(higgsbounds
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
   BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggsbounds.so *.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
-  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libhiggsbounds.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND ""
 )
 set_property(TARGET higgsbounds PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/HiggsBounds/HiggsBounds/lib/higgsbounds.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgsbounds.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/lib/higgsbounds.so")
 
 # HiggsSignals
 ExternalProject_Add(higgssignals
@@ -387,10 +385,10 @@ ExternalProject_Add(higgssignals
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
   BUILD_COMMAND make COMMAND mkdir -p lib COMMAND rm HiggsSignals.o COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/HiggsBounds/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
-  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libhiggssignals.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND ""
 )
 set_property(TARGET higgssignals PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/HiggsSignals/HiggsSignals/lib/higgssignals.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgssignals.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/lib/higgssignals.so")
 
 
 set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
