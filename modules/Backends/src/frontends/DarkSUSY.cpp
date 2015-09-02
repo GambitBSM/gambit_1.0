@@ -320,7 +320,7 @@ BE_NAMESPACE
     mspctm->mass(DSpart->kqu(1))   = mspctm->mu2gev;
     mspctm->md2gev              = to<double>(mySLHA.at("SMINPUTS").at(21).at(1)); // down quark mass @ 2 GeV
     mspctm->mass(DSpart->kqd(1))= mspctm->md2gev;
-    mspctm->mcmc                = to<double>(mySLHA.at("SMINPTUS").at(24).at(1)); // charm mass at m_c
+    mspctm->mcmc                = to<double>(mySLHA.at("SMINPUTS").at(24).at(1)); // charm mass at m_c
     mspctm->mass(DSpart->kqu(1))= mspctm->mcmc;
     mspctm->ms2gev              = to<double>(mySLHA.at("SMINPUTS").at(23).at(1)); // stange mass @ 2 GeV
     mspctm->mass(DSpart->kqd(2))= mspctm->ms2gev;
@@ -370,7 +370,8 @@ BE_NAMESPACE
 
     // Block MINPAR we skip, it is not needed
     // Block EXTPAR. Get Ma (shouldn't really be needed though)
-    mssmpar->ma = to<double>(mySLHA.at("EXTPAR").at(26).at(1));
+    // FIXME: CW: This crashes the code
+    //mssmpar->ma = to<double>(mySLHA.at("EXTPAR").at(26).at(1));
 
     // Block MSOFT
     mssmpar->m1 = to<double>(mySLHA.at("MSOFT").at(1).at(1));
@@ -397,23 +398,27 @@ BE_NAMESPACE
     mssmpar->tanbe = to<double>(mySLHA.at("HMIX").at(2).at(1));
 
     // Block ALPHA // JE CHECK: Do I call mySLHA correctly here as there is no index in this block?
-    mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").at(0));
+    // FIXME: CW: This crashes the code
+    //mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").at(0));
 
     // Block MASS
     // SM particles
-    mspctm->mass(DSpart->knu(1)) =  to<double>(mySLHA.at("MASS").at(12).at(1));
-    mspctm->mass(DSpart->knu(2)) =  to<double>(mySLHA.at("MASS").at(14).at(1));
-    mspctm->mass(DSpart->knu(3)) =  to<double>(mySLHA.at("MASS").at(16).at(1));
-    mspctm->mass(DSpart->kl(1))  =  to<double>(mySLHA.at("MASS").at(11).at(1));
-    mspctm->mass(DSpart->kl(2))  =  to<double>(mySLHA.at("MASS").at(13).at(1));
-    mspctm->mass(DSpart->kl(3))  =  to<double>(mySLHA.at("MASS").at(15).at(1));
-    mspctm->mass(DSpart->kqu(1)) =  to<double>(mySLHA.at("MASS").at(2).at(1));
-    mspctm->mass(DSpart->kqu(2)) =  to<double>(mySLHA.at("MASS").at(4).at(1));
-    mspctm->mass(DSpart->kqu(3)) =  to<double>(mySLHA.at("MASS").at(6).at(1));
-    mspctm->mass(DSpart->kqd(1)) =  to<double>(mySLHA.at("MASS").at(1).at(1));
-    mspctm->mass(DSpart->kqd(2)) =  to<double>(mySLHA.at("MASS").at(3).at(1));
-    mspctm->mass(DSpart->kqd(3)) =  to<double>(mySLHA.at("MASS").at(5).at(1));
-    mspctm->mass(DSparticle_code("Z0"))     =  to<double>(mySLHA.at("MASS").at(23).at(1));
+
+    // FIXME: CW: This crashes the code
+    //mspctm->mass(DSpart->knu(1)) =  to<double>(mySLHA.at("MASS").at(12).at(1));
+    //mspctm->mass(DSpart->knu(2)) =  to<double>(mySLHA.at("MASS").at(14).at(1));
+    //mspctm->mass(DSpart->knu(3)) =  to<double>(mySLHA.at("MASS").at(16).at(1));
+    //mspctm->mass(DSpart->kl(1))  =  to<double>(mySLHA.at("MASS").at(11).at(1));
+    //mspctm->mass(DSpart->kl(2))  =  to<double>(mySLHA.at("MASS").at(13).at(1));
+    //mspctm->mass(DSpart->kl(3))  =  to<double>(mySLHA.at("MASS").at(15).at(1));
+    //mspctm->mass(DSpart->kqu(1)) =  to<double>(mySLHA.at("MASS").at(2).at(1));
+    //mspctm->mass(DSpart->kqu(2)) =  to<double>(mySLHA.at("MASS").at(4).at(1));
+    //mspctm->mass(DSpart->kqu(3)) =  to<double>(mySLHA.at("MASS").at(6).at(1));
+    //mspctm->mass(DSpart->kqd(1)) =  to<double>(mySLHA.at("MASS").at(1).at(1));
+    //mspctm->mass(DSpart->kqd(2)) =  to<double>(mySLHA.at("MASS").at(3).at(1));
+    //mspctm->mass(DSpart->kqd(3)) =  to<double>(mySLHA.at("MASS").at(5).at(1));
+    //mspctm->mass(DSparticle_code("Z0"))     =  to<double>(mySLHA.at("MASS").at(23).at(1));
+
     // OK, we now have to enforce the tree-level condidtion for unitarity
     // We then have a choice of calculating both sin^2 theta_W and MW
     // from alpha,MZ and GF as we normally do in DarkSUSY. The line below
@@ -426,8 +431,8 @@ BE_NAMESPACE
     smruseful->s2thw=1.0-square(mspctm->mass(DSparticle_code("W+")))/square(mspctm->mass(DSparticle_code("Z0")));
 
     // Higgs bosons. Note h1_0 is the lightest, and h2_0 the heavier CP even
-    mspctm->mass(DSparticle_code("h2_0"))   =  to<double>(mySLHA.at("MASS").at(35).at(1));
-    mspctm->mass(DSparticle_code("h1_0"))   =  to<double>(mySLHA.at("MASS").at(25).at(1));
+    mspctm->mass(DSparticle_code("h0_2"))   =  to<double>(mySLHA.at("MASS").at(35).at(1));
+    mspctm->mass(DSparticle_code("h0_1"))   =  to<double>(mySLHA.at("MASS").at(25).at(1));
     mspctm->mass(DSparticle_code("A0"))   =  to<double>(mySLHA.at("MASS").at(36).at(1));
     mspctm->mass(DSparticle_code("H+"))   =  to<double>(mySLHA.at("MASS").at(37).at(1));
     
