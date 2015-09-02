@@ -23,10 +23,12 @@
 #include <string>
 #include <ostream>
 #include <sstream>
+#include <iomanip>
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
+
 namespace Gambit
 {
 
@@ -118,11 +120,12 @@ namespace Gambit
                                                 for (auto it = reqd_not_linked_libs.begin(), end = reqd_not_linked_libs.end(); it != end; ++it)
                                                 {
                                                         auto range = linked_libs_temp.equal_range(*it);
+                                                        auto range2 = linked_libs.equal_range(*it);
                                                         if (range.first == range.second)
                                                         {
                                                                 linked_temp.push_back(*it);
                                                         }
-                                                        else
+                                                        else if (range2.first == range2.second)
                                                         {
                                                                 linked_libs.insert(range.first, range.second);
                                                         }
@@ -196,18 +199,26 @@ namespace Gambit
                         std::string Plugin_Details::printFull() const
                         {
                                 std::stringstream out;
-                                const int maxlen1 = 20;
-                                const int maxlen2 = 20;
-                                // Default, list-format output header
-                                out << "\n\x1b[01m\x1b[04m" << type << " plugin" << spacing(type.length() + 7, maxlen1) << "version" << spacing(7, maxlen2) << "status" << spacing(6, maxlen2) << "\x1b[0m\n" << std::endl;
+                                const int out_len = 25;
+                                
+                                out << std::setiosflags(std::ios::left);
+                                out << "\n\x1b[01m\x1b[04m"  << std::setw (out_len) << stringToUpper(type) + " PLUGIN"  << std::setw (out_len) << "VERSION"  << std::setw (out_len) << "STATUS" << "\x1b[0m\n" << std::endl;
                                 //out << "----------------------------------------------------------------------------" << std::endl;
-                                out << plugin << spacing(plugin.length(), maxlen1) << version << spacing(version.length(), maxlen2) << status << std::endl;
+                                out << std::setw (out_len) << plugin << std::setw (out_len) << version << std::setw (out_len) << status << std::endl;
+                                out << std::resetiosflags(std::ios::left);
+                                
                                 out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
-                                out << "\nrequired inifile entries:  " << reqd_inifile_entries << std::endl;
+                                out << "\nrequired inifile entries:  ";
+                                if (reqd_inifile_entries.size() == 0)
+                                        out << "none" << std::endl;
+                                else
+                                        out << reqd_inifile_entries << std::endl;
                                 out << "\n\x1b[04mlink status\x1b[0m:" << std::endl;
                                 //out << "-----------" << std::endl;
-                                out << "    missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
-                                out << "    missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
+                                if (reqd_not_linked_libs.size() != 0)
+                                        out << "    missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
+                                if (ini_libs_not_found.size() != 0)
+                                        out << "    missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
                                 out << "    linked libraries:";
                                 if (linked_libs.size() == 0)
                                 {
@@ -222,8 +233,10 @@ namespace Gambit
                                 
                                 out << "\n\x1b[04minclude header status\x1b[0m:" << std::endl;
                                 //out << "---------------------" << std::endl;
-                                out << "    missing headers requested by plugin: " << reqd_incs_not_found << std::endl;
-                                out << "    missing headers specified in inifile: " << ini_incs_not_found << std::endl;
+                                if (reqd_incs_not_found.size() != 0)
+                                        out << "    missing headers requested by plugin: " << reqd_incs_not_found << std::endl;
+                                if (ini_incs_not_found.size() != 0)
+                                        out << "    missing headers specified in inifile: " << ini_incs_not_found << std::endl;
                                 out << "    headers found:";
                                 if (found_incs.size() == 0)
                                 {

@@ -39,6 +39,15 @@ namespace Gambit
                 /// Returns unique negative parameter id
                 int get_aux_param_id(const std::string &);
                 
+                inline void assign_aux_numbers(){}
+                
+                template<typename... T>
+                inline void assign_aux_numbers(const std::string &tag, const T&... params)
+                {
+                        get_aux_param_id(tag);
+                        assign_aux_numbers(params...);
+                }
+                
                 ///printer stream wrapper
                 class printer_stream
                 {

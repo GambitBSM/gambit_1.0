@@ -85,6 +85,8 @@ namespace Gambit
                         struct pluginData
                         {
                                 std::string name;
+                                std::string version;
+                                std::string type;
                                 std::string tag;
                                 YAML::Node node;
                                 printer_interface *printer;
@@ -95,7 +97,26 @@ namespace Gambit
                                 void (*deconstructor)();
                                 bool loaded;
                                 
-                                pluginData(std::string name) : name(name), deconstructor(NULL), loaded(false) {}
+                                pluginData(std::string str) : deconstructor(NULL), loaded(false) 
+                                {
+                                        std::string::size_type posMid = str.rfind("__v__");
+                                        version = str.substr(posMid + 5);
+                                        
+                                        std::string::size_type posLast = str.rfind("__t__", posMid - 1);
+                                        type = str.substr(posLast + 5, posMid - posLast - 5);
+                                        name = str.substr(0, posLast);
+                                        //posLast = version.find("_");
+                                        //major_version = StringToInt(version.substr(0, posLast));
+                                        //posMid = version.find("_", posLast + 1);
+                                        //minor_version = StringToInt(version.substr(posLast + 1, posMid - posLast - 1));
+                                        //posLast = version.find("_", posMid + 1);
+                                        //patch_version = StringToInt(version.substr(posMid + 1, posLast - posMid - 1));
+                                        //release_version = version.substr(posLast + 1);
+                                        //version = IntToString(major_version) + "." + IntToString(minor_version) + "." + IntToString(patch_version);
+                                        //if (release_version != "") 
+                                        //        version += "-" + release_version;
+                                }
+                                
                                 ~pluginData()
                                 {
                                         if (deconstructor != NULL && loaded == true)
