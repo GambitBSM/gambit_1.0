@@ -22,7 +22,7 @@
 # Values in GeV where units apply.
 
 # SLHA1
-alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *  FIXME RECHECK
+alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
 GF      :  1.16637870E-05 # G_Fermi **
 alphaS  :  1.18500000E-01 # alpha_s(mZ)^MSbar ^
 mZ      :  9.11760000E+01 # mZ(pole) !   

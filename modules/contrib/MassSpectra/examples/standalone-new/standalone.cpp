@@ -426,27 +426,27 @@ void setup(FSmodel& mssm)
 
 void spec_print(Spectrum * spec){
 
-   std::cout << "spec->runningpars.GetScale() =" << spec->runningpars.GetScale() << std::endl;
-   std::cout << "map mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") <<std::endl;
-   std::cout << "map mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") <<std::endl;
-   std::cout << "map BMu "  << spec->runningpars.get_mass2_parameter("BMu") <<std::endl;
-   std::cout << "map mHd2 "  << spec->runningpars.get_mass2_par("mHd2") <<std::endl;
-   std::cout << "map mHu2 "  << spec->runningpars.get_mass2_par("mHu2") <<std::endl;
-   std::cout << "map BMu "  << spec->runningpars.get_mass2_par("BMu") <<std::endl;
+   std::cout << "spec->runningpars().GetScale() =" << spec->runningpars().GetScale() << std::endl;
+   std::cout << "map mHd2 "  << spec->runningpars().get_mass2_parameter("mHd2") <<std::endl;
+   std::cout << "map mHu2 "  << spec->runningpars().get_mass2_parameter("mHu2") <<std::endl;
+   std::cout << "map BMu "  << spec->runningpars().get_mass2_parameter("BMu") <<std::endl;
+   std::cout << "map mHd2 "  << spec->runningpars().get_mass2_par("mHd2") <<std::endl;
+   std::cout << "map mHu2 "  << spec->runningpars().get_mass2_par("mHu2") <<std::endl;
+   std::cout << "map BMu "  << spec->runningpars().get_mass2_par("BMu") <<std::endl;
   
-   std::cout << "diff mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") 
-             -  spec->runningpars.get_mass2_par("mHd2") <<std::endl;
-   std::cout << "diff mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") 
-             - spec->runningpars.get_mass2_par("mHu2") <<std::endl;
-   std::cout << "diff BMu "  << spec->runningpars.get_mass2_parameter("BMu") 
-             -  spec->runningpars.get_mass2_par("BMu") <<std::endl;
+   std::cout << "diff mHd2 "  << spec->runningpars().get_mass2_parameter("mHd2") 
+             -  spec->runningpars().get_mass2_par("mHd2") <<std::endl;
+   std::cout << "diff mHu2 "  << spec->runningpars().get_mass2_parameter("mHu2") 
+             - spec->runningpars().get_mass2_par("mHu2") <<std::endl;
+   std::cout << "diff BMu "  << spec->runningpars().get_mass2_parameter("BMu") 
+             -  spec->runningpars().get_mass2_par("BMu") <<std::endl;
 
-   std::cout << "mq2(1,1) =  " <<  spec->runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
-   std::cout << "fake mq2(1) =  " <<  spec->runningpars.get_mass2_parameter("mq2",1) << std::endl;
+   std::cout << "mq2(1,1) =  " <<  spec->runningpars().get_mass2_parameter("mq2",1,1) << std::endl;
+   std::cout << "fake mq2(1) =  " <<  spec->runningpars().get_mass2_parameter("mq2",1) << std::endl;
 
-   double mgluino_drbar =  spec->runningpars.get_tree_MassEigenstate("MGluino");
+   double mgluino_drbar =  spec->runningpars().get_tree_MassEigenstate("MGluino");
    std::cout << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
-   double mgluino = spec->phys.get_Pole_Mass("MGluino");
+   double mgluino = spec->phys().get_Pole_Mass("MGluino");
    std::cout << "mgluino = " << mgluino<< std::endl;
 }
 
@@ -482,15 +482,15 @@ void mssm_print(MSSMSpec<FSmodel,FSphys> & mssm){
 
 void spec_manipulate(Spectrum * spec) {
    std::cout << "inside spectrum_manipulate" <<std::endl;
-   double lowscale = spec->runningpars.GetScale();
+   double lowscale = spec->runningpars().GetScale();
    double highscale = 1e+15;
    std::cout << "lowscale = " << lowscale << std::endl;
    spec_print(spec);
-   spec->runningpars.RunToScale(highscale);
+   spec->runningpars().RunToScale(highscale);
    std::cout << "after run scale to high scale" << std::endl;
    spec_print(spec);
-   spec->runningpars.RunToScale(lowscale);
-   std::cout << "After run scale back to low scale" << spec->runningpars.GetScale() << std::endl;
+   spec->runningpars().RunToScale(lowscale);
+   std::cout << "After run scale back to low scale" << spec->runningpars().GetScale() << std::endl;
    spec_print(spec);
   
 }

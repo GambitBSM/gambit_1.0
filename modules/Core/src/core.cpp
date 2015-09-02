@@ -28,6 +28,7 @@
 #include "gambit/Core/core.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/yaml_description_database.hpp"
+#include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"
@@ -270,14 +271,26 @@ namespace Gambit
         capability_info capinfo;
         capinfo.name = *it;
 
-        // Make sets of matching modules and backends
+        // Make sets of matching module and backend functions
         for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
         {
-          if ((*jt)->capability() == *it) capinfo.modset.insert((*jt)->origin());
+          if ((*jt)->capability() == *it)
+          {
+            str origin((*jt)->origin());
+            std::pair<str,str> name_type((*jt)->name(), (*jt)->type());
+            if (capinfo.modset.find(origin) == capinfo.modset.end()) capinfo.modset[origin] = std::set<std::pair<str,str> >();
+            capinfo.modset[origin].insert(name_type);
+          }
         } 
         for (fVec::const_iterator jt = backendFunctorList.begin(); jt != backendFunctorList.end(); ++jt)
         {
-          if ((*jt)->capability() == *it) capinfo.beset.insert((*jt)->origin());
+          if ((*jt)->capability() == *it)
+          {
+            str origin((*jt)->origin() + " v" + (*jt)->version());
+            std::pair<str,str> name_type((*jt)->name(), (*jt)->type());
+            if (capinfo.beset.find(origin) == capinfo.beset.end()) capinfo.beset[origin] = std::set<std::pair<str,str> >();
+            capinfo.beset[origin].insert(name_type);
+          }
         } 
  
         // Check original description files for descriptions matching this capability
@@ -291,9 +304,6 @@ namespace Gambit
             errmsg << "Error! Duplicate capability descriptions found for capability \""<<*it<<
              "\"! Only one description is permitted, since all capabilities going by the same name "
              "must provide the same information. Please rename a capability or delete one of the descriptions."<<endl;
-            errmsg << "This capability is provided by the following modules and backends:" <<endl;
-            errmsg << "Modules :"<<capinfo.modset<<endl;
-            errmsg << "Backends:"<<capinfo.beset<<endl<<endl;
             errmsg << "The duplicate descriptions are:" <<endl;
             errmsg << "---------------------" <<endl;
             int dup_num = 0;
@@ -464,23 +474,8 @@ namespace Gambit
     }
 
     /// Get the description of the named capability from the description database
-    // e.g. second argument might be "capability", with the first argument being
-    // the name of a capability
     const capability_info gambit_core::get_capability_info(const str& name) const
     {
-      // I am now keeping a vector of all the descriptions around... so no need to
-      // actually read from the database file...
-
-      // YAML::Node parser = YAML::LoadFile(centralised_descriptions);
-      // for(YAML::const_iterator it=parser.begin();it!=parser.end();++it)
-      // {
-      //   capability_info cap = it->as<capability_info>();
-      //   if(cap.name==name)
-      //   {
-      //     return cap; //Should only be one match possible after database check
-      //   }
-      // }
-      // If we didn't find any matching capability this is bad; raise an error.
 
       for(std::vector<capability_info>::const_iterator it=capability_dbase.begin();
            it!=capability_dbase.end();++it)
@@ -582,7 +577,11 @@ namespace Gambit
         valid_commands.insert(valid_commands.end(), modules.begin(), modules.end());
         valid_commands.insert(valid_commands.end(), capabilities.begin(), capabilities.end());
         for (auto it = backend_versions.begin(); it != backend_versions.end(); ++it) valid_commands.push_back(it->first);      
-        for (auto it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it) valid_commands.push_back((*it)->origin());             
+        for (auto it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it) valid_commands.push_back((*it)->origin());
+        std::vector<std::string> scanner_names = Scanner::Plugins::plugin_info().print_plugin_names("scanner");
+        std::vector<std::string> objective_names = Scanner::Plugins::plugin_info().print_plugin_names("objective");
+        valid_commands.insert(valid_commands.end(), scanner_names.begin(), scanner_names.end());
+        valid_commands.insert(valid_commands.end(), objective_names.begin(), objective_names.end());
 
         // If the user hasn't asked for a diagnostic at all, process the command line options for the standard run mode and get out.
         if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())

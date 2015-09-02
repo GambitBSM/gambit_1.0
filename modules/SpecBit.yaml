@@ -65,7 +65,7 @@ ObsLikes:
   #  function:     exampleRead
 
 Rules:
-  - capability: MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum 
     type: const Spectrum*
     function: get_MSSMatMGUT_spectrum  # Use this function to compute this capability
     options:

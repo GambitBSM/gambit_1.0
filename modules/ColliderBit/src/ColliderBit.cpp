@@ -11,7 +11,10 @@
 ///
 ///  \author Abram Krislock
 ///          (a.m.b.krislock@fys.uio.no)
+///
 ///  \author Aldo Saavedra
+///
+///  \author Andy Buckley
 ///
 ///  \author Chris Rogan
 ///          (crogan@cern.ch)
@@ -833,7 +836,7 @@ namespace Gambit
       #define PDB Models::ParticleDB()
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
 
       std::vector<std::string> sHneut;
       sHneut.push_back("h0_1");
@@ -853,35 +856,35 @@ namespace Gambit
       }
 
       // invisible LSP?
-      double lsp_mass = spec->phys.get_Pole_Mass("~chi0_1");
+      double lsp_mass = spec->phys().get_Pole_Mass("~chi0_1");
       int i_snu = 0;
       for(int i = 1; i <= 3; i++)
       {
-        if(spec->phys.get_Pole_Mass("~nu",i)  < lsp_mass)
+        if(spec->phys().get_Pole_Mass("~nu",i)  < lsp_mass)
         {
           i_snu = i;
-          lsp_mass = spec->phys.get_Pole_Mass("~nu",i);
+          lsp_mass = spec->phys().get_Pole_Mass("~nu",i);
         }
       }
 
       bool inv_lsp = true;
-      if(spec->phys.get_Pole_Mass("~chi+",1) < lsp_mass) inv_lsp = false;
-      if(spec->phys.get_Pole_Mass("~g") < lsp_mass) inv_lsp = false;
+      if(spec->phys().get_Pole_Mass("~chi+",1) < lsp_mass) inv_lsp = false;
+      if(spec->phys().get_Pole_Mass("~g") < lsp_mass) inv_lsp = false;
       if(inv_lsp)
       {
         for(int i = 1; i <= 6; i++)
         {
-          if(spec->phys.get_Pole_Mass("~d",i) < lsp_mass)
+          if(spec->phys().get_Pole_Mass("~d",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys.get_Pole_Mass("~u",i) < lsp_mass)
+          if(spec->phys().get_Pole_Mass("~u",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys.get_Pole_Mass("~e-",i) < lsp_mass)
+          if(spec->phys().get_Pole_Mass("~e-",i) < lsp_mass)
           {
             inv_lsp = false;
             break;

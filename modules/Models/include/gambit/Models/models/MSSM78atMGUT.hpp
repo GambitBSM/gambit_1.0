@@ -21,6 +21,8 @@
 #ifndef __MSSM78atMGUT_hpp__
 #define __MSSM78atMGUT_hpp__
 
+#include "gambit/Models/models/MSSM78atQ.hpp" // Must include models which are targets of translation functions
+
 // General GUT boundary condition parameterisation of the MSSM
 // There are several of these, compatible with different spectrum generators
 // To use a constrained GUT model like the CMSSM, there needs to be an 
@@ -29,8 +31,15 @@
 // being used.
 
 /// FlexibleSUSY compatible general (78 parameters plus sign) GUT scale MSSM parameterisation
-#define MODEL MSSM78atMGUT
+#define MODEL  MSSM78atMGUT
+#define PARENT MSSM78atQ
   START_MODEL
+
+  /// Can translate this model into MSSM78atQ (where Q will then be set to MGUT)
+  INTERPRET_AS_PARENT__FUNCTION(MSSM78atMGUT_to_MSSM78atQ)
+  /// Depends on an MSSM spectrum, since RGEs must run in order to determine MGUT
+  INTERPRET_AS_PARENT__DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
+
   DEFINEPARS(TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
   
@@ -65,6 +74,7 @@
   DEFINEPARS(Au_11, Au_12, Au_13,
              Au_21, Au_22, Au_23,
              Au_31, Au_32, Au_33)
+#undef PARENT
 #undef MODEL
 
 #endif

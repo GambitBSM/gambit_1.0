@@ -265,8 +265,8 @@ ObsLikes:
     type:         double
 
   # Test marginalised Poisson likelihood
-  - purpose:	Likelihood
-    capability:	marg_lnlike_test
+  - purpose:  Likelihood
+    capability: marg_lnlike_test
 
   # Uncomment to test FlavBit
   #- purpose:      NotLikelihood
@@ -366,7 +366,7 @@ Rules:
   - capability: t_decay_rates
     function: t_decays
 
-  - capability: MSSM_spectrum
+  - capability: unimproved_MSSM_spectrum
     options:
       precision_goal:        1.0e-4
       max_iterations:        0
@@ -410,7 +410,7 @@ Rules:
 
 #Choose either a log-normal or a Gaussian distribution to marginalise over
   #for the marginalised Poisson likelihood example.
-  - capability:	marg_lnlike_test
+  - capability: marg_lnlike_test
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 

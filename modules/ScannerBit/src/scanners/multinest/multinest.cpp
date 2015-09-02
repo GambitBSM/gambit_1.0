@@ -24,6 +24,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <mpi.h>
 
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
@@ -290,7 +291,11 @@ namespace Gambit {
           // Send info for each point to printer one command at a time
           int pointID; // ID number for each point 
           int myrank;  // MPI rank which wrote each point
-             
+             int rank;
+        int numtasks;
+        MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        
           // The discarded live points (and rejected candidate live points if IS = 1)
           for( int i = 0; i < nSamples; i++ )
           {

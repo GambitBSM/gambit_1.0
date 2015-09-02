@@ -77,6 +77,7 @@ namespace Gambit
                         }
                         
                         unsigned long long int getPtID() const {return pointID;}
+                        unsigned long long int &getPtIDRef() {return pointID;}
                 };
                 
                 template<typename ret, typename... args>

@@ -34,7 +34,7 @@ ObsLikes:
     capability:   specbit_test_show_SMInputs
 
 Rules:
-  - capability: MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum 
     function: get_MSSM_spectrum_from_SLHAfile
     options:
       filenames:

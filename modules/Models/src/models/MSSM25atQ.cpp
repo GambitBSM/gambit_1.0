@@ -27,14 +27,14 @@
 
 
 // Activate debug output
-//#define MSSM25_DBUG
+//#define MSSM25atQ_DBUG
 
 using namespace Gambit::Utils;
 
 #define MODEL MSSM25atQ
-  void MODEL_NAMESPACE::MSSM25atQ_to_MSSM78atQ (const ModelParameters &myP, ModelParameters &targetP)
+  void MODEL_NAMESPACE::MSSM25atQ_to_MSSM30atQ (const ModelParameters &myP, ModelParameters &targetP)
   {
-     logger()<<"Running interpret_as_parent calculations for MSSM25atQ --> MSSM78atQ..."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for MSSM25atQ --> MSSM30atQ..."<<LogTags::info<<EOM;
     
      targetP.setValue("Qin",     myP["Qin"] );
      targetP.setValue("TanBeta", myP["TanBeta"] );
@@ -50,124 +50,60 @@ using namespace Gambit::Utils;
      targetP.setValue("mHd2",  myP["mHd2"] );
 
      // RH squark soft masses
-     // Off-diagonal elements set to zero
-     targetP.setValue("mq2_11",  myP["mq2_1"] );
-     targetP.setValue("mq2_12",  0. );
-     targetP.setValue("mq2_13",  0. );
-
-     targetP.setValue("mq2_21",  0. );
-     targetP.setValue("mq2_22",  myP["mq2_2"] );
-     targetP.setValue("mq2_23",  0. );
-
-     targetP.setValue("mq2_31",  0. );
-     targetP.setValue("mq2_32",  0. );
-     targetP.setValue("mq2_33",  myP["mq2_2"] );
+     // Off-diagonal elements set to zero by parent model
+     targetP.setValue("mq2_1",  myP["mq2_1"] ); // mq2_11 in MSSM78
+     targetP.setValue("mq2_2",  myP["mq2_2"] ); // mq2_22   " "
+     targetP.setValue("mq2_3",  myP["mq2_2"] ); // mq2_33
 
      // RH slepton soft masses
-     // Off-diagonal elements set to zero
-     targetP.setValue("ml2_11",  myP["ml2_1"] );
-     targetP.setValue("ml2_12",  0. );
-     targetP.setValue("ml2_13",  0. );
-
-     targetP.setValue("ml2_21",  0. );
-     targetP.setValue("ml2_22",  myP["ml2_2"] );
-     targetP.setValue("ml2_23",  0. );
-
-     targetP.setValue("ml2_31",  0. );
-     targetP.setValue("ml2_32",  0. );
-     targetP.setValue("ml2_33",  myP["ml2_3"] );
+     // Off-diagonal elements set to zero by parent model
+     targetP.setValue("ml2_1",  myP["ml2_1"] ); // ml2_11 in MSSM78
+     targetP.setValue("ml2_2",  myP["ml2_2"] ); // ml2_22   " "
+     targetP.setValue("ml2_3",  myP["ml2_3"] ); // ml2_33
 
      // LH down-type slepton soft masses
-     // Off-diagonal elements set to zero
-     targetP.setValue("md2_11",  myP["md2_1"] );
-     targetP.setValue("md2_12",  0. );
-     targetP.setValue("md2_13",  0. );
-
-     targetP.setValue("md2_21",  0. );
-     targetP.setValue("md2_22",  myP["md2_2"] );
-     targetP.setValue("md2_23",  0. );
-
-     targetP.setValue("md2_31",  0. );
-     targetP.setValue("md2_32",  0. );
-     targetP.setValue("md2_33",  myP["md2_3"] );
+     // Off-diagonal elements set to zero by parent model
+     targetP.setValue("md2_1",  myP["md2_1"] ); // ml2_11 in MSSM78
+     targetP.setValue("md2_2",  myP["md2_2"] ); // ml2_22   " "
+     targetP.setValue("md2_3",  myP["md2_3"] ); // ml2_33
 
      // LH up-type slepton soft masses
-     // Off-diagonal elements set to zero
-     targetP.setValue("mu2_11",  myP["mu2_1"] );
-     targetP.setValue("mu2_12",  0. );
-     targetP.setValue("mu2_13",  0. );
-
-     targetP.setValue("mu2_21",  0. );
-     targetP.setValue("mu2_22",  myP["mu2_2"] );
-     targetP.setValue("mu2_23",  0. );
-
-     targetP.setValue("mu2_31",  0. );
-     targetP.setValue("mu2_32",  0. );
-     targetP.setValue("mu2_33",  myP["mu2_3"] );
+     // Off-diagonal elements set to zero by parent model
+     targetP.setValue("mu2_1",  myP["mu2_1"] ); // mu2_11 in MSSM78
+     targetP.setValue("mu2_2",  myP["mu2_2"] ); // mu2_22   " "
+     targetP.setValue("mu2_3",  myP["mu2_3"] ); // mu2_33
 
      // LH charged slepton soft masses
-     // Off-diagonal elements set to zero
-     targetP.setValue("me2_11",  myP["me2_1"] );
-     targetP.setValue("me2_12",  0. );
-     targetP.setValue("me2_13",  0. );
-
-     targetP.setValue("me2_21",  0. );
-     targetP.setValue("me2_22",  myP["me2_2"] );
-     targetP.setValue("me2_23",  0. );
-
-     targetP.setValue("me2_31",  0. );
-     targetP.setValue("me2_32",  0. );
-     targetP.setValue("me2_33",  myP["me2_3"] );
+     // Off-diagonal elements set to zero by parent model
+     targetP.setValue("me2_1",  myP["me2_1"] ); // me2_11 in MSSM78
+     targetP.setValue("me2_2",  myP["me2_2"] ); // me2_22   " "
+     targetP.setValue("me2_3",  myP["me2_3"] ); // me2_33
 
      // slepton trilinear couplings
-     // Off-diagonal elements set to zero
+     // Off-diagonal elements set to zero by parent model
      // First and second generation elements set equal
-     targetP.setValue("Ae_11",  myP["Ae_12"] );
-     targetP.setValue("Ae_12",  0. );
-     targetP.setValue("Ae_13",  0. );
-
-     targetP.setValue("Ae_21",  0. );
-     targetP.setValue("Ae_22",  myP["Ae_12"] );
-     targetP.setValue("Ae_23",  0. );
-
-     targetP.setValue("Ae_31",  0. );
-     targetP.setValue("Ae_32",  0. );
-     targetP.setValue("Ae_33",  myP["Ae_3"] );
+     targetP.setValue("Ae_1",  myP["Ae_12"] ); // Ae2_11 in MSSM78
+     targetP.setValue("Ae_2",  myP["Ae_12"] ); // Ae2_22   " "
+     targetP.setValue("Ae_3",  myP["Ae_3"]  ); // Ae2_33
 
      // down-type trilinear couplings
-     // Off-diagonal elements set to zero
+     // Off-diagonal elements set to zero by parent model
      // First and second generation to zero
-     targetP.setValue("Ad_11",  0. );
-     targetP.setValue("Ad_12",  0. );
-     targetP.setValue("Ad_13",  0. );
-
-     targetP.setValue("Ad_21",  0. );
-     targetP.setValue("Ad_22",  0. );
-     targetP.setValue("Ad_23",  0. );
-
-     targetP.setValue("Ad_31",  0. );
-     targetP.setValue("Ad_32",  0. );
-     targetP.setValue("Ad_33",  myP["Ad_3"] );
+     targetP.setValue("Ad_1",  0. );          // Ad2_11 in MSSM78
+     targetP.setValue("Ad_2",  0. );          // Ad2_22   " "
+     targetP.setValue("Ad_3",  myP["Ad_3"] ); // Ad2_33
 
      // up-type trilinear couplings
-     // Off-diagonal elements set to zero
+     // Off-diagonal elements set to zero by parent model
      // First and second generation set to zero
-     targetP.setValue("Au_11",  0. );
-     targetP.setValue("Au_12",  0. );
-     targetP.setValue("Au_13",  0. );
-
-     targetP.setValue("Au_21",  0. );
-     targetP.setValue("Au_22",  0. );
-     targetP.setValue("Au_23",  0. );
-
-     targetP.setValue("Au_31",  0. );
-     targetP.setValue("Au_32",  0. );
-     targetP.setValue("Au_33",  myP["Au_3"] );
+     targetP.setValue("Au_1",  0. );          // Au2_11 in MSSM78
+     targetP.setValue("Au_2",  0. );          // Au2_22   " "
+     targetP.setValue("Au_3",  myP["Au_3"] ); // Au2_33
 
      // Whew, done!
-     #ifdef MSSM25_DBUG
+     #ifdef MSSM25atQ_DBUG
        std::cout << "MSSM25atQ parameters:" << myP << std::endl;
-       std::cout << "MSSM78atQ parameters:" << targetP << std::endl;
+       std::cout << "MSSM30atQ parameters:" << targetP << std::endl;
      #endif
   }
 

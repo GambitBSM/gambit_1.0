@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      scan.Run(); 
+      scan.Run(argc, argv); 
 
       cout << "GAMBIT has finished successfully!" << endl;
 

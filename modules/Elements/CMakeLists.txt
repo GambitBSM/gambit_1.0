@@ -41,7 +41,7 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/spectrum.hpp
        		 include/gambit/Elements/spec_fptrfinder.hpp
                  include/gambit/Elements/subspectrum.hpp
-		 include/gambit/Elements/subspectrum_decl.hpp 
+		 include/gambit/Elements/subspectrum_head.hpp 
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/types_rollcall.hpp
                  include/gambit/Elements/mssm_slhahelp.hpp

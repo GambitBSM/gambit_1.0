@@ -199,7 +199,7 @@ namespace Gambit
     {
       using namespace Pipes::DD_couplings_SingletDM;
       const Spectrum* spec = *Dep::SingletDM_spectrum;
-      RunningPars& extrapar = spec->get_UV()->runningpars;
+      const RunningPars& extrapar = spec->get_HE()->runningpars();
       double mass = spec->get_Pole_Mass("S");
       double lambda = extrapar.get_mass_parameter("lambda_hS");
       double mh = spec->get_Pole_Mass("h0_1");
@@ -263,14 +263,14 @@ namespace Gambit
       // Convenience macros
       #define getSMmass(Name, spinX2)                                           \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-       (Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)));    
+       (Name , TH_ParticleProperty(SM->phys().get_Pole_Mass(Name), spinX2)));    
       #define addParticle(Name, Mass, spinX2)                                   \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(Mass, spinX2)));    
 
       // Import Spectrum objects
       const Spectrum* spec = *Dep::SingletDM_spectrum;
-      const RunningPars& extrapar = spec->get_UV()->runningpars;
+      const RunningPars& extrapar = spec->get_HE()->runningpars();
       const SubSpectrum* SM = spec->get_LE();
       const SMInputs& SMI   = spec->get_SMInputs();
 
