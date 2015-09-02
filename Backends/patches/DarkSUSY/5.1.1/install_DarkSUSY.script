@@ -1,0 +1,101 @@
+#!/bin/bash
+
+############################################################
+# This script will:
+#   * Retrieve the DarkSUSY 5.1.1 installation archive file
+#   * Unpack DarkSUSY
+#   * Copy necessary patches
+#   * Configure & build DarkSUSY
+#   * Copy shared object library to current directory,
+#     where it can be found by GAMBIT makefile
+# 
+# Steps that the script thinks are unnecessary will be
+# skipped (though the logic is limited).  The build system
+# is not robust at this time and the configuration may be
+# invalid/fail for some systems (work in progress).
+# 
+#   C. Savage  <chris@savage.name>  2014
+# 
+############################################################
+
+# Base name of DarkSUSY archive and directory.
+# Note some patch files have hardcoded names below.
+DSBASE="darksusy-5.1.1"
+
+# Archive file name and remote location
+DSARCHIVE="${DSBASE}.tar.gz"
+DSLINK="http://www.fysik.su.se/~edsjo/darksusy/tars/${DSARCHIVE}"
+
+# Location of extracted DarkSUSY files
+DSROOT="${DSBASE}/"
+
+# Location of patches
+PATCHDIR="${DSBASE}-patch/"
+
+# If anything changed, we need to configure/build.
+NEEDS_BUILD=0
+
+# Retrieve archive file
+if [ -f "${DSARCHIVE}" ]; then
+  echo "DarkSUSY installation archive already downloaded [skipping]."
+else
+  echo "Retrieving DarkSUSY installation archive...."
+  wget -c -O "${DSARCHIVE}" "${DSLINK}"
+  NEEDS_BUILD=1
+fi
+
+# Extract files
+if [ -d "${DSROOT}" ]; then
+  echo "DarkSUSY already extracted [skipping]."
+else
+  echo "Extracting DarkSUSY files...."
+  tar -xzf "${DSARCHIVE}"
+  NEEDS_BUILD=1
+fi
+
+# Copy new configuration files
+echo "Patching files...."
+for SRCFILE in ${PATCHDIR}*; do
+  FILENAME="${SRCFILE##*/}"
+  DESTFILE="${DSROOT}${FILENAME}"
+  if ! [ -f "${DESTFILE}" ] || [ "${SRCFILE}" -nt "${DESTFILE}" ]; then
+    echo "  Copying '${FILENAME}'...."
+    cp -p "${SRCFILE}" "${DESTFILE}"
+    NEEDS_BUILD=1
+  else
+    echo "  File '${FILENAME}' up to date [skipping]."
+  fi
+done
+
+# Configure/build DarkSUSY
+if [ "${NEEDS_BUILD}" -eq 0 ] && [ -f "${DSROOT}lib/libdarksusy.so" ]; then
+  echo ""
+  echo "The shared object library already exists: skipping the"
+  echo "DarkSUSY configuration/make process.  To force a rebuild,"
+  echo "delete ${DSROOT}lib/libdarksusy.so and run this"
+  echo "script again."
+  echo ""
+else
+  # Change to build directory
+  cd "${DSROOT}"
+  
+  # Configure
+  echo "Configuring DarkSUSY...."
+  ./configure.for_GAMBIT
+  
+  # Run make
+  echo "Building DarkSUSY...."
+  ./make_so_darksusy.5.1.1
+
+  # Back to original directory.
+  cd ..
+fi
+
+# Copy shared object library to GAMBIT.
+echo "Copying shared object library to current directory...."
+cp -p "${DSROOT}lib/libdarksusy.so" .
+
+echo ""
+echo "DarkSUSY installation completed."
+echo ""
+

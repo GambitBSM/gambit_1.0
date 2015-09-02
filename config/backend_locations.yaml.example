@@ -12,22 +12,22 @@
 
 
 DarkSUSY: 
-  5.1.1:       ./Backends/installed/DarkSUSY_5_1_1/lib/libdarksusy.so
+  5.1.1:       ./Backends/installed/DarkSUSY/5.1.1/lib/libdarksusy.so
 
 SuperIso:
-  3.4:         ./Backends/installed/SuperIso_3_4/libsuperiso.so
+  3.4:         ./Backends/installed/SuperIso/3.4/libsuperiso.so
 
 DDCalc0:
   0.0:         ../gambit_internal/extras/DDCalc0/libDDCalc0.so
 
 HiggsBounds:
-  4.1:         ./Backends/installed/HiggsBounds/lib/higgsbounds.so
+  4.1:         ./Backends/installed/HiggsBounds/4.1/lib/higgsbounds.so
 
 HiggsSignals:
-  1.2:         ./Backends/installed/HiggsSignals/lib/higgssignals.so
+  1.2:         ./Backends/installed/HiggsSignals/1.2/lib/higgssignals.so
 
 FeynHiggs:
-  2.10:        ./Backends/installed/FeynHiggs/lib/libFH.so
+  2.10:        ./Backends/installed/FeynHiggs/2.10.4/lib/libFH.so
 
 LibFarrayTest:
   1.0:         ./Backends/examples/libFarrayTest.so
@@ -50,14 +50,14 @@ gamLike:
   1.0.0:       ../gambit_internal/extras/gamLike/gamLike.so
 
 MicrOmegas:
-  3.5.5:       ../gambit_internal/extras/micromegas_3.5.5/MSSM/libmicromegas.so
+  3.5.5:       ../gambit_internal/extras/micromegas/3.5.5/MSSM/lib/libmicromegas.so
 
 MicrOmegasSingletDM:
-  3.5.5:       ../gambit_internal/extras/micromegas_3.5.5/SingletDM/libmicromegasSingletDM.so
+  3.5.5:       ../gambit_internal/extras/micromegas/3.5.5/SingletDM/lib/libmicromegas.so
   
 nulike:
   1.0.0:       ../gambit_internal/extras/nulike/lib/libnulike.so
 
 SUSY_HIT:
-  1.5:         ./Backends/installed/SUSY-HIT/libsusyhit.so
+  1.5:         ./Backends/installed/SUSY-HIT/1.5/libsusyhit.so
 

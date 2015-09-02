@@ -64,3 +64,10 @@ config/*_locations.yaml
 
 # Scratch files
 scratch/**
+
+# Downloaded backends and scanners
+Backends/downloaded/**
+Backends/installed/**
+ScannerBit/downloaded/**
+ScannerBit/installed/**
+
