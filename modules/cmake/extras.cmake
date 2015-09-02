@@ -273,7 +273,7 @@ ExternalProject_Add(nulike
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FOPT=${CMAKE_Fortran_FLAGS} MODULE=${FMODULE} 
+  BUILD_COMMAND make ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FOPT=${CMAKE_Fortran_FLAGS} MODULE=${FMODULE} 
   INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 set_property(TARGET nulike PROPERTY _EP_DOWNLOAD_ALWAYS 0)
