@@ -60,6 +60,9 @@ namespace Gambit {
          hsize_t  chunkdims[DSETRANK];
          hsize_t  slicedims[DSETRANK];
 
+         // flag to specify whether we should try to access an existing dataset or create a new one
+         const bool resume;
+
         protected:
          // Derived classes need full access to these
 
@@ -97,11 +100,14 @@ namespace Gambit {
 
          /// Constructors
          DataSetInterfaceBase(); 
-         DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]);
+         DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK], const bool resume);
          virtual ~DataSetInterfaceBase() {} 
 
          /// Create a (chunked) dataset 
          H5::DataSet createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]);
+
+         /// Open an existing dataset
+         H5::DataSet openDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]);
 
          /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
          void extend_dset(const ulong i);
@@ -122,16 +128,27 @@ namespace Gambit {
         , record_dims()
         , my_dataset()
         , dsetnextemptyslab(0)
+        , resume(false)
       {}
 
       template<class T, std::size_t RR, std::size_t CL>
-      DataSetInterfaceBase<T,RR,CL>::DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]) 
+      DataSetInterfaceBase<T,RR,CL>::DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK], const bool r)
         : mylocation(location)
         , myname(name)
         , record_dims() /* doh have to copy array element by element */
-        , my_dataset(createDataSet(location,name,rdims))
+        , my_dataset() 
         , dsetnextemptyslab(0)
+        , resume(r)
       {
+        if(resume)
+        {
+           my_dataset = openDataSet(location,name,rdims);
+        }
+        else
+        {
+           my_dataset = createDataSet(location,name,rdims);
+        }
+        // copy rdims to record_dims
         for(std::size_t i=0; i<DSETRANK; i++) { record_dims[i] = rdims[i]; }
       }
 
@@ -187,6 +204,66 @@ namespace Gambit {
          }
          return output;
       }
+
+      /// Open an existing dataset 
+      /// It is assumed that we are resuming a run and therefore know what format this dataset should have
+      template<class T, std::size_t RECORDRANK, std::size_t CHUNKLENGTH>
+      H5::DataSet DataSetInterfaceBase<T,RECORDRANK,CHUNKLENGTH>::createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK])
+      {
+         // Open the dataset
+         H5::DataSet output;
+         try {
+            output = location->openDataSet( name.c_str() );
+         } catch(const H5::Exception& e) {
+               std::ostringstream errmsg;
+               errmsg << "Error opening existing dataset (with name: \""<<myname<<"\") in HDF5 file. Message was: "<<e.getDetailMsg();
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+         // Get dataspace of the dataset.
+         H5::DataSpace dataspace = dataset.getSpace();
+         
+         // Get the number of dimensions in the dataspace.
+         int rank = dataspace.getSimpleExtentNdims();
+
+         if(rank!=DSETRANK)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error while accessing existing dataset (with name: \""<<myname<<"\") in HDF5 file. Rank of dataset ("<<rank<<") does not match the expected rank ("<<DSETRANK<<").";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+         // Get the dimension size of each dimension in the dataspace
+         hsize_t dims_out[DSETRANK];
+         int ndims = dataspace.getSimpleExtentDims( dims_out, NULL);  
+
+         // Update parameters to match dataset contents
+         // Compute initial dataspace and chunk dimensions
+         dims[0] = 0; //1*CHUNKLENGTH; // Start off with space for 1 chunk
+         maxdims[0] = H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
+         chunkdims[0] = CHUNKLENGTH;
+         slicedims[0] = 1; // Dimensions of a single record in the data space
+         for(std::size_t i=0; i<RECORDRANK; i++)
+         {
+            // Set other dimensions to match record size    
+            // Note: loop will not run for RANK=0 case
+            dims[i+1]      = rdims[i];             
+            maxdims[i+1]   = rdims[i];             
+            chunkdims[i+1] = rdims[i];             
+            slicedims[i+1] = rdims[i];
+
+            // Check that these match the existing dataset
+            if(dims[i+1] != dims_out[i+1])
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error while accessing existing dataset (with name: \""<<myname<<"\") in HDF5 file. Size of dimension "<<i+1<<" ("<<dims_out[i+1]<<") does not match the expected size ("<<dims[i+1]<<")";
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+         }
+
+         return output;
+      }
+
 
       /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
       template<class T, std::size_t RR, std::size_t CHUNKLENGTH>

@@ -73,7 +73,14 @@ namespace Gambit {
          public:
            /// Constructors
            VertexBufferNumeric1D_HDF5();
-           VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i, bool sync, bool silence
+           VertexBufferNumeric1D_HDF5(
+             , H5FGPtr location
+             , const std::string& name
+             , const int vID
+             , const unsigned int i
+             , const bool sync
+             , const bool silence
+             , const bool resume
              #ifdef WITH_MPI
              , const BuffTags& tags
              , const GMPI::Comm& pComm
@@ -156,8 +163,9 @@ namespace Gambit {
         , const std::string& name
         , const int vID
         , const unsigned int i
-        , bool sync
-        , bool silence
+        , const bool sync
+        , const bool silence
+        , const bool resume
         #ifdef WITH_MPI
         , const BuffTags& tags
         , const GMPI::Comm& pComm
@@ -169,6 +177,7 @@ namespace Gambit {
           , i
           , sync
           , silence
+          , resume
           #ifdef WITH_MPI
           , tags
           , pComm
@@ -187,8 +196,8 @@ namespace Gambit {
      
         if(not silence and this->myRank==0)
         {
-          _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location, name+"_isvalid");
-          _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location, name);
+          _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location, name+"_isvalid", resume);
+          _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location, name, resume);
         }
       }
       

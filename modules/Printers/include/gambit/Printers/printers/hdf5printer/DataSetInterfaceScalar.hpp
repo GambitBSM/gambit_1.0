@@ -49,7 +49,7 @@ namespace Gambit {
         public: 
           /// Constructors
           DataSetInterfaceScalar(); 
-          DataSetInterfaceScalar(H5FGPtr location, const std::string& name); 
+          DataSetInterfaceScalar(H5FGPtr location, const std::string& name, const bool resume); 
 
           void writenewchunk(const T (&chunkdata)[CHUNKLENGTH]);
 
@@ -74,8 +74,8 @@ namespace Gambit {
       {}
 
       template<class T, std::size_t CL>
-      DataSetInterfaceScalar<T,CL>::DataSetInterfaceScalar(H5FGPtr location, const std::string& name) 
-        : DataSetInterfaceBase<T,0,CL>(location, name, empty_rdims)
+      DataSetInterfaceScalar<T,CL>::DataSetInterfaceScalar(H5FGPtr location, const std::string& name, const bool resume) 
+        : DataSetInterfaceBase<T,0,CL>(location, name, empty_rdims, resume)
       {}
 
       template<class T, std::size_t CHUNKLENGTH>

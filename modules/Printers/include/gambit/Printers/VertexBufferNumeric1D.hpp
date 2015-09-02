@@ -174,11 +174,12 @@ namespace Gambit {
               , const unsigned int i
               , const bool sync
               , const bool sil
+              , const bool resume
               #ifdef WITH_MPI
               , const BuffTags& tags
               , const GMPI::Comm& pComm
               #endif
-           ): VertexBufferBase(label,vID,i,sync,sil)
+           ): VertexBufferBase(label,vID,i,sync,sil,resume)
             , buffer_valid() 
             , buffer_entries()
             #ifdef WITH_MPI

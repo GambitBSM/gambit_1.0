@@ -50,6 +50,10 @@ namespace Gambit {
             /// flag to disable any writing (turns this into a null buffer)
             bool silenced;
 
+            /// flag to indicate that GAMBIT is attempting to resume a run, so we need to
+            /// hook into existing output streams rather than create new ones
+            bool resume; 
+
          protected:
             /// flag to indicate if the sync buffer is full (and ready for sending/dumping)
             bool sync_buffer_full = false;
@@ -58,22 +62,24 @@ namespace Gambit {
          public:
             VertexBufferBase()
               : label("None (Bug!)")
-              , vertexID()
-              , index()
-              , synchronised()
-              , silenced()
+              , vertexID(0)
+              , index(0)
+              , synchronised(true)
+              , silenced(false)
+              , resume(false)
             {
               #ifdef HDF5_DEBUG
               std::cout<<"Default constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
               #endif
             }   
 
-            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil) 
+            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r) 
               : label(l)
               , vertexID(vID)
               , index(i)
               , synchronised(sync)
               , silenced(sil)
+              , resume(r)
             {
               #ifdef HDF5_DEBUG
               std::cout<<"Constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
@@ -97,6 +103,7 @@ namespace Gambit {
             bool sync_buffer_is_empty(){ return sync_buffer_empty; }
             bool is_synchronised()    { return synchronised; }
             bool is_silenced()        { return silenced; }
+            bool resume_mode()        { return resume; }
             unsigned int get_head_position() { return head_position; }
 
             // Get the current head position in the output dataset  
