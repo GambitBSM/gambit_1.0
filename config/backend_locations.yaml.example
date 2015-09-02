@@ -21,10 +21,10 @@ DDCalc0:
   0.0:         ../gambit_internal/extras/DDCalc0/libDDCalc0.so
 
 HiggsBounds:
-  4.1:         ./Backends/installed/HiggsBounds/4.1/lib/higgsbounds.so
+  4.1:         ./Backends/installed/HiggsBounds/4.2.0/lib/libhiggsbounds.so
 
 HiggsSignals:
-  1.2:         ./Backends/installed/HiggsSignals/1.2/lib/higgssignals.so
+  1.2:         ./Backends/installed/HiggsSignals/1.3.2/lib/libhiggssignals.so
 
 FeynHiggs:
   2.10:        ./Backends/installed/FeynHiggs/2.10.4/lib/libFH.so
@@ -50,10 +50,10 @@ gamLike:
   1.0.0:       ../gambit_internal/extras/gamLike/gamLike.so
 
 MicrOmegas:
-  3.5.5:       ../gambit_internal/extras/micromegas/3.5.5/MSSM/lib/libmicromegas.so
+  3.5.5:       ./Backends/installed/micromegas/3.5.5/MSSM/MSSM/libmicromegas.so
 
 MicrOmegasSingletDM:
-  3.5.5:       ../gambit_internal/extras/micromegas/3.5.5/SingletDM/lib/libmicromegas.so
+  3.5.5:       ./Backends/installed/micromegas/3.5.5/SingletDM/SingletDM/libmicromegas.so
   
 nulike:
   1.0.0:       ../gambit_internal/extras/nulike/lib/libnulike.so

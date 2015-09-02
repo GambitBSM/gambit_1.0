@@ -128,7 +128,7 @@ ExternalProject_Add(micromegas
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/MSSM/lib/libmicromegas.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/MSSM/MSSM/libmicromegas.so")
 
 # MicrOmegas for SingletDM
 ExternalProject_Add(micromegasSingletDM
@@ -138,7 +138,7 @@ ExternalProject_Add(micromegasSingletDM
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/SingletDM/lib/libmicromegas.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/SingletDM/SingletDM/libmicromegas.so")
 
 # Pythia
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
@@ -276,7 +276,7 @@ ExternalProject_Add(higgsbounds
   URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.0.tar.gz
   URL_MD5 9d76eefecea870d941a6fe8c0ee7a6ae
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
             COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${PROJECT_SOURCE_DIR}/../gambit_internal/extras/HiggsBounds/\"|" <SOURCE_DIR>/my_configure
@@ -288,7 +288,7 @@ ExternalProject_Add(higgsbounds
   INSTALL_COMMAND ""
 )
 set_property(TARGET higgsbounds PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/lib/higgsbounds.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0/lib/libhiggsbounds.so")
 
 # HiggsSignals
 ExternalProject_Add(higgssignals
@@ -296,11 +296,11 @@ ExternalProject_Add(higgssignals
   URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.3.2.tar.gz
   URL_MD5 2e300a3784eb5d3a9e1dd905d2af7676
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.3.2
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure my_configure 
-            COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../HiggsBounds|" <SOURCE_DIR>/my_configure
-            COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../HiggsBounds|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.0|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.0|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
@@ -308,13 +308,13 @@ ExternalProject_Add(higgssignals
   BUILD_COMMAND make 
         COMMAND mkdir -p lib 
         COMMAND rm HiggsSignals.o 
-        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../HiggsBounds/*.o" > make_so.sh 
+        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.0/*.o" > make_so.sh 
         COMMAND chmod u+x make_so.sh 
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
 set_property(TARGET higgssignals PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/lib/higgssignals.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.3.2/lib/libhiggssignals.so")
 
 
 set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
