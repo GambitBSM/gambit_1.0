@@ -53,11 +53,23 @@
 
 #define square(x) ((x) * (x))  // square a number
 
-// Copied from SUSY-HIT.cpp.
-// JE FIX: Make this work here
-// PS: don't use these, use the updated (non-macro) versions in the SUSY-HIT.cpp file in the ColliderBit_development branch (also sent by email).
-// #define REQUIRED_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); else backend_error().raise(LOCAL_INFO, "Missing SLHA block: " NAME); 
-// #define OPTIONAL_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); else BLOCK.push_back ("BLOCK " NAME);
+// Copied and adapted from SUSY-HIT.cpp.
+  /// Some SUSY-HIT-specific shortcuts for dealing with SLHA blocks
+
+void optional_block(const str& name, SLHAea::Block& block, const SLHAstruct& slha)
+  {
+    if (slha.find(name) != slha.end()) block = slha.at(name);
+    else block.push_back ("BLOCK " + name);
+  }
+  
+  void required_block(const str& name, SLHAea::Block& block, const SLHAea::Coll& slha)
+  {
+    if (slha.find(name) != slha.end()) block = slha.at(name);
+    else backend_error().raise(LOCAL_INFO, "Sorry, DarkSUSY needs SLHA block: " + name + ".\n" 
+    "If you tried to read in a debug SLHA file with missing entries,                       \n"
+    "then sort out your SLHA file so that it is readable by DarkSUSY!                      ");
+  }
+
 
 // Initialisation function (definition)
 BE_INI_FUNCTION
@@ -305,23 +317,51 @@ BE_NAMESPACE
     // DS_PACODES *DSpart = &(*BEreq::pacodes);
     // DS_PACODES *DSpart = pacodes;
     DS_PACODES *DSpart = &(*pacodes);
-    // JE FIX: Make the REQUIRED_BLOCK structures work here
-    // Add more required blocks below
-    // REQUIRED_BLOCK("SMINPUTS",sminputs)
+    // Define required blocks and raise an error if a block is missing
+
+    required_block("SMINPUTS", sminputs, mySLHA);
+    required_block("VCKMIN",   vckmin,   mySLHA);
+    required_block("MSOFT",    msoft,    mySLHA);
+    required_block("MASS",     mass,     mySLHA);
+    required_block("NMIX",     nmix,     mySLHA);
+    required_block("VMIX",     vmix,     mySLHA);
+    required_block("UMIX",     umix,     mySLHA);
+    required_block("ALPHA",    alpha,    mySLHA);
+    required_block("HMIX",     hmix,     mySLHA);
+    required_block("YU",       yu,       mySLHA);
+    required_block("YD",       yd,       mySLHA);
+    required_block("YE",       ye,       mySLHA);     
+    required_block("MSL2",     msl2,     mySLHA);     
+    required_block("MSE2",     mse2,     mySLHA);     
+    required_block("MSQ2",     msq2,     mySLHA);     
+    required_block("MSD2",     msd2,     mySLHA);
+    required_block("MSU2",     msu2,     mySLHA);
+    required_block("TD",       td,       mySLHA);
+    required_block("TU",       tu,       mySLHA);
+    required_block("TE",       tu,       mySLHA);
+    required_block("USQMIX",   usqmix,   mySLHA);
+    required_block("DSQMIX",   dsqmix,   mySLHA);
+    required_block("SELMIX",   selmix,   mySLHA);
+    required_block("SNUMIX",   snumix,   mySLHA);
 
     // Block SMINPUTS
     couplingconstants->alphem   = 1./to<double>(mySLHA.at("SMINPUTS").at(1).at(1)); // 1/alpha_{QED}
     smruseful->alph3mz          = to<double>(mySLHA.at("SMINPUTS").at(3).at(1));   // alpha_s @ MZ
     smruseful->gfermi           = to<double>(mySLHA.at("SMINPUTS").at(2).at(1));   // Fermi constant
+    // Lepton masses
     mspctm->mass(DSpart->kl(1)) = to<double>(mySLHA.at("SMINPUTS").at(11).at(1)); // electron mass
     mspctm->mass(DSpart->kl(2)) = to<double>(mySLHA.at("SMINPUTS").at(13).at(1)); // muon mass
     mspctm->mass(DSpart->kl(3)) = to<double>(mySLHA.at("SMINPUTS").at(7).at(1));  // tau mass
+    mspctm->mass(DSpart->knu(1)) =  to<double>(mySLHA.at("SMINPUTS").at(12).at(1)); // nu_1
+    mspctm->mass(DSpart->knu(2)) =  to<double>(mySLHA.at("SMINPUTS").at(14).at(1)); // nu_2
+    mspctm->mass(DSpart->knu(3)) =  to<double>(mySLHA.at("SMINPTUS").at(8).at(1)); // nu_3
+
     mspctm->mu2gev              = to<double>(mySLHA.at("SMINPUTS").at(22).at(1)); // up quark mass @ 2 GeV
     mspctm->mass(DSpart->kqu(1))   = mspctm->mu2gev;
     mspctm->md2gev              = to<double>(mySLHA.at("SMINPUTS").at(21).at(1)); // down quark mass @ 2 GeV
     mspctm->mass(DSpart->kqd(1))= mspctm->md2gev;
     mspctm->mcmc                = to<double>(mySLHA.at("SMINPUTS").at(24).at(1)); // charm mass at m_c
-    mspctm->mass(DSpart->kqu(1))= mspctm->mcmc;
+    mspctm->mass(DSpart->kqu(2))= mspctm->mcmc;
     mspctm->ms2gev              = to<double>(mySLHA.at("SMINPUTS").at(23).at(1)); // stange mass @ 2 GeV
     mspctm->mass(DSpart->kqd(2))= mspctm->ms2gev;
     mspctm->mbmb                = to<double>(mySLHA.at("SMINPUTS").at(5).at(1));  // bottom mass at m_b
@@ -369,9 +409,6 @@ BE_NAMESPACE
     */
 
     // Block MINPAR we skip, it is not needed
-    // Block EXTPAR. Get Ma (shouldn't really be needed though)
-    // FIXME: CW: This crashes the code
-    //mssmpar->ma = to<double>(mySLHA.at("EXTPAR").at(26).at(1));
 
     // Block MSOFT
     mssmpar->m1 = to<double>(mySLHA.at("MSOFT").at(1).at(1));
@@ -397,14 +434,15 @@ BE_NAMESPACE
     mssmpar->mu = to<double>(mySLHA.at("HMIX").at(1).at(1));
     mssmpar->tanbe = to<double>(mySLHA.at("HMIX").at(2).at(1));
 
-    // Block ALPHA // JE CHECK: Do I call mySLHA correctly here as there is no index in this block?
-    // FIXME: CW: This crashes the code
-    //mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").at(0));
+    // Block ALPHA 
+    mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").at().at(0));  // Higgs mixing angle
+    // mssmmixing->alpha = to<double>(alpha.back().at(0));  // SUSY-HIT way of doing it. Mixing angle in the neutral Higgs boson sector.
 
     // Block MASS
     // SM particles
 
-    // FIXME: CW: This crashes the code
+    // In principle, we could take the massess from the MASS block, but we cannot count on
+    // these being present and to avoid getting them at the wrong scale, we don't use them
     //mspctm->mass(DSpart->knu(1)) =  to<double>(mySLHA.at("MASS").at(12).at(1));
     //mspctm->mass(DSpart->knu(2)) =  to<double>(mySLHA.at("MASS").at(14).at(1));
     //mspctm->mass(DSpart->knu(3)) =  to<double>(mySLHA.at("MASS").at(16).at(1));
@@ -417,6 +455,7 @@ BE_NAMESPACE
     //mspctm->mass(DSpart->kqd(1)) =  to<double>(mySLHA.at("MASS").at(1).at(1));
     //mspctm->mass(DSpart->kqd(2)) =  to<double>(mySLHA.at("MASS").at(3).at(1));
     //mspctm->mass(DSpart->kqd(3)) =  to<double>(mySLHA.at("MASS").at(5).at(1));
+    // We don't read Z0 mass here, have taken it from SMINPUTS earlier
     //mspctm->mass(DSparticle_code("Z0"))     =  to<double>(mySLHA.at("MASS").at(23).at(1));
 
     // OK, we now have to enforce the tree-level condidtion for unitarity
@@ -515,7 +554,6 @@ BE_NAMESPACE
       }
 
     // Block YE, YU, YD - Yukawas
-    // JE FIX, can I trust that all Yukawas are set? PS: yes, but safest to make sure with required_block()
     for (int i=1; i<=3; i++)
       {
   couplingconstants->yukawa(DSpart->kl(i))=to<double>(mySLHA.at("YE").at(i,i).at(2));
@@ -524,8 +562,6 @@ BE_NAMESPACE
       }
 
     // Block MSL2, MSE2, MSQ2, MSU2, MSD2
-    // JE FIX. We here replace whatever was read from MSOFT. Can we trust
-    // that the blocks are always there PS: yes, but safest to make sure with required_block()
     for (int i=1; i<=3; i++)
       {
         mssmpar->mass2l(i) = to<double>(mySLHA.at("MSL2").at(i,i).at(2)); 
@@ -574,8 +610,7 @@ BE_NAMESPACE
     }
       }
 
-    // BLOCK TE, TU and TD. JE CHECK: I am assuming TE, TU, TD are here instead
-    // of AE, AU, AD. OK?
+    // BLOCK TE, TU and TD. I read these instead of AE, AU, AD.
     for (int i=1; i<=3; i++)
       {
   mssmpar->asofte(i)=to<double>(mySLHA.at("TE").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kl(i));
