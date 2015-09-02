@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cp -f MSSM_main.c MSSM/main.c
+cp -f micromegas.h sources/micromegas.h
+cp -f spectra.c sources/spectra.c
+
+# Hack to ensure -fPIC flag for fortran compilation.
+if [ ! -f "CalcHEP_src/getFlags.orig" ]; then
+  cp -p "CalcHEP_src/getFlags" "CalcHEP_src/getFlags.orig"
+  #sed -i '/-fPIC/!s|\(FFLAGS="\?\)|\1-fPIC |g' CalcHEP_src/getFlags
+  sed -i '/\\"\$FFLAGS\\"/!s|\(FFLAGS="\?\)|\1-fPIC |g' CalcHEP_src/getFlags
+fi
+

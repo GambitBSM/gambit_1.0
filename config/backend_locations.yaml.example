@@ -1,0 +1,63 @@
+# GAMBIT central backend location database
+#
+# GAMBIT will parse this file and use it to locate
+# backend shared libraries before attempting to 
+# dynamically load them.  
+#
+# Paths can be given as full absolute paths, or 
+# relative to the main GAMBIT directory.  Paths 
+# starting with a backslash will be interpreted as 
+# absolute, those beginning with a period will
+# be interpreted as relative to the GAMBIT dir.
+
+
+DarkSUSY: 
+  5.1.1:       ./Backends/installed/DarkSUSY/5.1.1/lib/libdarksusy.so
+
+SuperIso:
+  3.4:         ./Backends/installed/SuperIso/3.4/libsuperiso.so
+
+DDCalc0:
+  0.0:         ../gambit_internal/extras/DDCalc0/libDDCalc0.so
+
+HiggsBounds:
+  4.1:         ./Backends/installed/HiggsBounds/4.2.0/lib/libhiggsbounds.so
+
+HiggsSignals:
+  1.2:         ./Backends/installed/HiggsSignals/1.3.2/lib/libhiggssignals.so
+
+FeynHiggs:
+  2.10:        ./Backends/installed/FeynHiggs/2.10.4/lib/libFH.so
+
+LibFarrayTest:
+  1.0:         ./Backends/examples/libFarrayTest.so
+
+FastSim:
+  1.0:         ../gambit_internal/extras/libfastsim.so
+
+LibFirst:
+  1.0:         ./Backends/examples/libfirst.so
+  1.1:         ./Backends/examples/libfirst.so
+
+LibFortran:
+  1.0:         ./Backends/examples/libfortran.so
+
+Pythia:
+  8.186:       ../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so
+  8.209:       ../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so
+
+gamLike:
+  1.0.0:       ../gambit_internal/extras/gamLike/gamLike.so
+
+MicrOmegas:
+  3.5.5:       ./Backends/installed/micromegas/3.5.5/MSSM/MSSM/libmicromegas.so
+
+MicrOmegasSingletDM:
+  3.5.5:       ./Backends/installed/micromegas/3.5.5/SingletDM/SingletDM/libmicromegas.so
+  
+nulike:
+  1.0.0:       ../gambit_internal/extras/nulike/lib/libnulike.so
+
+SUSY_HIT:
+  1.5:         ./Backends/installed/SUSY-HIT/1.5/libsusyhit.so
+

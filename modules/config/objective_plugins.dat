@@ -1,0 +1,19 @@
+#############################################################################
+# GAMBIT central objective plugin description database                      #
+#                                                                           #
+# GAMBIT will parse this file and try to match the entries                  #
+# to the models it has registered. If there are any                         #
+# conflicts it will report them, and if any models                          #
+# are lacking descriptions those will be reported too.                      #
+# This is then merged with internally known information                     #
+# to create a centralised database of model information.                    #
+# This is found in the file "<insert name here>"                            #
+#                                                                           #
+# Note: Yaml syntax for multi-line strings is this:                         #
+#                                                                           #
+#body: |                                                                    #
+#  This is a multi-line string.                                             #
+#  "special" metacharacters may                                             #
+#  appear here. The extent of this string is                                #
+#  indicated by indentation.                                                #
+#############################################################################

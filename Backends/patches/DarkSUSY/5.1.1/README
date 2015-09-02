@@ -1,0 +1,14 @@
+The GAMBIT build system will look to this directory for a DarkSUSY
+shared object library ('libdarksusy.so').  However, GAMBIT will not
+build this library itself and will simply continue on without the use
+of DarkSUSY if the library file is not found.
+
+The easiest way to obtain the DarkSUSY shared object library is to
+run:
+
+  ./install_DarkSUSY
+
+This script will download, extract, patch, and compile DarkSUSY as
+necessary, though there may be issues on some systems (the build
+system is not (yet?) very robust).
+
