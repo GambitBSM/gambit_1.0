@@ -130,7 +130,8 @@ namespace Gambit
     };
   
     // Helper function for iterating through HDF5 file during verification stage
-    herr_t op_func_get_dset_lengths(hid_t loc_id, const char *name, const H5L_info_t *info, void *opdata)
+    herr_t op_func_get_dset_lengths(hid_t loc_id /*root of iteration, i.e. the group */, 
+                                    const char *name, const H5L_info_t *info, void *opdata)
     {
        herr_t     status, return_val = 0;
        H5O_info_t infobuf;
@@ -149,11 +150,32 @@ namespace Gambit
            case H5O_TYPE_DATASET: {
                // All good, get the name and length
 
-               // Get dataspace of the dataset identified by 'loc_id'
-               hid_t dspace = H5Dget_space(loc_id);
+               // Open the dataset located in the group identified by 'loc_id', with name 'name'.
+               hid_t dset_id = H5Dopen2(loc_id,name,H5P_DEFAULT);
+               if(dset_id<0)
+               {
+                  std::ostringstream errmsg;
+                  errmsg << "Error while verifying existing HDF5 file contents! Failed to open dataset "<<name<<"!";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
+
+               // Get dataspace of the dataset identified by 'dset_id'
+               hid_t dspace = H5Dget_space(dset_id);
+               if(dspace<0)
+               {
+                  std::ostringstream errmsg;
+                  errmsg << "Error while verifying existing HDF5 file contents! Failed to read dataspace of dataset "<<name<<"!";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
 
                // Get number of dimensions 
                const int ndims = H5Sget_simple_extent_ndims(dspace);
+               if(ndims<0)
+               {
+                  std::ostringstream errmsg;
+                  errmsg << "Error while verifying existing HDF5 file contents! Failed to read dimension sizes of dataset "<<name<<"!";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
 
                // Get sizes of dimensions
                hsize_t dims[ndims];
@@ -162,7 +184,11 @@ namespace Gambit
                // Store the name and dim[0] size (which is what we use as the "length")
                logger()<<LogTags::printers<<"Reading existing dataset '"<<name<<"'; length is "<<dims[0]<<std::endl;
                data->names.push_back(name);
-               data->lengths.push_back(dims[0]);               
+               data->lengths.push_back(dims[0]);              
+
+               // Release the dataset resources
+               H5Sclose(dspace);  // release dataspace 
+               H5Dclose(dset_id); // release dataset
                break; }
            case H5O_TYPE_NAMED_DATATYPE: {
                // Error! Not a dataset
