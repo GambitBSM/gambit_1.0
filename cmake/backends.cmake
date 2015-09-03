@@ -87,14 +87,18 @@ set_property(TARGET superiso PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.4/libsuperiso.so")
 
 # DDCalc
+set(ddcalc_location "${GAMBIT_INTERNAL}/DDCalc0")
+set(ddcalc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DDCalc/0.0")
 ExternalProject_Add(ddcalc
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/DDCalc0
+  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
+           COMMAND cmake -E copy_directory ${ddcalc_location} ${ddcalc_dir}
+  SOURCE_DIR ${ddcalc_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/DDCalc0/libDDCalc0.so")
+set(clean_files ${clean_files} "${ddcalc_dir}/libDDCalc0.so")
 
 # Gamlike
 if(GSL_FOUND)
@@ -111,14 +115,18 @@ set(gamlike_CXXFLAGS "${CMAKE_CXX_FLAGS}")
 if (NOT GSL_INCLUDE_DIRS STREQUAL "")
   set(gamlike_CXXFLAGS "${gamlike_CXXFLAGS} -I${GSL_INCLUDE_DIRS}")
 endif()
+set(gamlike_location "${GAMBIT_INTERNAL}/gamLike")
+set(gamlike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gamLike/1.0.0")
 ExternalProject_Add(gamlike
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/gamLike
+  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
+           COMMAND cmake -E copy_directory ${gamlike_location} ${gamlike_dir}
+  SOURCE_DIR ${gamlike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/gamLike/gamLike.so")
+set(clean_files ${clean_files} "${gamlike_dir}/gamLike.so")
 
 # MicrOmegas for MSSM
 ExternalProject_Add(micromegas
@@ -152,9 +160,14 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 endif()                                                 
 # - Set include directories
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
+# - Set local paths
+set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
+set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.209")
 # - Actual configure and compile commands
 ExternalProject_Add(pythia
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source
+  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
+           COMMAND cmake -E copy_directory ${pythia_location} ${pythia_dir}
+  SOURCE_DIR ${pythia_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so" ${pythia_CONFIGURE_EXTRAS}
   COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
@@ -164,28 +177,35 @@ ExternalProject_Add(pythia
   BUILD_COMMAND make CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/boss/bossed_pythia_source/lib/libpythia8.so")
+set(clean_files ${clean_files} "${pythia_dir}/config.mk" "${pythia_dir}/lib/libpythia8.so")
 
 # Fastsim
+set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
+set(fastsim_dir "${PROJECT_SOURCE_DIR}/Backends/installed/fastsim/1.0")
 ExternalProject_Add(fastsim
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../gambit_internal/extras/fast_sim
+  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
+           COMMAND cmake -E copy_directory ${fastsim_location} ${fastsim_dir}
+  SOURCE_DIR ${fastsim_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
   INSTALL_COMMAND cp ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/fast_sim/lib/libfastsim.so")
+set(clean_files ${clean_files} "${fastsim_dir}/lib/libfastsim.so")
 
 # Nulike
+set(nulike_location "${GAMBIT_INTERNAL}/nulike")
 set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
-set(nulike_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/nulike")
-set(nulike_short_dir "./../gambit_internal/extras/nulike")
+set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/1.0.0")
+set(nulike_short_dir "./Backends/installed/nulike/1.0.0")
 set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   #URL 
   #URL_MD5 
   #DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
+           COMMAND cmake -E copy_directory ${nulike_location} ${nulike_dir}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -260,11 +280,12 @@ set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.10.4/lib/libFH.so")
 
 # HiggsBounds
+set(higgsbounds_tables_dir "${PROJECT_SOURCE_DIR}/Backends/installed/csboutput_trans_binary")
 ExternalProject_Add(higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
   URL_MD5 004decca30335ddad95654a04dd034a6
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/csboutput_trans_binary
+  SOURCE_DIR ${higgsbounds_tables_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
@@ -279,7 +300,7 @@ ExternalProject_Add(higgsbounds
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
-            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${PROJECT_SOURCE_DIR}/../gambit_internal/extras/HiggsBounds/\"|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${higgsbounds_tables_dir}\"|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure

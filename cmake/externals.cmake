@@ -31,6 +31,9 @@
 
 include(ExternalProject)
 
+# Specify the location of unreleased codes in the gambit_internal repository.
+set(GAMBIT_INTERNAL "${PROJECT_SOURCE_DIR}/../gambit_internal/extras")
+
 # Define the sed command to use differently for OSX and linux
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(dashi "-i ''")
