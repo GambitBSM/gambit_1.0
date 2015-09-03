@@ -45,7 +45,7 @@ if(MPI)
     endif()
   else()
     message("${BoldRed}   Missing C MPI installation.  GAMBIT will not be MPI-enabled.${ColourReset}")
-    ## To avoid problems with locate_scanners.py
+    ## FIXME temporary -- to avoid problems with locate_scanners.py
     set(MPI_CXX_INCLUDE_PATH "")
     set(MPI_C_INCLUDE_PATH "")
   endif()
