@@ -178,6 +178,13 @@ string (REPLACE ";" "," itch_with_commas "${itch}")
 # Generate the cmake_variables.hpp file
 include(cmake/preprocessor.cmake)
 
+# Create the scratch directory if it isn't there already
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/scratch")
+  message("${Yellow}-- Creating scratch directory${ColourReset}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory scratch WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+  message("${Yellow}-- Creating scratch directory - done.${ColourReset}")
+endif()
+
 # Generate the ScannerBit compilation files
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
 set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})

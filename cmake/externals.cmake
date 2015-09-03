@@ -31,8 +31,19 @@
 
 include(ExternalProject)
 
-# Specify the location of unreleased codes in the gambit_internal repository.
+# Specify the location of unreleased codes in the gambit_internal repository. 
 set(GAMBIT_INTERNAL "${PROJECT_SOURCE_DIR}/../gambit_internal/extras")
+
+# Specify the warning to give when trying to compile unreleased codes.
+set(private_code_warning "       Retrieving unreleased code from GAMBIT Collaboration private repository. This will fail if you don't have the repository.")
+set(private_code_warning1 "       Retrieving unreleased code from GAMBIT Collaboration private repository.")
+if(NOT EXISTS ${GAMBIT_INTERNAL})
+  set(private_code_warning2 "       The repository was not found by cmake, so this will probably fail!")
+endif()
+
+# Specify where all backend and scanner tarballs are to be stored
+set(backend_download "${PROJECT_SOURCE_DIR}/Backends/downloaded")
+set(scanner_download "${PROJECT_SOURCE_DIR}/ScannerBit/downloaded")
 
 # Define the sed command to use differently for OSX and linux
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
