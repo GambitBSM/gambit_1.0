@@ -11,7 +11,10 @@
 ///
 ///  \author Abram Krislock
 ///          (a.m.b.krislock@fys.uio.no)
+///
 ///  \author Aldo Saavedra
+///
+///  \author Andy Buckley
 ///
 ///  \author Chris Rogan
 ///          (crogan@cern.ch)
@@ -72,7 +75,7 @@ namespace Gambit
       int nEvents = 0;
       globalAnalyses->clear();
 
-      // Do the base-level initialisation   
+      // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
 
       #pragma omp critical (runOptions)
@@ -84,7 +87,7 @@ namespace Gambit
       }
 
       // For every collider requested in the yaml file:
-      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) 
+      for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
       {
         pythiaNumber = 0;
         #pragma omp critical (runOptions)
@@ -123,24 +126,24 @@ namespace Gambit
     {
       using namespace Pipes::getPythia;
 
-      static bool SLHA_debug_mode = false;      
+      static bool SLHA_debug_mode = false;
       static std::vector<std::string> filenames;
-      static unsigned int counter = -1;               
+      static unsigned int counter = -1;
 
       if (*Loop::iteration == BASE_INIT)
-      {      
+      {
         // If there are no debug filenames set, look for them.
-        if (filenames.empty())              
-        {                          
+        if (filenames.empty())
+        {
           #pragma omp_critical (runOptions)
           {
-            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");          
-            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");  
+            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");
+            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
           }
         }
         // Increment the counter if there are debug SLHA files and this is the first thread.
         if (SLHA_debug_mode)
-        { 
+        {
           if (omp_get_thread_num() == 0) counter++;
           if (filenames.size() <= counter) invalid_point().raise("No more SLHA files. My work is done.");
         }
@@ -151,11 +154,11 @@ namespace Gambit
         // TODO Surely, I must call result.clear()?
 
         // Each thread gets its own Pythia instance.
-        // Thus, the actual Pythia initialization is 
+        // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
-        
+
         // Setup new Pythia
         pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
 
@@ -173,7 +176,7 @@ namespace Gambit
         {
           // Run Pythia reading an SLHA file.
           logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
-          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
+          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));
           result.init(pythiaOptions);
         }
         else
@@ -198,7 +201,7 @@ namespace Gambit
           }
           else
           {
-            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
+            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
           }
           cout << slha << endl;
           pythiaOptions.push_back("SLHA:file = slhaea");
@@ -274,7 +277,7 @@ namespace Gambit
         result.init(analysisNames);
         return;
       }
-      
+
       if (*Loop::iteration == END_SUBPROCESS)
       {
         const double xs = Dep::HardScatteringSim->xsec_pb();
@@ -636,37 +639,44 @@ namespace Gambit
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
       cout << "In calcLogLike" << endl;
 
-      std::vector<double> observedLikelihoods;
+      // Loop over analyses and calculate the total observed dll
+      double total_dll_obs = 0;
       for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis) {
         cout << "In analysis loop" << endl;
+
+        // Loop over the signal regions inside the analysis, and work out the total (delta) log likelihood for this analysis
+        /// @note In general each analysis could/should work out its own likelihood so they can handle SR combination if possible.
+        /// @note For now we just take the result from the SR *expected* to be most constraining, i.e. with highest expected dll
+        double bestexp_dll_exp = 0, bestexp_dll_obs = 0;
         for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR) {
           cout << "In signal region loop" << endl;
           SignalRegionData srData = analysisResults[analysis][SR];
 
-          /// Actual observed number of events
-          int n_obs = (int) srData.n_observed;
+          // Actual observed number of events
+          const int n_obs = (int) srData.n_observed;
 
           // A contribution to the predicted number of events that is known exactly
           // (e.g. from data-driven background estimate)
-          double n_predicted_exact = 0;
+          const double n_predicted_exact = 0;
 
           // A contribution to the predicted number of events that is not known exactly
-          double n_predicted_uncertain_b = srData.n_background;
-          double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
+          const double n_predicted_uncertain_b = srData.n_background;
+          const double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
 
-          /// A fractional uncertainty on n_predicted_uncertain
-          /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
-          double bkg_ratio = srData.background_sys/srData.n_background;
-          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0; ///< @todo Is this the best treatment?
-          double uncertainty_b = bkg_ratio;
-          double uncertainty_sb = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
+          // A fractional uncertainty on n_predicted_uncertain e.g. 0.2 from 20% uncertainty on efficencty wrt signal events
+          const double bkg_ratio = srData.background_sys/srData.n_background;
+          //const double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0; ///< @todo Is this the best treatment?
+          const double uncertainty_b = bkg_ratio;
+          //const double uncertainty_sb = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio); ///< @todo AB: I don't like this... should be something like sqrt(DeltaB**2 + DeltaS**2)/(B+S) ?
+          const double uncertainty_sb = sqrt(srData.background_sys*srData.background_sys + srData.signal_sys*srData.signal_sys) / n_predicted_uncertain_sb;
 
-          int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
-          // int n_predicted_total_sb_int = (int) round(n_predicted_exact + n_predicted_uncertain_sb); //< we don't use this: predictions all use exp[b] as the "observed"
+          const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
+          //int n_predicted_total_sb_int = (int) round(n_predicted_exact + n_predicted_uncertain_sb); //< we don't use this: predictions all use exp[b] as the "observed"
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
-          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_B " << n_predicted_uncertain_b << " UNCERTAINTY_B " << uncertainty_b << endl;
-          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
+          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact
+               << " UNCERTAIN_B "   << n_predicted_uncertain_b  << " UNCERTAINTY_B "   << uncertainty_b
+               << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             llb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
@@ -683,22 +693,33 @@ namespace Gambit
           }
           cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
-          observedLikelihoods.push_back(result);
+          // Calculate the expected dll and set the bestexp values for exp and obs dll if this one is the best so far
+          const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention here
+          if (dll_exp > bestexp_dll_exp) {
+            bestexp_dll_exp = dll_exp;
+            bestexp_dll_obs = llb_obs - llsb_obs;
+          }
+
         } // end SR loop
+
+        // Update the total obs dll
+        /// @note For now we assume that the analyses are fully orthogonal, i.e. no possiblity that the same event appears twice -> straight addition
+        total_dll_obs += bestexp_dll_obs;
+
       } // end ana loop
 
-      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood (ratio) / other combined-as-well-as-we-can LL number
-
+      // Set the single DLL to be returned
+      result = total_dll_obs;
     }
-    
-    
+
+
     /// *** Higgs physics ***
 
     /// FeynHiggs Higgs production cross-sections
-    void FH_HiggsProd(fh_HiggsProd &result) 
+    void FH_HiggsProd(fh_HiggsProd &result)
     {
       using namespace Pipes::FH_HiggsProd;
-      
+
       Farray<fh_real, 1,52> prodxs;
 
       fh_HiggsProd HiggsProd;
@@ -728,106 +749,106 @@ namespace Gambit
     void SMHiggs_ModelParameters(hb_ModelParameters &result)
     {
       using namespace Pipes::SMHiggs_ModelParameters;
-      
+
       for(int i = 0; i < 3; i++)
       {
-        result.Mh[i] = 0.; 
+        result.Mh[i] = 0.;
         result.deltaMh[i] = 0.;
-        result.hGammaTot[i] = 0.; 
-        result.CP[i] = 0.; 
-        result.CS_lep_hjZ_ratio[i] = 0.; 
-        result.CS_lep_bbhj_ratio[i] = 0.; 
+        result.hGammaTot[i] = 0.;
+        result.CP[i] = 0.;
+        result.CS_lep_hjZ_ratio[i] = 0.;
+        result.CS_lep_bbhj_ratio[i] = 0.;
         result.CS_lep_tautauhj_ratio[i] = 0.;
-        for(int j = 0; j < 3; j++) result.CS_lep_hjhi_ratio[i][j] = 0.; 
-        result.CS_gg_hj_ratio[i] = 0.; 
+        for(int j = 0; j < 3; j++) result.CS_lep_hjhi_ratio[i][j] = 0.;
+        result.CS_gg_hj_ratio[i] = 0.;
         result.CS_bb_hj_ratio[i] = 0.;
-        result.CS_bg_hjb_ratio[i] = 0.; 
+        result.CS_bg_hjb_ratio[i] = 0.;
         result.CS_ud_hjWp_ratio[i] = 0.;
         result.CS_cs_hjWp_ratio[i] = 0.;
         result.CS_ud_hjWm_ratio[i] = 0.;
-        result.CS_cs_hjWm_ratio[i] = 0.; 
+        result.CS_cs_hjWm_ratio[i] = 0.;
         result.CS_gg_hjZ_ratio[i] = 0.;
         result.CS_dd_hjZ_ratio[i] = 0.;
         result.CS_uu_hjZ_ratio[i] = 0.;
-        result.CS_ss_hjZ_ratio[i] = 0.; 
+        result.CS_ss_hjZ_ratio[i] = 0.;
         result.CS_cc_hjZ_ratio[i] = 0.;
-        result.CS_bb_hjZ_ratio[i] = 0.; 
+        result.CS_bb_hjZ_ratio[i] = 0.;
         result.CS_tev_vbf_ratio[i] = 0.;
-        result.CS_tev_tthj_ratio[i] = 0.; 
+        result.CS_tev_tthj_ratio[i] = 0.;
         result.CS_lhc7_vbf_ratio[i] = 0.;
         result.CS_lhc7_tthj_ratio[i] = 0.;
         result.CS_lhc8_vbf_ratio[i] = 0.;
-        result.CS_lhc8_tthj_ratio[i] = 0.; 
+        result.CS_lhc8_tthj_ratio[i] = 0.;
         result.BR_hjss[i] = 0.;
         result.BR_hjcc[i] = 0.;
-        result.BR_hjbb[i] = 0.; 
+        result.BR_hjbb[i] = 0.;
         result.BR_hjmumu[i] = 0.;
         result.BR_hjtautau[i] = 0.;
         result.BR_hjWW[i] = 0.;
-        result.BR_hjZZ[i] = 0.; 
+        result.BR_hjZZ[i] = 0.;
         result.BR_hjZga[i] = 0.;
-        result.BR_hjgaga[i] = 0.; 
-        result.BR_hjgg[i] = 0.; 
+        result.BR_hjgaga[i] = 0.;
+        result.BR_hjgg[i] = 0.;
         result.BR_hjinvisible[i] = 0.;
         for(int j = 0; j < 3; j++) result.BR_hjhihi[i][j] = 0.;
       }
-      
+
       result.MHplus = 0.;
       result.deltaMHplus = 0.;
-      result.HpGammaTot = 0.; 
+      result.HpGammaTot = 0.;
       result.CS_lep_HpjHmi_ratio = 0.;
       result.BR_tWpb = 0.;
       result.BR_tHpjb = 0.;
-      result.BR_Hpjcs = 0.; 
+      result.BR_Hpjcs = 0.;
       result.BR_Hpjcb = 0.;
       result.BR_Hptaunu = 0.;
 
       const Spectrum* fullspectrum = *Dep::SM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); 
+      const SubSpectrum* spec = fullspectrum->get_HE();
       const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
 
-      result.Mh[0] = spec->phys().get_Pole_Mass(25,0); 
+      result.Mh[0] = spec->phys().get_Pole_Mass(25,0);
 
-      result.deltaMh[0] = 0.; // FIXME Need to get theoretical error on mass
-      result.hGammaTot[0] = decays->width_in_GeV; 
-      result.CP[0] = 1; 
-      result.CS_lep_hjZ_ratio[0] = 1.; 
-      result.CS_lep_bbhj_ratio[0] = 1.; 
+      result.deltaMh[0] = 0.; // Need to get theoretical error on mass
+      result.hGammaTot[0] = decays->width_in_GeV;
+      result.CP[0] = 1;
+      result.CS_lep_hjZ_ratio[0] = 1.;
+      result.CS_lep_bbhj_ratio[0] = 1.;
       result.CS_lep_tautauhj_ratio[0] = 1.;
-      result.CS_gg_hj_ratio[0] = 1.; 
+      result.CS_gg_hj_ratio[0] = 1.;
       result.CS_bb_hj_ratio[0] = 1.;
-      result.CS_bg_hjb_ratio[0] = 1.; 
+      result.CS_bg_hjb_ratio[0] = 1.;
       result.CS_ud_hjWp_ratio[0] = 1.;
       result.CS_cs_hjWp_ratio[0] = 1.;
       result.CS_ud_hjWm_ratio[0] = 1.;
-      result.CS_cs_hjWm_ratio[0] = 1.; 
+      result.CS_cs_hjWm_ratio[0] = 1.;
       result.CS_gg_hjZ_ratio[0] = 1.;
       result.CS_dd_hjZ_ratio[0] = 1.;
       result.CS_uu_hjZ_ratio[0] = 1.;
-      result.CS_ss_hjZ_ratio[0] = 1.; 
+      result.CS_ss_hjZ_ratio[0] = 1.;
       result.CS_cc_hjZ_ratio[0] = 1.;
-      result.CS_bb_hjZ_ratio[0] = 1.; 
+      result.CS_bb_hjZ_ratio[0] = 1.;
       result.CS_tev_vbf_ratio[0] = 1.;
-      result.CS_tev_tthj_ratio[0] = 1.; 
+      result.CS_tev_tthj_ratio[0] = 1.;
       result.CS_lhc7_vbf_ratio[0] = 1.;
       result.CS_lhc7_tthj_ratio[0] = 1.;
       result.CS_lhc8_vbf_ratio[0] = 1.;
-      result.CS_lhc8_tthj_ratio[0] = 1.; 
+      result.CS_lhc8_tthj_ratio[0] = 1.;
       result.BR_hjss[0] = decays->BF("s", "sbar");
       result.BR_hjcc[0] = decays->BF("c", "cbar");
-      result.BR_hjbb[0] = decays->BF("b", "bbar"); 
+      result.BR_hjbb[0] = decays->BF("b", "bbar");
       result.BR_hjmumu[0] = decays->BF("mu+", "mu-");
       result.BR_hjtautau[0] = decays->BF("tau+", "tau-");
       result.BR_hjWW[0] = decays->BF("W+", "W-");
-      result.BR_hjZZ[0] = decays->BF("Z0", "Z0"); 
+      result.BR_hjZZ[0] = decays->BF("Z0", "Z0");
       result.BR_hjZga[0] = decays->BF("gamma", "Z0");
-      result.BR_hjgaga[0] = decays->BF("gamma", "gamma"); 
+      result.BR_hjgaga[0] = decays->BF("gamma", "gamma");
       result.BR_hjgg[0] = decays->BF("g", "g");
     }
 
     /// MSSM Higgs model parameters
     void MSSMHiggs_ModelParameters(hb_ModelParameters &result)
-    {     
+    {
       using namespace Pipes::MSSMHiggs_ModelParameters;
       #define PDB Models::ParticleDB()
 
@@ -840,15 +861,15 @@ namespace Gambit
       sHneut.push_back("A0");
 
       const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); 
+      const SubSpectrum* spec = fullspectrum->get_HE();
       const DecayTable decaytable = *Dep::decay_rates;
 
       const DecayTable::Entry* Hneut_decays[3];
       for(int i = 0; i < 3; i++)
       {
         // Higgs masses and errors
-        result.Mh[i] = spec->phys().get_Pole_Mass(sHneut[i]); 
-        result.deltaMh[i] = 0.; //FIXME need to get theoretical error on masses
+        result.Mh[i] = spec->phys().get_Pole_Mass(sHneut[i]);
+        result.deltaMh[i] = 0.;
       }
 
       // invisible LSP?
@@ -892,25 +913,25 @@ namespace Gambit
       {
         // Branching ratios and total widths
         Hneut_decays[i] = &(decaytable(sHneut[i]));
-      
-        result.hGammaTot[i] = Hneut_decays[i]->width_in_GeV; 
-      
+
+        result.hGammaTot[i] = Hneut_decays[i]->width_in_GeV;
+
         result.BR_hjss[i] = Hneut_decays[i]->BF("s", "sbar");
         result.BR_hjcc[i] = Hneut_decays[i]->BF("c", "cbar");
-        result.BR_hjbb[i] = Hneut_decays[i]->BF("b", "bbar"); 
+        result.BR_hjbb[i] = Hneut_decays[i]->BF("b", "bbar");
         result.BR_hjmumu[i] = Hneut_decays[i]->BF("mu+", "mu-");
         result.BR_hjtautau[i] = Hneut_decays[i]->BF("tau+", "tau-");
         result.BR_hjWW[i] = Hneut_decays[i]->BF("W+", "W-");
-        result.BR_hjZZ[i] = Hneut_decays[i]->BF("Z0", "Z0");         
+        result.BR_hjZZ[i] = Hneut_decays[i]->BF("Z0", "Z0");
         result.BR_hjZga[i] = Hneut_decays[i]->BF("gamma", "Z0");
-        result.BR_hjgaga[i] = Hneut_decays[i]->BF("gamma", "gamma"); 
+        result.BR_hjgaga[i] = Hneut_decays[i]->BF("gamma", "gamma");
         result.BR_hjgg[i] = Hneut_decays[i]->BF("g", "g");
         for(int j = 0; j < 3; j++)
         {
           if(2.*result.Mh[j] < result.Mh[i])
           {
-            result.BR_hjhihi[i][j] = Hneut_decays[i]->BF(sHneut[j],sHneut[j]); 
-          } 
+            result.BR_hjhihi[i][j] = Hneut_decays[i]->BF(sHneut[j],sHneut[j]);
+          }
           else
           {
             result.BR_hjhihi[i][j] = 0.;
@@ -931,16 +952,16 @@ namespace Gambit
         }
       }
 
-      result.MHplus = spec->phys().get_Pole_Mass("H+"); 
+      result.MHplus = spec->phys().get_Pole_Mass("H+");
       result.deltaMHplus = 0.;
-      
+
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));
       const DecayTable::Entry* top_decays = &(decaytable("t"));
-      
-      result.HpGammaTot = Hplus_decays->width_in_GeV; 
+
+      result.HpGammaTot = Hplus_decays->width_in_GeV;
       result.BR_tWpb    = top_decays->BF("W+", "b");
       result.BR_tHpjb   = top_decays->BF("H+", "b");
-      result.BR_Hpjcs   = Hplus_decays->BF("c", "sbar"); 
+      result.BR_Hpjcs   = Hplus_decays->BF("c", "sbar");
       result.BR_Hpjcb   = Hplus_decays->BF("c", "bbar");
       result.BR_Hptaunu = Hplus_decays->BF("tau+", "nu_tau");
 
@@ -951,15 +972,15 @@ namespace Gambit
       {
         if(FH_input.gammas_sm[H0FF(i,4,3,3)+4] <= 0.)
           g2hjbb[i] = 0.;
-        else 
+        else
           g2hjbb[i] = FH_input.gammas[H0FF(i,4,3,3)+4]/FH_input.gammas_sm[H0FF(i,4,3,3)+4];
       }
 
-      // using partial width ratio approximation for 
+      // using partial width ratio approximation for
       // h -> b bbar CS ratios
       for(int i = 0; i < 3; i++)
       {
-        result.CS_bg_hjb_ratio[i] = g2hjbb[i]; 
+        result.CS_bg_hjb_ratio[i] = g2hjbb[i];
         result.CS_bb_hj_ratio[i]  = g2hjbb[i];
       }
 
@@ -970,12 +991,12 @@ namespace Gambit
         fh_complex c_g2hjbb_R = FH_input.couplings[H0FF(i,4,3,3)+Roffset];
         fh_complex c_g2hjbb_SM_L = FH_input.couplings_sm[H0FF(i,4,3,3)];
         fh_complex c_g2hjbb_SM_R = FH_input.couplings_sm[H0FF(i,4,3,3)+RSMoffset];
-      
+
         fh_complex c_g2hjtautau_L = FH_input.couplings[H0FF(i,2,3,3)];
         fh_complex c_g2hjtautau_R = FH_input.couplings[H0FF(i,2,3,3)+Roffset];
         fh_complex c_g2hjtautau_SM_L = FH_input.couplings_sm[H0FF(i,2,3,3)];
         fh_complex c_g2hjtautau_SM_R = FH_input.couplings_sm[H0FF(i,2,3,3)+RSMoffset];
-      
+
         double R_g2hjbb_L = sqrt(c_g2hjbb_L.re*c_g2hjbb_L.re+
                c_g2hjbb_L.im*c_g2hjbb_L.im)/
           sqrt(c_g2hjbb_SM_L.re*c_g2hjbb_SM_L.re+
@@ -984,7 +1005,7 @@ namespace Gambit
                c_g2hjbb_R.im*c_g2hjbb_R.im)/
           sqrt(c_g2hjbb_SM_R.re*c_g2hjbb_SM_R.re+
                c_g2hjbb_SM_R.im*c_g2hjbb_SM_R.im);
-        
+
         double R_g2hjtautau_L = sqrt(c_g2hjtautau_L.re*c_g2hjtautau_L.re+
                    c_g2hjtautau_L.im*c_g2hjtautau_L.im)/
           sqrt(c_g2hjtautau_SM_L.re*c_g2hjtautau_SM_L.re+
@@ -993,12 +1014,12 @@ namespace Gambit
                    c_g2hjtautau_R.im*c_g2hjtautau_R.im)/
           sqrt(c_g2hjtautau_SM_R.re*c_g2hjtautau_SM_R.re+
                c_g2hjtautau_SM_R.im*c_g2hjtautau_SM_R.im);
-      
+
         double g2hjbb_s = (R_g2hjbb_L+R_g2hjbb_R)*(R_g2hjbb_L+R_g2hjbb_R)/4.;
         double g2hjbb_p = (R_g2hjbb_L-R_g2hjbb_R)*(R_g2hjbb_L-R_g2hjbb_R)/4.;
         double g2hjtautau_s = (R_g2hjtautau_L+R_g2hjtautau_R)*(R_g2hjtautau_L+R_g2hjtautau_R)/4.;
         double g2hjtautau_p = (R_g2hjtautau_L-R_g2hjtautau_R)*(R_g2hjtautau_L-R_g2hjtautau_R)/4.;
-      
+
         // check CP of state
         if(g2hjbb_p < 1e-10)
           result.CP[i] = 1;
@@ -1006,11 +1027,11 @@ namespace Gambit
           result.CP[i] = -1;
         else
           result.CP[i] = 0.;
-      
-        result.CS_lep_bbhj_ratio[i]     = g2hjbb_s + g2hjbb_p; 
+
+        result.CS_lep_bbhj_ratio[i]     = g2hjbb_s + g2hjbb_p;
         result.CS_lep_tautauhj_ratio[i] = g2hjtautau_s + g2hjtautau_p;
       }
-      
+
       // cross-section ratios for di-boson final states
       for(int i = 0; i < 3; i++)
       {
@@ -1018,34 +1039,34 @@ namespace Gambit
         fh_complex c_gWW_SM = FH_input.couplings_sm[H0VV(i,4)];
         fh_complex c_gZZ = FH_input.couplings[H0VV(i,3)];
         fh_complex c_gZZ_SM = FH_input.couplings_sm[H0VV(i,3)];
-      
+
         double g2hjWW = (c_gWW.re*c_gWW.re+c_gWW.im*c_gWW.im)/
           (c_gWW_SM.re*c_gWW_SM.re+c_gWW_SM.im*c_gWW_SM.im);
-      
+
         double g2hjZZ = (c_gZZ.re*c_gZZ.re+c_gZZ.im*c_gZZ.im)/
           (c_gZZ_SM.re*c_gZZ_SM.re+c_gZZ_SM.im*c_gZZ_SM.im);
-      
-        result.CS_lep_hjZ_ratio[i] = g2hjZZ; 
-      
+
+        result.CS_lep_hjZ_ratio[i] = g2hjZZ;
+
         result.CS_gg_hjZ_ratio[i] = 0.;
         result.CS_dd_hjZ_ratio[i] = g2hjZZ;
         result.CS_uu_hjZ_ratio[i] = g2hjZZ;
-        result.CS_ss_hjZ_ratio[i] = g2hjZZ; 
+        result.CS_ss_hjZ_ratio[i] = g2hjZZ;
         result.CS_cc_hjZ_ratio[i] = g2hjZZ;
         result.CS_bb_hjZ_ratio[i] = g2hjZZ;
-      
+
         result.CS_ud_hjWp_ratio[i] = g2hjWW;
         result.CS_cs_hjWp_ratio[i] = g2hjWW;
         result.CS_ud_hjWm_ratio[i] = g2hjWW;
-        result.CS_cs_hjWm_ratio[i] = g2hjWW; 
-      
+        result.CS_cs_hjWm_ratio[i] = g2hjWW;
+
         result.CS_tev_vbf_ratio[i]   = g2hjWW;
         result.CS_lhc7_vbf_ratio[i]  = g2hjWW;
-        result.CS_lhc8_tthj_ratio[i] = g2hjWW; 
+        result.CS_lhc8_tthj_ratio[i] = g2hjWW;
       }
 
       // higgs to higgs + V xsection ratios
-      // retrive SMInputs dependency 
+      // retrive SMInputs dependency
       const SMInputs& sminputs = *Dep::SMINPUTS;
 
       double norm = sminputs.GF*sqrt(2.)*sminputs.mZ*sminputs.mZ;
@@ -1054,17 +1075,17 @@ namespace Gambit
       {
         fh_complex c_gHV = FH_input.couplings[H0HV(i,j)];
         double g2HV = c_gHV.re*c_gHV.re+c_gHV.im*c_gHV.im;
-        result.CS_lep_hjhi_ratio[i][j] = g2HV/norm; 
+        result.CS_lep_hjhi_ratio[i][j] = g2HV/norm;
       }
 
       // gluon fusion x-section ratio
       for(int i = 0; i < 3; i++)
       {
         if(FH_input.gammas_sm[H0VV(i,5)] <= 0.)
-          result.CS_gg_hj_ratio[i] = 0.; 
+          result.CS_gg_hj_ratio[i] = 0.;
         else
           result.CS_gg_hj_ratio[i] = FH_input.gammas[H0VV(i,5)]/
-            FH_input.gammas_sm[H0VV(i,5)]; 
+            FH_input.gammas_sm[H0VV(i,5)];
       }
 
       // unpack FeynHiggs x-sections
@@ -1073,9 +1094,9 @@ namespace Gambit
       // h t tbar xsection ratios
       for(int i = 0; i < 3; i++)
       {
-        result.CS_tev_tthj_ratio[i] = 0.; 
+        result.CS_tev_tthj_ratio[i] = 0.;
         result.CS_lhc7_tthj_ratio[i] = 0.;
-        result.CS_lhc8_tthj_ratio[i] = 0.; 
+        result.CS_lhc8_tthj_ratio[i] = 0.;
         if(FH_prod.prodxs_Tev[i+30] > 0.)
           result.CS_tev_tthj_ratio[i]  = FH_prod.prodxs_Tev[i+27]/FH_prod.prodxs_Tev[i+30];
         if(FH_prod.prodxs_Tev[i+30] > 0.)
@@ -1088,12 +1109,12 @@ namespace Gambit
     }
 
     /// Get a LEP chisq from HiggsBounds
-    void HB_LEPchisq(double &result) 
+    void HB_LEPchisq(double &result)
     {
       using namespace Pipes::HB_LEPchisq;
-   
+
       hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
-      
+
       Farray<double, 1,3, 1,3> CS_lep_hjhi_ratio;
       Farray<double, 1,3, 1,3> BR_hjhihi;
       for(int i = 0; i < 3; i++) for(int j = 0; j < 3; j++)
@@ -1101,10 +1122,10 @@ namespace Gambit
         CS_lep_hjhi_ratio(i+1,j+1) = ModelParam.CS_lep_hjhi_ratio[i][j];
         BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
       }
-      
-      BEreq::HiggsBounds_neutral_input_part(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0], 
-              &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
-              &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
+
+      BEreq::HiggsBounds_neutral_input_part(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0],
+              &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0],
+              &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio,
               &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
               &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
               &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
@@ -1115,41 +1136,41 @@ namespace Gambit
               &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
               &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
               &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
-              &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
+              &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0],
               &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
-              &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
-              &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
+              &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0],
+              &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
               &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
 
       BEreq::HiggsBounds_charged_input(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
+               &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
                &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
-      
+
       BEreq::HiggsBounds_set_mass_uncertainties(&ModelParam.deltaMh[0],&ModelParam.deltaMHplus);
-      
+
       // run Higgs bounds 'classic'
       double HBresult, obsratio;
       int chan, ncombined;
       BEreq::run_HiggsBounds_classic(HBresult,chan,obsratio,ncombined);
-      
+
       // extract the LEP chisq
       double chisq_withouttheory,chisq_withtheory;
       int chan2;
       double theor_unc = 1.5; // theory uncertainty
       BEreq::HB_calc_stats(theor_unc,chisq_withouttheory,chisq_withtheory,chan2);
-      
+
       result = chisq_withouttheory;
       std::cout << "Calculating LEP chisq: " << chisq_withouttheory << " (no theor), " << chisq_withtheory << " (with theor)" << endl;
 
     }
 
     /// Get an LHC chisq from HiggsSignals
-    void HS_LHCchisq(double &result) 
+    void HS_LHCchisq(double &result)
     {
       using namespace Pipes::HS_LHCchisq;
-      
+
       hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
-      
+
       Farray<double, 1,3, 1,3> CS_lep_hjhi_ratio;
       Farray<double, 1,3, 1,3> BR_hjhihi;
       for(int i = 0; i < 3; i++) for(int j = 0; j < 3; j++)
@@ -1157,10 +1178,10 @@ namespace Gambit
         CS_lep_hjhi_ratio(i+1,j+1) = ModelParam.CS_lep_hjhi_ratio[i][j];
         BR_hjhihi(i+1,j+1) = ModelParam.BR_hjhihi[i][j];
       }
-      
-      BEreq::HiggsBounds_neutral_input_part_HS(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0], 
-                 &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0], 
-                 &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio, 
+
+      BEreq::HiggsBounds_neutral_input_part_HS(&ModelParam.Mh[0], &ModelParam.hGammaTot[0], &ModelParam.CP[0],
+                 &ModelParam.CS_lep_hjZ_ratio[0], &ModelParam.CS_lep_bbhj_ratio[0],
+                 &ModelParam.CS_lep_tautauhj_ratio[0], CS_lep_hjhi_ratio,
                  &ModelParam.CS_gg_hj_ratio[0], &ModelParam.CS_bb_hj_ratio[0],
                  &ModelParam.CS_bg_hjb_ratio[0], &ModelParam.CS_ud_hjWp_ratio[0],
                  &ModelParam.CS_cs_hjWp_ratio[0], &ModelParam.CS_ud_hjWm_ratio[0],
@@ -1171,16 +1192,16 @@ namespace Gambit
                  &ModelParam.CS_tev_tthj_ratio[0], &ModelParam.CS_lhc7_vbf_ratio[0],
                  &ModelParam.CS_lhc7_tthj_ratio[0], &ModelParam.CS_lhc8_vbf_ratio[0],
                  &ModelParam.CS_lhc8_tthj_ratio[0], &ModelParam.BR_hjss[0],
-                 &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0], 
+                 &ModelParam.BR_hjcc[0], &ModelParam.BR_hjbb[0],
                  &ModelParam.BR_hjmumu[0], &ModelParam.BR_hjtautau[0],
-                 &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0], 
-                 &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0], 
+                 &ModelParam.BR_hjWW[0], &ModelParam.BR_hjZZ[0],
+                 &ModelParam.BR_hjZga[0], &ModelParam.BR_hjgaga[0],
                  &ModelParam.BR_hjgg[0], &ModelParam.BR_hjinvisible[0], BR_hjhihi);
-      
+
       BEreq::HiggsBounds_charged_input_HS(&ModelParam.MHplus, &ModelParam.HpGammaTot, &ModelParam.CS_lep_HpjHmi_ratio,
-            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs, 
+            &ModelParam.BR_tWpb, &ModelParam.BR_tHpjb, &ModelParam.BR_Hpjcs,
             &ModelParam.BR_Hpjcb, &ModelParam.BR_Hptaunu);
-      
+
       BEreq::HiggsSignals_neutral_input_MassUncertainty(&ModelParam.deltaMh[0]);
 
       // add uncertainties to cross-sections and branching ratios
