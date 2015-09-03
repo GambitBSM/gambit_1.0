@@ -120,7 +120,7 @@ void MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::initialize()
    assert(model && "MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   initial_scale_guess = LowEnergyConstant(MZ);
+   initial_scale_guess =  oneset.displayPoleMZ();
 
    scale = initial_scale_guess;
 }
