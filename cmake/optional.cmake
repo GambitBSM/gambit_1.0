@@ -45,6 +45,9 @@ if(MPI)
     endif()
   else()
     message("${BoldRed}   Missing C MPI installation.  GAMBIT will not be MPI-enabled.${ColourReset}")
+    ## To avoid problems with locate_scanners.py
+    set(MPI_CXX_INCLUDE_PATH "")
+    set(MPI_C_INCLUDE_PATH "")
   endif()
   # Do things for Fortran backends and scanners
   if(MPI_Fortran_FOUND)
