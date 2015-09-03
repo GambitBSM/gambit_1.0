@@ -1,0 +1,18 @@
+262,269c262,269
+<         if (m0**2*tmpresult.lt.(-1D-12)
+<      -     .and.(idtag.ne.memory)) then
+<           write(*,*) '*****'
+<           write (*,*) 'Error in dsIBffdxdy (channel:',IBch,
+<      -                '): negative |M|^2 for model ',idtag,'.'
+<           write (*,*) 'Setting corresponding contributions to zero...'
+<           write(*,*) '*****'
+<         endif
+---
+> c        if (m0**2*tmpresult.lt.(-1D-12)
+> c     -     .and.(idtag.ne.memory)) then
+> c          write(*,*) '*****'
+> c          write (*,*) 'Error in dsIBffdxdy (channel:',IBch,
+> c     -                '): negative |M|^2 for model ',idtag,'.'
+> c          write (*,*) 'Setting corresponding contributions to zero...'
+> c          write(*,*) '*****'
+> c        endif
