@@ -53,24 +53,6 @@
 
 #define square(x) ((x) * (x))  // square a number
 
-// Copied and adapted from SUSY-HIT.cpp.
-  /// Some SUSY-HIT-specific shortcuts for dealing with SLHA blocks
-
-void optional_block(const str& name, SLHAea::Block& block, const SLHAstruct& slha)
-  {
-    if (slha.find(name) != slha.end()) block = slha.at(name);
-    else block.push_back ("BLOCK " + name);
-  }
-  
-  void required_block(const str& name, SLHAea::Block& block, const SLHAea::Coll& slha)
-  {
-    if (slha.find(name) != slha.end()) block = slha.at(name);
-    else backend_error().raise(LOCAL_INFO, "Sorry, DarkSUSY needs SLHA block: " + name + ".\n" 
-    "If you tried to read in a debug SLHA file with missing entries,                       \n"
-    "then sort out your SLHA file so that it is readable by DarkSUSY!                      ");
-  }
-
-
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
@@ -130,6 +112,16 @@ END_BE_INI_FUNCTION
 // Convenience functions (definitions)
 BE_NAMESPACE
 {
+
+  // Copied and adapted from SUSY-HIT.cpp.
+  /// Some SUSY-HIT-specific shortcuts for dealing with SLHA blocks
+  void required_block(const std::string& name, const SLHAea::Coll& slha)
+  {
+    if (slha.find(name) != slha.end()) return;
+    else backend_error().raise(LOCAL_INFO, "Sorry, DarkSUSY needs SLHA block: " + name + ".\n" 
+    "If you tried to read in a debug SLHA file with missing entries,                       \n"
+    "then sort out your SLHA file so that it is readable by DarkSUSY!                      ");
+  }
 
   /// Function dsgenericwimp_nusetup sets DarkSUSY's internal common
   /// blocks with all the properties required to compute neutrino
@@ -319,30 +311,32 @@ BE_NAMESPACE
     DS_PACODES *DSpart = &(*pacodes);
     // Define required blocks and raise an error if a block is missing
 
-    required_block("SMINPUTS", sminputs, mySLHA);
-    required_block("VCKMIN",   vckmin,   mySLHA);
-    required_block("MSOFT",    msoft,    mySLHA);
-    required_block("MASS",     mass,     mySLHA);
-    required_block("NMIX",     nmix,     mySLHA);
-    required_block("VMIX",     vmix,     mySLHA);
-    required_block("UMIX",     umix,     mySLHA);
-    required_block("ALPHA",    alpha,    mySLHA);
-    required_block("HMIX",     hmix,     mySLHA);
-    required_block("YU",       yu,       mySLHA);
-    required_block("YD",       yd,       mySLHA);
-    required_block("YE",       ye,       mySLHA);     
-    required_block("MSL2",     msl2,     mySLHA);     
-    required_block("MSE2",     mse2,     mySLHA);     
-    required_block("MSQ2",     msq2,     mySLHA);     
-    required_block("MSD2",     msd2,     mySLHA);
-    required_block("MSU2",     msu2,     mySLHA);
-    required_block("TD",       td,       mySLHA);
-    required_block("TU",       tu,       mySLHA);
-    required_block("TE",       tu,       mySLHA);
-    required_block("USQMIX",   usqmix,   mySLHA);
-    required_block("DSQMIX",   dsqmix,   mySLHA);
-    required_block("SELMIX",   selmix,   mySLHA);
-    required_block("SNUMIX",   snumix,   mySLHA);
+    // FIXME: CW: I removed the second argument from the previuos
+    // required_block version, since it was not required.
+    required_block("SMINPUTS", mySLHA);
+    required_block("VCKMIN",   mySLHA);
+    required_block("MSOFT",    mySLHA);
+    required_block("MASS",     mySLHA);
+    required_block("NMIX",     mySLHA);
+    required_block("VMIX",     mySLHA);
+    required_block("UMIX",     mySLHA);
+    required_block("ALPHA",    mySLHA);
+    required_block("HMIX",     mySLHA);
+    required_block("YU",       mySLHA);
+    required_block("YD",       mySLHA);
+    required_block("YE",       mySLHA);     
+    required_block("MSL2",     mySLHA);     
+    required_block("MSE2",     mySLHA);     
+    required_block("MSQ2",     mySLHA);     
+    required_block("MSD2",     mySLHA);
+    required_block("MSU2",     mySLHA);
+    required_block("TD",       mySLHA);
+    required_block("TU",       mySLHA);
+    required_block("TE",       mySLHA);
+    required_block("USQMIX",   mySLHA);
+    required_block("DSQMIX",   mySLHA);
+    required_block("SELMIX",   mySLHA);
+    required_block("SNUMIX",   mySLHA);
 
     // Block SMINPUTS
     couplingconstants->alphem   = 1./to<double>(mySLHA.at("SMINPUTS").at(1).at(1)); // 1/alpha_{QED}
@@ -435,7 +429,8 @@ BE_NAMESPACE
     mssmpar->tanbe = to<double>(mySLHA.at("HMIX").at(2).at(1));
 
     // Block ALPHA 
-    mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").at().at(0));  // Higgs mixing angle
+    // FIXME: CW: Please double-check that this gives the right result
+    mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").back().at(0));  // Higgs mixing angle
     // mssmmixing->alpha = to<double>(alpha.back().at(0));  // SUSY-HIT way of doing it. Mixing angle in the neutral Higgs boson sector.
 
     // Block MASS
