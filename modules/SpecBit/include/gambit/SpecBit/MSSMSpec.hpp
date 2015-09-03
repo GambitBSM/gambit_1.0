@@ -121,8 +121,7 @@ namespace Gambit
         double vu = this->runningpars.get(Par::mass1,"vu");
         double vd = this->runningpars.get(Par::mass1,"vd");        
         slha["HMIX"][""] << 3 << sqrt(vu*vu + vd*vd) << "# v = sqrt(vd^2 + vu^2) DRbar";
-        // FIXME this is wrong, should be tree not pole like this
-        slha["HMIX"][""] << 4 << this->phys.get(Par::Pole_Mass,"A0")*this->phys.get(Par::Pole_Mass,"A0") << "# m^2_A (tree)";        
+        slha["HMIX"][""] << 4 << this->runningpars.get(Par::mass2,"mA2") << "# m^2_A (tree)";        
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass2,"BMu","HMIX",101,"# Bmu DRbar");
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
