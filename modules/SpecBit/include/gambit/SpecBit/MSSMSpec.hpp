@@ -100,8 +100,6 @@ namespace Gambit
         // PS: FIXME remaining issues
         //  MINPAR
         //     3     can't currently get tanbeta DRbar at mZ (input) scale
-        //  HMIX
-        //     4     can't currently get m^2_A = m3/(sinbeta cosbeta) input parameter (tree-level A0 mass)  
         
         // Here we assume that all SM input info comes from the SMINPUT object, 
         // and all low-E stuff (quark pole masses and the like) come from the LE subspectrum.
