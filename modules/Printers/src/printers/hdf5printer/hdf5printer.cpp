@@ -610,7 +610,7 @@ namespace Gambit
        // has access to all the buffers.
        if(is_primary_printer)
        {
-        DBUG( std::cout << "Performing final writes for HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
+          logger() << LogTags::printers << "rank "<<myRank<<": Running finalise() routine for HDF5Printer (with name=\""<<printer_name<<"\")..." << EOM;
 
           // Make sure all the buffers are caught up to the final point.
           synchronise_buffers();          
@@ -705,7 +705,10 @@ namespace Gambit
                    errmsg << "Error! There are (N="<<remaining_msgs<<") postponed random-access writes still left unwritten to disk in buffer "<<it->second->get_label()<<" at end of run! This may mean that some sync buffer data was not properly delivered from another process.";
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                 }
-             
+            
+                // Debug: check final lengths
+                //std::cout << "dset: " << it->second->get_label() << ", length:" << it->second->get_dataset_length() << std::endl;
+ 
                 if(dset_length==0) 
                 {
                    dset_length = it->second->get_dataset_length();

@@ -790,11 +790,10 @@ namespace Gambit
 
           // Trigger a dummy print call for all printable functors. This is used by some printers
           // to set up buffers for each of these output streams.
-          logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << std::endl;
+          logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
           masterGraph[*vi]->print(boundPrinter,0);     
         }    
       }
-      logger() << EOM;
       // Force-reset the printer to erase the dummy calls
       // (but don't do this if we are in resume mode!)
       if(not boundCore->resume) boundPrinter->reset(true);

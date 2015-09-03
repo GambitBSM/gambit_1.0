@@ -215,7 +215,7 @@ namespace Gambit {
           }
           _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location, name, resume);
 
-          //logger()<<EOM; // Leave this to calling function
+          logger()<<EOM; // Leave this to calling function
         }
       }
       
