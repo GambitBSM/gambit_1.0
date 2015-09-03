@@ -206,8 +206,8 @@ namespace Gambit
         }
 
         SLHAea_add_block(slha, "ALPHA", this->runningpars.GetScale());
-        slha["ALPHA"][""] << 1 << asin(-1.0*this->phys.get(Par::Pole_Mixing, "h0", 1, 1)) << "# sin^-1(-SCALARMIX(1,1))";
-
+        slha["ALPHA"][""] << 1 << asin(this->phys.get(Par::Pole_Mixing, "h0", 2, 2)) << "# sin^-1(SCALARMIX(2,2))";
+	
         sspair V("SNUMIX","~nu");
         SLHAea_add_block(slha, V.first,this->runningpars.GetScale());
         for(int i=1;i<4;i++) for(int j=1;j<4;j++)
