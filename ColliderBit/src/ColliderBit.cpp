@@ -639,9 +639,15 @@ namespace Gambit
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
       cout << "In calcLogLike" << endl;
 
-      std::vector<double> observedLikelihoods;
+      // Loop over analyses and calculate the total observed dll
+      double total_dll_obs = 0;
       for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis) {
         cout << "In analysis loop" << endl;
+
+        // Loop over the signal regions inside the analysis, and work out the total (delta) log likelihood for this analysis
+        /// @note In general each analysis could/should work out its own likelihood so they can handle SR combination if possible.
+        /// @note For now we just take the result from the SR *expected* to be most constraining, i.e. with highest expected dll
+        double bestexp_dll_exp = 0, bestexp_dll_obs = 0;
         for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR) {
           cout << "In signal region loop" << endl;
           SignalRegionData srData = analysisResults[analysis][SR];
@@ -659,7 +665,7 @@ namespace Gambit
 
           // A fractional uncertainty on n_predicted_uncertain e.g. 0.2 from 20% uncertainty on efficencty wrt signal events
           const double bkg_ratio = srData.background_sys/srData.n_background;
-          const double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0; ///< @todo Is this the best treatment?
+          //const double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0; ///< @todo Is this the best treatment?
           const double uncertainty_b = bkg_ratio;
           //const double uncertainty_sb = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio); ///< @todo AB: I don't like this... should be something like sqrt(DeltaB**2 + DeltaS**2)/(B+S) ?
           const double uncertainty_sb = sqrt(srData.background_sys*srData.background_sys + srData.signal_sys*srData.signal_sys) / n_predicted_uncertain_sb;
@@ -687,12 +693,23 @@ namespace Gambit
           }
           cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
-          observedLikelihoods.push_back(result);
+          // Calculate the expected dll and set the bestexp values for exp and obs dll if this one is the best so far
+          const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention here
+          if (dll_exp > bestexp_dll_exp) {
+            bestexp_dll_exp = dll_exp;
+            bestexp_dll_obs = llb_obs - llsb_obs;
+          }
+
         } // end SR loop
+
+        // Update the total obs dll
+        /// @note For now we assume that the analyses are fully orthogonal, i.e. no possiblity that the same event appears twice -> straight addition
+        total_dll_obs += bestexp_dll_obs;
+
       } // end ana loop
 
-      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood (ratio) / other combined-as-well-as-we-can LL number
-
+      // Set the single DLL to be returned
+      result = total_dll_obs;
     }
 
 
@@ -787,10 +804,10 @@ namespace Gambit
       result.BR_Hptaunu = 0.;
 
       const Spectrum* fullspectrum = *Dep::SM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_UV();
+      const SubSpectrum* spec = fullspectrum->get_HE();
       const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
 
-      result.Mh[0] = spec->phys.get_Pole_Mass(25,0);
+      result.Mh[0] = spec->phys().get_Pole_Mass(25,0);
 
       result.deltaMh[0] = 0.; // Need to get theoretical error on mass
       result.hGammaTot[0] = decays->width_in_GeV;
@@ -844,14 +861,14 @@ namespace Gambit
       sHneut.push_back("A0");
 
       const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_UV();
+      const SubSpectrum* spec = fullspectrum->get_HE();
       const DecayTable decaytable = *Dep::decay_rates;
 
       const DecayTable::Entry* Hneut_decays[3];
       for(int i = 0; i < 3; i++)
       {
         // Higgs masses and errors
-        result.Mh[i] = spec->phys.get_Pole_Mass(sHneut[i]);
+        result.Mh[i] = spec->phys().get_Pole_Mass(sHneut[i]);
         result.deltaMh[i] = 0.;
       }
 
@@ -935,7 +952,7 @@ namespace Gambit
         }
       }
 
-      result.MHplus = spec->phys.get_Pole_Mass("H+");
+      result.MHplus = spec->phys().get_Pole_Mass("H+");
       result.deltaMHplus = 0.;
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));
