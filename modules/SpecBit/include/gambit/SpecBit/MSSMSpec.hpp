@@ -346,6 +346,16 @@ namespace Gambit
       { 
          return model.get_vu() / model.get_vd(); 
       }
+     // "extra" function to compute mA2 
+      template <class Model>
+      double get_DRbar_mA2(const Model& model) 
+      {
+	double tb = model.get_vu() / model.get_vd();
+	double cb = cos(atan(tb));
+	double sb = sin(atan(tb));
+	return model.get_BMu() / (sb * cb); 
+      }
+    
 
      template <class Model>
      double get_sinthW2_DRbar(const Model& model)
@@ -626,6 +636,16 @@ namespace Gambit
             tmp_map["sinW2"] = &get_sinthW2_DRbar<Model>;
             map_collection[Par::dimensionless].map0_extraM = tmp_map;
          }
+
+	 // Functions utilising the "extraM" function signature
+         // (Zero index, model object as argument)
+         {
+            typename MTget::fmap0_extraM tmp_map;
+            tmp_map["mA2"] = &get_DRbar_mA2<Model>;
+	  
+            map_collection[Par::mass2].map0_extraM = tmp_map;
+         }
+	 
 
          // Functions utilising the two-index "plain-vanilla" function signature
          // (Two-index member functions of model object)
