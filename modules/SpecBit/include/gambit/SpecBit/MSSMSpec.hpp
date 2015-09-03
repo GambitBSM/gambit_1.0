@@ -511,7 +511,7 @@ namespace Gambit {
             typename MTget::fmap0_extraM tmp_map;
             tmp_map["mA2"] = &get_DRbar_mA2<Model>;
 	  
-            map_collection[Par::mass1].map0_extraM = tmp_map;
+            map_collection[Par::mass2].map0_extraM = tmp_map;
          }
 	 
 
