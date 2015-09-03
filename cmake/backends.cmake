@@ -52,7 +52,7 @@ set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE
 ExternalProject_Add(darksusy
   URL http://www.fysik.su.se/~edsjo/darksusy/tars/darksusy-5.1.1.tar.gz
   URL_MD5 ebeb0e1cfb4d834858e120190e423f62
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.1
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif 
@@ -72,7 +72,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUS
 ExternalProject_Add(superiso
   URL http://superiso.in2p3.fr/download/superiso_v3.4.tgz
   URL_MD5 ae4ecc45e7f608d9faf91ba8e5780053
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.4
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -92,8 +92,9 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIs
 set(ddcalc_location "${GAMBIT_INTERNAL}/DDCalc0")
 set(ddcalc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DDCalc/0.0")
 ExternalProject_Add(ddcalc
-  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
-           COMMAND cmake -E copy_directory ${ddcalc_location} ${ddcalc_dir}
+  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+           COMMAND ${CMAKE_COMMAND} -E copy_directory ${ddcalc_location} ${ddcalc_dir}
   SOURCE_DIR ${ddcalc_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -120,8 +121,9 @@ endif()
 set(gamlike_location "${GAMBIT_INTERNAL}/gamLike")
 set(gamlike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gamLike/1.0.0")
 ExternalProject_Add(gamlike
-  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
-           COMMAND cmake -E copy_directory ${gamlike_location} ${gamlike_dir}
+  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+           COMMAND ${CMAKE_COMMAND} -E copy_directory ${gamlike_location} ${gamlike_dir}
   SOURCE_DIR ${gamlike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -167,8 +169,9 @@ set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
 set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.209")
 # - Actual configure and compile commands
 ExternalProject_Add(pythia
-  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
-           COMMAND cmake -E copy_directory ${pythia_location} ${pythia_dir}
+  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+           COMMAND ${CMAKE_COMMAND} -E copy_directory ${pythia_location} ${pythia_dir}
   SOURCE_DIR ${pythia_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so" ${pythia_CONFIGURE_EXTRAS}
@@ -185,8 +188,9 @@ set(clean_files ${clean_files} "${pythia_dir}/config.mk" "${pythia_dir}/lib/libp
 set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
 set(fastsim_dir "${PROJECT_SOURCE_DIR}/Backends/installed/fastsim/1.0")
 ExternalProject_Add(fastsim
-  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
-           COMMAND cmake -E copy_directory ${fastsim_location} ${fastsim_dir}
+  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+           COMMAND ${CMAKE_COMMAND} -E copy_directory ${fastsim_location} ${fastsim_dir}
   SOURCE_DIR ${fastsim_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -205,9 +209,10 @@ set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   #URL 
   #URL_MD5 
-  #DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
-  DOWNLOAD_COMMAND cmake -E echo "       Retrieving unreleased code from GAMBIT Collaboration private repository (will fail if you don't have the repository)."
-           COMMAND cmake -E copy_directory ${nulike_location} ${nulike_dir}
+  #DOWNLOAD_DIR ${backend_download}
+  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+           COMMAND ${CMAKE_COMMAND} -E copy_directory ${nulike_location} ${nulike_dir}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -225,7 +230,7 @@ set(susyhit_short_dir "./Backends/installed/SUSY-HIT/1.5")
 ExternalProject_Add(susyhit
   URL http://www.itp.kit.edu/~maggie/SUSY-HIT/susyhit.tar.gz
   URL_MD5 493c7ba3a07e192918d3412875fb386a
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${susyhit_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp -n makefile makefile.orig  COMMAND cp -n sdecay.f sdecay.orig  COMMAND cp -n hdecay.f hdecay.orig 
@@ -258,9 +263,9 @@ ExternalProject_Add(susyhit
             COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" makefile.tmp > makefile
             COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" sdecay.f.tmp > sdecay.f
             COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" hdecay.f.tmp > hdecay.f
-            COMMAND cmake -E remove makefile.tmp
-            COMMAND cmake -E remove sdecay.f.tmp
-            COMMAND cmake -E remove hdecay.f.tmp
+            COMMAND ${CMAKE_COMMAND} -E remove makefile.tmp
+            COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
+            COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
   BUILD_COMMAND make ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS}
   INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
@@ -271,7 +276,7 @@ set(clean_files ${clean_files} "${susyhit_dir}/${susyhit_lib}.so")
 ExternalProject_Add(feynhiggs
   URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.10.4.tar.gz
   URL_MD5 afd04154870ab5519603ffdb0e4e2d5b
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.10.4
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
@@ -286,7 +291,7 @@ set(higgsbounds_tables_dir "${PROJECT_SOURCE_DIR}/Backends/installed/csboutput_t
 ExternalProject_Add(higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
   URL_MD5 004decca30335ddad95654a04dd034a6
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgsbounds_tables_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -298,7 +303,7 @@ ExternalProject_Add(higgsbounds
   DEPENDS higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.0.tar.gz
   URL_MD5 9d76eefecea870d941a6fe8c0ee7a6ae
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
@@ -318,7 +323,7 @@ ExternalProject_Add(higgssignals
   DEPENDS higgsbounds
   URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.3.2.tar.gz
   URL_MD5 2e300a3784eb5d3a9e1dd905d2af7676
-  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/Backends/downloaded
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.3.2
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure my_configure 
@@ -343,5 +348,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSi
 set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia  
-                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit) #fastsim
+add_custom_target(backends COMMAND make darksusy micromegas micromegasSingletDM superiso  
+                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit)
+
+add_custom_target(backends_nonfree COMMAND make ddcalc gamlike nulike pythia) #fastsim

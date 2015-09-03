@@ -69,10 +69,15 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}"
 ##### distclean ########
 
 # Ensure that distclean sweeps out the scratch directory
-add_custom_target(clean-scratch-files COMMAND ${CMAKE_COMMAND} -E remove -f scratch/* WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_custom_target(clean-scratch-subdirs COMMAND ${CMAKE_COMMAND} -E remove_directory scratch/* WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_dependencies(clean-scratch-subdirs clean-scratch-files)
-add_dependencies(distclean clean-scratch-subdirs)
+add_custom_target(clean-scratch COMMAND ${CMAKE_COMMAND} -E remove_directory scratch WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_dependencies(distclean clean-scratch)
+
+# Ensure that distclean sweeps out the backend and scanner download and install directories
+add_custom_target(clean-backend-download COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_custom_target(clean-backend-install COMMAND ${CMAKE_COMMAND} -E remove_directory Backends/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_custom_target(clean-scanner-download COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/downloaded WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_custom_target(clean-scanner-install COMMAND ${CMAKE_COMMAND} -E remove_directory ScannerBit/installed WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_dependencies(distclean clean-backend-download clean-backend-install clean-scanner-download clean-scanner-install)
 
 # Ensure that distclean removes .pyc files
 add_custom_target(clean-pyc COMMAND ${CMAKE_COMMAND} -E remove *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})

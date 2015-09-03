@@ -26,9 +26,10 @@
 
 
 # Diver
+set(diver_location "${GAMBIT_INTERNAL}/Diver")
 set(diver_ver "1\\.0\\.0")
 set(diver_lib "libdiver")
-set(diver_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/Diver")
+set(diver_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/Diver/1.0.0")
 set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
 if(MPI_Fortran_FOUND)
   set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
@@ -38,7 +39,10 @@ endif()
 ExternalProject_Add(diver
   #URL 
   #URL_MD5 
-  #DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/ScannerBit/downloaded
+  #DOWNLOAD_DIR ${scanner_download}
+  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+           COMMAND ${CMAKE_COMMAND} -E copy_directory ${diver_location} ${diver_dir}
   SOURCE_DIR ${diver_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -49,9 +53,10 @@ set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
 
 # MultiNest
+set(mn_location "${GAMBIT_INTERNAL}/MultiNest_v3.9")
 set(mn_ver "3\\.9")
 set(mn_lib "libnest3")
-set(mn_dir "${PROJECT_SOURCE_DIR}/../gambit_internal/extras/MultiNest_v3.9")
+set(mn_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/MultiNest/3.9")
 set(mnLAPACK "${LAPACK_LINKLIBS}")
 set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS} ${mnLAPACK}")
 if(MPI_Fortran_FOUND)
@@ -63,7 +68,10 @@ ExternalProject_Add(multinest
   #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask CCPForge for a solution.
   #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
   #URL_MD5 6c0c9e9ee0ac3c906109675302fb30f0
-  #DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/ScannerBit/downloaded
+  #DOWNLOAD_DIR ${scanner_download}
+  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+           COMMAND ${CMAKE_COMMAND} -E copy_directory ${mn_location} ${mn_dir}
   SOURCE_DIR ${mn_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
