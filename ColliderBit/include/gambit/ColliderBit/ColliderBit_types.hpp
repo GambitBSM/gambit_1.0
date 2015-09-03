@@ -5,7 +5,7 @@
 ///  Type definition header for module
 ///  ColliderBit.
 ///
-///  Compile-time registration of type definitions 
+///  Compile-time registration of type definitions
 ///  required for the rest of the code to
 ///  communicate with ColliderBit.
 ///
@@ -17,7 +17,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name if you modify):
-///   
+///
 ///  \author Abram Krislock
 ///          (a.m.b.krislock@fys.uio.no)
 ///
@@ -37,10 +37,11 @@
 #include "HEPUtils/Event.h"
 
 namespace Gambit {
-  
+
   namespace ColliderBit {
 
     /// @brief Container for log likelihoods from multiple Analyses and SRs
+    /// @todo If we want to be able to handle correlations between analyses, we need some way to know which analysis number are at which outer-vector indices
     typedef std::vector<std::vector<SignalRegionData>> ColliderLogLikes;
   }
 }
