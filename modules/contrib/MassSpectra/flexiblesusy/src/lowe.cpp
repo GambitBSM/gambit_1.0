@@ -398,7 +398,7 @@ void QedQcd::toMz() {
 
   double alphasMZ = displayAlpha(ALPHAS);
   double alphaMZ = displayAlpha(ALPHA);
-  double mz = displayMu();
+  double mz = displayPoleMz();
   runGauge(mz, 1.0);
   run(1.0, mz, tol);
   // Reset alphas to erase numerical integration errors.
