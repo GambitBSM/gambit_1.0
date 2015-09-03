@@ -910,22 +910,48 @@ namespace Gambit
     void SI_BRBKstarmumu( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu;
+      cout<<"Calculating the B-> K*mumu observables!"<<endl;
+
+
 
       struct parameters param = *Dep::FlavBit_fill;
       //double S3, S4, S5, AFB, S7, S8, S9, FL;
       //      Flav_KstarMuMu_obs obs_out;
-      if(param.model<0) result.BR=0.;
+      if(param.model<0) 
+	{
+	result.BR=0.;
+	cout<<"You idiot you fucked up!!!"<<endl;
+	}
       else
       {
-    double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
-      std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-    double obs[Nobs_BKsll+1];
+	cout<<"Entering else"<<endl;
+	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
+	std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
+	double obs[Nobs_BKsll+1];
 
-    double mu_W=2.*param.mass_W;
-    double mu_b=param.mass_b_pole;
+	double mu_W=2.*param.mass_W;
+	double mu_b=param.mass_b_pole;
 
-    const double q2_min=result.q2_min;
-    const double q2_max=result.q2_max;
+	cout<<"Got the mass"<<endl;
+
+	double tmp_q2_min=result.q2_min;
+	double tmp_q2_max=result.q2_max;
+	
+	
+	if(tmp_q2_min==tmp_q2_max)
+	  {
+	    cout<<"Using this function with empty Flav_KstarMuMu_obs"<<endl;
+	    tmp_q2_min=1.;
+	    tmp_q2_max=6.;
+	  }
+
+	const double q2_min=tmp_q2_min;
+	const double q2_max=tmp_q2_max;
+
+	cout<<"Q2 min = "<<q2_min<<endl;
+	cout<<"Q2 max = "<<q2_max<<endl;
+	
+	
 
     BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
     BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
@@ -1118,6 +1144,7 @@ namespace Gambit
       Flav_KstarMuMu_obs obs_out_11_25;
       obs_out_11_25.q2_min=1.1;
       obs_out_11_25.q2_max=2.5;
+      cout<<"Before the crash!"<<endl;
       SI_BRBKstarmumu(obs_out_11_25);
       // we got observables
       Flav_KstarMuMu_obs obs_out_25_40;
