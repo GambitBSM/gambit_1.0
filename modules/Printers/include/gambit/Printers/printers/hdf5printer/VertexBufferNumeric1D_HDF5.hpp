@@ -32,6 +32,7 @@
 #include "gambit/Printers/VertexBufferNumeric1D.hpp"
 #include "gambit/Printers/printers/hdf5printer/DataSetInterfaceScalar.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Logs/log.hpp"
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
@@ -73,8 +74,8 @@ namespace Gambit {
          public:
            /// Constructors
            VertexBufferNumeric1D_HDF5();
-           VertexBufferNumeric1D_HDF5(
-             , H5FGPtr location
+           VertexBufferNumeric1D_HDF5
+             ( H5FGPtr location
              , const std::string& name
              , const int vID
              , const unsigned int i
@@ -196,8 +197,25 @@ namespace Gambit {
      
         if(not silence and this->myRank==0)
         {
+          if(resume) 
+          { 
+             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"_isvalid'..."<<std::endl;
+          } else
+          {
+             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"_isvalid'..."<<std::endl;
+          }
           _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location, name+"_isvalid", resume);
+
+          if(resume) 
+          { 
+             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"'..."<<std::endl;
+          } else
+          {
+             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"'..."<<std::endl;
+          }
           _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location, name, resume);
+
+          //logger()<<EOM; // Leave this to calling function
         }
       }
       

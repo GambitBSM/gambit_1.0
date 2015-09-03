@@ -236,6 +236,13 @@ namespace Gambit
         /// (should correspond to the number of "appends" each active buffer has received)
         ulong get_N_pointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
 
+        /// Retrieve the "resume" flag
+        bool get_resume() { return resume; }
+
+        /// Attempt to read an existing output file, and prepare it for
+        /// resumed writing (e.g. fix up dataset lengths if data missing)
+        void verify_existing_output(const std::string& file, const std::string& group);
+
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
         /// BaseBasePrinter, so we need to  

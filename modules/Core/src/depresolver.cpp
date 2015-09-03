@@ -796,7 +796,8 @@ namespace Gambit
       }
       logger() << EOM;
       // Force-reset the printer to erase the dummy calls
-      boundPrinter->reset(true);
+      // (but don't do this if we are in resume mode!)
+      if(not boundCore->resume) boundPrinter->reset(true);
 
       // sent vector of ID's of functors to be printed to printer.
       // (if we want to only print functor output sometimes, and dynamically

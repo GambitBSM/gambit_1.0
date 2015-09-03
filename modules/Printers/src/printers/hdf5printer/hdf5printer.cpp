@@ -122,6 +122,66 @@ namespace Gambit
   namespace Printers 
   {
    
+    // Locally defined helper struct 
+    struct DSetData
+    {
+      std::vector<std::string> names;
+      std::vector<unsigned long> lengths;
+    };
+  
+    // Helper function for iterating through HDF5 file during verification stage
+    herr_t op_func_get_dset_lengths(hid_t loc_id, const char *name, const H5L_info_t *info, void *opdata)
+    {
+       herr_t     status, return_val = 0;
+       H5O_info_t infobuf;
+       DSetData*  data = static_cast<DSetData*>(opdata);
+
+       // Ensure all objects in the group are datasets
+       // Also retrieve their names and lengths
+       status = H5Oget_info_by_name(loc_id, name, &infobuf, H5P_DEFAULT);
+       switch (infobuf.type) {
+           case H5O_TYPE_GROUP: {
+               // Error! Not a dataset
+               std::ostringstream errmsg;
+               errmsg << "Error while verifying existing HDF5 file contents! Detected an object in the target group (name="<<name<<") which is another group! Currently only datasets are written to the target group by the HDF5Printer, so this indicates an inconsistency (e.g. perhaps you are trying to resume using a different or altered yaml file from the one used to generate the existing data)";
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+               break; }
+           case H5O_TYPE_DATASET: {
+               // All good, get the name and length
+
+               // Get dataspace of the dataset identified by 'loc_id'
+               hid_t dspace = H5Dget_space(loc_id);
+
+               // Get number of dimensions 
+               const int ndims = H5Sget_simple_extent_ndims(dspace);
+
+               // Get sizes of dimensions
+               hsize_t dims[ndims];
+               H5Sget_simple_extent_dims(dspace, dims, NULL);
+
+               // Store the name and dim[0] size (which is what we use as the "length")
+               logger()<<LogTags::printers<<"Reading existing dataset '"<<name<<"'; length is "<<dims[0]<<std::endl;
+               data->names.push_back(name);
+               data->lengths.push_back(dims[0]);               
+               break; }
+           case H5O_TYPE_NAMED_DATATYPE: {
+               // Error! Not a dataset
+               std::ostringstream errmsg;
+               errmsg << "Error while verifying existing HDF5 file contents! Detected an object in the target group (name="<<name<<") which is a named datatype, not a dataset! Currently only datasets are written to the target group by the HDF5Printer, so this indicates an inconsistency (e.g. perhaps you are trying to resume using a different or altered yaml file from the one used to generate the existing data)";
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+               break; }
+           default: {
+               // Error! Not a dataset
+               std::ostringstream errmsg;
+               errmsg << "Error while verifying existing HDF5 file contents! Detected an object in the target group (name="<<name<<") with an unknown type, i.e. not a dataset! Currently only datasets are written to the target group by the HDF5Printer, so this indicates an inconsistency (e.g. perhaps you are trying to resume using a different or altered yaml file from the one used to generate the existing data)";
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
+      }
+
+       return return_val;
+    }
+
+
     // We are going to have to combine this data with information from the 
     // scanners (using the auxilliary printers). In order to do this efficiently,
     // we will store the pointIDs and ranks in a dataset seperate from the
@@ -207,6 +267,7 @@ namespace Gambit
                                        , aux_i
                                        , synchronised
                                        , silence
+                                       , printer->get_resume()
                                        #ifdef WITH_MPI
                                        /* Retrieve/create MPI tags for this buffer */
                                        , printer->get_bufftags(key)
@@ -282,48 +343,17 @@ namespace Gambit
            {
               overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
            }
-
-           if(resume)
+           else
            {
-             /// Check if hdf5 file exists and can be opened in read/write mode
-             std::string msg;
-             if(not HDF5::checkFileReadable(file, msg))
-             {
-               // We are supposed to be resuming, but no readable output file was found, so we can't.
-               std::ostringstream errmsg;
-               errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate any existing (and readable) output file. Resuming is therefore not possible; aborting run... (see below for IO error message)";
-               errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
-               errmsg << std::endl << "IO error message: " << msg;
-               printer_error().raise(LOCAL_INFO, errmsg.str()); 
-             }
+              /* Run checks (and potentially repairs) on existing output file */
+              verify_existing_output(file,group);
            }
-
-           // Open HDF5 file (create if non-existant)
+           
+           // Open requested file 
            bool oldfile; 
            Utils::ensure_path_exists(file);
            fileptr = HDF5::openFile(file,overwrite,oldfile);
-           if(resume and not oldfile)
-           {
-               std::ostringstream errmsg;
-               errmsg << "Error! New output file was created, but we are in resume mode and needed an old output file. But this problem should already have been caught, so this is a bug in the HDF5Printer, please fix it.";
-               printer_error().raise(LOCAL_INFO, errmsg.str()); 
-           }
 
-           if(resume)
-           {
-             // Check that group is readable
-             std::string msg;
-             if(not HDF5::checkGroupReadable(fileptr, group, msg))   
-             {
-               // We are supposed to be resuming, but specified group was not readable in the output file, so we can't.
-               std::ostringstream errmsg;
-               errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) was unable to open the specified group ("<<group<<") within the existing output file ("<<file<<"). Resuming is therefore not possible; aborting run... (see below for IO error message)";
-               errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
-               errmsg << std::endl << "IO error message: " << msg;
-               printer_error().raise(LOCAL_INFO, errmsg.str()); 
-             }
-           }
- 
            // Open requested group (creating it plus parents if needed)
            groupptr = HDF5::openGroup(fileptr,group);
 
@@ -374,6 +404,83 @@ namespace Gambit
       // Initialise "lastPointID" map to -1 (i.e. no last point)
       lastPointID[myRank] = -1; // Only rank 0 process for now; parallel mode not implemented
     }
+
+    /// Attempt to read an existing output file, and prepare it for
+    /// resumed writing (e.g. fix up dataset lengths if data missing)
+    void HDF5Printer::verify_existing_output(const std::string& file, const std::string& group)
+    {
+       if(resume)
+       {
+         /// Check if hdf5 file exists and can be opened in read/write mode
+         std::string msg;
+         if(not HDF5::checkFileReadable(file, msg))
+         {
+           // We are supposed to be resuming, but no readable output file was found, so we can't.
+           std::ostringstream errmsg;
+           errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate any existing (and readable) output file. Resuming is therefore not possible; aborting run... (see below for IO error message)";
+           errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
+           errmsg << std::endl << "IO error message: " << msg;
+           printer_error().raise(LOCAL_INFO, errmsg.str()); 
+         }
+
+         // Open HDF5 file
+         bool oldfile; 
+         bool overwrite=false;
+         Utils::ensure_path_exists(file);
+         fileptr = HDF5::openFile(file,overwrite,oldfile);
+    
+         // Check that group is readable
+         std::string msg2;
+         if(not HDF5::checkGroupReadable(fileptr, group, msg2))   
+         {
+           // We are supposed to be resuming, but specified group was not readable in the output file, so we can't.
+           std::ostringstream errmsg;
+           errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) was unable to open the specified group ("<<group<<") within the existing output file ("<<file<<"). Resuming is therefore not possible; aborting run... (see below for IO error message)";
+           errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
+           errmsg << std::endl << "IO error message: " << msg2;
+           printer_error().raise(LOCAL_INFO, errmsg.str()); 
+         }
+
+         // Open requested group (creating it plus parents if needed)
+         groupptr = HDF5::openGroup(fileptr,group);
+
+         // Now for more serious checks: we will check every dataset in the
+         // target group and make sure they are all the same length, so that
+         // we can learn where to write new data.
+         // TODO: add routine to fix dataset lengths in case some datasets
+         // were not properly updated during termination of previous run.
+         
+         // Get the C interface identifier for the output dataset
+         hid_t group_id = groupptr->getId();
+
+         herr_t errcode;
+
+         // Storage for data collected during iteration
+         DSetData dsetdata;
+
+         // First learn what all the existing datasets are and find out their lengths
+         errcode = H5Literate(group_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, op_func_get_dset_lengths, &dsetdata);
+         logger()<<EOM;
+
+         // Verify that all the dataset lengths are equal
+         long unsigned firstlength = dsetdata.lengths[0];
+         for(int i=1; i<dsetdata.lengths.size(); i++)
+         {
+           if(dsetdata.lengths[i] != dsetdata.lengths[0])
+           {
+              std::ostringstream errmsg;
+              errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! Length of dataset '"<<dsetdata.names[i]<<"' ("<<dsetdata.lengths[i]<<") in group '"<<group<<"' of file '"<<file<<"' is inconsistent with the lengths of other datasets in this group ("<<dsetdata.lengths[0]<<"). It is planned for such inconsistencies to be fixable, but currently it is an error, sorry!";
+              printer_error().raise(LOCAL_INFO, errmsg.str());
+           }
+         }
+ 
+         // Checks finished, close file.
+         groupptr->close();
+         fileptr->close();
+       }
+    }
+
+
 
     #ifdef WITH_MPI
     /// Master waits until all processes send the specified tag, and monitors

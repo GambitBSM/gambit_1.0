@@ -189,9 +189,11 @@ Rules:
 #    function: RD_thresholds_resonances_from_spectrum
       
   - capability: lnL_oh2
+    function: lnL_oh2_Simple
     options:
        oh2_mean: 0.11
        oh2_err: 0.07
+
   # Direct detection -------------------
   # For MSSM-based models, which of the DarkSUSY or micrOMEGAs routines
   # to use must be explicitly specified here (uncomment the desired one).

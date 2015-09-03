@@ -61,7 +61,7 @@ namespace Gambit {
          hsize_t  slicedims[DSETRANK];
 
          // flag to specify whether we should try to access an existing dataset or create a new one
-         const bool resume;
+         bool resume;
 
         protected:
          // Derived classes need full access to these
@@ -126,9 +126,9 @@ namespace Gambit {
         : mylocation(NULL)
         , myname()
         , record_dims()
-        , my_dataset()
-        , dsetnextemptyslab(0)
         , resume(false)
+	, my_dataset()
+        , dsetnextemptyslab(0)
       {}
 
       template<class T, std::size_t RR, std::size_t CL>
@@ -136,9 +136,9 @@ namespace Gambit {
         : mylocation(location)
         , myname(name)
         , record_dims() /* doh have to copy array element by element */
+        , resume(r)
         , my_dataset() 
         , dsetnextemptyslab(0)
-        , resume(r)
       {
         if(resume)
         {
@@ -208,12 +208,12 @@ namespace Gambit {
       /// Open an existing dataset 
       /// It is assumed that we are resuming a run and therefore know what format this dataset should have
       template<class T, std::size_t RECORDRANK, std::size_t CHUNKLENGTH>
-      H5::DataSet DataSetInterfaceBase<T,RECORDRANK,CHUNKLENGTH>::createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK])
+      H5::DataSet DataSetInterfaceBase<T,RECORDRANK,CHUNKLENGTH>::openDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK])
       {
          // Open the dataset
-         H5::DataSet output;
+         H5::DataSet dataset;
          try {
-            output = location->openDataSet( name.c_str() );
+            dataset = location->openDataSet( name.c_str() );
          } catch(const H5::Exception& e) {
                std::ostringstream errmsg;
                errmsg << "Error opening existing dataset (with name: \""<<myname<<"\") in HDF5 file. Message was: "<<e.getDetailMsg();
@@ -239,7 +239,7 @@ namespace Gambit {
 
          // Update parameters to match dataset contents
          // Compute initial dataspace and chunk dimensions
-         dims[0] = 0; //1*CHUNKLENGTH; // Start off with space for 1 chunk
+         dims[0] = dims_out[0]; // Set to match existing data
          maxdims[0] = H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
          chunkdims[0] = CHUNKLENGTH;
          slicedims[0] = 1; // Dimensions of a single record in the data space
@@ -252,7 +252,7 @@ namespace Gambit {
             chunkdims[i+1] = rdims[i];             
             slicedims[i+1] = rdims[i];
 
-            // Check that these match the existing dataset
+            // Check that record size matches the existing dataset
             if(dims[i+1] != dims_out[i+1])
             {
                std::ostringstream errmsg;
@@ -260,8 +260,13 @@ namespace Gambit {
                printer_error().raise(LOCAL_INFO, errmsg.str());
             }
          }
+         
+         // Update the variables which control where the next write will occur
+         // Index of first element in next target hyperslab (assumes that 
+         // existing dataset has been written up to a complete chunk)
+         dsetnextemptyslab = dims[0];  
 
-         return output;
+         return dataset;
       }
 
 
