@@ -1292,7 +1292,7 @@ namespace Gambit
       Chi2=Chi2/measurement_assym.dim;
       result+=0.5*Chi2;
       cout<<0.5*Chi2<<endl;
-      cout<<"DONE the likelihood"<<endl;
+      cout<<"DONE the likelihood for b2sll"<<endl;
 
     }
 

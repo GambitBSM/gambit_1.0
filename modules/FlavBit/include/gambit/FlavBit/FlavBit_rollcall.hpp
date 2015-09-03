@@ -424,21 +424,26 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY b2sll_LL
-  START_CAPABILITY
-    #define FUNCTION b2sll_likelihood
-    START_FUNCTION(double)
-          DEPENDENCY(FlavBit_fill, parameters)
-    #undef FUNCTION
-  #undef CAPABILITY
 
-  #define CAPABILITY b2sll_M
-  START_CAPABILITY
-    #define FUNCTION b2sll_measurements
-    START_FUNCTION(FlavBit::Flav_measurement_assym)
+
+ #define CAPABILITY b2sll_M                                      
+ START_CAPABILITY                                                
+   #define FUNCTION b2sll_measurements                           
+   START_FUNCTION(FlavBit::Flav_measurement_assym)               
+         DEPENDENCY(FlavBit_fill, parameters)                    
+         DEPENDENCY(SI_BRBKstarmumu, Flav_KstarMuMu_obs)         
+   #undef FUNCTION                                               
+ #undef CAPABILITY                                               
+                                                                 
+
+  #define CAPABILITY b2sll_LL                                              
+  START_CAPABILITY                                                         
+    #define FUNCTION b2sll_likelihood                                      
+    START_FUNCTION(double)                                                 
           DEPENDENCY(FlavBit_fill, parameters)
-    #undef FUNCTION
-  #undef CAPABILITY
+
+    #undef FUNCTION                                                        
+  #undef CAPABILITY                                                        
 
   #define CAPABILITY b2ll_LL                      
   START_CAPABILITY                                 
@@ -453,7 +458,7 @@ START_MODULE
     #define FUNCTION b2ll_measurements            
     START_FUNCTION(FlavBit::Flav_measurement_assym)
           DEPENDENCY(FlavBit_fill, parameters)     
-    #undef FUNCTION                                
+   #undef FUNCTION                                
   #undef CAPABILITY                                
 
   #define CAPABILITY SL_M                           
@@ -461,6 +466,7 @@ START_MODULE
     #define FUNCTION SL_measurements                
     START_FUNCTION(FlavBit::Flav_measurement_assym)   
           DEPENDENCY(FlavBit_fill, parameters)        
+          
     #undef FUNCTION                                   
   #undef CAPABILITY                                   
 
@@ -469,6 +475,7 @@ START_MODULE
     #define FUNCTION SL_likelihood               
     START_FUNCTION(double)                         
           DEPENDENCY(FlavBit_fill, parameters)     
+          
     #undef FUNCTION                                
   #undef CAPABILITY                                
 
