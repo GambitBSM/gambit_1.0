@@ -87,6 +87,7 @@ ObsLikes:
 
     - capability: lnL_oh2
       purpose: Likelihood 
+      function: lnL_oh2_Simple
 
     - capability: RD_oh2
       purpose: Observable

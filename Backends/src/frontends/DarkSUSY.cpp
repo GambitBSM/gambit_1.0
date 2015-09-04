@@ -348,7 +348,7 @@ BE_NAMESPACE
     mspctm->mass(DSpart->kl(3)) = to<double>(mySLHA.at("SMINPUTS").at(7).at(1));  // tau mass
     mspctm->mass(DSpart->knu(1)) =  to<double>(mySLHA.at("SMINPUTS").at(12).at(1)); // nu_1
     mspctm->mass(DSpart->knu(2)) =  to<double>(mySLHA.at("SMINPUTS").at(14).at(1)); // nu_2
-    mspctm->mass(DSpart->knu(3)) =  to<double>(mySLHA.at("SMINPTUS").at(8).at(1)); // nu_3
+    mspctm->mass(DSpart->knu(3)) =  to<double>(mySLHA.at("SMINPUTS").at(8).at(1)); // nu_3
 
     mspctm->mu2gev              = to<double>(mySLHA.at("SMINPUTS").at(22).at(1)); // up quark mass @ 2 GeV
     mspctm->mass(DSpart->kqu(1))   = mspctm->mu2gev;
@@ -390,7 +390,7 @@ BE_NAMESPACE
     mixing->ckm(3,1) = Spectrum::Wolf2V_td(lambda,A,rhobar,etabar);
     mixing->ckm(3,2) = Spectrum::Wolf2V_ts(lambda,A,rhobar,etabar);
     mixing->ckm(3,3) = Spectrum::Wolf2V_tb(lambda,A,rhobar,etabar);
-    
+
 
     // If VCKM block is available, this would be the best way of doing this instead
     /* for (int i=1; i<=3; i++)
@@ -510,111 +510,111 @@ BE_NAMESPACE
 
     // Block NMIX
     for (int i=1; i<=4; i++)
-      {
-  for (int j=1; j<=4; j++)
     {
-      mssmmixing->neunmx(i,j)=to<double>(mySLHA.at("NMIX").at(i,j).at(2));
-    }
+      for (int j=1; j<=4; j++)
+      {
+        mssmmixing->neunmx(i,j)=to<double>(mySLHA.at("NMIX").at(i,j).at(2));
       }
+    }
     // Make NMIX imaginary if mass eigenvalue is negative
     for (int i=1; i<=4; i++)
-      {
-  for (int j=1; j<=4; j++)
     {
-      if (mspctm->mass(DSpart->kn(i)) < 0)
+      for (int j=1; j<=4; j++)
       {
-        mssmmixing->neunmx(i,j).im = mssmmixing->neunmx(i,j).re;
-        mssmmixing->neunmx(i,j).re = 0.0;
-      }  
-    }
-  mspctm->mass(DSpart->kn(i)) = abs(mspctm->mass(DSpart->kn(i)));
+        if (mspctm->mass(DSpart->kn(i)) < 0)
+        {
+          mssmmixing->neunmx(i,j).im = mssmmixing->neunmx(i,j).re;
+          mssmmixing->neunmx(i,j).re = 0.0;
+        }  
       }
-    
+      mspctm->mass(DSpart->kn(i)) = abs(mspctm->mass(DSpart->kn(i)));
+    }
+
     // Block UMIX
     for (int i=1; i<=2; i++)
-      {
-  for (int j=1; j<=2; j++)
     {
-      mssmmixing->chaumx(i,j)=to<double>(mySLHA.at("UMIX").at(i,j).at(2));
-    }
+      for (int j=1; j<=2; j++)
+      {
+        mssmmixing->chaumx(i,j)=to<double>(mySLHA.at("UMIX").at(i,j).at(2));
       }
+    }
 
     // Block VMIX
     for (int i=1; i<=2; i++)
-      {
-  for (int j=1; j<=2; j++)
     {
-      mssmmixing->chavmx(i,j)=to<double>(mySLHA.at("VMIX").at(i,j).at(2));
-    }
+      for (int j=1; j<=2; j++)
+      {
+        mssmmixing->chavmx(i,j)=to<double>(mySLHA.at("VMIX").at(i,j).at(2));
       }
+    }
 
     // Block YE, YU, YD - Yukawas
     for (int i=1; i<=3; i++)
-      {
-  couplingconstants->yukawa(DSpart->kl(i))=to<double>(mySLHA.at("YE").at(i,i).at(2));
-  couplingconstants->yukawa(DSpart->kqu(i))=to<double>(mySLHA.at("YU").at(i,i).at(2));
-  couplingconstants->yukawa(DSpart->kqd(i))=to<double>(mySLHA.at("YD").at(i,i).at(2));
-      }
+    {
+      couplingconstants->yukawa(DSpart->kl(i))=to<double>(mySLHA.at("YE").at(i,i).at(2));
+      couplingconstants->yukawa(DSpart->kqu(i))=to<double>(mySLHA.at("YU").at(i,i).at(2));
+      couplingconstants->yukawa(DSpart->kqd(i))=to<double>(mySLHA.at("YD").at(i,i).at(2));
+    }
 
     // Block MSL2, MSE2, MSQ2, MSU2, MSD2
     for (int i=1; i<=3; i++)
-      {
-        mssmpar->mass2l(i) = to<double>(mySLHA.at("MSL2").at(i,i).at(2)); 
-        mssmpar->mass2e(i) = to<double>(mySLHA.at("MSE2").at(i,i).at(2)); 
-        mssmpar->mass2q(i) = to<double>(mySLHA.at("MSQ2").at(i,i).at(2)); 
-        mssmpar->mass2u(i) = to<double>(mySLHA.at("MSU2").at(i,i).at(2)); 
-        mssmpar->mass2d(i) = to<double>(mySLHA.at("MSD2").at(i,i).at(2)); 
-      }
+    {
+      mssmpar->mass2l(i) = to<double>(mySLHA.at("MSL2").at(i,i).at(2)); 
+      mssmpar->mass2e(i) = to<double>(mySLHA.at("MSE2").at(i,i).at(2)); 
+      mssmpar->mass2q(i) = to<double>(mySLHA.at("MSQ2").at(i,i).at(2)); 
+      mssmpar->mass2u(i) = to<double>(mySLHA.at("MSU2").at(i,i).at(2)); 
+      mssmpar->mass2d(i) = to<double>(mySLHA.at("MSD2").at(i,i).at(2)); 
+    }
 
     // Block SNUMIX
     for (int i=1; i<=3; i++)
-      {
-  for (int j=1; j<=3; j++)
     {
-      mssmmixing->slulmx(i,j) = to<double>(mySLHA.at("SNUMIX").at(i,j).at(2));
-    }
+      for (int j=1; j<=3; j++)
+      {
+        mssmmixing->slulmx(i,j) = to<double>(mySLHA.at("SNUMIX").at(i,j).at(2));
       }
+    }
 
     // Block SELMIX
     for (int i=1; i<=6; i++)
-      {
-  for (int j=1; j<=3; j++)
     {
-      mssmmixing->sldlmx(i,j) = to<double>(mySLHA.at("SELMIX").at(i,j).at(2));
-      mssmmixing->sldrmx(i,j) = to<double>(mySLHA.at("SELMIX").at(i,j+3).at(2));
-    }
+      for (int j=1; j<=3; j++)
+      {
+        mssmmixing->sldlmx(i,j) = to<double>(mySLHA.at("SELMIX").at(i,j).at(2));
+        mssmmixing->sldrmx(i,j) = to<double>(mySLHA.at("SELMIX").at(i,j+3).at(2));
       }
+    }
 
     // Block USQMIX
     for (int i=1; i<=6; i++)
-      {
-  for (int j=1; j<=3; j++)
     {
-      mssmmixing->squlmx(i,j) = to<double>(mySLHA.at("USQMIX").at(i,j).at(2));
-      mssmmixing->squrmx(i,j) = to<double>(mySLHA.at("USQMIX").at(i,j+3).at(2));
-    }
+      for (int j=1; j<=3; j++)
+      {
+        mssmmixing->squlmx(i,j) = to<double>(mySLHA.at("USQMIX").at(i,j).at(2));
+        mssmmixing->squrmx(i,j) = to<double>(mySLHA.at("USQMIX").at(i,j+3).at(2));
       }
-    
+    }
+
     // Block DSQMIX
     for (int i=1; i<=6; i++)
-      {
-  for (int j=1; j<=3; j++)
     {
-      mssmmixing->sqdlmx(i,j) = to<double>(mySLHA.at("DSQMIX").at(i,j).at(2));
-      mssmmixing->sqdrmx(i,j) = to<double>(mySLHA.at("DSQMIX").at(i,j+3).at(2));
-    }
+      for (int j=1; j<=3; j++)
+      {
+        mssmmixing->sqdlmx(i,j) = to<double>(mySLHA.at("DSQMIX").at(i,j).at(2));
+        mssmmixing->sqdrmx(i,j) = to<double>(mySLHA.at("DSQMIX").at(i,j+3).at(2));
       }
+    }
 
     // BLOCK TE, TU and TD. I read these instead of AE, AU, AD.
     for (int i=1; i<=3; i++)
-      {
-  mssmpar->asofte(i)=to<double>(mySLHA.at("TE").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kl(i));
-  mssmpar->asoftu(i)=to<double>(mySLHA.at("TU").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqu(i));
-  mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
-      } 
+    {
+      mssmpar->asofte(i)=to<double>(mySLHA.at("TE").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kl(i));
+      mssmpar->asoftu(i)=to<double>(mySLHA.at("TU").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqu(i));
+      mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
+    } 
     return 0;  // everything OK
   }
-    
+
   void registerMassesForIB(
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
