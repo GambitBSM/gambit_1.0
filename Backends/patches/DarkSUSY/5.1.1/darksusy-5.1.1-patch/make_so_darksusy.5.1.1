@@ -1,0 +1,65 @@
+#!/bin/bash 
+#####################################################################
+# Author: Christoph Weniger <christoph.weniger@gmail.com>
+# Date: 25 Nov 2012
+# Brief: Quick and dirty patch to turn DarkSUSY into a shared object
+#
+# Edited by Jonathan Cornell on 25 June 2013 for DarkSUSY 5.1.1
+# Edited by Christph Weniger on 14 July 2013 for DarkSUSY 5.1.1
+#   (I had problems with lots of undefined references)
+#
+# Usage:
+#  copy make_so_darksusy into darksusy root folder
+#  run ./configure (or ./conf.gfortran etc)
+#  run ./make_so_darksusy (runs make)
+#
+# Note: 
+#  - After make_so_darksusy libdarksusy.so can be found under lib
+#  - The patch works for me with GCC 4.7.2 and DarkSUSY 5.1.1
+#####################################################################
+
+# We are in darksusy root
+DS_ROOT=$PWD
+
+cd $DS_ROOT
+
+# Make darksusy
+rm -f $DS_ROOT/lib/*.so # make does not like *.so files under lib
+make
+
+# And finally ...drum roll... generate libdarksusy.so
+echo "Generating libdarksusy.so..."
+cd $DS_ROOT/lib
+mkdir tmp_libdarksusy
+mkdir tmp_libFH
+mkdir tmp_libHB
+mkdir tmp_libisajet
+
+# Different archives contain objects with same name
+cd tmp_libdarksusy
+ar x ../libdarksusy.a
+# This are objets that depend on function not defined in darksusy 
+rm -f dssetdsinstall.o dssetdsversion.o
+# This are objets that double define stuff from isajet
+rm -f ddilog.o drkstp.o eisrs1.o tql2.o tred2.o
+cd ..
+cd tmp_libFH
+ar x  ../libFH.a
+cd ..
+cd tmp_libHB
+ar x  ../libHB.a
+cd ..
+cd tmp_libisajet
+ar x  ../libisajet.a
+# These are objects that don't do anything but introduce undefined references
+rm -f fa12.o  func_int.o  func.o  isalhd.o  isared.o
+cd ..
+
+gfortran -shared -Wl,-soname,libdarksusy.so -o libdarksusy.so tmp_libdarksusy/*.o tmp_libFH/*.o tmp_libHB/*.o tmp_libisajet/*.o
+
+rm -rf tmp_libdarksusy
+rm -rf tmp_libFH
+rm -rf tmp_libHB
+rm -rf tmp_libisajet
+echo "Success!"
+exit

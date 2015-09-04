@@ -1,0 +1,112 @@
+diff -rupN isajet781-for-darksusy/aldata.f isajet781-for-darksusy2/aldata.f
+--- isajet781-for-darksusy/aldata.f	2011-11-03 15:34:52.000000000 +0100
++++ isajet781-for-darksusy2/aldata.f	2015-07-06 08:01:42.485250717 +0200
+@@ -155,8 +155,8 @@ C          LUXSET=.TRUE. after RLUXGO ha
+      $GOWW(25,2),ALLWW(2),GOWMOD(25,MXGOJ)
+       SAVE /Q1Q2/
+       LOGICAL GOQ,GOALL,GODY,STDDY,GOWW,ALLWW,GOWMOD
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+ C          SUSY parameters
+ C          AMGLSS               = gluino mass
+diff -rupN isajet781-for-darksusy/gettot.f isajet781-for-darksusy2/gettot.f
+--- isajet781-for-darksusy/gettot.f	2011-11-03 15:34:52.000000000 +0100
++++ isajet781-for-darksusy2/gettot.f	2015-07-06 08:02:54.373252385 +0200
+@@ -77,8 +77,8 @@ C          Jet limits
+       COMMON/IDRUN/IDVER,IDG(2),IEVT,IEVGEN
+       SAVE /IDRUN/
+       INTEGER   IDVER,IDG,IEVT,IEVGEN
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+       COMMON/PRIMAR/NJET,SCM,HALFE,ECM,IDIN(2),NEVENT,NTRIES,NSIGMA,
+      $WRTLHE
+diff -rupN isajet781-for-darksusy/prtevt.f isajet781-for-darksusy2/prtevt.f
+--- isajet781-for-darksusy/prtevt.f	2011-11-03 15:34:52.000000000 +0100
++++ isajet781-for-darksusy2/prtevt.f	2015-07-06 08:02:32.589251880 +0200
+@@ -84,8 +84,8 @@ C
+       COMMON/WSIG/SIGLLQ
+       SAVE /WSIG/
+       REAL      SIGLLQ
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+ C
+ C          LABELS ARE CHARACTER*8
+diff -rupN isajet781-for-darksusy/prtlim.f isajet781-for-darksusy2/prtlim.f
+--- isajet781-for-darksusy/prtlim.f	2011-11-03 15:34:52.000000000 +0100
++++ isajet781-for-darksusy2/prtlim.f	2015-07-06 08:02:47.365252223 +0200
+@@ -79,8 +79,8 @@ C          KKGravity common
+       COMMON/PRTOUT/NEVPRT,NJUMP
+       SAVE /PRTOUT/
+       INTEGER   NEVPRT,NJUMP
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+       INTEGER MXTYPE
+       PARAMETER (MXTYPE=8)
+diff -rupN isajet781-for-darksusy/ranfgt.f isajet781-for-darksusy2/ranfgt.f
+--- isajet781-for-darksusy/ranfgt.f	2011-11-03 15:34:52.000000000 +0100
++++ isajet781-for-darksusy2/ranfgt.f	2015-07-06 08:03:07.869252699 +0200
+@@ -1,4 +1,4 @@
+ C
+-      SUBROUTINE RANFGT(SEED)
++      SUBROUTINE RANFGT(SEEDg)
+       RETURN
+       END
+diff -rupN isajet781-for-darksusy/ranfst.f isajet781-for-darksusy2/ranfst.f
+--- isajet781-for-darksusy/ranfst.f	2011-11-03 15:34:52.000000000 +0100
++++ isajet781-for-darksusy2/ranfst.f	2015-07-06 08:03:12.665252810 +0200
+@@ -1,4 +1,4 @@
+-      SUBROUTINE RANFST(SEED)
+-      DOUBLE PRECISION SEED
++      SUBROUTINE RANFST(SEEDg)
++      DOUBLE PRECISION SEEDg
+       RETURN
+       END
+diff -rupN isajet781-for-darksusy/readin.f isajet781-for-darksusy2/readin.f
+--- isajet781-for-darksusy/readin.f	2011-11-03 15:34:52.000000000 +0100
++++ isajet781-for-darksusy2/readin.f	2015-07-06 08:02:42.469252109 +0200
+@@ -73,8 +73,8 @@ C          KKGravity common
+       COMMON/PRTOUT/NEVPRT,NJUMP
+       SAVE /PRTOUT/
+       INTEGER   NEVPRT,NJUMP
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+       INTEGER MXTYPE
+       PARAMETER (MXTYPE=8)
+@@ -230,7 +230,7 @@ C
+       CHARACTER*8 HTYPE
+       INTEGER JLIM1,JLIM2
+       REAL AMLIM1,AMLIM2
+-      DOUBLE PRECISION SEED
++      DOUBLE PRECISION SEEDg
+ C
+ C          Overlapping variable flags.
+       DATA NLAP/1,2,3, 1,2,7 ,1,2,8, 1,3,5, 1,3,6, 1,3,7, 1,3,8, 1,5,7,
+diff -rupN isajet781-for-darksusy/reset.f isajet781-for-darksusy2/reset.f
+--- isajet781-for-darksusy/reset.f	2011-11-03 15:34:52.000000000 +0100
++++ isajet781-for-darksusy2/reset.f	2015-07-06 08:03:04.061252610 +0200
+@@ -84,8 +84,8 @@ C          Jet limits
+      $GOWW(25,2),ALLWW(2),GOWMOD(25,MXGOJ)
+       SAVE /Q1Q2/
+       LOGICAL GOQ,GOALL,GODY,STDDY,GOWW,ALLWW,GOWMOD
+-      COMMON/SEED/XSEED
+-      SAVE /SEED/
++      COMMON/SEEDg/XSEED
++      SAVE /SEEDg/
+       CHARACTER*24 XSEED
+ C          SUSY parameters
+ C          AMGLSS               = gluino mass
