@@ -10,7 +10,7 @@
 #                                                
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)              
-#  \date 2015 Apr
+#  \date 2015 Apr, Sep
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
@@ -29,6 +29,14 @@ endif()
 
 # Check for link.h
 check_include_files(link.h HAVE_LINK_H)
+
+# Check for Graphviz
+include(cmake/FindGraphviz.cmake)
+find_package(Graphviz)
+
+# Define HAVE_GRAPHVIZ compiler option
+include(CMakeDependentOption)
+cmake_dependent_option(HAVE_GRAPHVIZ "create Graphviz files" ON "GRAPHVIZ_FOUND" OFF)
 
 # Configure the file
 set(outhdr "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake/cmake_variables.hpp")

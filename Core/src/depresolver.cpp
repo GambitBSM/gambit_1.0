@@ -348,9 +348,11 @@ namespace Gambit
       // Initialise the printer object with a list of functors that are set to print
       initialisePrinter();
 
+#ifdef HAVE_GRAPHVIZ
       // Generate graphviz plot
       std::ofstream outf(activeFunctorGraphFile);
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
+#endif
 
       // Done
     }
@@ -502,8 +504,10 @@ namespace Gambit
         // handy to check before launching a full job. It can always be checked via 
         // the logs, but this feature is more convenient.
         cout << ss.str();
+#ifdef HAVE_GRAPHVIZ
         cout << "To get postscript plot of active functors, please run: " << endl;
         cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh " << activeFunctorGraphFile << " no-loners" << endl;
+#endif
       }
 
       logger() << LogTags::dependency_resolver << ss.str() << EOM;

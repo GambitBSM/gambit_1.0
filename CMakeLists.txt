@@ -16,7 +16,7 @@
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
-#        2015 Jan, Feb, Sep
+#        2015 Jan, Feb, Apr, Sep
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)
