@@ -1,0 +1,96 @@
+#!/bin/bash
+
+################################################################
+# This script will:
+#   * Retrieve the micromegas 3.5.5 installation archive file
+#   * Unpack micromegas
+#   * Copy necessary patches
+#   * Configure & build micromegas (right now only for the MSSM)
+# 
+# Steps that the script thinks are unnecessary will be
+# skipped (though the logic is limited).  The build system
+# is not robust at this time and the configuration may be
+# invalid/fail for some systems (work in progress).
+# 
+#   C. Savage  <chris@savage.name>  2014
+#   C. Weniger <c.weniger@uva.nl>   Nov 2014
+#   P. Scott   <p.scott@imperial.ac.uk> Sep 2015
+# 
+################################################################
+
+# Base name of micromegas archive and directory.
+# Note some patch files have hardcoded names below.
+MOBASE="micromegas_3.5.5"
+
+# Location of extracted micromegas files
+MOROOT="../../../../installed/micromegas/3.5.5/MSSM"
+
+# Archive file name and remote location
+MOARCHIVE="../../../../downloaded/${MOBASE}.tgz"
+MOLINK="https://lapth.cnrs.fr/micromegas/downloadarea/code/${MOBASE}.tgz"
+
+# Location of patches
+PATCHDIR="${MOBASE}-patch/"
+
+# If anything changed, we need to configure/build.
+NEEDS_BUILD=0
+
+# Retrieve archive file
+if [ -f "${MOARCHIVE}" ]; then
+  echo "micromegas installation archive already downloaded [skipping]."
+else
+  echo "Retrieving micromegas installation archive...."
+  wget -c -O "${MOARCHIVE}" "${MOLINK}"
+  NEEDS_BUILD=1
+fi
+
+# Extract files
+if [ -d "${MOROOT}/sources" ]; then
+  echo "micromegas already extracted [skipping]."
+else
+  echo "Extracting micromegas files...."
+  tar -xzf "${MOARCHIVE}"
+  mv "${MOBASE}"/* "${MOROOT}/"
+  rm -r "${MOBASE}"
+  NEEDS_BUILD=1
+fi
+
+# Copy new configuration files
+echo "Patching files...."
+for SRCFILE in ${PATCHDIR}*; do
+  FILENAME="${SRCFILE##*/}"
+  DESTFILE="${MOROOT}/${FILENAME}"
+  if ! [ -f "${DESTFILE}" ] || [ "${SRCFILE}" -nt "${DESTFILE}" ]; then
+    echo "  Copying '${FILENAME}'...."
+    cp -p "${SRCFILE}" "${DESTFILE}"
+    NEEDS_BUILD=1
+  else
+    echo "  File '${FILENAME}' up to date [skipping]."
+  fi
+done
+
+# Configure/build micromegas
+if [ "${NEEDS_BUILD}" -eq 0 ] && [ -f "${MOROOT}/lib/libmicromegas.so" ]; then
+  echo ""
+  echo "The shared object library already exists: skipping the"
+  echo "micromegas configuration/make process.  To force a rebuild,"
+  echo "delete ${MOROOT}/lib/libmicromegas.so and run this"
+  echo "script again."
+  echo ""
+else
+  # Change to build directory
+  cd "${MOROOT}"
+  
+  # Configure
+  echo "Configuring micromegas...."
+  ./configure.for_GAMBIT
+  
+  # Run make
+  echo "Building micromegas...."
+  ./make_so_micromegas.3.5.5
+fi
+
+echo ""
+echo "micromegas installation completed."
+echo ""
+

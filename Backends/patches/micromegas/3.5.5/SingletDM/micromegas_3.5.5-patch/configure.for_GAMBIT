@@ -1,0 +1,12 @@
+#!/bin/bash
+
+./newProject SingletDM
+cp -f *.mdl SingletDM/work/models
+
+# Hack to ensure -fPIC flag for fortran compilation.
+if [ ! -f "CalcHEP_src/getFlags.orig" ]; then
+  cp -p "CalcHEP_src/getFlags" "CalcHEP_src/getFlags.orig"
+  #sed -i '/-fPIC/!s|\(FFLAGS="\?\)|\1-fPIC |g' CalcHEP_src/getFlags
+  sed -i '/\\"\$FFLAGS\\"/!s|\(FFLAGS="\?\)|\1-fPIC |g' CalcHEP_src/getFlags
+fi
+
