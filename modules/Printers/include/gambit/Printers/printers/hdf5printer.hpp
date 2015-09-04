@@ -111,7 +111,7 @@ namespace Gambit
         bool ready() { if(printer==NULL){return false;}else{return true;} }
 
         /// Retrieve a buffer for an IDcode/auxilliary-index pair
-        BuffType& get_buffer(const int vID, const uint i, const std::string& label); 
+        BuffType& get_buffer(const int vID, const unsigned int i, const std::string& label); 
     
     };
 
@@ -169,7 +169,7 @@ namespace Gambit
         void send_PPID_lists(bool finalsend=false);
 
         /// Update the master node PPID lists with IDs from a worker node
-        void receive_PPID_list(uint source);
+        void receive_PPID_list(unsigned int source);
  
         /// Master waits until all processes send the specified tag, and monitors
         /// for tag requests in the meantime. Used during initialise and finalise to
@@ -220,24 +220,27 @@ namespace Gambit
 
         /// Check whether printing to a new parameter space point is about to occur
         // and perform adjustments needed to prepare the printer.
-        void check_for_new_point(const ulong, const uint);
+        void check_for_new_point(const unsigned long, const unsigned int);
  
         /// Function used by print functions to retrieve their local buffer manager object
         template<class BuffType>
-        H5P_LocalBufferManager<BuffType>& get_mybuffermanager(ulong pointID, uint mpirank);
+        H5P_LocalBufferManager<BuffType>& get_mybuffermanager(unsigned long pointID, unsigned int mpirank);
 
         /// Retrieve index from global lookup table, with error checking
-        ulong get_global_index(const ulong pointID, const uint mpirank);
+        unsigned long get_global_index(const unsigned long pointID, const unsigned int mpirank);
  
         /// Get the name of this printer
         std::string get_printer_name() { return printer_name; }
 
         /// Get the number of pointIDs know to this printer
         /// (should correspond to the number of "appends" each active buffer has received)
-        ulong get_N_pointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
+        unsigned long get_N_pointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
 
         /// Retrieve the "resume" flag
         bool get_resume() { return resume; }
+
+        /// Retrieve the starting position in output datasets for new data
+        bool get_startpos() { return startpos; }
 
         /// Attempt to read an existing output file, and prepare it for
         /// resumed writing (e.g. fix up dataset lengths if data missing)
@@ -263,7 +266,7 @@ namespace Gambit
         #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME)                               \
          template<>                                                                \
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
-           HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
+           HDF5Printer::get_mybuffermanager<BUFFTYPE>(unsigned long pointID, unsigned int mpirank) \
           {                                                                        \
              /* If the buffermanger hasn't been initialised, do so now */          \
              if( not CAT(hdf5_localbufferman_,NAME).ready() )                      \
@@ -291,7 +294,7 @@ namespace Gambit
 
         /// List the types for which print functions are defined
         #define HDF5_PRINTABLE_TYPES \
-          (int)(uint)(long)(ulong)   \
+          (int)(unsigned int)(long)(unsigned long)   \
           (float)(double)            \
           (bool)(std::vector<bool>)  \
           (std::vector<int>)         \
@@ -299,7 +302,7 @@ namespace Gambit
           (ModelParameters)
 
         #define DECLARE_PRINT(r,data,ELEM) \
-          void print(ELEM const& value, const std::string& label, const int IDcode, const int rank, const ulong pointID); \
+          void print(ELEM const& value, const std::string& label, const int IDcode, const int rank, const unsigned long pointID); \
                                                                               
         #define DECLARE_PRINT_FUNCTIONS(TYPES) BOOST_PP_SEQ_FOR_EACH(DECLARE_PRINT, _, TYPES)
         DECLARE_PRINT_FUNCTIONS(HDF5_PRINTABLE_TYPES)       
@@ -308,7 +311,7 @@ namespace Gambit
         // Used to reduce repetition in definitions of virtual function overloads 
         // (useful since there is no automatic type conversion possible)
         template<class T>
-        void template_print(T const& value, const std::string& label, const int IDcode, const uint mpirank, const ulong pointID)
+        void template_print(T const& value, const std::string& label, const int IDcode, const unsigned int mpirank, const unsigned long pointID)
         {
            // Define what output format will be used for this type (by choosing an appropriate buffer type)  
            typedef VertexBufferNumeric1D_HDF5<T,BUFFERLENGTH> BuffType;
@@ -339,7 +342,7 @@ namespace Gambit
  
         /// @{ Helper macros to write all the print functions which can use the "easy" template
         #define TEMPLATE_TYPES      \
-         (int)(uint)(long)(ulong)   \
+         (int)(unsigned int)(long)(unsigned long)   \
          (float)(double)        
          // Add more as needed
          // TODO needs to be converted to int to work with MPI
@@ -350,7 +353,7 @@ namespace Gambit
         #define TEMPLATE_PRINT(r,data,i,elem)                                   \
           NEW_BUFFMAN(TEMPLATE_BUFFTYPE(elem),CAT(template_,i))                 \
           void print(elem const& value, const std::string& label, const int vID, \
-                       const uint mpirank, const ulong pointID)                 \
+                       const unsigned int mpirank, const unsigned long pointID)                 \
           {                                                                     \
             template_print(value,label,vID,mpirank,pointID);                    \
           }                                                          
@@ -373,8 +376,8 @@ namespace Gambit
         // etc...
 
         /// Regular print functions
-        void print(std::vector<double> const&, const std::string&, const int, const uint, const ulong);
-        void print(ModelParameters     const&, const std::string&, const int, const uint, const ulong);
+        void print(std::vector<double> const&, const std::string&, const int, const unsigned int, const unsigned long);
+        void print(ModelParameters     const&, const std::string&, const int, const unsigned int, const unsigned long);
 
       private:
         // Pointers to HDF5 file and group objects containing the datasets
@@ -399,15 +402,15 @@ namespace Gambit
         /// Map recording which model point this process is working on
         // Need this so that we can compute when (at least initial) writing to a model point has ceased
         // Key: rank; Value: last pointID sent by that rank.
-        std::map<uint,ulong> lastPointID;
+        std::map<unsigned int,unsigned long> lastPointID;
 
         /// Current absolute dataset index
         // i.e. this location in the output dataset is currently the target of print functions
-        ulong current_dset_position; 
+        unsigned long current_dset_position; 
 
         /// Map from pointID,thread pairs to absolute dataset indices
         //  Needed for dataset writes which return to old points.
-        std::map<PPIDpair, ulong> global_index_lookup; 
+        std::map<PPIDpair, unsigned long> global_index_lookup; 
 
         // Matching vector for the above, for reverse lookup
         std::vector<PPIDpair> reverse_global_index_lookup;
@@ -416,12 +419,12 @@ namespace Gambit
         std::string printer_name;
 
         /// MPI rank and size
-        uint myRank;  // Needed even without MPI available, for some default behaviour.
+        unsigned int myRank;  // Needed even without MPI available, for some default behaviour.
         #ifdef WITH_MPI
         // Gambit MPI communicator context for use within the hdf5 printer system
         GMPI::Comm myComm;
  
-        uint mpiSize;
+        unsigned int mpiSize;
  
         /// Tag manager object (only the primary printer has one of these) 
         MPITagManager* tag_manager = NULL;
@@ -434,7 +437,7 @@ namespace Gambit
         MPI_Status stat_PPIDsend; 
 
         /// Buffer, Flag, request, and status handles for N_buffers_sent messages
-        uint N_buffers_sent;
+        unsigned int N_buffers_sent;
         bool N_buffers_sent_buf_ready = true;
         MPI_Request req_N_buffers_sent = MPI_REQUEST_NULL;
         MPI_Status  stat_N_buffers_sent;
@@ -455,6 +458,10 @@ namespace Gambit
         /// i.e. during initialisation, we attempt to read the output file and
         /// work out where to write new data.
         bool resume;
+
+        /// Position to start writing new output. Should be zero unless we are in
+        /// resume mode.
+        unsigned long startpos = 0;
  
       protected:
         /// Things which other printers need access to

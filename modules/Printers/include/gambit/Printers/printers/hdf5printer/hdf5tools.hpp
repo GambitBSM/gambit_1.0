@@ -148,6 +148,36 @@ namespace Gambit
 
       //!_______________________________________________________________________________________
 
+      // Some useful code for comparing the C API hid_t codes for the various types.
+      // They do not seem to match the C++ API types in the way I would have expected...
+      //            std::cout << "test: h5t.type().getId()  = "<<h5t.type().getId() <<std::endl;
+      //            std::cout << "H5::PredType::NATIVE_UINT = "<<H5::PredType::NATIVE_UINT.getId()<<std::endl;
+      //            std::cout << "      H5T_NATIVE_UINT     = "<<H5T_NATIVE_UINT<<std::endl;
+      //            std::cout << "----"<<std::endl;
+      //            std::cout << " INT8  :" << H5::PredType::NATIVE_INT8.getId()  <<std::endl;
+      //            std::cout << "       :" << get_hdf5_data_type<int8_t>::type().getId() <<std::endl;
+      //            std::cout << "       :" << H5T_NATIVE_INT<<std::endl;
+      //            std::cout << "       :" << H5T_NATIVE_LONG<<std::endl;
+      //            std::cout << "       :" << H5T_NATIVE_LLONG<<std::endl;
+      //            std::cout << "UINT8  :" << H5::PredType::NATIVE_UINT8.getId() <<std::endl;
+      //            std::cout << "       :" << get_hdf5_data_type<uint8_t>::type().getId() <<std::endl;
+      //            std::cout << "       :" << H5T_NATIVE_B8<<std::endl;
+      //            std::cout << " INT16 :" << H5::PredType::NATIVE_INT16.getId() <<std::endl;
+      //            std::cout << "       :" << get_hdf5_data_type<int16_t>::type().getId() <<std::endl;
+      //            std::cout << "UINT16 :" << H5::PredType::NATIVE_UINT16.getId()<<std::endl;
+      //            std::cout << "       :" << get_hdf5_data_type<uint16_t>::type().getId() <<std::endl;
+      //            std::cout << "       :" << H5T_NATIVE_B16<<std::endl;
+      //            std::cout << " INT32 :" << H5::PredType::NATIVE_INT32.getId() <<std::endl;
+      //            std::cout << "       :" << get_hdf5_data_type<int32_t>::type().getId() <<std::endl;
+      //            std::cout << "UINT32 :" << H5::PredType::NATIVE_UINT32.getId()<<std::endl;
+      //            std::cout << "       :" << get_hdf5_data_type<uint32_t>::type().getId() <<std::endl;
+      //            std::cout << "       :" << H5T_NATIVE_B32<<std::endl;
+      //            std::cout << " INT64 :" << H5::PredType::NATIVE_INT64.getId() <<std::endl;
+      //            std::cout << "       :" << get_hdf5_data_type<int64_t>::type().getId() <<std::endl;
+      //            std::cout << "UINT64 :" << H5::PredType::NATIVE_UINT64.getId()<<std::endl;
+      //            std::cout << "       :" << get_hdf5_data_type<uint64_t>::type().getId() <<std::endl;
+      //            std::cout << "       :" << H5T_NATIVE_B64<<std::endl;
+
 
   }
 }

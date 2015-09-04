@@ -794,6 +794,13 @@ namespace Gambit
           masterGraph[*vi]->print(boundPrinter,0);     
         }    
       }
+      // Do the dummy prints for the pointID and MPIrank output
+      int myRank = boundPrinter->getRank();
+      logger() << "Triggering dummy print for pointID" << EOM;
+      boundPrinter->print(0,      "pointID", -1000, myRank, 0);
+      logger() << "Triggering dummy print for MPIrank" << EOM;
+      boundPrinter->print(myRank, "MPIrank", -1001, myRank, 0);
+
       // Force-reset the printer to erase the dummy calls
       // (but don't do this if we are in resume mode!)
       if(not boundCore->resume) boundPrinter->reset(true);

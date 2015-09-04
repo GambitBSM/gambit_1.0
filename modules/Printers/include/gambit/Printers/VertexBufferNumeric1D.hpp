@@ -291,7 +291,7 @@ namespace Gambit {
       {
          if(not this->is_silenced())
          {
-            //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running append()"<<std::endl;
+            //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"), pID ("<<pID.pointID<<","<<pID.rank<<"): running append()"<<std::endl;
 
             if(pID!=null_PPID and pID==PPID_of_last_append)
             {

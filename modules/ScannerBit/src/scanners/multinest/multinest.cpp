@@ -227,8 +227,14 @@ namespace Gambit {
          Cube[ndim+0] = myrank;
          Cube[ndim+1] = pointID;
          //std::cout << "Cube input: rank="<<myrank<<", pointID="<<pointID<<std::endl;
-         primary_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
-         primary_stream->print( pointID, "pointID", -8, myrank, pointID);
+
+         // Ben: No need to do this anymore, hdf5printer will do it automatically.
+         // However, asciiPrinter won't, so we can still output it anyway. But to make
+         // sure that the hdf5printer only outputs it once (and to avoid the name clash
+         // arising from duplicating the output) please use the ID codes -1000 and -1001 for
+         // these two special outputs) 
+         primary_stream->print(pointID, "pointID", -1000, myrank, pointID);
+         primary_stream->print(myrank,  "MPIrank", -1001, myrank, pointID);
 
          // Done! (lnew will be used by MultiNest to guide the search)
          return lnew;                  
@@ -310,8 +316,9 @@ namespace Gambit {
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
            
              //std::cout << "Posterior output: i="<<i<<", rank="<<myrank<<", pointID="<<pointID<<std::endl;
-             txt_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
-             txt_stream->print( pointID, "pointID", -8, myrank, pointID);
+             // NOTE: special reserved codes used for MPIrank and pointID output
+             txt_stream->print( myrank,  "MPIrank", -1000, myrank, pointID);
+             txt_stream->print( pointID, "pointID", -1001, myrank, pointID);
              txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   -4, myrank, pointID);
              txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", -5, myrank, pointID);
              // Put rest of parameters into a vector for printing all together
@@ -328,8 +335,9 @@ namespace Gambit {
           {
              myrank  = physLive[(nPar-2)*nlive + i]; //MPI rank number stored in second last entry of cube
              pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
-             live_stream->print( myrank,  "MPIrank",  -7, myrank, pointID);
-             live_stream->print( pointID, "pointID", -8, myrank, pointID);
+             // NOTE: special reserved codes used for MPIrank and pointID output
+             live_stream->print( myrank,  "MPIrank", -1000, myrank, pointID);
+             live_stream->print( pointID, "pointID", -1001, myrank, pointID);
              live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", -4, myrank, pointID);
              // Put rest of parameters into a vector for printing all together
              std::vector<double> parameters;
