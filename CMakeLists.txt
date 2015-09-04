@@ -16,7 +16,7 @@
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
-#        2015 Jan, Feb
+#        2015 Jan, Feb, Sep
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)
@@ -48,6 +48,11 @@ endforeach()
 
 # Set the project name, enabling C, C++ and Fortran support
 project(GAMBIT C CXX Fortran)
+
+# Disable clang support
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  message(FATAL_ERROR "GAMBIT does not support the Clang compiler. Please choose another compiler.")
+endif()
 
 # Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
