@@ -20,7 +20,7 @@
 #define __SMInputs_hpp__
 
 // Could remove this dependency if we refactor a little
-#include "slhaea.h"
+#include "SLHAea/slhaea.h"
 
 namespace Gambit {
 
