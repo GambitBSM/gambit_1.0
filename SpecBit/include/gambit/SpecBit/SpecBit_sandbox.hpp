@@ -26,11 +26,6 @@
     START_FUNCTION(SubSpectrum*)
     #undef FUNCTION
 
-    #define FUNCTION MSSMspectrum_test
-    START_FUNCTION(bool)
-    DEPENDENCY(unimproved_MSSMspectrum, Spectrum*)
-    #undef FUNCTION
-
   #undef CAPABILITY
 
   /// TEST FUNCTIONS
