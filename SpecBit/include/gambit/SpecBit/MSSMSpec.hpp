@@ -60,8 +60,7 @@ namespace Gambit
       // (i.e. it should be declared first)
       template <class MI>
       MSSMSpec<MI>::MSSMSpec(MI mi, str be_name, str be_version, bool switch_index_convention)
-         : Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>(model_interface.model)
-         , backend_name(be_name)
+         : backend_name(be_name)
          , backend_version(be_version)
          , index_offset(-1)
          , model_interface(mi)
@@ -99,26 +98,26 @@ namespace Gambit
 
         SLHAea_add_block(slha, "MINPAR");
         SLHAea_add_block(slha, "HMIX",this->runningpars().GetScale());
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass1,"Mu","HMIX",1,"# mu DRbar");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"tanbeta","HMIX",2,"# tan(beta) = vu/vd DRbar");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass1,"Mu","HMIX",1,"# mu DRbar");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"tanbeta","HMIX",2,"# tan(beta) = vu/vd DRbar");
         if (not this->runningpars().has(Par::mass1,"vu")) utils_error().raise(LOCAL_INFO, "MSSM subspectrum does not contain vu!");
         if (not this->runningpars().has(Par::mass1,"vd")) utils_error().raise(LOCAL_INFO, "MSSM subspectrum does not contain vd!");
         double vu = this->runningpars().get(Par::mass1,"vu");
         double vd = this->runningpars().get(Par::mass1,"vd");        
         slha["HMIX"][""] << 3 << sqrt(vu*vu + vd*vd) << "# v = sqrt(vd^2 + vu^2) DRbar";
         slha["HMIX"][""] << 4 << this->runningpars().get(Par::mass2,"mA2") << "# m^2_A (tree)";        
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass2,"BMu","HMIX",101,"# Bmu DRbar");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass2,"BMu","HMIX",101,"# Bmu DRbar");
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
         // FIXME this is wrong, should be at scale mZ, not be at scale Q like this
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
         slha["MINPAR"][""] << 4 << sgn(this->runningpars().get(Par::mass1,"Mu")) << "# sign(mu)";
 
         SLHAea_add_block(slha, "GAUGE",this->runningpars().GetScale());
         // Scale gY is in SU(5)/GUT normalisation internally; convert it to SM normalisation for SLHA output by multiplying by sqrt(3/5).
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"g1","GAUGE",1,"# g'  = g1 = gY DRbar", true, 0.7745966692414834); 
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"g2","GAUGE",2,"# g   = g2      DRbar");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"g3","GAUGE",3,"# g_s = g3      DRbar");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"g1","GAUGE",1,"# g'  = g1 = gY DRbar", true, 0.7745966692414834); 
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"g2","GAUGE",2,"# g   = g2      DRbar");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"g3","GAUGE",3,"# g_s = g3      DRbar");
 
         int pdg_codes[33] = {24,25,35,37,36,1000021,1000024,1000037,1000012,1000014,1000016,1000022,1000023,1000025,1000035,1000001,1000003,1000005,
                              2000001,2000003,2000005,1000011,1000013,1000015,2000011,2000013,2000015,1000002,1000004,1000006,2000002,2000004,2000006};
@@ -177,7 +176,7 @@ namespace Gambit
           for(int i=1;i<7;i++) for(int j=1;j<7;j++)
           {
             comment.str(""); comment << "# " << S[k].second << "-type sfermion mixing (" << i << "," << j << ")";
-            SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys, Par::Pole_Mixing, S[k].second, i, j, S[k].first, i, j, comment.str());
+            SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys(), Par::Pole_Mixing, S[k].second, i, j, S[k].first, i, j, comment.str());
           }
         }
 
@@ -188,7 +187,7 @@ namespace Gambit
           for(int i=1;i<3;i++) for(int j=1;j<3;j++)
           {
             comment.str(""); comment << "# " << U[k].second << " mixing matrix (" << i << "," << j << ")";
-            SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys, Par::Pole_Mixing, U[k].second, i, j, U[k].first, i, j, comment.str());
+            SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys(), Par::Pole_Mixing, U[k].second, i, j, U[k].first, i, j, comment.str());
           }
         }
 
@@ -200,7 +199,7 @@ namespace Gambit
         for(int i=1;i<4;i++) for(int j=1;j<4;j++)
         {
           comment.str(""); comment << "# " << V.second << " mixing matrix (" << i << "," << j << ")";
-          SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys, Par::Pole_Mixing, V.second, i, j, V.first, i, j, comment.str());
+          SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys(), Par::Pole_Mixing, V.second, i, j, V.first, i, j, comment.str());
         }
       
         sspair N("NMIX","~chi0");
@@ -208,7 +207,7 @@ namespace Gambit
         for(int i=1;i<5;i++) for(int j=1;j<5;j++)
         {
           comment.str(""); comment << "# " << N.second << " mixing matrix (" << i << "," << j << ")";
-          SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys, Par::Pole_Mixing, N.second, i, j, N.first, i, j, comment.str());
+          SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys(), Par::Pole_Mixing, N.second, i, j, N.first, i, j, comment.str());
         }
 
       }
@@ -305,25 +304,36 @@ namespace Gambit
       //approaches. Could do all of this via the interface. Depends
       //what will be simplest in general.
       template <class MI>
-      void MSSMSpec<MI>::RunToScale(double scale){
-         model_interface.model.run_to(scale);
+      void MSSMSpec<MI>::RunToScale(double scale)
+      {
+        model_interface.model.run_to(scale);
       }
       template <class MI>
-      double MSSMSpec<MI>::GetScale() const {
-         return model_interface.model.get_scale();
+      double MSSMSpec<MI>::GetScale() const
+      {
+        return model_interface.model.get_scale();
       }
       template <class MI>
-      void MSSMSpec<MI>::SetScale(double scale){
-          model_interface.model.set_scale(scale);
+      void MSSMSpec<MI>::SetScale(double scale)
+      {
+        model_interface.model.set_scale(scale);
       }
       
       template <class MI>
-      std::string MSSMSpec<MI>::AccessError(std::string state) const {
-         std::string errormsg;
-         errormsg = "Error accessing "+ state + " element is out of bounds";
-         return errormsg;
+      std::string MSSMSpec<MI>::AccessError(std::string state) const
+      {
+        std::string errormsg;
+        errormsg = "Error accessing "+ state + " element is out of bounds";
+        return errormsg;
       }
      
+      // "extra" function to compute TanBeta 
+      template <class Model>
+      double get_tanbeta(const Model& model) 
+      { 
+        return model.get_vu() / model.get_vd(); 
+      }
+
       // "extra" function to compute mA2 
       template <class Model>
       double get_DRbar_mA2(const Model& model) 
@@ -346,13 +356,13 @@ namespace Gambit
       template <class Model>
       void set_MSu_pole_slha(Model& model, double mass,int i)
       {
-       model.get_physical_slha().MSu(i) = mass;
+        model.get_physical_slha().MSu(i) = mass;
       }
-      
+    
       template <class Model>
       void set_MSd_pole_slha(Model& model, double mass,int i)
       {
-       model.get_physical_slha().MSd(i) = mass;
+        model.get_physical_slha().MSd(i) = mass;
       }
       
       template <class Model>
@@ -444,43 +454,72 @@ namespace Gambit
       {
         model.get_physical_slha().UP(i,j) = mass;
       }
-    
-      // PA: I'm using nicer names than the FlexibleSUSY ones here
-      // but maybe I shouldn't as it breaks the symmetry with the
-      // getters and could generate some confusion
+      
       template <class Model>
-      void set_MGluino_pole_slha(Model& model, double mass)
+      void set_MAh1_pole_slha(Model& model, double mass)
       {
+        model.get_physical_slha().MAh(1) = mass;
+      }
+      
+      template <class Model>
+      void set_MHpm1_pole_slha(Model& model, double mass)
+      {
+        model.get_physical_slha().MHpm(1) = mass;
+      }
+      
+      // goldstone setters.  maybe we need these for some consistent calculation
+      // unlikely but I'll add them for now.
+      template <class Model>
+      void set_neutral_goldstone_pole_slha(Model& model, double mass)
+      {
+        model.get_physical_slha().MAh(0) = mass;
+      }
+      
+      template <class Model>
+      void set_charged_goldstone_pole_slha(Model& model, double mass)
+      {
+        model.get_physical_slha().MHpm(0) = mass;
+      }
+         
+
+     // PA: I'm using nicer names than the FlexibleSUSY ones here
+     // but maybe I shouldn't as it breaks the symmetry with the
+     // getters and could generate some confusion
+     template <class Model>
+
+     void set_MGluino_pole_slha(Model& model, double mass)
+     {
         model.get_physical_slha().MGlu = mass;
-      }
-  
-      //PA:  setting MZ and MW is necessary because we may have them as ouptuts
-      template <class Model>
-      void set_MZ_pole_slha(Model& model, double mass)
-      {
+    }
+
+     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
+     template <class Model>
+     void set_MZ_pole_slha(Model& model, double mass)
+     {
         model.get_physical_slha().MVZ = mass;
-      }
-      
-      template <class Model>
-      void set_MW_pole_slha(Model& model, double mass)
-      {
+     }
+
+     template <class Model>
+     void set_MW_pole_slha(Model& model, double mass)
+     {
         model.get_physical_slha().MVWm = mass;
-      }
-      
-      // PA: do we really need to set the masses of states that must be
-      // massless in the MSSM.  This is an MSSM specific file.
-      template <class Model>
-      void set_MGluon(Model& model, double mass)
-      {
+     }
+
+     
+     // PA: do we really need to set the masses of states that must be
+     // massless in the MSSM.  This is an MSSM specific file.
+     template <class Model>
+     void set_MGluon(Model& model, double mass)
+     {
         model.get_physical().MG = mass;
-      }
-      
-      template <class Model>
-      void set_MPhoton(Model& model, double mass)
-      {
+     }
+     
+     template <class Model>
+     void set_MPhoton(Model& model, double mass)
+     {
         model.get_physical().MVP = mass;
-      }
-    
+     }
+
        
       /// @{ Fillers for "Running" subclass
  

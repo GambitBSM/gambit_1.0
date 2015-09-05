@@ -128,9 +128,9 @@ namespace Gambit
       //    #undef ECHO
       // #endif
 
-      SPECGEN_SET(precision_goal,                 double, 1.0e-4);
-      SPECGEN_SET(max_iterations,                 double, 0 );
-      SPECGEN_SET(calculate_sm_masses,              bool, false );
+      SPECGEN_SET(precision_goal,                    double, 1.0e-4);
+      SPECGEN_SET(max_iterations,                    double, 0 );
+      SPECGEN_SET(calculate_sm_masses,               bool, false );
       SPECGEN_SET(pole_mass_loop_order,              int, 2 );
       SPECGEN_SET(ewsb_loop_order,                   int, 2 );
       SPECGEN_SET(beta_loop_order,                   int, 2 );
