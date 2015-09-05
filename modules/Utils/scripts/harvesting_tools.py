@@ -45,7 +45,7 @@ def get_type_equivalencies():
             newline = re.sub("^\[\s*|\s*\]", "", newline)
             equivalency_class = set()
             for member in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", newline+","):
-                equivalency_class.add(re.sub("\"","",member[:-1].strip()))
+                equivalency_class.add(member[:-1].strip())
             for member in equivalency_class: result[member] = list(equivalency_class)
     return result
                     
@@ -139,9 +139,9 @@ def update_module(line,module):
 
 # Check for an existing or type equivalent entry. Preferentially return
 #  1. the existing equivalent entry
-#  2. the first equivalent entry that does not contain a comma
+#  2. the first equivalent entry
 #  3. the original type
-def first_simple_type_equivalent(candidate_in, equivs, existing):
+def first_type_equivalent(candidate_in, equivs, existing):
     if candidate_in in existing: return candidate_in
     candidate = candidate_in
     candidate.strip()
@@ -157,13 +157,7 @@ def first_simple_type_equivalent(candidate_in, equivs, existing):
         return candidate
     equivalency_class = equivs[candidate]
     common_elements = set.intersection(set(equivalency_class), existing)
-    if not common_elements:
-      for index in range(len(equivalency_class)):
-        equivalent = equivalency_class[index]
-        if "," not in equivalent: return equivalent+candidate_suffix
-      print "Error: all equivalent types found have commas in them!  Please typedef one without a comma."
-      print "Types are: ", equivalency_class
-      sys.exit(1)
+    if not common_elements: return equivalency_class[0]+candidate_suffix
     if len(common_elements) != 1: 
         print "Error: existing types and equivalency class have more than one element in common!"
         sys.exit(1)
@@ -206,7 +200,7 @@ def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_typ
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in new_candidate_types:
-            candidate_type = first_simple_type_equivalent(candidate_type,equiv_classes,typeset)
+            candidate_type = first_type_equivalent(candidate_type,equiv_classes,typeset)
             #Skip out now if the type is already found.
             if (candidate_type in typeset or
                 module+"::"+candidate_type in typeset or
@@ -264,7 +258,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
             if re.search("\)\s*\)\s*$", line): 
                 #This is a backend function requirement
                 leading_type = re.sub("\s*,\s*\(.*?\)\s*$", "", args)
-                leading_type = first_simple_type_equivalent(leading_type,equiv_classes,be_typeset)
+                leading_type = first_type_equivalent(leading_type,equiv_classes,be_typeset)
                 functor_template_types = list([leading_type])
                 args = re.sub(".*?,\s*\(\s*", "", re.sub("\s*\)\s*$", "", args) )
                 for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
@@ -273,16 +267,16 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
                         if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
-                        arg = first_simple_type_equivalent(arg,equiv_classes,be_typeset)
+                        arg = first_type_equivalent(arg,equiv_classes,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #This is a backend variable requirement
-                args = first_simple_type_equivalent(args,equiv_classes,be_typeset)
+                args = first_type_equivalent(args,equiv_classes,be_typeset)
                 functor_template_types = list([args+"*"])
 
         else:
             functor_template_types = list([splitline[command_index[splitline[0]]]])
-            functor_template_types[0] = first_simple_type_equivalent(functor_template_types[0],equiv_classes,be_typeset)
+            functor_template_types[0] = first_type_equivalent(functor_template_types[0],equiv_classes,be_typeset)
             if splitline[0].endswith("FUNCTION"):
                 #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
                 args = re.sub("\s*BE_(CONV_)?FUNCTION\s*\(.*?,.*?,\s*?\(", "", line)
@@ -297,7 +291,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
                         if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
-                        arg = first_simple_type_equivalent(arg,equiv_classes,be_typeset)
+                        arg = first_type_equivalent(arg,equiv_classes,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
@@ -311,7 +305,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in new_candidate_types:
-            candidate_type = first_simple_type_equivalent(candidate_type,equiv_classes,be_typeset)
+            candidate_type = first_type_equivalent(candidate_type,equiv_classes,be_typeset)
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.
             if ("Gambit::"+candidate_type in be_typeset):

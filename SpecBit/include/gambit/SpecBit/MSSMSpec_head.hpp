@@ -87,9 +87,16 @@ namespace Gambit {
             // These are public for now so that SpecBit_tests.cpp can access them
             MI model_interface;
 
+            // Dummy placeholder for potential Inputs object
+            DummyInput dummyinput;
+
             //Destructor
             virtual ~MSSMSpec();
-            
+
+            // Functions to interface Model and Input objects with the base 'Spec' class
+            typename MSSMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
+            typename MSSMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+
             //some model independent stuff
             virtual double get_lsp_mass(int & particle_type, 
                                         int & row, int & col) const;
