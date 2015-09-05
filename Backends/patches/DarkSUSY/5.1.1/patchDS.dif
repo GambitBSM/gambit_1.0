@@ -1,0 +1,124 @@
+diff -rupN src/ib/dsIBffdxdy.f src2/ib/dsIBffdxdy.f
+--- src/ib/dsIBffdxdy.f	2011-11-05 00:48:05.000000000 +0100
++++ src2/ib/dsIBffdxdy.f	2015-05-26 00:21:57.580562670 +0200
+@@ -259,14 +259,14 @@ c       endif
+ 
+ c...check that result is positive
+       if (0.gt.tmpresult) then
+-        if (m0**2*tmpresult.lt.(-1D-12)
+-     -     .and.(idtag.ne.memory)) then
+-          write(*,*) '*****'
+-          write (*,*) 'Error in dsIBffdxdy (channel:',IBch,
+-     -                '): negative |M|^2 for model ',idtag,'.'
+-          write (*,*) 'Setting corresponding contributions to zero...'
+-          write(*,*) '*****'
+-        endif
++c        if (m0**2*tmpresult.lt.(-1D-12)
++c     -     .and.(idtag.ne.memory)) then
++c          write(*,*) '*****'
++c          write (*,*) 'Error in dsIBffdxdy (channel:',IBch,
++c     -                '): negative |M|^2 for model ',idtag,'.'
++c          write (*,*) 'Setting corresponding contributions to zero...'
++c          write(*,*) '*****'
++c        endif
+         return
+       endif
+ 
+diff -rupN src/ib/dsIBfsrdxdy.f src2/ib/dsIBfsrdxdy.f
+--- src/ib/dsIBfsrdxdy.f	2011-11-05 00:48:05.000000000 +0100
++++ src2/ib/dsIBfsrdxdy.f	2015-05-26 00:22:22.168563736 +0200
+@@ -62,10 +62,10 @@ c... from a full analytical calculation
+ 
+ c...check that result is positive
+       if (0.gt.fsrtmp) then
+-        write(*,*) '*****'
+-        write (*,*) 'Error in dsIBfsrdxdy: negative |M|^2 !'
+-        write (*,*) 'Setting corresponding contributions to zero...'
+-        write(*,*) '*****'
++c        write(*,*) '*****'
++c        write (*,*) 'Error in dsIBfsrdxdy: negative |M|^2 !'
++c        write (*,*) 'Setting corresponding contributions to zero...'
++c        write(*,*) '*****'
+         dsIBfsrdxdy=0d0
+         return
+       endif
+diff -rupN src/ib/dsIBhhdxdy.f src2/ib/dsIBhhdxdy.f
+--- src/ib/dsIBhhdxdy.f	2011-11-05 00:48:05.000000000 +0100
++++ src2/ib/dsIBhhdxdy.f	2015-05-26 00:22:41.644564583 +0200
+@@ -80,15 +80,15 @@ c...import full IB expression for |M|**2
+ 
+ c...check that the result is positive
+       if (0.gt.tmpresult) then
+-        if (m0**2*tmpresult.lt.(-1D-15)
+-     -     .and.(idtag.ne.memory)) then
+-          write(*,*) '*****'
+-          write (*,*) 'Error in dsIBhhdxdy: ',
+-     -                'negative |M|^2 for model ',
+-     -                 idtag,'.'
+-          write (*,*) ' Setting corresponding contributions to zero...'
+-          write(*,*) '*****'
+-        endif
++c        if (m0**2*tmpresult.lt.(-1D-15)
++c     -     .and.(idtag.ne.memory)) then
++c          write(*,*) '*****'
++c          write (*,*) 'Error in dsIBhhdxdy: ',
++c     -                'negative |M|^2 for model ',
++c     -                 idtag,'.'
++c          write (*,*) ' Setting corresponding contributions to zero...'
++c          write(*,*) '*****'
++c        endif
+         return
+       endif
+ 
+diff -rupN src/ib/dsIBwhdxdy.f src2/ib/dsIBwhdxdy.f
+--- src/ib/dsIBwhdxdy.f	2011-11-05 00:48:05.000000000 +0100
++++ src2/ib/dsIBwhdxdy.f	2015-05-26 00:22:47.940564855 +0200
+@@ -205,14 +205,14 @@ c       endif
+ 
+ c...check that result is positive
+       if (0.gt.tmpresult) then
+-        if (m0**2*tmpresult.lt.(-1D-10)
+-     -     .and.(idtag.ne.memory)) then
+-          write(*,*) '*****'
+-          write (*,*) 'Error in dsIBwhdxdy: ',
+-     -                'negative |M|^2 for model ',idtag,'.'
+-          write (*,*) 'Setting corresponding contributions to zero...'
+-          write(*,*) '*****'
+-        endif
++c        if (m0**2*tmpresult.lt.(-1D-10)
++c     -     .and.(idtag.ne.memory)) then
++c          write(*,*) '*****'
++c          write (*,*) 'Error in dsIBwhdxdy: ',
++c     -                'negative |M|^2 for model ',idtag,'.'
++c          write (*,*) 'Setting corresponding contributions to zero...'
++c          write(*,*) '*****'
++c        endif
+         return
+       endif
+ 
+diff -rupN src/ib/dsIBwwdxdy.f src2/ib/dsIBwwdxdy.f
+--- src/ib/dsIBwwdxdy.f	2011-11-05 00:48:05.000000000 +0100
++++ src2/ib/dsIBwwdxdy.f	2015-05-26 00:22:54.220565128 +0200
+@@ -137,14 +137,14 @@ c       endif
+ 
+ c...check that result is positive
+       if (0.gt.tmpresult) then
+-        if (m0**2*tmpresult.lt.(-1D-10)
+-     -     .and.(idtag.ne.memory)) then
+-          write(*,*) '*****'
+-          write (*,*) 'Error in dsIBwwdxdy:',
+-     -                ' negative |M|^2 for model ',idtag,'.'
+-          write (*,*) 'Setting corresponding contributions to zero...'
+-          write(*,*) '*****'
+-        endif
++c        if (m0**2*tmpresult.lt.(-1D-10)
++c     -     .and.(idtag.ne.memory)) then
++c          write(*,*) '*****'
++c          write (*,*) 'Error in dsIBwwdxdy:',
++c     -                ' negative |M|^2 for model ',idtag,'.'
++c          write (*,*) 'Setting corresponding contributions to zero...'
++c          write(*,*) '*****'
++c        endif
+         return
+       endif
+ 

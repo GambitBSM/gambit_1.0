@@ -1,0 +1,63 @@
+# Defaults for StandardModel_SLHA2 parameters.
+# These are ALL FIXED
+# To vary, say, mTop, or just use different fixed values, you should create a
+# new version of this file.
+
+###
+# import this file into a Parameters node named:
+# StandardModel_SLHA2:
+#
+# Values from PDG 2014
+#  * from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-standard-model.pdf
+# ** from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-phys-constants.pdf
+#  § from http://pdg.lbl.gov/2014/tables/rpp2014-sum-leptons.pdf
+#  @ from http://pdg.lbl.gov/2014/tables/rpp2014-sum-quarks.pdf 
+#    (for reference: http://pdg.lbl.gov/2014/reviews/rpp2014-rev-quark-masses.pdf)
+#  $ from http://arxiv.org/abs/1403.4427
+#  ! from http://pdg.lbl.gov/2014/listings/rpp2014-list-z-boson.pdf
+#  & from http://pdg.lbl.gov/2014/listings/rpp2014-list-b-quark.pdf
+#  % from http://pdg.lbl.gov/2014/listings/rpp2014-list-c-quark.pdf
+#  ^ from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-qcd.pdf
+# If more than one source listed, values are equal in both sources.
+# Values in GeV where units apply.
+
+# SLHA1
+alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
+GF      :  1.16637870E-05 # G_Fermi **
+alphaS  :  1.18500000E-01 # alpha_s(mZ)^MSbar ^
+mZ      :  9.11760000E+01 # mZ(pole) !   
+mBmB    :  4.18000000E+00 # mb(mb)^MSbar &
+mT      :  1.73340000E+02 # mtop(pole) $
+mTau    :  1.77682000E+00 # mtau(pole) §
+mNu3    :               0 # mnu3(pole)
+# SLHA2
+mE      :  5.10998928E-04 # melectron(pole) § **
+mNu1    :               0 # mnu1(pole)
+mMu     :  1.05658372E-01 # mmuon(pole) §
+mNu2    :               0 # mnu2(pole)
+mD      :  4.80000000E-03 # md(2 GeV)^MSbar @
+mU      :  2.30000000E-03 # mu(2 GeV)^MSbar @
+mS      :  9.50000000E-02 # ms(2 GeV)^MSbar @
+mCmC    :  1.27500000E+00 # mc(mc)^MSbar %
+
+# CKM
+# Wolfenstein parameterisation (matches SLHA2 VCKMIN block)
+# from http://pdg.lbl.gov/2014/reviews/rpp2014-rev-ckm-matrix.pdf
+CKM_lambda  :  0.22537
+CKM_A       :  0.814
+CKM_rhobar  :  0.117
+CKM_etabar  :  0.353
+
+# PMNS
+# from     http://pdg.lbl.gov/2014/tables/rpp2014-sum-leptons.pdf
+# see also http://pdg.lbl.gov/2014/reviews/rpp2014-rev-neutrino-mixing.pdf
+# Note: angles given as x = sin^2(2*theta), so I have converted them as:
+# theta = 0.5*arcsin(sqrt(x))
+# CP-violating phases not measured, so I set them to zero. 
+theta12 :  0.58376 # solar angle
+theta23 :  0.76958 # atmospheric mixing angle
+theta13 :  0.15495 #                                    
+delta13 :  0       # Dirac CP-violating phase
+alpha1  :  0       # first Majorana CP-violating phase
+alpha2  :  0       # second CP-violating Majorana phase
+ 
