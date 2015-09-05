@@ -21,9 +21,16 @@
  // For testing only
   #define CAPABILITY test_MSSM_spectrum   
   START_CAPABILITY                          
+
     #define FUNCTION make_test_spectrum  // Get (pointer to) test MSSM spectrum
     START_FUNCTION(SubSpectrum*)
     #undef FUNCTION
+
+    #define FUNCTION MSSMspectrum_test
+    START_FUNCTION(bool)
+    DEPENDENCY(unimproved_MSSMspectrum, Spectrum*)
+    #undef FUNCTION
+
   #undef CAPABILITY
 
   /// TEST FUNCTIONS

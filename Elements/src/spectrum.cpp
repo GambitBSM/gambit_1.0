@@ -197,7 +197,7 @@ namespace Gambit
    {
      SLHAstruct slha(SMINPUTS.getSLHAea());    
      LE->add_to_SLHAea(slha);
-     UV->add_to_SLHAea(slha);
+     HE->add_to_SLHAea(slha);
      cout << slha;
      exit(0);
      return slha;

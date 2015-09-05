@@ -36,11 +36,8 @@ START_MODULE
   /// Module function declarations for SpecBit_SingletDM.cpp
   #include "gambit/SpecBit/SpecBit_SingletDM_rollcall.hpp"
 
-  /// Module function declarations for SpecBit_Higgs.cpp
-  #include "gambit/SpecBit/SpecBit_Higgs_rollcall.hpp"
-
   /// For SpecBit testing only
-  //#include "gambit/SpecBit/SpecBit_sandbox.hpp"
+  #include "gambit/SpecBit/SpecBit_sandbox.hpp"
 
   // Functions to changes the capability associated with a Spectrum object to "SM_spectrum"
   ///TODO: CURRENTLY THERE SEEMS TO BE A BUG WITH RETRIEVING THESE DEPENDENCIES! SWITCHING BACK TO OLD METHOD

@@ -2,7 +2,8 @@
 //   *********************************************
 ///  \file
 ///
-///  Abstract class for accessing general spectrum information.
+///  Abstract class for accessing general spectrum
+///  information.
 ///
 ///  *********************************************
 ///
@@ -180,19 +181,17 @@ namespace Gambit
          virtual int get_index_offset() const { vfcn_error(LOCAL_INFO); return 0; }
       
          /// Constructors/destructors
+         SubSpectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
          virtual ~SubSpectrum() {} 
    
          //Models::partmap& particle_database;
          /// new constructor.  Pass Models::ParticleDB() in as the third argument in all cases.  You will need to include partmap.hpp in order to be able to do this.
          //SubSpectrum(RunningPars& rp, Phys& p, Models::partmap& pdb) : phys(p), runningpars(rp), particle_database(pdb) {}
       
-         /// Physical and running parameters
-         virtual Phys& phys() = 0;
-         virtual RunningPars& runningpars() = 0;
-         // const versions       
-         virtual const Phys& phys() const = 0;
-         virtual const RunningPars& runningpars() const = 0;
-
+         /// Member objects containing physical and running parameters
+         Phys& phys;
+         RunningPars& runningpars;
+   
          /// Member object containing low-energy effective Standard Model parameters
          //SMLowEnergyEffective& SMeff;
    
@@ -667,16 +666,8 @@ namespace Gambit
  
       public:
          // During construction, link the object to its "parent"
-         PhysDer(Spec<D,DT>& p) : parent(p) {}
+         PhysDer(Spec<D,DT>& s) : parent(s) {}
          virtual ~PhysDer() {}    
-
-         // "Semi" copy constructor to copy all members, but then assign the "parent" reference.
-         // (Compiler should see it as just a regular constructor, I think)
-         PhysDer(const PhysDer& other, Spec<D,DT>& p)
-           : Phys(other)                        /* Call copy constructors of  base classes */
-           , CommonDer<Self, Par::Phys>(other)  /*         "                 "             */
-           , parent(p)
-         {}
 
    };
    /// Initialise maps (using filler overrides from DerivedSpec if defined)
@@ -729,16 +720,7 @@ namespace Gambit
 
       public:
          // During construction, link the object to its "parent"
-         RunparDer(Spec<D,DT>& p) : parent(p) {}
-
-         // "Semi" copy constructor to copy all members, but then assign the "parent" reference.
-         // (Compiler should see it as just a regular constructor, I think)
-         RunparDer(const RunparDer& other, Spec<D,DT>& p)
-           : RunningPars(other)                    /* Call copy constructors of  base classes */
-           , CommonDer<Self, Par::Running>(other)  /*         "                 "             */
-           , parent(p)
-         {}
-
+         RunparDer(Spec<D,DT>& s) : parent(s) {}
          virtual ~RunparDer() {}
    
          /// Functions to connect to overrides defined in classes derived from SubSpectrum
@@ -791,7 +773,11 @@ namespace Gambit
          /// Internal instances of specialised running and physical parameter classes   
          RunparDer<D,DT> rp;
          PhysDer<D,DT> pp;
-
+         /// Model object on which to call function pointers
+         Model* model; 
+         /// Contains extra data input on SubSpectrum object creation
+         Input* input;
+     
       protected:
          /// @{ Map filler functions
          /// Override as needed in derived classes
@@ -839,38 +825,46 @@ namespace Gambit
          
       public: 
          /// Minimal constructor used in default constructors of derived classes
+         /// Assumes that "Model" and "Input" classes have default constructors
          Spec()
-           : rp(*this)
+           : SubSpectrum(rp,pp)
+           , rp(*this)
            , pp(*this)
+           , model()
+           , input()
          {}
+      
+         /// Constructor initialising just "model" member (Input unused (e.g. no special computations))
+         Spec(Model& m)
+           : SubSpectrum(rp,pp)
+           , rp(*this)
+           , pp(*this)
+           , model(&m)
+           , input()
+         {}
+      
+         /// Constructor initialising just "input" member (Model unused (e.g. no RGEs))
+         Spec(Input& i)
+           : SubSpectrum(rp,pp)
+           , rp(*this)
+           , pp(*this)
+           , model()
+           , input(&i)
+         {}
+      
+         /// Full constructor
+         Spec(Model& m, Input& i)
+           : SubSpectrum(rp,pp)
+           , rp(*this)
+           , pp(*this)
+           , model(&m)
+           , input(&i)
+         {}
+     
+         Model* get_Model(){ return model; } 
+         Input* get_Input(){ return input; }
 
-         /// Need special copy constructor to properly copy the "nested" Phys
-         /// and RunningPars classes, but replace their "parent" reference.
-         Spec(const Spec<D,DT>& other)
-           : rp(other.rp, *this)
-           , pp(other.pp, *this)
-         {}
  
-         /// Copy-assignment
-         // Spec& operator=(Spec<D,DT> other)
-         //   : rp(other.rp, *this)
-         //   , pp(other.pp, *this)
-         // {}
-    
-         // /// Move constructor
-         // Spec(Spec<D,DT>&& other)
-         //   : rp(other.rp, *this)
-         //   , pp(other.pp, *this)
-         // {}
-          
-
-         /// Functions to access parameter-containing objects     
-         virtual Phys& phys() { return pp; }
-         virtual RunningPars& runningpars() { return rp; }
-         // const versions 
-         virtual const Phys& phys() const { return pp; }
-         virtual const RunningPars& runningpars() const { return rp; }
-
          /// CRTP-style polymorphic clone function
          /// Now derived classes will not need to re-implement the clone function.
          virtual std::unique_ptr<SubSpectrum> clone() const       
@@ -879,27 +873,14 @@ namespace Gambit
               new DerivedSpec(static_cast<DerivedSpec const &>(*this))
               );
          }
- 
-         /// @{ Getters for wrapped data; be sure to define the 'get_Model' and
-         ///    'get_Input' functions in the wrappers (with public access)
-         ///    Might as well use static polymorphism rather than virtual functions,
-         ///    since we are using the CRTP already anyway.
-
-         /// Get model object on which to call function pointers
-         Model& model() { return static_cast<DerivedSpec*>(this)->get_Model(); }
-
-         /// Get struct containing any extra data input on SubSpectrum object creation
-         Input& input() { return static_cast<DerivedSpec*>(this)->get_Input(); }
-
-         /// @}
-      
+       
    };
-
+  
    /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
    /// are not needed by the getters.
    class DummyModel {};
    class DummyInput {};
-  
+
 } // end namespace Gambit
 
 // Undef the various helper macros to avoid contaminating other files

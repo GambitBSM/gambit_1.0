@@ -72,10 +72,8 @@ namespace Gambit
       // Default constructor
       template <class MI>
       MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
-         , index_offset(-1)
-      {
-         if (switch_index_convention) index_offset = 0;
-      }
+         : index_offset(switch_index_convention ? 0 : -1)
+      {}
   
       template <class MI>
       MSSMSpec<MI>::~MSSMSpec()
@@ -100,23 +98,23 @@ namespace Gambit
         SLHAea_add(slha, "SPINFO", 2, GAMBIT_VERSION " (GAMBIT); "+backend_version+" ("+backend_name+")"); 
 
         SLHAea_add_block(slha, "MINPAR");
-        SLHAea_add_block(slha, "HMIX",this->runningpars.GetScale());
+        SLHAea_add_block(slha, "HMIX",this->runningpars().GetScale());
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass1,"Mu","HMIX",1,"# mu DRbar");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"tanbeta","HMIX",2,"# tan(beta) = vu/vd DRbar");
-        if (not this->runningpars.has(Par::mass1,"vu")) utils_error().raise(LOCAL_INFO, "MSSM subspectrum does not contain vu!");
-        if (not this->runningpars.has(Par::mass1,"vd")) utils_error().raise(LOCAL_INFO, "MSSM subspectrum does not contain vd!");
-        double vu = this->runningpars.get(Par::mass1,"vu");
-        double vd = this->runningpars.get(Par::mass1,"vd");        
+        if (not this->runningpars().has(Par::mass1,"vu")) utils_error().raise(LOCAL_INFO, "MSSM subspectrum does not contain vu!");
+        if (not this->runningpars().has(Par::mass1,"vd")) utils_error().raise(LOCAL_INFO, "MSSM subspectrum does not contain vd!");
+        double vu = this->runningpars().get(Par::mass1,"vu");
+        double vd = this->runningpars().get(Par::mass1,"vd");        
         slha["HMIX"][""] << 3 << sqrt(vu*vu + vd*vd) << "# v = sqrt(vd^2 + vu^2) DRbar";
-        slha["HMIX"][""] << 4 << this->runningpars.get(Par::mass2,"mA2") << "# m^2_A (tree)";        
+        slha["HMIX"][""] << 4 << this->runningpars().get(Par::mass2,"mA2") << "# m^2_A (tree)";        
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass2,"BMu","HMIX",101,"# Bmu DRbar");
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
         // FIXME this is wrong, should be at scale mZ, not be at scale Q like this
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
-        slha["MINPAR"][""] << 4 << sgn(this->runningpars.get(Par::mass1,"Mu")) << "# sign(mu)";
+        slha["MINPAR"][""] << 4 << sgn(this->runningpars().get(Par::mass1,"Mu")) << "# sign(mu)";
 
-        SLHAea_add_block(slha, "GAUGE",this->runningpars.GetScale());
+        SLHAea_add_block(slha, "GAUGE",this->runningpars().GetScale());
         // Scale gY is in SU(5)/GUT normalisation internally; convert it to SM normalisation for SLHA output by multiplying by sqrt(3/5).
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"g1","GAUGE",1,"# g'  = g1 = gY DRbar", true, 0.7745966692414834); 
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::dimensionless,"g2","GAUGE",2,"# g   = g2      DRbar");
@@ -127,35 +125,35 @@ namespace Gambit
         for(int i=0;i<33;i++)
         {
           str comment("# "+Models::ParticleDB().long_name(pdg_codes[i], 0));
-          SLHAea_add_from_subspec(slha, LOCAL_INFO, this->phys, Par::Pole_Mass, std::pair<int, int>(pdg_codes[i],0), "MASS", comment);
+          SLHAea_add_from_subspec(slha, LOCAL_INFO, this->phys(), Par::Pole_Mass, std::pair<int, int>(pdg_codes[i],0), "MASS", comment);
         }
    
-        SLHAea_add_block(slha, "MSOFT",this->runningpars.GetScale());
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass1,"M1","MSOFT",1,"# bino mass parameter M1");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass1,"M2","MSOFT",2,"# wino mass parameter M2");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass1,"M3","MSOFT",3,"# gluino mass parameter M3");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass2,"mHd2","MSOFT",21,"# d-type Higgs mass parameter mHd2");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars,Par::mass2,"mHu2","MSOFT",22,"# u-type Higgs mass parameter mHu2");
+        SLHAea_add_block(slha, "MSOFT",this->runningpars().GetScale());
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass1,"M1","MSOFT",1,"# bino mass parameter M1");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass1,"M2","MSOFT",2,"# wino mass parameter M2");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass1,"M3","MSOFT",3,"# gluino mass parameter M3");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass2,"mHd2","MSOFT",21,"# d-type Higgs mass parameter mHd2");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass2,"mHu2","MSOFT",22,"# u-type Higgs mass parameter mHu2");
 
         sspair A[3] = {sspair("AU","Au"), sspair("AD","Ad"), sspair("AE","Ae")};
         sspair Y[3] = {sspair("YU","Yu"), sspair("YD","Yd"), sspair("YE","Ye")};
         sspair T[3] = {sspair("TU","TYu"), sspair("TD","TYd"), sspair("TE","TYe")};
         for (int k=0;k<3;k++)
         {
-          SLHAea_add_block(slha, A[k].first,this->runningpars.GetScale());
-          SLHAea_add_block(slha, Y[k].first,this->runningpars.GetScale());
-          SLHAea_add_block(slha, T[k].first,this->runningpars.GetScale());
+          SLHAea_add_block(slha, A[k].first,this->runningpars().GetScale());
+          SLHAea_add_block(slha, Y[k].first,this->runningpars().GetScale());
+          SLHAea_add_block(slha, T[k].first,this->runningpars().GetScale());
           for(int i=1;i<4;i++)
           {
             comment.str(""); comment << "# " << A[k].second << "(" << i << "," << i << ")";
-            double invTii = 1.0/this->runningpars.get(Par::dimensionless,Y[k].second,i,i);
-            SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars, Par::mass1, T[k].second, i, i, A[k].first, i, i, comment.str(), true, invTii);
+            double invTii = 1.0/this->runningpars().get(Par::dimensionless,Y[k].second,i,i);
+            SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(), Par::mass1, T[k].second, i, i, A[k].first, i, i, comment.str(), true, invTii);
             for(int j=1;j<4;j++)
             {
               comment.str(""); comment << "# " << Y[k].second << "(" << i << "," << j << ")";
-              SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars, Par::dimensionless, Y[k].second, i, j, Y[k].first, i, j, comment.str());
+              SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(), Par::dimensionless, Y[k].second, i, j, Y[k].first, i, j, comment.str());
               comment.str(""); comment << "# " << T[k].second << "(" << i << "," << j << ")";
-              SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars, Par::mass1, T[k].second, i, j, T[k].first, i, j, comment.str());
+              SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(), Par::mass1, T[k].second, i, j, T[k].first, i, j, comment.str());
             }
           }
         }
@@ -163,19 +161,19 @@ namespace Gambit
         sspair M[5] = {sspair("MSL2","ml2"), sspair("MSE2","me2"), sspair("MSQ2","mq2"), sspair("MSU2","mu2"), sspair("MSD2","md2")};
         for (int k=0;k<5;k++)
         {
-          SLHAea_add_block(slha, M[k].first,this->runningpars.GetScale());
+          SLHAea_add_block(slha, M[k].first,this->runningpars().GetScale());
           for(int i=1;i<4;i++) for(int j=1;j<4;j++)
           {
             comment.str(""); comment << M[k].second << "(" << i << "," << j << ")";
-            SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars, Par::mass2, M[k].second, i, j, M[k].first, i, j, "# " + comment.str());
-            if (i == j) slha["MSOFT"][""] << 30+3*k+i+(k>1?5:0) << sqrt(this->runningpars.get(Par::mass2, M[k].second, i, j)) << "# sqrt("+comment.str()+")";
+            SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(), Par::mass2, M[k].second, i, j, M[k].first, i, j, "# " + comment.str());
+            if (i == j) slha["MSOFT"][""] << 30+3*k+i+(k>1?5:0) << sqrt(this->runningpars().get(Par::mass2, M[k].second, i, j)) << "# sqrt("+comment.str()+")";
           }
         }
 
         sspair S[3] = {sspair("USQMIX","~u"), sspair("DSQMIX","~d"), sspair("SELMIX","~e")};
         for (int k=0;k<3;k++)
         {
-          SLHAea_add_block(slha, S[k].first,this->runningpars.GetScale());
+          SLHAea_add_block(slha, S[k].first,this->runningpars().GetScale());
           for(int i=1;i<7;i++) for(int j=1;j<7;j++)
           {
             comment.str(""); comment << "# " << S[k].second << "-type sfermion mixing (" << i << "," << j << ")";
@@ -186,7 +184,7 @@ namespace Gambit
         sspair U[5] = {sspair("UMIX","~chi-"), sspair("VMIX","~chi+"), sspair("PSEUDOSCALARMIX","A0"), sspair("SCALARMIX","h0"), sspair("CHARGEMIX","H+")};
         for (int k=0;k<5;k++)
         {
-          SLHAea_add_block(slha, U[k].first, this->runningpars.GetScale());
+          SLHAea_add_block(slha, U[k].first, this->runningpars().GetScale());
           for(int i=1;i<3;i++) for(int j=1;j<3;j++)
           {
             comment.str(""); comment << "# " << U[k].second << " mixing matrix (" << i << "," << j << ")";
@@ -194,11 +192,11 @@ namespace Gambit
           }
         }
 
-        SLHAea_add_block(slha, "ALPHA", this->runningpars.GetScale());
-        slha["ALPHA"][""] << 1 << asin(this->phys.get(Par::Pole_Mixing, "h0", 2, 2)) << "# sin^-1(SCALARMIX(2,2))";
+        SLHAea_add_block(slha, "ALPHA", this->runningpars().GetScale());
+        slha["ALPHA"][""] << 1 << asin(this->phys().get(Par::Pole_Mixing, "h0", 2, 2)) << "# sin^-1(SCALARMIX(2,2))";
   
         sspair V("SNUMIX","~nu");
-        SLHAea_add_block(slha, V.first,this->runningpars.GetScale());
+        SLHAea_add_block(slha, V.first,this->runningpars().GetScale());
         for(int i=1;i<4;i++) for(int j=1;j<4;j++)
         {
           comment.str(""); comment << "# " << V.second << " mixing matrix (" << i << "," << j << ")";
@@ -206,7 +204,7 @@ namespace Gambit
         }
       
         sspair N("NMIX","~chi0");
-        SLHAea_add_block(slha, N.first,this->runningpars.GetScale());
+        SLHAea_add_block(slha, N.first,this->runningpars().GetScale());
         for(int i=1;i<5;i++) for(int j=1;j<5;j++)
         {
           comment.str(""); comment << "# " << N.second << " mixing matrix (" << i << "," << j << ")";

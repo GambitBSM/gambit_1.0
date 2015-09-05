@@ -94,7 +94,7 @@ namespace Gambit
         
         // Add the b pole mass
         SLHAea_add_block(slha, "MASS");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO, this->phys, Par::Pole_Mass,"b","MASS",5,"# mb (pole)");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO, this->phys(), Par::Pole_Mass,"b","MASS",5,"# mb (pole)");
       }
 
       /// Run masses and couplings to end_scale

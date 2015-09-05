@@ -181,13 +181,6 @@ namespace Gambit
       // one-stop-shop for all spectrum information, including the model interface object.
       MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.1.0");
 
-      // Add extra information about the scales used to the wrapper object
-      // (last parameter turns the 'safety' check for the override setter off, which allows
-      //  us to set parameters that don't previously exist)
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
-
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
@@ -299,7 +292,7 @@ namespace Gambit
     // Functions to changes the capability associated with a Spectrum object to 
     // "SM_spectrum"
     //TODO: "temporarily" removed
-    //void convert_MSSM_to_SM   (const Spectrum* &result) {result = *Pipes::convert_MSSM_to_SM::Dep::unimproved_MSSM_spectrum;}
+    //void convert_MSSM_to_SM   (const Spectrum* &result) {result = *Pipes::convert_MSSM_to_SM::Dep::MSSM_spectrum;}
 
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
@@ -327,11 +320,11 @@ namespace Gambit
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
       
       // Dump spectrum information to slha file (for testing...)
-      result->get_HE()->getSLHA("SpecBit/CMSSM_fromSpectrumObject.slha");
+      result->get_UV()->getSLHA("SpecBit/CMSSM_fromSpectrumObject.slha");
 
       // TEMPORARY CHECKING!
       std::cout<<"in get_CMSSM_spectrum"<<std::endl;
-      std::cout<<"Scale: "<<result->get_HE()->GetScale()<<std::endl;
+      std::cout<<"Scale: "<<result->get_UV()->GetScale()<<std::endl;
       // Check scale in SLHAea output
       SLHAstruct slhaea = result->getSLHAea();
       // 4th element of block definition should be the scale
@@ -366,16 +359,12 @@ namespace Gambit
       // Placeholder
     }
 
-    /// @{
-    /// Functions to decompose Spectrum object (of type MSSM_spectrum)
-
-    /// @} 
     /// Retrieve SubSpectrum* to SM LE model from Spectrum object
     /// DEPENDENCY(MSSM_spectrum, Spectrum)
     void get_SM_SubSpectrum_from_MSSM_Spectrum (const SubSpectrum* &result)
     {
       namespace myPipe = Pipes::get_SM_SubSpectrum_from_MSSM_Spectrum;
-      const Spectrum* matched_spectra(*myPipe::Dep::unimproved_MSSM_spectrum);
+      const Spectrum* matched_spectra(*myPipe::Dep::MSSM_spectrum);
       result = matched_spectra->get_LE();
     }
 
@@ -393,7 +382,7 @@ namespace Gambit
     /// Extract an SLHAea version of the spectrum contained in a Spectrum object
     void get_MSSM_spectrum_as_SLHAea (SLHAstruct &result)
     {
-      result = (*Pipes::get_MSSM_spectrum_as_SLHAea::Dep::unimproved_MSSM_spectrum)->getSLHAea();
+      result = (*Pipes::get_MSSM_spectrum_as_SLHAea::Dep::MSSM_spectrum)->getSLHAea();
     }
 
     /// Get an MSSMSpectrum object from an SLHA file
@@ -563,107 +552,6 @@ namespace Gambit
       MassObs.SinAlphatree = SAtree;
 
       result = MassObs; 
-    }
-
-
-    /// Higgs masses and mixings with theoretical uncertainties
-    void FH_HiggsMasses(fh_HiggsMassObs &result) 
-    {
-      using namespace Pipes::FH_HiggsMasses;
-
-      // Higgs mass with
-      // 0 - m1 (Mh in rMSSM)
-      // 1 - m2 (MH in rMSSM)
-      // 2 - m3 (MA in rMSSM)
-      // 3 - MHpm
-      Farray<fh_real, 1,4> MHiggs;
-      Farray<fh_real, 1,4> DeltaMHiggs;
-
-      // sine of effective Higgs mixing angle, alpha_eff
-      fh_complex SAeff; 
-      fh_complex DeltaSAeff; 
-
-      // matrix needed to rotate Higgs 
-      // mass matrix to diagonal form
-      Farray<fh_complex, 1,3, 1,3> UHiggs;
-      Farray<fh_complex, 1,3, 1,3> DeltaUHiggs;
-
-      // matrix of Z-factors needed to combine 
-      // amplitudes involving on-shell Higgs
-      Farray<fh_complex, 1,3, 1,3> ZHiggs;
-      Farray<fh_complex, 1,3, 1,3> DeltaZHiggs;
-
-      int error = 1;
-      BEreq::FHHiggsCorr(error, MHiggs, SAeff, UHiggs, ZHiggs);
-
-      error = 1;
-      BEreq::FHUncertainties(error, DeltaMHiggs, DeltaSAeff, DeltaUHiggs, DeltaZHiggs);
-
-      fh_HiggsMassObs HiggsMassObs;
-      for(int i = 0; i < 4; i++)
-      {
-        HiggsMassObs.MH[i] = MHiggs(i+1);
-        HiggsMassObs.deltaMH[i] = DeltaMHiggs(i+1);
-      }
-      HiggsMassObs.SinAlphaEff = SAeff; 
-      HiggsMassObs.deltaSinAlphaEff = DeltaSAeff; 
-      for(int i = 0; i < 3; i++)
-        for(int j = 0; j < 3; j++)
-        {
-          HiggsMassObs.UH[i][j] = UHiggs(i+1,j+1);
-          HiggsMassObs.deltaUH[i][j] = DeltaUHiggs(i+1,j+1);
-          HiggsMassObs.ZH[i][j] = ZHiggs(i+1,j+1);
-          HiggsMassObs.deltaZH[i][j] = DeltaZHiggs(i+1,j+1);
-        }
-
-      result = HiggsMassObs;
-    }
-
-
-    /// FeynHiggs Higgs couplings
-    void FH_Couplings(fh_Couplings &result) 
-    {
-      using namespace Pipes::FH_Couplings;
-      
-      // what to use for internal Higgs mixing
-      // (ex. in couplings)
-      // (default = 1)
-      // 0 - no mixing
-      // 1 - UHiggs
-      // 2 - ZHiggs
-      int uzint = 2;
-      // what to use for external Higgs mixing
-      // (ex. in decays)
-      // (default = 2)
-      // 0 - no mixing
-      // 1 - UHiggs
-      // 2 - ZHiggs
-      int uzext = 2; 
-      // which effective bottom mass to use
-      int mfeff = 1;
-
-      int error = 1;
-      BEreq::FHSelectUZ(error, uzint, uzext, mfeff);
-
-      Farray<fh_complex, 1,681> couplings;     // MSSM Higgs couplings
-      Farray<fh_complex, 1,231> couplings_sm;  // SM Higgs couplings
-      Farray<fh_real, 1,978> gammas;           // Higgs decay widths and BR's (MSSM)
-      Farray<fh_real, 1,250> gammas_sm;        // Higgs decay widths and BR's (SM)
-      int fast = 1;  // include off-diagonal fermion decays? (1 = no)
-
-      error = 1;
-      BEreq::FHCouplings(error, couplings, couplings_sm,
-                         gammas, gammas_sm, fast);
-
-      fh_Couplings Couplings;
-      for(int i = 0; i < 681; i++) Couplings.couplings[i] = couplings(i+1);
-      for(int i = 0; i < 231; i++) Couplings.couplings_sm[i] = couplings_sm(i+1);
-      for(int i = 0; i < 978; i++) Couplings.gammas[i] = gammas(i+1);
-      for(int i = 0; i < 250; i++) Couplings.gammas_sm[i] = gammas_sm(i+1);
-      Couplings.calculator = BEreq::FHCouplings.origin();
-      Couplings.calculator_version = BEreq::FHCouplings.version();
-
-      result = Couplings;
     }
 
 

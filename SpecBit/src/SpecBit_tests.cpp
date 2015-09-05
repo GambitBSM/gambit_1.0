@@ -54,11 +54,10 @@ namespace Gambit
     void MSSMspectrum_test (bool &result)
     {
 
-      // Retreive pointer to Spectrum object, delivered by dependency resolver
-      // Module function asks for Spectrum* with capability MSSM_spectrum.
-      // i.e. has DEPENDENCY(MSSM_spectrum, Spectrum*) 
+      // Retrieve pointer to Spectrum object, delivered by dependency resolver
+      // Module function asks for Spectrum* with capability unimproved_MSSM_spectrum.
       namespace myPipe = Pipes::MSSMspectrum_test;
-      const Spectrum* fullspectrum = *myPipe::Dep::MSSM_spectrum;
+      const Spectrum* fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
       const SubSpectrum* spec = fullspectrum->get_HE(); // MSSMSpec SubSpectrum object
       const SubSpectrum* SM   = fullspectrum->get_LE(); // QedQcdWrapper SubSpectrum object
 
@@ -93,8 +92,7 @@ namespace Gambit
          std::cout << std::endl << slhaea << std::endl;
          
          // Write to file so we can check it
-         std::string filename("SpecBit/MSSMspectrum_test_good.slha");
-         spec->dump2slha(filename);
+         spec->getSLHA("SpecBit/MSSMspectrum_test_good.slha");
 
          // ---------------------------------------------------------
          // BEGIN DEMO OF SPECTRUM OBJECT AND PARTICLE DATABASE
