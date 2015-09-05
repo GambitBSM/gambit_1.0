@@ -23,39 +23,23 @@
 #define MODULE SpecBit
 START_MODULE
 
-  /// @{ Functions defined in SpecBit.cpp
-
-  /// Produce an SMInputs object (SLHA2 conventions)
-  // i.e. provide Standard Model parameters in SLHA2 input conventions
-  #define CAPABILITY SMINPUTS
-  START_CAPABILITY
-
-    #define FUNCTION get_SMINPUTS            
-    START_FUNCTION(SMInputs)                  
-    ALLOW_MODELS(StandardModel_SLHA2)
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-  /// @}
-
   // Capabilities used in more than one of the headers
   // below need to be declared up-front (and then not
   // declared in the header)
 
   /// Module function declarations for SpecBit_SM.cpp
-  #include "gambit/SpecBit/SpecBit_SM.hpp"
+  #include "gambit/SpecBit/SpecBit_SM_rollcall.hpp"
 
   /// Module function declarations for SpecBit_MSSM.cpp
-  #include "gambit/SpecBit/SpecBit_MSSM.hpp"
+  #include "gambit/SpecBit/SpecBit_MSSM_rollcall.hpp"
 
   /// Module function declarations for SpecBit_SingletDM.cpp
-  #include "gambit/SpecBit/SpecBit_SingletDM.hpp"
+  #include "gambit/SpecBit/SpecBit_SingletDM_rollcall.hpp"
 
-  /// Module function declarations for SpecBit_tests.cpp (new tests)
-  #include "gambit/SpecBit/SpecBit_tests.hpp"
+  /// Module function declarations for SpecBit_Higgs.cpp
+  #include "gambit/SpecBit/SpecBit_Higgs_rollcall.hpp"
 
-  /// For SpecBit testing only (old tests)
+  /// For SpecBit testing only
   //#include "gambit/SpecBit/SpecBit_sandbox.hpp"
 
   // Functions to changes the capability associated with a Spectrum object to "SM_spectrum"

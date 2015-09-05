@@ -179,7 +179,7 @@ namespace Gambit
       //
       // This object will COPY the interface data members into itself, so it is now the 
       // one-stop-shop for all spectrum information, including the model interface object.
-      MSSMSpec<MI> mssmspec(model_interface);
+      MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.1.0");
 
       // Add extra information about the scales used to the wrapper object
       // (last parameter turns the 'safety' check for the override setter off, which allows
@@ -327,13 +327,13 @@ namespace Gambit
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
       
       // Dump spectrum information to slha file (for testing...)
-      result->get_HE()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
+      result->get_HE()->getSLHA("SpecBit/CMSSM_fromSpectrumObject.slha");
 
       // TEMPORARY CHECKING!
       std::cout<<"in get_CMSSM_spectrum"<<std::endl;
       std::cout<<"Scale: "<<result->get_HE()->GetScale()<<std::endl;
       // Check scale in SLHAea output
-      SLHAea::Coll slhaea = result->get_HE()->getSLHAea();
+      SLHAstruct slhaea = result->getSLHAea();
       // 4th element of block definition should be the scale
       std::cout<<"Scale (slhaea): "<<slhaea.at("MSOFT").find_block_def()->at(3)<<std::endl;
     }
@@ -388,26 +388,21 @@ namespace Gambit
       result = matched_spectra->get_LE();
     }
 
-
-    // Dump whatever is in the spectrum object to SLHA
-    // This is mostly for testing purposes.
+    /// Dump whatever is in the spectrum object to SLHA
+    /// This is mostly for testing purposes.
     void dump_spectrum(double &result)
     {
       namespace myPipe = Pipes::dump_spectrum;
       const SubSpectrum* spec(*myPipe::Dep::SM_subspectrum);
       std::string filename(myPipe::runOptions->getValue<std::string>("filename"));
-      spec->dump2slha(filename);
+      spec->getSLHA(filename);
       result = 1;
     }
 
-    /// Extract an SLHAea version of the spectrum contained in a SubSpectrum object
-    //  (with capability MSSM_spectrum)
-    //  DEPENDENCY(MSSM_spectrum, SubSpectrum*)  
-    void get_MSSM_spectrum_as_SLHAea (SLHAea::Coll &result)
+    /// Extract an SLHAea version of the spectrum contained in a Spectrum object
+    void get_MSSM_spectrum_as_SLHAea (SLHAstruct &result)
     {
-      namespace myPipe = Pipes::get_MSSM_spectrum_as_SLHAea;
-      const SubSpectrum* spec(*myPipe::Dep::MSSM_subspectrum);
-      result = spec->getSLHAea();
+      result = (*Pipes::get_MSSM_spectrum_as_SLHAea::Dep::MSSM_spectrum)->getSLHAea();
     }
 
     /// Get an MSSMSpectrum object from an SLHA file
@@ -419,7 +414,7 @@ namespace Gambit
       // Static counter running in a loop over all filenames
       static unsigned int counter = 0;
       static long int ncycle = 1;
-      SLHAea::Coll input_slha;
+      SLHAstruct input_slha;
 
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAfile;
    
@@ -458,7 +453,7 @@ namespace Gambit
       MSSMskeleton mssmskel(input_slha);
 
       // Create SMInputs object from the SLHAea object
-      SMInputs sminputs(fill_SMInputs_from_SLHAea(input_slha));
+      SMInputs sminputs(input_slha);
 
       // Create SMskeleton SubSpectrum object from the SLHAea object
       // (basically just interacts with SMINPUTS block)

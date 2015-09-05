@@ -66,6 +66,8 @@ namespace Gambit {
             typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
    
          private:
+            str backend_name;
+            str backend_version;
             int index_offset;
             virtual int get_index_offset() const {return index_offset;}
 
@@ -78,24 +80,16 @@ namespace Gambit {
 
             //constructors
             MSSMSpec(bool switch_index_convention=false);
-            MSSMSpec(MI, bool switch_index_convention=false);
-            //MSSMSpec(const MSSMSpec&); // default copy constructor should now be fine...
+            MSSMSpec(MI, str backend_name, str backend_version, bool switch_index_convention=false);
 
             //Could more constructors to interface with other generators   
              
             // These are public for now so that SpecBit_tests.cpp can access them
             MI model_interface;
 
-            // Dummy placeholder for potential Inputs object
-            DummyInput dummyinput;
-
             //Destructor
             virtual ~MSSMSpec();
-
-            // Functions to interface Model and Input objects with the base 'Spec' class
-            typename MSSMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
-            typename MSSMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
-
+            
             //some model independent stuff
             virtual double get_lsp_mass(int & particle_type, 
                                         int & row, int & col) const;
@@ -103,11 +97,8 @@ namespace Gambit {
             //may use something like this to pass error to Gambit
             virtual std::string AccessError(std::string state) const;
 
-            // Write spectrum information in slha format (not including input parameters etc.)
-            virtual void dump2slha(const std::string&) const;
-
-            // Return an SLHAea object containing spectrum information
-            virtual SLHAea::Coll getSLHAea() const;
+            // Fill an SLHAea object with spectrum information
+            virtual void add_to_SLHAea(SLHAstruct& slha) const;
 
             /// TODO: Need to implement this properly...
             /// Copy low energy spectrum information from another model object
