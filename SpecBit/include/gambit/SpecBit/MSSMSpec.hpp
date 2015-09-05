@@ -330,6 +330,25 @@ namespace Gambit
       { 
          return model.get_vu() / model.get_vd(); 
       }
+     // "extra" function to compute mA2 
+      template <class Model>
+      double get_DRbar_mA2(const Model& model) 
+      {
+  double tb = model.get_vu() / model.get_vd();
+  double cb = cos(atan(tb));
+  double sb = sin(atan(tb));
+  return model.get_BMu() / (sb * cb); 
+      }
+    
+
+     template <class Model>
+     double get_sinthW2_DRbar(const Model& model)
+     {
+       double sthW2 = Utils::sqr(model.get_g1()) * 0.6
+   / (0.6 * Utils::sqr(model.get_g1()) +   Utils::sqr(model.get_g2()));
+
+       return sthW2;
+     }
 
       // "extra" function to compute mA2 
       template <class Model>
@@ -452,31 +471,6 @@ namespace Gambit
         model.get_physical_slha().UP(i,j) = mass;
       }
     
-      template <class Model>
-      void set_MAh1_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MAh(1) = mass;
-      }
-      template <class Model>
-      void set_MHpm1_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MHpm(1) = mass;
-      }
-    
-     // goldstone setters.  maybe we need these for some consistent calculation
-     // unlikely but I'll add them for now.
-      template <class Model>
-      void set_neutral_goldstone_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MAh(0) = mass;
-      }
-
-      template <class Model>
-      void set_charged_goldstone_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MHpm(0) = mass;
-      }
-
       // PA: I'm using nicer names than the FlexibleSUSY ones here
       // but maybe I shouldn't as it breaks the symmetry with the
       // getters and could generate some confusion
@@ -513,6 +507,29 @@ namespace Gambit
         model.get_physical().MVP = mass;
       }
     
+=======
+     template <class Model>
+     void set_MW_pole_slha(Model& model, double mass)
+     {
+       model.get_physical_slha().MVWm = mass;
+     }
+
+     
+     // PA: do we really need to set the masses of states that must be
+     // massless in the MSSM.  This is an MSSM specific file.
+     template <class Model>
+     void set_MGluon(Model& model, double mass)
+     {
+       model.get_physical().MG = mass;
+     }
+     
+     template <class Model>
+     void set_MPhoton(Model& model, double mass)
+     {
+       model.get_physical().MVP = mass;
+     }
+
+>>>>>>> SpecBit_development
        
       /// @{ Fillers for "Running" subclass
  
@@ -626,11 +643,9 @@ namespace Gambit
          {
             typename MTget::fmap0_extraM tmp_map;
             tmp_map["mA2"] = &get_DRbar_mA2<Model>;
-    
             map_collection[Par::mass2].map0_extraM = tmp_map;
          }
    
-
          // Functions utilising the two-index "plain-vanilla" function signature
          // (Two-index member functions of model object)
          {

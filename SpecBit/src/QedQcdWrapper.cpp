@@ -168,12 +168,12 @@ namespace Gambit
       double get_Pole_mPhoton  (const SMInputs&) { return 0.; }
       double get_Pole_mGluon   (const SMInputs&) { return 0.; }
 
-     double get_sinthW2_pole(const softsusy::QedQcd &qedqcd)
-     {
+      double get_sinthW2_pole(const softsusy::QedQcd &qedqcd)
+      {
         return (1 - Utils::sqr(qedqcd.displayPoleMW()) / Utils::sqr(qedqcd.displayPoleMZ()));
-     }
-
-     // Filler function for getter function pointer maps extractable from "runningpars" container
+      }
+    
+      // Filler function for getter function pointer maps extractable from "runningpars" container
       RunningGetterMaps QedQcdWrapper::runningpars_fill_getter_maps()
       {
          RunningGetterMaps map_collection; 
@@ -220,6 +220,9 @@ namespace Gambit
          return map_collection;
       }
 
+
+
+     
       // Filler function for getter function pointer maps extractable from "phys" container
       PhysGetterMaps QedQcdWrapper::phys_fill_getter_maps()
       {
@@ -276,8 +279,8 @@ namespace Gambit
             map_collection[Par::Pole_Mixing].map0_extraM = tmp_map;
          }
 
+         /// @}
 
-   /// @}
          return map_collection;
       } 
 
