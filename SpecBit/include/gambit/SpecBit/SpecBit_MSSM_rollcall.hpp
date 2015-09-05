@@ -98,7 +98,7 @@
     // Extract appropriate SubSpectrum* from Spectrum struct, starting from MSSM_spectrum
     #define FUNCTION get_SM_SubSpectrum_from_MSSM_Spectrum
     START_FUNCTION(const SubSpectrum*)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
     #undef FUNCTION
 
   #undef CAPABILITY

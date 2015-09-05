@@ -57,7 +57,7 @@ namespace Gambit
       // Retrieve pointer to Spectrum object, delivered by dependency resolver
       // Module function asks for Spectrum* with capability unimproved_MSSM_spectrum.
       namespace myPipe = Pipes::MSSMspectrum_test;
-      const Spectrum* fullspectrum = *myPipe::Dep::unimproved_MSSM_spectrum;
+      const Spectrum* fullspectrum = *myPipe::Dep::unimproved_MSSMspectrum;
       const SubSpectrum* spec = fullspectrum->get_HE(); // MSSMSpec SubSpectrum object
       const SubSpectrum* SM   = fullspectrum->get_LE(); // QedQcdWrapper SubSpectrum object
 

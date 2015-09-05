@@ -324,32 +324,6 @@ namespace Gambit
          return errormsg;
       }
      
-      // "extra" function to compute TanBeta 
-      template <class Model>
-      double get_tanbeta(const Model& model) 
-      { 
-         return model.get_vu() / model.get_vd(); 
-      }
-     // "extra" function to compute mA2 
-      template <class Model>
-      double get_DRbar_mA2(const Model& model) 
-      {
-  double tb = model.get_vu() / model.get_vd();
-  double cb = cos(atan(tb));
-  double sb = sin(atan(tb));
-  return model.get_BMu() / (sb * cb); 
-      }
-    
-
-     template <class Model>
-     double get_sinthW2_DRbar(const Model& model)
-     {
-       double sthW2 = Utils::sqr(model.get_g1()) * 0.6
-   / (0.6 * Utils::sqr(model.get_g1()) +   Utils::sqr(model.get_g2()));
-
-       return sthW2;
-     }
-
       // "extra" function to compute mA2 
       template <class Model>
       double get_DRbar_mA2(const Model& model) 
@@ -507,29 +481,6 @@ namespace Gambit
         model.get_physical().MVP = mass;
       }
     
-=======
-     template <class Model>
-     void set_MW_pole_slha(Model& model, double mass)
-     {
-       model.get_physical_slha().MVWm = mass;
-     }
-
-     
-     // PA: do we really need to set the masses of states that must be
-     // massless in the MSSM.  This is an MSSM specific file.
-     template <class Model>
-     void set_MGluon(Model& model, double mass)
-     {
-       model.get_physical().MG = mass;
-     }
-     
-     template <class Model>
-     void set_MPhoton(Model& model, double mass)
-     {
-       model.get_physical().MVP = mass;
-     }
-
->>>>>>> SpecBit_development
        
       /// @{ Fillers for "Running" subclass
  
