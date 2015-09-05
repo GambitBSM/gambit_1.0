@@ -44,7 +44,9 @@ void sighandler(int sig)
 {
         if (printerInterface != NULL)
                 printerInterface->finalise();
-        //MPI_Finalize();
+        //#ifdef WITH_MPI
+        //  MPI_Finalize();
+        //#endif
         std::cout << "ScannerBit has finished early!" << std::endl;
         exit(sig);
 }
@@ -81,8 +83,10 @@ int main(int argc, char **argv)
         signal(SIGABRT, sighandler);
         signal(SIGTERM, sighandler);
         signal(SIGINT, sighandler);
-        
-        GMPI::Init();
+
+        #ifdef WITH_MPI
+          GMPI::Init();
+        #endif
         try
         {
                 if (argc == 1)
@@ -174,7 +178,9 @@ int main(int argc, char **argv)
                         logger() << "Starting scan." << EOM;
                         scan.Run(); 
 
-                        MPI_Finalize();
+                        #ifdef WITH_MPI
+                          MPI_Finalize();
+                        #endif
                         
                         std::cout << "ScannerBit has finished successfully!" << std::endl;
                 }
