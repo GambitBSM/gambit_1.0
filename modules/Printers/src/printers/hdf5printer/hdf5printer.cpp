@@ -116,6 +116,10 @@
 
 //#define CHECK_SYNC 
 
+// Debugging for 'finalise' routine
+#define FINAL_CHECK_SYNC
+#define FINAL_DEBUG_MODE 
+
 // Code!
 namespace Gambit
 {
@@ -806,7 +810,7 @@ namespace Gambit
           if(myRank!=0) 
           {
              flush();
-             #ifdef MPI_DEBUG
+             #ifdef FINAL_MPI_DEBUG
              std::cout << "rank "<<myRank<<": Sent all buffers to master ("<<printer_name<<")"<<std::endl;
              #endif
           }
@@ -818,12 +822,12 @@ namespace Gambit
 
           #ifdef WITH_MPI
           // Wait for all the nodes to do their final sends
-          #ifdef MPI_DEBUG
+          #ifdef FINAL_MPI_DEBUG
           std::cout << "rank "<<myRank<<": Waiting at barrier in finalise() ("<<printer_name<<")"<<std::endl;
           #endif
           master_wait_for_tag(FINAL_PASS);
           //myComm.Barrier(); // replaced with master_wait_for_tag
-          #ifdef MPI_DEBUG
+          #ifdef FINAL_MPI_DEBUG
           std::cout << "rank "<<myRank<<": Barrier passed ("<<printer_name<<")"<<std::endl;
           #endif
           #endif
@@ -833,29 +837,29 @@ namespace Gambit
              #ifdef WITH_MPI
              // Collect the worker buffers and fix up synchronisation
              
-             #ifdef MPI_DEBUG
+             #ifdef FINAL_MPI_DEBUG
              std::cout << "rank "<<myRank<<": collect_mpi_buffers() ("<<printer_name<<")"<<std::endl;
              #endif
 
-             #ifdef CHECK_SYNC
-             check_sync("FINAL Pre-mpi-buffer-collect check (in finalise)", 1);
+             #ifdef FINAL_CHECK_SYNC
+             check_sync("FINAL Pre-mpi-buffer-collect check (in finalise)", 1, true);
              #endif
 
              if( collect_mpi_buffers() ) 
              {
-               #ifdef MPI_DEBUG
+               #ifdef FINAL_MPI_DEBUG
                std::cout << "rank "<<myRank<<": Syncing after FINAL collect_mpi_buffers() call (in "<<printer_name<<")"<<std::endl;
                #endif
 
-               #ifdef CHECK_SYNC
-               check_sync("FINAL Pre-mpi-buffer-collect check (in finalise)", 1);
+               #ifdef FINAL_CHECK_SYNC
+               check_sync("FINAL Pre-mpi-buffer-collect check (in finalise)", 1, true);
                #endif
 
                synchronise_buffers();
              }
 
-             #ifdef CHECK_SYNC
-             check_sync("FINAL Post-mpi-buffer-collect check (in finalise)", 1);
+             #ifdef FINAL_CHECK_SYNC
+             check_sync("FINAL Post-mpi-buffer-collect check (in finalise)", 1, true);
              #endif
 
              // No more message passing should happen, so make sure that all messages
@@ -869,9 +873,12 @@ namespace Gambit
                        << " (Was there an N_BUFFERS_SENT message amongst them? answer="<<bufsent<<")";
                 printer_error().raise(LOCAL_INFO, errmsg.str());
              }
+             #ifdef FINAL_MPI_DEBUG
+             std::cout << "rank "<<myRank<<": No MPI messages waiting to be received according to Iprobe ("<<printer_name<<")"<<std::endl;
+             #endif
 
              // Very very last write to disk
-             #ifdef MPI_DEBUG
+             #ifdef FINAL_MPI_DEBUG
              std::cout << "rank "<<myRank<<": Doing very last buffer flush ("<<printer_name<<")"<<std::endl;
              #endif
                      
@@ -893,8 +900,10 @@ namespace Gambit
                 }
             
                 // Debug: check final lengths
-                //std::cout << "dset: " << it->second->get_label() << ", length:" << it->second->get_dataset_length() << std::endl;
- 
+                #ifdef FINAL_MPI_DEBUG
+                std::cout << "dset: " << it->second->get_label() << ", length:" << it->second->get_dataset_length() << std::endl;
+                #endif 
+
                 if(dset_length==0) 
                 {
                    dset_length = it->second->get_dataset_length();
@@ -1234,11 +1243,14 @@ namespace Gambit
        #endif
 
        // First we will check if any BUFFER_SENT messages are waiting.
-       if(myComm.Iprobe(MPI_ANY_SOURCE, N_BUFFERS_SENT))
+       // (We will loop here until we receive all waiting N_BUFFERS_SENT messages)
+       int loopcount = 0;
+       while( myComm.Iprobe(MPI_ANY_SOURCE, N_BUFFERS_SENT) )
        {
-          #ifdef MPI_DEBUG
-          std::cout<<"rank "<<myRank<<": N_BUFFERS_SENT message detected..."<<std::endl;
-          #endif
+          //#ifdef MPI_DEBUG
+          std::cout<<"rank "<<myRank<<": N_BUFFERS_SENT message detected (loop "<<loopcount<<")..."<<std::endl;
+          loopcount += 1;
+          //#endif
 
           collected_sync_buffers = true;
           for(unsigned int source_rank=1; source_rank<mpiSize; source_rank++)
@@ -1562,8 +1574,29 @@ namespace Gambit
     /// Flag sets whether "perfect" sync is required, or whether
     /// some buffers can be ahead by one slot (due to having
     /// performed prints that other buffers have not yet done)
-    void HDF5Printer::check_sync(const std::string& label, const int sync_type)
+    /// If checkall=true, then all_buffers is checked, not just
+    /// all_my_buffers. Only primary printer can do this.
+    void HDF5Printer::check_sync(const std::string& label, const int sync_type, bool checkall=false)
     {
+         BaseBufferMap* map_to_check=NULL;
+         if(checkall)
+         {
+            if(not is_primary_printer)
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error running 'check_sync'; flag 'checkall' set to true, but this is not the primary printer (it is "<<this->get_printer_name()<<") This is not allowed and is a bug, please fix it.";
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+            else
+            {
+               map_to_check=&all_buffers;
+            }
+         }
+         else
+         {
+            map_to_check=&all_my_buffers;
+         }
+
          // Explicitly check up on the synchronisation of all the buffers and their
          // associated datasets
          std::string sync_type_name = "non-perfect";
@@ -1588,38 +1621,41 @@ namespace Gambit
            errmsg << "   head_pos = " << head_pos << "; name = " << name << std::endl; \
            errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
 
-         for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
+         for(BaseBufferMap::iterator it = map_to_check->begin(); it != map_to_check->end(); it++)
          {
-           long head_pos = it->second->dset_head_pos();
-           std::string name       = it->second->get_label();
-           long sync_pos_plus1 = get_N_pointIDs();
-
-           if(sync_type==0) {
-              if(head_pos+1 < sync_pos_plus1)
-              {
-                 ERR_MSG
-                 errmsg << " (head_pos < syncpos) " << std::endl;
-                 printer_error().raise(LOCAL_INFO, errmsg.str());
-              } else if (head_pos > sync_pos_plus1) 
-              {
-                 ERR_MSG           
-                 errmsg << " (head_pos > syncpos + 1) " << std::endl;
-                 printer_error().raise(LOCAL_INFO, errmsg.str());
-              }  // else ok.   
-           } 
-           else if(sync_type==1 or sync_type==2)
+           if(it->second->is_synchronised())
            {
-             if(head_pos != sync_pos_plus1-1 + diff)
-             {
-                ERR_MSG           
-                errmsg << " (head_pos != syncpos + "<<diff<<") " << std::endl;
-                printer_error().raise(LOCAL_INFO, errmsg.str());
-             }
-           }
+              long head_pos = it->second->dset_head_pos();
+              std::string name = it->second->get_label();
+              long sync_pos_plus1 = get_N_pointIDs();
 
-           std::cout << "   head_pos = " << head_pos << "; name = " << name << std::endl;
-           std::cout << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
-           //it->second->sync_report();
+              if(sync_type==0) {
+                 if(head_pos+1 < sync_pos_plus1)
+                 {
+                    ERR_MSG
+                    errmsg << " (head_pos < syncpos) " << std::endl;
+                    printer_error().raise(LOCAL_INFO, errmsg.str());
+                 } else if (head_pos > sync_pos_plus1) 
+                 {
+                    ERR_MSG           
+                    errmsg << " (head_pos > syncpos + 1) " << std::endl;
+                    printer_error().raise(LOCAL_INFO, errmsg.str());
+                 }  // else ok.   
+              } 
+              else if(sync_type==1 or sync_type==2)
+              {
+                if(head_pos != sync_pos_plus1-1 + diff)
+                {
+                   ERR_MSG           
+                   errmsg << " (head_pos != syncpos + "<<diff<<") " << std::endl;
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+              }
+
+              std::cout << "   head_pos = " << head_pos << "; name = " << name << std::endl;
+              std::cout << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
+              //it->second->sync_report();
+            }
          }
     }
 
@@ -1772,8 +1808,10 @@ namespace Gambit
          // below to avoid duplication.
          // EDIT: Ok need to do these in the constructor also, since otherwise
          // the very first point gets missed.
-         print(candidate_newpoint, "pointID", -1000, myRank, candidate_newpoint);
-         print(myRank,             "MPIrank", -1001, myRank, candidate_newpoint);
+         /// TODO: Ok currently cannot both print them here and in the scanner plugins.
+         /// Need to deal with duplicate print attempts better.
+         //print(candidate_newpoint, "pointID", -1000, myRank, candidate_newpoint);
+         //print(myRank,             "MPIrank", -1001, myRank, candidate_newpoint);
       }
     }
 

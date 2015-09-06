@@ -189,7 +189,7 @@ namespace Gambit
         /// Flag sets whether "perfect" sync is required, or whether
         /// some buffers can be ahead by one slot (due to having
         /// performed prints that other buffers have not yet done)
-        void check_sync(const std::string& label, const int sync_type);
+        void check_sync(const std::string& label, const int sync_type, bool checkall);
  
         #ifdef WITH_MPI
         /// Reserved tags for MPI messages

@@ -233,8 +233,10 @@ namespace Gambit {
          // sure that the hdf5printer only outputs it once (and to avoid the name clash
          // arising from duplicating the output) please use the ID codes -1000 and -1001 for
          // these two special outputs) 
+         // Edit: add total LogLike to this list? Special code?
          primary_stream->print(pointID, "pointID", -1000, myrank, pointID);
          primary_stream->print(myrank,  "MPIrank", -1001, myrank, pointID);
+         primary_stream->print(lnew,    "LogLike",    -4, myrank, pointID);
 
          // Done! (lnew will be used by MultiNest to guide the search)
          return lnew;                  
