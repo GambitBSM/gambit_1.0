@@ -43,13 +43,23 @@ set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_
 include_directories("${yaml_INCLUDE_DIR}")
 add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(dashi "-i ''")
+else()
+  set(dashi "-i")
+endif()
+
 #contrib/Delphes-3.1.2; include only if ColliderBit is in use
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   set (EXCLUDE_DELPHES FALSE)
+  set (DELPH_BAD_LINE "\\(..CC)\ ..patsubst\ -std=%,,..CXXFLAGS))\\)\ \\(..CXXFLAGS.\\)")
   ExternalProject_Add(delphes
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2
     BUILD_IN_SOURCE 1
-    CONFIGURE_COMMAND "./configure; mv Makefile Makefile.orig; sed 's,\ ..EXECUTABLE.,,' Makefile.orig > Makefile;"
+    CONFIGURE_COMMAND ./configure 
+              COMMAND cp <SOURCE_DIR>/Makefile <SOURCE_DIR>/Makefile.orig 
+              COMMAND sed -i "s,\ ..EXECUTABLE.,,g" <SOURCE_DIR>/Makefile
+              COMMAND sed -i "s/${DELPH_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
     BUILD_COMMAND $(MAKE) all
     INSTALL_COMMAND ""
     INSTALL_DIR ${CMAKE_BINARY_DIR}/install
