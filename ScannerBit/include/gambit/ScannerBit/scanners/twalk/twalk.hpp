@@ -23,7 +23,6 @@
 
 #include "scanner_plugin.hpp"
 #include "random_tools.hpp"
-#include "mpi.h"
 
 inline bool notUnit(const std::vector<double> &in)
 {
