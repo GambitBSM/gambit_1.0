@@ -22,7 +22,7 @@
 #include <string>
 #include <sstream>
 
-#include "gambit/Elements/slhaea_alias.hpp"
+#include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/partmap.hpp"
