@@ -58,8 +58,8 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ./configure 
               COMMAND cp <SOURCE_DIR>/Makefile <SOURCE_DIR>/Makefile.orig 
-              COMMAND sed -i "s,\ ..EXECUTABLE.,,g" <SOURCE_DIR>/Makefile
-              COMMAND sed -i "s/${DELPH_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
+              COMMAND sed ${dashi} "s,\ ..EXECUTABLE.,,g" <SOURCE_DIR>/Makefile
+              COMMAND sed ${dashi} "s/${DELPH_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
     BUILD_COMMAND $(MAKE) all
     INSTALL_COMMAND ""
     INSTALL_DIR ${CMAKE_BINARY_DIR}/install
