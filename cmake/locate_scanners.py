@@ -515,12 +515,6 @@ def main(argv):
 #                                                \n\
 #************************************************\n\n"                                                
     towrite += cmakelist_txt_out
-
-    if sys.platform == "darwin":
-        cflags = "-dynamiclib"
-    else:
-        cflags = "-rdynamic"
-
     towrite += "\
 # Add the ScannerBit linking flag utility        \n\
 add_executable(scanlibs ${scanner_scanlibs_sources} ${scanner_scanlibs_headers})\n\
@@ -555,10 +549,6 @@ endif()                                          \n\
                                                  \n\
 set( reqd_lib_output )                           \n\
 set( exclude_lib_output )                        \n\n\
-set( PLUGIN_COMPILE_FLAGS                        \n"
-                
-    towrite += "                \"" + cflags + "\""
-    towrite += ")\n\n\
 if(MPI_C_FOUND)                                  \n\
     set( PLUGIN_COMPILE_DIRECTORIES              \n\
                 ${PLUGIN_COMPILE_DIRECTORIES}    \n\
@@ -754,7 +744,6 @@ endif()                                          \n\n"
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
-            towrite += " "*23 + "LINK_FLAGS \""+ cflags +"\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
             towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
                 
             #if scanbit_static_links.has_key(plug_type[i]):
@@ -762,7 +751,6 @@ endif()                                          \n\n"
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
             #            cflags = "-static " + scanbit_static_links[plug_type[i]][directory]
 
-            towrite += " "*23 + "COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS}\"\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"

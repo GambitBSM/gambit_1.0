@@ -41,6 +41,13 @@ set(BoldMagenta "${Esc}[1;35m")
 set(BoldCyan    "${Esc}[1;36m")
 set(BoldWhite   "${Esc}[1;37m")
 
+# Define the sed command to use differently for OSX and linux
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(dashi "-i ''")
+else()
+  set(dashi "-i")
+endif()
+
 #Crash function for failed execute_processes
 function(check_result result command)
   if(NOT ${result} STREQUAL "0")

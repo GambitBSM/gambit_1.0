@@ -45,13 +45,6 @@ endif()
 set(backend_download "${PROJECT_SOURCE_DIR}/Backends/downloaded")
 set(scanner_download "${PROJECT_SOURCE_DIR}/ScannerBit/downloaded")
 
-# Define the sed command to use differently for OSX and linux
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(dashi "-i ''")
-else()
-  set(dashi "-i")
-endif()
-
 # Define the newline strings to use for OSX-safe substitution.
 set(nl "___totally_unlikely_to_occur_naturally___")
 set(true_nl \"\\n\")

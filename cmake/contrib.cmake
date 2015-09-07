@@ -39,15 +39,9 @@ add_gambit_library(mkpath OPTION OBJECT
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:mkpath>)
 
 #contrib/yaml-cpp-0.5.1
-set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
+set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
 include_directories("${yaml_INCLUDE_DIR}")
 add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(dashi "-i ''")
-else()
-  set(dashi "-i")
-endif()
 
 #contrib/Delphes-3.1.2; include only if ColliderBit is in use
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
