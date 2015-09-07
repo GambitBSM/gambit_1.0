@@ -19,14 +19,22 @@
 #ifndef __SMInputs_hpp__
 #define __SMInputs_hpp__
 
-// Could remove this dependency if we refactor a little
-#include "slhaea.h"
+#include "gambit/Elements/slhaea_helpers.hpp"
 
-namespace Gambit {
+
+namespace Gambit
+{
 
    // Container class for Standard Model input information (defined as in SLHA2)
    struct SMInputs
    {
+
+     // Default constructor
+     SMInputs() {}
+
+     // Create an SMInputs struct from an SLHAea object
+     SMInputs(SLHAstruct&);
+
       // Block SMINPUTS 
       // SLHA1
       double alphainv;  // 1: Inverse electromagnetic coupling at the Z pole in the MSbar scheme (with 5 active flavours)
@@ -60,7 +68,8 @@ namespace Gambit {
       // given by PDG (or by UTFit[31] and CKMFitter [32], the main 
       // collaborations that extract the CKM parameters) refer to SM
       // MSbar quantities defined at Q=mZ, to avoid any possible ambiguity."
-      struct CKMdef { 
+      struct CKMdef
+      { 
         double lambda;
         double A;  
         double rhobar;
@@ -70,29 +79,24 @@ namespace Gambit {
 
       // Block UPMNSIN
       // PDG parameterisation in terms of rotation angles (all in radians)
-      struct PMNSdef {
+      struct PMNSdef
+      {
         double theta12; // the solar angle
         double theta23; // the atmospheric mixing angle
-        double theta13;
+        double theta13; // the reactor mixing angle
         double delta13; // the Dirac CP-violating phase
         double alpha1;  // the first Majorana CP-violating phase
         double alpha2;  // the second CP-violating Majorana phase
       };
       PMNSdef PMNS;
 
-      // Add any missing information to the input SLHAea object
-      // (since many codes will leave out information that they don't use)
-      void add_to_SLHAea(SLHAea::Coll& data /*modify*/) const;
+      // Return a fresh SLHAea object containing the contents of this object.
+      SLHAstruct getSLHAea() const;
+
+      // Add the contents of this object to an existing SLHAea object
+      void add_to_SLHAea(SLHAstruct& slha /*modify*/) const;
+      
    };
-   
-   // Get an entry from an SLHAea object, with some error checking
-   double SLHAea_get(const SLHAea::Coll& data, const std::string& block, const int index);
-
-   // Add an entry to an SLHAea object if it doesn't already exist (unless overwrite=true)
-   void SLHAea_add(SLHAea::Coll& data /*modify*/, const std::string& block, const int index, const double value, const std::string& comment="", const bool overwrite=false);
-
-   // Fill SMInputs struct from an SLHAea object
-   SMInputs fill_SMInputs_from_SLHAea(SLHAea::Coll&);
 
 } // end namespace Gambit
 

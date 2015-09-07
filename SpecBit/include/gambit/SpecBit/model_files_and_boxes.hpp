@@ -38,9 +38,8 @@
 // 'getSLHAea' virtual function. 
 //
 // The interface class here is specific to flexiblesusy, but in order to work, it just
-// need to typedef a Model object with all the right MSSMSpec getter names (like before)
-// as well as contain a function called "getSLHAea" which takes said model object and
-// creates an SLHAea object from it. If extra objects are needed to do this (as in the
+// need to typedef a Model object with all the right MSSMSpec getter names (like before).
+// If extra objects are needed to do this (as in the
 // flexiblesusy case), they will need to be carried around by an instance of this interface 
 // struct, which should be used to construct the MSSMSpec.
 
@@ -71,31 +70,8 @@
           Model model;     /* FlexibleSUSY model */                                    \
           QedQcd oneset;   /* SoftSUSY format Standard Model parameters */             \
           InputParameters input;    /* Parameters needed to compute points of Model */ \
-          SlhaIo slha_io;   /* FlexibleSUSY SLHA input/output manager */               \
           Problems problems; /* FlexibleSUSY problems report manager */                \
           Scales scales;   /*scales at shich coundary conditions are applied*/         \
-          /* Function to create SLHAea object from 'model' */                          \
-          /* THIS IS REQUIRED BY MSSMSpec */                                           \
-          SLHAea::Coll getSLHAea() const                                               \
-          {                                                                            \
-             SlhaIo slhaio;                                                           \
-             fill_slhaio(slhaio);                                                     \
-             return slhaio.fill_slhaea(model,oneset);                                 \
-          }                                                                            \
-                                                                                       \
-          /* Function to write SLHA file from 'model' */                               \
-          /* THIS IS REQUIRED BY MSSMSpec */                                           \
-          void dump2slha(const std::string& slha_output_file) const                    \
-          {                                                                            \
-             SlhaIo slhaio;                                                           \
-             /* Clone of output method used in run_CMSSM.cpp  */                       \
-             fill_slhaio(slhaio);                                                     \
-             if (slha_output_file.empty()) {                                           \
-               slhaio.write_to_stream(std::cout); /*may not want this*/               \
-             } else {                                                                  \
-               slhaio.write_to_file(slha_output_file);                                \
-             }                                                                         \
-          }                                                                            \
                                                                                        \
           /* The rest is also internal data only. For now anyway, might need some of it     
              accessible at some point, like the input parameters, could add more       

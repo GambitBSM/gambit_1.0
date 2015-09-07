@@ -186,21 +186,7 @@ namespace Gambit {
       /// Retrieve SLHAea object
       SLHAea::Coll MSSMskeleton::getSLHAea() const { return slhawrap.getSLHAea(); } 
 
-      /// Write out SLHA file
-      void MSSMskeleton::dump2slha(const std::string& filename) const
-      {
-         std::ofstream ofs(filename);
-         if(ofs){ ofs << getSLHAea(); }
-         else{ 
-           std::ostringstream errmsg;
-           errmsg << "Could not open file '" << filename << "' for writing. Please check that the path exists!";
-           SpecBit_error().raise(LOCAL_INFO,errmsg.str()); 
-         }     
-         ofs.close();
-      }
- 
-      // Map fillers
-     
+      // Map fillers    
 
       RunningGetterMaps MSSMskeleton::runningpars_fill_getter_maps()
       {

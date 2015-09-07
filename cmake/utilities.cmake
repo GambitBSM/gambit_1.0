@@ -41,6 +41,13 @@ set(BoldMagenta "${Esc}[1;35m")
 set(BoldCyan    "${Esc}[1;36m")
 set(BoldWhite   "${Esc}[1;37m")
 
+# Define the sed command to use differently for OSX and linux
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(dashi "-i ''")
+else()
+  set(dashi "-i")
+endif()
+
 #Crash function for failed execute_processes
 function(check_result result command)
   if(NOT ${result} STREQUAL "0")
@@ -98,6 +105,7 @@ function(add_gambit_library libraryname)
   add_dependencies(${libraryname} backend_harvest)
   add_dependencies(${libraryname} printer_harvest)
   add_dependencies(${libraryname} module_harvest)
+  add_dependencies(${libraryname} yaml-cpp)
 
   if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
     foreach (dir ${GAMBIT_INCDIRS})

@@ -44,15 +44,19 @@ ObsLikes:
   #  type:         double
   #  function:     specbit_test_func1
 
-  - purpose:      Likelihood
-    capability:   specbit_tests3
-    type:         double
-    function:     specbit_test_func3
+  - purpose:      Test
+    capability:   unimproved_MSSM_spectrum
+    function:     get_MSSM_spectrum_as_SLHAea
 
-  - purpose:      Likelihood
-    capability:   specbit_test_Spectrum
-    type:         double
-    function:     specbit_test_Spectrum
+  #- purpose:      Likelihood
+  #  capability:   specbit_tests3
+  #  type:         double
+  #  function:     specbit_test_func3
+
+  #- purpose:      Likelihood
+  #  capability:   specbit_test_Spectrum
+  #  type:         double
+  #  function:     specbit_test_Spectrum
 
   #- purpose:      Likelihood
   #  capability:   dump_spectrum_slha
@@ -65,9 +69,14 @@ ObsLikes:
   #  function:     exampleRead
 
 Rules:
-  - capability: unimproved_MSSM_spectrum 
-    type: const Spectrum*
-    function: get_MSSMatMGUT_spectrum  # Use this function to compute this capability
+
+  - capability: unimproved_MSSM_spectrum
+    function: get_MSSM_spectrum_as_SLHAea
+    dependencies:
+      - capability: unimproved_MSSM_spectrum
+        function: get_MSSMatMGUT_spectrum
+
+  - function: get_MSSMatMGUT_spectrum
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1

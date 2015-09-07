@@ -177,7 +177,7 @@ void NSM_low_scale_constraint<Two_scale>::initialize()
    assert(model && "NSM_low_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   initial_scale_guess = LowEnergyConstant(MZ);
+   initial_scale_guess =  oneset.displayPoleMZ();
 
    scale = initial_scale_guess;
 
@@ -199,7 +199,7 @@ void NSM_low_scale_constraint<Two_scale>::update_scale()
    assert(model && "NSM_low_scale_constraint<Two_scale>::"
           "update_scale(): model pointer is zero.");
 
-   scale = LowEnergyConstant(MZ);
+   scale = oneset.displayPoleMZ();
 
 
 }

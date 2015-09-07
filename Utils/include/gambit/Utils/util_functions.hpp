@@ -60,6 +60,9 @@ namespace Gambit
   template <typename T>
   T byVal(T t) { return t; }
 
+  template <typename T> 
+  int sgn(T val) { return (T(0) < val) - (val < T(0)); }
+
   namespace Utils
   {
 
@@ -146,6 +149,9 @@ namespace Gambit
     /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)    
     bool check2(const std::string& s1, const std::string& s2);
 
+    /// returns square of double - saves tedious repetition
+    double sqr(double a);
+    
     /// Local GAMBIT definition of isnan.  Could be redefined at a later point, depending on compiler support. 
     using std::isnan;
 

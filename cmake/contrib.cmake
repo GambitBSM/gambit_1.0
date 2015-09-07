@@ -39,15 +39,9 @@ add_gambit_library(mkpath OPTION OBJECT
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:mkpath>)
 
 #contrib/yaml-cpp-0.5.1
-set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
+set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
 include_directories("${yaml_INCLUDE_DIR}")
 add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(dashi "-i ''")
-else()
-  set(dashi "-i")
-endif()
 
 #contrib/Delphes-3.1.2; include only if ColliderBit is in use
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
@@ -121,10 +115,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}
-       #--with-blas-libdir=${BLAS_LAPACK_LOCATION}
-       #--with-lapack-libdir=${BLAS_LAPACK_LOCATION}
+      #--enable-verbose flag causes verbose output at runtime as well. Maybe set it dynamically somehow in future.
      )
-  #--enable-verbose flag causes verbose output at runtime as well. Set it dynamically somehow.
 
   # Set the models (spectrum generators) existing in flexiblesusy (could autogen this, but that would build some things we don't need)
   set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM)
@@ -167,11 +159,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   include_directories("${MASS_SPECTRA_DIR}/flexiblesusy/slhaea")
   # Dig through flexiblesusy "models" directory and add all subdirectories to the include list
   # (these contain the headers for the generated spectrum generators)
-  #file(GLOB _ALL_FILES ${MASS_SPECTRA_DIR}/flexiblesusy/models ${MASS_SPECTRA_DIR}/flexiblesusy/models/*)
   foreach(_MODEL ${BUILT_FS_MODELS})
-    #if(IS_DIRECTORY ${_FILE})
-      include_directories("${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL}")
-    #endif()
+    include_directories("${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL}")
   endforeach()
 
   # Strip out leading and trailing whitespace

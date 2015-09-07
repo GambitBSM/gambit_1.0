@@ -24,7 +24,7 @@
    
      #define FUNCTION MSSMspectrum_test            
      START_FUNCTION(bool)                  
-     DEPENDENCY(MSSM_spectrum, const Spectrum*)
+     DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
      #undef FUNCTION
    
    #undef CAPABILITY
