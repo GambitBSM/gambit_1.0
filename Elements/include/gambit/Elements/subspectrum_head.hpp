@@ -29,23 +29,18 @@
 
 #include "gambit/Utils/cats.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Elements/slhaea_helpers.hpp"
+#include "gambit/Elements/spectrum_helpers.hpp"
 #include "gambit/Models/partmap.hpp"
 
-#include "SLHAea/slhaea.h"
 
 // Particle database access
 #define PDB Models::ParticleDB()        
 
-namespace Gambit {
+namespace Gambit
+{
 
-   /// Helper function for checking if indices are valid
-   inline bool within_bounds(const int i, const std::set<int> allowed)
-   {
-     return ( allowed.find(i) != allowed.end() );
-   }
-   
    /// Helper macro for throwing errors in base class versions of virtual functions
-   ///TODO: probably want a Gambit error here
    #define vfcn_error(local_info) \
      utils_error().forced_throw(local_info,"This virtual function (of SubSpectrum object) has not been overridden in the derived class!")
    
@@ -68,12 +63,12 @@ namespace Gambit {
    
    #define DECLARE_GETTERS(FUNC,PARTYPE) \
       /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */ \
-      bool   CAT(has_,FUNC)(const std::string& name) const { return this->has(PARTYPE,name); } \
-      double CAT(get_,FUNC)(const std::string& name) const { return this->get(PARTYPE,name); } \
-      bool   CAT(has_,FUNC)(const std::string& name, int i) const { return this->has(PARTYPE,name,i); } \
-      double CAT(get_,FUNC)(const std::string& name, int i) const { return this->get(PARTYPE,name,i); } \
-      bool   CAT(has_,FUNC)(const std::string& name, int i, int j) const { return this->has(PARTYPE,name,i,j); } \
-      double CAT(get_,FUNC)(const std::string& name, int i, int j) const { return this->get(PARTYPE,name,i,j); } \
+      bool   CAT(has_,FUNC)(const str& name) const { return this->has(PARTYPE,name); } \
+      double CAT(get_,FUNC)(const str& name) const { return this->get(PARTYPE,name); } \
+      bool   CAT(has_,FUNC)(const str& name, int i) const { return this->has(PARTYPE,name,i); } \
+      double CAT(get_,FUNC)(const str& name, int i) const { return this->get(PARTYPE,name,i); } \
+      bool   CAT(has_,FUNC)(const str& name, int i, int j) const { return this->has(PARTYPE,name,i,j); } \
+      double CAT(get_,FUNC)(const str& name, int i, int j) const { return this->get(PARTYPE,name,i,j); } \
       /* Might as well declare the PDG overloads at the same time */ \
       DECLARE_PDG_GETTERS(FUNC) \
 
@@ -83,14 +78,14 @@ namespace Gambit {
          the model object (for when values cannot be inserted back into the
          model object)
          Note; these are NON-CONST */ \
-      void CAT(set_,FUNC)(const double v, const std::string& name) { return this->set(PARTYPE,v,name); } \
-      void CAT(set_,FUNC)(const double v, const std::string& name, int i) { return this->set(PARTYPE,v,name,i); } \
-      void CAT(set_,FUNC)(const double v, const std::string& name, int i, int j) { return this->set(PARTYPE,v,name,i,j); } \
+      void CAT(set_,FUNC)(const double v, const str& name) { return this->set(PARTYPE,v,name); } \
+      void CAT(set_,FUNC)(const double v, const str& name, int i) { return this->set(PARTYPE,v,name,i); } \
+      void CAT(set_,FUNC)(const double v, const str& name, int i, int j) { return this->set(PARTYPE,v,name,i,j); } \
       /* The parameter overrides are handled entirely by this base class, so
          they are not virtual.  */ \
-      void CAT(set_override_,FUNC)(const double v, const std::string& name, bool safety = true) { return this->set_override(PARTYPE,v,name,safety); } \
-      void CAT(set_override_,FUNC)(const double v, const std::string& name, int i, bool safety = true) { return this->set_override(PARTYPE,v,name,i,safety); } \
-      void CAT(set_override_,FUNC)(const double v, const std::string& name, int i, int j, bool safety = true) { return this->set_override(PARTYPE,v,name,i,j,safety); } \
+      void CAT(set_override_,FUNC)(const double v, const str& name, bool safety = true) { return this->set_override(PARTYPE,v,name,safety); } \
+      void CAT(set_override_,FUNC)(const double v, const str& name, int i, bool safety = true) { return this->set_override(PARTYPE,v,name,i,safety); } \
+      void CAT(set_override_,FUNC)(const double v, const str& name, int i, int j, bool safety = true) { return this->set_override(PARTYPE,v,name,i,j,safety); } \
       /* TODO: Do we want PDG versions of these too? I guess so. */
 
    #define DEFINE_PDG_GETTERS(CLASS,FUNC)                                          \
@@ -148,39 +143,6 @@ namespace Gambit {
    class RunningPars;
    class Phys;
  
-   /// List of parameter types used to classify spectrum contents
-   namespace Par
-   {
-     enum Phys {
-         Pole_Mass = 0,
-         Pole_Mixing
-     };
-     enum Running {
-         mass4 = 2,
-         mass3,
-         mass2,
-         mass1,
-         dimensionless,
-         mass_eigenstate
-      };
-
-      /// Map from enum value to string, for error messages
-      static std::map<int,std::string> fill_map()
-      {
-         std::map<int,std::string> name;
-         name[Pole_Mass]       = "Pole_Mass";
-         name[Pole_Mixing]     = "Pole_Mixing";
-         name[mass4]           = "mass4";
-         name[mass3]           = "mass3";
-         name[mass2]           = "mass2";
-         name[mass1]           = "mass1";
-         name[dimensionless]   = "dimensionless";
-         name[mass_eigenstate] = "mass4";
-         return name;
-      }
-      static const std::map<int,std::string> toString = fill_map();
-   }
-
    /// Struct to hold collections of function pointer maps to be filled by derived classes
    template <class MapTypes>
    struct MapCollection
@@ -198,34 +160,33 @@ namespace Gambit {
 
    /// Virtual base class for interacting with spectrum generator output
    // Includes facilities for running RGEs
-   class SubSpectrum {
+   class SubSpectrum
+   {
       public:
-         /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
-         virtual void dump2slha(const std::string&) const { vfcn_error(LOCAL_INFO); }
    
          /// Clone the SubSpectrum object
          virtual std::unique_ptr<SubSpectrum> clone() const = 0;
       
+         /// Dump out spectrum information to an SLHA file (if possible)
+         virtual void getSLHA(const str&) const;
+
          /// Get spectrum information in SLHAea format (if possible)
-         SLHAea::Coll empty_SLHAea;  // never used; just to avoid "no return statement in function returning non-void" warnings
-         virtual SLHAea::Coll getSLHAea() const { vfcn_error(LOCAL_INFO); return empty_SLHAea; }
+         virtual SLHAstruct getSLHAea() const;
+
+         /// Add spectrum information to an SLHAea object (if possible)
+         virtual void add_to_SLHAea(SLHAstruct&) const {}
    
          /// Get integer offset convention used by internal model class (needed by getters which take indices) 
          virtual int get_index_offset() const { vfcn_error(LOCAL_INFO); return 0; }
       
          /// Constructors/destructors
-         // implicit default constructor is fine
          virtual ~SubSpectrum() {} 
    
          //Models::partmap& particle_database;
          /// new constructor.  Pass Models::ParticleDB() in as the third argument in all cases.  You will need to include partmap.hpp in order to be able to do this.
          //SubSpectrum(RunningPars& rp, Phys& p, Models::partmap& pdb) : phys(p), runningpars(rp), particle_database(pdb) {}
       
-         /// Member objects containing physical and running parameters
-         /// UPDATE:  This makes copying objects a nightmare, so we will use virtual functions instead
-         //Phys& phys;
-         //RunningPars& runningpars;
-
+         /// Physical and running parameters
          virtual Phys& phys() = 0;
          virtual RunningPars& runningpars() = 0;
          // const versions       
@@ -278,9 +239,9 @@ namespace Gambit {
    /// Definition of struct to hold various override values for a given ParamTag
    struct OverrideMaps
    {    
-      std::map<std::string,double>                             m0; // No indices
-      std::map<std::string,std::map<int,double>>               m1; // One index
-      std::map<std::string,std::map<int,std::map<int,double>>> m2; // Two indices
+      std::map<str,double>                             m0; // No indices
+      std::map<str,std::map<int,double>>               m1; // One index
+      std::map<str,std::map<int,std::map<int,double>>> m2; // Two indices
       /* e.g. retrieve like this: contents = m2[name][i][j]; */
    };
 
@@ -296,21 +257,21 @@ namespace Gambit {
          virtual ~CommonAbstract() {}      
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         virtual bool   has(const ParamType, const std::string&) const = 0;
-         virtual double get(const ParamType, const std::string&) const = 0;
-         virtual bool   has(const ParamType, const std::string&, int) const = 0;
-         virtual double get(const ParamType, const std::string&, int) const = 0;
-         virtual bool   has(const ParamType, const std::string&, int, int) const = 0;
-         virtual double get(const ParamType, const std::string&, int, int) const = 0;
+         virtual bool   has(const ParamType, const str&) const = 0;
+         virtual double get(const ParamType, const str&) const = 0;
+         virtual bool   has(const ParamType, const str&, int) const = 0;
+         virtual double get(const ParamType, const str&, int) const = 0;
+         virtual bool   has(const ParamType, const str&, int, int) const = 0;
+         virtual double get(const ParamType, const str&, int, int) const = 0;
 
          /* Setter declarations, for setting parameters in a derived model object,
             and for overriding model object values with values stored outside
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         virtual void set(const ParamType, const double, const std::string&) = 0;
-         virtual void set(const ParamType, const double, const std::string&, int) = 0;
-         virtual void set(const ParamType, const double, const std::string&, int, int) = 0;
+         virtual void set(const ParamType, const double, const str&) = 0;
+         virtual void set(const ParamType, const double, const str&, int) = 0;
+         virtual void set(const ParamType, const double, const str&, int, int) = 0;
    };
  
    /// More functions shared by both Phys and RunningPars classes, but none of which need to be
@@ -326,20 +287,20 @@ namespace Gambit {
          using CommonAbstract<ParamType>::has;
          using CommonAbstract<ParamType>::get;
 
-         CommonFuncs(const std::string& cname, const std::map<ParamType,OverrideMaps>& override_maps) 
+         CommonFuncs(const str& cname, const std::map<ParamType,OverrideMaps>& override_maps) 
            : classname(cname)
            , get_override_maps(override_maps) 
          {}
          virtual ~CommonFuncs() {}
 
-         std::string classname;
+         str classname;
          std::map<ParamType,OverrideMaps> get_override_maps;
  
          /* The parameter overrides are handled entirely by this base class, so
             they are not virtual.  */
-         void set_override(const ParamType, const double, const std::string&, bool safety = true);
-         void set_override(const ParamType, const double, const std::string&, int, bool safety = true);
-         void set_override(const ParamType, const double, const std::string&, int, int, bool safety = true);
+         void set_override(const ParamType, const double, const str&, bool safety = true);
+         void set_override(const ParamType, const double, const str&, int, bool safety = true);
+         void set_override(const ParamType, const double, const str&, int, int, bool safety = true);
 
          /* Overloads of getter/checker functions to allow access using PDG codes */
          /* as defined in Models/src/particle_database.cpp */
@@ -451,20 +412,20 @@ namespace Gambit {
          /// @{ Old interface; remove eventually
 
          /// getters using map (and "checkers")
-	 DECLARE_GETTERS(mass4_parameter,Par::mass4)
-	 DECLARE_GETTERS(mass3_parameter,Par::mass3)
-	 DECLARE_GETTERS(mass2_parameter,Par::mass2)
-	 DECLARE_GETTERS(mass_parameter,Par::mass1)
-	 DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
-	 DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
-	
-	 /// setters (and parameter overrides)
-	 DECLARE_SETTERS(mass4_parameter,Par::mass4)
-	 DECLARE_SETTERS(mass3_parameter,Par::mass3)
-	 DECLARE_SETTERS(mass2_parameter,Par::mass2)
-	 DECLARE_SETTERS(mass_parameter,Par::mass1)
-	 DECLARE_SETTERS(dimensionless_parameter,Par::dimensionless)
-	 DECLARE_SETTERS(mass_eigenstate,Par::mass_eigenstate)
+   DECLARE_GETTERS(mass4_parameter,Par::mass4)
+   DECLARE_GETTERS(mass3_parameter,Par::mass3)
+   DECLARE_GETTERS(mass2_parameter,Par::mass2)
+   DECLARE_GETTERS(mass_parameter,Par::mass1)
+   DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
+   DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
+  
+   /// setters (and parameter overrides)
+   DECLARE_SETTERS(mass4_parameter,Par::mass4)
+   DECLARE_SETTERS(mass3_parameter,Par::mass3)
+   DECLARE_SETTERS(mass2_parameter,Par::mass2)
+   DECLARE_SETTERS(mass_parameter,Par::mass1)
+   DECLARE_SETTERS(dimensionless_parameter,Par::dimensionless)
+   DECLARE_SETTERS(mass_eigenstate,Par::mass_eigenstate)
          /// @}
    };
 
@@ -491,12 +452,12 @@ namespace Gambit {
          /// @{ Old interface; remove eventually
 
          /// getters using map (and "checkers")
-	 DECLARE_GETTERS(Pole_Mass,Par::Pole_Mass)
-	 DECLARE_GETTERS(Pole_Mixing,Par::Pole_Mixing)
-	
-	 /// setters (and parameter overrides)
-	 DECLARE_SETTERS(Pole_Mass,Par::Pole_Mass)
-	 DECLARE_SETTERS(Pole_Mixing,Par::Pole_Mixing)
+   DECLARE_GETTERS(Pole_Mass,Par::Pole_Mass)
+   DECLARE_GETTERS(Pole_Mixing,Par::Pole_Mixing)
+  
+   /// setters (and parameter overrides)
+   DECLARE_SETTERS(Pole_Mass,Par::Pole_Mass)
+   DECLARE_SETTERS(Pole_Mixing,Par::Pole_Mixing)
          /// @}
    };
    
@@ -571,15 +532,15 @@ namespace Gambit {
       typedef FcnInfo2<plainfptrM2> FInfo2M; //    "              " 
       typedef FcnInfo1<plainfptrI1> FInfo1I; //    "              " 
       typedef FcnInfo2<plainfptrI2> FInfo2I; //    "              " 
-      typedef std::map<std::string, FSptr> fmap0; /* Typedef for map of strings to function pointers */
-      typedef std::map<std::string, FInfo1> fmap1;/*with an index*/
-      typedef std::map<std::string, FInfo2> fmap2; /*with 2 indices */
-      typedef std::map<std::string, plainfptrM> fmap0_extraM;  /* map of plain function pointers */
-      typedef std::map<std::string, FInfo1M> fmap1_extraM;  /* map of plain function pointers */
-      typedef std::map<std::string, FInfo2M> fmap2_extraM;  /* map of plain function pointers */
-      typedef std::map<std::string, plainfptrI> fmap0_extraI; /* map of plain function pointers */
-      typedef std::map<std::string, FInfo1I> fmap1_extraI; /* map of plain function pointers */
-      typedef std::map<std::string, FInfo2I> fmap2_extraI; /* map of plain function pointers */
+      typedef std::map<str, FSptr> fmap0; /* Typedef for map of strings to function pointers */
+      typedef std::map<str, FInfo1> fmap1;/*with an index*/
+      typedef std::map<str, FInfo2> fmap2; /*with 2 indices */
+      typedef std::map<str, plainfptrM> fmap0_extraM;  /* map of plain function pointers */
+      typedef std::map<str, FInfo1M> fmap1_extraM;  /* map of plain function pointers */
+      typedef std::map<str, FInfo2M> fmap2_extraM;  /* map of plain function pointers */
+      typedef std::map<str, plainfptrI> fmap0_extraI; /* map of plain function pointers */
+      typedef std::map<str, FInfo1I> fmap1_extraI; /* map of plain function pointers */
+      typedef std::map<str, FInfo2I> fmap2_extraI; /* map of plain function pointers */
    };
 
    /// Types needed for function pointer maps
@@ -605,15 +566,15 @@ namespace Gambit {
       typedef FcnInfo2<plainfptrM2> FInfo2M; //    "              " 
       typedef FcnInfo1<plainfptrI1> FInfo1I; //    "              " 
       typedef FcnInfo2<plainfptrI2> FInfo2I; //    "              " 
-      typedef std::map<std::string, FSptr> fmap0; /* Typedef for map of strings to function pointers */
-      typedef std::map<std::string, FInfo1> fmap1;/*with an index*/
-      typedef std::map<std::string, FInfo2> fmap2; /*with 2 indices */
-      typedef std::map<std::string, plainfptrM> fmap0_extraM;  /* map of plain function pointers */
-      typedef std::map<std::string, FInfo1M> fmap1_extraM;  /* map of plain function pointers */
-      typedef std::map<std::string, FInfo2M> fmap2_extraM;  /* map of plain function pointers */
-      typedef std::map<std::string, plainfptrI> fmap0_extraI; /* map of plain function pointers */
-      typedef std::map<std::string, FInfo1I> fmap1_extraI; /* map of plain function pointers */
-      typedef std::map<std::string, FInfo2I> fmap2_extraI; /* map of plain function pointers */
+      typedef std::map<str, FSptr> fmap0; /* Typedef for map of strings to function pointers */
+      typedef std::map<str, FInfo1> fmap1;/*with an index*/
+      typedef std::map<str, FInfo2> fmap2; /*with 2 indices */
+      typedef std::map<str, plainfptrM> fmap0_extraM;  /* map of plain function pointers */
+      typedef std::map<str, FInfo1M> fmap1_extraM;  /* map of plain function pointers */
+      typedef std::map<str, FInfo2M> fmap2_extraM;  /* map of plain function pointers */
+      typedef std::map<str, plainfptrI> fmap0_extraI; /* map of plain function pointers */
+      typedef std::map<str, FInfo1I> fmap1_extraI; /* map of plain function pointers */
+      typedef std::map<str, FInfo2I> fmap2_extraI; /* map of plain function pointers */
    };
 
    /// @}
@@ -653,21 +614,21 @@ namespace Gambit {
       public:
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         bool   has(const ParamType, const std::string&) const;
-         double get(const ParamType, const std::string&) const;
-         bool   has(const ParamType, const std::string&, int) const;
-         double get(const ParamType, const std::string&, int) const;
-         bool   has(const ParamType, const std::string&, int, int) const;
-         double get(const ParamType, const std::string&, int, int) const;
+         bool   has(const ParamType, const str&) const;
+         double get(const ParamType, const str&) const;
+         bool   has(const ParamType, const str&, int) const;
+         double get(const ParamType, const str&, int) const;
+         bool   has(const ParamType, const str&, int, int) const;
+         double get(const ParamType, const str&, int, int) const;
 
          /* Setter declarations, for setting parameters in a derived model object,
             and for overriding model object values with values stored outside
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         void set(const ParamType, const double, const std::string&);
-         void set(const ParamType, const double, const std::string&, int);
-         void set(const ParamType, const double, const std::string&, int, int);
+         void set(const ParamType, const double, const str&);
+         void set(const ParamType, const double, const str&, int);
+         void set(const ParamType, const double, const str&, int, int);
    };
 
  
@@ -925,7 +886,7 @@ namespace Gambit {
          ///    since we are using the CRTP already anyway.
 
          /// Get model object on which to call function pointers
- 	 Model& model() { return static_cast<DerivedSpec*>(this)->get_Model(); }
+         Model& model() { return static_cast<DerivedSpec*>(this)->get_Model(); }
 
          /// Get struct containing any extra data input on SubSpectrum object creation
          Input& input() { return static_cast<DerivedSpec*>(this)->get_Input(); }
@@ -933,12 +894,12 @@ namespace Gambit {
          /// @}
       
    };
-  
+
    /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
    /// are not needed by the getters.
    class DummyModel {};
    class DummyInput {};
-
+  
 } // end namespace Gambit
 
 // Undef the various helper macros to avoid contaminating other files

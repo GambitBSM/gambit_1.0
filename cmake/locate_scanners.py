@@ -544,8 +544,6 @@ set( PLUGIN_INCLUDE_DIRECTORIES                  \n\
                 ${GSL_INCLUDE_DIRS}              \n\
                 ${ROOT_INCLUDE_DIR}              \n\
                 ${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit\n\
-                ${MPI_C_INCLUDE_PATH}            \n\
-                ${MPI_CXX_INCLUDE_PATH}          \n\
 )                                                \n\n\
 if( ${PLUG_VERBOSE} )                            \n\
     message(\"*** begin PLUG_INCLUDE_DIRECTORIES ***\")\n\
@@ -557,12 +555,30 @@ endif()                                          \n\
                                                  \n\
 set( reqd_lib_output )                           \n\
 set( exclude_lib_output )                        \n\n\
-set( PLUGIN_COMPILE_FLAGS                        \n\
-                ${MPI_C_COMPILE_FLAGS}           \n\
-                ${MPI_CXX_COMPILE_FLAGS}         \n"
+set( PLUGIN_COMPILE_FLAGS                        \n"
                 
     towrite += "                \"" + cflags + "\""
-    towrite += ")\n\n"
+    towrite += ")\n\n\
+if(MPI_C_FOUND)                                  \n\
+    set( PLUGIN_COMPILE_DIRECTORIES              \n\
+                ${PLUGIN_COMPILE_DIRECTORIES}    \n\
+                ${MPI_C_COMPILE_PATH}            \n\
+    )                                            \n\
+    set( PLUGIN_INCLUDE_DIRECTORIES              \n\
+                ${PLUGIN_INCLUDE_DIRECTORIES}    \n\
+                ${MPI_C_INCLUDE_PATH}            \n\
+    )                                            \n\
+endif()                                          \n\n\
+if(MPI_CXX_FOUND)                                \n\
+    set( PLUGIN_COMPILE_DIRECTORIES              \n\
+                ${PLUGIN_COMPILE_DIRECTORIES}    \n\
+                ${MPI_CXX_COMPILE_PATH}            \n\
+    )                                            \n\
+    set( PLUGIN_INCLUDE_DIRECTORIES              \n\
+                ${PLUGIN_INCLUDE_DIRECTORIES}    \n\
+                ${MPI_CXX_INCLUDE_PATH}            \n\
+    )                                            \n\
+endif()                                          \n\n"
 
 
     # now link the shared libraries to their respective plugin libraries
@@ -750,7 +766,7 @@ set( PLUGIN_COMPILE_FLAGS                        \n\
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
             #            cflags = "-static " + scanbit_static_links[plug_type[i]][directory]
 
-            towrite += " "*23 + "COMPILE_FLAGS ${PLUGIN_COMPILE_FLAGS}\n"
+            towrite += " "*23 + "COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS}\"\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"

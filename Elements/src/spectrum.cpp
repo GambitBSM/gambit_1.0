@@ -189,33 +189,16 @@ namespace Gambit
    }
    
    /// SLHAea object getter
-   /// "Shortcut" getter. Tries to retrieve SLHAea object from HE SubSpectrum. If this fails,
-   /// attempts to get it from the LE SubSpectrum (though probably this will never work).
-   /// Error raised if this still fails.
-   SLHAea::Coll Spectrum::getSLHAea() const 
+   /// First constructs an SLHAea object from the SMINPUTS object, then adds the info from
+   /// the LE subspectrum (if possible), followed by the HE subspectrum (if possible). Any duplicate
+   /// entries are overwritten at each step, so HE takes precendence over LE, and LE takes precedence
+   /// over SMINPUTS.
+   SLHAstruct Spectrum::getSLHAea() const 
    {
-     SLHAea::Coll output;
-     try { 
-       output = HE->getSLHAea(); 
-     }
-     catch(const Gambit::exception& e) {
-       try {
-         output = LE->getSLHAea(); 
-       }
-       catch(const Gambit::exception& e2) {
-          std::ostringstream errmsg;
-          errmsg << "Could not convert particle spectrum data into SLHAea object! (errors returned by both HE->getSLHAea() and LE->getSLHAea())" << std::endl;
-          errmsg << "(Error from HE SubSpectrum: "<< e.what() <<")"<< std::endl;
-          errmsg << "(Error from LE SubSpectrum: "<< e2.what() <<")"<< std::endl;
-          utils_error().raise(LOCAL_INFO,errmsg.str());   
-       }
-     }
-     // TODO: do we want to remove the above error, since can always return the SMInputs entries?     
-
-     // Add any information from SMInputs to the SLHAea object, if those entries don't exist already
-     SMINPUTS.add_to_SLHAea(output);
-
-     return output;
+     SLHAstruct slha(SMINPUTS.getSLHAea());    
+     LE->add_to_SLHAea(slha);
+     HE->add_to_SLHAea(slha);
+     return slha;
    }
 
    // The expressions in all of the following CKM functions are from the CKMFitter paper hep-ph/0406184v3.
