@@ -105,6 +105,7 @@ function(add_gambit_library libraryname)
   add_dependencies(${libraryname} backend_harvest)
   add_dependencies(${libraryname} printer_harvest)
   add_dependencies(${libraryname} module_harvest)
+  add_dependencies(${libraryname} yaml-cpp)
 
   if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
     foreach (dir ${GAMBIT_INCDIRS})
