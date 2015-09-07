@@ -36,9 +36,9 @@
 #include <complex>
 
 #include "gambit/Elements/sminputs.hpp"
+#include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/partmap.hpp"
-#include "SLHAea/slhaea.h"
 
 namespace Gambit
 {
@@ -119,10 +119,11 @@ namespace Gambit
          /// @}
    
          /// SLHAea object getter
-         /// "Shortcut" getter. Tries to retrieve SLHAea object from HE SubSpectrum. If this fails,
-         /// attempts to get it from the LE SubSpectrum (though probably this will never work).
-         /// Error raised if this still fails.
-         SLHAea::Coll getSLHAea() const;
+         /// First constructs an SLHAea object from the SMINPUTS object, then adds the info from
+         /// the LE subspectrum (if possible), followed by the HE subspectrum (if possible). Any duplicate
+         /// entries are overwritten at each step, so HE takes precendence over LE, and LE takes precedence
+         /// over SMINPUTS.
+         SLHAstruct getSLHAea() const;
          
          /// CKM Wolfenstein (lambda, A, rhobar, etabar) --> V_qq standard parameterisation convertors
          /// @{

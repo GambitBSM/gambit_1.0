@@ -766,7 +766,7 @@ endif()                                          \n\n"
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
             #            cflags = "-static " + scanbit_static_links[plug_type[i]][directory]
 
-            towrite += " "*23 + "COMPILE_FLAGS ${PLUGIN_COMPILE_FLAGS}\n"
+            towrite += " "*23 + "COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS}\"\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"

@@ -181,7 +181,7 @@ void MSSMNoFVatMGUT_low_scale_constraint<Two_scale>::initialize()
    assert(model && "MSSMNoFVatMGUT_low_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   initial_scale_guess = LowEnergyConstant(MZ);
+   initial_scale_guess = oneset.displayPoleMZ();
 
    scale = initial_scale_guess;
 
@@ -203,7 +203,7 @@ void MSSMNoFVatMGUT_low_scale_constraint<Two_scale>::update_scale()
    assert(model && "MSSMNoFVatMGUT_low_scale_constraint<Two_scale>::"
           "update_scale(): model pointer is zero.");
 
-   scale = LowEnergyConstant(MZ);
+   scale =  oneset.displayPoleMZ();
 
 
 }
