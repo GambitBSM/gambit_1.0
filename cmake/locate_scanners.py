@@ -743,7 +743,7 @@ endif()                                          \n\n"
             towrite += "endif()\n\n"
 
             towrite += "if ( " + plug_type[i] + "_compile_flag_" + directory + " STREQUAL \"\" )\n"
-            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION MODULE SOURCES ${"
+            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${"
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
