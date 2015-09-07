@@ -517,7 +517,7 @@ def main(argv):
     towrite += cmakelist_txt_out
 
     if sys.platform == "darwin":
-        cflags = ""#"-dynamiclib"
+        cflags = "-dynamiclib"
     else:
         cflags = "-rdynamic"
 
@@ -754,12 +754,8 @@ endif()                                          \n\n"
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
-            if sys.platform == "darwin":
-            #    towrite += " "*23 + "LINK_FLAGS \"-dynamiclib\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-                towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-            else:
-                towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-                towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+            towrite += " "*23 + "LINK_FLAGS \""+ cflags +"\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+            towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
                 
             #if scanbit_static_links.has_key(plug_type[i]):
             #    if scanbit_static_links[plug_type[i]].has_key(directory):
