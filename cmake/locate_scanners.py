@@ -549,11 +549,9 @@ endif()                                          \n\
                                                  \n\
 set( reqd_lib_output )                           \n\
 set( exclude_lib_output )                        \n\n\
+set( PLUGIN_COMPILE_FLAGS \"${CMAKE_CXX_FLAGS}\")\n\n\
 if(MPI_C_FOUND)                                  \n\
-    set( PLUGIN_COMPILE_FLAGS                    \n\
-                ${PLUGIN_COMPILE_FLAGS}          \n\
-                ${MPI_C_COMPILE_FLAGS}           \n\
-    )                                            \n\
+    set( PLUGIN_COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS} ${MPI_C_COMPILE_FLAGS}\" )\n\
     set( PLUGIN_COMPILE_DIRECTORIES              \n\
                 ${PLUGIN_COMPILE_DIRECTORIES}    \n\
                 ${MPI_C_COMPILE_PATH}            \n\
@@ -564,10 +562,7 @@ if(MPI_C_FOUND)                                  \n\
     )                                            \n\
 endif()                                          \n\n\
 if(MPI_CXX_FOUND)                                \n\
-    set( PLUGIN_COMPILE_FLAGS                    \n\
-                ${PLUGIN_COMPILE_FLAGS}          \n\
-                ${MPI_CXX_COMPILE_FLAGS}         \n\
-    )                                            \n\
+    set( PLUGIN_COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS} ${MPI_CXX_COMPILE_FLAGS}\" )\n\
     set( PLUGIN_COMPILE_DIRECTORIES              \n\
                 ${PLUGIN_COMPILE_DIRECTORIES}    \n\
                 ${MPI_CXX_COMPILE_PATH}            \n\
