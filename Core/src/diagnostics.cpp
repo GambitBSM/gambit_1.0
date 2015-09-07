@@ -46,8 +46,8 @@ namespace Gambit
   {
     int maxlens[6] = {18, 7, 70, 13, 3, 3};
     bool all_good = true;
-    cout << "Backends               Version     Path to lib                                  Status          #funcs  #types  #ctors" << endl;
-    cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
+    cout << "Backends               Version     Path to lib                                                                Status            #funcs  #types  #ctors" << endl;
+    cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
     // Loop over all registered backends
     for (std::map<str, std::set<str> >::const_iterator it = backend_versions.begin(); it != backend_versions.end(); ++it)
@@ -105,8 +105,8 @@ namespace Gambit
   {
     int maxlen1 = 35;
     int maxlen2 = 35;
-    cout << "Models                     Parent             Parameters" << endl;
-    cout << "--------------------------------------------------------" << endl;
+    cout << "Models                                  Parent                                  Parameters" << endl;
+    cout << "------------------------------------------------------------------------------------------" << endl;
     for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
     {
       str model = (*it)->origin();
