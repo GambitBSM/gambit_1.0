@@ -510,7 +510,7 @@ namespace Gambit
         cout << "To get postscript plot of active functors, please run: " << endl;
         cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh " << activeFunctorGraphFile << " no-loners" << endl;
 #else 
-        cout << "To get postscript plot of active functors, please install graphviz, rerun cmake and remake GAMBIT." << endl;
+        cout << "To get postscript plot of active functors, please install graphviz, rerun cmake and remake GAMBIT." << endl << endl;
 #endif
       }
 
