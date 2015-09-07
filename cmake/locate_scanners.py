@@ -550,6 +550,10 @@ endif()                                          \n\
 set( reqd_lib_output )                           \n\
 set( exclude_lib_output )                        \n\n\
 if(MPI_C_FOUND)                                  \n\
+    set( PLUGIN_COMPILE_FLAGS                    \n\
+                ${PLUGIN_COMPILE_FLAGS}          \n\
+                ${MPI_C_COMPILE_FLAGS}           \n\
+    )                                            \n\
     set( PLUGIN_COMPILE_DIRECTORIES              \n\
                 ${PLUGIN_COMPILE_DIRECTORIES}    \n\
                 ${MPI_C_COMPILE_PATH}            \n\
@@ -560,6 +564,10 @@ if(MPI_C_FOUND)                                  \n\
     )                                            \n\
 endif()                                          \n\n\
 if(MPI_CXX_FOUND)                                \n\
+    set( PLUGIN_COMPILE_FLAGS                    \n\
+                ${PLUGIN_COMPILE_FLAGS}          \n\
+                ${MPI_CXX_COMPILE_FLAGS}         \n\
+    )                                            \n\
     set( PLUGIN_COMPILE_DIRECTORIES              \n\
                 ${PLUGIN_COMPILE_DIRECTORIES}    \n\
                 ${MPI_CXX_COMPILE_PATH}            \n\
@@ -745,12 +753,7 @@ endif()                                          \n\n"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
             towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-                
-            #if scanbit_static_links.has_key(plug_type[i]):
-            #    if scanbit_static_links[plug_type[i]].has_key(directory):
-            #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
-            #            cflags = "-static " + scanbit_static_links[plug_type[i]][directory]
-
+            towrite += " "*23 + "COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS}\"\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"
