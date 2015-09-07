@@ -114,12 +114,16 @@ namespace Gambit
       int nparams = (*it)->valuePtr()->getNumberOfPars();
       cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
     }
+#ifdef HAVE_GRAPHVIZ
     // Create and spit out graph of the model hierarchy.
     str graphfile = GAMBIT_DIR "/scratch/GAMBIT_model_hierarchy.gv";
     ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
     cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
     cout << endl << "To get postscript plot of model hierarchy, please run: " << endl;
     cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+graphfile << endl;
+#else
+    cout << endl << "To get postscript plot of model hierarchy, please install graphviz, rerun cmake and remake GAMBIT." << endl;
+#endif
   }
 
   /// Basic capability diagnostic function

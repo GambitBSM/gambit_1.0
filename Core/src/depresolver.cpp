@@ -39,7 +39,9 @@
 #endif
 
 #include <boost/format.hpp>
-#include <boost/graph/graphviz.hpp>
+#ifdef HAVE_GRAPHVIZ
+  #include <boost/graph/graphviz.hpp>
+#endif
 
 // This vertex ID is reserved for nodes that correspond to
 // likelihoods/observables/etc (observables of interest)
@@ -507,6 +509,8 @@ namespace Gambit
 #ifdef HAVE_GRAPHVIZ
         cout << "To get postscript plot of active functors, please run: " << endl;
         cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh " << activeFunctorGraphFile << " no-loners" << endl;
+#else 
+        cout << "To get postscript plot of active functors, please install graphviz, rerun cmake and remake GAMBIT." << endl;
 #endif
       }
 
