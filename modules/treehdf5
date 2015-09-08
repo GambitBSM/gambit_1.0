@@ -50,12 +50,14 @@ space='    '
 
 def islast(item,iterator):
     """Check if an item is the last one in an iterator"""
+    i = [None,None]
     for i in iterator:
         pass    #go through the iterator to the end
     return item==i 
 
 def lastitem(iterator):
     """Check if an item is the last one in an iterator"""
+    i = [None,None]
     for i in iterator:
         pass    #go through the iterator to the end
     return i
@@ -94,9 +96,39 @@ def printcontents(item,prelines):
 
 printcontents(f,'')
                                         
-quit()
+#quit()
 
 ##  #test extraction of data from dataset
+
+dset=f['test/test2/#normaldist_loglike @ExampleBit_A::normaldist_loglike']
+print dset[:50]
+dset=f['test/test2/#normaldist_loglike @ExampleBit_A::normaldist_loglike_isvalid']
+print dset[:50]
+dset=f['test/test2/LogLike']
+print "LogLike:", dset[:50]
+dset=f['test/test2/LogLike_isvalid']
+print dset[:50]
+dset=f['test/test2/RA/Posterior']
+print "Posterior:", dset[:50]
+dset=f['test/test2/RA/Posterior_isvalid']
+print dset[:50]
+dset=f['test/test2/RA/RA_pointID']
+print "RA_pointID:", dset[:50]
+dset=f['test/test2/RA/RA_pointID_isvalid']
+print dset[:50]
+dset=f['test/test2/RA/RA_MPIrank']
+print "RA_MPIrank:", dset[:50]
+dset=f['test/test2/RA/RA_MPIrank_isvalid']
+print dset[:50]
+
+dset=f['test/test2/pointID']
+print "pointID:", dset[:50]
+dset=f['test/test2/pointID_isvalid']
+print dset[:50]
+dset=f['test/test2/MPIrank']
+print "MPIrank:", dset[:50]
+dset=f['test/test2/MPIrank_isvalid']
+print dset[:50]
 ##  
 ##  #dset=f['prelep/CCR/mu+/txt']
 ##  #print dset[150000:150020,0:10]

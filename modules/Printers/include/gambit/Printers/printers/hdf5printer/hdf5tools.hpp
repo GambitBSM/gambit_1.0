@@ -35,12 +35,12 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
 
-#include <H5Cpp.h>                      
+#include <hdf5.h>
 #include <boost/utility/enable_if.hpp>
 
 
 /// Provide template specialisation of get_hdf5_data_type only if the requested type hasn't been used to define one already.
-#define SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(TYPE_CATEGORY, TYPEDEFD_TYPE, RETURN_HDF5_TYPE)                                  \
+#define SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(TYPEDEFD_TYPE, RETURN_HDF5_TYPE)                                  \
       template<typename T>                                                                                                   \
       struct get_hdf5_data_type<T, typename boost::enable_if_c< std::is_same<T, TYPEDEFD_TYPE>::value                     && \
                                                                !std::is_same<char, TYPEDEFD_TYPE>::value                  && \
@@ -58,7 +58,7 @@
                                                                !std::is_same<long double, TYPEDEFD_TYPE>::value           && \
                                                                !std::is_same<bool, TYPEDEFD_TYPE>::value>::type >            \
       {                                                                                                                      \
-         static TYPE_CATEGORY type() { return RETURN_HDF5_TYPE; }                                                            \
+         static hid_t type() { return RETURN_HDF5_TYPE; }                                                            \
       };                                                                                                                     \
 
 
@@ -69,28 +69,31 @@ namespace Gambit
   {
 
       /// Typedefs for managed H5 pointers
-      typedef std::shared_ptr<H5::CommonFG> H5FGPtr; // common ancestor of H5File and Group
-      typedef std::shared_ptr<H5::H5File> H5FilePtr;
-      typedef std::shared_ptr<H5::Group>  H5GroupPtr;
+      //typedef std::shared_ptr<H5::CommonFG> H5FGPtr; // common ancestor of H5File and Group
+      //typedef std::shared_ptr<H5::H5File> H5FilePtr;
+      //typedef std::shared_ptr<H5::Group>  H5GroupPtr;
       
       namespace HDF5 { 
          /// Create or open hdf5 file
          // If overwrite=true then any existing file will be deleted and replaced. USE CAREFULLY!!!
          // third argument "oldfile" is used to report whether an existing file was opened (true if yes)
-         H5FilePtr openFile(const std::string& fname, bool overwrite, bool& oldfile);
+         hid_t openFile(const std::string& fname, bool overwrite, bool& oldfile);
+
+         /// Close hdf5 file
+         void closeFile(hid_t file);
 
          /// Check if hdf5 file exists and can be opened in read/write mode
          bool checkFileReadable(const std::string& fname, std::string& msg);
 
          /// Check if a group exists and can be accessed
-         bool checkGroupReadable(H5FGPtr location, const std::string& groupname, std::string& msg);   
+         bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg);   
 
          /// Create hdf5 file (always overwrite existing files)
-         H5FilePtr createFile(const std::string& fname);
+         hid_t createFile(const std::string& fname);
 
          /// Create a group inside the specified location
          // Argument "location" can be a pointer to either a file or another group
-         H5GroupPtr createGroup(H5FGPtr location, const std::string& name);
+         hid_t createGroup(hid_t location, const std::string& name);
 
          // Modified minimally from https://github.com/gregreen/h5utils/blob/master/src/h5utils.cpp#L92
          // Credit: Gregory Green 2012
@@ -104,8 +107,12 @@ namespace Gambit
           * does not yet exist.
           *
           */ 
-         H5GroupPtr openGroup(H5FilePtr file, const std::string& name, bool nocreate=false);
+         hid_t openGroup(hid_t file_id, const std::string& name, bool nocreate=false);
  
+         /// Close group
+         void closeGroup(hid_t group);
+
+
       }
 
       /// Base template is left undefined in order to raise 
@@ -115,20 +122,20 @@ namespace Gambit
 
       /// True types
       /// @{
-      template<> struct get_hdf5_data_type<char>              { static H5::IntType   type() { return H5::PredType::NATIVE_CHAR   ; } };
-      template<> struct get_hdf5_data_type<short>             { static H5::IntType   type() { return H5::PredType::NATIVE_SHORT  ; } };
-      template<> struct get_hdf5_data_type<int>               { static H5::IntType   type() { return H5::PredType::NATIVE_INT    ; } };
-      template<> struct get_hdf5_data_type<long>              { static H5::IntType   type() { return H5::PredType::NATIVE_LONG   ; } };
-      template<> struct get_hdf5_data_type<long long>         { static H5::IntType   type() { return H5::PredType::NATIVE_LLONG  ; } };
-      template<> struct get_hdf5_data_type<unsigned char>     { static H5::IntType   type() { return H5::PredType::NATIVE_UCHAR  ; } };
-      template<> struct get_hdf5_data_type<unsigned short>    { static H5::IntType   type() { return H5::PredType::NATIVE_USHORT ; } };
-      template<> struct get_hdf5_data_type<unsigned int>      { static H5::IntType   type() { return H5::PredType::NATIVE_UINT   ; } };
-      template<> struct get_hdf5_data_type<unsigned long>     { static H5::IntType   type() { return H5::PredType::NATIVE_ULONG  ; } };
-      template<> struct get_hdf5_data_type<unsigned long long>{ static H5::IntType   type() { return H5::PredType::NATIVE_ULLONG ; } };
-      template<> struct get_hdf5_data_type<float>             { static H5::FloatType type() { return H5::PredType::NATIVE_FLOAT  ; } };
-      template<> struct get_hdf5_data_type<double>            { static H5::FloatType type() { return H5::PredType::NATIVE_DOUBLE ; } };
-      template<> struct get_hdf5_data_type<long double>       { static H5::FloatType type() { return H5::PredType::NATIVE_LDOUBLE; } };
-      template<> struct get_hdf5_data_type<bool>              { static H5::IntType   type() { return H5::PredType::NATIVE_UINT8  ; } };
+      template<> struct get_hdf5_data_type<char>              { static hid_t type() { return H5T_NATIVE_CHAR   ; } };
+      template<> struct get_hdf5_data_type<short>             { static hid_t type() { return H5T_NATIVE_SHORT  ; } };
+      template<> struct get_hdf5_data_type<int>               { static hid_t type() { return H5T_NATIVE_INT    ; } };
+      template<> struct get_hdf5_data_type<long>              { static hid_t type() { return H5T_NATIVE_LONG   ; } };
+      template<> struct get_hdf5_data_type<long long>         { static hid_t type() { return H5T_NATIVE_LLONG  ; } };
+      template<> struct get_hdf5_data_type<unsigned char>     { static hid_t type() { return H5T_NATIVE_UCHAR  ; } };
+      template<> struct get_hdf5_data_type<unsigned short>    { static hid_t type() { return H5T_NATIVE_USHORT ; } };
+      template<> struct get_hdf5_data_type<unsigned int>      { static hid_t type() { return H5T_NATIVE_UINT   ; } };
+      template<> struct get_hdf5_data_type<unsigned long>     { static hid_t type() { return H5T_NATIVE_ULONG  ; } };
+      template<> struct get_hdf5_data_type<unsigned long long>{ static hid_t type() { return H5T_NATIVE_ULLONG ; } };
+      template<> struct get_hdf5_data_type<float>             { static hid_t type() { return H5T_NATIVE_FLOAT  ; } };
+      template<> struct get_hdf5_data_type<double>            { static hid_t type() { return H5T_NATIVE_DOUBLE ; } };
+      template<> struct get_hdf5_data_type<long double>       { static hid_t type() { return H5T_NATIVE_LDOUBLE; } };
+      template<> struct get_hdf5_data_type<bool>              { static hid_t type() { return H5T_NATIVE_UINT8  ; } };
       // Bools are a bit trickier because C has no built-in boolean type (until recently; anyway 
       // the HDF5 libraries were written in C before this existed). We also want something that
       // will be recognised as a bool by h5py. For now we just use an unsigned int.
@@ -136,14 +143,14 @@ namespace Gambit
 
       /// Typedef'd types; enabled only where they differ from the true types.
       /// @{      
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, int8_t,   H5::PredType::NATIVE_INT8)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, uint8_t,  H5::PredType::NATIVE_UINT8)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, int16_t,  H5::PredType::NATIVE_INT16)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, uint16_t, H5::PredType::NATIVE_UINT16)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, int32_t,  H5::PredType::NATIVE_INT32)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, uint32_t, H5::PredType::NATIVE_UINT32)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, int64_t,  H5::PredType::NATIVE_INT64)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, uint64_t, H5::PredType::NATIVE_UINT64)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int8_t,   H5T_NATIVE_INT8)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint8_t,  H5T_NATIVE_UINT8)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int16_t,  H5T_NATIVE_INT16)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint16_t, H5T_NATIVE_UINT16)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int32_t,  H5T_NATIVE_INT32)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint32_t, H5T_NATIVE_UINT32)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int64_t,  H5T_NATIVE_INT64)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint64_t, H5T_NATIVE_UINT64)
       /// @}
 
       //!_______________________________________________________________________________________

@@ -26,12 +26,13 @@
 #include <sstream>
 #include <iostream>
 
-// HDF5 C++ bindings
-#include "H5Cpp.h" 
+// HDF5 C bindings
+#include <hdf5.h> 
  
 // Gambit
 #include "gambit/Printers/printers/hdf5printer/DataSetInterfaceBase.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Logs/log.hpp"
 
 namespace Gambit {
   
@@ -49,7 +50,7 @@ namespace Gambit {
         public: 
           /// Constructors
           DataSetInterfaceScalar(); 
-          DataSetInterfaceScalar(H5FGPtr location, const std::string& name, const bool resume); 
+          DataSetInterfaceScalar(hid_t location_id, const std::string& name, const bool resume); 
 
           void writenewchunk(const T (&chunkdata)[CHUNKLENGTH]);
 
@@ -74,8 +75,8 @@ namespace Gambit {
       {}
 
       template<class T, std::size_t CL>
-      DataSetInterfaceScalar<T,CL>::DataSetInterfaceScalar(H5FGPtr location, const std::string& name, const bool resume) 
-        : DataSetInterfaceBase<T,0,CL>(location, name, empty_rdims, resume)
+      DataSetInterfaceScalar<T,CL>::DataSetInterfaceScalar(hid_t location_id, const std::string& name, const bool resume) 
+        : DataSetInterfaceBase<T,0,CL>(location_id, name, empty_rdims, resume)
       {}
 
       template<class T, std::size_t CHUNKLENGTH>
@@ -92,14 +93,32 @@ namespace Gambit {
          // newsize[1] = dims[1]; // don't need: only 1D for now.
 
          // Select a hyperslab.
-         H5::DataSpace filespace = this->my_dataset.getSpace();
+         //H5::DataSpace filespace = this->my_dataset.getSpace();
+         hid_t dspace_id = H5Dget_space(this->get_dset_id());
+         if(dspace_id<0) 
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error writing new chunk to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dget_space failed." << std::endl;
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+
          offsets[0] = this->dsetnextemptyslab;
          //offsets[1] = 0; // don't need: only 1D for now.
-         filespace.selectHyperslab( H5S_SELECT_SET, this->get_chunkdims(), offsets );
-         
+         //filespace.selectHyperslab( H5S_SELECT_SET, this->get_chunkdims(), offsets );
+         herr_t err_hs = H5Sselect_hyperslab(dspace_id, H5S_SELECT_SET, offsets, NULL, this->get_chunkdims(), NULL);        
+
+         if(err_hs<0) 
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error writing new chunk to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Sselect_hyperslab failed." << std::endl;
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
          // Define memory space
-         H5::DataSpace memspace( DSETRANK, this->get_chunkdims() );
-        
+         //H5::DataSpace memspace( DSETRANK, this->get_chunkdims() );
+         hid_t memspace_id = H5Screate_simple(DSETRANK, this->get_chunkdims(), NULL);         
+
          #ifdef HDF5_DEBUG 
          std::cout << "Debug variables:" << std::endl
                    << "  dsetdims()[0]      = " << this->dsetdims()[0] << std::endl
@@ -109,11 +128,12 @@ namespace Gambit {
          #endif
  
          // Write the data to the hyperslab.
-         try {
-            this->my_dataset.write( chunkdata, this->hdf_dtype.type(), memspace, filespace );
-         } catch(const H5::Exception& e) {
+         herr_t status = H5Dwrite(this->get_dset_id(), this->hdftype_id, memspace_id, dspace_id, H5P_DEFAULT, chunkdata);
+         //this->my_dataset.write( chunkdata, this->hdf_dtype.type(), memspace, filespace );
+         if(status<0)
+         {
             std::ostringstream errmsg;
-            errmsg << "Error writing new chunk to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. Message was: "<<e.getDetailMsg() << std::endl;
+            errmsg << "Error writing new chunk to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dwrite failed." << std::endl;
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
          #ifdef HDF5_DEBUG
@@ -183,6 +203,7 @@ namespace Gambit {
          // Extend the dataset if needed
          // To do this need to know largest target coordinate
          ulong max_coord = *std::max_element(coords,coords+npoints);
+         
          this->extend_dset(max_coord);
 
          // Dataset size in memory
@@ -193,12 +214,9 @@ namespace Gambit {
          hid_t dspace = H5Screate_simple(MDIM_RANK, mdim, NULL);
          if(dspace<0) error_occurred = true; 
 
-         // Get the C interface identifier for the output dataset
-         hid_t dset_id = this->my_dataset.getId();
- 
          // Get the C interface identifier for a copy of the dataspace
          // of the dataset (confusing...)
-         hid_t dspace_id = H5Dget_space(dset_id);
+         hid_t dspace_id = H5Dget_space(this->get_dset_id());
          if(dspace_id<0) error_occurred = true; 
 
          // Select the target write points in the file dataspace
@@ -206,9 +224,10 @@ namespace Gambit {
          if(errflag<0) error_occurred = true; 
 
          // Get the C interface identifier for the type of the output dataset
-         hid_t expected_dtype = this->hdf_dtype.type().getId();
+         hid_t expected_dtype = this->hdftype_id;
+
          //hid_t dtype = H5::PredType::NATIVE_DOUBLE.getId(); //the above does something like this
-         hid_t dtype = H5Dget_type(dset_id); // type with which the dset was created
+         hid_t dtype = H5Dget_type(this->get_dset_id()); // type with which the dset was created
          if(not H5Tequal(dtype, expected_dtype))
          {
              std::ostringstream errmsg;
@@ -219,7 +238,8 @@ namespace Gambit {
          // Write data to selected points
          // (H5P_DEFAULT specifies some transfer properties for the I/O 
          //  operation. These are the default values, probably are ok.)
-         hid_t errflag2 = H5Dwrite(dset_id, dtype, dspace, dspace_id, H5P_DEFAULT, values);
+         hid_t errflag2 = H5Dwrite(this->get_dset_id(), dtype, dspace, dspace_id, H5P_DEFAULT, values);
+
          if(errflag2<0) error_occurred = true; 
  
          if(error_occurred)

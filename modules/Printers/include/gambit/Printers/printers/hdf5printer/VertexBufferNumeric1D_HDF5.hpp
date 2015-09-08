@@ -25,8 +25,8 @@
 #include <cstddef>
 #include <sstream>
 
-// HDF5 C++ bindings
-#include "H5Cpp.h" 
+// HDF5 C bindings
+#include <hdf5.h> 
  
 // Gambit
 #include "gambit/Printers/VertexBufferNumeric1D.hpp"
@@ -74,20 +74,31 @@ namespace Gambit {
          public:
            /// Constructors
            VertexBufferNumeric1D_HDF5();
+           #ifdef WITH_MPI
            VertexBufferNumeric1D_HDF5
-             ( H5FGPtr location
+             ( hid_t location_id
              , const std::string& name
              , const int vID
              , const unsigned int i
              , const bool sync
              , const bool silence
              , const bool resume
-             #ifdef WITH_MPI
              , const BuffTags& tags
              , const GMPI::Comm& pComm
-             #endif
              );
-      
+           #endif
+ 
+           // No MPI constructor
+           VertexBufferNumeric1D_HDF5
+             ( hid_t location_id
+             , const std::string& name
+             , const int vID
+             , const unsigned int i
+             , const bool sync
+             , const bool silence
+             , const bool resume
+             );
+     
            /// Destructor
            /// Make sure buffer contents are written to file when buffer object is destroyed
            ~VertexBufferNumeric1D_HDF5();
@@ -118,7 +129,7 @@ namespace Gambit {
            /// (really just updates the nextemptyslab variable)
            virtual void update_dset_head_pos()
            {
-              if(this->myRank==0) // Only the master process has access to this information
+              if(this->myRank==0 or not this->MPI_mode()) // Only the master process has access to this information, unless we are in non-MPI mode
               {
                 if(dsetvalid().get_nextemptyslab() != dsetdata().get_nextemptyslab())
                 {
@@ -158,19 +169,18 @@ namespace Gambit {
         , postpone_write_queue_and_locs()
       {}
 
+      #ifdef WITH_MPI
       template<class T, std::size_t CHUNKLENGTH>
       VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::VertexBufferNumeric1D_HDF5(
-          H5FGPtr location
+          hid_t location_id
         , const std::string& name
         , const int vID
         , const unsigned int i
         , const bool sync
         , const bool silence
         , const bool resume
-        #ifdef WITH_MPI
         , const BuffTags& tags
         , const GMPI::Comm& pComm
-        #endif
         )
         : VertexBufferNumeric1D<T,CHUNKLENGTH>(
             name
@@ -179,23 +189,20 @@ namespace Gambit {
           , sync
           , silence
           , resume
-          #ifdef WITH_MPI
           , tags
           , pComm
-          #endif
           )
         , _dsetvalid()
         , _dsetdata()
         , postpone_write_queue_and_locs()
       {
-        if(location==NULL and this->myRank==0)
+        if(this->MPI_mode() and location_id==-1 and this->myRank==0)
         {
            std::ostringstream errmsg;
-           errmsg << "rank "<<this->myRank<<": Error! Tried to create buffer '"<<this->get_label()<<"', but supplied HDF5 location pointer was NULL (and we are the rank 0 process, who needs this pointer)";
+           errmsg << "rank "<<this->myRank<<": Error! Tried to create buffer '"<<this->get_label()<<"', but supplied HDF5 location pointer was -1 (and we are the rank 0 process, who needs this pointer)";
            printer_error().raise(LOCAL_INFO, errmsg.str()); 
         }
-     
-        if(not silence and this->myRank==0)
+        else if(not silence)
         {
           if(resume) 
           { 
@@ -204,7 +211,7 @@ namespace Gambit {
           {
              logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"_isvalid'..."<<std::endl;
           }
-          _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location, name+"_isvalid", resume);
+          _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location_id, name+"_isvalid", resume);
 
           if(resume) 
           { 
@@ -213,12 +220,66 @@ namespace Gambit {
           {
              logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"'..."<<std::endl;
           }
-          _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location, name, resume);
+          _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location_id, name, resume);
 
           logger()<<EOM; // Leave this to calling function
         }
       }
-      
+      #endif     
+ 
+      // No MPI constructor
+      template<class T, std::size_t CHUNKLENGTH>
+      VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::VertexBufferNumeric1D_HDF5(
+          hid_t location_id
+        , const std::string& name
+        , const int vID
+        , const unsigned int i
+        , const bool sync
+        , const bool silence
+        , const bool resume
+        )
+        : VertexBufferNumeric1D<T,CHUNKLENGTH>(
+            name
+          , vID
+          , i
+          , sync
+          , silence
+          , resume
+          )
+        , _dsetvalid()
+        , _dsetdata()
+        , postpone_write_queue_and_locs()
+      {
+        if(this->MPI_mode() and location_id==-1 and this->myRank==0)
+        {
+           std::ostringstream errmsg;
+           errmsg << "rank "<<this->myRank<<": Error! Tried to create buffer '"<<this->get_label()<<"', but supplied HDF5 location pointer was NULL (and we are the rank 0 process, who needs this pointer)";
+           printer_error().raise(LOCAL_INFO, errmsg.str()); 
+        }
+        else if(not silence)
+        {
+          if(resume) 
+          { 
+             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"_isvalid'..."<<std::endl;
+          } else
+          {
+             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"_isvalid'..."<<std::endl;
+          }
+          _dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location_id, name+"_isvalid", resume);
+
+          if(resume) 
+          { 
+             logger()<<LogTags::printers<<"Attempting to resume writing to dataset '"<<name<<"'..."<<std::endl;
+          } else
+          {
+             logger()<<LogTags::printers<<"Creating new dataset '"<<name<<"'..."<<std::endl;
+          }
+          _dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location_id, name, resume);
+
+          logger()<<EOM; // Leave this to calling function
+        }
+      }
+ 
       /// Destructor
       template<class T, std::size_t L>
       VertexBufferNumeric1D_HDF5<T,L>::~VertexBufferNumeric1D_HDF5() 
@@ -253,7 +314,7 @@ namespace Gambit {
       DataSetInterfaceScalar<bool,L>& VertexBufferNumeric1D_HDF5<T,L>::dsetvalid()
       {
         #ifdef WITH_MPI
-        if(this->myRank!=0)
+        if(this->MPI_mode() and this->myRank!=0)
         {
             std::ostringstream errmsg;
             errmsg << "rank "<<this->myRank<<": Error! VertexBuffer (HDF5 type) in non-master process tried to access dsetvalid! This doesn't exist except on the master process (buffer is "<<this->get_label()<<")";
@@ -267,7 +328,7 @@ namespace Gambit {
       DataSetInterfaceScalar<T,L>& VertexBufferNumeric1D_HDF5<T,L>::dsetdata()
       {
         #ifdef WITH_MPI
-        if(this->myRank!=0)
+        if(this->MPI_mode() and this->myRank!=0)
         {
             std::ostringstream errmsg;
             errmsg << "rank "<<this->myRank<<"Error! VertexBuffer (HDF5 type) in non-master process tried to access dsetdata! This doesn't exist except on the master process (buffer is "<<this->get_label()<<")";
@@ -332,7 +393,7 @@ namespace Gambit {
          /// be erased had we gotten around to writing it.
          postpone_write_queue_and_locs.clear();
 
-         if(this->myRank==0) // Can only touch datasets on master process.
+         if(this->myRank==0 or not this->MPI_mode()) // Can only touch datasets on master process (unless we are in non-MPI mode)
          {
             /// Invalidate the contents of the linked datasets
             /// This can be done by simply resetting the all validity bools to "false"

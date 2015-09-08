@@ -34,13 +34,10 @@ namespace Gambit {
     namespace HDF5 { 
       /// Create or open hdf5 file
       /// third argument "oldfile" is used to report whether an existing file was opened (true if yes)
-      H5FilePtr openFile(const std::string& fname, bool overwrite, bool& oldfile)
+      hid_t openFile(const std::string& fname, bool overwrite, bool& oldfile)
       {
-          // Switch error printing back on when debugging by commenting this out
-          //H5::Exception::dontPrint();
+          hid_t file_id;  // file handle
 
-          H5::H5File* file = NULL;
-           
           if(overwrite)
           {
             // DANGER! Deletes existing file
@@ -53,91 +50,119 @@ namespace Gambit {
             logger()<<LogTags::utils<<LogTags::info<<"Deleted pre-existing file "<<fname<<" (because overwrite=true)"<<EOM;
           }          
 
-          try {
-              file = new H5::H5File(fname.c_str(), H5F_ACC_RDWR);
-              oldfile = true; /* successfully opened existing file */
-          } catch(const H5::FileIException&) {
-              try {
-                  file = new H5::H5File(fname.c_str(), H5F_ACC_EXCL);
-                  oldfile = false; /* successfully created and opened new file */
-              } catch(const H5::FileIException& e) {
-                  std::ostringstream errmsg;
-                  errmsg << "Error creating or opening HDF5 file '"<<fname<<"'. Message was: "<<e.getDetailMsg();
-                  printer_error().raise(LOCAL_INFO, errmsg.str());
-              }
-          }  
-      
-          // Wrap raw pointer in a shared pointer for safer handling
-          return H5FilePtr(file);
+          file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+          if(file_id < 0)
+          {
+             /* Ok maybe file doesn't exist yet, try creating it */
+             file_id = H5Fcreate(fname.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);             
+             if(file_id < 0)
+             {
+                /* Still no good; error */
+                std::ostringstream errmsg;
+                errmsg << "Failed to open existing HDF5 file, then failed to create new one! ("<<fname<<")";
+                printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
+             else
+             {
+                /* successfully created new file */
+                oldfile = false;
+             }
+          }
+          else
+          {
+             /* successfully opened existing file */
+             oldfile = true;
+          }
+
+          /* Return the file handle */
+          return file_id;
       }
 
       /// Check if hdf5 file exists and can be opened in read/write mode
       bool checkFileReadable(const std::string& fname, std::string& msg)
       {
           bool readable(false);
-          H5::H5File* file = NULL;
-          try {
-              file = new H5::H5File(fname.c_str(), H5F_ACC_RDWR);
-              file->close();
-              readable=true;
-          } catch(const H5::FileIException& e) {
-              /* get the error message */
-              msg = e.getDetailMsg(); 
-              readable=false;              
-          }  
+
+          hid_t file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+          if(file_id < 0)
+          {
+            readable=false;
+            std::ostringstream errmsg;
+            errmsg<<"H5Fopen failed (tried to open '"<<fname<<"')";
+            msg = errmsg.str();
+          }
+          else
+          {
+            /* everything fine, close the file */
+            herr_t status = H5Fclose(file_id);
+            if(status<0) 
+            {
+                std::ostringstream errmsg;
+                errmsg << "Failed to properly close HDF5 file after successfully checking that it was readable! ("<<fname<<")";
+                printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+            readable=true;
+          }
           return readable;
       } 
 
       /// Check if a group exists and can be accessed
-      bool checkGroupReadable(H5FGPtr location, const std::string& groupname, std::string& msg)   
+      bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg)   
       {
+          hid_t group_id;
           bool readable(false);
-          H5::Group* group = NULL;
-          try {
-             group = new H5::Group(location->openGroup(groupname.c_str()));
-             group->close();
-             readable=true;
-          } catch(const H5::FileIException& e) {
-             msg = e.getDetailMsg();
-             readable=false;
+
+          group_id = H5Gopen2(location, groupname.c_str(), H5P_DEFAULT);
+          if(group_id < 0)
+          {
+            readable=false;
+            std::ostringstream errmsg;
+            errmsg<<"H5Gopen failed (tried to open '"<<groupname<<"' from location with id "<<location<<")";
+            msg = errmsg.str();
+          }
+          else
+          {
+            /* everything fine, close the group */
+            herr_t status = H5Gclose(group_id);
+            if(status<0) 
+            {
+                std::ostringstream errmsg;
+                errmsg << "Failed to properly close HDF5 group after successfully checking that it was readable! ("<<groupname<<")";
+                printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+            readable=true;
           }
           return readable;
       }
  
       /// Create hdf5 file (always overwrite existing files)
-      H5FilePtr createFile(const std::string& fname)
+      hid_t createFile(const std::string& fname)
       {
-          H5::Exception::dontPrint();
-          H5::H5File* file = NULL;
-
-          try {
-              file = new H5::H5File(fname.c_str(), H5F_ACC_TRUNC);       
-          } catch(const H5::FileIException& e) {
-              std::ostringstream errmsg;
-              errmsg << "Error creating HDF5 file '"<<fname<<"'. Message was: "<<e.getDetailMsg();
-              printer_error().raise(LOCAL_INFO, errmsg.str());
+          hid_t file_id = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);             
+          if(file_id < 0)
+          {
+             /* Still no good; error */
+             std::ostringstream errmsg;
+             errmsg << "Failed to create HDF5 file '"<<fname<<"'!";
+             printer_error().raise(LOCAL_INFO, errmsg.str());
           }
- 
-          // Wrap raw pointer in a shared pointer for safer handling
-          return H5FilePtr(file);
+          return file_id;
       }
 
       /// Create a group inside the specified location
-      // Argument "location" can be a pointer to either a file or another group
-      H5GroupPtr createGroup(H5FGPtr location, const std::string& name)   
+      // Argument "location" can be a handle for either a file or another group
+      hid_t createGroup(hid_t location, const std::string& name)   
       {
-          H5::Group* group = NULL;
+          hid_t group_id;
 
-          try {
-              group = new H5::Group( location->createGroup(name) );
-          } catch(const H5::GroupIException& e) {
+          group_id = H5Gcreate2(location, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+          if(group_id<0)
+          {
               std::ostringstream errmsg;
-              errmsg << "Error creating HDF5 group '"<<name<<"'. Message was: "<<e.getDetailMsg();
+              errmsg << "Error creating HDF5 group '"<<name<<"'";
               printer_error().raise(LOCAL_INFO, errmsg.str());
           }
- 
-          // Wrap raw pointer in a shared pointer for safer handling
-          return H5GroupPtr(group); 
+          return group_id; 
       }
 
       // Modified minimally from https://github.com/gregreen/h5utils/blob/master/src/h5utils.cpp#L92
@@ -152,19 +177,21 @@ namespace Gambit {
        * does not yet exist.
        *
        */ 
-      H5GroupPtr openGroup(H5FilePtr file, const std::string& name, bool nocreate) //, int accessmode) 
+      hid_t openGroup(hid_t file_id, const std::string& name, bool nocreate) //, int accessmode) 
       {
-         H5::Group* group = NULL;
+         hid_t group_id;
+ 
          // User does not want to create group
          if(nocreate) //accessmode & H5Utils::DONOTCREATE)
          {
-            try {
-               group = new H5::Group(file->openGroup(name.c_str()));
-            } catch(const H5::FileIException& e) {
+            group_id = H5Gcreate2(file_id, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+            if(group_id<0)
+            {
               std::ostringstream errmsg;
-              errmsg << "Error opening HDF5 group '"<<name<<"'. Group does not exist, and accessmode is set to DONOTCREATE. Message was: "<<e.getDetailMsg();
+              errmsg << "Error opening HDF5 group '"<<name<<"'. Group (probably) does not exist, and 'nocreate' flag is set to 'true', so we will not attempt to create one";
               printer_error().raise(LOCAL_INFO, errmsg.str());
-            }
+            } 
+            H5Gclose(group_id);
          }
          // Possibly create group and parent groups
          std::stringstream ss(name);
@@ -173,17 +200,54 @@ namespace Gambit {
          while(std::getline(ss, gp_name, '/')) 
          {
             path << "/" << gp_name;
-            if(group != NULL) { delete group; }
-            try {
-               group = new H5::Group(file->openGroup(path.str().c_str()));
-            } catch(const H5::FileIException& err_does_not_exist) {
-               group = new H5::Group(file->createGroup(path.str().c_str()));
-            }
-         }
-         return H5GroupPtr(group);
+            group_id = H5Gopen2(file_id, path.str().c_str(), H5P_DEFAULT);
+            if(group_id<0)
+            {
+               /* doesn't exist; try to create it */
+               group_id = H5Gcreate2(file_id, path.str().c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+               if(group_id<0)
+               {
+                 std::ostringstream errmsg;
+                 errmsg << "Error while recursively creating/opening group '"<<name<<"'. Failed to create group '"<<path.str()<<"'";
+                 printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
+            }          
+            H5Gclose(group_id);
+        }
+        // Should exist now; open the group and return the handle
+        group_id = H5Gopen2(file_id, name.c_str(), H5P_DEFAULT);
+        if(group_id<0)
+        {
+          std::ostringstream errmsg;
+          errmsg << "Error opening HDF5 group '"<<name<<"' after recursive creation supposedly succeeded! There must be a bug in this routine, please fix.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        } 
+        return group_id;
       }
 
+      /// Close hdf5 file
+      void closeFile(hid_t file_id)
+      {
+         herr_t status = H5Fclose(file_id);
+         if(status<0)
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error encountered while closing HDF5 file with id '"<<file_id<<"'!";
+           printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+      }
 
+      /// Close hdf5 group
+      void closeGroup(hid_t group_id)
+      {
+         herr_t status = H5Gclose(group_id);
+         if(status<0)
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error encountered while closing HDF5 group with id '"<<group_id<<"'!";
+           printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+      }
 
     }
  

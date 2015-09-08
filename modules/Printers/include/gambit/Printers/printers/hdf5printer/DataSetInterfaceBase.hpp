@@ -26,11 +26,12 @@
 #ifndef __DataSetInterfaceBase_hpp__
 #define __DataSetInterfaceBase_hpp__
 
-// HDF5 C++ bindings
-#include "H5Cpp.h" 
+// HDF5 C bindings
+#include <hdf5.h> 
  
 // Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Logs/log.hpp"
 
 namespace Gambit {
   
@@ -45,7 +46,7 @@ namespace Gambit {
       {
         private: 
          static const std::size_t DSETRANK = RECORDRANK+1; // Rank of the dataset array
-         H5FGPtr mylocation; // where this datasets is located in the hdf5 file
+         hid_t mylocation_id; // handle for where this datasets is located in the hdf5 file
          std::string myname; // name of the dataset in the hdf5 file         
 
          // Dimension sizes for each record. 
@@ -66,11 +67,23 @@ namespace Gambit {
         protected:
          // Derived classes need full access to these
 
-         // Type specifier for datasets
-         static const get_hdf5_data_type<T> hdf_dtype;
+         // HDF5 type handle for datasets
+         static const hid_t hdftype_id;
 
-         // Wrapped dataset
-         H5::DataSet my_dataset;
+         // Handle for wrapped dataset
+         hid_t dset_id;
+
+         // Safe(r) getter for dataset handle
+         hid_t get_dset_id()
+         { 
+           if(this->dset_id<0)
+           {
+              std::ostringstream errmsg;
+              errmsg << "Error getting handle for dataset with name: \""<<get_myname()<<"\". Handle id is invalid. Dataset wrapping has failed to occur correctly, and problems should have been detected before this, so this is a bug; please fix.";
+              printer_error().raise(LOCAL_INFO, errmsg.str());
+           }
+           return this->dset_id;
+         } 
 
          // index of the beginning of the next empty slot in the output array
          // i.e. the offset in dimension 0 of the dataset needed to select the
@@ -100,17 +113,17 @@ namespace Gambit {
 
          /// Constructors
          DataSetInterfaceBase(); 
-         DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK], const bool resume);
-         virtual ~DataSetInterfaceBase() {} 
+         DataSetInterfaceBase(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK], const bool resume);
+         virtual ~DataSetInterfaceBase(); 
 
          /// Create a (chunked) dataset 
-         H5::DataSet createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]);
+         hid_t createDataSet(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK]);
 
          /// Open an existing dataset
-         H5::DataSet openDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]);
+         hid_t openDataSet(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK]);
 
          /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
-         void extend_dset(const ulong i);
+         void extend_dset(const unsigned long i);
       };
 
 
@@ -118,43 +131,68 @@ namespace Gambit {
 
       // Define some static members
       template<class T, std::size_t RR, std::size_t CL>
-      const get_hdf5_data_type<T> DataSetInterfaceBase<T,RR,CL>::hdf_dtype; // Default initialisation is fine
+      const hid_t DataSetInterfaceBase<T,RR,CL>::hdftype_id = get_hdf5_data_type<T>::type(); 
 
       /// Constructors
       template<class T, std::size_t RR, std::size_t CL>
       DataSetInterfaceBase<T,RR,CL>::DataSetInterfaceBase() 
-        : mylocation(NULL)
+        : mylocation_id(-1)
         , myname()
         , record_dims()
         , resume(false)
-	, my_dataset()
+	, dset_id(-1)
         , dsetnextemptyslab(0)
       {}
 
       template<class T, std::size_t RR, std::size_t CL>
-      DataSetInterfaceBase<T,RR,CL>::DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK], const bool r)
-        : mylocation(location)
+      DataSetInterfaceBase<T,RR,CL>::DataSetInterfaceBase(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK], const bool r)
+        : mylocation_id(location_id)
         , myname(name)
         , record_dims() /* doh have to copy array element by element */
         , resume(r)
-        , my_dataset() 
+        , dset_id(-1) 
         , dsetnextemptyslab(0)
       {
         if(resume)
         {
-           my_dataset = openDataSet(location,name,rdims);
+           dset_id = openDataSet(location_id,name,rdims);
         }
         else
         {
-           my_dataset = createDataSet(location,name,rdims);
+           dset_id = createDataSet(location_id,name,rdims);
+        }
+        if(dset_id<0)
+        {
+           std::ostringstream errmsg;
+           errmsg << "Error! Failed to attach interface to dataset '"<<this->get_myname()<<"', and problem was not caught during open or create routine! This is a bug, please fix."; 
+           printer_error().raise(LOCAL_INFO, errmsg.str());
         }
         // copy rdims to record_dims
         for(std::size_t i=0; i<DSETRANK; i++) { record_dims[i] = rdims[i]; }
       }
+ 
+      /// Do cleanup (close dataset)
+      template<class T, std::size_t RR, std::size_t CL>
+      DataSetInterfaceBase<T,RR,CL>::~DataSetInterfaceBase()
+      {
+         // TODO: Having problems with copied objects sharing dataset identifiers, and closing datasets prematurely on each other.
+         // To fix, will probably need to have a fancy copy constructor or something. Or wrap datasets in an
+         // object which itself has a fancy copy constructor. For now, just leave dataset resources lying around,
+         // probably won't cause any issues.
+         // Or could explicity tell interface to close datasets before the objects are destroyed.
+         //if(this->dset_id>=0)
+         //{
+         //  herr_t status = H5Dclose(this->dset_id); 
+         //  if(status<0)
+         //  {
+         //     logger() << LogTags::printers << LogTags::err << "Error destructing DataSetInterfaceBase! Failed to close wrapped dataset! (H5Dclose failed). No exception thrown because this will behave badly when throw from a destructor. (dataset name: "<<myname<<")"<<EOM;
+         //  }
+         //}
+      }
 
       /// Create a (chunked) dataset 
       template<class T, std::size_t RECORDRANK, std::size_t CHUNKLENGTH>
-      H5::DataSet DataSetInterfaceBase<T,RECORDRANK,CHUNKLENGTH>::createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK])
+      hid_t DataSetInterfaceBase<T,RECORDRANK,CHUNKLENGTH>::createDataSet(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK])
       {
          // I'd like to declare rdims as rdims[RECORDRANK], but apparantly zero length arrays are not allowed,
          // so this would not compile in the RECORDRANK=0 case, which I need. Irritating.
@@ -175,56 +213,88 @@ namespace Gambit {
          }
 
          // Create the data space
-         H5::DataSpace dspace(DSETRANK, dims, maxdims);
-
-         // Object containing dataset creation parameters
-         H5::DSetCreatPropList cparms;   
-         cparms.setChunk(DSETRANK, chunkdims);
-
-         // Set fill value for dataset
-         //int fill_val = 0;
-         //cparms.setFillValue( hdf_dtype.type, &fill_value);
-      
-         // Check if location pointer is NULL
-         if(location==NULL)
+         //H5::DataSpace dspace(DSETRANK, dims, maxdims);
+         hid_t dspace_id = H5Screate_simple(DSETRANK, dims, maxdims);
+         if(dspace_id<0)
          {
             std::ostringstream errmsg;
-            errmsg << "Error! Tried to create hdf5 dataset (with name: \""<<myname<<"\" at NULL location (H5FGPtr was NULL). Please check that calling code supplied a valid location ptr. This is a bug, please report it."; 
+            errmsg << "Error creating dataset (with name: \""<<name<<"\") in HDF5 file. H5Screate_simple failed.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+         // Object containing dataset creation parameters
+         //H5::DSetCreatPropList cparms;   
+         //cparms.setChunk(DSETRANK, chunkdims);
+         hid_t cparms_id = H5Pcreate(H5P_DATASET_CREATE);
+         if(cparms_id<0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error creating dataset (with name: \""<<name<<"\") in HDF5 file. H5Pcreate failed.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+         herr_t status = H5Pset_chunk(cparms_id, DSETRANK, chunkdims);
+         if(status<0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error creating dataset (with name: \""<<name<<"\") in HDF5 file. H5Pset_chunk failed.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+
+         // Check if location id is invalid
+         if(location_id==-1)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error! Tried to create hdf5 dataset (with name: \""<<myname<<"\") at undefined location (location_id was -1). Please check that calling code supplied a valid location handle. This is a bug, please report it."; 
             printer_error().raise(LOCAL_INFO, errmsg.str()); 
          }
  
          // Create the dataset
-         H5::DataSet output;
-         try {
-            output = location->createDataSet( name.c_str(), hdf_dtype.type(), dspace, cparms);
-         } catch(const H5::Exception& e) {
+         hid_t output_dset_id;
+         output_dset_id = H5Dcreate2(location_id, name.c_str(), hdftype_id, dspace_id, H5P_DEFAULT, cparms_id, H5P_DEFAULT);
+         //output = location->createDataSet( name.c_str(), hdf_dtype.type(), dspace, cparms);
+         if(output_dset_id<0)
+         {
                std::ostringstream errmsg;
-               errmsg << "Error creating dataset (with name: \""<<myname<<"\") in HDF5 file. Dataset with same name may already exist. Message was: "<<e.getDetailMsg();
+               errmsg << "Error creating dataset (with name: \""<<myname<<"\") in HDF5 file. Dataset with same name may already exist";
                printer_error().raise(LOCAL_INFO, errmsg.str());
          }
-         return output;
+         return output_dset_id;
       }
 
       /// Open an existing dataset 
       /// It is assumed that we are resuming a run and therefore know what format this dataset should have
       template<class T, std::size_t RECORDRANK, std::size_t CHUNKLENGTH>
-      H5::DataSet DataSetInterfaceBase<T,RECORDRANK,CHUNKLENGTH>::openDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK])
+      hid_t DataSetInterfaceBase<T,RECORDRANK,CHUNKLENGTH>::openDataSet(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK])
       {
          // Open the dataset
-         H5::DataSet dataset;
-         try {
-            dataset = location->openDataSet( name.c_str() );
-         } catch(const H5::Exception& e) {
-               std::ostringstream errmsg;
-               errmsg << "Error opening existing dataset (with name: \""<<myname<<"\") in HDF5 file. Message was: "<<e.getDetailMsg();
-               printer_error().raise(LOCAL_INFO, errmsg.str());
+         hid_t out_dset_id = H5Dopen2(location_id, name.c_str(), H5P_DEFAULT);
+         if(out_dset_id<0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error opening existing dataset (with name: \""<<name<<"\") in HDF5 file. H5Dopen2 failed.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
          }
 
          // Get dataspace of the dataset.
-         H5::DataSpace dataspace = dataset.getSpace();
-         
+         //H5::DataSpace dataspace = dataset.getSpace();
+         hid_t dspace_id = H5Dget_space(out_dset_id);
+         if(dspace_id<0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error opening existing dataset (with name: \""<<name<<"\") in HDF5 file. H5Dget_space failed.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
+        
          // Get the number of dimensions in the dataspace.
-         int rank = dataspace.getSimpleExtentNdims();
+         //int rank = dataspace.getSimpleExtentNdims();
+         int rank = H5Sget_simple_extent_ndims(out_dset_id);
+         if(rank<0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error opening existing dataset (with name: \""<<name<<"\") in HDF5 file. H5Sget_simple_extent_ndims failed.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
 
          if(rank!=DSETRANK)
          {
@@ -235,7 +305,14 @@ namespace Gambit {
 
          // Get the dimension size of each dimension in the dataspace
          hsize_t dims_out[DSETRANK];
-         int ndims = dataspace.getSimpleExtentDims( dims_out, NULL);  
+         //int ndims = dataspace.getSimpleExtentDims( dims_out, NULL);  
+         int ndims = H5Sget_simple_extent_dims(out_dset_id, dims_out, NULL);
+         if(ndims<0)
+         {
+            std::ostringstream errmsg;
+            errmsg << "Error while accessing existing dataset (with name: \""<<myname<<"\") in HDF5 file. Failed to retrieve dataset extents (H5Sget_simple_extent_dims failed).";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+         }
 
          // Update parameters to match dataset contents
          // Compute initial dataspace and chunk dimensions
@@ -266,15 +343,16 @@ namespace Gambit {
          // existing dataset has been written up to a complete chunk)
          dsetnextemptyslab = dims[0];  
 
-         return dataset;
+         return out_dset_id;
       }
 
 
       /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
       template<class T, std::size_t RR, std::size_t CHUNKLENGTH>
-      void DataSetInterfaceBase<T,RR,CHUNKLENGTH>::extend_dset(const ulong min_length)
+      void DataSetInterfaceBase<T,RR,CHUNKLENGTH>::extend_dset(const unsigned long min_length)
       {
-         if( min_length > this->dsetdims()[0] )
+         std::size_t current_length = this->dsetdims()[0];
+         if( min_length > current_length )
          {
             // Extend the dataset to the nearest multiple of CHUNKLENGTH above min_length,
             // unless min_length is itself a multiple of CHUNKLENGTH.
@@ -283,12 +361,20 @@ namespace Gambit {
             if(remainder==0) { newlength = min_length; } 
             else             { newlength = min_length - remainder + CHUNKLENGTH; }
             #ifdef HDF5_DEBUG
-            std::cout << "Requested min_length ("<<min_length<<") larger than current dataset length ("<<this->dsetdims()[0]<<") (dset name="<<this->get_myname()<<")" << std::endl
+            std::cout << "Requested min_length ("<<min_length<<") larger than current dataset length ("<<current_length<<") (dset name="<<this->get_myname()<<")" << std::endl
                       << "Extending dataset to newlength="<<newlength<<std::endl;
             #endif
             this->dsetdims()[0] = newlength;
-            this->my_dataset.extend( this->dsetdims() );  
-         }
+            //this->my_dataset.extend( this->dsetdims() );  
+            herr_t status = H5Dset_extent( this->get_dset_id(), this->dsetdims());
+            if(status<0)
+            {
+               std::cout<<this->get_dset_id()<<std::endl;
+               std::ostringstream errmsg;
+               errmsg << "Failed to extend dataset (with name: \""<<myname<<"\") from length "<<current_length<<" to length "<<newlength<<"!";
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+        }
       }
       /// @}
 
