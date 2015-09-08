@@ -13,7 +13,7 @@
 
 MultiNest: 
   3.9: 
-    - lib: ./ScannerBit/installed/MultiNest_v3.9/libnest3.so
+    - lib: ./ScannerBit/installed/MultiNest/3.9/libnest3.so
 
 square_grid:
   1.0.0:              
@@ -21,4 +21,4 @@ square_grid:
 
 Diver:
   1.0.0:
-    - lib: ./ScannerBit/installed/Diver/lib/libdiver.so
+    - lib: ./ScannerBit/installed/Diver/1.0.0/lib/libdiver.so

@@ -98,7 +98,7 @@ namespace Gambit
                                                 std::stringstream p_ss(std::string(path_buffer, p_n));
                                                 while (p_ss >> p_str)
                                                 {
-                                                        if (p_str.find(".so") != std::string::npos)
+                                                        if (p_str.find(".so") != std::string::npos && p_str.find(".so.") == std::string::npos)
                                                                 loadLibrary (path + p_str);
                                                 }
                                         }
