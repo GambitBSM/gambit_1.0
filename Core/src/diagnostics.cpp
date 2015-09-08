@@ -46,8 +46,8 @@ namespace Gambit
   {
     int maxlens[6] = {18, 7, 70, 13, 3, 3};
     bool all_good = true;
-    cout << "Backends               Version     Path to lib                                  Status          #funcs  #types  #ctors" << endl;
-    cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
+    cout << "Backends               Version     Path to lib                                                                Status            #funcs  #types  #ctors" << endl;
+    cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
     // Loop over all registered backends
     for (std::map<str, std::set<str> >::const_iterator it = backend_versions.begin(); it != backend_versions.end(); ++it)
@@ -105,8 +105,8 @@ namespace Gambit
   {
     int maxlen1 = 35;
     int maxlen2 = 35;
-    cout << "Models                     Parent             Parameters" << endl;
-    cout << "--------------------------------------------------------" << endl;
+    cout << "Models                                  Parent                                  Parameters" << endl;
+    cout << "------------------------------------------------------------------------------------------" << endl;
     for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
     {
       str model = (*it)->origin();
@@ -114,12 +114,16 @@ namespace Gambit
       int nparams = (*it)->valuePtr()->getNumberOfPars();
       cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
     }
+#ifdef HAVE_GRAPHVIZ
     // Create and spit out graph of the model hierarchy.
     str graphfile = GAMBIT_DIR "/scratch/GAMBIT_model_hierarchy.gv";
     ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
     cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
     cout << endl << "To get postscript plot of model hierarchy, please run: " << endl;
     cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+graphfile << endl;
+#else
+    cout << endl << "To get postscript plot of model hierarchy, please install graphviz, rerun cmake and remake GAMBIT." << endl;
+#endif
   }
 
   /// Basic capability diagnostic function

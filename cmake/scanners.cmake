@@ -58,7 +58,7 @@ set(mn_ver "3\\.9")
 set(mn_lib "libnest3")
 set(mn_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/MultiNest/3.9")
 set(mnLAPACK "${LAPACK_LINKLIBS}")
-set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS} ${mnLAPACK}")
+set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
 if(MPI_Fortran_FOUND)
   set(mnFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
 else()
@@ -75,12 +75,12 @@ ExternalProject_Add(multinest
   SOURCE_DIR ${mn_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
-                                 -e "s#-o[[:space:]]*\\(\\$\\)(LIBS)[[:space:]]*\\$@#-o \\$\\(LIBS\\)\\$@#g"
+                                 -e "s#-o[[:space:]]*\\(\\$\\)(LIBS)[[:space:]]*\\$@[[:space:]]*\\$^#-o \\$\\(LIBS\\)\\$@ \\$^ ${mnLAPACK}#g"
                                  <SOURCE_DIR>/Makefile 
             COMMAND sed ${dashi} -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
                                  -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g"
                                  <SOURCE_DIR>/cwrapper.f90
-  BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LAPACKLIB=${mnLAPACK} LIBS=${mn_dir}/ 
+  BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LIBS=${mn_dir}/
   INSTALL_COMMAND "" 
 )
 set_property(TARGET multinest PROPERTY _EP_DOWNLOAD_ALWAYS 0)

@@ -515,12 +515,6 @@ def main(argv):
 #                                                \n\
 #************************************************\n\n"                                                
     towrite += cmakelist_txt_out
-
-    if sys.platform == "darwin":
-        cflags = ""#"-dynamiclib"
-    else:
-        cflags = "-rdynamic"
-
     towrite += "\
 # Add the ScannerBit linking flag utility        \n\
 add_executable(scanlibs ${scanner_scanlibs_sources} ${scanner_scanlibs_headers})\n\
@@ -544,8 +538,6 @@ set( PLUGIN_INCLUDE_DIRECTORIES                  \n\
                 ${GSL_INCLUDE_DIRS}              \n\
                 ${ROOT_INCLUDE_DIR}              \n\
                 ${PROJECT_SOURCE_DIR}/ScannerBit/include/gambit/ScannerBit\n\
-                ${MPI_C_INCLUDE_PATH}            \n\
-                ${MPI_CXX_INCLUDE_PATH}          \n\
 )                                                \n\n\
 if( ${PLUG_VERBOSE} )                            \n\
     message(\"*** begin PLUG_INCLUDE_DIRECTORIES ***\")\n\
@@ -557,12 +549,29 @@ endif()                                          \n\
                                                  \n\
 set( reqd_lib_output )                           \n\
 set( exclude_lib_output )                        \n\n\
-set( PLUGIN_COMPILE_FLAGS                        \n\
-                ${MPI_C_COMPILE_FLAGS}           \n\
-                ${MPI_CXX_COMPILE_FLAGS}         \n"
-                
-    towrite += "                \"" + cflags + "\""
-    towrite += ")\n\n"
+set( PLUGIN_COMPILE_FLAGS \"${CMAKE_CXX_FLAGS}\")\n\n\
+if(MPI_C_FOUND)                                  \n\
+    set( PLUGIN_COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS} ${MPI_C_COMPILE_FLAGS}\" )\n\
+    set( PLUGIN_COMPILE_DIRECTORIES              \n\
+                ${PLUGIN_COMPILE_DIRECTORIES}    \n\
+                ${MPI_C_COMPILE_PATH}            \n\
+    )                                            \n\
+    set( PLUGIN_INCLUDE_DIRECTORIES              \n\
+                ${PLUGIN_INCLUDE_DIRECTORIES}    \n\
+                ${MPI_C_INCLUDE_PATH}            \n\
+    )                                            \n\
+endif()                                          \n\n\
+if(MPI_CXX_FOUND)                                \n\
+    set( PLUGIN_COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS} ${MPI_CXX_COMPILE_FLAGS}\" )\n\
+    set( PLUGIN_COMPILE_DIRECTORIES              \n\
+                ${PLUGIN_COMPILE_DIRECTORIES}    \n\
+                ${MPI_CXX_COMPILE_PATH}            \n\
+    )                                            \n\
+    set( PLUGIN_INCLUDE_DIRECTORIES              \n\
+                ${PLUGIN_INCLUDE_DIRECTORIES}    \n\
+                ${MPI_CXX_INCLUDE_PATH}            \n\
+    )                                            \n\
+endif()                                          \n\n"
 
 
     # now link the shared libraries to their respective plugin libraries
@@ -734,23 +743,12 @@ set( PLUGIN_COMPILE_FLAGS                        \n\
             towrite += "endif()\n\n"
 
             towrite += "if ( " + plug_type[i] + "_compile_flag_" + directory + " STREQUAL \"\" )\n"
-            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION MODULE SOURCES ${"
+            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${"
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
-            if sys.platform == "darwin":
-            #    towrite += " "*23 + "LINK_FLAGS \"-dynamiclib\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-                towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-            else:
-                towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-                towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-                
-            #if scanbit_static_links.has_key(plug_type[i]):
-            #    if scanbit_static_links[plug_type[i]].has_key(directory):
-            #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
-            #            cflags = "-static " + scanbit_static_links[plug_type[i]][directory]
-
-            towrite += " "*23 + "COMPILE_FLAGS ${PLUGIN_COMPILE_FLAGS}\n"
+            towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+            towrite += " "*23 + "COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS}\"\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"

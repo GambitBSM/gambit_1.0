@@ -19,22 +19,49 @@
 ///
 ///  *********************************************
 
+#include <fstream>
+
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/spec_fptrfinder.hpp"
 
-namespace Gambit {
+namespace Gambit
+{
 
-   /// @{ Remnants of old interface (PDG overloads for getter functions)
-   DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
+  /// @{ Remnants of old interface (PDG overloads for getter functions)
+  DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
+  DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
 
-   DEFINE_PDG_GETTERS(Phys,Pole_Mass)
-   DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
-   /// @}
+  DEFINE_PDG_GETTERS(Phys,Pole_Mass)
+  DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
+  /// @}
+
+  /// Dump out spectrum information to an SLHA file (if possible)
+  void SubSpectrum::getSLHA(const str& filename) const
+  {
+    std::ofstream ofs(filename);
+    if (ofs)
+    { 
+      ofs << getSLHAea();
+    }
+    else
+    { 
+      utils_error().raise(LOCAL_INFO,"Could not open file '"+filename+
+       "' for writing. Please check that the path exists!"); 
+    }     
+    ofs.close();
+  }
+           
+  /// Get spectrum information in SLHAea format (if possible)
+  SLHAstruct SubSpectrum::getSLHAea() const
+  {
+    SLHAstruct slha;
+    this->add_to_SLHAea(slha);
+    return slha;    
+  }
 
 }
 

@@ -34,7 +34,9 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
-#include <boost/graph/graphviz.hpp>
+#ifdef HAVE_GRAPHVIZ
+  #include <boost/graph/graphviz.hpp>
+#endif
 
 namespace Gambit
 {
@@ -111,7 +113,8 @@ namespace Gambit
         }
       }
       if (verbose) std::cout<<std::endl;
-      
+
+#ifdef HAVE_GRAPHVIZ
       // Property writer for graph; see http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/write-graphviz.html
       // Also for valid properties see http://www.graphviz.org/pdf/dotguide.pdf
       struct graphWriter{
@@ -125,7 +128,7 @@ namespace Gambit
       std::ofstream outf(filename);
       // args: output stream, vertex list, vertex property writer (PW), edge PW, graph PW. 
       write_graphviz(outf, modelGraph, labelWriter(&modelGraph), colorWriter(&modelGraph), graphWriter()); 
-      
+#endif
     }
 
     /// Add model functors to the modelGraph

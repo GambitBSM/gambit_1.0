@@ -24,7 +24,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <mpi.h>
+#include <iomanip>  // For debugging only
 
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
@@ -32,7 +32,6 @@
 #include "gambit/Utils/util_functions.hpp"
 //#include "gambit/Printers/basebaseprinter.hpp"
 
-#include <iomanip>  // For debugging only
 
 namespace Gambit
 {   
@@ -110,7 +109,7 @@ scanner_plugin(MultiNest, version(3, 9))
   
       // Setup auxilliary streams. These are only needed by the master process,
       // so let's create them only for that process
-      int myrank = get_printer().get_stream()->getRank(); // mpi rank of this process
+      int myrank = get_printer().get_stream()->getRank(); // MPI rank of this process
       std::cout << "myrank? " << myrank <<std::endl;
       if(myrank==0)
       {
@@ -215,7 +214,7 @@ namespace Gambit {
          printer* primary_stream( boundPrinter.get_stream() );
 
          // Get, set and ouptut the process rank and this point's ID
-         int myrank  = primary_stream->getRank(); // mpi rank of this process
+         int myrank  = primary_stream->getRank(); // MPI rank of this process
          int pointID = boundLogLike->getPtID();   // point ID number
          Cube[ndim+0] = myrank;
          Cube[ndim+1] = pointID;
@@ -291,10 +290,6 @@ namespace Gambit {
           // Send info for each point to printer one command at a time
           int pointID; // ID number for each point 
           int myrank;  // MPI rank which wrote each point
-             int rank;
-        int numtasks;
-        MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         
           // The discarded live points (and rejected candidate live points if IS = 1)
           for( int i = 0; i < nSamples; i++ )

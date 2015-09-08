@@ -1266,9 +1266,10 @@ namespace Gambit
 
 
     /// Check whether printing to a new parameter space point is about to occur
-    // and perform adjustments needed to prepare the printer.
+    /// and perform adjustments needed to prepare the printer.
     void HDF5Printer::check_for_new_point(const ulong candidate_newpoint, const uint mpirank)
     {
+       #ifdef WITH_MPI
        if(myRank==0)
        {
           // Master process primary printer checks for tag requests from worker processes
@@ -1280,6 +1281,7 @@ namespace Gambit
           // Everyone else checks for the replies to the tag requests.
           primary_printer->check_for_bufftag_deliveries();
        }
+       #endif
 
        if(is_auxilliary_printer())
        {

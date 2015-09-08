@@ -21,4 +21,4 @@ square_grid:
 
 Diver:
   1.0.0:
-    - lib: ./ScannerBit/installed/Diver/lib/libdiver.so
+    - lib: ./ScannerBit/installed/Diver/1.0.0/lib/libdiver.so
