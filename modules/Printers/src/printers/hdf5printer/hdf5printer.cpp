@@ -1090,7 +1090,24 @@ namespace Gambit
          // Ok safe to do the resets.
          for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
          {
-           it->second->reset(force);
+           // SPECIAL CASES!
+           // We rely on the special RA buffers 'RA_MPIrank' and 'RA_pointID'
+           // to keep track of which RA entries correspond to which 
+           // sync buffer points. Once written once, we preserve which slots
+           // in the RA datasets correspond to a particular sync point, even
+           // after resetting them, because multiple RA streams are all 
+           // writing data into the same hdf5 group. So if we invalidate the
+           // RA_MPIrank and RA_pointID ranks, then we screw up the matching
+           // between RA output streams (i.e. non-sync printers). 
+           // Could perhaps use a different groups for each aux printer 
+           // (i.e. stream). each with its own MPIrank and pointID datasets.
+           // For now though, we will simply not invalidate these datasets.
+           const std::string& name = it->second->get_label();
+           if(name!="RA_MPIrank" and name!="RA_pointID")
+           {
+             // Reset the rest
+             it->second->reset(force);
+           }
          }
       }
     }

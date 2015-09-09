@@ -318,10 +318,10 @@ namespace Gambit
            // Extract a buffer from the manager corresponding to this 
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
 
-           //#ifdef HDEBUG_MODE
+           #ifdef HDEBUG_MODE
            std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<typeid(T).name()<<", "<<label<<" = "<<value<<std::endl;
            std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": pointID="<<pointID<<", mpirank="<<mpirank<<std::endl;
-           //#endif
+           #endif
  
            PPIDpair ppid(pointID,mpirank);
            if(synchronised)

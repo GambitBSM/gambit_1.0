@@ -459,8 +459,8 @@ namespace Gambit {
                // are about to finish looping.
                if(now_i==CHUNKLENGTH or itpp == postpone_write_queue_and_locs.end())
                {
-                  std::fill_n(valid, CHUNKLENGTH, false); 
-                  std::fill_n(valid, now_i, true); 
+                  std::fill(valid, valid+CHUNKLENGTH, false); 
+                  std::fill(valid, valid+now_i, true); 
                   dsetvalid().RA_write(valid,           now_abs_write_locations, now_i); 
                   dsetdata().RA_write (now_write_queue, now_abs_write_locations, now_i);
                   //std::cout<<"Wrote "<<now_i<<" postponed RA items to disk"<<std::endl;
@@ -542,8 +542,9 @@ namespace Gambit {
                      errmsg << "rank "<<this->myRank<<": Error! now_i has exceeded CHUNKLENGTH (now_i=="<<now_i<<"). (buffer name = "<<this->get_label()<<")";
                      printer_error().raise(LOCAL_INFO, errmsg.str()); 
                   }
-                  std::fill_n(valid, CHUNKLENGTH, false); 
-                  std::fill_n(valid, now_i, true); 
+                  std::fill(valid, valid+CHUNKLENGTH, false); 
+                  std::fill(valid, valid+now_i, true); 
+                  std::cout<<"rank "<<this->myRank<<": writing buffer for "<<this->get_label()<<" to disk; now_i="<<now_i<<std::endl;
                   dsetvalid().RA_write(valid,           now_abs_write_locations, now_i); 
                   dsetdata().RA_write (now_write_queue, now_abs_write_locations, now_i);
                }
