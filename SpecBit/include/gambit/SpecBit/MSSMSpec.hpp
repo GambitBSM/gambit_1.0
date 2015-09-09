@@ -165,7 +165,7 @@ namespace Gambit
           {
             comment.str(""); comment << M[k].second << "(" << i << "," << j << ")";
             SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(), Par::mass2, M[k].second, i, j, M[k].first, i, j, "# " + comment.str());
-            if (i == j) slha["MSOFT"][""] << 30+3*k+i+(k>1?5:0) << sqrt(this->runningpars().get(Par::mass2, M[k].second, i, j)) << "# sqrt("+comment.str()+")";
+            if (i == j) slha["MSOFT"][""] << 30+3*k+i+(k>1?4:0) << sqrt(this->runningpars().get(Par::mass2, M[k].second, i, j)) << "# sqrt("+comment.str()+")";
           }
         }
 
