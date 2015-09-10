@@ -40,6 +40,7 @@
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
 set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
+set(darksusy_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.1")
 set(DS_PATCH_DIR "${PROJECT_SOURCE_DIR}/Backends/patches/DarkSUSY/5.1.1")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(_ld_prefix "-Wl,-all_load")
@@ -53,30 +54,31 @@ ExternalProject_Add(darksusy
   URL http://www.fysik.su.se/~edsjo/darksusy/tars/darksusy-5.1.1.tar.gz
   URL_MD5 ebeb0e1cfb4d834858e120190e423f62
   DOWNLOAD_DIR ${backend_download}
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.1
+  SOURCE_DIR ${darksusy_dir}
   BUILD_IN_SOURCE 1
   PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}//patchDS.dif 
         COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND make 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so 
 )
 set_property(TARGET darksusy PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.1/lib/libdarksusy.so")
+add_external_clean(darksusy ${darksusy_dir} distclean)
 
 # SuperIso
+set(superiso_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.4")
 ExternalProject_Add(superiso
   URL http://superiso.in2p3.fr/download/superiso_v3.4.tgz
   URL_MD5 ae4ecc45e7f608d9faf91ba8e5780053
   DOWNLOAD_DIR ${backend_download}
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.4
+  SOURCE_DIR ${superiso_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile 
         COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile
-        COMMAND make 
+        COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND ar x <SOURCE_DIR>/src/libisospin.a
         COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh
         COMMAND chmod u+x make_so.sh
@@ -84,7 +86,7 @@ ExternalProject_Add(superiso
   INSTALL_COMMAND ""
 )
 set_property(TARGET superiso PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.4/libsuperiso.so")
+add_external_clean(superiso ${superiso_dir} distclean)
 
 # DDCalc
 set(ddcalc_location "${GAMBIT_INTERNAL}/DDCalc0")
@@ -96,10 +98,10 @@ ExternalProject_Add(ddcalc
   SOURCE_DIR ${ddcalc_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${ddcalc_dir}/libDDCalc0.so")
+add_external_clean(ddcalc ${ddcalc_dir} cleanest)
 
 # Gamlike
 if(GSL_FOUND)
@@ -125,30 +127,32 @@ ExternalProject_Add(gamlike
   SOURCE_DIR ${gamlike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${gamlike_dir}/gamLike.so")
+add_external_clean(gamlike ${gamlike_dir} clean)
 
 # MicrOmegas for MSSM
+set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/MSSM")
 ExternalProject_Add(micromegas
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/MSSM
+  SOURCE_DIR ${micromegas_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/MSSM/MSSM/libmicromegas.so")
+add_external_clean(micromegas ${micromegas_dir} distclean)
 
 # MicrOmegas for SingletDM
+set(micromegasSingletDM_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/SingletDM")
 ExternalProject_Add(micromegasSingletDM
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/SingletDM
+  SOURCE_DIR ${micromegasSingletDM_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/SingletDM/SingletDM/libmicromegas.so")
+add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} distclean)
 
 # Pythia
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
@@ -177,10 +181,10 @@ ExternalProject_Add(pythia
   COMMAND echo "OSX DEBUG: pythia_CXXFLAGS = ${pythia_CXXFLAGS}"
   COMMAND echo "OSX DEBUG: pythia_CONFIGURE_EXTRAS = ${pythia_CONFIGURE_EXTRAS}"
   COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
-  BUILD_COMMAND make CXX="${CMAKE_CXX_COMPILER}"
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${pythia_dir}/config.mk" "${pythia_dir}/lib/libpythia8.so")
+add_external_clean(pythia ${pythia_dir} distclean)
 
 # Fastsim
 set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
@@ -192,10 +196,10 @@ ExternalProject_Add(fastsim
   SOURCE_DIR ${fastsim_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
   INSTALL_COMMAND cp ""
 )
-set(clean_files ${clean_files} "${fastsim_dir}/lib/libfastsim.so")
+add_external_clean(fastsim ${fastsim_dir} distclean)
 
 # Nulike
 set(nulike_location "${GAMBIT_INTERNAL}/nulike")
@@ -214,11 +218,11 @@ ExternalProject_Add(nulike
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
   INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 set_property(TARGET nulike PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
+add_external_clean(nulike ${nulike_dir} distclean)
 
 # SUSY-HIT
 set(susyhit_ver "1\\.5")
@@ -264,25 +268,26 @@ ExternalProject_Add(susyhit
             COMMAND ${CMAKE_COMMAND} -E remove makefile.tmp
             COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
             COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
-  BUILD_COMMAND make ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS}
   INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 set_property(TARGET susyhit PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${susyhit_dir}/${susyhit_lib}.so")
+add_external_clean(susyhit ${susyhit_dir} clean)
 
 # FeynHiggs
+set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.10.4")
 ExternalProject_Add(feynhiggs
   URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.10.4.tar.gz
   URL_MD5 afd04154870ab5519603ffdb0e4e2d5b
   DOWNLOAD_DIR ${backend_download}
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.10.4
+  SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
 set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.10.4/lib/libFH.so")
+add_external_clean(feynhiggs ${feynhiggs_dir} clean)
 
 # HiggsBounds
 set(higgsbounds_tables_dir "${PROJECT_SOURCE_DIR}/Backends/installed/csboutput_trans_binary")
@@ -297,12 +302,13 @@ ExternalProject_Add(higgsbounds_tables
   INSTALL_COMMAND ""
 )
 set_property(TARGET higgsbounds_tables PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+set(higgsbounds_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0")
 ExternalProject_Add(higgsbounds
   DEPENDS higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.0.tar.gz
   URL_MD5 9d76eefecea870d941a6fe8c0ee7a6ae
   DOWNLOAD_DIR ${backend_download}
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0
+  SOURCE_DIR ${higgsbounds_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
             COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${higgsbounds_tables_dir}\"|" <SOURCE_DIR>/my_configure
@@ -310,19 +316,20 @@ ExternalProject_Add(higgsbounds
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
-  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggsbounds.so *.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggsbounds.so *.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
 set_property(TARGET higgsbounds PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0/lib/libhiggsbounds.so")
+add_external_clean(higgsbounds ${higgsbounds_dir} hyperclean)
 
 # HiggsSignals
+set(higgssignals_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.3.2")
 ExternalProject_Add(higgssignals
   DEPENDS higgsbounds
   URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.3.2.tar.gz
   URL_MD5 2e300a3784eb5d3a9e1dd905d2af7676
   DOWNLOAD_DIR ${backend_download}
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.3.2
+  SOURCE_DIR ${higgssignals_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND cp configure my_configure 
             COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.0|" <SOURCE_DIR>/my_configure
@@ -331,7 +338,7 @@ ExternalProject_Add(higgssignals
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
-  BUILD_COMMAND make 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND mkdir -p lib 
         COMMAND rm HiggsSignals.o 
         COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.0/*.o" > make_so.sh 
@@ -340,13 +347,17 @@ ExternalProject_Add(higgssignals
   INSTALL_COMMAND ""
 )
 set_property(TARGET higgssignals PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.3.2/lib/libhiggssignals.so")
+add_external_clean(higgssignals ${higgssignals_dir} hyperclean)
 
 
 set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make darksusy micromegas micromegasSingletDM superiso  
+add_custom_target(backends DEPENDS darksusy micromegas micromegasSingletDM superiso  
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit)
 
-add_custom_target(backends_nonfree COMMAND make ddcalc gamlike nulike pythia) #fastsim
+add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike pythia) #fastsim
+
+add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso  
+                      clean-higgssignals clean-higgsbounds clean-feynhiggs clean-susyhit clean-delphes clean-flexiblesusy
+                      clean-ddcalc clean-gamlike clean-nulike clean-pythia)

@@ -45,28 +45,23 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
 
 #contrib/Delphes-3.1.2; include only if ColliderBit is in use
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+
   set (EXCLUDE_DELPHES FALSE)
-  set (DELPH_BAD_LINE "\\(..CC)\ ..patsubst\ -std=%,,..CXXFLAGS))\\)\ \\(..CXXFLAGS.\\)")
+  set (DELPHES_DIR "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
+  set (DELPHES_LDFLAGS "-L${DELPHES_DIR} -lDelphes")
+  set (DELPHES_BAD_LINE "\\(..CC)\ ..patsubst\ -std=%,,..CXXFLAGS))\\)\ \\(..CXXFLAGS.\\)")
+  include_directories("${DELPHES_DIR}" "${DELPHES_DIR}/external" "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
   ExternalProject_Add(delphes
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2
+    SOURCE_DIR ${DELPHES_DIR}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ./configure 
               COMMAND cp <SOURCE_DIR>/Makefile <SOURCE_DIR>/Makefile.orig 
               COMMAND sed ${dashi} "s,\ ..EXECUTABLE.,,g" <SOURCE_DIR>/Makefile
-              COMMAND sed ${dashi} "s/${DELPH_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
-    BUILD_COMMAND $(MAKE) all
+              COMMAND sed ${dashi} "s/${DELPHES_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
+    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} all
     INSTALL_COMMAND ""
-    INSTALL_DIR ${CMAKE_BINARY_DIR}/install
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
   )
-  set(delphes_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/external")
-  set(delphes_LIBRARIES "Delphes")
-  set(delphes_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2 -l${delphes_LIBRARIES}")
-  include_directories("${delphes_INCLUDE_DIRS}" )
-  include_directories("${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
-  set(CMAKE_INSTALL_RPATH "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
-  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/libDelphes*" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/Makefile*")
-  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/tmp" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/core")
+
   message("${Yellow}-- Generating Delphes ROOT dictionaries...${ColourReset}")
   execute_process(COMMAND ./make_dicts.sh
                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes
@@ -76,9 +71,17 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
     message(FATAL_ERROR "Could not automatically generate Delphes ROOT dictionaries.  Blame ROOT.")
   endif()
   message("${Yellow}-- Generating Delphes ROOT dictionaries - done.${ColourReset}")
+
+  # Add clean info
+  add_custom_target(clean-delphes COMMAND cd ${DELPHES_DIR} && ${CMAKE_MAKE_PROGRAM} distclean)
+  add_dependencies(distclean clean-delphes)
+
 else()
+
   set (EXCLUDE_DELPHES TRUE)
+
 endif()
+
 
 #contrib/MassSpectra; include only if SpecBit is in use
 if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
@@ -167,7 +170,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   string(STRIP "${flexiblesusy_LDFLAGS}" flexiblesusy_LDFLAGS)
 
   # Add clean info
-  add_custom_target(clean-flexiblesusy COMMAND cd ${MASS_SPECTRA_DIR}/flexiblesusy && make clean && make distclean )
+  add_custom_target(clean-flexiblesusy COMMAND cd ${MASS_SPECTRA_DIR}/flexiblesusy && ${CMAKE_MAKE_PROGRAM} clean && ${CMAKE_MAKE_PROGRAM} distclean )
   add_dependencies(distclean clean-flexiblesusy)
 
 else()

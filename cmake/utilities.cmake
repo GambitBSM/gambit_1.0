@@ -89,6 +89,13 @@ macro(retrieve_bits bits root excludes quiet)
 
 endmacro()
 
+# Macro to write some shell commands to clean an external code
+macro(add_external_clean package dir target)
+  set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
+  add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install
+                                     COMMAND cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
+endmacro()
+
 # Function to add GAMBIT directory if and only if it exists
 function(add_subdirectory_if_present dir)
   if(EXISTS "${PROJECT_SOURCE_DIR}/${dir}")
