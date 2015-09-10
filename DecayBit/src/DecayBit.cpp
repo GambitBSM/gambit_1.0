@@ -2506,6 +2506,11 @@ namespace Gambit
     {
       using namespace Pipes::get_mass_es_pseudonyms;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+      std::cout << "rd_mh_low = "
+		<< mssm->phys().get(Par::Pole_Mass, "rd_mh_low") << std::endl;
+      std::cout << "rd_mh_high = "
+		<< mssm->phys().get(Par::Pole_Mass, "rd_mh_high") << std::endl;
+      
       double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");

@@ -188,6 +188,16 @@ namespace Gambit
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 
+
+      /// We could just add default values here and then allow the user to seperately configure these and add them later in precision Bit?  But why do it in SpecBit at all?
+
+      /// Defauilt in most codes is 3 GeV, this seems like an underestimate to me if 
+      double rd_mh_low = 3.0 / mssmspec.phys().get(Par::Pole_Mass, "h0", 1);
+      double rd_mh_high =  3.0 / mssmspec.phys().get(Par::Pole_Mass, "h0", 1);
+      mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_low,"rd_mh_low",false);
+      mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_high,"rd_mh_high",false);
+      
+      
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
