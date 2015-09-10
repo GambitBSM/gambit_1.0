@@ -74,9 +74,9 @@ namespace Gambit {
               , resume(false)
               , MPImode(false)
             {
-              //#ifdef HDF5_DEBUG
+              #ifdef HDF5_DEBUG
               std::cout<<"Default constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
-              //#endif
+              #endif
             }   
 
             VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r, const bool mode) 
@@ -88,9 +88,9 @@ namespace Gambit {
               , resume(r)
               , MPImode(mode)
             {
-              //#ifdef HDF5_DEBUG
+              #ifdef HDF5_DEBUG
               std::cout<<"Constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
-              //#endif
+              #endif
             }
 
             virtual ~VertexBufferBase() 

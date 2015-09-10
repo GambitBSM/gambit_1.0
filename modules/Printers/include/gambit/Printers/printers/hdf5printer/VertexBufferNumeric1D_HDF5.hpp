@@ -544,7 +544,9 @@ namespace Gambit {
                   }
                   std::fill(valid, valid+CHUNKLENGTH, false); 
                   std::fill(valid, valid+now_i, true); 
+                  #ifdef DEBUG_MODE
                   std::cout<<"rank "<<this->myRank<<": writing buffer for "<<this->get_label()<<" to disk; now_i="<<now_i<<std::endl;
+                  #endif
                   dsetvalid().RA_write(valid,           now_abs_write_locations, now_i); 
                   dsetdata().RA_write (now_write_queue, now_abs_write_locations, now_i);
                }
