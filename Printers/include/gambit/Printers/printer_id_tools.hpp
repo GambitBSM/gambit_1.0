@@ -17,30 +17,24 @@
 #include "gambit/Printers/baseprintermanager.hpp"
 #include "gambit/Printers/basebaseprinter.hpp"
 
-#ifndef PRINTER_INTERFACE_HPP
-#define PRINTER_INTERFACE_HPP
+#ifndef PRINTER_ID_TOOLS_HPP
+#define PRINTER_ID_TOOLS_HPP
 
 #include <string>
 #include <vector>
 
 namespace Gambit
 {
-    namespace Scanner
+    namespace Printers
     { 
-        /// typedef printer_interface_temp printer_interface;
-        typedef Printers::BasePrinterManager printer_interface;
+        /// Returns unigue pointid;
+        unsigned long long int &get_point_id();
         
-        /// Type of the printer objects
-        typedef Printers::BaseBasePrinter printer;
-
-        inline void assign_aux_numbers(){}
+        /// Returns unique postive parameter id
+        int get_main_param_id(const std::string &);
         
-        template<typename... T>
-        inline void assign_aux_numbers(const std::string &tag, const T&... params)
-        {
-            Gambit::Printers::get_aux_param_id(tag);
-            assign_aux_numbers(params...);
-        }
+        /// Returns unique negative parameter id
+        int get_aux_param_id(const std::string &);
     }
 }
 

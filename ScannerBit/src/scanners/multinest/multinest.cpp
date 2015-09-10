@@ -128,7 +128,9 @@ scanner_plugin(MultiNest, version(3, 9))
          get_printer().new_stream("stats",stats_options);            
          get_printer().new_stream("live",live_options);
       }
-
+      //ensure mpi processes has same id for parameters;
+      Gambit::Scanner::assign_aux_numbers("Posterior", "LogLike", "pointID", "MPIrank", "Parameters");
+      
       // Create the object that interfaces to the MultiNest LogLike callback function
       Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, get_printer(), ndims);
       Gambit::MultiNest::global_loglike_object = &loglwrapper;
@@ -211,16 +213,16 @@ namespace Gambit {
          double lnew = (*boundLogLike)(unitpars); 
 
          // Extract the primary printer from the printer manager
-         printer* primary_stream( boundPrinter.get_stream() );
+         //printer* primary_stream( boundPrinter.get_stream() );
 
          // Get, set and ouptut the process rank and this point's ID
-         int myrank  = primary_stream->getRank(); // MPI rank of this process
+         int myrank  = boundLogLike->getRank(); // MPI rank of this process
          int pointID = boundLogLike->getPtID();   // point ID number
          Cube[ndim+0] = myrank;
          Cube[ndim+1] = pointID;
          //std::cout << "Cube input: rank="<<myrank<<", pointID="<<pointID<<std::endl;
-         primary_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
-         primary_stream->print( pointID, "pointID", -8, myrank, pointID);
+         //primary_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
+         //primary_stream->print( pointID, "pointID", -8, myrank, pointID);
 
          // Done! (lnew will be used by MultiNest to guide the search)
          return lnew;                  

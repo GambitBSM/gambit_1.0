@@ -26,7 +26,12 @@
   #include <boost/enable_shared_from_this.hpp>
 #endif
 
+#ifdef WITH_MPI
+  #include <mpi.h>
+#endif
+
 #include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/printer_interface.hpp"
 
 namespace Gambit
 {
@@ -56,28 +61,53 @@ namespace Gambit
                 class Function_Base <ret (args...)> : public enable_shared_from_this<Function_Base <ret (args...)>>
                 {
                 private:
-                        unsigned long long int pointID;
                         friend class Function_Deleter<ret (args...)>;
                         friend class scan_ptr<ret (args...)>;
+                        
+                        printer *main_printer;
+                        std::string purpose;
+                        int rank;
+                        
                         virtual void deleter(Function_Base <ret (args...)> *in) const
                         {
                                 delete in;
                         }
+                        
                         virtual const std::type_info & type() const {return typeid(ret (args...));}
                         
                 public:
-                        Function_Base() : pointID(0) {}
+                        Function_Base() : rank(0)
+                        {
+#ifdef WITH_MPI
+                                MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+                        }
+                        
+                        
+                        
                         virtual ret main(const args&...) = 0;
                         virtual ~Function_Base(){} 
                         
                         ret operator () (const args&... params) 
                         {
-                                pointID++;
-                                return main(params...);
+                                unsigned long long int id = ++Gambit::Printers::get_point_id();
+                                ret ret_val = main(params...);
+                                
+                                if (sizeof...(params) == 1)
+                                        main_printer->print(params..., "unitCubeParameters", rank, id);
+                                main_printer->print(ret_val, purpose, rank, id);
+                                main_printer->print(int(id), "pointID", rank, id);
+                                main_printer->print(rank, "MPIrank", rank, id);
+                                
+                                return ret_val;
                         }
                         
-                        unsigned long long int getPtID() const {return pointID;}
-                        unsigned long long int &getPtIDRef() {return pointID;}
+                        void setPurpose(const std::string p){purpose = p;}
+                        void setPrinter(printer* p){main_printer = p;}
+                        printer *getPrinter(){return main_printer;}
+                        std::string getPurpose() const {return purpose;}
+                        int getRank() const {return rank;}
+                        unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
                 };
                 
                 template<typename ret, typename... args>

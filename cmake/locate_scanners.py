@@ -386,7 +386,8 @@ def main(argv):
                                                     scanbit_reqs[plugin[7]][plugin_name][version][1] += ",\"" + lib + "\""
                                             else:
                                                 [libdir, lib] = os.path.split(lib)
-                                                lib = re.sub("^lib|\..*$","",lib)
+                                                #lib = re.sub("^lib|\..*$","",lib)
+                                                lib = "\"" + lib + "\""
                                                 scanbit_reqs[plugin[7]][plugin_name][version][4] += [lib]
                                             
                                     elif key in ("inc", "incs", "include", "includes", "include_path", "include_paths", "-inc", "-incs", "-include", "-includes", "-include_path", "-include_paths", "hdr", "hdrs", "header", "headers", "-hdr", "-hdrs", "-header", "-headers"):
@@ -626,7 +627,7 @@ endif()                                          \n\n"
                     for lib in scanbit_link_libs[plug_type[i]][directory]:
                         towrite += "set (" + plug_type[i] + "_plugin_linked_libs_" + directory + " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory + "}"
                         towrite += "    " + lib[0] + ": " + lib[1] + "\\n\")\n"
-                        
+            towrite += "\n"
             towrite += "set (" + plug_type[i] + "_plugin_lib_full_paths_" + directory + "\n"
             if scanbit_link_libs.has_key(plug_type[i]):
                 if scanbit_link_libs[plug_type[i]].has_key(directory):
