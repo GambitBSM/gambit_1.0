@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Configure DarkSUSY for use with GAMBIT.
+# This script attempts to identify the appropriate
+# compilation parameters/flags for the current system.
+
+# Common settings
+CC=gcc
+CFLAGS="-g"
+CXX=g++
+CXXFLAGS="-g"
+FC=gfortran
+FCFLAGS="-O -ffixed-line-length-none"
+
+# Extra flag(s) for 64-bit compilation
+if [ `uname -m` == 'x86_64' ]; then
+  CFLAGS+=" -fPIC"
+  CXXFLAGS+=" -fPIC"
+  FCFLAGS+=" -fPIC"
+fi
+
+# DarkSUSY uses FCFLAGS, but compiles FeynHiggs
+# which uses FFLAGS
+FFLAGS="$FCFLAGS"
+
+# Now run configure script
+./configure CC="$CC" CFLAGS="$CFLAGS" CXX="$CXX" CXXFLAGS="$CXXFLAGS" FC="$FC" FCFLAGS="$FCFLAGS" FFLAGS="$FFLAGS"
+
+# Patching IB routines
+patch -b src/ib/dsIBffdxdy.f dsIBffdxdy.f.patch

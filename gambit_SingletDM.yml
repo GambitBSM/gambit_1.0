@@ -1,0 +1,252 @@
+# Minimal GAMBIT DarkBit test initialization file (in YAML)
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters: 
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+    StandardModel_Higgs:
+      mH: 125.9
+      vev: 246
+
+    SingletDM:
+        mS:
+            range: [45.001, 100]
+            prior_type: log
+        lambda_hS:
+            range: [0.002, 0.5]
+            #fixed_value: 0.0366524 
+            prior_type: log
+    nuclear_params_fnq:
+      # proton hadronic matrix elements
+      fpd:
+        fixed_value: 0.0191
+      fpu:
+        fixed_value: 0.0153
+      fps:
+        fixed_value: 0.0447
+      # neutron hadronic matrix elements
+      fnd:
+        fixed_value: 0.0273
+      fnu:
+        fixed_value: 0.011
+      fns:
+        fixed_value: 0.0447
+      # proton spin content
+      deltad:
+        fixed_value: -0.427
+      deltau:
+        fixed_value: 0.842
+      deltas:
+        fixed_value: -0.085
+
+#   Uncomment the below to use DarkSUSY nuclear parameters.
+#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
+
+##############################
+# Prior setup
+##############################
+
+Priors:
+
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # # Select printer to use via string tag
+  # # (currently only ascii printer available)
+  # printer: ascii
+  # # This options node is passed on wholesale to
+  # # the printer object; required options may
+  # # therefore vary according to the selected
+  # # printer. 
+  # options:
+  #   # name of output file
+  #   output_file: "runs/DarkBit_SingletDM/samples/gambit_output.txt"
+  #   # name of info file (explains content of output file)
+  #   info_file: "runs/DarkBit_SingletDM/samples/gambit_output.info"
+
+  printer: hdf5
+  options:
+    output_file: "runs/DarkBit_SingletDM/samples/gambit_output.hdf5"
+    group: "/"
+    delete_file_if_exists: true
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+  use_scanner: square_grid
+  
+  scanners:
+    square_grid:
+      plugin: square_grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 5 #NxN grid
+
+###############################
+# Observables of interest
+###############################
+
+ObsLikes:
+
+# Uncomment to run DarkBit unit test
+#    - capability: UnitTest_DarkBit
+#      purpose:  Observable
+#      options:
+#        GA_AnnYield:
+#          nbins: 20
+
+# Fermi LAT dwarf limits
+#    - capability: lnL_FermiLATdwarfs
+#      function: lnL_FermiLATdwarfs_gamLike
+#      purpose:  Likelihood
+# Simple gaussian relic density likelihood
+    - capability: RD_oh2
+      purpose: Observable
+      function: RD_oh2_general
+    - capability: lnL_oh2
+      purpose: Likelihood 
+# XENON100 2012 direct detection likelihood
+    - capability: lnL_XENON100_2012
+      purpose:  Likelihood
+# LUX 2013 direct detection likelihood
+    - capability: lnL_LUX_2013
+      purpose:  Likelihood
+# DARWIN argon-based proposal (2015 estimate) direct detection likelihood
+# NOTE: treated as observable!
+#    - capability: lnL_DARWIN_Ar_2015
+#      purpose:  Observable
+# DARWIN xenon-based proposal (2015 estimate) direct detection likelihood
+# NOTE: treated as observable!
+#    - capability: lnL_DARWIN_Xe_2015
+#      purpose:  Observable
+      
+Rules:
+  # Gamma-rays -------------------------
+  - capability: UnitTest_DarkBit
+    options:
+      GA_AnnYield:
+        nbins: 201
+  - capability: gamLike_1_0_0_init  # Initialization of gamLike backend
+    options:
+        # Supply (optional) path to likelihood data.  Otherwise relative path
+        # is used.
+        # datapath: /home/weniger/Work/Projects/GAMBIT/gambit/extras/gamLike/data/
+  - capability: lnL_FermiLATdwarfs
+    #dependencies: 
+    #    - capability: GA_AnnYield
+    #      function: GA_AnnYield_DarkSUSY
+  - capability: GA_AnnYield
+    #function: GA_AnnYield_DarkSUSY
+    function: GA_AnnYield_General
+    options:
+        Emin: 1.
+  - capability: cascadeMC_FinalStates
+    options:
+        cMC_finalStates: 
+            - gamma
+  - capability: SimYieldTable     
+    function: SimYieldTable_DarkSusy
+    #function: SimYieldTable_MicrOmegas
+  - capability: dump_GammaSpectrum  # For unit tests: dump gamma-ray spectrum
+    dependencies: 
+        - capability: GA_AnnYield
+          function: GA_AnnYield_DarkSUSY
+    options:
+        filename: dNdE.dat
+  # Relic density ----------------------
+  - capability: RD_oh2
+    options:
+      fast: 1  # Accuracy options (used by micromegas)
+      Beps: 1e-2
+    function: RD_oh2_general   # general routines (DS backend)
+    #function: RD_oh2_DarkSUSY   # darksusy backend
+    #function: RD_oh2_MicrOmegas  # micromegas backend     
+  - capability: RD_spectrum
+    options: 
+      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
+
+#  - capability: RD_thresholds_resonances
+#    function: RD_thresholds_resonances_from_spectrum
+      
+  - capability: lnL_oh2
+    function: lnL_oh2_Simple
+    options:
+       oh2_mean: 0.11
+       oh2_err: 0.07
+  # Direct detection -------------------
+  # For MSSM-based models, which of the DarkSUSY or micrOMEGAs routines
+  # to use must be explicitly specified here (uncomment the desired one).
+  # The SingletDM function can be explicitly specified for the SingletDM
+  # model, but the dependency resolver will choose it by default as it
+  # is the only one available for that model.
+  - capability: DD_couplings
+    #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
+    #function: DD_couplings_MicrOmegas  # couplings from micromegas backend
+    function: DD_couplings_SingletDM   # couplings for singlet DM model
+    options:
+        rescale_couplings: 1  # For unit tests: rescale couplings
+  # Decays
+  - capability: decay_rates
+    function: all_decays
+
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
+
+  prefix : "runs/DarkBit_SingletDM/logs/"
+  redirection:
+    # [Debug] : stdout #"debug.log"
+    # [Default] : stdout #"default.log"
+    # [Error] : stdout #"errors.log"
+    # [Warning] : stdout #"warnings.log"
+    # [Core,Error] : stdout #"core_errors.log"
+    # [Core,Error,Fatal] : stdout #"fatal_core_errors.log"
+    # [Dependency Resolver] : stdout #"stdout"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [BackendIniBit]: "BackendIniBit.log"
+    [LibFirst] : "libfirst.log"
+    [Default] : "default.log"
+  #  [Logger, Debug] : "stdout"
+  #  [Core] : "stdout"
+  #  [Dependency Resolver] : "stdout"
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+    use_old_routines: false
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    ExampleBit_A_error: non-fatal
+
+  enable_testing: false
+
