@@ -18,16 +18,16 @@ mu_isvalid = np.array(group["#NormalDist_parameters @NormalDist::primary_paramet
 sigma = group["#NormalDist_parameters @NormalDist::primary_parameters::sigma"]
 sigma_isvalid = np.array(group["#NormalDist_parameters @NormalDist::primary_parameters::sigma_isvalid"],dtype=np.bool)
 
-print group["pointID"][:]
-print group["pointID_isvalid"][:]
-print group["MPIrank"][:]
-print group["MPIrank_isvalid"][:]
-quit()
-
-print mu[-100:]
-print mu_isvalid[-100:]
-print sigma[-100:]
-print sigma_isvalid[-100:]
+#print group["pointID"][:]
+#print group["pointID_isvalid"][:]
+#print group["MPIrank"][:]
+#print group["MPIrank_isvalid"][:]
+#quit()
+#
+#print mu[-100:]
+#print mu_isvalid[-100:]
+#print sigma[-100:]
+#print sigma_isvalid[-100:]
 
 P = group["Posterior"]
 P_isvalid = np.array(group["Posterior_isvalid"],dtype=np.bool)
