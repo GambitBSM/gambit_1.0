@@ -10,7 +10,8 @@ namespace Gambit {
                 100. + (y - 67.00) / (806.00 - 67.00) * (0. - 100.));
     }
     bool ALEPHSelectronLimitAt208GeV::isWithinExclusionRegion(double x, double y) {
-      return (y <= x and x <= 208. / 2.);
+      /// @TODO Use actual Z mass from spectrum
+      return (y <= x and x <= 208. / 2. and x > 91.19 / 2.);
     }
     ALEPHSelectronLimitAt208GeV::ALEPHSelectronLimitAt208GeV() {
       ///// Limit values /////
@@ -3021,7 +3022,8 @@ namespace Gambit {
                 100. + (y - 63.00) / (803.00 - 63.00) * (0. - 100.));
     }
     bool ALEPHSmuonLimitAt208GeV::isWithinExclusionRegion(double x, double y) {
-      return (y <= x and x <= 208. / 2.);
+      /// @TODO Use actual Z mass from spectrum
+      return (y <= x and x <= 208. / 2. and x > 91.19 / 2.);
     }
     ALEPHSmuonLimitAt208GeV::ALEPHSmuonLimitAt208GeV() {
       ///// Limit values /////
@@ -6181,7 +6183,8 @@ namespace Gambit {
                 100. + (y - 66.00) / (805.00 - 66.00) * (0. - 100.));
     }
     bool ALEPHStauLimitAt208GeV::isWithinExclusionRegion(double x, double y) {
-      return (y <= x and x <= 208. / 2.);
+      /// @TODO Use actual Z mass from spectrum
+      return (y <= x and x <= 208. / 2. and x > 91.19 / 2.);
     }
     ALEPHStauLimitAt208GeV::ALEPHStauLimitAt208GeV() {
       ///// Limit values /////

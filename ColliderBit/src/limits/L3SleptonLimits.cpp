@@ -12,7 +12,8 @@ namespace Gambit {
     }
     /// @brief Check to see if the point is within the exclusion region
     bool L3SelectronLimitAt205GeV::isWithinExclusionRegion(double x, double y) {
-      return (y <= x and x <= 104.);
+      /// @TODO Use actual Z mass from spectrum
+      return (y <= x and x <= 205. / 2. and x > 91.19 / 2.);
     }
     L3SelectronLimitAt205GeV::L3SelectronLimitAt205GeV() {
       ///// Limit values /////
@@ -201,7 +202,8 @@ namespace Gambit {
                 100. + (y - 40.50) / (610.00 - 40.50) * (0. - 100.));
     }
     bool L3SmuonLimitAt205GeV::isWithinExclusionRegion(double x, double y) {
-      return (y <= x and x <= 104.);
+      /// @TODO Use actual Z mass from spectrum
+      return (y <= x and x <= 205. / 2. and x > 91.19 / 2.);
     }
     L3SmuonLimitAt205GeV::L3SmuonLimitAt205GeV() {
       ///// Limit values /////
@@ -358,7 +360,8 @@ namespace Gambit {
                 100. + (y - 948.50) / (1518.00 - 948.50) * (0. - 100.));
     }
     bool L3StauLimitAt205GeV::isWithinExclusionRegion(double x, double y) {
-      return (y <= x and x <= 104.);
+      /// @TODO Use actual Z mass from spectrum
+      return (y <= x and x <= 205. / 2. and x > 91.19 / 2.);
     }
     L3StauLimitAt205GeV::L3StauLimitAt205GeV() {
       ///// Limit values /////

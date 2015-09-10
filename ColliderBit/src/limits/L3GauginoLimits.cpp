@@ -11,7 +11,8 @@ namespace Gambit {
                 100. + (y - 23.00) / (622.00 - 23.00) * (0. - 100.));
     }
     bool L3CharginoAllChannelsLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y) {
-      return (y <= x and x <= 188.6 / 2.);
+      /// @TODO Use actual Z mass from spectrum
+      return (y <= x and x <= 188.6 / 2. and x > 91.19 / 2.);
     }
     L3CharginoAllChannelsLimitAt188pt6GeV::L3CharginoAllChannelsLimitAt188pt6GeV() {
       ///// Limit values /////
@@ -217,7 +218,8 @@ namespace Gambit {
                 100. + (y - 853.00) / (1447.00 - 853.00) * (0. - 100.));
     }
     bool L3CharginoLeptonicLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y) {
-      return (y <= x and x <= 188.6 / 2.);
+      /// @TODO Use actual Z mass from spectrum
+      return (y <= x and x <= 188.6 / 2. and x > 91.19 / 2.);
     }
     L3CharginoLeptonicLimitAt188pt6GeV::L3CharginoLeptonicLimitAt188pt6GeV() {
       ///// Limit values /////
@@ -360,11 +362,6 @@ namespace Gambit {
     bool L3NeutralinoAllChannelsLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y) {
       /// @TODO Use actual Z mass from spectrum
       return (y <= x and x + y <= 188.6 and x + y > 91.19);
-    }
-    double L3NeutralinoAllChannelsLimitAt188pt6GeV::specialLimit(double x, double y) {
-      /// @TODO Use actual Z mass from spectrum
-      return x + y <= 91.19 ? std::numeric_limits<double>::epsilon()
-                            : std::numeric_limits<double>::infinity();
     }
     L3NeutralinoAllChannelsLimitAt188pt6GeV::L3NeutralinoAllChannelsLimitAt188pt6GeV() {
       ///// Limit values /////
@@ -550,11 +547,6 @@ namespace Gambit {
     bool L3NeutralinoLeptonicLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y) {
       /// @TODO Use actual Z mass from spectrum
       return (y <= x and x + y <= 188.6 and x + y > 91.19);
-    }
-    double L3NeutralinoLeptonicLimitAt188pt6GeV::specialLimit(double x, double y) {
-      /// @TODO Use actual Z mass from spectrum
-      return x + y <= 91.19 ? std::numeric_limits<double>::epsilon()
-                            : std::numeric_limits<double>::infinity();
     }
     L3NeutralinoLeptonicLimitAt188pt6GeV::L3NeutralinoLeptonicLimitAt188pt6GeV() {
       ///// Limit values /////

@@ -90,8 +90,6 @@ namespace Gambit {
         P2 convertPt(double x, double y);
         /// @brief Check to see if the point is within the exclusion region
         bool isWithinExclusionRegion(double x, double y);
-        /// @brief Return the limit value outside of the exclusion region
-        double specialLimit(double x, double y);
       //@}
 
       /// @name Construction, initializing with all necessary data from the plot
@@ -111,8 +109,6 @@ namespace Gambit {
         P2 convertPt(double x, double y);
         /// @brief Check to see if the point is within the exclusion region
         bool isWithinExclusionRegion(double x, double y);
-        /// @brief Return the limit value outside of the exclusion region
-        double specialLimit(double x, double y);
       //@}
 
       /// @name Construction, initializing with all necessary data from the plot
