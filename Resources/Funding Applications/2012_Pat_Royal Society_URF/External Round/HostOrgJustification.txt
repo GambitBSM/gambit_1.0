@@ -1,6 +1,0 @@
-Imperial offers:
-1. An ideal professional environment
-2. Vast expertise relevant to my research
-3. Priority access to a 4000+ core supercomputer
-
-I will partake in decisions and supervision in the Astrophysics group as if already a lecturer, and my career path will be factored into the group's long-term strategy. I will collaborate closely with Roberto Trotta, who has extensive experience in dark matter and global fits. My research program will enhance and benefit from the new Imperial Centre for Inference and Cosmology: I will work with Heavens, van Dyk et al in optimising the numerical/statistical methods of my research. With Sumner and Araujo I will ensure that results of LUX and other direct detection experiments are correctly included in my global fits. I will draw on the Imperial CMS group in developing the collider likelihood modules. Trotta, Jaffe, Contaldi and Rajantie provide strong cosmological support (e.g. links to Planck), as do Duff and Kibble in quantum field theory.
