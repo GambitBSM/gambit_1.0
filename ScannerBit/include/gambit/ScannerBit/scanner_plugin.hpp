@@ -34,22 +34,22 @@
 #define scanner_plugin(...)             SCANNER_PLUGIN(__VA_ARGS__)
 ///@}
 
-#define SCANNER_SETUP                                                                   \
-using namespace Gambit::Scanner;                                                        \
-                                                                                        \
-void *get_purpose(const std::string &purpose)                                    \
-{                                                                                       \
-    void *ptr = (get_input_value<Factory_Base>(1))(purpose);              \
-    static_cast <Function_Base<void(void)>*>(ptr)->setPurpose(purpose);                       \
-    static_cast <Function_Base<void(void)>*>(ptr)->setPrinter(get_printer().get_stream());    \
-    assign_aux_numbers(purpose, "pointID", "MPIrank");                                  \
-                                                                                        \
-    return ptr;                                                                         \
-}                                                                                       \
-                                                                                        \
-inline unsigned int get_dimension() {return get_input_value<unsigned int>(0);}          \
+#define SCANNER_SETUP                                                                       \
+using namespace Gambit::Scanner;                                                            \
+                                                                                            \
+void *get_purpose(const std::string &purpose)                                               \
+{                                                                                           \
+    void *ptr = (get_input_value<Factory_Base>(1))(purpose);                                \
+    static_cast <Function_Base<void(void)>*>(ptr)->setPurpose(purpose);                     \
+    static_cast <Function_Base<void(void)>*>(ptr)->setPrinter(get_printer().get_stream());  \
+    assign_aux_numbers(purpose, "pointID", "MPIrank");                                      \
+                                                                                            \
+    return ptr;                                                                             \
+}                                                                                           \
+                                                                                            \
+inline unsigned int get_dimension() {return get_input_value<unsigned int>(0);}              \
 
-#define SCANNER_PLUGIN(plug_name, ...)                                                  \
-    GAMBIT_PLUGIN_INITIALIZE(SCANNER_SETUP, plug_name, scanner, __VA_ARGS__)            \
+#define SCANNER_PLUGIN(plug_name, ...)                                                      \
+    GAMBIT_PLUGIN_INITIALIZE(SCANNER_SETUP, plug_name, scanner, __VA_ARGS__)                \
         
 #endif

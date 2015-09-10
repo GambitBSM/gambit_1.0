@@ -18,6 +18,7 @@
 #include "mpi.h"
 #endif
 
+#include "plugin_interface.hpp"
 #include "scanner_plugin.hpp"
 #include "twalk.hpp"
 
@@ -34,7 +35,6 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
 #else
                 numtasks = 1;
 #endif
-                
                 
                 Gambit::Options txt_options;
                 txt_options.setValue("synchronised",false);

@@ -282,6 +282,11 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                                                                                                             \
                 myData.inits.clear();                                                                       \
             }                                                                                               \
+            else                                                                                            \
+            {                                                                                               \
+                scan_err << "plugin:\n" << __gambit_plugin_namespace__::myData.print()                      \
+                        << "is already loaded" << scan_end;                                                 \
+            }                                                                                               \
                                                                                                             \
             return myData.plugin_mains;                                                                     \
         }                                                                                                   \
@@ -308,8 +313,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
         if (!__gambit_plugin_namespace__::myData.node[in])                                                  \
         {                                                                                                   \
             scan_err << "Missing iniFile entry \""<< in << "\" needed by a gambit plugin:  \n"              \
-                    << Gambit::Scanner::Plugins::Plugin_Details(#plug_name).printMin()                      \
-                    << scan_end;                                                                            \
+                    << __gambit_plugin_namespace__::myData.print() << scan_end;                             \
             return T();                                                                                     \
         }                                                                                                   \
                                                                                                             \
@@ -321,8 +325,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
         if (!__gambit_plugin_namespace__::myData.node[in])                                                  \
         {                                                                                                   \
             scan_err << "Missing iniFile node \""<< in << "\" needed by a gambit plugin:  \n"               \
-                    << Gambit::Scanner::Plugins::Plugin_Details(#plug_name).printMin()                      \
-                    << scan_end;                                                                            \
+                    << __gambit_plugin_namespace__::myData.print() << scan_end;                             \
             YAML::Node node;                                                                                \
             return node;                                                                                    \
         }                                                                                                   \

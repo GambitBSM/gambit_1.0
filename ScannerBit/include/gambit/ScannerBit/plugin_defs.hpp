@@ -105,16 +105,26 @@ namespace Gambit
                                         std::string::size_type posLast = str.rfind("__t__", posMid - 1);
                                         type = str.substr(posLast + 5, posMid - posLast - 5);
                                         name = str.substr(0, posLast);
-                                        //posLast = version.find("_");
-                                        //major_version = StringToInt(version.substr(0, posLast));
-                                        //posMid = version.find("_", posLast + 1);
-                                        //minor_version = StringToInt(version.substr(posLast + 1, posMid - posLast - 1));
-                                        //posLast = version.find("_", posMid + 1);
-                                        //patch_version = StringToInt(version.substr(posMid + 1, posLast - posMid - 1));
-                                        //release_version = version.substr(posLast + 1);
-                                        //version = IntToString(major_version) + "." + IntToString(minor_version) + "." + IntToString(patch_version);
-                                        //if (release_version != "") 
-                                        //        version += "-" + release_version;
+                                        posLast = version.find("_");
+                                        std::string major_version = version.substr(0, posLast);
+                                        posMid = version.find("_", posLast + 1);
+                                        std::string minor_version = version.substr(posLast + 1, posMid - posLast - 1);
+                                        posLast = version.find("_", posMid + 1);
+                                        std::string patch_version = version.substr(posMid + 1, posLast - posMid - 1);
+                                        std::string release_version = version.substr(posLast + 1);
+                                        version = major_version + "." + minor_version + "." + patch_version;
+                                        if (release_version != "") 
+                                                version += "-" + release_version;
+                                }
+                                
+                                std::string print()
+                                {
+                                        std::stringstream ss;
+                                        ss << "plugin name:  " << name << std::endl;
+                                        ss << "plugin type:  " << type << std::endl;
+                                        ss << "plugin version: " << version << std::endl;
+                                        
+                                        return ss.str();
                                 }
                                 
                                 ~pluginData()
