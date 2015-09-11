@@ -404,7 +404,7 @@ BE_INI_FUNCTION
     //}
 
     slha = (*Dep::MSSM_spectrum)->getSLHAea();
-    const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+    const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
 
     // Retrieve the tolerance for off-diagonal sfermion mixing
     double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
@@ -417,23 +417,23 @@ BE_INI_FUNCTION
                          
     // Set out the PDG codes of the mass eigenstates best corresponding to the
     // gauge eigenstates for which SUSY-HIT wants masses from the SLHA MASS block.
-    pdg_codes[5]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~d_L",     mssm, tol, LOCAL_INFO)).first; 
-    pdg_codes[6]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~d_R",     mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[7]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~u_L",     mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[8]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~u_R",     mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[9]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~s_L",     mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[10] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~s_R",     mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[11] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~c_L",     mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[12] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~c_R",     mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[5]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~d_L",      mssm, tol, LOCAL_INFO)).first; 
+    pdg_codes[6]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~d_R",      mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[7]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~u_L",      mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[8]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~u_R",      mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[9]  = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~s_L",      mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[10] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~s_R",      mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[11] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~c_L",      mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[12] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~c_R",      mssm, tol, LOCAL_INFO)).first;
     pdg_codes[13] = Models::ParticleDB().pdg_pair(sbottom1).first,
     pdg_codes[14] = Models::ParticleDB().pdg_pair(sbottom2).first,
     pdg_codes[15] = Models::ParticleDB().pdg_pair(stop1).first,
     pdg_codes[16] = Models::ParticleDB().pdg_pair(stop2).first,
-    pdg_codes[17] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~e_L",     mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[18] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~e_R",     mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[17] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~e_L",      mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[18] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~e_R",      mssm, tol, LOCAL_INFO)).first;
     pdg_codes[19] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~nu_e_L",   mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[20] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~mu_L",    mssm, tol, LOCAL_INFO)).first;
-    pdg_codes[21] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~mu_R",    mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[20] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~mu_L",     mssm, tol, LOCAL_INFO)).first;
+    pdg_codes[21] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~mu_R",     mssm, tol, LOCAL_INFO)).first;
     pdg_codes[22] = Models::ParticleDB().pdg_pair(slhahelp::mass_es_from_gauge_es("~nu_mu_L",  mssm, tol, LOCAL_INFO)).first;
     pdg_codes[23] = Models::ParticleDB().pdg_pair(stau1).first,
     pdg_codes[24] = Models::ParticleDB().pdg_pair(stau2).first,
