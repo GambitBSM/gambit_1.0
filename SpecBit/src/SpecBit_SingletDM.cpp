@@ -118,25 +118,49 @@ namespace Gambit
       
       input.Lambda1Input = -0.1;
       
-      input.Lambda2Input=-0.1;
     //  input.mS2Input=pow(mS,2)-lambda_hs*15;
+
+      NSM_spectrum_generator<Two_scale> spectrum_generator;
+
       input.vSInput=100;
       input.Qin=173;
-      input.Lambda2Input=0.1;
-      NSM_spectrum_generator<Two_scale> spectrum_generator;
+      input.Lambda2Input=-0.1;
+      
+            
+      spectrum_generator.run(oneset, input);
       NSM_slha<Two_scale> model(spectrum_generator.get_model());
       
       NSM<Two_scale> tmp_model(model);
       NSM_parameter_getter parameter_getter;
+      //Coupling_monitor<NSM<Two_scale>, NSM_parameter_getter>
+      //coupling_monitor(tmp_model, parameter_getter);
 
-      
-      spectrum_generator.run(oneset, input);
+
       //NSM_physical& pole_masses = model.get_physical_slha();
-      //tmp_model.run_to(1.22e15);
+      tmp_model.run_to(1000);
       //double lam_out;
       //lam_out=parameter_getter.get_parameters(tmp_model)[5]; // 3 for lambda
+      
+      
+      // alternative calling sequence
+//      NSM_susy_parameters susy;
+//      susy.set_scale(Electroweak_constants::MZ);
+//
+//      susy.set_g1(Electroweak_constants::g1);
+//      susy.set_g2(Electroweak_constants::g2);
+//      susy.set_g3(Electroweak_constants::g3);
+//
+//      susy.run_to(1.0e16);
+//
+//
+//      double Lambda5=0,mS2=-100,mH2=-4000,vH=246,vS=100,Lambda4=0;
+//
+//      NSM_soft_parameters soft(susy, Lambda5, Lambda4,  mS2,  mH2, vH,  vS);
+//
+//      soft.run_to(Electroweak_constants::MZ);
 
-
+// end of alternative calling sequence
+      
 
       
       result=1;
