@@ -275,7 +275,7 @@ namespace Gambit
             if (std::system("command -v less >/dev/null"))
                 std::system((std::string("more -d ") + std::string(temp_file)).c_str());
             else  
-                std::system((std::string("less -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\" ") + std::string(temp_file)).c_str());
+                std::system((std::string("less -S -R -P\"Gambit diagnostic ") + name + std::string(" line %l (press h for help or q to quit)\" ") + std::string(temp_file)).c_str());
             std::system(("rm -f " + std::string(temp_file) + " >/dev/null").c_str());
         }
         
