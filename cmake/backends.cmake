@@ -155,16 +155,13 @@ ExternalProject_Add(micromegasSingletDM
 add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} distclean)
 
 # Pythia
-
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-  set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
-endif()
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
-# - Suppress warnings from -Wextra when building Pythia with gcc
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -O3 -ffast-math -mavx")
+# - Add compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -xavx")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -O3 -ffast-math -mavx")
 endif()
 # - Set include directories
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
