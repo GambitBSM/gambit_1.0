@@ -633,7 +633,6 @@ namespace Gambit
 
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
-    /// @todo Don't we also need to return a reference LL, or just the deltaLL?
     void calcLogLike(double& result) {
       using namespace Pipes::calcLogLike;
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
@@ -694,7 +693,7 @@ namespace Gambit
           cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
           // Calculate the expected dll and set the bestexp values for exp and obs dll if this one is the best so far
-          const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention here
+          const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention -> more exclusion here
           if (dll_exp > bestexp_dll_exp) {
             bestexp_dll_exp = dll_exp;
             bestexp_dll_obs = llb_obs - llsb_obs;
@@ -708,8 +707,8 @@ namespace Gambit
 
       } // end ana loop
 
-      // Set the single DLL to be returned
-      result = total_dll_obs;
+      // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
+      result = -total_dll_obs;
     }
 
 
