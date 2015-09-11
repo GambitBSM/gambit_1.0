@@ -633,23 +633,22 @@ namespace Gambit
 
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
-    /// @todo Don't we also need to return a reference LL, or just the deltaLL?
     void calcLogLike(double& result) {
       using namespace Pipes::calcLogLike;
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
-      cout << "In calcLogLike" << endl;
+      // cout << "In calcLogLike" << endl;
 
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;
       for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis) {
-        cout << "In analysis loop" << endl;
+        // cout << "In analysis loop" << endl;
 
         // Loop over the signal regions inside the analysis, and work out the total (delta) log likelihood for this analysis
         /// @note In general each analysis could/should work out its own likelihood so they can handle SR combination if possible.
         /// @note For now we just take the result from the SR *expected* to be most constraining, i.e. with highest expected dll
         double bestexp_dll_exp = 0, bestexp_dll_obs = 0;
         for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR) {
-          cout << "In signal region loop" << endl;
+          // cout << "In signal region loop" << endl;
           SignalRegionData srData = analysisResults[analysis][SR];
 
           // Actual observed number of events
@@ -674,9 +673,9 @@ namespace Gambit
           //int n_predicted_total_sb_int = (int) round(n_predicted_exact + n_predicted_uncertain_sb); //< we don't use this: predictions all use exp[b] as the "observed"
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
-          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact
-               << " UNCERTAIN_B "   << n_predicted_uncertain_b  << " UNCERTAINTY_B "   << uncertainty_b
-               << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
+          // cout << "OBS " << n_obs << " EXACT " << n_predicted_exact
+          //      << " UNCERTAIN_B "   << n_predicted_uncertain_b  << " UNCERTAINTY_B "   << uncertainty_b
+          //      << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             llb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
@@ -691,10 +690,10 @@ namespace Gambit
             llb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
             llsb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
+          //cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
           // Calculate the expected dll and set the bestexp values for exp and obs dll if this one is the best so far
-          const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention here
+          const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention -> more exclusion here
           if (dll_exp > bestexp_dll_exp) {
             bestexp_dll_exp = dll_exp;
             bestexp_dll_obs = llb_obs - llsb_obs;
@@ -708,8 +707,8 @@ namespace Gambit
 
       } // end ana loop
 
-      // Set the single DLL to be returned
-      result = total_dll_obs;
+      // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
+      result = -total_dll_obs;
     }
 
 
