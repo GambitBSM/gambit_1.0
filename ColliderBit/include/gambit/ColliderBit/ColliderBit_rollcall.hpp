@@ -170,9 +170,9 @@ START_MODULE
   #undef CAPABILITY
 
   // Calculate the log likelihood from the analysis numbers
-  #define CAPABILITY LogLikelihood
+  #define CAPABILITY LHC_Combined_LogLike
   START_CAPABILITY
-    #define FUNCTION calcLogLike
+    #define FUNCTION calc_LHC_LogLike
     START_FUNCTION(double)
     DEPENDENCY(AnalysisNumbers, ColliderLogLikes)
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )

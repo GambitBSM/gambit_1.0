@@ -61,13 +61,9 @@ Scanner:
 
 ObsLikes:
 
-  # ColliderBit
-  #- purpose:      Observable
-  #  capability:   LogLikelihood
-
-  # Test marginalised LHC Poisson likelihood
+  # Test LHC combined likelihood
   - purpose:    Likelihood
-    capability: LogLikelihood
+    capability: LHC_Combined_LogLike
 
   # TODO: Test the functionality of these likelihood functions
   # Test LEP SUSY limit slepton likelihoods
@@ -211,8 +207,7 @@ Rules:
       debug_SLHA_filenames:
         - ColliderBit/data/sps1aWithDecays.spc
 
-  - capability: LogLikelihood
-    function: calcLogLike
+  - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 

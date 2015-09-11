@@ -699,15 +699,14 @@ namespace Gambit
 
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
-    void calcLogLike(double& result) {
-      using namespace Pipes::calcLogLike;
+    void calc_LHC_LogLike(double& result) {
+      using namespace Pipes::calc_LHC_LogLike;
       // xsec veto
       if (allProcessesVetoed) {
         result = 0.;
         return;
       }
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
-      // cout << "In calcLogLike" << endl;
 
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;
