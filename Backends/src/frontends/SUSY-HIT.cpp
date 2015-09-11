@@ -38,7 +38,7 @@ BE_NAMESPACE
     if (slha.find(block) == slha.end())
     {
       std::vector<double> matmix = slhahelp::family_state_mix_matrix(type, 3, s1, s2, spec, tol, LOCAL_INFO);
-      Utils::SLHAea_add_matrix(slha, block, matmix, 2, 2); 
+      SLHAea_add_matrix(slha, block, matmix, 2, 2); 
     }
     else
     {
@@ -387,10 +387,10 @@ BE_INI_FUNCTION
     pdg_codes[24] = 2000015; // ~tau_2
     pdg_codes[25] = 1000016; // ~nu_tauL
     // If the CKM entries are missing from the SLHA file, fill them in with defaults.
-    Utils::SLHAea_add(slha, "VCKMIN", 1, 0.22537, "lambda", false);
-    Utils::SLHAea_add(slha, "VCKMIN", 2, 0.814, "A", false);
-    Utils::SLHAea_add(slha, "VCKMIN", 3, 0.117, "rhobar", false);
-    Utils::SLHAea_add(slha, "VCKMIN", 4, 0.353, "etabar", false);
+    SLHAea_add(slha, "VCKMIN", 1, 0.22537, "lambda", false);
+    SLHAea_add(slha, "VCKMIN", 2, 0.814, "A", false);
+    SLHAea_add(slha, "VCKMIN", 3, 0.117, "rhobar", false);
+    SLHAea_add(slha, "VCKMIN", 4, 0.353, "etabar", false);
     // If the b pole mass is missing from the SLHA file, fill it in with a default.
     SLHAea_add(slha, "MASS",   5, 4.87878, "mb (pole)", false);
   }

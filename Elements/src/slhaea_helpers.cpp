@@ -2,28 +2,25 @@
 //   *********************************************
 ///  \file
 ///
-///  Implementations of helper functions that add
-///  or retrieve the contents of an SLHAea::Coll
-///  with some basic error-checking.
+///  Helper functions for SMInputs struct
 ///
 ///  *********************************************
 ///
-///  Authors (add name and date if you modify):
+///  Authors: 
 ///   
-///  \author Ben Farmer  
-///          (benjamin.farmer@monash.edu)
-///  \date 2015
-///  
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2015 Mar 
+///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
-///  \date 2015
-///
+///  \date 2015 Jul
+/// 
 ///  *********************************************
 
-#ifndef __slhaea_helpers_hpp__
-#define __slhaea_helpers_hpp__
-
+#include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
+
 
 namespace Gambit
 {
@@ -31,7 +28,7 @@ namespace Gambit
   /// Get an entry from an SLHAea object as a double, with some error checking
   double SLHAea_get(const SLHAstruct& slha, const str& block, const int index)
   {
-    double output;
+    double output = 0.0;
     try
     {
       output = SLHAea::to<double>(slha.at(block).at(index).at(1));
@@ -48,7 +45,7 @@ namespace Gambit
   }
 
   /// Get an entry from an SLHAea object as a double; raise a warning and use a default value if the entry is missing
-  double SLHAea_get_or_def(const SLHAstruct& slha, const str& block, const int index, const double defvalue)
+  double SLHAea_get(const SLHAstruct& slha, const str& block, const int index, const double defvalue)
   {
     double output;
     try
@@ -79,7 +76,7 @@ namespace Gambit
   }
 
   /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
-  bool check_block(SLHAstruct& slha, const str& block, const int index, const bool overwrite)
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index, const bool overwrite)
   {
     // Check if block exists
     try
@@ -113,17 +110,15 @@ namespace Gambit
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const double value, const str& comment, const bool overwrite)
   {
-    if (check_block(slha, block, index, overwrite)) return;
+    if (SLHAea_check_block(slha, block, index, overwrite)) return;
     slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
   }
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
    const str& value, const str& comment, const bool overwrite)
   {
-    if (check_block(slha, block, index, overwrite)) return;
+    if (SLHAea_check_block(slha, block, index, overwrite)) return;
     slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
   }
   /// @}
 
 }
-
-#endif // #defined slhaea_helpers_hpp
