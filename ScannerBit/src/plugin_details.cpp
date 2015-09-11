@@ -28,7 +28,7 @@
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/ScannerBit/screen_print_utils.hpp"
+#include "gambit/Core/screen_print_utils.hpp"
 
 namespace Gambit
 {

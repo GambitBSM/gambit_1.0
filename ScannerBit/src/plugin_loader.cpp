@@ -25,7 +25,7 @@
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/ScannerBit/screen_print_utils.hpp"
+#include "gambit/Core/screen_print_utils.hpp"
 
 namespace Gambit
 {
@@ -37,49 +37,27 @@ namespace Gambit
         {
             inline std::string print_plugins(std::map< std::string, std::map<std::string, std::vector<Plugin_Details> > >::const_iterator plugins)
             {
-                std::stringstream out;
-                int out_len1, out_len2, out_len3 = 25;
-                int cols = get_screen_cols();
-                if (cols > 0)
-                {
-                    out_len1 = out_len2 = out_len3 = cols/3;
-                    out_len3 += cols%3;
-                }
-                else
-                {
-                    out_len1 = out_len2 = out_len3 = 25;
-                }
-                
                 typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
                 typedef std::map<std::string, plugin_map> plugin_mapmap;
                 
-                out << std::setiosflags(std::ios::left);
-                out << "\n\x1b[01m\x1b[04m"  << std::setw (out_len1) << stringToUpper(plugins->first) + " PLUGINS"  << std::setw (out_len2) << "VERSION"  << std::setw (out_len3) << "STATUS" << "\x1b[0m\n" << std::endl;
-                //out << "----------------------------------------------------------------------------" << std::endl;
-
-                // Loop over all entries in the plugins map map
+                list_formatter list(stringToUpper(plugins->first) + " PLUGINS", "STATUS", "VERSION");
+                list.set_padding(1);
+                
                 for (auto it = plugins->second.begin(); it != plugins->second.end(); ++it)
                 {
                     for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
                     {
-                        // Print the scanner name if this is the first version, otherwise just space
                         const str firstentry = (jt == it->second.begin() ? it->first : "");
-                        out << std::setw (out_len1) << firstentry; 
-                        // Print the scanner info.
-                        out << std::setw (out_len2) << jt->version;
+                        list << firstentry;
+                        list << jt->version;
                         if (jt->status == "ok")
-                            out << "\x1b[32m" << std::setw (out_len3) << jt->status << "\x1b[0m" << std::endl;
+                            list.set_green() << jt->status;
                         else
-                            out << "\x1b[31m" << std::setw (out_len3) << jt->status << "\x1b[0m" << std::endl;
-
+                            list.set_red() << jt->status;
                     }
-                    
-                    out << std::endl;
                 }
                 
-                out << std::resetiosflags(std::ios::left);
-                
-                return out.str();
+                return list.str();
             }
             
             Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")

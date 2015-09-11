@@ -19,7 +19,7 @@
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-
+#include "gambit/Core/screen_print_utils.hpp"
 
 namespace Gambit
 {
@@ -27,9 +27,12 @@ namespace Gambit
   /// Basic module diagnostic function
   void gambit_core::module_diagnostic()
   {
-    const int maxlen = 25;
-    cout << "Modules                #functions" << endl;
-    cout << "---------------------------------" << endl;
+    //const int maxlen = 25;
+    list_formatter list("Modules", "#functions");
+    list.set_padding(1);
+    list.capital_title();
+    //cout << "Modules                #functions" << endl;
+    //cout << "---------------------------------" << endl;
     for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
     {
       int nf = 0;
@@ -37,17 +40,22 @@ namespace Gambit
       {
         if ((*jt)->origin() == *it) nf++;
       } 
-      cout << *it << spacing(it->length(),maxlen) << nf << endl;
+      //cout << *it << spacing(it->length(),maxlen) << nf << endl;
+      list << *it << nf;
     }
+    print_to_screen(list.str(), "module");
   }
   
   /// Basic backend diagnostic function
   void gambit_core::backend_diagnostic()
   {
-    int maxlens[6] = {18, 7, 70, 13, 3, 3};
+    //int maxlens[6] = {18, 7, 70, 13, 3, 3};
     bool all_good = true;
-    cout << "Backends               Version     Path to lib                                                                Status            #funcs  #types  #ctors" << endl;
-    cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+    list_formatter list("Backends", "Version", "Path to lib", "Status", "#func", "#types", "#ctors");
+    list.set_padding(1);
+    list.capital_title();
+    //cout << "Backends               Version     Path to lib                                                                Status            #funcs  #types  #ctors" << endl;
+    //cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
     // Loop over all registered backends
     for (std::map<str, std::set<str> >::const_iterator it = backend_versions.begin(); it != backend_versions.end(); ++it)
@@ -84,20 +92,29 @@ namespace Gambit
         std::ostringstream ss1, ss2;
         str ss1a, ss2a;
         const str firstentry = (jt == it->second.begin() ? it->first : "");
-        cout << firstentry << spacing(firstentry.length(),maxlens[0]);
-        cout << *jt        << spacing(jt->length(),maxlens[1]);
-        cout << path       << spacing(path.length(),maxlens[2]);
-        cout << status     << spacing(status.length(),maxlens[3]);
-        ss1 << nfuncs; ss1a = spacing(ss1.str().length(),maxlens[4]);
-        ss2 << ntypes; ss2a = spacing(ss2.str().length(),maxlens[5]);
-        cout << ss1.str() << ss1a << ss2.str() << ss2a << nctors << endl;
+        //cout << firstentry << spacing(firstentry.length(),maxlens[0]);
+        //cout << *jt        << spacing(jt->length(),maxlens[1]);
+        //cout << path       << spacing(path.length(),maxlens[2]);
+        //cout << status     << spacing(status.length(),maxlens[3]);
+        ss1 << nfuncs; //ss1a = spacing(ss1.str().length(),maxlens[4]);
+        ss2 << ntypes; //ss2a = spacing(ss2.str().length(),maxlens[5]);
+        //cout << ss1.str() << ss1a << ss2.str() << ss2a << nctors << endl;
+        list << firstentry << *jt << path;
+        if (status == "OK")
+            list.set_green() << status;
+        else
+            list.set_red() << status;
+        list << ss1.str() << ss2.str() << nctors;
       }
     }
 
-    cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
-    cout << "All relative paths are given with reference to " << GAMBIT_DIR << ".";
-    if (all_good) cout << endl << "All your backend are belong to us." << endl;
-    cout << endl;
+    //cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
+    std::stringstream out;
+    out << "All relative paths are given with reference to " << GAMBIT_DIR << ".";
+    if (all_good) out << endl << "All your backend are belong to us." << endl;
+    out << endl;
+    out << list.str();
+    print_to_screen(out.str(), "backend");
   }
   
   /// Basic model diagnostic function
@@ -105,37 +122,47 @@ namespace Gambit
   {
     int maxlen1 = 35;
     int maxlen2 = 35;
-    cout << "Models                                  Parent                                  Parameters" << endl;
-    cout << "------------------------------------------------------------------------------------------" << endl;
+    std::stringstream out;
+    list_formatter list("Model", "Parent", "Parameters");
+    list.set_default_width(35);
+    list.set_padding(1);
+    list.capital_title();
+    //cout << "Models                                  Parent                                  Parameters" << endl;
+    //cout << "------------------------------------------------------------------------------------------" << endl;
     for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
     {
       str model = (*it)->origin();
       str parentof = modelInfo->get_parent(model);
       int nparams = (*it)->valuePtr()->getNumberOfPars();
       cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
+      list << model << parentof << nparams;
     }
 #ifdef HAVE_GRAPHVIZ
     // Create and spit out graph of the model hierarchy.
     str graphfile = GAMBIT_DIR "/scratch/GAMBIT_model_hierarchy.gv";
     ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
-    cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
-    cout << endl << "To get postscript plot of model hierarchy, please run: " << endl;
-    cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+graphfile << endl;
+    out << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
+    out << endl << "To get postscript plot of model hierarchy, please run: " << endl;
+    out << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+graphfile << endl;
 #else
-    cout << endl << "To get postscript plot of model hierarchy, please install graphviz, rerun cmake and remake GAMBIT." << endl;
+    out << endl << "To get postscript plot of model hierarchy, please install graphviz, rerun cmake and remake GAMBIT." << endl;
 #endif
+    out << list.str();
+    print_to_screen(out.str(), "model");
   }
 
   /// Basic capability diagnostic function
   void gambit_core::capability_diagnostic()
   {
-    const int maxlen1 = 35;
-    const int maxlen2 = 25;
+    //const int maxlen1 = 35;
+    //const int maxlen2 = 25;
 
     // Default, list-format output header
-    cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
-    cout << "---------------------------------------------------------------------------------------------" << endl;
-    
+    //cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
+    //cout << "---------------------------------------------------------------------------------------------" << endl;
+    list_formatter list("Capabilities", "Available in (modules/models)", "Available in (backends)");
+    list.set_padding(1);
+    list.capital_title();
     for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
     {
       std::set<str> modset, beset;
@@ -167,8 +194,13 @@ namespace Gambit
       if (mods.length() == 0 and bes.length() == 0) mods = it->substr(0,it->length()-11);
 
       // Print the entry in the table (list format)
-      cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
+      //cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
+      list << *it << mods << bes;
     }
+    auto outstr = list.str();
+    std::ofstream out("file");
+    out << outstr << std::flush;
+    print_to_screen(outstr, "capability");
   }
 
   /// Basic scanner diagnostic function
