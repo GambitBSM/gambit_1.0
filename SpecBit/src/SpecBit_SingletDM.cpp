@@ -26,9 +26,10 @@
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
 #include "gambit/SpecBit/SMHiggsContainer.hpp"
 #include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
+#include "gambit/SpecBit/model_files_and_boxes.hpp"
 
 // Switch for debug mode
-#define SpecBit_DBUG 
+#define SpecBit_DBUG
 
 namespace Gambit
 {
@@ -86,6 +87,51 @@ namespace Gambit
       full_spectrum = Spectrum(qedqcdspec,singletspec,sminputs);
 
       result = &full_spectrum;
+    }
+      
+    void VS_SSDM(double &result) //  try incorporating a simple likelihood function here
+    { //                           in a similar style to RD_oh2_general
+      using namespace Pipes::VS_SSDM;
+      namespace myPipe = Pipes::get_SingletDM_spectrum;
+      using namespace Gambit;
+      using namespace flexiblesusy;
+
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+
+      // SoftSUSY object used to set quark and lepton masses and gauge
+      // couplings in QEDxQCD effective theory
+      QedQcd oneset;
+      NSM_input_parameters input;
+
+      // Fill QedQcd object with SMInputs values
+      setup_QedQcd(oneset,sminputs);
+
+      // Run everything to Mz
+      oneset.toMz();
+      double mH,mS,lambda_hs;
+      
+      mH = *myPipe::Param.at("mH");
+      mS = *myPipe::Param.at("mS");
+      lambda_hs   = *myPipe::Param.at("lambda_hS");
+      
+      input.HiggsIN = -pow(mH,2)/2;
+      
+      input.Lambda3Input=lambda_hs;
+      input.mS2Input=pow(mS,2)-lambda_hs*15;
+      NSM_spectrum_generator<algorithm_type> spectrum_generator;
+
+      
+      spectrum_generator.run(oneset, input);
+      NSM_slha<Two_scale> model(spectrum_generator.get_model());
+      NSM_physical& pole_masses = model.get_physical_slha();
+      tmp_model.run_to(1.22e15);
+      double lam_out;
+      lam_out=parameter_getter.get_parameters(tmp_model)[5]; // 3 for lambda
+
+
+
+      
+      result=lam_out;
     }
 
 

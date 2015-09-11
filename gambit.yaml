@@ -96,7 +96,7 @@ Scanner:
     mcmc:
       plugin: toy_mcmc
       options:
-        point_number: 2
+        point_number: 50
         output_file:  output
         like:  Likelihood
 
@@ -187,17 +187,19 @@ ObsLikes:
     module:       ""
 
   # Uncomment to test neutrino likelihoods
-  #- purpose:      Likelihood
-  #  capability:   IceCube_likelihood
-  #  function:     IC79_loglike
+# - purpose:      Likelihood
+#    capability:   IceCube_likelihood
+#    function:     IC79_loglike
+
+
 
   # Uncomment to test DD likelihoods
 #  - purpose:      Likelihood
 #    capability:   lnL_LUX_2013
 
   # Uncomment to test FastSim
-  #- purpose:      Likelihood
-  #  capability:   fast_sim
+#- purpose:      Likelihood
+#   capability:   fast_sim
 
   # Uncomment to test array and -> operators in safety buckets.
   - purpose:      Observable
@@ -208,9 +210,9 @@ ObsLikes:
     capability:   doFarrayStuff
 
   # Uncomment 'purpose' and one of the 'capability' entries to test BOSS
-  - purpose:      Observable
-    capability:   Pythia_tester
-  #  capability:   BOSS_tester
+# - purpose:      Observable
+# capability:   Pythia_tester
+#  capability:   BOSS_tester
 
   # Test multi-required-models
   - purpose:      Observable
@@ -312,6 +314,7 @@ ObsLikes:
 #########################
 
 Rules:
+
   - capability: A0_decay_rates
     function: A0_decays
   - capability: Higgs_decay_rates
@@ -451,6 +454,13 @@ Logger:
 
 # Ben: Here we will choose which printer(s?) we want to use. For now
 # it is hardcoded: I'll come back to this.
+Printer:
+  printer: ascii
+  options:
+    output_file: "runs/spartan_multinest/samples/gambit_output.data"
+    buffer_length: 10
+
+
 
 
 ##########################

@@ -86,7 +86,7 @@ ObsLikes:
       
 # Complete list of likelihoods in DarkBit as of 2015-05-10
 Rules:
-  - capability: SM_spectrum 
+  - capability: SM_spectrum
     function: get_QedQcd_spectrum
     #function: get_SM_SubSpectrum_from_MSSM_Spectrum
 

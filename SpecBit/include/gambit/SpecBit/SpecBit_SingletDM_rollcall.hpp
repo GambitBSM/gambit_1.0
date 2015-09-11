@@ -35,5 +35,14 @@
 
   #undef CAPABILITY
 
+  #define CAPABILITY VS
+    START_CAPABILITY
+    #define FUNCTION VS_SSDM
+    START_FUNCTION(double)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
 #endif
 
