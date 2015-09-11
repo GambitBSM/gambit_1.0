@@ -2,7 +2,7 @@
 #************************************************
 # \file                                          
 #                                                
-#  Cmake configuration scripts for obtaining,
+#  CMake configuration scripts for obtaining,
 #  configuring, compiling and installing 
 #  backends.
 #  
@@ -20,6 +20,7 @@
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)              
 #  \date 2014 Sep, Oct, Nov
+#  \date 2015 Sep
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
@@ -47,7 +48,6 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set(_ld_prefix "-Wl,--whole-archive")
   set(_ld_suffix "-Wl,--no-whole-archive")
 endif()
-set(CMAKE_Fortran_FLAGS_forDS "${CMAKE_Fortran_FLAGS} -fopenmp")      
 set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE_DIR>/lib/libdarksusy.a <SOURCE_DIR>/lib/libisajet.a ${_ld_suffix})
 ExternalProject_Add(darksusy
   URL http://www.fysik.su.se/~edsjo/darksusy/tars/darksusy-5.1.1.tar.gz
@@ -55,11 +55,11 @@ ExternalProject_Add(darksusy
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.1
   BUILD_IN_SOURCE 1
-  PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif 
+  PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
         COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif 
         COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif 
         COMMAND patch -b -p1 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif 
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS_forDS} FFLAGS=${CMAKE_Fortran_FLAGS_forDS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS_forDS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND make 
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
