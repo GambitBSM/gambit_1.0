@@ -160,23 +160,6 @@ namespace Gambit
 #endif
                 }
                 
-                /*****************************************************/
-                /****** convert string to upper case function ********/
-                /*****************************************************/
-                
-                inline std::string stringToUpper(const std::string &s)
-                {
-                        std::string ret;
-                        ret.resize(s.size());
-                        
-                        for(unsigned int l = 0; l < s.length(); l++)
-                        {
-                                ret[l] = std::toupper(s[l]);
-                        }
-                        
-                        return ret;
-                }
-                
                 /*****************************/
                 /****** func_ptr_type ********/
                 /*****************************/

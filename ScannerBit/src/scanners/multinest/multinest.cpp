@@ -300,17 +300,17 @@ namespace Gambit {
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
            
              //std::cout << "Posterior output: i="<<i<<", rank="<<myrank<<", pointID="<<pointID<<std::endl;
-             txt_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
-             txt_stream->print( pointID, "pointID", -8, myrank, pointID);
-             txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   -4, myrank, pointID);
-             txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", -5, myrank, pointID);
+             txt_stream->print( myrank,  "MPIrank", myrank, pointID);
+             txt_stream->print( pointID, "pointID", myrank, pointID);
+             txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   myrank, pointID);
+             txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", myrank, pointID);
              // Put rest of parameters into a vector for printing all together
              std::vector<double> parameters;
              for( int j = 0; j < nPar-2; j++ )
              {
                  parameters.push_back( posterior[j*nSamples + i] );
              }
-             txt_stream->print(parameters, "Parameters", -6, myrank, pointID);
+             txt_stream->print(parameters, "Parameters", myrank, pointID);
           }
 
           // The last set of live points
@@ -318,16 +318,16 @@ namespace Gambit {
           {
              myrank  = physLive[(nPar-2)*nlive + i]; //MPI rank number stored in second last entry of cube
              pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
-             live_stream->print( myrank,  "MPIrank",  -7, myrank, pointID);
-             live_stream->print( pointID, "pointID", -8, myrank, pointID);
-             live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", -4, myrank, pointID);
+             live_stream->print( myrank,  "MPIrank",  myrank, pointID);
+             live_stream->print( pointID, "pointID", myrank, pointID);
+             live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", myrank, pointID);
              // Put rest of parameters into a vector for printing all together
              std::vector<double> parameters;
              for( int j = 0; j < nPar-2; j++ )
              {
                  parameters.push_back( physLive[j*nlive + i] );
              }
-             live_stream->print(parameters, "Parameters", -6, myrank, pointID);
+             live_stream->print(parameters, "Parameters", myrank, pointID);
           }
 
           // OLD DEBUG CODE, probably not ready to be tossed just yet.

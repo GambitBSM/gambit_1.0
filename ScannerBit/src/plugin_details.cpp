@@ -225,10 +225,12 @@ namespace Gambit
                 out << std::setw (out_len1) << plugin;
                 out << std::setw (out_len2) << version;
                 if (status == "ok")
-                    out << "\x1b[32m" << std::setw (out_len3) << status << "\x1b[0m\n" << std::endl;
+                    out << "\x1b[32m" << std::setw (out_len3) << status << "\x1b[0m" << std::endl;
                 else
-                    out << "\x1b[31m" << std::setw (out_len3) << status << "\x1b[0m\n" << std::endl;
+                    out << "\x1b[31m" << std::setw (out_len3) << status << "\x1b[0m" << std::endl;
                 out << std::resetiosflags(std::ios::left);
+                
+                out << std::endl;
                 
                 out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
                 out << "\nrequired inifile entries:  ";
@@ -271,6 +273,8 @@ namespace Gambit
                     for (auto it = found_incs.begin(), end = found_incs.end(); it != end; ++it)
                             out << "        " << it->first << ": " << it->second << std::endl;
                 }
+                
+                out << std::endl;
                 
                 out << "\n\x1b[01m\x1b[04mDESCRIPTION\x1b[0m\n" << std::endl;
                 

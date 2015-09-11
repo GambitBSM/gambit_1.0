@@ -34,7 +34,7 @@
 #define scanner_plugin(...)             SCANNER_PLUGIN(__VA_ARGS__)
 ///@}
 
-#define SCANNER_SETUP                                                                       \
+#define __SCANNER_SETUP__                                                                   \
 using namespace Gambit::Scanner;                                                            \
                                                                                             \
 void *get_purpose(const std::string &purpose)                                               \
@@ -50,6 +50,6 @@ void *get_purpose(const std::string &purpose)                                   
 inline unsigned int get_dimension() {return get_input_value<unsigned int>(0);}              \
 
 #define SCANNER_PLUGIN(plug_name, ...)                                                      \
-    GAMBIT_PLUGIN_INITIALIZE(SCANNER_SETUP, plug_name, scanner, __VA_ARGS__)                \
+    GAMBIT_PLUGIN_INITIALIZE(__SCANNER_SETUP__, plug_name, scanner, __VA_ARGS__)            \
         
 #endif

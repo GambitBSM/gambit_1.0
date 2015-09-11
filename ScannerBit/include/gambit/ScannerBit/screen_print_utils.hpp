@@ -1,3 +1,30 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+/// \file
+///  Utility Functions for the Gambit Scanner
+///
+///  *********************************************
+///
+///  Authors
+///  =======
+///
+///  (add name and date if you modify)
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2015 Sep
+///
+///  *********************************************
+
+/*
+ * To get the screen, use
+ * int width = get_screen_cols();
+ * This will return -1 if it can't
+ * To print a string through less, do
+ * print_to_screen(string, file_name);
+ * Will print to 'more' if there is no 'less
+ */
+
 #ifndef __SCREEN_PRINT_UTILS__
 #define __SCREEN_PRINT_UTILS__
 
@@ -8,6 +35,26 @@ namespace Gambit
     
     namespace Scanner
     {
+        /*****************************************************/
+        /****** convert string to upper case function ********/
+        /*****************************************************/
+        
+        inline std::string stringToUpper(const std::string &s)
+        {
+                std::string ret;
+                ret.resize(s.size());
+                
+                for(unsigned int l = 0; l < s.length(); l++)
+                {
+                        ret[l] = std::toupper(s[l]);
+                }
+                
+                return ret;
+        }
+        
+        /*******************************************/
+        /****** get the width of the screen ********/
+        /*******************************************/
         
         inline int get_screen_cols()
         {
@@ -31,6 +78,10 @@ namespace Gambit
             
             return ret;
         }
+        
+        /********************************************/
+        /****** adds spaces to fit to screen ********/
+        /********************************************/
         
         inline void add_screen_spaces(std::string &str, std::string::size_type size, std::string::size_type indent)
         {
@@ -90,7 +141,7 @@ namespace Gambit
             if (cols > 0)
             {
                 std::string::size_type cols_pos = cols;
-                while(std::getline(ss, str))
+                while (std::getline(ss, str))
                 {
                     bool add_n = false;
                     std::string line = str;
@@ -151,8 +202,8 @@ namespace Gambit
                                 std::string::size_type end_pos_b = line.find_last_of(" ", cols_pos);
                                 if (end_pos_b != std::string::npos)
                                     end_pos_b = line.find_last_not_of(" ", end_pos_b);
-                                std::string::size_type end_pos_a = line.find_last_of("!.?;:,", cols_pos-1);
-                                std::string::size_type end_pos_ab = line.find_last_of("/-+=\\", cols_pos);
+                                std::string::size_type end_pos_a = line.find_last_of("!.?;:,$#", cols_pos-1);
+                                std::string::size_type end_pos_ab = line.find_last_of("/-+=()[]{}*@&^%\\", cols_pos);
                                 if (end_pos_ab == cols_pos) end_pos_ab--;
                                 
                                 if (end_pos_b != std::string::npos && end_pos_b > end_pos)
@@ -209,6 +260,10 @@ namespace Gambit
             
             return output_string;
         }
+        
+        /*************************************************/
+        /****** pipes output through less or more ********/
+        /*************************************************/
         
         inline void print_to_screen(const std::string &file_in, const std::string &name)
         {

@@ -62,7 +62,7 @@ namespace Gambit
 #define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
 ///@}
 
-#define OBJECTIVE_SETUP                                                                                         \
+#define __OBJECTIVE_SETUP__                                                                                     \
 using namespace Gambit::Scanner;                                                                                \
 using Gambit::Printers::get_point_id;                                                                           \
                                                                                                                 \
@@ -109,6 +109,6 @@ inline void prior_transform(const std::vector<double> &in, std::unordered_map<st
 }                                                                                                               \
 
 #define OBJECTIVE_PLUGIN(plug_name, ...)                                                                        \
-    GAMBIT_PLUGIN_INITIALIZE(OBJECTIVE_SETUP, plug_name, objective, __VA_ARGS__)                                \
+    GAMBIT_PLUGIN_INITIALIZE(__OBJECTIVE_SETUP__, plug_name, objective, __VA_ARGS__)                            \
 
 #endif
