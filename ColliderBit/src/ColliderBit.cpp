@@ -210,6 +210,8 @@ namespace Gambit
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
+        if (omp_get_thread_num() == 0) 
+          pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
