@@ -63,8 +63,8 @@ int main()
 
   // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
   // In our case, this means nulike (for likelihood calculations)
-  calcLogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
-  // calcLogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpin); // treat systematics with a Gaussian distribution
+  calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
+  // calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpin); // treat systematics with a Gaussian distribution
   
   // Notify any module functions that care of the model(s) being scanned.
   // 'Care' means where they depend on model parameters directly, or have dependencies or backend requirements that are
@@ -88,7 +88,7 @@ int main()
   runAnalyses.resolveDependency(&getAnalysisContainer);
   runAnalyses.resolveDependency(&getPythia);
   runAnalyses.resolveDependency(&reconstructBuckFastEvent);
-  calcLogLike.resolveDependency(&runAnalyses);
+  calc_LHC_LogLike.resolveDependency(&runAnalyses);
   
 
   //Start processing some points here (eventually this will become a scan)
@@ -115,7 +115,7 @@ int main()
     getAnalysisContainer.reset_and_calculate();
     reconstructBuckFastEvent.reset_and_calculate();
     runAnalyses.reset_and_calculate();
-    calcLogLike.reset_and_calculate();
+    calc_LHC_LogLike.reset_and_calculate();
   }
     
 }
