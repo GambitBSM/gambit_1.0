@@ -49,7 +49,7 @@ Scanner:
     random:
       plugin: random_sampler
       options:
-        point_number: 3
+        point_number: 1
         output_file:  output
         like:  Likelihood
         files:
@@ -61,13 +61,57 @@ Scanner:
 
 ObsLikes:
 
-  # ColliderBit
-  #- purpose:      Observable
-  #  capability:   LogLikelihood
-
-  # Test marginalised Poisson likelihood
+  # Test LHC combined likelihood
   - purpose:    Likelihood
-    capability: LogLikelihood
+    capability: LHC_Combined_LogLike
+
+  # TODO: Test the functionality of these likelihood functions
+  # Test LEP SUSY limit slepton likelihoods
+  #- purpose:    Likelihood
+  #  capability: ALEPH_Selectron_LLike
+
+  #- purpose:    Likelihood
+  #  capability: ALEPH_Smuon_LLike
+
+  #- purpose:    Likelihood
+  #  capability: ALEPH_Stau_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Selectron_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Smuon_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Stau_LLike
+
+  ## Test LEP SUSY limit gaugino likelihoods
+  #- purpose:    Likelihood
+  #  capability: L3_Neutralino_All_Channels_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Neutralino_Leptonic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Chargino_All_Channels_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Chargino_Leptonic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Chargino_Hadronic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Chargino_SemiLeptonic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Chargino_Leptonic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Chargino_All_Channels_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Neutralino_Hadronic_LLike
 
 
 #########################
@@ -122,41 +166,48 @@ Rules:
   - capability:  ColliderOperator
     function: operatePythia
     options:
-      nEvents: 10
-      pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
-      Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
+      nEvents: 1000
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
+      #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
+      #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
       #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
 
   - capability:  HardScatteringSim
     function:  getPythia
     options:
-      Pythia_glusq_LHC_8TeV:
-        # Change to absolute paths below when running outside of the gambit/modules directory
+      # Change to absolute paths below when running outside of the gambit/modules directory
+      Pythia_SUSY_LHC_8TeV:
         pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
+                          "Print:quiet = on",
                           "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off"]
-      Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
-                          "PartonLevel:MPI = off",
-                          "PartonLevel:ISR = on",
-                          "PartonLevel:FSR = off",
-                          "HadronLevel:all = off",
-                          "SUSY:idA = 1000021",
-                          "SUSY:idB = 1000021"]
-        pythiaOptions_2: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
-                          "PartonLevel:MPI = off",
-                          "PartonLevel:ISR = on",
-                          "PartonLevel:FSR = off",
-                          "HadronLevel:all = off",
-                          "SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004",
-                          "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
-      #debug_SLHA_filenames:
-      #  - ColliderBit/data/sps1aWithDecays.spc
+      #Pythia_glusq_LHC_8TeV:
+      #  pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
+      #                    "PartonLevel:MPI = off",
+      #                    "PartonLevel:ISR = on",
+      #                    "PartonLevel:FSR = off",
+      #                    "HadronLevel:all = off"]
+      #Pythia_SUSY_LHC_8TeV:
+      #  pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
+      #                    "PartonLevel:MPI = off",
+      #                    "PartonLevel:ISR = on",
+      #                    "PartonLevel:FSR = off",
+      #                    "HadronLevel:all = off",
+      #                    "SUSY:idA = 1000021",
+      #                    "SUSY:idB = 1000021"]
+      #  pythiaOptions_2: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
+      #                    "PartonLevel:MPI = off",
+      #                    "PartonLevel:ISR = on",
+      #                    "PartonLevel:FSR = off",
+      #                    "HadronLevel:all = off",
+      #                    "SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004",
+      #                    "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
+      debug_SLHA_filenames:
+        - ColliderBit/data/sps1aWithDecays.spc
 
-  - capability: LogLikelihood
-    function: calcLogLike
+  - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 

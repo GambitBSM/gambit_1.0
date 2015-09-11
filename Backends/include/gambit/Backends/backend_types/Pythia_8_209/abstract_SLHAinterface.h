@@ -32,9 +32,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual Pythia8::Abstract_SusyLesHouches& slha_ref__BOSS() =0;
     
                 virtual Pythia8::Abstract_CoupSUSY& coupSUSY_ref__BOSS() =0;
-                // IGNORED: Field  -- Name: couplingsPtr  -- XML id: _25125
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _25126
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _25127
+                // IGNORED: Field  -- Name: couplingsPtr  -- XML id: _25489
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _25490
+                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _25491
     
                 virtual int& meMode_ref__BOSS() =0;
     
