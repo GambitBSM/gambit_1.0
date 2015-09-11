@@ -50,11 +50,15 @@ namespace Gambit {
             logger()<<LogTags::utils<<LogTags::info<<"Deleted pre-existing file "<<fname<<" (because overwrite=true)"<<EOM;
           }          
 
+          errorsOff();
           file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+          errorsOn();
           if(file_id < 0)
           {
              /* Ok maybe file doesn't exist yet, try creating it */
+             errorsOff();
              file_id = H5Fcreate(fname.c_str(), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);             
+             errorsOn();
              if(file_id < 0)
              {
                 /* Still no good; error */
@@ -83,7 +87,9 @@ namespace Gambit {
       {
           bool readable(false);
 
+          errorsOff();
           hid_t file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+          errorsOn();
           if(file_id < 0)
           {
             readable=false;
@@ -112,7 +118,9 @@ namespace Gambit {
           hid_t group_id;
           bool readable(false);
 
+          errorsOff();
           group_id = H5Gopen2(location, groupname.c_str(), H5P_DEFAULT);
+          errorsOn();
           if(group_id < 0)
           {
             readable=false;
@@ -200,7 +208,9 @@ namespace Gambit {
          while(std::getline(ss, gp_name, '/')) 
          {
             path << "/" << gp_name;
+            errorsOff();
             group_id = H5Gopen2(file_id, path.str().c_str(), H5P_DEFAULT);
+            errorsOn();
             if(group_id<0)
             {
                /* doesn't exist; try to create it */
@@ -247,6 +257,28 @@ namespace Gambit {
            errmsg << "Error encountered while closing HDF5 group with id '"<<group_id<<"'!";
            printer_error().raise(LOCAL_INFO, errmsg.str());
          }
+      }
+
+      /// global error variables (handler)
+      H5E_auto2_t old_func;
+      void *old_client_data;
+
+      /// Silence error report (e.g. while probing for file existence)
+      /// Just silences default error stack, since we aren't using anything else
+      void errorsOff()
+      {
+         /* Save old error handler */
+         H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+         /* Turn off error handling */
+         H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+      }
+
+      /// Restore error report
+      void errorsOn()
+      {
+         /* Restore previous error handler */
+         H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
       }
 
     }

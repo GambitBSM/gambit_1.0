@@ -375,6 +375,11 @@ namespace Gambit
         //void print(ModelParameters     const&, const std::string&, const int, const unsigned int, const unsigned long);
 
       private:
+        // String names for output file and group
+        std::string file;    // final combined output filename
+        std::string tmpfile; // temporary filename (unique to each process)
+        std::string group;   // HDF5 group location to store datasets
+
         // Handles for HDF5 files and groups containing the datasets
         hid_t file_id;
         hid_t group_id;
@@ -417,11 +422,10 @@ namespace Gambit
 
         /// MPI rank and size
         unsigned int myRank;  // Needed even without MPI available, for some default behaviour.
+        unsigned int mpiSize; //            "                           "
         #ifdef WITH_MPI
         // Gambit MPI communicator context for use within the hdf5 printer system
         GMPI::Comm myComm;
- 
-        unsigned int mpiSize;
         #endif
 
         /// Flag to specify whether all buffers created by this printer 

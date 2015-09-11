@@ -93,6 +93,7 @@
 #include <fstream>
 #include <iomanip>
 #include <time.h> // For short sleeps in master_wait_for_tag function
+#include <cstdlib> // For popen in finalise() 
 
 // Gambit
 #include "gambit/Printers/printers/hdf5printer.hpp"
@@ -449,9 +450,9 @@ namespace Gambit
       : BasePrinter(primary,options.getValueOrDef<bool>(false,"auxilliary"))
       , printer_name("Primary printer")
       , myRank(0)
+      , mpiSize(1)
       #ifdef WITH_MPI
       , myComm() // initially attaches to MPI_COMM_WORLD
-      , mpiSize(1)
       #endif
       , resume(options.getValue<bool>("resume"))
     {
@@ -473,14 +474,16 @@ namespace Gambit
         // Set up communicator context for HDF5 printer system
         #ifdef WITH_MPI
         myComm.dup(MPI_COMM_WORLD); // duplicates MPI_COMM_WORLD
+        mpiSize = myComm.Get_size();
         #endif
 
         std::ostringstream ss;
         ss << "Primary printer for rank " << myRank;
         printer_name = ss.str();
 
-        std::string file = options.getValue<std::string>("output_file");
-        std::string group = options.getValueOrDef<std::string>("/","group");
+        file = options.getValue<std::string>("output_file");
+        tmpfile = file;
+        group = options.getValueOrDef<std::string>("/","group");
         bool overwrite = false;
 
         if(not resume) /* No overwrite allowed when resuming */
@@ -496,18 +499,17 @@ namespace Gambit
           }
         }
   
-        #ifdef WITH_MPI
         // Rename file to a temporary name; we will combine all the data from
         // each file (one from each process) at the end of the run.
+        // TODO: Currently we have to do this even if no MPI is being used.
         std::ostringstream rename;
         rename << file << "_temp_" << myRank;
-        file = rename.str();
-        #endif      
+        tmpfile = rename.str();
 
         // Open requested file 
         bool oldfile; 
-        Utils::ensure_path_exists(file);
-        file_id = HDF5::openFile(file,overwrite,oldfile);
+        Utils::ensure_path_exists(tmpfile);
+        file_id = HDF5::openFile(tmpfile,overwrite,oldfile);
 
         // Open requested group (creating it plus parents if needed)
         group_id = HDF5::openGroup(file_id,group);
@@ -780,7 +782,13 @@ namespace Gambit
           std::cout << "rank "<<myRank<<": Final buffer flush done ("<<printer_name<<")"<<std::endl;
           #endif
 
-          // close HDF5 file and groups
+          // close HDF5 datasets, groups, and file
+
+          for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+          {
+            // Tell the buffers that they are done; they should then close the HDF5 datasets that they own.
+            it->second->finalise();
+          }
           HDF5::closeGroup(group_id);
           HDF5::closeGroup(RA_group_id);
           HDF5::closeFile(file_id);
@@ -860,7 +868,71 @@ namespace Gambit
                 }
              }
           }
+      
+          /// BEGIN DATA COMBINATION
+          //  We now need to combine the data from all the different processes
+          //  that were creating output during this run. First, make sure all
+          //  processess are finished
+          //  TODO: This requires that the scanner code did not shut down MPI
+          //  already! In principle we could do this another way, e.g. by 
+          //  getting all processes to write a dummy file that signals that
+          //  they are done, but for now let us just use this:
+          //  TODO: In principle we shouldn't have to do this combination if
+          //  either MPI is not used at all, or if mpiSize==1, however currently
+          //  we still have to do it due to the way the RA writes are just
+          //  "queued up" in the temporary HDF5 file, rather than actually
+          //  written to the correct place. But should make it do the latter
+          //  in these special cases.
+          #ifdef WITH_MPI
+          master_wait_for_tag(FINAL_SYNC);
+          #endif
 
+          logger() << LogTags::printers << "rank "<<myRank<<": passed FINAL_SYNC point in HDF5Printer finalise() routine" << EOM;
+ 
+          if(myRank==0)
+          {
+             // Getting weird problems with HDF5 files from *other* processes getting corrupted when we go to open them.
+             // Need to wait longer for filesystem to close them properly?
+             // struct timespec sleep_time;
+             // sleep_time.tv_sec  = 5; // 1 second 
+             // sleep_time.tv_nsec = 0; // plus no nanoseconds
+             // nanosleep(&sleep_time,NULL);
+
+             std::ostringstream command;
+             command << "python Printers/scripts/combine_hdf5.py "<<file<<" "<<group<<" "<<mpiSize<<" 2>&1";
+             logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
+                      << "> " << command.str() << std::endl
+                      << "--------------------" << std::endl;
+             FILE* fp = popen(command.str().c_str(), "r");
+             if(fp==NULL)
+             {
+                // Error running popen
+                std::ostringstream errmsg;
+                errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! popen failed to run the specified command (command was '"<<command.str()<<"')";
+                printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
+             // Something ran at least; get the stdout (plus redirected stderr)
+             char buffer[512];
+             // read output into a c++ stream via buffer
+             std::ostringstream output;
+             while(fgets(buffer, sizeof(buffer), fp) != NULL) {
+                 output << buffer;
+             }
+             logger() << LogTags::printers << output.str() << std::endl
+                      << "--------------------" << std::endl
+                      << "end HDF5 combination script output" << EOM;
+             int rc = pclose(fp);
+             if(rc!=0)
+             {
+               // Python error occurred
+                std::ostringstream errmsg;
+                errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered. Please see printer-tagged log files for the Python traceback.";
+                printer_error().raise(LOCAL_INFO, errmsg.str());              
+             }
+             // Otherwise everything should be ok!
+             // TODO: can delete the temporary hdf5 files, but let's not do that quite yet.
+          }              
+       logger() << LogTags::printers << "rank "<<myRank<<": HDF5Printer finalise() completed successfully." << EOM;
        } //end if(is_primary_printer)
     }
 

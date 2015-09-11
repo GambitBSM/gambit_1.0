@@ -122,6 +122,9 @@ namespace Gambit {
          /// Open an existing dataset
          hid_t openDataSet(hid_t location_id, const std::string& name, const std::size_t rdims[DSETRANK]);
 
+         /// Close an open dataset
+         void closeDataSet();
+
          /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
          void extend_dset(const unsigned long i);
       };
@@ -188,6 +191,22 @@ namespace Gambit {
          //     logger() << LogTags::printers << LogTags::err << "Error destructing DataSetInterfaceBase! Failed to close wrapped dataset! (H5Dclose failed). No exception thrown because this will behave badly when throw from a destructor. (dataset name: "<<myname<<")"<<EOM;
          //  }
          //}
+      }
+
+      /// Release resources associated with the underlying dataset
+      template<class T, std::size_t RR, std::size_t CL>
+      void DataSetInterfaceBase<T,RR,CL>::closeDataSet()
+      {
+         if(this->dset_id>=0)
+         {
+           herr_t status = H5Dclose(this->dset_id); 
+           if(status<0)
+           {
+            std::ostringstream errmsg;
+            errmsg << "Error closing dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. H5Dclose failed.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+           }
+         }
       }
 
       /// Create a (chunked) dataset 
@@ -340,10 +359,10 @@ namespace Gambit {
          
          // Update the variables which control where the next write will occur
          // Index of first element in next target hyperslab (assumes that 
-         // existing dataset has been written up to a complete chunk)
-         dsetnextemptyslab = dims[0];  
-
-         return out_dset_id;
+//          // existing dataset has been written up to a complete chunk)
+//          dsetnextemptyslab = dims[0];  
+// 
+//          return out_dset_id;
       }
 
 

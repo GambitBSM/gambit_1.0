@@ -141,6 +141,9 @@ namespace Gambit {
             // know where in the output datasets they are supposed to write.
             virtual void RA_flush(const std::map<PPIDpair, ulong>& PPID_to_dsetindex) = 0;
 
+            // Finalise writing to underlying output. Do not do any more writing after this!
+            virtual void finalise() = 0;
+   
             // For debugging purposes only
             virtual std::size_t postponed_RA_queue_length() = 0;
             virtual uint get_RA_queue_length() = 0;

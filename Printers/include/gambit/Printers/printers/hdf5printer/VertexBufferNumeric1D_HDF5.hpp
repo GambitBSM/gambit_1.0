@@ -119,6 +119,9 @@ namespace Gambit {
            /// Reset the output (non-synchronised datasets only, unless force=true)
            virtual void reset(bool force=false);
 
+           // Finalise writing to underlying output. Do not do any more writing after this!
+           virtual void finalise();
+
            /// Send random access write queue to dataset interfaces for writing
            virtual void RA_write_to_disk(const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
 
@@ -653,6 +656,14 @@ namespace Gambit {
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
          return dsetdata().dset_length();
+      }
+
+      // Finalise writing to underlying output. Do not do any more writing after this!
+      template<class T, std::size_t L>
+      void VertexBufferNumeric1D_HDF5<T,L>::finalise()
+      {
+         dsetdata().closeDataSet();
+         dsetvalid().closeDataSet();
       }
       /// @} 
   }

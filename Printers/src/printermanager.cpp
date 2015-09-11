@@ -117,10 +117,17 @@ namespace Gambit
       }
       else
       {
-        ///TODO: add check to make sure that the requested stream exists
-        // Note that this automatically converts the BasePrinter pointer into a BaseBasePrinter pointer
+        // Note that this routine automatically converts the BasePrinter pointer into a BaseBasePrinter pointer
         // (for a more minimal interface for use in ScannerBit)
-        return auxprinters.at(streamname);
+        typedef std::map<std::string, BasePrinter*>::iterator it_type;
+        it_type it = auxprinters.find(streamname);
+        if( it == auxprinters.end() ) 
+        {
+          std::ostringstream errmsg;
+          errmsg << "Error! PrinterManager failed to retrieve the requested auxilliary print stream with name '"<<streamname<<"'! The stream may not have been created in the first place. Please check that the scanner plugin you are using correctly creates a printer stream with this name.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        return it->second;
       }
     }
 

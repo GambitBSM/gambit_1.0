@@ -5,6 +5,7 @@
 import math
 import numpy as np
 import h5py
+import os
 import sys
 
 chunksize = 1000
@@ -73,6 +74,7 @@ group = sys.argv[2]
 RA_group = group + "/RA"
 N = int(sys.argv[3])
 
+print(os.getcwd())
 print "Root filename:", rootfname
 print "Root group: ", group
 print "Number of files to combine: ", N
@@ -87,10 +89,11 @@ total_sync_length = 0
 
 for i in range(N):
    fname = "{0}_temp_{1}".format(rootfname,i)
-   print "Analysing {0}...".format(fname)
+   print "   Opening {0}...".format(fname)
    f = h5py.File(fname,'r')
    files[fname] = f
-   
+   print "      Analysing..."
+  
    datasets = []
    tmp_dset_metadata = {}
    tmp_RA_dset_metadata = {}
@@ -106,13 +109,16 @@ for i in range(N):
       check_lengths(tmp_RA_dset_metadata)
    else:
       raise ValueError("File '{0}' does not contain the group '{1}!'".format(fname,RA_group))
+   print "      ...done"
 
 # Make sure all sync dsets have the same length
  
 print "Sync dsets:"
+for item in sorted(sync_dsets):
+   print "  ",item
 print "RA dsets:"
-for item in RA_dsets:
-   print item
+for item in sorted(RA_dsets):
+   print "  ",item
 print "total sync length =",total_sync_length
 
 
@@ -123,10 +129,10 @@ gout = fout.create_group(group)
 # Create dataset to match every sync and RA dataset
 alldsets = {}
 for dsetname,dt in sorted(sync_dsets):   
-   print "Creating empty dset:", dsetname
+   print "   Creating empty dset:", dsetname
    alldsets[dsetname] = gout.create_dataset(dsetname, (total_sync_length,), chunks=(chunksize,), dtype=dt)
 for dsetname,dt in sorted(RA_dsets):
-   print "Creating empty dset:", dsetname
+   print "   Creating empty dset:", dsetname
    alldsets[dsetname] = gout.create_dataset(dsetname, (total_sync_length,), chunks=(chunksize,), dtype=dt)
 
 # Copy data from separate sync datasets into combined datasets
@@ -170,15 +176,15 @@ for i in range(N):
       IDs_in = cantor_pairing(pointIDs_in[mask_in],mpiranks_in[mask_in])
 
       if runchecks:
-         print "checking input selection for duplicate keys..."
+         print "   checking input selection for duplicate keys..."
          seen = []
          allid = []       
          for ID,p,r in zip(IDs_in,pointIDs_in[mask_in],mpiranks_in[mask_in]):
             if ID in seen:
-               print "Warning!", ID, "is duplicated!"
+               print "   Warning!", ID, "is duplicated!"
                x=(ID,p,r)
                if x in allid:
-                 print "...and so are the pointID and MPIrank:", x
+                 print "   ...and so are the pointID and MPIrank:", x
             seen+=[ID]
             allid+=[(ID,p,r)]
 
@@ -194,15 +200,15 @@ for i in range(N):
       IDs_out = cantor_pairing(pointIDs_out[mask_out],mpiranks_out[mask_out])
 
       if runchecks:
-         print "checking output selection for duplicate keys..."
+         print "   checking output selection for duplicate keys..."
          seen = []
          allid = []       
          for ID,p,r in zip(IDs_out,pointIDs_in[mask_out],mpiranks_out[mask_out]):
             if ID in seen:
-               print "Warning!", ID, "is duplicated!"
+               print "   Warning!", ID, "is duplicated!"
                x=(ID,p,r)
                if x in allid:
-                 print "...and so are the pointID and MPIrank:", x
+                 print "   ...and so are the pointID and MPIrank:", x
             seen+=[ID]
             allid+=[(ID,p,r)]
 
@@ -220,10 +226,10 @@ for i in range(N):
 
       # TODO: I think this is screwing up; after masking, I think there are still output dset IDs left that are not targets (i.e. not in the IDs_in list) check:
       if runchecks:
-         print "Double-checking that all selected input dset entries have matching targets in the output dsets..." 
+         print "   Double-checking that all selected input dset entries have matching targets in the output dsets..." 
          for ID in IDs_in:
             if ID not in IDs_out[target_mask_small]:
-               print "Warning! No target for ID {0} found in output selection!".format(ID)
+               print "   Warning! No target for ID {0} found in output selection!".format(ID)
 
       # Number of "true" elements in target mask should match number of elements in 'in' arrays (after masking)
       # Check this
@@ -278,17 +284,17 @@ for i in range(N):
       ## print indices 
       ## print x2[indices]
 
-      print "Sorting input data to match order in output selection..."
+      print "   Sorting input data to match order in output selection..."
       xsort = np.argsort(IDs_in)
       yindex = np.searchsorted(IDs_in[xsort], IDs_out[target_mask_small])
       fancyindices = xsort[yindex]
 
       if runchecks:
-         print "Checking that matching of input data to output selection has succeeded..."
+         print "   Checking that matching of input data to output selection has succeeded..."
          print yindex[:10]
          for k,(i,j) in enumerate(zip(IDs_out[target_mask_small][:100],IDs_in[fancyindices[:100]])):
            if i!=j:
-             print "Warning! Mismatch found. At position {0}, input ID ({1}) != output ID ({2})".format(k,i,j)
+             print "   Warning! Mismatch found. At position {0}, input ID ({1}) != output ID ({2})".format(k,i,j)
              #print i,j
              #print IDs_out[k-1:k+2]
              #print IDs_in[fancyindices[k-1:k+2]]
@@ -311,7 +317,7 @@ for i in range(N):
             if indset.dtype!=outdset.dtype:
                ValueError("Type mismatch detected between dataset {0} in file {1} (dtype={2}), and matching dataset in output file {3} (dtype={3})".format(itemname,fname,indset.dtype,outfname,outdset.dtype)) 
             #can't do the fancy list-indexing directly on the hdf5 dataset (the boolean assignment should be ok though) 
-            print "Copying RA data for dataset", itemname
+            print "   Copying RA data for dataset", itemname
             outdset[target_mask] = indset[mask_in][fancyindices]  
 
 print "Data combination completed"

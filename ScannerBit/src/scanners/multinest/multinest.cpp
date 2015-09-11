@@ -122,17 +122,17 @@ scanner_plugin(MultiNest, version(3, 9))
       {
          // Get inifile options for each print stream
          Gambit::Options txt_options   = get_inifile_node("aux_printer_txt_options");
-         Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
+         //Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options"); //FIXME
          Gambit::Options live_options  = get_inifile_node("aux_printer_live_options");
 
          // Options to desynchronise print streams from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
-         stats_options.setValue("synchronised",false); 
+         //stats_options.setValue("synchronised",false); //FIXME
          txt_options.setValue("synchronised",false);
          live_options.setValue("synchronised",false);
 
          // Initialise auxiliary print streams
          get_printer().new_stream("txt",txt_options);
-         get_printer().new_stream("stats",stats_options);            
+         //get_printer().new_stream("stats",stats_options); //FIXME       
          get_printer().new_stream("live",live_options);
       }
 
@@ -276,14 +276,20 @@ namespace Gambit {
       void LogLikeWrapper::dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double* /*paramConstr*/, 
        double maxLogLike, double logZ, double logZerr)
       {
+          int thisrank = boundPrinter.get_stream()->getRank(); // MPI rank of this process
+          if(thisrank!=0)
+          {
+             std::cout<<"Error! ScannerBit MultiNest plugin attempted to run 'dumper' function on a worker process (thisrank=="<<thisrank<<")! MultiNest should only try to run this function on the master process. Most likely this means that your multinest installation is not running in MPI mode correctly, and is actually running independent scans on each process. Alternatively, the version of MultiNest you are using may be too far ahead of what this plugin can handle, if e.g. the described behaviour has changed since this plugin was written."<<std::endl;
+             exit(1);
+          } 
 
           // Get printers for each auxiliary stream
-          printer* stats_stream( boundPrinter.get_stream("stats") );
+          //printer* stats_stream( boundPrinter.get_stream("stats") ); //FIXME see below
           printer* txt_stream(   boundPrinter.get_stream("txt")   );
           printer* live_stream(  boundPrinter.get_stream("live")  );
 
           // Reset the print streams. WARNING! This potentially deletes the old data (here we overwrite it on purpose)
-          stats_stream->reset();  
+          //stats_stream->reset();  // FIXME
           txt_stream->reset();   
           live_stream->reset();
 

@@ -95,6 +95,12 @@ namespace Gambit
          // Argument "location" can be a pointer to either a file or another group
          hid_t createGroup(hid_t location, const std::string& name);
 
+         /// Silence error report (e.g. while probing for file existence)
+         void errorsOff();
+
+         /// Restore error report
+         void errorsOn();
+
          // Modified minimally from https://github.com/gregreen/h5utils/blob/master/src/h5utils.cpp#L92
          // Credit: Gregory Green 2012
          /*
