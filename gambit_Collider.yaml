@@ -182,6 +182,7 @@ Rules:
       # Change to absolute paths below when running outside of the gambit/modules directory
       Pythia_SUSY_LHC_8TeV:
         pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
+                          "Print:quiet = on",
                           "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
