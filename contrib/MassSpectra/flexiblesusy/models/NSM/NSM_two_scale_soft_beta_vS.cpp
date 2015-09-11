@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:29
+// File generated at Thu 13 Aug 2015 00:58:39
 
 #include "NSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,8 +37,7 @@ double NSM_soft_parameters::calc_beta_vS_one_loop(const Soft_traces& soft_traces
 
    double beta_vS;
 
-   beta_vS = Re(-(oneOver16PiSqr*vH*(Y2S(rH(List(1))(List(gi23)),List(
-      gen1)) + Y2S(rH(List(2))(List(gi23)),List(gen1)))));
+   beta_vS = Re(0);
 
 
    return beta_vS;
@@ -55,15 +54,7 @@ double NSM_soft_parameters::calc_beta_vS_two_loop(const Soft_traces& soft_traces
 
    double beta_vS;
 
-   beta_vS = Re(0.5*twoLoop*vH*(3*H2ab(rH(List(1))(List(gi23)),List(gen1)
-      ) + 3*H2ab(rH(List(2))(List(gi23)),List(gen1)) + 2*Hbar2(rH(List(1))(List
-      (gi23)),List(gen1)) + 2*Hbar2(rH(List(2))(List(gi23)),List(gen1)) - Lam2S
-      (rH(List(1))(List(gi23)),List(gen1)) - Lam2S(rH(List(2))(List(gi23)),List
-      (gen1)) - 10*Y2FS(rH(List(1))(List(gi23)),List(gen1),1) - 10*Y2FS(rH(List
-      (1))(List(gi23)),List(gen1),2) - 10*Y2FS(rH(List(1))(List(gi23)),List(
-      gen1),3) - 10*Y2FS(rH(List(2))(List(gi23)),List(gen1),1) - 10*Y2FS(rH(
-      List(2))(List(gi23)),List(gen1),2) - 10*Y2FS(rH(List(2))(List(gi23)),List
-      (gen1),3)));
+   beta_vS = Re(-4*twoLoop*vS*(12*Sqr(Lambda2) + Sqr(Lambda3)));
 
 
    return beta_vS;

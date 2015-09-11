@@ -143,5 +143,10 @@ MAKE_INTERFACE
 MAKE_INTERFACE
 #undef MODELNAME
 
+#define MODELNAME MSSM
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSM model headers etc.
+MAKE_INTERFACE
+#undef MODELNAME
+
 
 #endif
