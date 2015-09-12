@@ -22,6 +22,7 @@
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
 #include "gambit/Utils/type_index.hpp"
+#include "gambit/Utils/variadic_functions.hpp"
 
 using Gambit::type_index;
 
@@ -58,7 +59,7 @@ using Gambit::type_index;
 /// @}
 
 #define REQD_INIFILE_ENTRIES(...)
-#define REQD_LIRBARIES(...)
+//define REQD_LIRBARIES(...)
 #define REQD_HEADERS(...)
 #define SET_FLAG(...)
 
@@ -73,6 +74,38 @@ using Gambit::type_index;
 #define __PLUGIN_VERSION___1(major) __PLUGIN_VERSION___4(major,,,)
 #define __PLUGIN_VERSION___0() __PLUGIN_VERSION___(,,,)
 #define __PLUGIN_VERSION(...) __COMBINE__(__PLUGIN_VERSION___,__ARG_N__(__VA_ARGS__))( __VA_ARGS__ )
+
+#define REQD_LIRBARIES(...)                                                                             \
+namespace __gambit_plugin_namespace__                                                                   \
+{                                                                                                       \
+    namespace ReqdTags                                                                                  \
+    {                                                                                                   \
+        struct reqdlibs{};                                                                              \
+    }                                                                                                   \
+                                                                                                        \
+    namespace                                                                                           \
+    {                                                                                                   \
+        template<>                                                                                      \
+        class interface <ReqdTags::reqdlibs>                                                            \
+        {                                                                                               \
+        public:                                                                                         \
+                                                                                                        \
+            interface(pluginData &myData)                                                               \
+            {                                                                                           \
+                myData.inits.push_back(interface <ReqdTags::reqdlibs>::init);                           \
+            }                                                                                           \
+                                                                                                        \
+            static void init(pluginData &myData)                                                        \
+            {                                                                                           \
+                myData.load_libs = true;                                                                \
+                myData.reqd_libs = Gambit::initVector(__VA_ARGS__);                                     \
+            }                                                                                           \
+        };                                                                                              \
+                                                                                                        \
+        template <>                                                                                     \
+        interface <ReqdTags::reqdlibs> reg_init <ReqdTags::reqdlibs>::reg(myData);                      \
+    }                                                                                                   \
+}                                                                                                       \
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                      \

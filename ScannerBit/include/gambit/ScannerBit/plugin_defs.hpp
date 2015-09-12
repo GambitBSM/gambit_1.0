@@ -85,8 +85,8 @@ namespace Gambit
             struct pluginData
             {
                 std::string name;
-                std::string version;
                 std::string type;
+                std::string version;
                 std::string tag;
                 YAML::Node node;
                 printer_interface *printer;
@@ -94,31 +94,13 @@ namespace Gambit
                 std::vector <void (*)(pluginData &)> inits;
                 std::map<std::string, factoryBase *> outputFuncs;
                 std::map<type_index, void *> plugin_mains;
+                std::vector <std::string> reqd_libs;
                 void (*deconstructor)();
                 bool loaded;
-                
-                pluginData(std::string str) : deconstructor(NULL), loaded(false) 
-                {
-                    std::string::size_type posMid = str.rfind("__v__");
-                    version = str.substr(posMid + 5);
-                    
-                    std::string::size_type posLast = str.rfind("__t__", posMid - 1);
-                    type = str.substr(posLast + 5, posMid - posLast - 5);
-                    name = str.substr(0, posLast);
-                    posLast = version.find("_");
-                    std::string major_version = version.substr(0, posLast);
-                    posMid = version.find("_", posLast + 1);
-                    std::string minor_version = version.substr(posLast + 1, posMid - posLast - 1);
-                    posLast = version.find("_", posMid + 1);
-                    std::string patch_version = version.substr(posMid + 1, posLast - posMid - 1);
-                    std::string release_version = version.substr(posLast + 1);
-                    version = major_version + "." + minor_version + "." + patch_version;
-                    if (release_version != "") 
-                        version += "-" + release_version;
-                }
+                bool load_libs;
                 
                 pluginData(std::string name, std::string type, std::string version) 
-                        : name(name), type(type), version(version), deconstructor(NULL), loaded(false) 
+                        : name(name), type(type), version(version), deconstructor(NULL), loaded(false), load_libs(false)
                 {
                     std::string::size_type posLast = version.find("_");
                     std::string major_version = version.substr(0, posLast);

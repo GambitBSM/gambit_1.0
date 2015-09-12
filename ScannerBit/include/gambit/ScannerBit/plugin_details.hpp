@@ -114,11 +114,11 @@ namespace Gambit
                 Plugin_Details_Ref(const Plugin_Details &details) : details(&details) {}
                 Plugin_Details_Ref(const Plugin_Details_Ref &details) : details(details.details) {}
                 
-                const Plugin_Details_Ref &operator = (const Plugin_Details &details_in) const
-                {
-                    details = &details_in;
-                    return *this;
-                }
+                //const Plugin_Details_Ref &operator = (const Plugin_Details &details_in) const
+                //{
+                //    details = &details_in;
+                //    return *this;
+                //}
                 
                 const Plugin_Details_Ref &operator = (const Plugin_Details_Ref &details_in) const
                 {
@@ -126,11 +126,11 @@ namespace Gambit
                     return *this;
                 }
                 
-                Plugin_Details_Ref &operator = (Plugin_Details &details_in)
-                {
-                    details = &details_in;
-                    return *this;
-                }
+                //Plugin_Details_Ref &operator = (Plugin_Details &details_in)
+                //{
+                //    details = &details_in;
+                //    return *this;
+                //}
                 
                 Plugin_Details_Ref &operator = (Plugin_Details_Ref &details_in)
                 {

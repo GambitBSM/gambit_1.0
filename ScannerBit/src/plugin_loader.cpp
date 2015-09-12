@@ -40,7 +40,8 @@ namespace Gambit
                 typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
                 typedef std::map<std::string, plugin_map> plugin_mapmap;
                 
-                list_formatter list(stringToUpper(plugins->first) + " PLUGINS", "STATUS", "VERSION");
+                list_formatter list(plugins->first + " PLUGINS", "STATUS", "VERSION");
+                list.capitalize_title();
                 list.set_padding(1);
                 
                 for (auto it = plugins->second.begin(); it != plugins->second.end(); ++it)
