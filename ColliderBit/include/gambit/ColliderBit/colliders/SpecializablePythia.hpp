@@ -52,19 +52,27 @@ namespace Gambit {
         /// @brief Add a command to the list of settings used by "init"
         void addToSettings(const std::string& command) { _pythiaSettings.push_back(command); }
 
-        /// @brief Add a command to the list of settings used by "init"
-        void init(const std::vector<std::string>& externalSettings,
+        /// @brief Create a useless Pythia instance just to print the banner
+        void banner(const std::string pythiaDocPath) { _pythiaInstance = new Pythia8::Pythia(pythiaDocPath); }
+
+        /// @brief Initialize from some external settings
+        void init(const std::string pythiaDocPath,
+                  const std::vector<std::string>& externalSettings,
                   const SLHAea::Coll* slhaea=nullptr, std::ostream& os=std::cout);
 
-        void init_external(const std::vector<std::string>& externalSettings,
-                  const SLHAea::Coll* slhaea=nullptr, std::ostream& os=std::cout);
+        /// @brief Special initialization for externally provided process generation.
+        void init_external(const std::string pythiaDocPath,
+                           const std::vector<std::string>& externalSettings,
+                           const SLHAea::Coll* slhaea=nullptr, std::ostream& os=std::cout);
 
-        void init(const std::vector<std::string>& externalSettings, std::ostream& os) {
-          init(externalSettings, nullptr, os);
+        void init(const std::string pythiaDocPath,
+                  const std::vector<std::string>& externalSettings, std::ostream& os) {
+          init(pythiaDocPath, externalSettings, nullptr, os);
         }
 
-        void init_external(const std::vector<std::string>& externalSettings, std::ostream& os) {
-          init_external(externalSettings, nullptr, os);
+        void init_external(const std::string pythiaDocPath,
+                           const std::vector<std::string>& externalSettings, std::ostream& os) {
+          init_external(pythiaDocPath, externalSettings, nullptr, os);
         }
       
         /// @brief Specialize this Pythia interface to Gambit with a specialization function.

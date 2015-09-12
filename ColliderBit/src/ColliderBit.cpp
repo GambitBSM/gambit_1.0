@@ -165,6 +165,8 @@ namespace Gambit
 
       static bool SLHA_debug_mode = false;
       static std::vector<std::string> filenames;
+      static std::string pythia_doc_path;
+      static bool print_pythia_banner = true;
       static unsigned int counter = -1;               
       // variables for xsec veto
       std::stringstream processLevelOutput;
@@ -175,6 +177,17 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {
+        // Get Pythia to print its banner.
+        if (print_pythia_banner)
+        {
+          #pragma omp_critical (runOptions)
+          {
+            pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
+          }
+          result.banner(pythia_doc_path);
+          result.clear();
+          print_pythia_banner = false;
+        }
         // If there are no debug filenames set, look for them.
         if (filenames.empty())
         {
@@ -224,9 +237,9 @@ namespace Gambit
           logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
           pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
           if (omp_get_thread_num() == 0)
-            result.init(pythiaOptions, processLevelOutput);
+            result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
           else
-            result.init(pythiaOptions);
+            result.init(pythia_doc_path, pythiaOptions);
         }
         else
         {
@@ -254,9 +267,9 @@ namespace Gambit
           pythiaOptions.push_back("SLHA:file = slhaea");
 
           if (omp_get_thread_num() == 0)
-            result.init(pythiaOptions, &slha, processLevelOutput);
+            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
           else
-            result.init(pythiaOptions, &slha);
+            result.init(pythia_doc_path, pythiaOptions, &slha);
         }
 
         /// xsec veto
