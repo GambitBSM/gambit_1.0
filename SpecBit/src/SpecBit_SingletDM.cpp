@@ -341,8 +341,20 @@ namespace Gambit
       
       
       // ^^^^^^^^^^^^^^^^^^  minimumn value of Lambda found   ^^^^^^^^^^^^^^^^^^^^^^
+      double prob;
+      if (fu<0)
+      {
+      // Calculate probability function for transition rate to false vacuum
+      prob=exp(-exp(4*140-2600/(abs(fu)/0.01))*pow(u/(1.2e19),4)); //probability of 0 decays
+
+      }
+      else
+      {
+      prob=1; // vacuum is absolutely stable
+      }
       
-      result=fu;
+
+      result=prob;
     }
 
 
