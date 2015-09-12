@@ -33,8 +33,6 @@ namespace Gambit {
           specializeMe->addToSettings("Beams:eCM = 8000");
           specializeMe->addToSettings("Main:numberOfEvents = 1000");
           specializeMe->addToSettings("Main:timesAllowErrors = 1000");
-          specializeMe->addToSettings("Print:quiet = on");
-          specializeMe->addToSettings("Init:showProcesses = on");
           // Default to SUSY with all subprocesses
           specializeMe->addToSettings("SUSY:all = on");
 
