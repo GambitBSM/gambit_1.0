@@ -16,7 +16,7 @@ Parameters:
             range: [45.001, 100]
             prior_type: log
         lambda_hS:
-            range: [0.002, 0.5]
+            range: [0.002, 0.2]
             #fixed_value: 0.0366524 
             prior_type: log
 
@@ -81,7 +81,7 @@ ObsLikes:
     - capability: lnL_oh2
       purpose: Likelihood
 
-# simple test function in SpecBit
+# simple test vacuum stability function in SpecBit (observable only for now)
 
     - capability: VS
       purpose: Observable
