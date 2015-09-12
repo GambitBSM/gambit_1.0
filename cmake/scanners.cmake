@@ -45,11 +45,12 @@ ExternalProject_Add(diver
            COMMAND ${CMAKE_COMMAND} -E copy_directory ${diver_location} ${diver_dir}
   SOURCE_DIR ${diver_dir}
   BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
   INSTALL_COMMAND "" 
 )
-set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+enable_auto_rebuild(diver)
 add_external_clean(diver ${diver_dir} cleanall)
 
 # MultiNest
@@ -83,7 +84,7 @@ ExternalProject_Add(multinest
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LIBS=${mn_dir}/
   INSTALL_COMMAND "" 
 )
-set_property(TARGET multinest PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+enable_auto_rebuild(multinest)
 add_external_clean(multinest ${mn_dir} clean)
 
 # All other scanners are implemented natively in ScannerBit.

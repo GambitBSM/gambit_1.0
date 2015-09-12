@@ -89,6 +89,13 @@ macro(retrieve_bits bits root excludes quiet)
 
 endmacro()
 
+# Macro to clear the build stamp manually for an external project
+macro(enable_auto_rebuild package)
+  set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-build")
+  add_custom_target(check-rebuild-${package} ${CMAKE_COMMAND} -E remove -f ${rmstring}) 
+  add_dependencies(${package} check-rebuild-${package})
+endmacro()
+
 # Macro to write some shell commands to clean an external code
 macro(add_external_clean package dir target)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
