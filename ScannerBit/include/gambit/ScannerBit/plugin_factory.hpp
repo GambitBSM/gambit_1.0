@@ -67,7 +67,7 @@ namespace Gambit
             for (auto it = vec.begin(), end = vec.end(); it != end; it++)
             {
                 std::string::size_type pos = it->find("::");
-                ret[it->substr(0, pos)].push_back(it->substr(pos+2));
+                ret[it->substr(0, pos)].push_back(*it);
             }
             
             return ret;
