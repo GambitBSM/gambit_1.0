@@ -25,6 +25,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 #include <algorithm>
 #include <typeinfo>
 
@@ -94,13 +95,11 @@ namespace Gambit
                 std::vector <void (*)(pluginData &)> inits;
                 std::map<std::string, factoryBase *> outputFuncs;
                 std::map<type_index, void *> plugin_mains;
-                std::vector <std::string> reqd_libs;
                 void (*deconstructor)();
                 bool loaded;
-                bool load_libs;
                 
                 pluginData(std::string name, std::string type, std::string version) 
-                        : name(name), type(type), version(version), deconstructor(NULL), loaded(false), load_libs(false)
+                        : name(name), type(type), version(version), deconstructor(NULL), loaded(false)
                 {
                     std::string::size_type posLast = version.find("_");
                     std::string major_version = version.substr(0, posLast);

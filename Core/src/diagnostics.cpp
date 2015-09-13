@@ -19,7 +19,8 @@
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Core/screen_print_utils.hpp"
+#include "gambit/Utils/screen_print_utils.hpp"
+#include "gambit/Utils/table_formatter.hpp"
 
 namespace Gambit
 {
@@ -28,10 +29,10 @@ namespace Gambit
   void gambit_core::module_diagnostic()
   {
     //const int maxlen = 25;
-    list_formatter list("Modules", "#functions");
-    list.set_padding(1);
-    list.capitalize_title();
-    list.set_default_widths(25);
+    table_formatter table("Modules", "#functions");
+    table.padding(1);
+    table.capitalize_title();
+    table.default_widths(25);
     //cout << "Modules                #functions" << endl;
     //cout << "---------------------------------" << endl;
     for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
@@ -42,10 +43,10 @@ namespace Gambit
         if ((*jt)->origin() == *it) nf++;
       } 
       //cout << *it << spacing(it->length(),maxlen) << nf << endl;
-      list << *it << nf;
+      table << *it << nf;
     }
     std::stringstream out;
-    out << list.str();
+    out << table.str();
     if (out.str().size() > 0)
         print_to_screen(out.str(), "module");
   }
@@ -55,10 +56,10 @@ namespace Gambit
   {
     //int maxlens[6] = {18, 7, 70, 13, 3, 3};
     bool all_good = true;
-    list_formatter list("Backends", "Version", "Path to lib", "Status", "#func", "#types", "#ctors");
-    list.set_padding(1);
-    list.capitalize_title();
-    list.set_default_widths(18, 7, 70, 13, 3, 3);
+    table_formatter table("Backends", "Version", "Path to lib", "Status", "#func", "#types", "#ctors");
+    table.padding(1);
+    table.capitalize_title();
+    table.default_widths(18, 7, 70, 13, 3, 3);
     //cout << "Backends               Version     Path to lib                                                                Status            #funcs  #types  #ctors" << endl;
     //cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
@@ -104,12 +105,12 @@ namespace Gambit
         ss1 << nfuncs; //ss1a = spacing(ss1.str().length(),maxlens[4]);
         ss2 << ntypes; //ss2a = spacing(ss2.str().length(),maxlens[5]);
         //cout << ss1.str() << ss1a << ss2.str() << ss2a << nctors << endl;
-        list << firstentry << *jt << path;
+        table << firstentry << *jt << path;
         if (status == "OK")
-            list.set_green() << status;
+            table.green() << status;
         else
-            list.set_red() << status;
-        list << ss1.str() << ss2.str() << nctors;
+            table.red() << status;
+        table << ss1.str() << ss2.str() << nctors;
       }
     }
 
@@ -118,7 +119,7 @@ namespace Gambit
     out << "All relative paths are given with reference to " << GAMBIT_DIR << ".";
     if (all_good) out << endl << "All your backend are belong to us." << endl;
     out << endl;
-    out << list.str();
+    out << table.str();
     if (out.str().size() > 0)
         print_to_screen(out.str(), "backend");
   }
@@ -129,10 +130,10 @@ namespace Gambit
     //int maxlen1 = 35;
     //int maxlen2 = 35;
     std::stringstream out;
-    list_formatter list("Model", "Parent", "Parameters");
-    list.set_default_widths(35);
-    list.set_padding(1);
-    list.capitalize_title();
+    table_formatter table("Model", "Parent", "Parameters");
+    table.default_widths(35);
+    table.padding(1);
+    table.capitalize_title();
     //cout << "Models                                  Parent                                  Parameters" << endl;
     //cout << "------------------------------------------------------------------------------------------" << endl;
     for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
@@ -141,7 +142,7 @@ namespace Gambit
       str parentof = modelInfo->get_parent(model);
       int nparams = (*it)->valuePtr()->getNumberOfPars();
       //cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
-      list << model << parentof << nparams;
+      table << model << parentof << nparams;
     }
 #ifdef HAVE_GRAPHVIZ
     // Create and spit out graph of the model hierarchy.
@@ -153,7 +154,7 @@ namespace Gambit
 #else
     out << endl << "To get postscript plot of model hierarchy, please install graphviz, rerun cmake and remake GAMBIT." << endl;
 #endif
-    out << list.str();
+    out << table.str();
     if (out.str().size() > 0)
     print_to_screen(out.str(), "model");
   }
@@ -167,10 +168,10 @@ namespace Gambit
     // Default, list-format output header
     //cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
     //cout << "---------------------------------------------------------------------------------------------" << endl;
-    list_formatter list("Capabilities", "Available in (modules/models)", "Available in (backends)");
-    list.set_padding(1);
-    list.capitalize_title();
-    list.set_default_widths(35, 25);
+    table_formatter table("Capabilities", "Available in (modules/models)", "Available in (backends)");
+    table.padding(1);
+    table.capitalize_title();
+    table.default_widths(35, 25);
     for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
     {
       std::set<str> modset, beset;
@@ -203,10 +204,10 @@ namespace Gambit
 
       // Print the entry in the table (list format)
       //cout << *it << spacing(it->length(),maxlen1) << mods << spacing(mods.length(),maxlen2) << bes << endl;
-      list << *it << mods << bes;
+      table << *it << mods << bes;
     }
     std::stringstream out;
-    out << list.str();
+    out << table.str();
     if (out.str().size() > 0)
         print_to_screen(out.str(), "capability");
   }
@@ -215,13 +216,17 @@ namespace Gambit
   void gambit_core::scanner_diagnostic()
   {
     // Import scanner plugin info from ScannerBit 
-    Scanner::Plugins::plugin_info().print_all_to_screen("scanner");
+    std::string output = Scanner::Plugins::plugin_info().print_all("scanner");
+    if (output.length() > 0)
+        print_to_screen(output, "scanners");
   }
 
   /// Basic test function diagnostic function
   void gambit_core::test_function_diagnostic()
   { 
-    Scanner::Plugins::plugin_info().print_all_to_screen("objective");
+    std::string output = Scanner::Plugins::plugin_info().print_all("objective");
+    if (output.length() > 0)
+        print_to_screen(output, "objectives");
   }
   
   /// Free-form module diagnostic function
@@ -237,10 +242,11 @@ namespace Gambit
         //std::cout << "                   Dependencies[] & Backend Reqs{}" << endl;
         //std::cout << "-------------------------------------------------------------------------------------------------------------------------------";
         //std::cout << "--------------------------------------------------" << endl;
-        list_formatter list("Function", "Capability", "Result Type", "Loop Manager: Is", "Needs");
-        list.set_padding(1);
-        list.capitalize_title();
-        list.set_default_widths(30, 35, 35, 19, 27);
+        table_formatter table("Function", "Capability", "Result Type", "Loop Manager: Is", "Needs");
+        table.padding(1);
+        table.capitalize_title();
+        table.default_widths(30, 35, 35, 19, 27);
+        //table.min_widths(10, 10, 10, 10, 10);
         
         for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
         {
@@ -255,7 +261,7 @@ namespace Gambit
             std::set<sspair> reqs = (*jt)->backendreqs();
             //cout << f << spacing(f.length()-2,30) << c << spacing(c.length(),35);
             //cout << t << spacing(t.length(),35) << islm << "  " << nlm << spacing(nlm.length(),19);
-            list.no_newline() << f << c << t << (islm + "  " + nlm);
+            table.no_newline() << f << c << t << (islm + "  " + nlm);
             
             if (not deps.empty())
             {
@@ -264,9 +270,9 @@ namespace Gambit
                 //if (kt != deps.begin()) std::cout << std::string(146,' ');
                 //std::cout << kt->first << "[" << kt->second << "]" << std::endl;
                 if (kt != deps.begin())
-                    list.no_newline() << "" << "" << "" << "" << kt->first + " [" + kt->second + "]";
+                    table.no_newline() << "" << "" << "" << "" << kt->first + " [" + kt->second + "]";
                 else
-                    list << kt->first + " [" + kt->second + "]";
+                    table << kt->first + " [" + kt->second + "]";
               }
             } 
             if (not reqs.empty())
@@ -276,16 +282,16 @@ namespace Gambit
                 //if (kt != reqs.begin() or not deps.empty()) std::cout << std::string(146,' ');
                 //std::cout << kt->first << "{" << kt->second << "}" << std::endl;
                 if (kt != reqs.begin() or not deps.empty())
-                    list.no_newline() << "" << "" << "" << "" << kt->first + " {" + kt->second + "}";
+                    table.no_newline() << "" << "" << "" << "" << kt->first + " {" + kt->second + "}";
                 else
-                    list << kt->first + " {" + kt->second + "}";
+                    table << kt->first + " {" + kt->second + "}";
               }
             }
-            if (reqs.empty() and deps.empty()) list << "";//std::cout << std::endl;
-            list.newline(list.row_pos()-1);
+            if (reqs.empty() and deps.empty()) table << "";//std::cout << std::endl;
+            table.newline(table.row_pos()-1);
           }
         }
-        out << list.str();
+        out << table.str();
         break;
       }
     }
@@ -317,10 +323,10 @@ namespace Gambit
           out << "Library status: " << status << std::endl; 
           //bool first = true;
           
-          list_formatter back_list("  Function/Variable", "Capability", "Type", "Status");
-          back_list.capitalize_title();
-          back_list.set_default_widths(27, 35, 40, 40);
-          back_list.set_padding(1);
+          table_formatter back_table("  Function/Variable", "Capability", "Type", "Status");
+          back_table.capitalize_title();
+          back_table.default_widths(27, 35, 40, 40);
+          back_table.padding(1);
           // Loop over all the backend functions and variables
           for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
           {
@@ -336,22 +342,22 @@ namespace Gambit
               const str c = (*kt)->capability();
               const str t = (*kt)->type();
               const int s = (*kt)->status();
-              back_list << ("  " + f) << c << t;
+              back_table << ("  " + f) << c << t;
               //str ss;
-              if (s == -2) back_list.set_red() << "Function absent";//ss = "Function absent";
-              else if (s == -1) back_list.set_red() << "Backend absent";//ss = "Backend absent";
-              else if (s >= 0)  back_list.set_green() << "Available";//ss = "Available";
-              else back_list << "";
+              if (s == -2) back_table.red() << "Function absent";//ss = "Function absent";
+              else if (s == -1) back_table.red() << "Backend absent";//ss = "Backend absent";
+              else if (s >= 0)  back_table.green() << "Available";//ss = "Available";
+              else back_table << "";
               //cout << "  " << f << spacing(f.length(),25) << c << spacing(c.length(),35);
               //cout << t << spacing(t.length(),40) << ss << endl;
             }
           }
-          if (back_list.rows() > 0)
-            out << back_list.str();
-          list_formatter class_list("  Class", "Constructor overload", "Status");
-          class_list.capitalize_title();
-          class_list.set_default_widths(46, 60, 60);
-          class_list.set_padding(1);
+          if (back_table.rows() > 0)
+            out << back_table.str();
+          table_formatter class_table("  Class", "Constructor overload", "Status");
+          class_table.capitalize_title();
+          class_table.default_widths(46, 60, 60);
+          class_table.padding(1);
           // If this version has classes to offer, print out info on them too
           if (backendData->classloader.at(it->first+*jt))
           {
@@ -373,17 +379,17 @@ namespace Gambit
                 const str ss = backendData->constructor_status.at(it->first+*jt+*kt+args);
                 const str firstentry = (lt == ctors.begin() ? *kt : "");
                 //cout << "  " << firstentry << spacing(firstentry.length(),46) << args << spacing(args.length(),60) << ss << endl; 
-                class_list << ("  " + firstentry) << args;
+                class_table << ("  " + firstentry) << args;
                 if (ss == "OK")
-                    class_list.set_green() << status;
+                    class_table.green() << status;
                 else
-                    class_list.set_red() << status;
+                    class_table.red() << status;
               }
             }
           } 
           //cout << "  ----------------------------------------------------------------------------------------------------------------------------------" << endl << endl;
-          if (class_list.rows() > 0)
-              out << class_list.str();
+          if (class_table.rows() > 0)
+              out << class_table.str();
         }
         // Tell the user what the default version is for classes of this backend (if there are any).
         if (has_classloader)
@@ -483,13 +489,17 @@ namespace Gambit
   /// Free-form scanner diagnostic function
   void gambit_core::ff_scanner_diagnostic(str& command)
   {
-    Scanner::Plugins::plugin_info().print_plugin_to_screen("scanner", command);     
+    std::string output = Scanner::Plugins::plugin_info().print_plugin("scanner", command);
+    if (output.length() > 0)
+        print_to_screen(output, command);     
   }
 
   /// Free-form test function diagnostic function
   void gambit_core::ff_test_function_diagnostic(str& command)
   {
-    Scanner::Plugins::plugin_info().print_plugin_to_screen("objective", command);
+    std::string output = Scanner::Plugins::plugin_info().print_plugin("objective", command);
+    if (output.length() > 0)
+        print_to_screen(output, command);   
   }
 
 }

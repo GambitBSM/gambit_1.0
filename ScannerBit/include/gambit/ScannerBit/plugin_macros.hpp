@@ -59,7 +59,7 @@ using Gambit::type_index;
 /// @}
 
 #define REQD_INIFILE_ENTRIES(...)
-//define REQD_LIRBARIES(...)
+#define REQD_LIRBARIES(...)
 #define REQD_HEADERS(...)
 #define SET_FLAG(...)
 
@@ -74,38 +74,6 @@ using Gambit::type_index;
 #define __PLUGIN_VERSION___1(major) __PLUGIN_VERSION___4(major,,,)
 #define __PLUGIN_VERSION___0() __PLUGIN_VERSION___(,,,)
 #define __PLUGIN_VERSION(...) __COMBINE__(__PLUGIN_VERSION___,__ARG_N__(__VA_ARGS__))( __VA_ARGS__ )
-
-#define REQD_LIRBARIES(...)                                                                             \
-namespace __gambit_plugin_namespace__                                                                   \
-{                                                                                                       \
-    namespace ReqdTags                                                                                  \
-    {                                                                                                   \
-        struct reqdlibs{};                                                                              \
-    }                                                                                                   \
-                                                                                                        \
-    namespace                                                                                           \
-    {                                                                                                   \
-        template<>                                                                                      \
-        class interface <ReqdTags::reqdlibs>                                                            \
-        {                                                                                               \
-        public:                                                                                         \
-                                                                                                        \
-            interface(pluginData &myData)                                                               \
-            {                                                                                           \
-                myData.inits.push_back(interface <ReqdTags::reqdlibs>::init);                           \
-            }                                                                                           \
-                                                                                                        \
-            static void init(pluginData &myData)                                                        \
-            {                                                                                           \
-                myData.load_libs = true;                                                                \
-                myData.reqd_libs = Gambit::initVector(__VA_ARGS__);                                     \
-            }                                                                                           \
-        };                                                                                              \
-                                                                                                        \
-        template <>                                                                                     \
-        interface <ReqdTags::reqdlibs> reg_init <ReqdTags::reqdlibs>::reg(myData);                      \
-    }                                                                                                   \
-}                                                                                                       \
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                      \
@@ -391,13 +359,13 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
         __GAMBIT_PLUGIN__(plug_name, plug_type, plug_version)                                               \
 
 #define GAMBIT_PLUGIN_1(plugin_name)                                                                        \
-        _GAMBIT_PLUGIN_(plug_name,, __PLUGIN_no_version)                                                     \
+        _GAMBIT_PLUGIN_(plug_name,, __PLUGIN_no_version)                                                    \
         
 #define GAMBIT_PLUGIN_2(plugin_name, plug_type)                                                             \
-        _GAMBIT_PLUGIN_(plug_name, plug_type, __PLUGIN__no_version)                                           \
+        _GAMBIT_PLUGIN_(plug_name, plug_type, __PLUGIN__no_version)                                         \
 
 #define GAMBIT_PLUGIN_3(plug_name, plug_type, plug_version)                                                 \
-        _GAMBIT_PLUGIN_(plug_name, plug_type, __PLUGIN_ ## plug_version)                                     \
+        _GAMBIT_PLUGIN_(plug_name, plug_type, __PLUGIN_ ## plug_version)                                    \
 
 #define GAMBIT_PLUGIN(...) __COMBINE__(GAMBIT_PLUGIN_, __ARG_N__(__VA_ARGS__))(__VA_ARGS__ )
 
@@ -409,16 +377,16 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
         ___GAMBIT_PLUGIN_NAMESPACE___(plug_name, plug_type, plug_version)                                   \
 
 #define __GAMBIT_PLUGIN_NAMESPACE___1(plug_name)                                                            \
-        _GAMBIT_PLUGIN_NAMESPACE_(plug_name,, __PLUGIN_no_version)                                           \
+        _GAMBIT_PLUGIN_NAMESPACE_(plug_name,, __PLUGIN_no_version)                                          \
 
 #define __GAMBIT_PLUGIN_NAMESPACE___2(plug_name, plug_type)                                                 \
-        _GAMBIT_PLUGIN_NAMESPACE_(plug_name, plug_type, __PLUGIN_no_version)                                 \
+        _GAMBIT_PLUGIN_NAMESPACE_(plug_name, plug_type, __PLUGIN_no_version)                                \
 
 #define __GAMBIT_PLUGIN_NAMESPACE___3(plug_name, plug_type, plug_version)                                   \
-        _GAMBIT_PLUGIN_NAMESPACE_(plug_name, plug_type, __PLUGIN_ ## plug_version)                           \
+        _GAMBIT_PLUGIN_NAMESPACE_(plug_name, plug_type, __PLUGIN_ ## plug_version)                          \
 
 #define __GAMBIT_PLUGIN_NAMESPACE__(...)                                                                    \
-        __COMBINE__(__GAMBIT_PLUGIN_NAMESPACE___, __ARG_N__(__VA_ARGS__))(__VA_ARGS__)                   \
+        __COMBINE__(__GAMBIT_PLUGIN_NAMESPACE___, __ARG_N__(__VA_ARGS__))(__VA_ARGS__)                      \
 
 
 #define GAMBIT_PLUGIN_INITIALIZE(setup, ...)                                                                \

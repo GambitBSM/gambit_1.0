@@ -25,7 +25,8 @@
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Core/screen_print_utils.hpp"
+#include "gambit/Utils/table_formatter.hpp"
+#include "gambit/Utils/screen_print_utils.hpp"
 
 namespace Gambit
 {
@@ -40,25 +41,25 @@ namespace Gambit
                 typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
                 typedef std::map<std::string, plugin_map> plugin_mapmap;
                 
-                list_formatter list(plugins->first + " PLUGINS", "STATUS", "VERSION");
-                list.capitalize_title();
-                list.set_padding(1);
+                table_formatter table(plugins->first + " PLUGINS", "STATUS", "VERSION");
+                table.capitalize_title();
+                table.padding(1);
                 
                 for (auto it = plugins->second.begin(); it != plugins->second.end(); ++it)
                 {
                     for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
                     {
                         const str firstentry = (jt == it->second.begin() ? it->first : "");
-                        list << firstentry;
-                        list << jt->version;
+                        table << firstentry;
+                        table << jt->version;
                         if (jt->status == "ok")
-                            list.set_green() << jt->status;
+                            table.green() << jt->status;
                         else
-                            list.set_red() << jt->status;
+                            table.red() << jt->status;
                     }
                 }
                 
-                return list.str();
+                return table.str();
             }
             
             Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")

@@ -28,7 +28,7 @@
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Core/screen_print_utils.hpp"
+#include "gambit/Utils/table_formatter.hpp"
 
 namespace Gambit
 {
@@ -207,30 +207,17 @@ namespace Gambit
             std::string Plugin_Details::printFull() const
             {
                 std::stringstream out;
-                int out_len1, out_len2, out_len3 = 25;
-                int cols = get_screen_cols();
-                if (cols > 0)
-                {
-                    out_len1 = out_len2 = out_len3 = cols/3;
-                    out_len3 += cols%3;
-                }
-                else
-                {
-                    out_len1 = out_len2 = out_len3 = 25;
-                }
                 
-                out << std::setiosflags(std::ios::left);
-                out << "\n\x1b[01m\x1b[04m"  << std::setw (out_len1) << stringToUpper(type) + " PLUGIN"  << std::setw (out_len2) << "VERSION"  << std::setw (out_len3) << "STATUS" << "\x1b[0m\n" << std::endl;
-                //out << "----------------------------------------------------------------------------" << std::endl;
-                out << std::setw (out_len1) << plugin;
-                out << std::setw (out_len2) << version;
+                table_formatter table(type + " PLUGIN", "VERSION", "STATUS");
+                table.capitalize_title();
+                table.padding(1);
+                table << plugin << version;
                 if (status == "ok")
-                    out << "\x1b[32m" << std::setw (out_len3) << status << "\x1b[0m" << std::endl;
+                    table.green() << status;
                 else
-                    out << "\x1b[31m" << std::setw (out_len3) << status << "\x1b[0m" << std::endl;
-                out << std::resetiosflags(std::ios::left);
+                    table.red() << status;
                 
-                out << std::endl;
+                out << table.str();// << std::endl;
                 
                 out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
                 out << "\nrequired inifile entries:  ";
