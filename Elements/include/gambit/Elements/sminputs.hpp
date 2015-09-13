@@ -21,11 +21,10 @@
 
 #include "gambit/Elements/slhaea_helpers.hpp"
 
-
 namespace Gambit
 {
 
-   // Container class for Standard Model input information (defined as in SLHA2)
+   /// Container class for Standard Model input information (defined as in SLHA2)
    struct SMInputs
    {
 

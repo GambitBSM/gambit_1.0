@@ -546,6 +546,21 @@ is a unique record for every rank/pointID pair.";
       addtobuffer(value,labels,IDcode,thread,pointID);
     }
    
+    void asciiPrinter::print(triplet<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    {
+      std::vector<str> labels;
+      std::vector<double> values;
+      labels.reserve(3);
+      values.reserve(3);
+      labels.push_back(label+"(central)");
+      labels.push_back(label+"(lower)");
+      labels.push_back(label+"(upper)");
+      values.push_back(value.central);
+      values.push_back(value.lower);
+      values.push_back(value.upper);
+      addtobuffer(values,labels,IDcode,thread,pointID);
+    }
+
     void asciiPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
       std::map<std::string, double> parameter_map = value.getValues();

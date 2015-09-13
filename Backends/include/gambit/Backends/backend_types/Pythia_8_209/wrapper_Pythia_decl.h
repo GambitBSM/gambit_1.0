@@ -83,6 +83,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool setResonancePtr(WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn);
         
+                bool init(std::basic_ostream<char,std::char_traits<char> >& os);
+        
                 bool init();
         
                 bool next();

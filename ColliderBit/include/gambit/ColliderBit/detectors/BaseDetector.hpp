@@ -6,7 +6,6 @@
 
 #include "gambit/Elements/shared_types.hpp"
 #include "gambit/ColliderBit/Py8Utils.hpp"
-#include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
 #include "HEPUtils/Event.h"
 #include "HEPUtils/Particle.h"

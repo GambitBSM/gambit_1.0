@@ -24,9 +24,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_LHdecayTable : virtual public AbstractBase
         {
             private:
-                // IGNORED: Field  -- Name: id  -- XML id: _25458
-                // IGNORED: Field  -- Name: width  -- XML id: _25459
-                // IGNORED: Field  -- Name: table  -- XML id: _25460
+                // IGNORED: Field  -- Name: id  -- XML id: _25811
+                // IGNORED: Field  -- Name: width  -- XML id: _25812
+                // IGNORED: Field  -- Name: table  -- XML id: _25813
             public:
     
                 virtual int getId() =0;
