@@ -151,6 +151,7 @@ ExternalProject_Add(micromegasSingletDM
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/SingletDM/SingletDM/libmicromegas.so")
 
 # Pythia
+
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
 endif()
@@ -159,7 +160,8 @@ string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
 # - Suppress warnings from -Wextra when building Pythia with gcc
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra")
-endif()                                                 
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -O3 -ffast-math -mavx")
+endif()
 # - Set include directories
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 # - Set local paths

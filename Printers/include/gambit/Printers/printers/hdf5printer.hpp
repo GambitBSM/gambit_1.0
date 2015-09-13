@@ -289,7 +289,8 @@ namespace Gambit
           (bool)(std::vector<bool>)  \
           (std::vector<int>)         \
           (std::vector<double>)      \
-          (ModelParameters)
+          (triplet<double>)          \
+          (ModelParameters)  
 
         #define DECLARE_PRINT(r,data,ELEM) \
           void print(ELEM const& value, const std::string& label, const int IDcode, const int rank, const ulong pointID); \
@@ -367,7 +368,8 @@ namespace Gambit
 
         /// Regular print functions
         void print(std::vector<double> const&, const std::string&, const int, const uint, const ulong);
-        void print(ModelParameters     const&, const std::string&, const int, const uint, const ulong);
+        void print(triplet<double> const&,     const std::string&, const int, const uint, const ulong);
+        void print(ModelParameters const&,     const std::string&, const int, const uint, const ulong);
 
       private:
         // Pointers to HDF5 file and group objects containing the datasets

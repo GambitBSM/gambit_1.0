@@ -66,6 +66,9 @@ ycent = 0.5*(y[1:] + y[:-1])
 xc, yc = np.meshgrid(xcent, ycent, indexing='ij')
 zc = np.zeros_like(xc)
 
+xc.tofile('xdata.txt', ' ')
+yc.tofile('ydata.txt', ' ')
+
 for i in xrange(ngrid):
     if not (i+1) % (ngrid // 10):
         print "xindex @ " + str(i+1)
@@ -97,7 +100,6 @@ for i in xrange(ngrid):
                 xsecAverage = np.nan
                 break
             else:
-                # TODO: Play with this weight function for a good result
                 weight = np.sqrt(1./rmin)
                 totalWeight += weight
                 xsecAverage += weight * xsec_at_rmin
@@ -105,6 +107,8 @@ for i in xrange(ngrid):
             zc[i,j] = xsecAverage
         else:
             zc[i,j] = xsecAverage / totalWeight
+
+zc.tofile('zdata_python.txt', '\n')
 
 fig, axes = plt.subplots(figsize=(11,7), facecolor='#ffffff')
 levels = np.arange(0, 2.01, 0.05)

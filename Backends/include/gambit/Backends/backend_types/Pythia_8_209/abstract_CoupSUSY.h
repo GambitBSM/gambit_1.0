@@ -173,12 +173,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual std::complex<double> (&Rsl_ref__BOSS())[7][7] =0;
     
                 virtual std::complex<double> (&Rsv_ref__BOSS())[7][7] =0;
-                // IGNORED: Field  -- Name: slhaPtr  -- XML id: _23594
+                // IGNORED: Field  -- Name: slhaPtr  -- XML id: _24714
             private:
-                // IGNORED: Variable  -- Name: DBSUSY  -- XML id: _23595
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _23596
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _23597
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _23598
+                // IGNORED: Variable  -- Name: DBSUSY  -- XML id: _24715
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _24716
+                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _24717
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _24718
             public:
     
                 virtual void initSUSY__BOSS(Pythia8::Abstract_SusyLesHouches*, Pythia8::Abstract_Info*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Settings*) =0;

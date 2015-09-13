@@ -38,7 +38,7 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/numerical_constants.hpp
                  include/gambit/Elements/safety_bucket.hpp
                  include/gambit/Elements/shared_types.hpp
-                 include/gambit/Elements/slhaea_helpers.hpp                 
+                 include/gambit/Elements/slhaea_helpers.hpp
                  include/gambit/Elements/sminputs.hpp
                  include/gambit/Elements/spectrum.hpp
                  include/gambit/Elements/spec_fptrfinder.hpp
