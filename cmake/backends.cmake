@@ -139,29 +139,34 @@ enable_auto_rebuild(gamlike)
 add_external_clean(gamlike ${gamlike_dir} clean)
 
 # MicrOmegas for MSSM
-set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/MSSM")
+set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/MSSM")
+set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/MSSM")
 ExternalProject_Add(micromegas
+  DOWNLOAD_COMMAND ""
   SOURCE_DIR ${micromegas_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
+  BUILD_COMMAND cd ${micromegas_patch_dir} && ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
-add_external_clean(micromegas ${micromegas_dir} distclean)
+enable_auto_rebuild(micromegas)
+add_external_clean(micromegas ${micromegas_dir} clean)
 
 # MicrOmegas for SingletDM
-set(micromegasSingletDM_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/SingletDM")
+set(micromegasSingletDM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/SingletDM")
+set(micromegasSingletDM_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/SingletDM")
 ExternalProject_Add(micromegasSingletDM
+  DOWNLOAD_COMMAND ""
   SOURCE_DIR ${micromegasSingletDM_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
+  BUILD_COMMAND cd ${micromegasSingletDM_patch_dir} && ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
   INSTALL_COMMAND ""
 )
 enable_auto_rebuild(micromegasSingletDM)
-add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} distclean)
+add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
