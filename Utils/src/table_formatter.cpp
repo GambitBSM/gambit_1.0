@@ -82,6 +82,7 @@ namespace Gambit
     {
         int cols_screen = get_screen_cols();
         int row_num = data.size();
+        int col_last = col_num - 1;
         std::vector<int> col_sizes;
         std::stringstream out;
         bool overflow = false;
@@ -89,7 +90,7 @@ namespace Gambit
         if (cols_screen > 0)
         {
             col_sizes = std::vector<int>(col_num, (cols_screen)/col_num);
-            col_sizes[col_num-1] += (cols_screen-pad)%col_num;
+            col_sizes[col_last] += (cols_screen-pad)%col_num;
         }
         else
         {
@@ -115,12 +116,12 @@ namespace Gambit
             }
         }
         
-        if (pad > 0) for (int i = 0, end = col_num-1; i < end; i++)
+        if (pad > 0) for (int i = 0; i < col_last; i++)
         {
             max_col[i] += pad;
         }
         
-        for (int i = 0, end = col_num-1; i < end; i++)
+        for (int i = 0; i < col_last; i++)
         {
             if (col_sizes[i] < max_col[i])
             {
@@ -131,18 +132,18 @@ namespace Gambit
         
         if (col_num > 1)
         {
-            if (col_sizes[col_num-1] < max_col[col_num-1])
+            if (col_sizes[col_last] < max_col[col_last])
             {
-                int diff = max_col[col_num-1] - col_sizes[col_num-1];
+                int diff = max_col[col_last] - col_sizes[col_last];
                 bool changed = true;
                 while (diff > 0 && changed)
                 {
                     changed = false;
-                    for (int i = 0, end = col_num-1; i < end; i++)
+                    for (int i = 0; i < col_last; i++)
                     {
                         if (col_sizes[i] > max_col[i] && diff > 0)
                         {
-                            col_sizes[end]++;
+                            col_sizes[col_last]++;
                             col_sizes[i]--;
                             diff--;
                             changed = true;
@@ -152,29 +153,29 @@ namespace Gambit
                 
                 if (diff > 0)
                 {
-                    col_sizes[col_num-1] = max_col[col_num-1];
+                    col_sizes[col_last] = max_col[col_last];
                     overflow = true;
                 }
             }
         }
+        
+        if (pad > 0) for (int i = 0; i < col_last; i++)
+        {
+            col_sizes[i] -= pad;
+        }
+        
+        std::string spaces(pad, ' ');
 
         std::vector<std::ios_base::fmtflags> ff(col_num);
         for (int i = 0; i < col_num; i++)
         {
-            if (col_flags.find(i) != col_flags.end())
+            if (col_flags[i] & JUST_RIGHT)
             {
-                if (col_flags[i] & JUST_RIGHT)
-                {
-                    ff[i] = std::ios::right;
-                }
-                else if (col_flags[i] & JUST_CENTER)
-                {
-                    ff[i] = std::ios::internal;
-                }
-                else
-                {
-                    ff[i] = std::ios::left;
-                }
+                ff[i] = std::ios::right;
+            }
+            else if (col_flags[i] & JUST_CENTER)
+            {
+                ff[i] = std::ios::left;
             }
             else
             {
@@ -189,8 +190,13 @@ namespace Gambit
         for (int i = 0; i < col_num; i++)
         {
             out << std::setiosflags(ff[i]);
-            out << std::setw(col_sizes[i]) << titles[i];
+            if (col_flags[i] & JUST_CENTER)
+                out << std::setw(col_sizes[i]) << std::string((col_sizes[i]-titles[i].size())/2, ' ') + titles[i];
+            else
+                out << std::setw(col_sizes[i]) << titles[i];
             out << std::resetiosflags(ff[i]);
+            if (i < col_last)
+                out << spaces;
         }
         out << "\x1b[0m\n" << std::endl;
         
@@ -203,7 +209,10 @@ namespace Gambit
                 if (flags.find(key) == flags.end())
                 {
                     out << std::setiosflags(ff[j]);
-                    out << std::setw(col_sizes[j]) << data[i][j];
+                    if (col_flags[j] & JUST_CENTER)
+                        out << std::setw(col_sizes[j]) << std::string((col_sizes[j]-data[i][j].size())/2, ' ') + data[i][j];
+                    else
+                        out << std::setw(col_sizes[j]) << data[i][j];
                     out << std::resetiosflags(ff[j]);
                 }
                 else
@@ -229,9 +238,16 @@ namespace Gambit
                     {
                         out << "\x1b[04m";
                     }
-                    out << std::setw(col_sizes[j]) << data[i][j] << "\x1b[0m";
+                    if (col_flags[j] & JUST_CENTER)
+                        out << std::setw(col_sizes[j]) << std::string((col_sizes[j]-data[i][j].size())/2, ' ') + data[i][j];
+                    else
+                        out << std::setw(col_sizes[j]) << data[i][j];
+                    out << "\x1b[0m";
                     out << std::resetiosflags(ff[j]);
                 }
+                
+                if (j < col_last)
+                    out << spaces;
             }
             
             if (bool(row_flags[i] & WRAP))

@@ -185,7 +185,7 @@ namespace Gambit
         std::vector<std::string> titles;
         std::map<std::pair<int, int>, unsigned char> flags;
         std::vector<unsigned char> row_flags;
-        std::map<int, unsigned char> col_flags;
+        std::vector<unsigned char> col_flags;
         
         inline void enter_titles(){}
         template<typename... T>
@@ -211,7 +211,7 @@ namespace Gambit
         static const unsigned char WRAP = 0x80;
         
         template <typename... T>
-        table_formatter(const T& ...params) : col_num(sizeof...(T)), col(0), row(0), pad(0), wrap(false), defaultWidths(col_num, 25), minWidths(col_num, -1), row_flags(1, 0x00)
+        table_formatter(const T& ...params) : col_num(sizeof...(T)), col(0), row(0), pad(0), wrap(false), defaultWidths(col_num, 25), minWidths(col_num, -1), row_flags(1, 0x00), col_flags(sizeof...(T), 0x00)
         {
             enter_titles(params...);
         }
@@ -299,14 +299,16 @@ namespace Gambit
         
         inline table_formatter& reset_row_flag(const unsigned char flag, int i)
         {
-            row_flags[i] = flag;
+            if (i < (int)row_flags.size())
+                row_flags[i] = flag;
             
             return *this;
         }
         
         inline table_formatter& reset_col_flag(const unsigned char flag, int i)
         {
-            col_flags[i] = flag;
+            if (i < (int)col_flags.size())
+                col_flags[i] = flag;
             
             return *this;
         }
@@ -337,18 +339,15 @@ namespace Gambit
         
         inline table_formatter& set_row_flag(const unsigned char flag, int i)
         {
-            row_flags[i] |= flag;
+            if (i < (int)row_flags.size())
+                row_flags[i] |= flag;
             
             return *this;
         }
         
         inline table_formatter& set_col_flag(const unsigned char flag, int i)
         {
-            if (col_flags.find(i) == col_flags.end())
-            {
-                col_flags[i] = flag;
-            }
-            else
+            if (i < (int)col_flags.size())
             {
                 if (bool(col_flags[i] & JUST) && bool(flag & JUST))
                 {

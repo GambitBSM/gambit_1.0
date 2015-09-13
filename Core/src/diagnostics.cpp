@@ -246,7 +246,8 @@ namespace Gambit
         table.padding(1);
         table.capitalize_title();
         table.default_widths(30, 35, 35, 19, 27);
-        //table.min_widths(10, 10, 10, 10, 10);
+        //table.min_widths(10, 10, 10, 10, 10); //if I want to allow line wraps within columns
+        //table.center_justify(3); //center justifies the "Loop Manager: Is" column
         
         for (fVec::const_iterator jt = functorList.begin(); jt != functorList.end(); ++jt)
         {
