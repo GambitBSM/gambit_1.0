@@ -49,6 +49,7 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   set (EXCLUDE_DELPHES FALSE)
   set (DELPHES_LDFLAGS "-L${DELPHES_DIR} -lDelphes")
   set (DELPHES_BAD_LINE "\\(..CC)\ ..patsubst\ -std=%,,..CXXFLAGS))\\)\ \\(..CXXFLAGS.\\)")
+  set (CMAKE_INSTALL_RPATH "${DELPHES_DIR}")
   include_directories("${DELPHES_DIR}" "${DELPHES_DIR}/external" "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
   ExternalProject_Add(delphes
     SOURCE_DIR ${DELPHES_DIR}
