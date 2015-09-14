@@ -52,6 +52,8 @@ Rules:
   - capability: decay_rates
     function: all_decays
 
+  - capability: SingletDM_spectrum
+    function: get_SingletDM_spectrum
 
 
 

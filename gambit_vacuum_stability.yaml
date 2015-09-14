@@ -116,12 +116,20 @@ ObsLikes:
       purpose: Observable
       function: VS_SSDM
 
+      
+    - capability: SingletDM_spectrum
+      purpose: Observable
+      function: get_SingletDM_spectrum_pole
+
 
 #########################
 # Auxiliary entries
 #########################
 
 Rules:
+
+  - capability: SingletDM_spectrum
+    function: get_SingletDM_spectrum_pole
 
 
 

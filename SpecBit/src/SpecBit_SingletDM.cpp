@@ -109,6 +109,71 @@ namespace Gambit
 
       result = &full_spectrum;
     }
+    
+    void get_SingletDM_spectrum_pole(const Spectrum* &result)
+    {
+      namespace myPipe = Pipes::get_SingletDM_spectrum_pole;
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+
+      // SoftSUSY object used to set quark and lepton masses and gauge
+      // couplings in QEDxQCD effective theory
+      QedQcd oneset;
+
+
+      // setup_QedQcd(oneset,sminputs);
+
+      // Run everything to Mz
+      
+      
+      SSDM_input_parameters input;
+      SSDM_spectrum_generator<Two_scale> spectrum_generator;
+      oneset.toMz();
+      
+      
+
+      // Create a SubSpectrum object to wrap the qedqcd object
+      // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
+      // extracted from the QedQcd object, so use the values that we put into it.)
+      QedQcdWrapper qedqcdspec(oneset,sminputs);
+
+      // Initialise an object to carry the Singlet plus Higgs sector information
+      
+      double mH,mS,lambda_hs;
+      
+      setup_QedQcd(oneset,sminputs);       // Fill QedQcd object with SMInputs values
+      mH = *myPipe::Param.at("mH");
+      mS = *myPipe::Param.at("mS");
+      lambda_hs   = *myPipe::Param.at("lambda_hS");
+      
+      input.HiggsIN=-pow(mH,2)/2;
+      input.mS2Input=pow(mS,2)-lambda_hs*15;
+      input.Lambda2Input=lambda_hs;
+      input.Lambda3Input=0;
+      input.Qin=173.15;  // scale where EWSB conditions are applied
+            
+      spectrum_generator.run(oneset, input);
+      SSDM_slha<Two_scale> model(spectrum_generator.get_model());
+      
+      SSDM_parameter_getter parameter_getter;
+      SSDM_physical& pole_masses = model.get_physical_slha();
+
+      SingletDMModel singletmodel;
+      singletmodel.HiggsPoleMass   = pole_masses.Mhh;
+      singletmodel.HiggsVEV        = *myPipe::Param.at("vev");
+      singletmodel.SingletPoleMass = pole_masses.Mss;
+      singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
+
+      cout<< "Scalar pole mass from spectrum generator = "<< pole_masses.Mss << endl;
+
+      // Create a SubSpectrum object to wrap the EW sector information
+      SingletDMContainer singletspec(singletmodel);
+
+      static Spectrum full_spectrum;
+
+      full_spectrum = Spectrum(qedqcdspec,singletspec,sminputs);
+
+      result = &full_spectrum;
+    }
       
     void VS_SSDM(double &result) //  calculate minimum value of the quartic Higgs coupling between M_Z and M_Planck
     {
@@ -123,22 +188,16 @@ namespace Gambit
 
       // SoftSUSY object used to set quark and lepton masses and gauge
       // couplings in QEDxQCD effective theory
-      
-      
+
       QedQcd oneset;
       SSDM_input_parameters input;
       
       SSDM_spectrum_generator<Two_scale> spectrum_generator;
-      
-
       // Fill QedQcd object with SMInputs values
-
-
       // Run everything to Mz
       oneset.toMz();
       double mH,mS,lambda_hs;
       setup_QedQcd(oneset,sminputs);
-      
       mH = *myPipe::Param.at("mH");
       mS = *myPipe::Param.at("mS");
       lambda_hs   = *myPipe::Param.at("lambda_hS");
@@ -158,11 +217,8 @@ namespace Gambit
       SSDM_physical& pole_masses = model.get_physical_slha();
       MS_pole_mass=pole_masses.Mss;
      // mtop=pole_masses.MFu(2);
-      cout<< "Scalar pole mass from spectrum generator = "<< MS_pole_mass << endl;
-      //cout<< "top pole mass from spectrum generator= "<< mtop << endl;
-    
-      
-      // need to redo the calcuation using beta function directly from FS
+     // cout<< "Scalar pole mass from spectrum generator = "<< MS_pole_mass << endl;
+
       
       // vvvvvvvvvvvv    Finding minimum value of Lambda      vvvvvvvvvvvvv
       
@@ -256,7 +312,7 @@ namespace Gambit
       // bracketing complete now need to find minimum lambda value, using Brent's method
       
       
-      double xmin, fmin;
+
       const double CGOLD=0.3819660;
       const double ZEPS=numeric_limits<double>::epsilon()*1.0e-3;
       //Here ITMAX is the maximum allowed number of iterations;
@@ -277,6 +333,7 @@ namespace Gambit
           tol2=2.0*(tol1=tol*abs(x)+ZEPS);
           if (abs(x-xm) <= (tol2-0.5*(b-a)))
           {                      //Test for done here.
+              double xmin, fmin;
               fmin=fx;
               xmin=x;
               iterations=iter;
