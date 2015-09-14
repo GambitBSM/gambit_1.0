@@ -39,6 +39,12 @@
     START_CAPABILITY
     #define FUNCTION VS_SSDM
     START_FUNCTION(double)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    //DEPENDENCY(SingletDM_spectrum, Spectrum*)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs, SingletDM)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs))
+    MODEL_GROUP(singlet, (SingletDM))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
   #undef CAPABILITY

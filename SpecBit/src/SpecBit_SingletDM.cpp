@@ -115,7 +115,7 @@ namespace Gambit
       using namespace Pipes::VS_SSDM;
       using namespace flexiblesusy;
       using namespace softsusy;
-      namespace myPipe = Pipes::get_SingletDM_spectrum;
+      namespace myPipe = Pipes::VS_SSDM;//get_SingletDM_spectrum;
       using namespace Gambit;
 
 
