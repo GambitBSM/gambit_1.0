@@ -48,6 +48,8 @@ namespace Gambit
                 int patch_version;
                 ///status, not set right now
                 std::string status;
+                ///reason is excluded
+                std::vector<std::string> reason;
                 ///release version
                 std::string release_version;
                 ///full path to library containing plugin

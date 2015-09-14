@@ -105,7 +105,6 @@ namespace Gambit
                 for (auto it = excluded_plugins.begin(), end = excluded_plugins.end(); it != end; it++)
                 {
                     it->get_status(libNode, plugNode, flagNode);
-                    it->status = "excluded";
                     excluded_plugin_map[it->type][it->plugin].push_back(*it);
                     total_plugin_map[it->type][it->plugin].push_back(*it);
                     //std::cout << it->printFull() << std::endl;
@@ -121,24 +120,47 @@ namespace Gambit
                     for (auto it = node.begin(), end = node.end(); it != end; it++)
                     {
                         std::string lib = it->first.as<std::string>();
+                        std::vector<Plugin_Details> excluded_plugins_temp;
+                        std::vector<std::string> reason;
                         if (it->second.IsMap())
                         {
                             if (it->second["plugins"])
                             {
-                                for (auto it2 = it->second["plugins"].begin(), end2 = it->second["plugins"].end(); it2 != end2; it2++)
+                                for (auto it2 = it->second["plugins"].begin(), end2 = it->second["plugins"].end(); it2 != end2; ++it2)
                                 {
                                     Plugin_Details temp(it2->as<std::string>());
 
                                     temp.path = path + lib;
-                                    temp.status = -1;
-                                    total_plugins.push_back(temp);
-                                    excluded_plugins.push_back(temp);
+                                    temp.status = "excluded";
+                                    //total_plugins.push_back(temp);
+                                    excluded_plugins_temp.push_back(temp);
                                 }
                             }
                             
                             if (it->second["reason"])
                             {
+                                if(it->second["reason"].IsScalar())
+                                {
+                                    reason.push_back(it->second["reason"].as<std::string>());
+                                }
+                                if(it->second["reason"].IsMap())
+                                {
+                                    for (auto it2 = it->second["reason"].begin(), end2 = it->second["reason"].end(); it2 != end2; ++it2)
+                                    {
+                                        reason.push_back(it2->first.as<std::string>() + ":  " + it2->second.as<std::string>());
+                                    }
+                                }
                             }
+                            
+                            for (auto it2 = excluded_plugins_temp.begin(), end2 = excluded_plugins_temp.end(); it2 != end2; ++it2)
+                            {
+                                it2->status = "excluded";
+                                it2->reason.insert(it2->reason.end(), reason.begin(), reason.end());
+                            }
+                            
+                            excluded_plugins.insert(excluded_plugins.end(), excluded_plugins_temp.begin(), excluded_plugins_temp.end());
+                            total_plugins.insert(total_plugins.end(), excluded_plugins_temp.begin(), excluded_plugins_temp.end());
+                            
                         }
                     }
                 }
@@ -279,12 +301,12 @@ namespace Gambit
                 std::stringstream output;
                 std::vector<Scanner::Plugins::Plugin_Details> vec;
                 
-                if((plugin_map.find(type) == plugin_map.end()) || (plugin_map.at(type).find(plugin) == plugin_map.at(type).end()))
+                if((getPluginsMap().find(type) == getPluginsMap().end()) || (getPluginsMap().at(type).find(plugin) == getPluginsMap().at(type).end()))
                 {
                     return "";
                 }
                 
-                for (auto it = plugin_map.at(type).at(plugin).begin(), end = plugin_map.at(type).at(plugin).end(); it != end; it++)
+                for (auto it = getPluginsMap().at(type).at(plugin).begin(), end = getPluginsMap().at(type).at(plugin).end(); it != end; it++)
                 {
                     vec.push_back(*it);
                 }

@@ -162,21 +162,24 @@ namespace Gambit
                     }
                 }
                 
-                if (reqd_incs_not_found.size() > 0)
+                if (status != "excluded")
                 {
-                    status = "reqd file(s) not found";
-                }
-                else if (reqd_not_linked_libs.size() > 0)
-                {
-                    status = "reqd lib(s) not linked";
-                }
-                else if (ini_libs_not_found.size() > 0)
-                {
-                    status = "inifile lib(s) not found";
-                }
-                else if (ini_incs_not_found.size() > 0)
-                {
-                    status = "inifile folder(s) not found";
+                    if (reqd_incs_not_found.size() > 0)
+                    {
+                        status = "reqd file(s) not found";
+                    }
+                    else if (reqd_not_linked_libs.size() > 0)
+                    {
+                        status = "reqd lib(s) not linked";
+                    }
+                    else if (ini_libs_not_found.size() > 0)
+                    {
+                        status = "inifile lib(s) not found";
+                    }
+                    else if (ini_incs_not_found.size() > 0)
+                    {
+                        status = "inifile folder(s) not found";
+                    }
                 }
             }
                     
@@ -208,7 +211,7 @@ namespace Gambit
             {
                 std::stringstream out;
                 
-                table_formatter table(type + " PLUGIN", "VERSION", "STATUS");
+                /*table_formatter table(type + " PLUGIN", "VERSION", "STATUS");
                 table.capitalize_title();
                 table.padding(1);
                 table << plugin << version;
@@ -217,7 +220,26 @@ namespace Gambit
                 else
                     table.red() << status;
                 
-                out << table.str();// << std::endl;
+                out << table.str();*/
+                
+                out << "\n\x1b[01m\x1b[04mPLUGIN INFO\x1b[0m" << std::endl;
+                out << "\nplugin name:     " << plugin;
+                out << "\nplugin type:     " << type;
+                out << "\nplugin version:  " << version;
+                out << "\nstatus:          ";
+                if (status == "ok")
+                    out << "\x1b[32;01m" << status << "\x1b[0m" << std::endl;
+                else
+                    out << "\x1b[31;01m" << status << "\x1b[0m" << std::endl;
+                
+                if (reason.size() > 0)
+                {
+                    out << "\nreason for exclusion:\n";
+                    for (auto it = reason.begin(), end = reason.end(); it != end; ++it)
+                        out << "    " << *it << std::endl;
+                }
+                
+                out << std::endl;
                 
                 out << "\n\x1b[01m\x1b[04mHEADER & LINK INFO\x1b[0m" << std::endl;
                 out << "\nrequired inifile entries:  ";
