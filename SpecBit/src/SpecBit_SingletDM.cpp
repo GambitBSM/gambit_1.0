@@ -162,6 +162,8 @@ namespace Gambit
       //cout<< "top pole mass from spectrum generator= "<< mtop << endl;
     
       
+      // need to redo the calcuation using beta function directly from FS
+      
       // vvvvvvvvvvvv    Finding minimum value of Lambda      vvvvvvvvvvvvv
       
       double MZ, a,b,Mpl,fa,fb,fc;
