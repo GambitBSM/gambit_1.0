@@ -138,15 +138,15 @@ namespace Gambit
 
       // Initialise an object to carry the Singlet plus Higgs sector information
       
-      double mH,mS,lambda_hs;
+      double mH2,mS2,lambda_hs;
       
       setup_QedQcd(oneset,sminputs);       // Fill QedQcd object with SMInputs values
-      mH = *myPipe::Param.at("mH");
-      mS = *myPipe::Param.at("mS");
+      mH2 = *myPipe::Param.at("mH2");
+      mS2 = *myPipe::Param.at("mS2");
       lambda_hs   = *myPipe::Param.at("lambda_hS");
       
-      input.HiggsIN=-pow(mH,2)/2;
-      input.mS2Input=pow(mS,2)-lambda_hs*15;
+      input.HiggsIN=-mH2;//-pow(mH,2)/2;
+      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
       input.Lambda2Input=lambda_hs;
       input.Lambda3Input=0;
       input.Qin=173.15;  // scale where EWSB conditions are applied
@@ -154,7 +154,7 @@ namespace Gambit
       spectrum_generator.run(oneset, input);
       SSDM_slha<Two_scale> model(spectrum_generator.get_model());
       
-      SSDM_parameter_getter parameter_getter;
+      //SSDM_parameter_getter parameter_getter;
       SSDM_physical& pole_masses = model.get_physical_slha();
 
       SingletDMModel singletmodel;
@@ -213,9 +213,9 @@ namespace Gambit
       
       SSDM<Two_scale> tmp_model(model);
       SSDM_parameter_getter parameter_getter;
-      double MS_pole_mass;
-      SSDM_physical& pole_masses = model.get_physical_slha();
-      MS_pole_mass=pole_masses.Mss;
+      //double MS_pole_mass;
+      //SSDM_physical& pole_masses = model.get_physical_slha();
+      //MS_pole_mass=pole_masses.Mss;
      // mtop=pole_masses.MFu(2);
      // cout<< "Scalar pole mass from spectrum generator = "<< MS_pole_mass << endl;
 
@@ -333,9 +333,6 @@ namespace Gambit
           tol2=2.0*(tol1=tol*abs(x)+ZEPS);
           if (abs(x-xm) <= (tol2-0.5*(b-a)))
           {                      //Test for done here.
-              double xmin, fmin;
-              fmin=fx;
-              xmin=x;
               iterations=iter;
               cout << "minimum found after " << iterations << " iterations" << endl;
               break;
