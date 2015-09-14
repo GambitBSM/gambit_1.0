@@ -389,7 +389,7 @@ namespace Gambit {
 
         double trigger_cleaning_eff = 1;//0.53;
 
-        cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+        /*cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
         cout << "CUT FLOW: ATLAS-CONF-2013-48 - Appendix, Table 8 - stop -> b chargino, stop 400, chargino 250, LSP 1 "<<std::endl;
         cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
         cout << "filter applied to MC. not scaled to 50 K events, but scaled at the 2 OS SF signal lepton stage" << endl;
@@ -402,7 +402,7 @@ namespace Gambit {
         }
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
 
-        cout << "RESULTS 2LEP " << _numSRM90SF << " " << _numSRM100SF << " " << _numSRM110SF << " " << _numSRM120SF << " " << _numSRM90DF << " " << _numSRM100DF << " " << _numSRM110DF << " " << _numSRM120DF << endl;
+        cout << "RESULTS 2LEP " << _numSRM90SF << " " << _numSRM100SF << " " << _numSRM110SF << " " << _numSRM120SF << " " << _numSRM90DF << " " << _numSRM100DF << " " << _numSRM110DF << " " << _numSRM120DF << endl;*/
 
       }
 
