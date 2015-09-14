@@ -1,0 +1,204 @@
+# Ultra-minimal GAMBIT Initialization file (in YAML)
+# Only needs example modules ExampleBit_A and ExampleBit_B,
+# plus example backends libfirst and libFortran.
+#
+# Don't commit modified versions of this file!
+# If you want to change it in order to test 
+# your own modifications to the code, copy 
+# it to spartan_personal.yaml, which will be 
+# ignored by git.
+#
+# Pat Scott <p.scott@imperial.ac.uk>
+# Oct 2014
+#
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters: 
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+    StandardModel_Higgs_running:
+      mH2: 8000
+      vev: 246
+
+    SingletDM_running:
+        mS2:
+            range: [100, 1000]
+            prior_type: log
+        lambda_hS:
+            range: [0.002, 0.2]
+            #fixed_value: 0.0366524 
+            prior_type: log
+        lambda_S: 0.001
+
+
+
+
+
+
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer. 
+  options:
+    # name of output file
+    output_file: "runs/VS_spartan/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/VS_spartan/samples/gambit_output.info"
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+  #use_objectives: uniform
+  use_scanner: random
+
+# Scanners
+
+  scanners:
+  
+    random:
+      plugin: random_sampler
+      options:
+        point_number: 200
+        output_file:  output
+        like:  Likelihood
+        files:
+          output_file: "weights ..."
+        
+    square_grid:
+      plugin: square_grid
+      version: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
+            
+    grid:
+      plugin: grid
+      version: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: [2, 2]
+
+  objectives:
+
+    uniform:
+      plugin: uniform
+      version: ">=1.0 & <2.0"
+      options:
+        some_param: 10
+      parameters:
+        param...2:
+          range: [-10, 10]          
+
+            
+###############################
+# Observables of interest
+###############################
+
+ObsLikes:
+
+# simple test vacuum stability function in SpecBit (observable only for now)
+
+#    - capability: VS
+#      purpose: Observable
+#      function: VS_SSDM
+
+      
+    - capability: SingletDM_spectrum
+      purpose: Observable
+      function: get_SingletDM_spectrum_pole
+
+
+#########################
+# Auxiliary entries
+#########################
+
+Rules:
+
+  - capability: SingletDM_spectrum
+    function: get_SingletDM_spectrum_pole
+
+
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
+
+  prefix : "runs/DarkBit_SingletDM/logs/"
+  redirection:
+    # [Debug] : stdout #"debug.log"
+    # [Default] : stdout #"default.log"
+    # [Error] : stdout #"errors.log"
+    # [Warning] : stdout #"warnings.log"
+    # [Core,Error] : stdout #"core_errors.log"
+    # [Core,Error,Fatal] : stdout #"fatal_core_errors.log"
+    # [Dependency Resolver] : stdout #"stdout"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [BackendIniBit]: "BackendIniBit.log"
+    [LibFirst] : "libfirst.log"
+    [Default] : "default.log"
+  #  [Logger, Debug] : "stdout"
+  #  [Core] : "stdout"
+  #  [Dependency Resolver] : "stdout"
+
+###############################
+## Printer (output) setup
+###############################
+
+# Ben: Here we will choose which printer(s?) we want to use. For now
+# it is hardcoded: I'll come back to this.
+
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  # Some example keys and subkeys
+  my_key: 123
+  another_key:
+    subkey3:
+      subsubkey1: value2
+
+  rng: ranlux48
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+    log_runtime: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    ExampleBit_A_error: non-fatal
+
+  enable_testing: false
+
