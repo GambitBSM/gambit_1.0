@@ -2,9 +2,9 @@
 #define __loaded_types_Pythia_8_209_hpp__ 1
 
 #include "wrapper_ParticleData.h"
-#include "wrapper_CoupSUSY.h"
 #include "wrapper_Info.h"
 #include "wrapper_DecayChannel.h"
+#include "wrapper_CoupSUSY.h"
 #include "wrapper_Settings.h"
 #include "wrapper_Vec4.h"
 #include "wrapper_Hist.h"
@@ -13,7 +13,6 @@
 #include "wrapper_SusyLesHouches.h"
 #include "wrapper_LHdecayTable.h"
 #include "wrapper_Parm.h"
-#include "wrapper_LHdecayChannel.h"
 #include "wrapper_Rndm.h"
 #include "wrapper_PartonLevel.h"
 #include "wrapper_ResonanceDecays.h"
@@ -23,6 +22,7 @@
 #include "wrapper_CoupSM.h"
 #include "wrapper_BeamParticle.h"
 #include "wrapper_ResonanceGmZ.h"
+#include "wrapper_LHdecayChannel.h"
 #include "wrapper_AlphaEM.h"
 #include "wrapper_Couplings.h"
 #include "wrapper_Event.h"
@@ -34,9 +34,9 @@
 // Indicate which types are provided by this backend, and what the symbols of their factories are.
 #define Pythia_8_209_all_data \
   (( /*class*/(Pythia8)(ParticleData),    /*constructors*/(("_ZN7Pythia822Factory_ParticleData_0Ev",())) )) \
-  (( /*class*/(Pythia8)(CoupSUSY),    /*constructors*/(("_ZN7Pythia818Factory_CoupSUSY_0Ev",())) )) \
   (( /*class*/(Pythia8)(Info),    /*constructors*/(("_ZN7Pythia814Factory_Info_0Ev",())) )) \
   (( /*class*/(Pythia8)(DecayChannel),    /*constructors*/(("_ZN7Pythia822Factory_DecayChannel_0Eidiiiiiiiii",(int, double, int, int, int, int, int, int, int, int, int))) (("_ZN7Pythia822Factory_DecayChannel_1Eidiiiiiiii",(int, double, int, int, int, int, int, int, int, int))) (("_ZN7Pythia822Factory_DecayChannel_2Eidiiiiiii",(int, double, int, int, int, int, int, int, int))) (("_ZN7Pythia822Factory_DecayChannel_3Eidiiiiii",(int, double, int, int, int, int, int, int))) (("_ZN7Pythia822Factory_DecayChannel_4Eidiiiii",(int, double, int, int, int, int, int))) (("_ZN7Pythia822Factory_DecayChannel_5Eidiiii",(int, double, int, int, int, int))) (("_ZN7Pythia822Factory_DecayChannel_6Eidiii",(int, double, int, int, int))) (("_ZN7Pythia822Factory_DecayChannel_7Eidii",(int, double, int, int))) (("_ZN7Pythia822Factory_DecayChannel_8Eidi",(int, double, int))) (("_ZN7Pythia822Factory_DecayChannel_9Eid",(int, double))) (("_ZN7Pythia823Factory_DecayChannel_10Ei",(int))) (("_ZN7Pythia823Factory_DecayChannel_11Ev",())) )) \
+  (( /*class*/(Pythia8)(CoupSUSY),    /*constructors*/(("_ZN7Pythia818Factory_CoupSUSY_0Ev",())) )) \
   (( /*class*/(Pythia8)(Settings),    /*constructors*/(("_ZN7Pythia818Factory_Settings_0Ev",())) )) \
   (( /*class*/(Pythia8)(Vec4),    /*constructors*/(("_ZN7Pythia814Factory_Vec4_0Edddd",(double, double, double, double))) (("_ZN7Pythia814Factory_Vec4_1Eddd",(double, double, double))) (("_ZN7Pythia814Factory_Vec4_2Edd",(double, double))) (("_ZN7Pythia814Factory_Vec4_3Ed",(double))) (("_ZN7Pythia814Factory_Vec4_4Ev",())) )) \
   (( /*class*/(Pythia8)(Hist),    /*constructors*/(("_ZN7Pythia814Factory_Hist_0Ev",())) (("_ZN7Pythia814Factory_Hist_1ESsidd",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, double, double))) (("_ZN7Pythia814Factory_Hist_2ESsid",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, double))) (("_ZN7Pythia814Factory_Hist_3ESsi",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int))) (("_ZN7Pythia814Factory_Hist_4ESs",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >))) (("_ZN7Pythia814Factory_Hist_5ESsRKN12Pythia_8_2097Pythia84HistE",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, const my_ns::Pythia8::Hist&))) )) \
@@ -45,7 +45,6 @@
   (( /*class*/(Pythia8)(SusyLesHouches),    /*constructors*/(("_ZN7Pythia824Factory_SusyLesHouches_0Ei",(int))) (("_ZN7Pythia824Factory_SusyLesHouches_1Ev",())) (("_ZN7Pythia824Factory_SusyLesHouches_2ESsi",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int))) (("_ZN7Pythia824Factory_SusyLesHouches_3ESs",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >))) )) \
   (( /*class*/(Pythia8)(LHdecayTable),    /*constructors*/(("_ZN7Pythia822Factory_LHdecayTable_0Ev",())) (("_ZN7Pythia822Factory_LHdecayTable_1Ei",(int))) (("_ZN7Pythia822Factory_LHdecayTable_2Eid",(int, double))) )) \
   (( /*class*/(Pythia8)(Parm),    /*constructors*/(("_ZN7Pythia814Factory_Parm_0ESsdbbdd",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, double, bool, bool, double, double))) (("_ZN7Pythia814Factory_Parm_1ESsdbbd",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, double, bool, bool, double))) (("_ZN7Pythia814Factory_Parm_2ESsdbb",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, double, bool, bool))) (("_ZN7Pythia814Factory_Parm_3ESsdb",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, double, bool))) (("_ZN7Pythia814Factory_Parm_4ESsd",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, double))) (("_ZN7Pythia814Factory_Parm_5ESs",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >))) (("_ZN7Pythia814Factory_Parm_6Ev",())) )) \
-  (( /*class*/(Pythia8)(LHdecayChannel),    /*constructors*/(("_ZN7Pythia824Factory_LHdecayChannel_0Ev",())) (("_ZN7Pythia824Factory_LHdecayChannel_1EdiSt6vectorIiSaIiEESs",(double, int, std::vector<int,std::allocator<int> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >))) (("_ZN7Pythia824Factory_LHdecayChannel_2EdiSt6vectorIiSaIiEE",(double, int, std::vector<int,std::allocator<int> >))) )) \
   (( /*class*/(Pythia8)(Rndm),    /*constructors*/(("_ZN7Pythia814Factory_Rndm_0Ev",())) (("_ZN7Pythia814Factory_Rndm_1Ei",(int))) )) \
   (( /*class*/(Pythia8)(PartonLevel),    /*constructors*/(("_ZN7Pythia821Factory_PartonLevel_0Ev",())) )) \
   (( /*class*/(Pythia8)(ResonanceDecays),    /*constructors*/(("_ZN7Pythia825Factory_ResonanceDecays_0Ev",())) )) \
@@ -55,6 +54,7 @@
   (( /*class*/(Pythia8)(CoupSM),    /*constructors*/(("_ZN7Pythia816Factory_CoupSM_0Ev",())) )) \
   (( /*class*/(Pythia8)(BeamParticle),    /*constructors*/(("_ZN7Pythia822Factory_BeamParticle_0Ev",())) )) \
   (( /*class*/(Pythia8)(ResonanceGmZ),    /*constructors*/(("_ZN7Pythia822Factory_ResonanceGmZ_0Ei",(int))) )) \
+  (( /*class*/(Pythia8)(LHdecayChannel),    /*constructors*/(("_ZN7Pythia824Factory_LHdecayChannel_0Ev",())) (("_ZN7Pythia824Factory_LHdecayChannel_1EdiSt6vectorIiSaIiEESs",(double, int, std::vector<int,std::allocator<int> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >))) (("_ZN7Pythia824Factory_LHdecayChannel_2EdiSt6vectorIiSaIiEE",(double, int, std::vector<int,std::allocator<int> >))) )) \
   (( /*class*/(Pythia8)(AlphaEM),    /*constructors*/(("_ZN7Pythia817Factory_AlphaEM_0Ev",())) )) \
   (( /*class*/(Pythia8)(Couplings),    /*constructors*/(("_ZN7Pythia819Factory_Couplings_0Ev",())) )) \
   (( /*class*/(Pythia8)(Event),    /*constructors*/(("_ZN7Pythia815Factory_Event_0Ei",(int))) (("_ZN7Pythia815Factory_Event_1Ev",())) )) \

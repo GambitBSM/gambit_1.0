@@ -74,6 +74,9 @@ namespace Gambit
       //typedef std::shared_ptr<H5::Group>  H5GroupPtr;
       
       namespace HDF5 { 
+
+         /// @{ File and group manipulation
+
          /// Create or open hdf5 file
          // If overwrite=true then any existing file will be deleted and replaced. USE CAREFULLY!!!
          // third argument "oldfile" is used to report whether an existing file was opened (true if yes)
@@ -118,6 +121,11 @@ namespace Gambit
          /// Close group
          void closeGroup(hid_t group);
 
+         /// @}
+
+         /// @{ Dataset and dataspace manipulation
+ 
+         /// @}
 
       }
 

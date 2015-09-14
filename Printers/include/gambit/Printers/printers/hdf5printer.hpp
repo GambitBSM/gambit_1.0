@@ -290,6 +290,7 @@ namespace Gambit
         #define NON_TEMPLATE_TYPES \
           (std::vector<double>)    \
           (ModelParameters)        \
+          (triplet<double>)        \
           /*(std::vector<bool>)        \
              (std::vector<int>)        */
 
@@ -373,6 +374,7 @@ namespace Gambit
         // Now already declared in macro above
         //void print(std::vector<double> const&, const std::string&, const int, const unsigned int, const unsigned long);
         //void print(ModelParameters     const&, const std::string&, const int, const unsigned int, const unsigned long);
+        //void print(triplet<double> const&,     const std::string&, const int, const unsigned int, const unsigned long);
 
       private:
         // String names for output file and group

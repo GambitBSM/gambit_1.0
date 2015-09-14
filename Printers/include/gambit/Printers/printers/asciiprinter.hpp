@@ -135,6 +135,7 @@ namespace Gambit
         void print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void print(triplet<double> const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
 
         // Scanner-unfriendly print functions

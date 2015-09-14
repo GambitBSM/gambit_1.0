@@ -88,7 +88,7 @@ BE_VARIABLE(sd_mbmb_type, sd_mbmb, "sd_mbmb_", "cb_sd_mbmb")
 BE_VARIABLE(sd_selectron_type, sd_selectron, "sd_selectron_", "cb_sd_selectron")
 
 // Convenience functions (registration)
-BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double), "susy_hit_backend_level_init")
+BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double, int*), "susy_hit_backend_level_init")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
