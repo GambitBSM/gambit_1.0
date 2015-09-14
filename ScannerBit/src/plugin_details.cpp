@@ -222,11 +222,11 @@ namespace Gambit
                 
                 out << table.str();*/
                 
-                out << "\n\x1b[01m\x1b[04mPLUGIN INFO\x1b[0m" << std::endl;
-                out << "\nplugin name:     " << plugin;
-                out << "\nplugin type:     " << type;
-                out << "\nplugin version:  " << version;
-                out << "\nstatus:          ";
+                out << "\n\x1b[01m\x1b[04mGENERAL PLUGIN INFO\x1b[0m" << std::endl;
+                out << "\nname:     " << plugin;
+                out << "\ntype:     " << type;
+                out << "\nversion:  " << version;
+                out << "\nstatus:   ";
                 if (status == "ok")
                     out << "\x1b[32;01m" << status << "\x1b[0m" << std::endl;
                 else
