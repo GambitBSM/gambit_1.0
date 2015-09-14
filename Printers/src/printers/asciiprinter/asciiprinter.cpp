@@ -82,16 +82,50 @@ namespace Gambit
     // Printer to ascii file (i.e. table of doubles)
 
     // Common constructor tasks
-    void asciiPrinter::common_constructor()
+    void asciiPrinter::common_constructor(const Options& options)
     {
+      if( this->is_auxilliary_printer() ) // check if this is an auxilliary printer
+      {
+
+         // Get stream name from printermanager
+         printer_name = options.getValue<std::string>("name");
+
+         // Get primary printer (need to cast from BasePrinter type to asciiPrinter)
+         asciiPrinter* primary = dynamic_cast<asciiPrinter*>(this->get_primary_printer());
+
+         // Name files based on the primary printer filenames, or use a user-supplied option
+         std::ostringstream f;
+         f << primary->get_output_filename() << "_" << printer_name;
+         output_file = Utils::ensure_path_exists(options.getValueOrDef<std::string>(f.str(),"output_file"));
+
+         // Match the buffer length to the primary printer, or use a user-supplied option
+         bufferlength = options.getValueOrDef<uint>(primary->get_bufferlength(),"buffer_length");
+      }
+      else
+      {
+         printer_name = "Primary";     
+         output_file = Utils::ensure_path_exists(options.getValue<std::string>("output_file"));
+         bufferlength = options.getValueOrDef<uint>(100,"buffer_length");
+      }
+
+      // Name "info" file to match "output" file
+      std::ostringstream finfo;
+      finfo<< output_file <<"_info";
+      info_file = finfo.str();
+
       #ifdef WITH_MPI
-        // Do basic MPI check
-        //std::cout << "Hooking up to MPI..." << std::endl;
-        //std::cout << " Size: " << GMPI::COMM_WORLD.Get_size() << std::endl;
-        //std::cout << " Rank: " << GMPI::COMM_WORLD.Get_rank() << std::endl;
- 
-        //std::exit(0);
+      myRank = myComm.Get_rank();
+      mpiSize = myComm.Get_size();
+
+      // Append mpi rank to file names to avoid collisions between processes
+      std::ostringstream fout;
+      std::ostringstream finfo2;
+      fout << output_file <<"_"<<myRank;
+      finfo2<< info_file  <<"_"<<myRank;
+      output_file = fout.str();
+      info_file = finfo2.str();
       #endif
+
 
       // Initialise "lastPointID" map to -1 (i.e. no last point)
       #ifdef WITH_MPI
@@ -114,53 +148,22 @@ namespace Gambit
     }
 
     // Constructor
-    asciiPrinter::asciiPrinter(const Options& options)
-      : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
+    asciiPrinter::asciiPrinter(const Options& options, BasePrinter* const primary)
+      : BasePrinter(primary,options.getValueOrDef<bool>(false,"auxilliary"))
+      , output_file("")
       , info_file("")
-      , bufferlength( options.getValueOrDef<uint>(100,"buffer_length") )
+      , bufferlength(100) 
       , global(false)
-      , printer_name("Primary")
+      , printer_name("")
       , myRank(0)
      #ifdef WITH_MPI
       , myComm() // attaches to MPI_COMM_WORLD, beware collisions with e.g. scanning algorithms.
       , mpiSize(1)
      #endif
     {
-      // Name "info" file to match "output" file
-      std::ostringstream finfo;
-      finfo<< output_file <<"_info";
-      info_file = finfo.str();
-
-      #ifdef WITH_MPI
-      myRank = myComm.Get_rank();
-      mpiSize = myComm.Get_size();
-
-      // Append mpi rank to file names to avoid collisions between processes
-      std::ostringstream fout;
-      std::ostringstream finfo2;
-      fout << output_file <<"_"<<myRank;
-      finfo2<< info_file  <<"_"<<myRank;
-      output_file = fout.str();
-      info_file = finfo2.str();
-      #endif
-
-      DBUG( std::cout << "Constructing Primary asciiPrinter object..." << std::endl; )
-      common_constructor();
+      common_constructor(options);
     }
- 
-    // /// Auxiliary mode constructor 
-    // asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool globalIN)
-    //   : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
-    //   , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
-    //   , global(globalIN)
-    //   , printer_name(name)
-    // {
-    //   std::cout << "does this ever get called???" << std::endl;
-    //   exit(0);
-    //   // Could set these things via options also if we like.
-    //   DBUG( std::cout << "Constructing Auxilliary asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
-    //   common_constructor();
-    // }
+
  
     /// Destructor
     // Overload the base class virtual destructor
@@ -253,7 +256,11 @@ namespace Gambit
       //   buf_loc = 0;
       // }
     }
-  
+
+    // getters for internal variables 
+    std::string asciiPrinter::get_output_filename() { return output_file; }
+    int         asciiPrinter::get_bufferlength()    { return bufferlength; }
+
     // add results to printer buffer
     void asciiPrinter::addtobuffer(const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels, const int vID, const int rank, const int pointID) 
     { 

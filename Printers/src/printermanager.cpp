@@ -41,8 +41,9 @@ namespace Gambit
   {
 
     /// Manager class for creating printer objects  
-    PrinterManager::PrinterManager(const Options& printerNode)
-      : tag(printerNode.getValue<std::string>("printer"))
+    PrinterManager::PrinterManager(const Options& printerNode, bool resume_mode)
+      : BasePrinterManager(resume_mode)
+      , tag(printerNode.getValue<std::string>("printer"))
       , options(printerNode.getNode("options"))
       , printerptr(NULL)
     {
@@ -51,7 +52,13 @@ namespace Gambit
       {
          // If "tag" names a valid printer, create it.
          DBUG( std::cout << "PrinterManager: Creating Primary printer \"" << tag << "\"" << std::endl; )
-         printerptr = printer_creators.at(tag)(options);
+
+         // pass on the "resume" flag to the printer
+         Options mod_options = options;
+         mod_options.setValue("resume",resume_mode);
+
+         BasePrinter* null(NULL);
+         printerptr = printer_creators.at(tag)(mod_options,null);
       }
       else
       {
@@ -87,13 +94,13 @@ namespace Gambit
        //for the auxiliary printers, e.g. so we can print to a different file
        DBUG( std::cout << "PrinterManager: Creating Auxilliary printer \"" << tag << "\" with name \"" << streamname << "\"" << std::endl; )
        Options mod_options = options;
+       mod_options.setValue("resume",this->resume_mode());
        mod_options.setValue("auxilliary",true);
        mod_options.setValue("name",streamname);
-       auxprinters[streamname] = printer_creators.at(tag)(mod_options);
-       // Provide the new printer with a pointer to the primary printer so that
-       // they can interact with each other. Also flags the new printer as "auxilliary"
-       // for the purposes of its own internal logic.
-       auxprinters.at(streamname)->set_primary_printer(printerptr);
+       // To construct printer as an auxilliary printer, a pointer to the primary printer is supplied as well as the options.
+       auxprinters[streamname] = printer_creators.at(tag)(mod_options,printerptr);
+       // Some printers may requires two-step initiations so this virtual function is provided to allow that.
+       auxprinters.at(streamname)->auxilliary_init();
     }
 
     // Retrieve pointer to named printer object
@@ -110,10 +117,17 @@ namespace Gambit
       }
       else
       {
-        ///TODO: add check to make sure that the requested stream exists
-        // Note that this automatically converts the BasePrinter pointer into a BaseBasePrinter pointer
+        // Note that this routine automatically converts the BasePrinter pointer into a BaseBasePrinter pointer
         // (for a more minimal interface for use in ScannerBit)
-        return auxprinters.at(streamname);
+        typedef std::map<std::string, BasePrinter*>::iterator it_type;
+        it_type it = auxprinters.find(streamname);
+        if( it == auxprinters.end() ) 
+        {
+          std::ostringstream errmsg;
+          errmsg << "Error! PrinterManager failed to retrieve the requested auxilliary print stream with name '"<<streamname<<"'! The stream may not have been created in the first place. Please check that the scanner plugin you are using correctly creates a printer stream with this name.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        return it->second;
       }
     }
 

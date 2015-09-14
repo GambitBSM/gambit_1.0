@@ -159,8 +159,14 @@ namespace Gambit
 
       //primary_printer->print(lnlike,    "Ln(likelihood)",       -4, MPIrank, pointID);
       //primary_printer->print(param_vec, "Unit cube parameters", -6, MPIrank, pointID);
-      //primary_printer->print(MPIrank,   "MPIrank",              -7, MPIrank, pointID);
-      //primary_printer->print(pointID,   "pointID",              -8, MPIrank, pointID);
+
+      // Ben: No need to do this anymore, hdf5printer will do it automatically.
+      // However, asciiPrinter won't, so we can still output it anyway. But to make
+      // sure that the hdf5printer only outputs it once (and to avoid the name clash
+      // arising from duplicating the output) please use the ID codes -1000 and -1001 for
+      // these two special outputs) 
+      //primary_printer->print(pointID,   "pointID", -1000, MPIrank, pointID);
+      //primary_printer->print(MPIrank,   "MPIrank", -1001, MPIrank, pointID);
 
       // Increment the number of function calls, tell Diver to continue and return the likelihood
       fcall += 1;

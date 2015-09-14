@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
     for(int i=0;i<argc;i++){ logger() << arguments[i] << " "; }
     logger() << endl;
     logger() << core << "Starting GAMBIT" << endl << EOM;
+    if( Core().resume ) logger() << core << "Attempting to resume scan..." << endl << EOM;
     logger() << core << "Registered module functors [Core().getModuleFunctors().size()]: ";
     logger() << Core().getModuleFunctors().size() << endl;
     logger() << "Registered backend functors [Core().getBackendFunctors().size()]: ";
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
     Core().accountForMissingClasses();
 
     // Set up the printer manager for redirection of scan output.
-    Printers::PrinterManager printerManager(iniFile.getPrinterNode());
+    Printers::PrinterManager printerManager(iniFile.getPrinterNode(),Core().resume);
 
     // Set up dependency resolver
     DRes::DependencyResolver dependencyResolver(Core(), Models::ModelDB(), iniFile, Utils::typeEquivalencies(), *(printerManager.printerptr));
