@@ -172,18 +172,6 @@ clean-$(MODNAME)-obj:
 		-rm -f $(LIBSSDM_OBJ)
 		-rm -f $(EXESSDM_OBJ)
 
-# BEGIN: NOT EXPORTED ##########################################
-clean-$(MODNAME)-src:
-		-rm -f $(LIBSSDM_SRC)
-		-rm -f $(LIBSSDM_HDR)
-		-rm -f $(EXESSDM_SRC)
-		-rm -f $(METACODE_STAMP_SSDM)
-		-rm -f $(SSDM_TWO_SCALE_MK)
-		-rm -f $(SSDM_GNUPLOT)
-
-clean-$(MODNAME): clean-$(MODNAME)-src
-# END:   NOT EXPORTED ##########################################
-
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBSSDM)
 		-rm -f $(RUN_SSDM_EXE)
