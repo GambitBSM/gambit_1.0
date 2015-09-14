@@ -1435,6 +1435,41 @@ namespace Gambit
 
     void HDF5Printer::print(ModelParameters const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
+      // Retrieve the buffer manager for buffers with this type
+      typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
+      typedef H5P_LocalBufferManager<BuffType> BuffMan;
+      BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
+      
+      #ifdef HDEBUG_MODE
+      std::cout<<"printing triplet<double>: "<<label<<std::endl;
+      std::cout<<"pointID: "<<pointID<<", mpirank: "<<mpirank<<std::endl;
+      #endif
+ 
+      PPIDpair ppid(pointID,mpirank);      
+      // Write to each buffer
+      if(synchronised)
+      {
+       // Write the data to the selected buffer ("just works" for simple numeric types)
+       buffer_manager.get_buffer(vID, 0, label+"(central)").append(value.central);
+       buffer_manager.get_buffer(vID, 1, label+"(lower)").append(value.lower);
+       buffer_manager.get_buffer(vID, 2, label+"(upper)").append(value.upper);
+      }
+      else
+      {
+         // Queue up a desynchronised ("random access") dataset write to previous scan iteration
+         if(not seen_PPID_before(ppid))
+         {
+           add_PPID_to_list(ppid);
+         }
+         // Queue up a desynchronised ("random access") dataset write to previous scan iteration
+         buffer_manager.get_buffer(vID, 0, label+"(central)").RA_write(value.central,ppid,primary_printer->global_index_lookup); 
+         buffer_manager.get_buffer(vID, 1, label+"(lower)").RA_write(value.lower,ppid,primary_printer->global_index_lookup); 
+         buffer_manager.get_buffer(vID, 2, label+"(upper)").RA_write(value.upper,ppid,primary_printer->global_index_lookup); 
+      }
+    }
+
+    void HDF5Printer::print(ModelParameters const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+   {
        // We will write to several 'double' buffers, since modelparameters are often retrieved separately
        typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
       
