@@ -1432,8 +1432,8 @@ namespace Gambit
          }
        }
     }
-
-    void HDF5Printer::print(ModelParameters const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+   
+    void HDF5Printer::print(triplet<double> const& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
     {
       // Retrieve the buffer manager for buffers with this type
       typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
