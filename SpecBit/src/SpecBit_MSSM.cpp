@@ -206,19 +206,20 @@ namespace Gambit
 	  it != ms.pole_mass_strs_1_6.end(); ++it)
 	{
 	  for(int i = 1; i <=6; i++){
-	    str low =  "rd_m" + *it + "_" + std::to_string(i) + "_low";
-	    str high = "rd_m" + *it + "_" + std::to_string(i) + "_high";
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
+	    str low =  "rd_m" + *it + "_low";
+	    str high = "rd_m" + *it + "_high";
+	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
+	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
 	  }
 	}
 
+
       
       for(int i = 1; i <=4; i++){
-	    str low =  "rd_mchi0_" + std::to_string(i) + "_low";
-	    str high = "rd_mchi0_" + std::to_string(i) + "_high";
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
+	    str low =  "rd_mchi0_low";
+	    str high = "rd_mchi0_high";
+	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
+	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
 	  }
       
 
@@ -228,8 +229,8 @@ namespace Gambit
 	  for(int i = 1; i <=3; i++){
 	    str low =  "rd_m" + *it + "_" + std::to_string(i) + "_low";
 	    str high = "rd_m" + *it + "_" + std::to_string(i) + "_high";
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
+	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
+	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
 	  }
 	}
       
@@ -237,10 +238,10 @@ namespace Gambit
 	  it != ms.pole_mass_strs_1_2.end(); ++it)
 	{
 	  for(int i = 1; i <=2; i++){
-	    str low =  "rd_m" + *it + "_" + std::to_string(i) + "_low";
-	    str high = "rd_m" + *it + "_" + std::to_string(i) + "_high";
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
+	    str low =  "rd_m" + *it + "_low";
+	    str high = "rd_m" + *it + "_high";
+	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
+	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
 	  }
 	}
 
@@ -249,9 +250,10 @@ namespace Gambit
       /// seems like an underestimate if the stop masses are heavy enough.  
       double rd_mh_low = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
       double rd_mh_high =  3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_low,"rd_mh0_1_low",false);
-      mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_high,"rd_mh0_1_high",false);
-      
+     
+      mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_low,"rd_mh0_low", 1, false);
+      mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_high,"rd_mh0_high",1, false);
+     
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
