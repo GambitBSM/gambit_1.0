@@ -108,7 +108,7 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/new_mpi_datatypes.hpp"
-
+#include "gambit/cmake/cmake_variables.hpp"
 // Switch for debugging output (manual at the moment)
 
 #ifdef DEBUG_MODE 
@@ -899,7 +899,7 @@ namespace Gambit
              // nanosleep(&sleep_time,NULL);
 
              std::ostringstream command;
-             command << "python Printers/scripts/combine_hdf5.py "<<file<<" "<<group<<" "<<mpiSize<<" 2>&1";
+             command << "python " GAMBIT_DIR "/Printers/scripts/combine_hdf5.py "<<file<<" "<<group<<" "<<mpiSize<<" 2>&1";
              logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                       << "> " << command.str() << std::endl
                       << "--------------------" << std::endl;

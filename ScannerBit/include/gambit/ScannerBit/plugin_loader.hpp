@@ -91,17 +91,57 @@ namespace Gambit
                 Plugin_Details &find (const std::string &, const std::string &, const std::string &, const std::string &) const;
             };
             
+//             template <typename T>
+//             class __plugin_resume__
+//             {
+//             private:
+//                 T *data;
+//                 
+//             public:
+//                 __plugin_resume__(T &data) : data(&data) {}
+//                 __plugin_resume__(const __plugin_resume__ &in) : data(in.data) {}
+//                 __plugin_resume__ &operator()(const __plugin_resume__ &in) {data = in.data; return *this;}
+//                 
+//                 void print(std::ofstream &out)
+//                 {
+//                 }
+//             }
+            
             ///Container for all the plugin info from the inifile and Scannerbit
             class pluginInfo
             {
             private:
                 std::map<std::string, std::map<std::string, Proto_Plugin_Details> > selectedPlugins;
                 mutable Plugins::Plugin_Loader plugins;
+                std::unordered_map<std::vector<__resume_base__>> resume_data;
+                std::string resume_name;
                 printer_interface *printer;
                 Options options;
                     
             public:
                 void iniFile(const Options &, printer_interface &);
+                
+//                 void set_resume(const std::string &name)
+//                 {
+//                     resume_name = name;
+//                 }
+//                 
+//                 inline void resume(){}
+//                 
+//                 template <typename... T>
+//                 void resume(T&... data)
+//                 {
+//                     if (printer->resume_mode())
+//                     {
+//                         ifstream in(resume_name);
+//                         get_resume_data();
+//                     }
+//                     else
+//                     {
+//                         resume_data[resume_name].push_back(__plugin_resume__(data));
+//                     }
+//                 }
+                
                 const Plugin_Loader &operator()(){return plugins;}
                 Plugin_Interface_Details operator()(const std::string &, const std::string &);
             };
