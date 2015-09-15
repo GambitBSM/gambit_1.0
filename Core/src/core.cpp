@@ -81,6 +81,7 @@ namespace Gambit
                 "\n   models                List registered models and output model graph     "
                 "\n   capabilities          List all registered function capabilities         "
                 "\n   scanners              List registered scanners                          "
+                "\n   test-functions        List registered scanner test objective functions  "
                 "\n   <name>                Give info on a specific module, backend, model,   "
                 "\n                           capability or scanner                           "
                 "\n                           e.g.: gambit DarkBit                            "       
