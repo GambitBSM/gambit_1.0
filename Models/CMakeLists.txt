@@ -31,6 +31,8 @@ set(source_files src/claw_singleton.cpp
                  src/models/extraCMSSM.cpp
                  src/models/nuclear_params.cpp
                  src/particle_database.cpp
+                 src/models/StandardModel_Higgs.cpp
+                 src/models/SingletDM.cpp
 )
 
 set(header_files include/gambit/Models/claw_singleton.hpp

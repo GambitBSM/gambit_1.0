@@ -19,19 +19,19 @@
 Parameters: 
     StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-    StandardModel_Higgs_running:
-      mH2: 8000
+    StandardModel_Higgs:
+      mH: 125
       vev: 246
 
-    SingletDM_running:
-        mS2:
-            range: [100, 1000]
+    SingletDM:
+        mS:
+            range: [50, 100]
             prior_type: log
         lambda_hS:
             range: [0.002, 0.2]
             #fixed_value: 0.0366524 
             prior_type: log
-        lambda_S: 0.001
+        #lambda_S: 0.001
 
 
 
