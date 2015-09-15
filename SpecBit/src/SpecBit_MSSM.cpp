@@ -188,19 +188,16 @@ namespace Gambit
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 
-
-      /// We could just add default values here and then allow the user to seperately configure these and add them later in precision Bit?  But why do it in SpecBit at all?
-
-      /// Defauilt in most codes is 3 GeV, this seems like an underestimate to me if the stop masses are heavy enough.  
+      
+      /// add theory errors
       MSSM_strs ms;
      
       typedef std::vector<str>::iterator iter;
-      for(iter it = ms.pole_mass_strs.begin();
-	  it != ms.pole_mass_strs.end(); ++it)
+      for(iter it = ms.pole_mass_pred.begin();
+	  it != ms.pole_mass_pred.end(); ++it)
 	{
 	  str low =  "rd_m" + *it + "_low";
 	  str high = "rd_m" + *it + "_high";
-	  std::cout << "state: " << *it << std::endl;
 	  mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
 	  mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
 	}
@@ -211,8 +208,6 @@ namespace Gambit
 	  for(int i = 1; i <=6; i++){
 	    str low =  "rd_m" + *it + "_" + std::to_string(i) + "_low";
 	    str high = "rd_m" + *it + "_" + std::to_string(i) + "_high";
-	    std::cout << "state: " << *it << std::endl;
-	    std::cout << "i = "  << i << std::endl;
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
 	  }
@@ -222,7 +217,6 @@ namespace Gambit
       for(int i = 1; i <=4; i++){
 	    str low =  "rd_mchi0_" + std::to_string(i) + "_low";
 	    str high = "rd_mchi0_" + std::to_string(i) + "_high";
-	    std::cout << "mchi mass order i = "  << i << std::endl;
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
 	  }
@@ -234,8 +228,6 @@ namespace Gambit
 	  for(int i = 1; i <=3; i++){
 	    str low =  "rd_m" + *it + "_" + std::to_string(i) + "_low";
 	    str high = "rd_m" + *it + "_" + std::to_string(i) + "_high";
-	    std::cout << "state: " << *it << std::endl;
-	    std::cout << "i = "  << i << std::endl;
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
 	  }
@@ -247,21 +239,18 @@ namespace Gambit
 	  for(int i = 1; i <=2; i++){
 	    str low =  "rd_m" + *it + "_" + std::to_string(i) + "_low";
 	    str high = "rd_m" + *it + "_" + std::to_string(i) + "_high";
-	    std::cout << "state: " << *it << std::endl;
-	    std::cout << "i = "  << i << std::endl;
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
 	  }
 	}
-      
+
+      /// do the Higgs mass seperately
+      /// Default in most codes is 3 GeV,
+      /// seems like an underestimate if the stop masses are heavy enough.  
       double rd_mh_low = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
       double rd_mh_high =  3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
       mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_low,"rd_mh0_1_low",false);
       mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_high,"rd_mh0_1_high",false);
-      
-      
-      std::cout << "ms.pole_mass_strs[0] = "  << ms.pole_mass_strs[0]
-		<< std::endl;
       
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily

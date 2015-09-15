@@ -149,7 +149,7 @@ namespace Gambit {
 
       };
 
-      /// This struct contains all the strings we will use for the MSSM
+     /// This struct contains all the strings we will use for the MSSM
      /// in the maps.  this allows us to implement the maps in
      /// a safer way if we choose , while still giving the option of
      /// flexibility.  
@@ -250,6 +250,13 @@ namespace Gambit {
 						     Goldstoneplus,
 						     Goldstoneminus,
 						     Wplus, Wminus, Z0);
+
+       // as above but with Z0 since we do not predict that mass
+       std::vector<str> pole_mass_pred = initVector( gluino, A0, Hplus,
+						     Hminus, Goldstone0,
+						     Goldstoneplus,
+						     Goldstoneminus,
+						     Wplus, Wminus);
 
        /// pole mass strings with 1 index
        std::vector<str> pole_mass_strs_1 = initVector( su, sd, se, seminus, snu,
