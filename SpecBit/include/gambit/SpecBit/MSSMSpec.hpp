@@ -860,7 +860,7 @@ namespace Gambit
           tmp_map["Goldstone+"] = &set_charged_goldstone_pole_slha<Model>;
           tmp_map["Goldstone-"] = &set_charged_goldstone_pole_slha<Model>;
    
-          /// the getters for these were removed but Pat last meeting
+          /// the getters for these were removed but at last meeting
           /// we agreed to add setters here unless I misunderstood.
           /// need to discuss this
           tmp_map["W+"] = &set_MW_pole_slha<Model>;
