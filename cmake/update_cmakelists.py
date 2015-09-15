@@ -27,7 +27,7 @@ def module_census(verbose,install_dir,excludes):
             exclude = False
             for x in excludes:
                 if mod.startswith(x): exclude = True
-            if not exclude and mod.lower().find("bit") != -1:
+            if not exclude and mod.lower().find("bit") != -1 and mod.lower().find(".dsym") == -1:
                 if verbose: print "Located GAMBIT module '{0}'.".format(mod)
                 modules+=[mod]
         break
