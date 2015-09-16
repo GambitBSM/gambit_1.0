@@ -523,14 +523,15 @@ namespace Gambit
                 
                 template<typename T>
                 inline typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, void>::type
-                resume_file_output(std::ostream &out, T &param)
+                resume_file_output(std::ofstream &out, T &param)
                 {
-                        out << param << std::endl;
+                        out.write(reinterpret_cast<char *>(&param), sizeof(T));
+                        //out << param << std::endl;
                 };
                 
                 template <typename T>
-                inline typename std::enable_if <is_container<T>::value, std::ostream &>::type
-                resume_file_output (std::ostream &out, T &param)
+                inline typename std::enable_if <is_container<T>::value, void>::type
+                resume_file_output (std::ofstream &out, T &param)
                 {
                         for (auto it = param.begin(), end = param.end(); it != end; it++)
                         {
@@ -539,8 +540,8 @@ namespace Gambit
                 }
                 
                 template <typename T>
-                inline typename std::enable_if <is_pair<T>::value, std::ostream &>::type
-                resume_file_output (std::ostream &out, T &param)
+                inline typename std::enable_if <is_pair<T>::value, void>::type
+                resume_file_output (std::ofstream &out, T &param)
                 {
                         resume_file_output(out, param.first);
                         resume_file_output(out, param.second);
@@ -550,11 +551,12 @@ namespace Gambit
                 typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, void>::type
                 resume_file_input(std::ifstream &in, T &param)
                 {
-                        in >> param;
+                        in.read(reinterpret_cast<char *>(&param), sizeof(T));
+                        //in >> param;
                 };
                 
                 template <typename T>
-                inline typename std::enable_if <is_container<T>::value, std::ostream &>::type
+                inline typename std::enable_if <is_container<T>::value, void>::type
                 resume_file_input (std::ifstream &in, T &param)
                 {
                         for (auto it = param.begin(), end = param.end(); it != end; it++)
@@ -564,7 +566,7 @@ namespace Gambit
                 }
                 
                 template <typename T>
-                inline typename std::enable_if <is_pair<T>::value, std::ostream &>::type
+                inline typename std::enable_if <is_pair<T>::value, void>::type
                 resume_file_input (std::ifstream &in, T &param)
                 {
                         resume_file_input(in, param.first);

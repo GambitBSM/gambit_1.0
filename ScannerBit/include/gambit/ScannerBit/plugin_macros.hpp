@@ -45,9 +45,9 @@ using Gambit::type_index;
 /// Runs when the plugin is destroyed.
 #define plugin_deconstructor            PLUGIN_DECONSTRUCTOR
 /// Sets the version number
-#define __PLUGIN_version(...)            __PLUGIN_VERSION( __VA_ARGS__ )
+#define __PLUGIN_version(...)           __PLUGIN_VERSION( __VA_ARGS__ )
 /// Set version number to 0.0.0.
-#define __PLUGIN_no_version              __PLUGIN_VERSION()
+#define __PLUGIN_no_version             __PLUGIN_VERSION()
 /// Tells ScannerBit that these tags are required
 #define reqd_inifile_entries(...) void reqd_inifile_entries()
 /// Tells ScannerBit that these libraries are requested

@@ -93,12 +93,15 @@ namespace Gambit
                 Plugin_Details &find (const std::string &, const std::string &, const std::string &, const std::string &) const;
             };
             
+            ///Virtual container base class to store plugin values for resume function
             class __plugin_resume_base__
             {
             public:
                 virtual void print(std::ofstream &) = 0;
+                virtual ~__plugin_resume_base__(){}
             };
             
+            ///Container class to store plugin values for resume function
             template <typename T>
             class __plugin_resume__ : public __plugin_resume_base__
             {
@@ -107,12 +110,12 @@ namespace Gambit
                 
             public:
                 __plugin_resume__(T &data) : data(&data) {}
-                __plugin_resume__(const __plugin_resume__ &in) : data(in.data) {}
-                __plugin_resume__ &operator()(const __plugin_resume__ &in) {data = in.data; return *this;}
+                
                 void print(std::ofstream &out)
                 {
                     resume_file_output<T>(out, *data);
                 }
+                ~__plugin_resume__(){}
             };
             
             ///Container for all the plugin info from the inifile and Scannerbit
@@ -144,12 +147,14 @@ namespace Gambit
                 }
                 
             public:
+                ///Enter plugin inifile
                 void iniFile(const Options &, printer_interface &);
                 
+                ///resume function
                 template <typename... T>
                 void resume(const std::string &name, T&... data)
                 {
-                    if (printer->resume_mode())
+                    if (false)//(printer->resume_mode())
                     {
                         if (resume_data.find(name) == resume_data.end())
                         {
@@ -157,30 +162,21 @@ namespace Gambit
                         }
                         else
                         {
-                            std::ifstream in((std::string(GAMBIT_DIR) + "/" + name).c_str());
+                            std::ifstream in((std::string(GAMBIT_DIR) + "/scratch/" + name).c_str(), std::ifstream::binary);
                             get_resume(in, data...);
                         }
                     }
-                    else
-                    {
-                        set_resume(resume_data[name], data...);
-                    }
+                    
+                    set_resume(resume_data[name], data...);
                 }
                 
-                void finalize()
-                {
-                    for (auto it = resume_data.begin(), end = resume_data.end(); it != end; ++it)
-                    {
-                        std::ofstream out(it->first);
-                        for (auto v_it = it->second.begin(), v_end = it->second.end(); v_it != v_end; ++v_it)
-                        {
-                            (*v_it)->print(out);
-                        }
-                    }
-                }
-                
-                const Plugin_Loader &operator()(){return plugins;}
+                ///Dump contains for resume.
+                void dump();
+                ///Retrieve plugin data.
+                const Plugin_Loader &operator()() {return plugins;}
+                ///Get plugin data for single plugin.
                 Plugin_Interface_Details operator()(const std::string &, const std::string &);
+                ~pluginInfo();
             };
             
             ///Access Functor for plugin info
