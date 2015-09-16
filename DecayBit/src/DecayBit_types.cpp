@@ -35,42 +35,42 @@ namespace Gambit
     // Definitions of methods for struct mass_es_pseudonyms
     
     /// Refill strings in struct
-    void mass_es_pseudonyms::refill(const SubSpectrum* mssm, double tol, bool hard_error, bool debug)
+    void mass_es_pseudonyms::refill(const SubSpectrum* mssm, double tol, bool pt_error, bool debug)
     {
       filled = false;
-      fill(mssm, tol, hard_error, debug);
+      fill(mssm, tol, pt_error, debug);
     }
 
     /// Fill strings in struct
-    void  mass_es_pseudonyms::fill(const SubSpectrum* mssm, double tol, bool hard_error, bool debug) 
+    void  mass_es_pseudonyms::fill(const SubSpectrum* mssm, double tol, bool pt_error, bool debug) 
     {
       if(filled == true) return;  // Don't refill unnecessarily
      
-      fill_mass_es_psn_gauge (isdl, isdlbar, "~d_L", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge (isul, isulbar, "~u_L", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge (issl, isslbar, "~s_L", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge (iscl, isclbar, "~c_L", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_family(isb1, isb1bar, "~b_1", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_family(ist1, ist1bar, "~t_1", mssm, tol, hard_error, debug);
+      fill_mass_es_psn_gauge (isdl, isdlbar, "~d_L", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge (isul, isulbar, "~u_L", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge (issl, isslbar, "~s_L", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge (iscl, isclbar, "~c_L", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_family(isb1, isb1bar, "~b_1", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_family(ist1, ist1bar, "~t_1", mssm, tol, pt_error, debug);
       
-      fill_mass_es_psn_gauge (isell,  isellbar,  "~e_L",   mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge (ismul,  ismulbar,  "~mu_L",  mssm, tol, hard_error, debug);
-      fill_mass_es_psn_family(istau1, istau1bar, "~tau_1", mssm, tol, hard_error, debug);
+      fill_mass_es_psn_gauge (isell,  isellbar,  "~e_L",   mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge (ismul,  ismulbar,  "~mu_L",  mssm, tol, pt_error, debug);
+      fill_mass_es_psn_family(istau1, istau1bar, "~tau_1", mssm, tol, pt_error, debug);
 
-      fill_mass_es_psn_gauge(isnel,   isnelbar,   "~nu_e_L",   mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge(isnmul,  isnmulbar,  "~nu_mu_L",  mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge(isntaul, isntaulbar, "~nu_tau_L", mssm, tol, hard_error, debug);
+      fill_mass_es_psn_gauge(isnel,   isnelbar,   "~nu_e_L",   mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge(isnmul,  isnmulbar,  "~nu_mu_L",  mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge(isntaul, isntaulbar, "~nu_tau_L", mssm, tol, pt_error, debug);
   
-      fill_mass_es_psn_gauge (isdr, isdrbar, "~d_R", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge (isur, isurbar, "~u_R", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge (issr, issrbar, "~s_R", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge (iscr, iscrbar, "~c_R", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_family(isb2, isb2bar, "~b_2", mssm, tol, hard_error, debug);
-      fill_mass_es_psn_family(ist2, ist2bar, "~t_2", mssm, tol, hard_error, debug);
+      fill_mass_es_psn_gauge (isdr, isdrbar, "~d_R", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge (isur, isurbar, "~u_R", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge (issr, issrbar, "~s_R", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge (iscr, iscrbar, "~c_R", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_family(isb2, isb2bar, "~b_2", mssm, tol, pt_error, debug);
+      fill_mass_es_psn_family(ist2, ist2bar, "~t_2", mssm, tol, pt_error, debug);
 
-      fill_mass_es_psn_gauge (iselr, iselrbar,   "~e_R",   mssm, tol, hard_error, debug);
-      fill_mass_es_psn_gauge (ismur, ismurbar,   "~mu_R",  mssm, tol, hard_error, debug);
-      fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol, hard_error, debug);
+      fill_mass_es_psn_gauge (iselr, iselrbar,   "~e_R",   mssm, tol, pt_error, debug);
+      fill_mass_es_psn_gauge (ismur, ismurbar,   "~mu_R",  mssm, tol, pt_error, debug);
+      fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol, pt_error, debug);
             
       filled = true;
   
@@ -80,7 +80,7 @@ namespace Gambit
 
     /// Helper function for getting mass eigenstates from gauge eigenstates
     void mass_es_pseudonyms::fill_mass_es_psn_gauge(str& is, str& isbar, str gauge_es, const SubSpectrum* mssm, 
-                                                    double tol, bool hard_error_on_mixing_failure, bool debug)
+                                                    double tol, bool pt_error_on_mixing_failure, bool debug)
     { 
       double max_mix = 0; 
       str mass_es = slhahelp::mass_es_from_gauge_es(gauge_es, max_mix, mssm);
@@ -95,13 +95,13 @@ namespace Gambit
          std::stringstream ss;
          ss << "MSSM mass(-squared) eigenstate " << mass_es << " is only " << max_mix*max_mix*100 << "% gauge eigenstate " << gauge_es << "." << endl
             << "The requested tolerance is " << tol*100 << " => too much sfermion mixing to assume that this is a pure gauge eigenstate.";
-         if (hard_error_on_mixing_failure)
+         if (pt_error_on_mixing_failure)
          {
-           DecayBit_error().raise(LOCAL_INFO, ss.str());
+           invalid_point().raise(ss.str());
          }
          else
          {
-           invalid_point().raise(ss.str());
+           DecayBit_error().raise(LOCAL_INFO, ss.str());
          }
       }  
 
@@ -110,7 +110,7 @@ namespace Gambit
 
     /// Helper function for getting family states from gauge eigenstates
     void mass_es_pseudonyms::fill_mass_es_psn_family(str& is, str& isbar, str family_state, const SubSpectrum* mssm,
-                                                     double tol, bool hard_error_on_mixing_failure, bool debug)
+                                                     double tol, bool pt_error_on_mixing_failure, bool debug)
     { 
       /// First identify the mass eigenstate that best matches the requested family state.
       /// Then get the decomposition of that mass eigenstate into the two gauge states from the same family as the family state.
@@ -136,13 +136,13 @@ namespace Gambit
          ss << "MSSM mass(-squared) eigenstate " << mass_es << " is only " << mix_mag_sq*100 << "% the same family as "
             << "family state " << family_state << "." << endl << "The requested tolerance is " << tol*100 
             << "% => too much inter-family sfermion mixing to assume that this is a pure family state.";
-         if (hard_error_on_mixing_failure)
+         if (pt_error_on_mixing_failure)
          {
-           DecayBit_error().raise(LOCAL_INFO, ss.str());
+           invalid_point().raise(ss.str());
          }
          else
          {
-           invalid_point().raise(ss.str());
+           DecayBit_error().raise(LOCAL_INFO, ss.str());
          }
       }
       
@@ -269,10 +269,10 @@ namespace Gambit
       if(g_es != gauge_es) std::cout << "g_s error! " << std::endl;
       if(max_mix_r != max_mix) std::cout << "g_s max_mix_r error! " << std::endl;
       
-      str ges = slhahelp::gauge_es_from_mass_es(mass_es, mssm, 1e-3, LOCAL_INFO);
+      str ges = slhahelp::gauge_es_from_mass_es(mass_es, mssm, 1e-3, LOCAL_INFO, false);
       std::cout << "ges = "  << ges << std::endl;
       if(ges != gauge_es) std::cout << "ges error! " << std::endl;
-      str mes = slhahelp::mass_es_from_gauge_es(gauge_es, mssm, 1e-3, LOCAL_INFO);
+      str mes = slhahelp::mass_es_from_gauge_es(gauge_es, mssm, 1e-3, LOCAL_INFO, false);
       std::cout << "mes = "  << ges << std::endl;
       if(mes != mass_es) std::cout << "mes error! " << std::endl;
     }
@@ -291,13 +291,11 @@ namespace Gambit
       std::cout << "sum_sq_mix = " << sum_sq_mix << std::endl;
       std::cout << "mix_mag_sq = " << mix_mag_sq << std::endl; 
       if(fs != family_state) std::cout << "fs error! = " << std::endl;
-      str f_s = slhahelp::family_state_closest_to_mass_es(mass_es, mssm,
-                                                          1e-3, LOCAL_INFO);
+      str f_s = slhahelp::family_state_closest_to_mass_es(mass_es, mssm, 1e-3, LOCAL_INFO, false);
       std::cout << "f_s obtained from mass_es = " << f_s << std::endl;
       if(f_s != family_state) std::cout << "f_s error! = " << std::endl;
     
-      str m_es = slhahelp::mass_es_closest_to_family(family_state, mssm, tol, 
-                                                     LOCAL_INFO);
+      str m_es = slhahelp::mass_es_closest_to_family(family_state, mssm, tol, LOCAL_INFO, false);
       std::cout << "m_es = "  << m_es << std::endl;
       if(m_es != mass_es) std::cout << "m_es error! = " << std::endl;
       

@@ -217,6 +217,11 @@ Rules:
       #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
       #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
 
+  - options:
+      gauge_mixing_tolerance: 0.5
+      family_mixing_tolerance: 0.5
+      off_diagonal_mixing_tolerance: 0.5
+
   - capability:  HardScatteringSim
     function:  getPythia
     options:
@@ -228,8 +233,8 @@ Rules:
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = on",
-			  "SUSY:all = on",
-			  "TauDecays:mode = 0"]
+        "SUSY:all = on",
+        "TauDecays:mode = 0"]
       #Pythia_glusq_LHC_8TeV:
       #  pythiaOptions_1: ["PartonLevel:MPI = off",
       #                    "PartonLevel:ISR = on",

@@ -56,7 +56,8 @@ BE_INI_FUNCTION
 
     std::vector<double> mix_matrix_stop, mix_matrix_sbottom, mix_matrix_stau;
     std::string mass_es1, mass_es2;
-    double tol = runOptions->getValueOrDef<double>(.01, "flavour_mixing_tolerance");
+    const static double tol = runOptions->getValueOrDef<double>(.01, "family_mixing_tolerance");
+    const static bool pterror = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
 
     mix_matrix_stop = Gambit::slhahelp::family_state_mix_matrix("~u", 3, mass_es1, mass_es2, mySpec->get_HE());
 
@@ -91,14 +92,20 @@ BE_INI_FUNCTION
             (mix_matrix_stau[2]*mix_matrix_stau[2] + mix_matrix_stau[3]*mix_matrix_stau[3]) < (1. - tol))
     {
         std::stringstream tol_string;
-        std::ofstream SLHAerror("DarkBitError.slha");
-        SLHAerror << mySLHA;
-        SLHAerror.close();
         tol_string << tol;
-        backend_error().raise(LOCAL_INFO,
-                "Flavour mixing is in excess of what is allowed by MicrOmegas flavour_mixing_tolerance\n"
-                "parameter (currently set to " + tol_string.str() + "). Mixing matrices outputted to "
-                "DarkBitError.slha");
+        const str errmsg = "Flavour mixing is in excess of what is allowed by MicrOmegas flavour_mixing_tolerance\n"
+                "parameter (currently set to " + tol_string.str() + ").";
+        if (pterror)
+        {
+            invalid_point().raise(errmsg);
+        }
+        else
+        {
+            std::ofstream SLHAerror("MicrOmegasError.slha");
+            SLHAerror << mySLHA;
+            SLHAerror.close();
+            backend_error().raise(LOCAL_INFO, errmsg + " Mixing matrices outputted to MicrOmegasError.slha");
+        }
     }
 
     std::ofstream ofs(filename);

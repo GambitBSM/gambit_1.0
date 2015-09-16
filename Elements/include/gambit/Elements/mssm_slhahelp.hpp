@@ -60,9 +60,10 @@ namespace Gambit
    
       /// Identifies the mass eigenstate with largest gauge eigenstate content.
       ///   @{
-      /// Version that tests internally agains a user-requested tolerance
+      /// Version that tests internally agains a user-requested tolerance, either
+      /// raising a GAMBIT error (if pterror_only = false) or invalidating a point.
       str mass_es_from_gauge_es(str gauge_es, const SubSpectrum* mssm, double tol,
-                                str context);
+                                str context, bool pterror_only);
       /// Version returning maximum mixing
       str mass_es_from_gauge_es(str gauge_es, double & max_mixing,
                                 const SubSpectrum* mssm);
@@ -79,9 +80,10 @@ namespace Gambit
    
       /// Identifies the gauge eigenstate with largest mass eigenstate content.
       ///   @{
-      /// Version that tests internally agains a user-requested tolerance
+      /// Version that tests internally agains a user-requested tolerance, either
+      /// raising a GAMBIT error (if pterror_only = false) or invalidating a point.
       str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm,
-                                double tol, str context);      
+                                double tol, str context, bool pterror_only);      
       /// Version returning maximum mixing
       str gauge_es_from_mass_es(str mass_es, double & max_mixing,
                                 const SubSpectrum* mssm);
@@ -103,9 +105,10 @@ namespace Gambit
 
       /// Identifies the mass eigenstate that best matches the requested family state.
       ///   @{
-      /// Version that tests internally agains a user-requested tolerance for family mixing
+      /// Version that tests internally agains a user-requested tolerance for family mixing, either
+      /// raising a GAMBIT error (if pterror_only = false) or invalidating a point.
       str mass_es_closest_to_family(str familystate, const SubSpectrum* mssm,
-                                    double tol, str context);
+                                    double tol, str context, bool pterror_only);
       /// Version returning mixing elements of the resulting mass eigenstate 
       /// into the two gauge eigenstates of the requested family.  To test 
       /// against family mixing, check that the square sum of elements of this
@@ -128,9 +131,10 @@ namespace Gambit
    
       /// Identifies the family state that best matches the requested mass eigenstate.
       ///   @{
-      /// Version that tests internally agains a user-requested tolerance for family mixing
+      /// Version that tests internally agains a user-requested tolerance for family mixing, either
+      /// raising a GAMBIT error (if pterror_only = false) or invalidating a point.
       str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
-                                          double tol, str context);
+                                          double tol, str context, bool pterror_only);
       /// Version returning the mass eigenstate composition of the gauge 
       /// eigenstate that best matches the requested mass eigenstate.  
       str family_state_closest_to_mass_es(str mass_es, std::vector<double> & mass_comp,
@@ -155,10 +159,11 @@ namespace Gambit
       /// as well as the resulting 2x2 family mixing matrix between them.
       /// The matrix has the form (Mix_{11}, Mix_{12}, Mix_{21}, Mix_{22}).
       ///   @{
-      /// Version that tests internally agains a user-requested tolerance for family mixing
+      /// Version that tests internally agains a user-requested tolerance for family mixing, either
+      /// raising a GAMBIT error (if pterror_only = false) or invalidating a point.
       std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e"*/, int generation,
                                                   str & mass_es1, str & mass_es2, const SubSpectrum* mssm,
-                                                  double tol, str context);       
+                                                  double tol, str context, bool pterror_only);       
       /// Version that leaves the test up to the user.
       /// To test that there is negligible family mixing, you can check that for both rows of the 
       /// family mixing matrix, the sum of squares of elements is sufficently close to 1.  That is,

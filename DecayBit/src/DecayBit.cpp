@@ -2504,10 +2504,10 @@ namespace Gambit
     {
       using namespace Pipes::get_mass_es_pseudonyms;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
-      double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");
-      result.refill(mssm, tol, hard_error, debug);
+      result.refill(mssm, tol, pt_error, debug);
     }
 
     /// @}

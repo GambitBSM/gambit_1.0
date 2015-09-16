@@ -47,7 +47,7 @@ namespace Gambit
     ///  If l_are_gauge_es = F, then l(bar)_chirality = 1 => (anti-)slepton is lightest family state
     ///                                               = 2 => (anti-)slepton is heaviest family state
     void get_sigma_ee_ll(triplet<double>& result, const double sqrts, const int generation, const int l_chirality, 
-                         const int lbar_chirality, const double tol, const Spectrum* spec, const double gammaZ,
+                         const int lbar_chirality, const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ,
                          const bool l_are_gauge_es)
     {
       static const str genmap[3][2] =
@@ -86,14 +86,14 @@ namespace Gambit
         sleptonmix[0][1] = 0.0; 
         sleptonmix[1][0] = 0.0; 
         sleptonmix[1][1] = 1.0;
-        mass_es1 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][l_chirality-1],    mssm, tol, LOCAL_INFO);
-        mass_es2 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][lbar_chirality-1], mssm, tol, LOCAL_INFO);
+        mass_es1 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][l_chirality-1],    mssm, tol, LOCAL_INFO, pt_error);
+        mass_es2 = slhahelp::mass_es_from_gauge_es(genmap[generation-1][lbar_chirality-1], mssm, tol, LOCAL_INFO, pt_error);
       }
       else
       {
         // Requested final states are family mass eigenstates.  Pass 2x2 family mass mixing matrix to low-level routine.
         str m_light, m_heavy;
-        std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e", generation, m_light, m_heavy, mssm, tol, LOCAL_INFO);
+        std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e", generation, m_light, m_heavy, mssm, tol, LOCAL_INFO, pt_error);
         mass_es1 = (l_chirality    == 1) ? m_light : m_heavy;
         mass_es2 = (lbar_chirality == 1) ? m_light : m_heavy;
         sleptonmix[0][0] = slepton4vec[0]; 
@@ -156,7 +156,7 @@ namespace Gambit
 
     /// Retrieve the production cross-section at an e+e- collider for neutralino pairs
     void get_sigma_ee_chi00(triplet<double>& result, const double sqrts, const int chi_first, const int chi_second,
-                            const double tol, const Spectrum* spec, const double gammaZ)
+                            const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ)
     {
       // Subspectrum
       const SubSpectrum* mssm = spec->get_HE();
@@ -178,8 +178,8 @@ namespace Gambit
       // MSSM parameters
       const double tanb = mssm->runningpars().get_dimensionless_parameter("tanbeta");
       // Get the mass eigenstates best corresponding to ~eL and ~eR.
-      const str mass_esL = slhahelp::mass_es_from_gauge_es("~e_L", mssm, tol, LOCAL_INFO);
-      const str mass_esR = slhahelp::mass_es_from_gauge_es("~e_R", mssm, tol, LOCAL_INFO);
+      const str mass_esL = slhahelp::mass_es_from_gauge_es("~e_L", mssm, tol, LOCAL_INFO, pt_error);
+      const str mass_esR = slhahelp::mass_es_from_gauge_es("~e_R", mssm, tol, LOCAL_INFO, pt_error);
       // Get the slepton masses
       const double mS[2] = {spec->get_Pole_Mass(mass_esL), spec->get_Pole_Mass(mass_esR)};
       // Get the neutralino masses
@@ -231,7 +231,7 @@ namespace Gambit
 
     /// Retrieve the production cross-section at an e+e- collider for chargino pairs
     void get_sigma_ee_chipm(triplet<double>& result, const double sqrts, const int chi_plus, const int chi_minus,
-                            const double tol, const Spectrum* spec, const double gammaZ)
+                            const double tol, const bool pt_error, const Spectrum* spec, const double gammaZ)
     {
       // Subspectrum
       const SubSpectrum* mssm = spec->get_HE();
@@ -252,7 +252,7 @@ namespace Gambit
 
       // MSSM parameters
       // Get the mass eigenstates best corresponding to ~nu_e_L.
-      const str mass_snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO);
+      const str mass_snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       // Get the electron sneutrino masses
       const double msn = spec->get_Pole_Mass(mass_snue);
       // Get the chargino masses
