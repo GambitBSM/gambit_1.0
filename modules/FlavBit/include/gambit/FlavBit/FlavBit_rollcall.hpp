@@ -466,7 +466,7 @@ START_MODULE
     #define FUNCTION SL_measurements                
     START_FUNCTION(FlavBit::Flav_measurement_assym)   
           DEPENDENCY(FlavBit_fill, parameters)
-          DEPENDENCY(Btaunu , double ) 
+          DEPENDENCY(Btaunu, double ) 
     #undef FUNCTION                                   
   #undef CAPABILITY                                   
 
