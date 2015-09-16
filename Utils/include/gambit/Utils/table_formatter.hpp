@@ -25,6 +25,10 @@
  *                                                                                *
  *   table formatter table("file", "locate", "status");                           *
  *                                                                                *
+ * If you add another line to the column titles, you can by:                      *
+ *                                                                                *
+ *   table.new_titles("(name)", "(/home)", "[ok/not ok]");                        *
+ *                                                                                *
  * Just in case something bad happens, the formatter will make                    *
  * the column widths equal to its default values which you can set by:            *
  *                                                                                *
@@ -33,6 +37,8 @@
  * And if you want to capitalize the titles, do                                   *
  *                                                                                *
  *   table.capitalize_title();                                                    *
+ *                                                                                *
+ * Or table.capitalize_title(0) for a specific line number in the title           *
  *                                                                                *
  * Also, you may want to add a padding space between the columns like this:       *
  *                                                                                *
@@ -97,76 +103,11 @@
 #include <iomanip>
 #include <map>
 #include <utility>
+#include <cctype>
 #include "gambit/Utils/variadic_functions.hpp"
 
 namespace Gambit
 {
-
-    /*******************************************/
-    /****** get the width of the screen ********/
-    /*******************************************/
-    
-    inline int get_screen_cols()
-    {
-        int ret = -1;
-        if (FILE* f = popen("tput cols", "r"))
-        {
-            char buffer[1024];
-            int n;
-            
-            while ((n = fread(buffer, 1, sizeof buffer, f)) > 0)
-            {
-                std::stringstream ss(std::string(buffer, n));
-                if (! (ss >> ret))
-                {
-                    ret = -1;
-                }
-            }
-            
-            pclose(f);
-        }
-        
-        return ret;
-    }
-    
-    /********************************************/
-    /****** separates line to fix length ********/
-    /********************************************/
-    
-    inline std::string separate_line(std::string &line, std::string::size_type indent, std::string::size_type cols_pos)
-    {
-        std::string sub_line;
-        std::string::size_type end_pos = 0;
-        std::string::size_type end_pos_b = line.find_last_of(" ", cols_pos);
-        if (end_pos_b != std::string::npos)
-            end_pos_b = line.find_last_not_of(" ", end_pos_b);
-        std::string::size_type end_pos_a = line.find_last_of("!.?;:,$#", cols_pos-1);
-        std::string::size_type end_pos_ab = line.find_last_of("/-+=()[]{}*@&^%\\", cols_pos);
-        if (end_pos_ab == cols_pos) end_pos_ab--;
-        
-        if (end_pos_b != std::string::npos && end_pos_b > end_pos)
-        {
-            end_pos = end_pos_b;
-        }
-        if (end_pos_ab != std::string::npos && end_pos_ab > end_pos)
-        {
-            end_pos = end_pos_ab;
-        }
-        if (end_pos_a != std::string::npos && end_pos_a > end_pos)
-        {
-            end_pos = end_pos_a;
-        }
-        if (end_pos == 0 || end_pos == std::string::npos)
-            end_pos = cols_pos;
-        else
-            end_pos++;
-        
-        sub_line = line.substr(0, end_pos);
-        line = std::string(indent, ' ') + line.substr(line.find_first_not_of(" ", end_pos));
-        
-        return sub_line;
-    }
-    
     /*************************************/
     /****** class to format lists ********/
     /*************************************/
@@ -179,23 +120,25 @@ namespace Gambit
         int row;
         int pad;
         bool wrap;
+        bool top;
+        bool bottom;
         std::vector<int> defaultWidths;
         std::vector<int> minWidths;
         std::vector<std::vector<std::string>> data;
-        std::vector<std::string> titles;
+        std::vector<std::vector<std::string>> titles;
         std::map<std::pair<int, int>, unsigned char> flags;
         std::vector<unsigned char> row_flags;
         std::vector<unsigned char> col_flags;
         
-        inline void enter_titles(){}
-        template<typename... T>
-        void enter_titles (const std::string &str, const T&... params)
-        {
-            titles.push_back(str);
-            enter_titles(params...);
-        }
+        template <typename U>
+        inline void enter_vec(std::vector<U> &){}
         
-        void wrap_lines (const std::vector<int> &widths);
+        template<typename U, typename V, typename... T>
+        void enter_vec (std::vector<U> &vec, const V &str, const T&... params)
+        {
+            vec.push_back(str);
+            enter_vec(vec, params...);
+        }
 
     public:
         static const unsigned char RESET = 0x00;
@@ -211,9 +154,20 @@ namespace Gambit
         static const unsigned char WRAP = 0x80;
         
         template <typename... T>
-        table_formatter(const T& ...params) : col_num(sizeof...(T)), col(0), row(0), pad(0), wrap(false), defaultWidths(col_num, 25), minWidths(col_num, -1), row_flags(1, 0x00), col_flags(sizeof...(T), 0x00)
+        table_formatter(const T& ...params) : col_num(sizeof...(T)), col(0), row(0), pad(0), wrap(false), top(false), bottom(false), defaultWidths(col_num, 25), minWidths(col_num, -1), titles(1), row_flags(1, 0x00), col_flags(sizeof...(T), 0x00)
         {
-            enter_titles(params...);
+            enter_vec(titles[0], params...);
+        }
+        
+        template<typename... T>
+        void new_titles(const T&... in)
+        {
+            if (sizeof...(T) == col_num)
+            {
+                std::vector<std::string> temp;
+                enter_vec(temp, in...);
+                titles.push_back(temp);
+            }
         }
         
         template<typename... T>
@@ -221,7 +175,9 @@ namespace Gambit
         {
             if (sizeof...(T) == col_num)
             {
-                defaultWidths = initVector(in...);
+                std::vector<int> temp;
+                enter_vec(temp, in...);
+                defaultWidths = temp;
             }
         }
         
@@ -231,20 +187,38 @@ namespace Gambit
             if (sizeof...(T) == col_num)
             {
                 wrap = true;
-                minWidths = initVector(in...);
+                std::vector<int> temp;
+                enter_vec(temp, in...);
+                minWidths = temp;
             }
         }
         
         inline void padding(int p) {pad = p;}
         inline void wrap_around(bool b) {wrap = b;}
+        inline void top_line(bool b){top = b;}
+        inline void bottom_line(bool b){bottom = b;}
+        
+        inline void capitalize_title(int i)
+        {
+            for (auto it = titles[i].begin(), end = titles[i].end(); it != end; ++it)
+            {
+                for(auto s_it = it->begin(), s_end = it->end(); s_it != s_end; ++s_it)
+                {
+                    *s_it = std::toupper(*s_it);
+                }
+            }
+        }
         
         inline void capitalize_title()
         {
             for (auto it = titles.begin(), end = titles.end(); it != end; ++it)
             {
-                for(auto s_it = it->begin(), s_end = it->end(); s_it != s_end; ++s_it)
+                for (auto t_it = it->begin(), t_end = it->end(); t_it != t_end; ++t_it)
                 {
-                    *s_it = std::toupper(*s_it);
+                    for(auto s_it = t_it->begin(), s_end = t_it->end(); s_it != s_end; ++s_it)
+                    {
+                        *s_it = std::toupper(*s_it);
+                    }
                 }
             }
         }

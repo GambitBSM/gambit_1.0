@@ -69,6 +69,8 @@ using Gambit::type_index;
 #define __ARG_N__(...) _ARG_N_(__VA_ARGS__ , 4, 3, 2, 1, 0)
 #define __COMBINE__(a, b) _COMBINE_(a, b)
 #define _COMBINE_(a, b) a ## b
+#define _STR_(a) #a
+#define __STR__(a) _STR_(a)
 
 #define __PLUGIN_VERSION___4(major, minor, patch, release) major ## _ ## minor ## _ ## patch ## _ ## release
 #define __PLUGIN_VERSION___3(major, minor, patch) __PLUGIN_VERSION___4(major, minor, patch, )
@@ -353,6 +355,9 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
     {                                                                                                       \
         return *static_cast<T*>(__gambit_plugin_namespace__::myData.inputData[i]);                          \
     }                                                                                                       \
+                                                                                                            \
+    Gambit::Scanner::resume_params_func                                                                     \
+                    set_resume_params(__STR__(plug_name ## __t__ ## plug_type ## __v__ ## plug_version));   \
 }                                                                                                           \
 namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_version ## _namespace__      \
 

@@ -516,6 +516,60 @@ namespace Gambit
                 {
                         return out << "{" << in.first << " : " << in.second << "}";
                 }
+                
+                /********************************/
+                /****** Output Functions ********/
+                /********************************/
+                
+                template<typename T>
+                inline typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, void>::type
+                resume_file_output(std::ostream &out, T &param)
+                {
+                        out << param << std::endl;
+                };
+                
+                template <typename T>
+                inline typename std::enable_if <is_container<T>::value, std::ostream &>::type
+                resume_file_output (std::ostream &out, T &param)
+                {
+                        for (auto it = param.begin(), end = param.end(); it != end; it++)
+                        {
+                                resume_file_output(out, *it);
+                        }
+                }
+                
+                template <typename T>
+                inline typename std::enable_if <is_pair<T>::value, std::ostream &>::type
+                resume_file_output (std::ostream &out, T &param)
+                {
+                        resume_file_output(out, param.first);
+                        resume_file_output(out, param.second);
+                }
+                
+                template<typename T>
+                typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, void>::type
+                resume_file_input(std::ifstream &in, T &param)
+                {
+                        in >> param;
+                };
+                
+                template <typename T>
+                inline typename std::enable_if <is_container<T>::value, std::ostream &>::type
+                resume_file_input (std::ifstream &in, T &param)
+                {
+                        for (auto it = param.begin(), end = param.end(); it != end; it++)
+                        {
+                                resume_file_input(in, *it);
+                        }
+                }
+                
+                template <typename T>
+                inline typename std::enable_if <is_pair<T>::value, std::ostream &>::type
+                resume_file_input (std::ifstream &in, T &param)
+                {
+                        resume_file_input(in, param.first);
+                        resume_file_input(in, param.second);
+                }
         }
 }
 

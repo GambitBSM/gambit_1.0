@@ -42,7 +42,7 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                 txt_options.setValue("info_file", "info");
                 get_printer().new_stream("txt", txt_options);
 
-                TWalk(LogLike, get_printer(),
+                TWalk(LogLike, get_printer(), set_resume_params,
                                 dim,
                                 get_inifile_value<double>("kwalk_ratio", 0.9836),
                                 get_inifile_value<int>("projection_dimension", 4),
@@ -53,13 +53,14 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                                 get_inifile_value<double>("tolerance", 1.001),
                                 get_inifile_value<int>("chain_number", 5 + numtasks),
                                 get_inifile_value<bool>("hyper_grid", true),
-                                get_inifile_value<int>("cut", 1000));
+                                get_inifile_value<int>("cut", 1000)
+                     );
                 
                 return 0;
         }
 }
 
-void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
+void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
 {
         std::vector<double> chisq(NThreads);
         std::vector<double> aNext(ma, 0.0);
@@ -82,7 +83,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         std::vector<int> ranks(NThreads);
         unsigned long long int next_id;
         double logZ, Ravg = 0.0;
-        
+        set_resume_params(mult, chisqnext);
 #ifdef WITH_MPI
         int rank;
         int numtasks;

@@ -27,10 +27,10 @@
 
 #include <cstdlib>
 #include <sstream>
+#include <fstream>
 #include <iomanip>
 #include <utility>
 #include "gambit/Utils/screen_print_utils.hpp"
-#include "gambit/Utils/table_formatter.hpp"
 
 namespace Gambit
 {

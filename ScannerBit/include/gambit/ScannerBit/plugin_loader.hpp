@@ -29,6 +29,8 @@
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 
 namespace Gambit
 {
@@ -91,21 +93,27 @@ namespace Gambit
                 Plugin_Details &find (const std::string &, const std::string &, const std::string &, const std::string &) const;
             };
             
-//             template <typename T>
-//             class __plugin_resume__
-//             {
-//             private:
-//                 T *data;
-//                 
-//             public:
-//                 __plugin_resume__(T &data) : data(&data) {}
-//                 __plugin_resume__(const __plugin_resume__ &in) : data(in.data) {}
-//                 __plugin_resume__ &operator()(const __plugin_resume__ &in) {data = in.data; return *this;}
-//                 
-//                 void print(std::ofstream &out)
-//                 {
-//                 }
-//             }
+            class __plugin_resume_base__
+            {
+            public:
+                virtual void print(std::ofstream &) = 0;
+            };
+            
+            template <typename T>
+            class __plugin_resume__ : public __plugin_resume_base__
+            {
+            private:
+                T *data;
+                
+            public:
+                __plugin_resume__(T &data) : data(&data) {}
+                __plugin_resume__(const __plugin_resume__ &in) : data(in.data) {}
+                __plugin_resume__ &operator()(const __plugin_resume__ &in) {data = in.data; return *this;}
+                void print(std::ofstream &out)
+                {
+                    resume_file_output<T>(out, *data);
+                }
+            };
             
             ///Container for all the plugin info from the inifile and Scannerbit
             class pluginInfo
@@ -113,34 +121,63 @@ namespace Gambit
             private:
                 std::map<std::string, std::map<std::string, Proto_Plugin_Details> > selectedPlugins;
                 mutable Plugins::Plugin_Loader plugins;
-                std::unordered_map<std::vector<__resume_base__>> resume_data;
-                std::string resume_name;
+                std::map<std::string, std::vector<__plugin_resume_base__ *>> resume_data;
                 printer_interface *printer;
                 Options options;
-                    
+                
+                void set_resume(std::vector<__plugin_resume_base__ *> &){}
+                                
+                template<typename U, typename... T>
+                void set_resume(std::vector<__plugin_resume_base__ *> &r_data, U& param, T&... params)
+                {
+                    r_data.push_back(new __plugin_resume__<U>(param));
+                    set_resume(r_data, params...); 
+                }
+                
+                void get_resume(std::ifstream &){}
+                
+                template<typename U, typename... T>
+                void get_resume(std::ifstream &in, U& param, T&... params)
+                {
+                    resume_file_input(in, param);
+                    get_resume(in, params...);
+                }
+                
             public:
                 void iniFile(const Options &, printer_interface &);
                 
-//                 void set_resume(const std::string &name)
-//                 {
-//                     resume_name = name;
-//                 }
-//                 
-//                 inline void resume(){}
-//                 
-//                 template <typename... T>
-//                 void resume(T&... data)
-//                 {
-//                     if (printer->resume_mode())
-//                     {
-//                         ifstream in(resume_name);
-//                         get_resume_data();
-//                     }
-//                     else
-//                     {
-//                         resume_data[resume_name].push_back(__plugin_resume__(data));
-//                     }
-//                 }
+                template <typename... T>
+                void resume(const std::string &name, T&... data)
+                {
+                    if (printer->resume_mode())
+                    {
+                        if (resume_data.find(name) == resume_data.end())
+                        {
+                            scan_err << "Can not load resume data." << scan_end;
+                        }
+                        else
+                        {
+                            std::ifstream in((std::string(GAMBIT_DIR) + "/" + name).c_str());
+                            get_resume(in, data...);
+                        }
+                    }
+                    else
+                    {
+                        set_resume(resume_data[name], data...);
+                    }
+                }
+                
+                void finalize()
+                {
+                    for (auto it = resume_data.begin(), end = resume_data.end(); it != end; ++it)
+                    {
+                        std::ofstream out(it->first);
+                        for (auto v_it = it->second.begin(), v_end = it->second.end(); v_it != v_end; ++v_it)
+                        {
+                            (*v_it)->print(out);
+                        }
+                    }
+                }
                 
                 const Plugin_Loader &operator()(){return plugins;}
                 Plugin_Interface_Details operator()(const std::string &, const std::string &);

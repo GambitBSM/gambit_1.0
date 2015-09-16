@@ -56,7 +56,7 @@ namespace Gambit
   {
     //int maxlens[6] = {18, 7, 70, 13, 3, 3};
     bool all_good = true;
-    table_formatter table("Backends", "Version", "Path to lib", "Status", "#func", "#types", "#ctors");
+    table_formatter table("Backends", "Version", "Path to lib", "Status ", " #func ", "#types ", "#ctors");
     table.padding(1);
     table.capitalize_title();
     table.default_widths(18, 7, 70, 13, 3, 3);
@@ -110,7 +110,7 @@ namespace Gambit
             table.green() << status;
         else
             table.red() << status;
-        table << ss1.str() << ss2.str() << nctors;
+        table << " " + ss1.str() << ss2.str() << nctors;
       }
     }
 
@@ -242,7 +242,8 @@ namespace Gambit
         //std::cout << "                   Dependencies[] & Backend Reqs{}" << endl;
         //std::cout << "-------------------------------------------------------------------------------------------------------------------------------";
         //std::cout << "--------------------------------------------------" << endl;
-        table_formatter table("Function", "Capability", "Result Type", "Loop Manager: Is", "Needs");
+        table_formatter table("", "", "", "LOOP MANAGER:", "DEPENDENCIES / BACKEND REQUIREMENTS");
+        table.new_titles("Function", "Capability", "Result Type", " IS  NEEDS", "[type]         {type}");
         table.padding(1);
         table.capitalize_title();
         table.default_widths(30, 35, 35, 19, 27);
@@ -262,7 +263,7 @@ namespace Gambit
             std::set<sspair> reqs = (*jt)->backendreqs();
             //cout << f << spacing(f.length()-2,30) << c << spacing(c.length(),35);
             //cout << t << spacing(t.length(),35) << islm << "  " << nlm << spacing(nlm.length(),19);
-            table.no_newline() << f << c << t << (islm + "  " + nlm);
+            table.no_newline() << f << c << t << (" " + islm + " " + nlm);
             
             if (not deps.empty())
             {
@@ -328,6 +329,8 @@ namespace Gambit
           back_table.capitalize_title();
           back_table.default_widths(27, 35, 40, 40);
           back_table.padding(1);
+          back_table.top_line(true);
+          back_table.bottom_line(true);
           // Loop over all the backend functions and variables
           for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
           {
@@ -359,6 +362,8 @@ namespace Gambit
           class_table.capitalize_title();
           class_table.default_widths(46, 60, 60);
           class_table.padding(1);
+          class_table.top_line(true);
+          class_table.bottom_line(true);
           // If this version has classes to offer, print out info on them too
           if (backendData->classloader.at(it->first+*jt))
           {

@@ -19,6 +19,9 @@
 #include <string>
 #include <cstdlib>
 #include <csignal>
+#ifdef WITH_MPI
+#include <mpi.h>
+#endif
 
 #include "gambit/Logs/log.hpp"
 #include "gambit/Printers/printermanager.hpp"
@@ -42,12 +45,16 @@ void scan_terminator()
 
 void sighandler(int sig)
 {
+    Gambit::Scanner::Plugins::plugin_info.finalize();
         if (printerInterface != NULL)
                 printerInterface->finalise();
+        
+        //MPI_Abort(MPI_COMM_WORLD, sig);
         //#ifdef WITH_MPI
         //  MPI_Finalize();
         //#endif
         std::cout << "ScannerBit has finished early!" << std::endl;
+        //sleep(60);
         exit(sig);
 }
 
@@ -83,6 +90,7 @@ int main(int argc, char **argv)
         signal(SIGABRT, sighandler);
         signal(SIGTERM, sighandler);
         signal(SIGINT, sighandler);
+        signal(SIGQUIT, sighandler);
 
         #ifdef WITH_MPI
           GMPI::Init();

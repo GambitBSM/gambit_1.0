@@ -29,8 +29,13 @@
 #include <algorithm>
 #include <typeinfo>
 
+#ifdef WITH_MPI
+#include <mpi.h>
+#endif
+
 #include "gambit/ScannerBit/printer_interface.hpp"
 #include "gambit/Utils/type_index.hpp"
+#include "gambit/ScannerBit/plugin_loader.hpp"
 
 namespace Gambit
 {
@@ -38,6 +43,32 @@ namespace Gambit
     namespace Scanner
     {
 
+        class resume_params_func
+        {
+        private:
+            std::string name;
+            
+        public:
+            resume_params_func(const std::string name_in)
+            {
+                int rank;
+#ifdef WITH_MPI
+                MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#else
+                rank = 0;
+#endif
+                std::stringstream ss;
+                ss << rank;
+                name = name_in + "_" + ss.str();
+            }
+            
+            template <typename... T>
+            void operator ()(T&... params)
+            {
+                Gambit::Scanner::Plugins::plugin_info.resume(name, params...);
+            }
+        };
+            
         namespace Plugins
         {
             using Gambit::type_index;

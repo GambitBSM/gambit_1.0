@@ -23,6 +23,7 @@
 #include <utility>
 #include "gambit/Utils/variadic_functions.hpp"
 #include "gambit/Utils/table_formatter.hpp"
+#include "gambit/Utils/screen_print_utils.hpp"
 
 namespace Gambit
 {
@@ -30,25 +31,28 @@ namespace Gambit
     /****** table formatter output funcs ********/
     /********************************************/
     
-    void table_formatter::wrap_lines (const std::vector<int> &widths)
+    inline void wrap_lines (std::vector<std::vector<std::string>> &data_in, const std::vector<int> &widths, const std::vector<int> &minWidths, double pad, std::vector<unsigned char> *row_flags = 0)
     {
-        auto f_it = row_flags.begin();
-        for (auto it = data.begin(), end = data.end(); it != end;)
+        std::vector<unsigned char>::iterator f_it;
+        if (row_flags)
+            f_it= row_flags->begin();
+        for (auto it = data_in.begin(), end = data_in.end(); it != end;)
         {
+            int col_num = it->size();
             std::vector<std::string> temp(col_num, "");
             bool wrapped = false;
             for (int i = 0; i < col_num; i++)
             {
-                if (minWidths[i] > 0)
+                if (minWidths.at(i) > 0)
                 {
                     int w = widths[i];
                     if (i != col_num-1)
                     {
                         w -= pad;
                     }
-                    if (minWidths[i] > w)
+                    if (minWidths.at(i) > w)
                     {
-                        w = minWidths[i];
+                        w = minWidths.at(i);
                     }
                     if (w < (int)(*it)[i].length())
                     {
@@ -67,22 +71,29 @@ namespace Gambit
                     }
                 }
             }
+            
             ++it;
+            
             if (wrapped)
             {
-                f_it = row_flags.insert(f_it, 0x80);
-                it = data.insert(it, temp);
-                end = data.end();
+                if (row_flags)
+                    f_it = row_flags->insert(f_it, 0x80);
+                it = data_in.insert(it, temp);
+                end = data_in.end();
             }
-            ++f_it;
+            
+            if (row_flags)
+                ++f_it;
         }
     }
 
     std::string table_formatter::str()
     {
         int cols_screen = get_screen_cols();
+        int cols_tot = 0;
         int row_num = data.size();
         int col_last = col_num - 1;
+        int row_last = row_num - 1;
         std::vector<int> col_sizes;
         std::stringstream out;
         bool overflow = false;
@@ -90,7 +101,7 @@ namespace Gambit
         if (cols_screen > 0)
         {
             col_sizes = std::vector<int>(col_num, (cols_screen)/col_num);
-            col_sizes[col_last] += (cols_screen-pad)%col_num;
+            col_sizes[col_last] += cols_screen%col_num;
         }
         else
         {
@@ -98,14 +109,22 @@ namespace Gambit
         }
         
         if (wrap) 
-            wrap_lines (col_sizes);
-        
-        std::vector<int> max_col(col_num, 0);
-        for (int i = 0; i < col_num; i++)
         {
-            max_col[i] = titles[i].length();
+            wrap_lines (data, col_sizes, minWidths, pad, &row_flags);
+            wrap_lines (titles, col_sizes, minWidths, pad);
         }
         
+        std::vector<int> max_col(col_num, 0);
+        
+        for (auto it = titles.begin(), end = titles.end(); it != end; ++it)
+        {
+            for (int i = 0; i < col_num; i++)
+            {
+                if ((unsigned int)max_col[i] < (*it)[i].length())
+                    max_col[i] = (*it)[i].length();
+            }
+        }
+            
         for (auto it = data.begin(), end = data.end(); it != end; ++it)
         {
             for (int i = 0; i < col_num; i++)
@@ -159,11 +178,6 @@ namespace Gambit
             }
         }
         
-        if (pad > 0) for (int i = 0; i < col_last; i++)
-        {
-            col_sizes[i] -= pad;
-        }
-        
         std::string spaces(pad, ' ');
 
         std::vector<std::ios_base::fmtflags> ff(col_num);
@@ -181,28 +195,63 @@ namespace Gambit
             {
                 ff[i] = std::ios::left;
             }
+            
+            cols_tot += col_sizes[i];
+        }
+        
+        if (pad > 0) for (int i = 0; i < col_last; i++)
+        {
+            col_sizes[i] -= pad;
         }
         
         if (overflow && cols_screen > 0)
             out << "\x1b[33;01m" << std::setw(cols_screen) << "=== more here ==>" << "\x1b[0m" << std::endl;
         
-        out << "\n\x1b[01m\x1b[04m";
-        for (int i = 0; i < col_num; i++)
+        if(top)
         {
-            out << std::setiosflags(ff[i]);
-            if (col_flags[i] & JUST_CENTER)
-                out << std::setw(col_sizes[i]) << std::string((col_sizes[i]-titles[i].size())/2, ' ') + titles[i];
-            else
-                out << std::setw(col_sizes[i]) << titles[i];
-            out << std::resetiosflags(ff[i]);
-            if (i < col_last)
-                out << spaces;
+            out << "\x1b[01m\x1b[04m" << std::setw(cols_tot) << "" << "\x1b[0m";
         }
-        out << "\x1b[0m\n" << std::endl;
+        out << std::endl;
+        
+        for (auto it = titles.begin(), end = titles.end(); it != end; ++it)
+        {
+            if (it == end - 1)
+            {
+                out << "\x1b[01m\x1b[04m";
+            }
+            else
+            {
+                out << "\x1b[01m";
+            }
+            int temp = 0;
+            for (int i = 0; i < col_num; i++)
+            {
+                out << std::setiosflags(ff[i]);
+                if (col_flags[i] & JUST_CENTER)
+                    out << std::setw(col_sizes[i]) << std::string((col_sizes[i]-it->size())/2, ' ') + (*it)[i];
+                else
+                    out << std::setw(col_sizes[i]) << (*it)[i];
+                out << std::resetiosflags(ff[i]);
+
+                if (i < col_last)
+                    out << spaces;
+            }
+            out << "\x1b[0m" << std::endl;
+        }
+        
+        out << std::endl;
         
         for (int i = 0; i < row_num; i++)
         {
-            out << "\x1b[0m";
+            if (bottom && i == row_last && bool(row_flags[i] & WRAP))
+            {
+                out << "\x1b[01m\x1b[04m";
+            }
+            else
+            {
+                out << "\x1b[0m";
+            }
+            
             for (int j = 0; j < col_num; j++)
             {
                 std::pair<int, int> key(i, j);
@@ -239,9 +288,13 @@ namespace Gambit
                         out << "\x1b[04m";
                     }
                     if (col_flags[j] & JUST_CENTER)
+                    {
                         out << std::setw(col_sizes[j]) << std::string((col_sizes[j]-data[i][j].size())/2, ' ') + data[i][j];
+                    }
                     else
+                    {
                         out << std::setw(col_sizes[j]) << data[i][j];
+                    }
                     out << "\x1b[0m";
                     out << std::resetiosflags(ff[j]);
                 }
@@ -251,9 +304,22 @@ namespace Gambit
             }
             
             if (bool(row_flags[i] & WRAP))
+            {
+                if (bottom && i == row_last)
+                {
+                    out << "\x1b[0m";
+                }
                 out << std::endl;
+            }
             else
-                out << "\n" << std::endl;
+            {
+                out << "\n";
+                if (bottom && i == row_last)
+                {
+                    out << "\x1b[01m\x1b[04m" << std::setw(cols_tot) << "" << "\x1b[0m";
+                }
+                out << std::endl;
+            }
         }
         
         out << std::flush;
