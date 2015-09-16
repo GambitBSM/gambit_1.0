@@ -45,16 +45,12 @@ void MODEL_NAMESPACE::StandardModel_Higgs_to_StandardModel_Higgs_running (const 
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
    logger()<<"Running interpret_as_parent calculations for SM_Higgs --> SM_Higgs_running..."<<LogTags::info<<EOM;
   
-   // Copy all the parameters SM_Higgs into SM_Higgs_running, not what we want exactly? May just copy lambda_sh which is what we want
-   //targetP.copy_parameters_from(myP);
 
-   // Now only the "Qin" parameter is left unset. Need to extract this from the Spectrum object dependency.
-  // const Spectrum* spec = *Dep::unimproved_MSSM_spectrum;
-
-  double tree_level_H_mass,mh2;
+  double tree_level_H_mass,mh2,v;
   tree_level_H_mass=myP.getValue("mH");
+  v=myP.getValue("vev");
   
-  targetP.setValue("vev",246);
+  targetP.setValue("vev",v);
   
   mh2=0.5*pow(tree_level_H_mass,2);
   

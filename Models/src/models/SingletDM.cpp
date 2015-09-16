@@ -45,15 +45,10 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
    logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_running..."<<LogTags::info<<EOM;
   
-   // Copy all the parameters SingletDM into SingletDM_running, not what we want exactly? May just copy lambda_sh which is what we want
-   //targetP.copy_parameters_from(myP);
-
-   // Now only the "Qin" parameter is left unset. Need to extract this from the Spectrum object dependency.
- //  const Spectrum* spec = *Dep::unimproved_MSSM_spectrum;
 
   double tree_level_S_mass,Lambda_hS,ms2;
-  tree_level_S_mass=100; //myP.mS;
-  Lambda_hS=0.01; //myP.lambda_hS;
+  tree_level_S_mass=myP.getValue("mS");
+  Lambda_hS=myP.getValue("lambda_hS");
   
   ms2=pow(tree_level_S_mass,2)-0.5*Lambda_hS*pow(246.2,2);
   
