@@ -1545,7 +1545,7 @@ namespace Gambit
       double theory_Dmunu=0.;
       SI_Dsmunu(theory_Dmunu);
 
-
+      cout<<"THis couses the  Gambit::safety_bucket_base::dieGracefully"<<endl;
       cout<<"Compare: "<<*(Dep::Btaunu)<<" "<<theory_Btaunu<<endl;
 
       
