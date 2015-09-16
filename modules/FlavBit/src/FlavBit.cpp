@@ -1546,7 +1546,7 @@ namespace Gambit
       SI_Dsmunu(theory_Dmunu);
 
 
-      cout<<"Compare: "<<*(Pipes::Btaunu)<<" "<<theory_Btaunu<<endl;
+      cout<<"Compare: "<<*(Dep::Btaunu)<<" "<<theory_Btaunu<<endl;
 
       
       // theory results;
