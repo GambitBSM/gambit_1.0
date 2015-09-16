@@ -1,0 +1,298 @@
+# GAMBIT Initialization file (in YAML)
+#
+# Christoph Weniger <c.weniger@uva.nl>
+# June, July 2013
+#
+# Ben Farmer <ben.farmer@gmail.com>
+# Dec 2013
+#
+
+
+###################################
+# Input parameter declarations
+###################################
+
+Parameters:
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  #MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
+  CMSSM:
+      M0:
+        range: [30, 1000]
+        prior_type: flat
+      M12:
+        range: [30, 1000]
+        prior_type: flat
+      A0: 0
+      tanb: 10
+      signmu: 1
+      
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer.
+  options:
+    # name of output file
+    output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.info"
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+  use_scanner: multinest
+
+  scanners:
+
+    multinest:
+      plugin: MultiNest
+      options:
+        like:  Likelihood
+        nlive: 100
+        tol: 0.1
+        aux_printer_txt_options:
+          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
+          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt_info"
+        aux_printer_stats_options:
+          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.stats"
+          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.stats_info"
+        aux_printer_live_options:
+          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.live"
+          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.live_info"
+
+
+    random:
+      plugin: random_sampler
+      options:
+        point_number: 3
+        output_file:  output
+        like:  Likelihood
+        files:
+          output_file: "weights ..."
+
+###############################
+# Observables of interest
+###############################
+
+ObsLikes:
+
+  # Test LHC combined likelihood
+  - purpose:    Likelihood
+    capability: LHC_Combined_LogLike
+
+  # TODO: Test the functionality of these likelihood functions
+  # Test LEP SUSY limit slepton likelihoods
+  #- purpose:    Likelihood
+  #  capability: ALEPH_Selectron_LLike
+
+  #- purpose:    Likelihood
+  #  capability: ALEPH_Smuon_LLike
+
+  #- purpose:    Likelihood
+  #  capability: ALEPH_Stau_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Selectron_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Smuon_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Stau_LLike
+
+  ## Test LEP SUSY limit gaugino likelihoods
+  #- purpose:    Likelihood
+  #  capability: L3_Neutralino_All_Channels_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Neutralino_Leptonic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Chargino_All_Channels_LLike
+
+  #- purpose:    Likelihood
+  #  capability: L3_Chargino_Leptonic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Chargino_Hadronic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Chargino_SemiLeptonic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Chargino_Leptonic_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Chargino_All_Channels_LLike
+
+  #- purpose:    Likelihood
+  #  capability: OPAL_Neutralino_Hadronic_LLike
+
+
+#########################
+# Rule entries
+#########################
+
+Rules:
+
+  #ColliderBit options (note, these ones are mandatory at this moment)
+
+  #- capability: unimproved_MSSM_spectrum 
+  #  function: get_MSSMatQ_spectrum  
+  #  options:
+  #    invalid_point_fatal: true
+
+  - capability: unimproved_MSSM_spectrum 
+    function: get_CMSSM_spectrum  # Use this function to compute this capability
+    options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+  - capability: Higgs_decay_rates
+    function: MSSM_h0_1_decays
+
+  - capability: h0_2_decay_rates
+    function: h0_2_decays
+
+  - capability: A0_decay_rates
+    function: A0_decays
+
+  - capability: Hplus_decay_rates
+    function: Hplus_decays
+      
+  - capability: decay_rates
+    function: all_decays
+
+  - capability: AnalysisContainer
+    function: getAnalysisContainer
+    options:  
+      analysisNames: ["ATLAS_0LEP_20invfb"]
+
+  - capability: DetectorSim
+    function: getDelphes
+    options:
+      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+
+  - capability: SimpleSmearingSim
+    function: getBuckFast
+    options:
+      buckFastOption: "BuckFastSmear"
+ 
+  - capability: ReconstructedEvent
+    function: reconstructBuckFastEvent
+    dependencies:
+    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
+    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
+
+  - capability:  ColliderOperator
+    function: operatePythia
+    options:
+      nEvents: 10000
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
+      #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
+      #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
+      #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
+
+  - capability:  HardScatteringSim
+    function:  getPythia
+    options:
+      # Change to absolute paths below when running outside of the gambit/modules directory
+      Pythia_doc_path: "../gambit_internal/extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV:
+        pythiaOptions_1: ["Print:quiet = on",
+                          "PartonLevel:MPI = off",
+                          "PartonLevel:ISR = on",
+                          "PartonLevel:FSR = off",
+                          "HadronLevel:all = on",
+			  "SUSY:all = on",
+			  "TauDecays:mode = 0"]
+      #Pythia_glusq_LHC_8TeV:
+      #  pythiaOptions_1: ["PartonLevel:MPI = off",
+      #                    "PartonLevel:ISR = on",
+      #                    "PartonLevel:FSR = off",
+      #                    "HadronLevel:all = off"]
+      #Pythia_SUSY_LHC_8TeV:
+      #  pythiaOptions_1: ["PartonLevel:MPI = off",
+      #                    "PartonLevel:ISR = on",
+      #                    "PartonLevel:FSR = off",
+      #                    "HadronLevel:all = off",
+      #                    "SUSY:idA = 1000021",
+      #                    "SUSY:idB = 1000021"]
+      #  pythiaOptions_2: ["PartonLevel:MPI = off",
+      #                    "PartonLevel:ISR = on",
+      #                    "PartonLevel:FSR = off",
+      #                    "HadronLevel:all = off",
+      #                    "SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004",
+      #                    "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
+      #debug_SLHA_filenames:
+      #  - ColliderBit/data/sps1aWithDecays.spc
+
+  - capability: LHC_Combined_LogLike
+    backends:
+    - {capability: lnlike_marg_poisson_lognormal_error}
+
+  - capability: AnalysisNumbers
+    dependencies:
+    - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
+    
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirectory of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
+
+  prefix : "runs/example_minimal_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+    [Core,Error] : "core_errors.log"
+    [Core,Error,Fatal] : "fatal_core_errors.log"
+    [Dependency Resolver] : "dependency_resolver.log"
+    [ColliderBit] : "ColliderBit.log"
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
