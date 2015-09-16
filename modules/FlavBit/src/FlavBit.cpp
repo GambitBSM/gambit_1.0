@@ -104,7 +104,7 @@ namespace Gambit
       SLHAstruct spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
-
+      
       /*
       // Debug code for reading in a spectrum from an example SLHA file.
       char name[]="FlavBit/example.lha";
@@ -572,6 +572,7 @@ namespace Gambit
 
       printf("BR(B->tau nu)=%.3e\n",result);
     }
+    
 
     // *************************************************
 
@@ -1491,7 +1492,7 @@ namespace Gambit
 
     void SL_measurements(Flav_measurement_assym &measurement_assym)
     {
-
+      using namespace Pipes::SL_measurements; 
       int n_experiments=5;
       // experimental measurement
       cout<<"In b2taunu_measurements"<<endl;
@@ -1545,6 +1546,9 @@ namespace Gambit
       SI_Dsmunu(theory_Dmunu);
 
 
+      cout<<"Compare: "<<*(Pipes::Btaunu)<<" "<<theory_Btaunu<<endl;
+
+      
       // theory results;
 
       boost::numeric::ublas::matrix<double> M_th(n_experiments,1);
