@@ -57,6 +57,11 @@ namespace Gambit
         /// Signal printer that scan is finished, and final output needs to be performed
         virtual void finalise() = 0;
 
+        /// Ask the printer for the highest ID number known for a given rank
+        /// process (needed for resuming, so the scanner can resume assigning
+        /// point ID from this value. 
+        virtual unsigned long getHighestPointID(const int rank) = 0;
+
         /// Declarations of minimal print functions needed by ScannerBit
         #define SCANNER_PRINTABLE_TYPES \
           (bool)                     \

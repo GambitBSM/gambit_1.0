@@ -402,6 +402,10 @@ namespace Gambit {
             /// This can be done by simply resetting the all validity bools to "false"
             dsetvalid().zero();
             //dsetdata().zero(); // Should work fine, but should be unneccesary.
+
+            // Point the write head (or "cursor") back at the beginning of the output datasets.
+            dsetvalid().reset_nextemptyslab();
+            dsetdata().reset_nextemptyslab();
          }
       }
 
@@ -480,19 +484,24 @@ namespace Gambit {
       template<class T, std::size_t CHUNKLENGTH>
       void VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::RA_write_to_disk(const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
       {
-         if(not this->is_silenced()) 
+        if(this->is_synchronised())
+        {
+           std::ostringstream errmsg;
+           errmsg << "rank "<<this->myRank<<": Error! Non-synchronised buffer attempted to perform RA_write_to_disk! Only non-synchronised buffers are permitted to do this. (buffer name = "<<this->get_label()<<")";
+           printer_error().raise(LOCAL_INFO, errmsg.str()); 
+        }
+
+        if(not this->is_silenced()) 
          {
             dsetvalid().extend_dset(target_sync_pos);
             dsetdata().extend_dset(target_sync_pos);
 
-            #ifdef DEBUG_MODE
-            std::cout<<"rank "<<this->myRank<<": Extended RA dset '"<<this->get_label()<<"' to size "<<target_sync_pos<<std::endl; 
-            #endif
+            //#ifdef DEBUG_MODE
+            std::cout<<"rank "<<this->myRank<<": Extended RA dset '"<<this->get_label()<<"' to at least size "<<target_sync_pos<<std::endl; 
+            //#endif
 
             if (this->RA_queue_length!=0 or postpone_write_queue_and_locs.size()!=0) 
             {
-      
-               /// Make sure RA datasets are at least the same length as the sync datasets
                #ifdef DEBUG_MODE
                std::cout<<"rank "<<this->myRank<<": Doing RA_write_to_disk for buffer '"<<this->get_label()<<"' (note: target_sync_pos="<<target_sync_pos<<", dset_head_pos()="<<this->dset_head_pos()<<")"<<std::endl;
                #endif 
@@ -577,9 +586,9 @@ namespace Gambit {
             // (do this regardless of whether this is a sync buffer or not)
             target_sync_pos = sync_pos;
 
-            #ifdef HDF5_BUF_DEBUG
+            //#ifdef HDF5_BUF_DEBUG
             std::cout<<"rank "<<this->myRank<<": Updated target_sync_pos to '"<<target_sync_pos<<" in buffer "<<this->get_label()<<std::endl; 
-            #endif
+            //#endif
 
             if(this->is_synchronised()) 
             {

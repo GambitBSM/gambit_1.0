@@ -463,6 +463,13 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::RA_flush(const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
       {
+        if(this->is_synchronised())
+        {
+           std::ostringstream errmsg;
+           errmsg << "rank "<<this->myRank<<": Error! Non-synchronised buffer attempted to perform RA_flush! Only non-synchronised buffers are permitted to do this. (buffer name = "<<this->get_label()<<")";
+           printer_error().raise(LOCAL_INFO, errmsg.str()); 
+        }
+
         if(not this->is_silenced()) {
             #ifdef WITH_MPI
             // Prepate to send buffer data to master node

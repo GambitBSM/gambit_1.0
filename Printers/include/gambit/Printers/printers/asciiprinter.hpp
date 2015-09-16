@@ -103,6 +103,12 @@ namespace Gambit
         int getRank();
         void finalise();
 
+        /// Ask the printer for the highest ID number known for a given rank
+        /// process (needed for resuming, so the scanner can resume assigning
+        /// point ID from this value. 
+        /// TODO: This does not work yet! Needed for resuming, which is not yet implemented in the asciiprinter
+        unsigned long getHighestPointID(const int rank) { return -1; }
+
         ///@}
       
         /// Asciiprinter-specific functions

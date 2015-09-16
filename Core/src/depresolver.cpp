@@ -799,13 +799,15 @@ namespace Gambit
           // Trigger a dummy print call for all printable functors. This is used by some printers
           // to set up buffers for each of these output streams.
           logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
-          masterGraph[*vi]->print(boundPrinter,0);     
+
+          masterGraph[*vi]->print(boundPrinter,-1);     
         }    
       }
 
       // Force-reset the printer to erase the dummy calls
       // (but don't do this if we are in resume mode!)
-      if(not boundCore->resume) boundPrinter->reset(true);
+      //if(not boundCore->resume) boundPrinter->reset(true);
+      boundPrinter->reset(true); // Actually *do* do it in resume mode as well. Printers should only reset new data, not destroy old data.
 
       // sent vector of ID's of functors to be printed to printer.
       // (if we want to only print functor output sometimes, and dynamically

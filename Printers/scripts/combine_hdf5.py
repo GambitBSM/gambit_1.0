@@ -85,6 +85,7 @@ files = {}
 
 sync_dsets = set([])
 RA_dsets = set([])
+RA_dsets_exclude = set(["RA_pointID","RA_pointID_isvalid","RA_MPIrank","RA_MPIrank_isvalid"])
 total_sync_length = 0
 
 for i in range(N):
@@ -122,21 +123,53 @@ for item in sorted(RA_dsets):
 print "total sync length =",total_sync_length
 
 
-print "Creating output file"
-fout = h5py.File(outfname,'w')
-gout = fout.create_group(group)
+print "Creating/accessing output file"
+fout = h5py.File(outfname,'a')
+if not group in fout:
+   gout = fout.create_group(group)
+else:
+   gout = fout[group]
+
+# Check for existing dsets in the output (and get their lengths if they exist)
+existing_dsets = {}
+dsetlengths = {}
+for name in gout:   
+   if isinstance(gout[name],h5py.Dataset):
+      print "   Accessing existing dset:", name
+      existing_dsets[name] = gout[name]
+      dsetlengths[name]   = gout[name].shape[0]
+
+# check that the existing dsets have a consistent length
+if len(dsetlengths)!=0:
+   init_output_length = check_lengths(dsetlengths)	 
+   print "Existing datasets have length ", init_output_length
+else:
+   init_output_length = 0
+
+
+# Resize the existing dsets to accommodate the new data
+for dsetname,dset in existing_dsets.items():
+   print "   Extending existing dset '{0}' to length {1}+{2}={3} to accommodate new data...".format(dsetname,init_output_length,total_sync_length,init_output_length+total_sync_length)
+   dset.resize((init_output_length+total_sync_length,))
 
 # Create dataset to match every sync and RA dataset
-alldsets = {}
+target_dsets = {}
 for dsetname,dt in sorted(sync_dsets):   
-   print "   Creating empty dset:", dsetname
-   alldsets[dsetname] = gout.create_dataset(dsetname, (total_sync_length,), chunks=(chunksize,), dtype=dt)
+   if not dsetname in gout:
+      print "   Creating empty dset:", dsetname
+      target_dsets[dsetname] = gout.create_dataset(dsetname, (init_output_length+total_sync_length,), chunks=(chunksize,), dtype=dt, maxshape=(None,))
+   else:
+      target_dsets[dsetname] = existing_dsets[dsetname]
 for dsetname,dt in sorted(RA_dsets):
-   print "   Creating empty dset:", dsetname
-   alldsets[dsetname] = gout.create_dataset(dsetname, (total_sync_length,), chunks=(chunksize,), dtype=dt)
+   if not dsetname in RA_dsets_exclude:
+      if not dsetname in gout:
+         print "   Creating empty dset:", dsetname
+         target_dsets[dsetname] = gout.create_dataset(dsetname, (init_output_length+total_sync_length,), chunks=(chunksize,), dtype=dt, maxshape=(None,))
+      else:
+         target_dsets[dsetname] = existing_dsets[dsetname]
 
 # Copy data from separate sync datasets into combined datasets
-nextempty=0
+nextempty=init_output_length
 for i in range(N):
    fname = "{0}_temp_{1}".format(rootfname,i)
    print "Copying sync data from file {0} to file {1}...".format(fname,outfname)
@@ -171,6 +204,7 @@ for i in range(N):
       mpiranks_isvalid_in = np.array(fin[RA_group]["RA_MPIrank_isvalid"][:],dtype=np.bool)
 
       mask_in = (pointIDs_isvalid_in & mpiranks_isvalid_in) 
+      print "...{0} scheduled RA writes found.".format(np.sum(mask_in))
 
       # convert entries to single values to facilitate fast comparison
       IDs_in = cantor_pairing(pointIDs_in[mask_in],mpiranks_in[mask_in])
@@ -195,6 +229,7 @@ for i in range(N):
       mpiranks_isvalid_out = np.array(fout[group]["MPIrank_isvalid"][:],dtype=np.bool)
  
       mask_out = (pointIDs_isvalid_out & mpiranks_isvalid_out) 
+      print "...{0} RA targets found.".format(np.sum(mask_out))
 
       # convert entries to single values to facilitate fast comparison
       IDs_out = cantor_pairing(pointIDs_out[mask_out],mpiranks_out[mask_out])
@@ -203,12 +238,12 @@ for i in range(N):
          print "   checking output selection for duplicate keys..."
          seen = []
          allid = []       
-         for ID,p,r in zip(IDs_out,pointIDs_in[mask_out],mpiranks_out[mask_out]):
+         for ID,p,r in zip(IDs_out,pointIDs_out[mask_out],mpiranks_out[mask_out]):
             if ID in seen:
                print "   Warning!", ID, "is duplicated!"
                x=(ID,p,r)
                if x in allid:
-                 print "   ...and so are the pointID and MPIrank:", x
+                 print "   ...and so are the pointID ({0}) and MPIrank ({0})".format(p,r)
             seen+=[ID]
             allid+=[(ID,p,r)]
 
@@ -306,9 +341,7 @@ for i in range(N):
       # rearraging the source according to the index array we just created
       for itemname in fin[RA_group]: 
          item = fin[RA_group][itemname]
-         if isinstance(item,h5py.Dataset) and \
-              itemname!="RA_pointID" and \
-              itemname!="RA_MPIrank":
+         if isinstance(item,h5py.Dataset) and not itemname in RA_dsets_exclude:
             #Do the copy
             #(TODO: figure out how to chunk this...)
             indset = item
@@ -319,5 +352,12 @@ for i in range(N):
             #can't do the fancy list-indexing directly on the hdf5 dataset (the boolean assignment should be ok though) 
             print "   Copying RA data for dataset", itemname
             outdset[target_mask] = indset[mask_in][fancyindices]  
+
+
+# If everything has been successful, delete the temporary files
+for i in range(N):
+   fname = "{0}_temp_{1}".format(rootfname,i)
+   print "Deleting temporary HDF5 file...".format(fname,outfname)
+   os.remove(fname)
 
 print "Data combination completed"

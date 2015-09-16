@@ -105,8 +105,11 @@ namespace Gambit {
          const hsize_t* get_chunkdims() const      { return chunkdims; }
          const hsize_t* get_slicedims() const      { return slicedims; }
          ulong get_nextemptyslab() const     { return dsetnextemptyslab; }
-         ulong dset_length() const           { return dims[0]; }
+         ulong dset_length() const            { return dims[0]; }
  
+         // To point "next write" cursor back at the beginning of a dataset, for overwriting everything
+         void reset_nextemptyslab() { dsetnextemptyslab = 0; }
+
          // Full accessor needed for dataset dimensions 
          // so that they can be updated when chunks are added
          hsize_t* dsetdims() { return dims; }
@@ -307,14 +310,13 @@ namespace Gambit {
         
          // Get the number of dimensions in the dataspace.
          //int rank = dataspace.getSimpleExtentNdims();
-         int rank = H5Sget_simple_extent_ndims(out_dset_id);
+         int rank = H5Sget_simple_extent_ndims(dspace_id);
          if(rank<0)
          {
             std::ostringstream errmsg;
             errmsg << "Error opening existing dataset (with name: \""<<name<<"\") in HDF5 file. H5Sget_simple_extent_ndims failed.";
             printer_error().raise(LOCAL_INFO, errmsg.str());
          }
-
          if(rank!=DSETRANK)
          {
             std::ostringstream errmsg;
@@ -323,9 +325,10 @@ namespace Gambit {
          }
 
          // Get the dimension size of each dimension in the dataspace
+         // now that we know ndims matches DSETRANK.
          hsize_t dims_out[DSETRANK];
          //int ndims = dataspace.getSimpleExtentDims( dims_out, NULL);  
-         int ndims = H5Sget_simple_extent_dims(out_dset_id, dims_out, NULL);
+         int ndims = H5Sget_simple_extent_dims(dspace_id, dims_out, NULL);
          if(ndims<0)
          {
             std::ostringstream errmsg;
@@ -359,10 +362,10 @@ namespace Gambit {
          
          // Update the variables which control where the next write will occur
          // Index of first element in next target hyperslab (assumes that 
-//          // existing dataset has been written up to a complete chunk)
-//          dsetnextemptyslab = dims[0];  
-// 
-//          return out_dset_id;
+         // existing dataset has been written up to a complete chunk)
+         dsetnextemptyslab = dims[0];  
+
+         return out_dset_id;
       }
 
 
@@ -379,10 +382,10 @@ namespace Gambit {
             std::size_t newlength;
             if(remainder==0) { newlength = min_length; } 
             else             { newlength = min_length - remainder + CHUNKLENGTH; }
-            #ifdef HDF5_DEBUG
+            //#ifdef HDF5_DEBUG
             std::cout << "Requested min_length ("<<min_length<<") larger than current dataset length ("<<current_length<<") (dset name="<<this->get_myname()<<")" << std::endl
                       << "Extending dataset to newlength="<<newlength<<std::endl;
-            #endif
+            //#endif
             this->dsetdims()[0] = newlength;
             //this->my_dataset.extend( this->dsetdims() );  
             herr_t status = H5Dset_extent( this->get_dset_id(), this->dsetdims());

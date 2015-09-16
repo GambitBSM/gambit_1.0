@@ -163,6 +163,11 @@ namespace Gambit
         /// Add PPIDpair to global index list
         void add_PPID_to_list(const PPIDpair&);
 
+        /// Ask the printer for the highest ID number known for a given rank
+        /// process (needed for resuming, so the scanner can resume assigning
+        /// point ID from this value. 
+        unsigned long getHighestPointID(const int rank);
+
         /// Check if PPIDpair exists in global index list
         bool seen_PPID_before(const PPIDpair& ppid);
 
@@ -216,10 +221,12 @@ namespace Gambit
         /// Get the name of this printer
         std::string get_printer_name() { return printer_name; }
 
+        /// Get the number of RA write locations known to the primary printer
+        unsigned long get_N_RApointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
+
         /// Get the number of pointIDs know to this printer
         /// (should correspond to the number of "appends" each active buffer has received)
-        //unsigned long get_N_pointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
-        unsigned long get_N_pointIDs() { return sync_pos; }
+        unsigned long get_sync_pos() { return sync_pos; }
         void increment_sync_pos() { sync_pos+=1; }
 
         /// Retrieve the "resume" flag
@@ -228,9 +235,15 @@ namespace Gambit
         /// Retrieve the starting position in output datasets for new data
         bool get_startpos() { return startpos; }
 
+        /// Retreive any stored PPIDpairs from previous runs (resume mode)
+        const std::vector<PPIDpair>& get_previous_points() { return previous_points; }
+
+        /// Clear previous points list
+        void clear_previous_points() { std::vector<PPIDpair>().swap(previous_points); } // This technique also shrinks the capacity of the vector, which 'clear' does not do.
+
         /// Attempt to read an existing output file, and prepare it for
         /// resumed writing (e.g. fix up dataset lengths if data missing)
-        void verify_existing_output(const std::string& file, const std::string& group);
+        std::vector<PPIDpair> verify_existing_output(const std::string& file, const std::string& group);
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
@@ -318,6 +331,11 @@ namespace Gambit
 
            // Extract a buffer from the manager corresponding to this 
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
+
+           // { debug
+           //if(label=="pointID") std::cout << "rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<label<<" = "<<value<<std::endl;
+           // }
+
 
            #ifdef HDEBUG_MODE
            std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<typeid(T).name()<<", "<<label<<" = "<<value<<std::endl;
@@ -452,7 +470,10 @@ namespace Gambit
 
         /// Write position to which output buffers should be synchronised
         unsigned long sync_pos = 0;
- 
+
+        /// In resume mode: storage for PPIDpairs harvested from previous scan data 
+        std::vector<PPIDpair> previous_points;
+
       protected:
         /// Things which other printers need access to
 

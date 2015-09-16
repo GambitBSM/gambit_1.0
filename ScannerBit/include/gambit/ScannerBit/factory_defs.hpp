@@ -72,9 +72,9 @@ namespace Gambit
                         
                         ret operator () (const args&... params) 
                         {
-                                pointID++;
-                                return main(params...);
-                        }
+				pointID++;
+         			return main(params...);             		
+			}
                         
                         unsigned long long int getPtID() const {return pointID;}
                         unsigned long long int &getPtIDRef() {return pointID;}
