@@ -104,7 +104,7 @@ namespace Gambit
       SLHAstruct spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
       // Add the MODSEL block if it is not provided by the spectrum object.
       SLHAea_add(spectrum,"MODSEL",1, 0, "General MSSM", false);
-      
+
       /*
       // Debug code for reading in a spectrum from an example SLHA file.
       char name[]="FlavBit/example.lha";
@@ -118,7 +118,7 @@ namespace Gambit
       out1 << spectrum;
       out1.close();
       */
-  
+
       BEreq::Init_param(&result);
 
       int ie,je;
@@ -572,7 +572,7 @@ namespace Gambit
 
       printf("BR(B->tau nu)=%.3e\n",result);
     }
-    
+
 
     // *************************************************
 
@@ -918,7 +918,7 @@ namespace Gambit
       struct parameters param = *Dep::FlavBit_fill;
       //double S3, S4, S5, AFB, S7, S8, S9, FL;
       //      Flav_KstarMuMu_obs obs_out;
-      if(param.model<0) 
+      if(param.model<0)
 	{
 	result.BR=0.;
 	cout<<"You idiot you fucked up!!!"<<endl;
@@ -937,9 +937,9 @@ namespace Gambit
 
 	double tmp_q2_min=result.q2_min;
 	double tmp_q2_max=result.q2_max;
-	
-	
-	if(tmp_q2_min==tmp_q2_max)
+
+
+	if(abs(tmp_q2_min-tmp_q2_max)<0.0001)
 	  {
 	    cout<<"Using this function with empty Flav_KstarMuMu_obs"<<endl;
 	    tmp_q2_min=1.;
@@ -951,8 +951,8 @@ namespace Gambit
 
 	cout<<"Q2 min = "<<q2_min<<endl;
 	cout<<"Q2 max = "<<q2_max<<endl;
-	
-	
+
+
 
     BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
     BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
@@ -1049,13 +1049,13 @@ namespace Gambit
     }
 
     // *************************************************
-     
-    void FH_FlavorObs(fh_FlavorObs &result) 
+
+    void FH_FlavorObs(fh_FlavorObs &result)
     {
       using namespace Pipes::FH_FlavorObs;
 
       cout << "****** calling FH_FlavorObs ******" << endl;
-      
+
       fh_real bsgMSSM;     // B -> Xs gamma in MSSM
       fh_real bsgSM;       // B -> Xs gamma in SM
       fh_real deltaMsMSSM; // delta Ms in MSSM
@@ -1069,12 +1069,12 @@ namespace Gambit
            bsmumuMSSM, bsmumuSM);
 
       fh_FlavorObs FlavorObs;
-      FlavorObs.Bsg_MSSM = bsgMSSM;     
-      FlavorObs.Bsg_SM = bsgSM;       
-      FlavorObs.deltaMs_MSSM = deltaMsMSSM; 
-      FlavorObs.deltaMs_SM = deltaMsSM;   
-      FlavorObs.Bsmumu_MSSM = bsmumuMSSM;  
-      FlavorObs.Bsmumu_SM = bsmumuSM;    
+      FlavorObs.Bsg_MSSM = bsgMSSM;
+      FlavorObs.Bsg_SM = bsgSM;
+      FlavorObs.deltaMs_MSSM = deltaMsMSSM;
+      FlavorObs.deltaMs_SM = deltaMsSM;
+      FlavorObs.Bsmumu_MSSM = bsmumuMSSM;
+      FlavorObs.Bsmumu_SM = bsmumuSM;
 
       result = FlavorObs;
     }
@@ -1111,7 +1111,7 @@ namespace Gambit
           {
             cout<<observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]<<endl;
             observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
-    
+
           }
       }
           // we have all names
@@ -1120,7 +1120,7 @@ namespace Gambit
           for(int i=0;i<observables.size();++i)
       {
         red->read_yaml_mesurement("example.yaml", observables[i]);
-    
+
       }
 
       red->create_global_corr();
@@ -1213,25 +1213,25 @@ namespace Gambit
       M_th(29,0)=obs_out_60_80.S7;
       M_th(30,0)=obs_out_60_80.S8;
       M_th(31,0)=obs_out_60_80.S9;
-      
-      M_th(32,0)=obs_out_15_17.FL;   
-      M_th(33,0)=obs_out_15_17.AFB;  
-      M_th(34,0)=obs_out_15_17.S3;   
-      M_th(35,0)=obs_out_15_17.S4;   
-      M_th(36,0)=obs_out_15_17.S5;   
-      M_th(37,0)=obs_out_15_17.S7;   
-      M_th(38,0)=obs_out_15_17.S8;   
-      M_th(39,0)=obs_out_15_17.S9;   
-      
-      M_th(40,0)=obs_out_17_19.FL;   
-      M_th(41,0)=obs_out_17_19.AFB;  
-      M_th(42,0)=obs_out_17_19.S3;   
-      M_th(43,0)=obs_out_17_19.S4;   
-      M_th(44,0)=obs_out_17_19.S5;   
-      M_th(45,0)=obs_out_17_19.S7;   
-      M_th(46,0)=obs_out_17_19.S8;   
+
+      M_th(32,0)=obs_out_15_17.FL;
+      M_th(33,0)=obs_out_15_17.AFB;
+      M_th(34,0)=obs_out_15_17.S3;
+      M_th(35,0)=obs_out_15_17.S4;
+      M_th(36,0)=obs_out_15_17.S5;
+      M_th(37,0)=obs_out_15_17.S7;
+      M_th(38,0)=obs_out_15_17.S8;
+      M_th(39,0)=obs_out_15_17.S9;
+
+      M_th(40,0)=obs_out_17_19.FL;
+      M_th(41,0)=obs_out_17_19.AFB;
+      M_th(42,0)=obs_out_17_19.S3;
+      M_th(43,0)=obs_out_17_19.S4;
+      M_th(44,0)=obs_out_17_19.S5;
+      M_th(45,0)=obs_out_17_19.S7;
+      M_th(46,0)=obs_out_17_19.S8;
       M_th(47,0)=obs_out_17_19.S9;
-      
+
       measurement_assym.LL_name="b2ll_likelihood";
 
       cout<<"works?"<<endl;
@@ -1312,9 +1312,9 @@ namespace Gambit
             if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
             if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
             if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];
-    
+
           }
-    
+
       }
       cout<<"ok?"<<endl;
       Chi2=Chi2/measurement_assym.dim;
@@ -1326,6 +1326,7 @@ namespace Gambit
 
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
     {
+      using namespace Pipes::b2ll_measurements;
 
       // experimental measurement
       //Bsmumu
@@ -1346,10 +1347,10 @@ namespace Gambit
 
       cout<<"correlation"<<endl;
 
-      double theory_bs2mumu=0;
-      SI_Bsmumu_untag(theory_bs2mumu);
-      double theory_bd2mumu=0;
-      SI_Bdmumu(theory_bd2mumu);
+      double theory_bs2mumu=*(Dep::Bsmumu_untag);
+      //SI_Bsmumu_untag(theory_bs2mumu);
+      double theory_bd2mumu=*(Dep::Bdmumu);
+      //SI_Bdmumu(theory_bd2mumu);
 
 
       // now the correlation(no correlation from theory for B->sll)
@@ -1424,9 +1425,12 @@ namespace Gambit
 
     void b2ll_likelihood(double &result)
     {
+      using namespace Pipes::b2ll_likelihood;
+
       cout<<"Doing the likelihood"<<endl;
-      Flav_measurement_assym measurement_assym;
-      b2ll_measurements(measurement_assym);
+      Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
+      //      Flav_measurement_assym measurement_assym;
+      //b2ll_measurements(measurement_assym);
       // calculating the chi2:
       cout<<"Dimension= "<<measurement_assym.dim<<endl;
       boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;
@@ -1475,9 +1479,9 @@ namespace Gambit
             if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
             if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
             if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];
-    
+
           }
-    
+
       }
       cout<<"ok?"<<endl;
       Chi2=Chi2/measurement_assym.dim;
@@ -1492,7 +1496,7 @@ namespace Gambit
 
     void SL_measurements(Flav_measurement_assym &measurement_assym)
     {
-      using namespace Pipes::SL_measurements; 
+      using namespace Pipes::SL_measurements;
       int n_experiments=5;
       // experimental measurement
       cout<<"In b2taunu_measurements"<<endl;
@@ -1524,31 +1528,29 @@ namespace Gambit
 
       cout<<"correlation"<<endl;
 
-      double theory_Btaunu=0.;
-      SI_Btaunu(theory_Btaunu);
+      double theory_Btaunu=*(Dep::Btaunu);
+      //SI_Btaunu(theory_Btaunu); now handled by gambit
 
-      double theory_BDtaunu=0.;
-      SI_BDtaunu(theory_BDtaunu);
+      double theory_BDtaunu=*(Dep::BDtaunu);
+      //      SI_BDtaunu(theory_BDtaunu);
 
-      double theory_BDtaunu_BDenu=0.;
-      SI_BDtaunu_BDenu(theory_BDtaunu_BDenu);
+      double theory_BDtaunu_BDenu=*(Dep::BDtaunu_BDenu);
+      //      SI_BDtaunu_BDenu(theory_BDtaunu_BDenu);
 
-      double theory_Kmunu_pimunu=0.;
-      SI_Kmunu_pimunu(theory_Kmunu_pimunu);
+      double theory_Kmunu_pimunu=*(Dep::Kmunu_pimunu);
+      //      SI_Kmunu_pimunu(theory_Kmunu_pimunu);
 
-      double theory_Dstaunu=0.;
-      SI_Dstaunu(theory_Dstaunu);
+      double theory_Dstaunu=*(Dep::Dstaunu);
+      //SI_Dstaunu(theory_Dstaunu);
 
-      double theory_Dsmunu=0.;
-      SI_Dsmunu(theory_Dsmunu);
+      double theory_Dsmunu=*(Dep::Dsmunu);
+      //SI_Dsmunu(theory_Dsmunu);
 
-      double theory_Dmunu=0.;
-      SI_Dsmunu(theory_Dmunu);
+      double theory_Dmunu=*(Dep::Dmunu);
+      //      SI_Dmunu(theory_Dmunu);
 
-      cout<<"THis couses the  Gambit::safety_bucket_base::dieGracefully"<<endl;
-      cout<<"Compare: "<<*(Dep::Btaunu)<<" "<<theory_Btaunu<<endl;
 
-      
+
       // theory results;
 
       boost::numeric::ublas::matrix<double> M_th(n_experiments,1);
@@ -1630,9 +1632,13 @@ namespace Gambit
     /// semileptonic likelihood
     void SL_likelihood(double &result)
     {
+
+      using namespace Pipes::SL_likelihood;
+
       cout<<"Doing the likelihood for SL decays"<<endl;
-      Flav_measurement_assym measurement_assym;
-      SL_measurements(measurement_assym);
+      //Flav_measurement_assym measurement_assym;
+      Flav_measurement_assym measurement_assym = *Dep::SL_M;
+      //SL_measurements(measurement_assym);
       // calculating the chi2:
       cout<<"Dimension= "<<measurement_assym.dim<<endl;
       boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;
@@ -1681,7 +1687,7 @@ namespace Gambit
             if( diff[i] >= 0. && diff[j] <0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
             if( diff[i] < 0. && diff[j] >=0.) Chi2+= diff[i] * cov_ud_inv(i,j)*diff[j];
             if( diff[i] < 0. && diff[j] <0.) Chi2+= diff[i] * cov_dd_inv(i,j)*diff[j];
-    
+
           }
       }
       cout<<"ok?"<<endl;
