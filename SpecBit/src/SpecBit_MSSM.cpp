@@ -227,8 +227,8 @@ namespace Gambit
 	  it != ms.pole_mass_strs_1_3.end(); ++it)
 	{
 	  for(int i = 1; i <=3; i++){
-	    str low =  "rd_m" + *it + "_" + std::to_string(i) + "_low";
-	    str high = "rd_m" + *it + "_" + std::to_string(i) + "_high";
+	    str low =  "rd_m" + *it  + "_low";
+	    str high = "rd_m" + *it  + "_high";
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
 	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
 	  }
