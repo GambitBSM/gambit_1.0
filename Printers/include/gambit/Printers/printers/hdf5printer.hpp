@@ -245,6 +245,9 @@ namespace Gambit
         /// resumed writing (e.g. fix up dataset lengths if data missing)
         std::vector<PPIDpair> verify_existing_output(const std::string& file, const std::string& group);
 
+        /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
+        void combine_output(const int N);
+
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
         /// BaseBasePrinter, so we need to  

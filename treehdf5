@@ -100,62 +100,50 @@ printcontents(f,'')
 
 ##  #test extraction of data from dataset
 
-dset=f['test/test2/#normaldist_loglike @ExampleBit_A::normaldist_loglike']
-print dset[:50]
-dset=f['test/test2/#normaldist_loglike @ExampleBit_A::normaldist_loglike_isvalid']
-print dset[:50]
-dset=f['test/test2/LogLike']
-print "LogLike:", dset[:50]
-dset=f['test/test2/LogLike_isvalid']
-print dset[:50]
-
-
 import numpy as np
-dset=f['test/test2/RA/Posterior']
-print "Posterior:", dset[:50]
-dset=f['test/test2/RA/Posterior_isvalid']
-print dset[:50]
-pid = f['test/test2/RA/RA_pointID']
-print "RA_pointID:", pid[:50]
-pidv = np.array(f['test/test2/RA/RA_pointID_isvalid'],dtype=np.bool)
-print pidv[:50]
-rank = f['test/test2/RA/RA_MPIrank']
-print "RA_MPIrank:", rank[:50]
-rankv = np.array(f['test/test2/RA/RA_MPIrank_isvalid'],dtype=np.bool)
-print rankv[:50]
+def preview(name,D,Dv_in):
+   print "preview: ",name
+   Dv = np.array(Dv_in,dtype=np.bool)
+   print D[:50], D[-50:]
+   print Dv[:50], Dv[-50:]
+   print np.sum(Dv)
+   print D[Dv]
+ 
 
-# Check for duplicates
-seen = []
-dup  = []
-for p,r in zip(pid[pidv],rank[rankv]):
-   if (p,r) not in seen:
-      seen+=[(p,r)]
-   else:
-      print "Duplicate detected! :", (p,r)
-      dup +=[(p,r)]
-print "All duplicates: ", dup 
+dset1=f['test/test2/#normaldist_loglike @ExampleBit_A::normaldist_loglike']
+dset2=f['test/test2/#normaldist_loglike @ExampleBit_A::normaldist_loglike_isvalid']
+preview("normaldist_loglike",dset1,dset2)
+
+dset1=f['test/test2/Likelihood']
+dset2=f['test/test2/Likelihood_isvalid']
+preview("Likelihood",dset1,dset2)
+
+
+# # Check for duplicates
+# seen = []
+# dup  = []
+# for p,r in zip(pid[pidv],rank[rankv]):
+#    if (p,r) not in seen:
+#       seen+=[(p,r)]
+#    else:
+#       print "Duplicate detected! :", (p,r)
+#       dup +=[(p,r)]
+# print "All duplicates: ", dup 
       
 
-#dset=f['test/test2/Posterior']
-#print "Posterior:", dset[:50]
-#dset=f['test/test2/Posterior_isvalid']
-#print dset[:50]
+dset1=f['test/test2/Posterior']
+dset2=f['test/test2/Posterior_isvalid']
+preview("Posterior",dset1,dset2)
 
-dset=f['test/test2/pointID']
-print "pointID:", dset[:50]
-dset=f['test/test2/pointID_isvalid']
+dset1=f['test/test2/pointID']
+dset2=f['test/test2/pointID_isvalid']
+preview("pointID",dset1,dset2)
 
-print dset[:50]
-dset=f['test/test2/MPIrank']
-print "MPIrank:", dset[:50]
-dset=f['test/test2/MPIrank_isvalid']
-print dset[:50]
+dset1=f['test/test2/MPIrank']
+dset2=f['test/test2/MPIrank_isvalid']
+preview("MPIrank",dset1,dset2)
 
-import numpy as np
-pid_isvalid = np.array(f['test/test2/pointID_isvalid'],dtype=np.bool)
-rank_isvalid = pid_isvalid = np.array(f['test/test2/MPIrank_isvalid'],dtype=np.bool)
 
-print (pid_isvalid == rank_isvalid)
 ##  
 ##  #dset=f['prelep/CCR/mu+/txt']
 ##  #print dset[150000:150020,0:10]

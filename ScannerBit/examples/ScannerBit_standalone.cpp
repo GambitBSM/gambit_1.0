@@ -19,6 +19,9 @@
 #include <string>
 #include <cstdlib>
 #include <csignal>
+#ifdef WITH_MPI
+#include <mpi.h>
+#endif
 
 #include "gambit/Logs/log.hpp"
 #include "gambit/Printers/printermanager.hpp"
@@ -42,12 +45,16 @@ void scan_terminator()
 
 void sighandler(int sig)
 {
+    Gambit::Scanner::Plugins::plugin_info.finalize();
         if (printerInterface != NULL)
                 printerInterface->finalise();
+        
+        //MPI_Abort(MPI_COMM_WORLD, sig);
         //#ifdef WITH_MPI
         //  MPI_Finalize();
         //#endif
         std::cout << "ScannerBit has finished early!" << std::endl;
+        //sleep(60);
         exit(sig);
 }
 
@@ -83,6 +90,7 @@ int main(int argc, char **argv)
         signal(SIGABRT, sighandler);
         signal(SIGTERM, sighandler);
         signal(SIGINT, sighandler);
+        signal(SIGQUIT, sighandler);
 
         #ifdef WITH_MPI
           GMPI::Init();
@@ -164,7 +172,7 @@ int main(int argc, char **argv)
                         Random::create_rng_engine(iniFile.getValueOrDef<std::string>("default", "rng"));
                 
                         // Set up the printer (redirection of scan output)
-                        bool resume = true; // TODO: Greg I just added this here to fix a compile error, modify as you like.
+                        bool resume = false; // TODO: Greg I just added this here to fix a compile error, modify as you like.
                         Printers::PrinterManager printerManager(iniFile.getPrinterNode(),resume);
                         Printers::BasePrinter& printer (*printerManager.printerptr); 
                         //Printers::BasePrinter printerManager();

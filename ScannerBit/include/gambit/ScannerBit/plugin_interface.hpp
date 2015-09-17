@@ -111,14 +111,14 @@ namespace Gambit
                                 {
                                         Plugin_Interface_Details details = plugin_info(type, name);
                                         flags = details.flags;
-                                        plugin = dlopen (details.path.c_str(), RTLD_LAZY);
+                                        plugin = dlopen (details.details.path.c_str(), RTLD_LAZY);
                                         
                                         if (bool(plugin))
                                         {
                                                 tag = name;
                                                 input_variadic_vector(input, inputs...);
-                                                initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + details.full_string + std::string("__")).c_str());
-                                                getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + details.full_string + std::string("__")).c_str());
+                                                initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + details.details.full_string + std::string("__")).c_str());
+                                                getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + details.details.full_string + std::string("__")).c_str());
                                                 
                                                 char *errmesg = dlerror();
                                                 if (errmesg != NULL)
@@ -133,7 +133,7 @@ namespace Gambit
                                         }
                                         else
                                         {
-                                                scan_err << "Cannot load " << details.path << ":  " << dlerror() << scan_end;
+                                                scan_err << "Cannot load " << details.details.path << ":  " << dlerror() << scan_end;
                                                 plugin = 0;
                                                 return error_map_return();
                                         }

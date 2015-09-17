@@ -586,9 +586,9 @@ namespace Gambit {
             // (do this regardless of whether this is a sync buffer or not)
             target_sync_pos = sync_pos;
 
-            //#ifdef HDF5_BUF_DEBUG
+            #ifdef HDF5_BUF_DEBUG
             std::cout<<"rank "<<this->myRank<<": Updated target_sync_pos to '"<<target_sync_pos<<" in buffer "<<this->get_label()<<std::endl; 
-            //#endif
+            #endif
 
             if(this->is_synchronised()) 
             {

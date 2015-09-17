@@ -99,6 +99,7 @@
 #include "gambit/Printers/printers/hdf5printer.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
+#include "gambit/Printers/printer_id_tools.hpp"
 
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
@@ -587,6 +588,29 @@ namespace Gambit
          std::string msg;
          if(not HDF5::checkFileReadable(file, msg))
          {
+           // Could not read output file, might not exist. If run terminated 
+           // early, may not have been able to combine temporary output files,
+           // so try this now (after checking that necessary files exist)
+                      
+           // TODO: assumes mpiSize the same as last run, can we relax this? Try to auto-detect files?
+           for(int i=0; i<mpiSize; i++)
+           {
+              std::ostringstream tmpfile;
+              tmpfile << file << "_temp_" << i;
+              std::string msg2;
+              if(not HDF5::checkFileReadable(tmpfile.str(), msg2))
+              {
+                 std::ostringstream errmsg;
+                 errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate any existing (and readable) output file, nor could readable temporary files from previous run be located. Resuming is therefore not possible; aborting run... (see below for IO error messages)";
+                 errmsg << std::endl << "IO error message for main output file read attempt: " << msg;
+                 errmsg << std::endl << "IO error message for temporary file read attempt: " << msg2;
+                 printer_error().raise(LOCAL_INFO, errmsg.str()); 
+              }
+              // Ok all the temporary files exist: combine them
+              combine_output(mpiSize);
+           }
+
+
            // We are supposed to be resuming, but no readable output file was found, so we can't.
            std::ostringstream errmsg;
            errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate any existing (and readable) output file. Resuming is therefore not possible; aborting run... (see below for IO error message)";
@@ -679,10 +703,10 @@ namespace Gambit
          unsigned long lastvalid = 0;
          for(size_t i=0; i<dsetdata.pointIDs.size(); i++)
          {
-           std::cout<<"Examining PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<"), validity: ("<<dsetdata.pointIDs_isvalid[i]<<", "<<dsetdata.mpiranks_isvalid[i]<<")"<<std::endl;
+           //std::cout<<"Examining PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<"), validity: ("<<dsetdata.pointIDs_isvalid[i]<<", "<<dsetdata.mpiranks_isvalid[i]<<")"<<std::endl;
            if(dsetdata.pointIDs_isvalid[i] and dsetdata.mpiranks_isvalid[i])
            {
-              std::cout<<"  Loading PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<")"<<std::endl;
+              //std::cout<<"  Loading PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<")"<<std::endl;
               if(allvalid==false)
               {
                  // If invalid pointIDs occur, it is only permitted at the end
@@ -933,49 +957,48 @@ namespace Gambit
  
           if(myRank==0)
           {
-             // Getting weird problems with HDF5 files from *other* processes getting corrupted when we go to open them.
-             // Need to wait longer for filesystem to close them properly?
-             // struct timespec sleep_time;
-             // sleep_time.tv_sec  = 5; // 1 second 
-             // sleep_time.tv_nsec = 0; // plus no nanoseconds
-             // nanosleep(&sleep_time,NULL);
-
-             std::ostringstream command;
-             command << "python Printers/scripts/combine_hdf5.py "<<file<<" "<<group<<" "<<mpiSize<<" 2>&1";
-             logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
-                      << "> " << command.str() << std::endl
-                      << "--------------------" << std::endl;
-             FILE* fp = popen(command.str().c_str(), "r");
-             if(fp==NULL)
-             {
-                // Error running popen
-                std::ostringstream errmsg;
-                errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! popen failed to run the specified command (command was '"<<command.str()<<"')";
-                printer_error().raise(LOCAL_INFO, errmsg.str());
-             }
-             // Something ran at least; get the stdout (plus redirected stderr)
-             char buffer[512];
-             // read output into a c++ stream via buffer
-             std::ostringstream output;
-             while(fgets(buffer, sizeof(buffer), fp) != NULL) {
-                 output << buffer;
-             }
-             logger() << LogTags::printers << output.str() << std::endl
-                      << "--------------------" << std::endl
-                      << "end HDF5 combination script output" << EOM;
-             int rc = pclose(fp);
-             if(rc!=0)
-             {
-               // Python error occurred
-                std::ostringstream errmsg;
-                errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered. Please see printer-tagged log files for the Python traceback.";
-                printer_error().raise(LOCAL_INFO, errmsg.str());              
-             }
-             // Otherwise everything should be ok!
-             // TODO: can delete the temporary hdf5 files, but let's not do that quite yet.
+             // Make sure all datasets etc are closed before doing this or else errors may occur.
+             combine_output(mpiSize); 
           }              
        logger() << LogTags::printers << "rank "<<myRank<<": HDF5Printer finalise() completed successfully." << EOM;
        } //end if(is_primary_printer)
+    }
+
+    /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
+    void HDF5Printer::combine_output(const int N)
+    {
+      std::ostringstream command;
+      command << "python Printers/scripts/combine_hdf5.py "<<file<<" "<<group<<" "<<N<<" 2>&1";
+      logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
+               << "> " << command.str() << std::endl
+               << "--------------------" << std::endl;
+      FILE* fp = popen(command.str().c_str(), "r");
+      if(fp==NULL)
+      {
+         // Error running popen
+         std::ostringstream errmsg;
+         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! popen failed to run the specified command (command was '"<<command.str()<<"')";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+      // Something ran at least; get the stdout (plus redirected stderr)
+      char buffer[512];
+      // read output into a c++ stream via buffer
+      std::ostringstream output;
+      while(fgets(buffer, sizeof(buffer), fp) != NULL) {
+          output << buffer;
+      }
+      logger() << LogTags::printers << output.str() << std::endl
+               << "--------------------" << std::endl
+               << "end HDF5 combination script output" << EOM;
+      int rc = pclose(fp);
+      if(rc!=0)
+      {
+        // Python error occurred
+         std::ostringstream errmsg;
+         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered. Please see printer-tagged log files for the Python traceback.";
+         printer_error().raise(LOCAL_INFO, errmsg.str());              
+      }
+      // Otherwise everything should be ok!
     }
 
     /// Retrieve pointer to HDF5 location to which datasets are added

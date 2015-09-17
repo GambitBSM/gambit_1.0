@@ -382,10 +382,10 @@ namespace Gambit {
             std::size_t newlength;
             if(remainder==0) { newlength = min_length; } 
             else             { newlength = min_length - remainder + CHUNKLENGTH; }
-            //#ifdef HDF5_DEBUG
+            #ifdef HDF5_DEBUG
             std::cout << "Requested min_length ("<<min_length<<") larger than current dataset length ("<<current_length<<") (dset name="<<this->get_myname()<<")" << std::endl
                       << "Extending dataset to newlength="<<newlength<<std::endl;
-            //#endif
+            #endif
             this->dsetdims()[0] = newlength;
             //this->my_dataset.extend( this->dsetdims() );  
             herr_t status = H5Dset_extent( this->get_dset_id(), this->dsetdims());
@@ -396,7 +396,7 @@ namespace Gambit {
                errmsg << "Failed to extend dataset (with name: \""<<myname<<"\") from length "<<current_length<<" to length "<<newlength<<"!";
                printer_error().raise(LOCAL_INFO, errmsg.str());
             }
-        }
+         }
       }
       /// @}
 
