@@ -114,7 +114,7 @@ namespace Gambit {
         /// @brief Add cross-sections and errors for two different process types
         void add_xsec(double xs, double xserr) {
           std::stringstream msg;
-          msg << "Adding xsecs: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
+          //msg << "Adding xsecs: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
           if (xs > 0) {
             if (xsec() <= 0) {
               set_xsec(xs, xserr);
