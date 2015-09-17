@@ -132,13 +132,13 @@ namespace Gambit
     }
 
     /// Instruct all printers that scan has finished and to perform cleanup
-    void PrinterManager::finalise()
+    void PrinterManager::finalise(bool abnormal)
     {
       typedef std::map<std::string, BasePrinter*>::iterator it_type;
       for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
-         it->second->finalise();
+         it->second->finalise(abnormal);
       } 
-      printerptr->finalise();
+      printerptr->finalise(abnormal);
     }
  
   }

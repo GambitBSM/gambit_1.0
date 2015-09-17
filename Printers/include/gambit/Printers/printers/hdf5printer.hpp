@@ -144,7 +144,7 @@ namespace Gambit
         void flush();
         void reset(bool force=false);
         int getRank();
-        void finalise();
+        void finalise(bool abnormal=false);
 
         ///@}
      
@@ -246,7 +246,7 @@ namespace Gambit
         std::vector<PPIDpair> verify_existing_output(const std::string& file, const std::string& group);
 
         /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
-        void combine_output(const int N);
+        void combine_output(const int N, const bool resume);
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type

@@ -496,9 +496,9 @@ namespace Gambit {
             dsetvalid().extend_dset(target_sync_pos);
             dsetdata().extend_dset(target_sync_pos);
 
-            //#ifdef DEBUG_MODE
+            #ifdef DEBUG_MODE
             std::cout<<"rank "<<this->myRank<<": Extended RA dset '"<<this->get_label()<<"' to at least size "<<target_sync_pos<<std::endl; 
-            //#endif
+            #endif
 
             if (this->RA_queue_length!=0 or postpone_write_queue_and_locs.size()!=0) 
             {

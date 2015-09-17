@@ -502,6 +502,16 @@ namespace Gambit
           //{  
             /* Run checks (and potentially repairs) on existing output file */
             previous_points = verify_existing_output(file,group);
+
+            // Use global function get_point_id to fast-forward ScannerBit to the
+            // next unused pointID for this rank (actually we give it the highest known, it will iterate itself)
+            long highest = 0;
+            for(std::vector<PPIDpair>::iterator it = previous_points.begin(); it != previous_points.end(); it++)
+            {
+               if(it->rank==myRank and it->pointID > highest) highest = it->pointID;
+            }
+            get_point_id() = highest; 
+
           //}
         }
   
@@ -554,21 +564,7 @@ namespace Gambit
         location_id = primary_printer->get_location();
         RA_location_id = primary_printer->get_RA_location();
         startpos = primary_printer->get_startpos();
- 
-        if(resume and primary_printer->get_previous_points().size()!=0)
-        {
-           // Add the previous point IDs to the RA target list
-           for(std::vector<PPIDpair>::const_iterator 
-                   it  = primary_printer->get_previous_points().begin(); 
-                   it != primary_printer->get_previous_points().end(); it++)
-           {
-             add_PPID_to_list(*it);
-           }
-           // Clear the previous points list so we don't try to add them again next time
-           // an auxilliary printer is constructed.
-           primary_printer->clear_previous_points();
-        }
-     } 
+      } 
       // Now that communicator is set up, get its properties.
       #ifdef WITH_MPI
       myRank = myComm.Get_rank();
@@ -581,7 +577,6 @@ namespace Gambit
     /// Returns all the PPIDs found in the existing datasets
     std::vector<PPIDpair> HDF5Printer::verify_existing_output(const std::string& file, const std::string& group)
     {
-       std::vector<PPIDpair> previous_points;   
        if(resume)
        {
          /// Check if hdf5 file exists and can be opened in read/write mode
@@ -600,23 +595,18 @@ namespace Gambit
               std::string msg2;
               if(not HDF5::checkFileReadable(tmpfile.str(), msg2))
               {
+                 // We are supposed to be resuming, but no readable output file was found, so we can't.
                  std::ostringstream errmsg;
                  errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate any existing (and readable) output file, nor could readable temporary files from previous run be located. Resuming is therefore not possible; aborting run... (see below for IO error messages)";
                  errmsg << std::endl << "IO error message for main output file read attempt: " << msg;
                  errmsg << std::endl << "IO error message for temporary file read attempt: " << msg2;
                  printer_error().raise(LOCAL_INFO, errmsg.str()); 
               }
+
               // Ok all the temporary files exist: combine them
-              combine_output(mpiSize);
+              // (but do it in non-resume mode, since any potentially existing output file is unreadable anyway)
+              combine_output(mpiSize,false);
            }
-
-
-           // We are supposed to be resuming, but no readable output file was found, so we can't.
-           std::ostringstream errmsg;
-           errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate any existing (and readable) output file. Resuming is therefore not possible; aborting run... (see below for IO error message)";
-           errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
-           errmsg << std::endl << "IO error message: " << msg;
-           printer_error().raise(LOCAL_INFO, errmsg.str()); 
          }
 
          // Open HDF5 file
@@ -830,7 +820,7 @@ namespace Gambit
     }
 
     /// Perform final cleanup and write tasks 
-    void HDF5Printer::finalise()
+    void HDF5Printer::finalise(bool abnormal)
     {
        // Only the primary_printer should have to do anything here, since it
        // has access to all the buffers.
@@ -949,26 +939,33 @@ namespace Gambit
           //  "queued up" in the temporary HDF5 file, rather than actually
           //  written to the correct place. But should make it do the latter
           //  in these special cases.
-          #ifdef WITH_MPI
-          master_wait_for_tag(FINAL_SYNC);
-          #endif
-
-          logger() << LogTags::printers << "rank "<<myRank<<": passed FINAL_SYNC point in HDF5Printer finalise() routine" << EOM;
- 
-          if(myRank==0)
+          if(not abnormal) // Don't do the combination in case of abnormal termination, since we cannot reliably wait for all the other processes to finish
           {
-             // Make sure all datasets etc are closed before doing this or else errors may occur.
-             combine_output(mpiSize); 
-          }              
+             #ifdef WITH_MPI
+             master_wait_for_tag(FINAL_SYNC);
+             #endif
+
+             logger() << LogTags::printers << "rank "<<myRank<<": passed FINAL_SYNC point in HDF5Printer finalise() routine" << EOM;
+ 
+             if(myRank==0)
+             {
+                // Make sure all datasets etc are closed before doing this or else errors may occur.
+                combine_output(mpiSize,resume); 
+             }              
+          }
+          else
+          {
+             logger() << LogTags::printers << "rank "<<myRank<<": HDF5Printer is terminating abnormally (usually if some signal, e.g. CTRL-C detected); temporary hdf5 files NOT combined! Combination will be attempted upon resuming the run." << EOM;
+          }
        logger() << LogTags::printers << "rank "<<myRank<<": HDF5Printer finalise() completed successfully." << EOM;
        } //end if(is_primary_printer)
     }
 
     /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
-    void HDF5Printer::combine_output(const int N)
+    void HDF5Printer::combine_output(const int N, const bool resume)
     {
       std::ostringstream command;
-      command << "python Printers/scripts/combine_hdf5.py "<<file<<" "<<group<<" "<<N<<" 2>&1";
+      command << "python Printers/scripts/combine_hdf5.py "<<file<<" "<<group<<" "<<N<<" "<<resume<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
                << "--------------------" << std::endl;

@@ -101,7 +101,7 @@ namespace Gambit
         void initialise(const std::vector<int>&);
         void reset(bool force=false);
         int getRank();
-        void finalise();
+        void finalise(bool abnormal=false);
 
         /// Ask the printer for the highest ID number known for a given rank
         /// process (needed for resuming, so the scanner can resume assigning

@@ -192,7 +192,7 @@ namespace Gambit
     }
 
     /// Do final buffer dumps
-    void asciiPrinter::finalise()
+    void asciiPrinter::finalise(bool abnormal)
     {
       dump_buffer(true);
       DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )

@@ -64,7 +64,7 @@ namespace Gambit
         BaseBasePrinter* get_stream(const std::string& = "");
   
         /// Instruct printers that scan has finished and to perform cleanup
-        void finalise();
+        void finalise(bool abnormal=false);
 
         /// For debugging: check up on MPI
         #ifdef WITH_MPI

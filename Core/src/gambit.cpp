@@ -19,13 +19,30 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
+#include <csignal> // For definitions of SIGTERM etc
+
 using namespace Gambit;
 using namespace LogTags;
+
+// TODO: this is just copied from ScannerBit_standalone
+Printers::PrinterManager * printerInterface = NULL;
+void sighandler(int sig)
+{
+    Gambit::Scanner::Plugins::plugin_info.dump();
+    if (printerInterface != NULL)
+        printerInterface->finalise(true); // call output finalise routine in abnormal termination mode
+
+    std::cout << "ScannerBit has finished early!" << std::endl;
+    exit(sig);
+}
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
+  signal(SIGABRT, sighandler);
+  signal(SIGTERM, sighandler);
+  signal(SIGINT, sighandler);
 
   try
   {
@@ -71,6 +88,7 @@ int main(int argc, char* argv[])
 
     // Set up the printer manager for redirection of scan output.
     Printers::PrinterManager printerManager(iniFile.getPrinterNode(),Core().resume);
+    printerInterface = &printerManager; // Attach to the sighandler global pointer
 
     // Set up dependency resolver
     DRes::DependencyResolver dependencyResolver(Core(), Models::ModelDB(), iniFile, Utils::typeEquivalencies(), *(printerManager.printerptr));

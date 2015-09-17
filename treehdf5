@@ -116,32 +116,30 @@ preview("normaldist_loglike",dset1,dset2)
 
 dset1=f['test/test2/Likelihood']
 dset2=f['test/test2/Likelihood_isvalid']
-preview("Likelihood",dset1,dset2)
-
-
-# # Check for duplicates
-# seen = []
-# dup  = []
-# for p,r in zip(pid[pidv],rank[rankv]):
-#    if (p,r) not in seen:
-#       seen+=[(p,r)]
-#    else:
-#       print "Duplicate detected! :", (p,r)
-#       dup +=[(p,r)]
-# print "All duplicates: ", dup 
-      
+preview("Likelihood",dset1,dset2)      
 
 dset1=f['test/test2/Posterior']
 dset2=f['test/test2/Posterior_isvalid']
 preview("Posterior",dset1,dset2)
 
-dset1=f['test/test2/pointID']
-dset2=f['test/test2/pointID_isvalid']
-preview("pointID",dset1,dset2)
+pid=f['test/test2/pointID']
+pidv=np.array(f['test/test2/pointID_isvalid'],dtype=np.bool)
+preview("pointID",pid,pidv)
 
-dset1=f['test/test2/MPIrank']
-dset2=f['test/test2/MPIrank_isvalid']
-preview("MPIrank",dset1,dset2)
+rank=f['test/test2/MPIrank']
+rankv=np.array(f['test/test2/MPIrank_isvalid'],dtype=np.bool)
+preview("MPIrank",rank,rankv)
+
+# Check for duplicates
+seen = []
+dup  = []
+for p,r in zip(pid[pidv],rank[rankv]):
+   if (p,r) not in seen:
+      seen+=[(p,r)]
+   else:
+      print "Duplicate detected! :", (p,r)
+      dup +=[(p,r)]
+
 
 
 ##  

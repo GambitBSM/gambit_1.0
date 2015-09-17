@@ -56,7 +56,7 @@ namespace Gambit
         virtual int getRank() = 0;
 
         /// Signal printer that scan is finished, and final output needs to be performed
-        virtual void finalise() = 0;
+        virtual void finalise(bool abnormal=false) = 0;
 
         /// Ask the printer for the highest ID number known for a given rank
         /// process (needed for resuming, so the scanner can resume assigning

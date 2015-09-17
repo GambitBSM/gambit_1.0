@@ -11,7 +11,7 @@ import sys
 chunksize = 1000
 
 def usage():
-   print ("\nusage: python combine_hdf5.py <path-to-hdf5-file-root-name> <root group in hdf5 files> <Number of files> [--runchecks]"
+   print ("\nusage: python combine_hdf5.py <path-to-hdf5-file-root-name> <root group in hdf5 files> <Number of files> <resume> [--runchecks]"
           "\n"
           "Attempts to combine the data in a group of hdf5 files produced by HDF5Printer but by separate processes during a GAMBIT run.\n"
           "Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)")
@@ -59,11 +59,11 @@ def cantor_pairing(x,y):
 
 #====Begin "main"=================================
 
-if len(sys.argv)!=4 and len(sys.argv)!=5: usage()
+if len(sys.argv)!=5 and len(sys.argv)!=6: usage()
 
 runchecks=False
-if len(sys.argv)==5:
-   if sys.argv[4]=="--runchecks": 
+if len(sys.argv)==6:
+   if sys.argv[5]=="--runchecks": 
       runchecks=True
    else:
       usage()
@@ -73,11 +73,13 @@ outfname = rootfname
 group = sys.argv[2]
 RA_group = group + "/RA"
 N = int(sys.argv[3])
+resume = bool(int(sys.argv[4]))
 
 print(os.getcwd())
 print "Root filename:", rootfname
 print "Root group: ", group
 print "Number of files to combine: ", N
+print "Resume:", resume
 print ""
 print "Analysing input files..."
 
@@ -122,9 +124,13 @@ for item in sorted(RA_dsets):
    print "  ",item
 print "total sync length =",total_sync_length
 
+if resume:
+   print "Accessing existing output file for adding new data following resume..."
+   fout = h5py.File(outfname,'r+')
+else:
+   print "Creating new output file (will overwrite existing file!) for adding combined data"
+   fout = h5py.File(outfname,'w')
 
-print "Creating/accessing output file"
-fout = h5py.File(outfname,'a')
 if not group in fout:
    gout = fout.create_group(group)
 else:
