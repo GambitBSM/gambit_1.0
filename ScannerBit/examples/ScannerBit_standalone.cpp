@@ -47,7 +47,7 @@ void sighandler(int sig)
 {
     Gambit::Scanner::Plugins::plugin_info.dump();
     if (printerInterface != NULL)
-        printerInterface->finalise();
+        printerInterface->finalise(true);
 
     std::cout << "ScannerBit has finished early!" << std::endl;
     exit(sig);
