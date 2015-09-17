@@ -125,9 +125,9 @@ namespace Gambit {
         set("v", 0)->bind("E")->vect(x);
 
       if ( runOptions->getValueOrDef<bool>(true, "use_dwarfs") )
-        result += BEreq::lnL_dwarfs(x, y);
+        result += BEreq::lnL(1, x, y);
       if ( runOptions->getValueOrDef<bool>(false, "use_GC") )
-        result += BEreq::lnL_GC(x, y);
+        result += BEreq::lnL(2, x, y);
 
       logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
