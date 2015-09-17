@@ -120,6 +120,7 @@ if (NOT GSL_INCLUDE_DIRS STREQUAL "")
 endif()
 set(gamlike_location "${GAMBIT_INTERNAL}/gamLike")
 set(gamlike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gamLike/1.0.0")
+set(gamlike_data_path "${gamlike_dir}/data/")
 ExternalProject_Add(gamlike
   DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
            COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
@@ -127,10 +128,10 @@ ExternalProject_Add(gamlike
   SOURCE_DIR ${gamlike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
+  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS} GAMLIKE_DATA_PATH=${gamlike_data_path}
   INSTALL_COMMAND ""
 )
-set(clean_files ${clean_files} "${gamlike_dir}/gamLike.so")
+set(clean_files ${clean_files} "${gamlike_dir}/lib/gamLike.so")
 
 # MicrOmegas for MSSM
 ExternalProject_Add(micromegas
