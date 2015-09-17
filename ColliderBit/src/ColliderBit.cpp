@@ -268,7 +268,7 @@ namespace Gambit
             if ((*issPtr) >> code >> _junk >> xsec) totalxsec += xsec;
             delete issPtr;
           }
-          std::cout << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << "\n";
+          //std::cout << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << "\n";
           
           /// TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
           if (totalxsec * 1e12 * 20. < 1.) Loop::wrapup();
@@ -682,7 +682,7 @@ namespace Gambit
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
-          cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
+          //cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
           // Finalize is currently only used to report a cut flow.... rename?
           (*anaPtr)->finalize();
           result.push_back((*anaPtr)->get_results());
