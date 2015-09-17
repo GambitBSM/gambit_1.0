@@ -470,6 +470,29 @@ namespace Gambit
                 }
             }
             
+            void pluginInfo::dump()
+            {
+                for (auto it = resume_data.begin(), end = resume_data.end(); it != end; ++it)
+                {
+                    std::ofstream out((std::string(GAMBIT_DIR) + "/scratch/" + it->first).c_str(), std::ofstream::binary);
+                    for (auto v_it = it->second.begin(), v_end = it->second.end(); v_it != v_end; ++v_it)
+                    {
+                        (*v_it)->print(out);
+                    }
+                }
+            }
+            
+            pluginInfo::~pluginInfo()
+            {
+                for (auto it = resume_data.begin(), end = resume_data.end(); it != end; ++it)
+                {
+                    for (auto v_it = it->second.begin(), v_end = it->second.end(); v_it != v_end; ++v_it)
+                    {
+                        delete (*v_it);
+                    }
+                }
+            }
+            
             pluginInfo plugin_info;
         }
     }
