@@ -44,29 +44,23 @@ include_directories("${yaml_INCLUDE_DIR}")
 add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
 
 #contrib/Delphes-3.1.2; include only if ColliderBit is in use
+set (DELPHES_DIR "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   set (EXCLUDE_DELPHES FALSE)
-  set (DELPH_BAD_LINE "\\(..CC)\ ..patsubst\ -std=%,,..CXXFLAGS))\\)\ \\(..CXXFLAGS.\\)")
+  set (DELPHES_LDFLAGS "-L${DELPHES_DIR} -lDelphes")
+  set (DELPHES_BAD_LINE "\\(..CC)\ ..patsubst\ -std=%,,..CXXFLAGS))\\)\ \\(..CXXFLAGS.\\)")
+  set (CMAKE_INSTALL_RPATH "${DELPHES_DIR}")
+  include_directories("${DELPHES_DIR}" "${DELPHES_DIR}/external" "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
   ExternalProject_Add(delphes
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2
+    SOURCE_DIR ${DELPHES_DIR}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ./configure 
               COMMAND cp <SOURCE_DIR>/Makefile <SOURCE_DIR>/Makefile.orig 
               COMMAND sed ${dashi} "s,\ ..EXECUTABLE.,,g" <SOURCE_DIR>/Makefile
-              COMMAND sed ${dashi} "s/${DELPH_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
-    BUILD_COMMAND $(MAKE) all
+              COMMAND sed ${dashi} "s/${DELPHES_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
+    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} all
     INSTALL_COMMAND ""
-    INSTALL_DIR ${CMAKE_BINARY_DIR}/install
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
   )
-  set(delphes_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/external")
-  set(delphes_LIBRARIES "Delphes")
-  set(delphes_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2 -l${delphes_LIBRARIES}")
-  include_directories("${delphes_INCLUDE_DIRS}" )
-  include_directories("${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
-  set(CMAKE_INSTALL_RPATH "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
-  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/libDelphes*" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/Makefile*")
-  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/tmp" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/core")
   message("${Yellow}-- Generating Delphes ROOT dictionaries...${ColourReset}")
   execute_process(COMMAND ./make_dicts.sh
                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes
@@ -76,15 +70,20 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
     message(FATAL_ERROR "Could not automatically generate Delphes ROOT dictionaries.  Blame ROOT.")
   endif()
   message("${Yellow}-- Generating Delphes ROOT dictionaries - done.${ColourReset}")
+  # Add clean info
+  add_external_clean(delphes ${DELPHES_DIR} distclean)
+  add_dependencies(distclean clean-delphes)
 else()
   set (EXCLUDE_DELPHES TRUE)
+  add_custom_target(clean-delphes COMMAND "")
 endif()
 
+
 #contrib/MassSpectra; include only if SpecBit is in use
+set (FS_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy")
 if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   
   set (EXCLUDE_FLEXIBLESUSY FALSE)
-  set(MASS_SPECTRA_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra")
   
   # Determine compiler libraries needed by flexiblesusy.
   if(CMAKE_Fortran_COMPILER MATCHES "gfortran*")
@@ -126,7 +125,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   set(config_command ./configure ${FS_OPTIONS} --with-models=${BUILT_FS_MODELS_COMMAS})
   message("${Yellow}-- Configuring FlexibleSUSY for models: ${BoldYellow}${BUILT_FS_MODELS_COMMAS}${ColourReset}")
   execute_process(COMMAND ${config_command}
-                  WORKING_DIRECTORY ${MASS_SPECTRA_DIR}/flexiblesusy
+                  WORKING_DIRECTORY ${FS_DIR}
                   RESULT_VARIABLE result
                   OUTPUT_VARIABLE output
                  )
@@ -138,7 +137,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
 
   # Add FlexibleSUSY as an external project
   ExternalProject_Add(flexiblesusy
-    SOURCE_DIR ${MASS_SPECTRA_DIR}/flexiblesusy
+    SOURCE_DIR ${FS_DIR}
     BUILD_IN_SOURCE 1
     BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LINKLIBS}
     CONFIGURE_COMMAND ""
@@ -146,32 +145,34 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   )
   
   # Set linking commands.  Link order matters! The core flexiblesusy libraries need to come after the model libraries but before the other link flags.
-  set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/src -lflexisusy -L${MASS_SPECTRA_DIR}/flexiblesusy/legacy -llegacy ${flexiblesusy_LDFLAGS}")
+  set(flexiblesusy_LDFLAGS "-L${FS_DIR}/src -lflexisusy -L${FS_DIR}/legacy -llegacy ${flexiblesusy_LDFLAGS}")
   foreach(_MODEL ${BUILT_FS_MODELS})
-    set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL} -l${_MODEL} ${flexiblesusy_LDFLAGS}")
+    set(flexiblesusy_LDFLAGS "-L${FS_DIR}/models/${_MODEL} -l${_MODEL} ${flexiblesusy_LDFLAGS}")
   endforeach()
   
   # Set up include paths
-  include_directories("${MASS_SPECTRA_DIR}")
-  include_directories("${MASS_SPECTRA_DIR}/flexiblesusy/src")
-  include_directories("${MASS_SPECTRA_DIR}/flexiblesusy/legacy")
-  include_directories("${MASS_SPECTRA_DIR}/flexiblesusy/config")
-  include_directories("${MASS_SPECTRA_DIR}/flexiblesusy/slhaea")
+  include_directories("${FS_DIR}/..")
+  include_directories("${FS_DIR}/src")
+  include_directories("${FS_DIR}/legacy")
+  include_directories("${FS_DIR}/config")
+  include_directories("${FS_DIR}/slhaea")
   # Dig through flexiblesusy "models" directory and add all subdirectories to the include list
   # (these contain the headers for the generated spectrum generators)
   foreach(_MODEL ${BUILT_FS_MODELS})
-    include_directories("${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL}")
+    include_directories("${FS_DIR}/models/${_MODEL}")
   endforeach()
 
   # Strip out leading and trailing whitespace
   string(STRIP "${flexiblesusy_LDFLAGS}" flexiblesusy_LDFLAGS)
-
-  # Add clean info
-  add_custom_target(clean-flexiblesusy COMMAND cd ${MASS_SPECTRA_DIR}/flexiblesusy && make clean && make distclean )
-  add_dependencies(distclean clean-flexiblesusy)
 
 else()
 
   set (EXCLUDE_FLEXIBLESUSY TRUE)
 
 endif()
+# Add clean info
+add_external_clean(flexiblesusy-makeclean ${FS_DIR} clean)
+add_external_clean(flexiblesusy-makedistclean ${FS_DIR} distclean)
+add_dependencies(clean-flexiblesusy-makedistclean clean-flexiblesusy-makeclean)
+add_custom_target(clean-flexiblesusy DEPENDS clean-flexiblesusy-makedistclean)
+add_dependencies(distclean clean-flexiblesusy)
