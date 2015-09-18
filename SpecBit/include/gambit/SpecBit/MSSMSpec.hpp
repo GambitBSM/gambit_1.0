@@ -31,9 +31,9 @@
 
 #include <memory>
 
-#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
+#include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/SpecBit/MSSMSpec_head.hpp"   // "Header" declarations for MSSMSpec class
 
@@ -94,7 +94,7 @@ namespace Gambit
 
         SLHAea_add_block(slha, "SPINFO");
         SLHAea_add(slha, "SPINFO", 1, "GAMBIT, using "+backend_name);
-        SLHAea_add(slha, "SPINFO", 2, GAMBIT_VERSION " (GAMBIT); "+backend_version+" ("+backend_name+")"); 
+        SLHAea_add(slha, "SPINFO", 2, gambit_version+" (GAMBIT); "+backend_version+" ("+backend_name+")"); 
 
         SLHAea_add_block(slha, "MINPAR");
         SLHAea_add_block(slha, "HMIX",this->runningpars().GetScale());

@@ -35,7 +35,7 @@
 
 #define MODULE DecayBit
 START_MODULE
-
+  
   #define CAPABILITY t_decay_rates
   START_CAPABILITY
 
@@ -640,16 +640,29 @@ START_MODULE
   #undef CAPABILITY
 
 
+  #define CAPABILITY SLHA1_violation
+  START_CAPABILITY
+  
+    #define FUNCTION check_first_sec_gen_mixing
+    START_FUNCTION(int)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    #undef FUNCTION
+    
+  #undef CAPABILITY
+
+
   #define CAPABILITY SLHA_pseudonyms
   START_CAPABILITY
     #define FUNCTION get_mass_es_pseudonyms
     START_FUNCTION(DecayBit::mass_es_pseudonyms)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(SLHA1_violation, int)
     #undef FUNCTION
   #undef CAPABILITY
 
 
 #undef MODULE
+
 
 // SM decay rate functions
 QUICK_FUNCTION(DecayBit, W_plus_decay_rates,    NEW_CAPABILITY, W_plus_decays,    DecayTable::Entry)

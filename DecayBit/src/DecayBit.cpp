@@ -25,6 +25,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/virtual_higgs.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp" 
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
 #include "gambit/Utils/version.hpp"
@@ -43,13 +44,14 @@ namespace Gambit
     /// \name DecayBit module functions
     /// @{
 
+
     /////////////// Standard Model ///////////////////
 
     /// SM decays: W+
     void W_plus_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 2.085;                    
       result.positive_error = 4.2e-02;
       result.negative_error = 4.2e-02;
@@ -69,7 +71,7 @@ namespace Gambit
     void Z_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 2.4952;                    
       result.positive_error = 2.3e-03;
       result.negative_error = 2.3e-03;
@@ -83,7 +85,7 @@ namespace Gambit
     void t_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 2.00;                    
       result.positive_error = 4.7e-01;
       result.negative_error = 4.3e-01;
@@ -100,7 +102,7 @@ namespace Gambit
     void mu_plus_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 2.9959847e-19;                    
       result.positive_error = 3.0e-25;
       result.negative_error = 3.0e-25;
@@ -117,7 +119,7 @@ namespace Gambit
     void tau_plus_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 2.267E-12;                    
       result.positive_error = 4.0e-15;
       result.negative_error = 4.0e-15;
@@ -141,7 +143,7 @@ namespace Gambit
     void pi_0_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 7.73e-09;                    
       result.positive_error = 1.7e-10;
       result.negative_error = 1.7e-10;
@@ -155,7 +157,7 @@ namespace Gambit
     void pi_plus_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 2.5284e-17;                    
       result.positive_error = 5.0e-21;
       result.negative_error = 5.0e-21;
@@ -173,7 +175,7 @@ namespace Gambit
     void eta_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 1.31e-06;                    
       result.positive_error = 5.0e-08;
       result.negative_error = 5.0e-08;
@@ -184,7 +186,7 @@ namespace Gambit
     void rho_0_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 1.491e-01;                    
       result.positive_error = 8.0e-04;
       result.negative_error = 8.0e-04;
@@ -195,7 +197,7 @@ namespace Gambit
     void rho_plus_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 1.491e-01;                    
       result.positive_error = 8.0e-04;
       result.negative_error = 8.0e-04;
@@ -212,7 +214,7 @@ namespace Gambit
     void omega_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = 8.49e-03;                    
       result.positive_error = 8.0e-05;
       result.negative_error = 8.0e-05;
@@ -224,7 +226,7 @@ namespace Gambit
     {
       double mh = (*Pipes::SM_Higgs_decays::Dep::SM_spectrum)->get_Pole_Mass("h0_1");
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
       result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);   
       result.set_BF(virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
       result.set_BF(virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
@@ -2367,7 +2369,7 @@ namespace Gambit
       }
       // Log calculator
       result.calculator = "GAMBIT::DecayBit";
-      result.calculator_version = version;
+      result.calculator_version = gambit_version;
     }
   
 
@@ -2508,6 +2510,44 @@ namespace Gambit
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");
       result.refill(mssm, tol, pt_error, debug);
+    }
+
+    /// SLHA1 mixing check flag
+    /// This gets set non-zero if first or second generation left-right mixing
+    /// exceeds the specified tolerance (which means that SLHA1 is an invalid format for
+    /// this model point).
+    /// 1 = u, 2 = d, 3 = c, 4 = s, 5 = e, 6 = mu
+    void check_first_sec_gen_mixing (int& result)
+    {
+      using namespace Pipes::check_first_sec_gen_mixing;
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      result = 0;
+      double max_mixing;
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+      str x = slhahelp::mass_es_from_gauge_es("~u_L", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 1;
+      x = slhahelp::mass_es_from_gauge_es("~u_R", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 1;
+      x = slhahelp::mass_es_from_gauge_es("~d_L", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 2;
+      x = slhahelp::mass_es_from_gauge_es("~d_R", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 2;
+      x = slhahelp::mass_es_from_gauge_es("~c_L", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 3;
+      x = slhahelp::mass_es_from_gauge_es("~c_R", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 3;
+      x = slhahelp::mass_es_from_gauge_es("~s_L", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 4;
+      x = slhahelp::mass_es_from_gauge_es("~s_R", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 4;
+      x = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 5;
+      x = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 5;
+      x = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 6;
+      x = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
+      if((max_mixing*max_mixing) <= 1-tol) result = 6;
     }
 
     /// @}

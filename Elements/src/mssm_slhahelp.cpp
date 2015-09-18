@@ -100,10 +100,8 @@ namespace Gambit
       }
       
       ///routine to return mass state admixure for given gauge state
-      /// in the end this is a trival routine but may help      
-      double get_mixing_element(str gauge_es, 
-                                       str mass_es, 
-                                       const SubSpectrum* mssm)
+      /// in the end this is a trival routine but may help
+      double get_mixing_element(str gauge_es, str mass_es, const SubSpectrum* mssm)
       { 
          ///extract info from maps
          p_int_string mass_es_index_type = mass_label_to_index_type[mass_es]; 
@@ -120,8 +118,7 @@ namespace Gambit
                "called with types for the gauge eigenstate and mass eigenstate that don't match.");
             }
          /// will need to add mssm object to cal method in gambit
-         double admix = mssm->phys().get_Pole_Mixing(type, mass_index, 
-                                                   gauge_index);
+         double admix = mssm->phys().get_Pole_Mixing(type, mass_index, gauge_index);
          return admix;
       }
       
@@ -129,8 +126,7 @@ namespace Gambit
       /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
       /// which is just a row in the mixing matrix 
       /// just wraps get_Pole_Mixing_row after extracting info from string
-      std::vector<double> get_gauge_comp_for_mass(str mass_es, 
-                                                  const SubSpectrum* mssm)
+      std::vector<double> get_gauge_comp_for_mass(str mass_es, const SubSpectrum* mssm)
       {   
          /// extract info using map
          p_int_string index_type = mass_label_to_index_type[mass_es];

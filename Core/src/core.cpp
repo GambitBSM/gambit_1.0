@@ -136,7 +136,7 @@ namespace Gambit
           {
             // Display version number and shutdown.
             int mpirank = launch_diagnostic_MPI();
-            if (mpirank == 0) cout << "\nThis is GAMBIT v" + version << endl;
+            if (mpirank == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
             logger().disable();
             quit_diagnostic_MPI();
             core_error().silent_forced_throw();

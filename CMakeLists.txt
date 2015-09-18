@@ -173,9 +173,10 @@ endif()
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
 
-# Set the version number
+# Set the version number (later to come directly from git tag)
 set(GAMBIT_VERSION_MAJOR 1)
 set(GAMBIT_VERSION_MINOR 0)
+set(GAMBIT_VERSION_REVISION 0)
 
 # Reprocess the ditch set into a comma-separated list
 string (REPLACE ";" "," itch_with_commas "${itch}")

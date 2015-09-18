@@ -268,16 +268,20 @@ namespace Gambit
             slha.push_front(block);
           }
           else
+          {
             ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
-          cout << slha << endl;
+          }
           pythiaOptions.push_back("SLHA:file = slhaea");
 
-          try {
+          try
+          {
             if (omp_get_thread_num() == 0)
               result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
             else
               result.init(pythia_doc_path, pythiaOptions, &slha);
-          } catch (SpecializablePythia::InitializationError &e) {
+          }
+          catch (SpecializablePythia::InitializationError &e)
+          {
             logger() << "     ---> initialization veto.";
             Loop::wrapup();
             return;

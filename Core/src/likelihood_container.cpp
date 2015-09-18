@@ -63,7 +63,7 @@ namespace Gambit
     }
     target_vertices.resize(size);
   }
-			
+      
   /// Do the prior transformation and populate the parameter map  
   void Likelihood_Container::setParameters (const std::vector<double> &vec) 
   {
@@ -93,10 +93,10 @@ namespace Gambit
     //real stuff here to replace what is below;
     double tmp = in; tmp++; str tmp2 = type;
   }
-		  
+      
   /// Evaluate total likelihood function
   // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points 
-  // (ie ones with valid likelihood calculations but invalid auxilary observables).	 Invalid observables should be identified by
+  // (ie ones with valid likelihood calculations but invalid auxilary observables).  Invalid observables should be identified by
   // functor::retrieve_invalid_point_exception() != NULL in printers.
   double Likelihood_Container::main (const std::vector<double> &in)
   {
@@ -162,8 +162,8 @@ namespace Gambit
         }
         catch(Gambit::invalid_point_exception& e)
         {
-          logger() << LogTags::core << "The calculation was declared invalid by " << e.thrower()->origin()
-                   << "::" << e.thrower()->name() << ".  *Shrug*." << EOM;
+          logger() << LogTags::core << "Observable calculation was declared invalid by " << e.thrower()->origin()
+                   << "::" << e.thrower()->name() << ".  Not declaring point invalid, as no likelihood depends on this." << EOM;
         }
       }
     }

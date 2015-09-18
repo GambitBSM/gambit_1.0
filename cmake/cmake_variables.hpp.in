@@ -25,9 +25,6 @@
 /// Gambit source directory                       
 #define GAMBIT_DIR "@PROJECT_SOURCE_DIR@"       
 
-/// Gambit version (later to come from git tag)
-#define GAMBIT_VERSION "1.0.0"
-
 /// Found regex in STL
 #cmakedefine HAVE_REGEX_H 1
 
@@ -36,5 +33,12 @@
 
 /// Found Graphviz
 #cmakedefine HAVE_GRAPHVIZ 1
+
+/// Version info
+/// @{
+#cmakedefine GAMBIT_VERSION_MAJOR    1
+#cmakedefine GAMBIT_VERSION_MINOR    0
+#cmakedefine GAMBIT_VERSION_REVISION 0
+/// @}
 
 #endif //// #defined__cmake_variables_hpp__

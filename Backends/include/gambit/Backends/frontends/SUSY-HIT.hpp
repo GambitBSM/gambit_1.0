@@ -92,6 +92,7 @@ BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double, int*), "susy_h
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
+BE_INI_DEPENDENCY(SLHA1_violation, int)
 BE_INI_DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
 BE_INI_DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
 BE_INI_DEPENDENCY(Z_decay_rates, DecayTable::Entry)

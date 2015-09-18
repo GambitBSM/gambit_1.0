@@ -41,6 +41,8 @@ Printer:
   # therefore vary according to the selected
   # printer.
   options:
+    # size of write buffer
+    buffer_length: 1
     # name of output file
     output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
     # name of info file (explains content of output file)
@@ -52,7 +54,7 @@ Printer:
 
 Scanner:
 
-  use_scanner: multinest
+  use_scanner: random 
 
   scanners:
 
@@ -60,7 +62,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 100
+        nlive: 20
         tol: 0.1
         aux_printer_txt_options:
           output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
@@ -76,7 +78,7 @@ Scanner:
     random:
       plugin: random_sampler
       options:
-        point_number: 3
+        point_number: 100
         output_file:  output
         like:  Likelihood
         files:
@@ -91,6 +93,9 @@ ObsLikes:
   # Test LHC combined likelihood
   - purpose:    Likelihood
     capability: LHC_Combined_LogLike
+
+  - purpose:    Observable
+    capability: SLHA1_violation
 
   # TODO: Test the functionality of these likelihood functions
   # Test LEP SUSY limit slepton likelihoods
@@ -218,9 +223,12 @@ Rules:
       #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
 
   - options:
-      gauge_mixing_tolerance: 0.5
-      family_mixing_tolerance: 0.5
-      off_diagonal_mixing_tolerance: 0.5
+      #gauge_mixing_tolerance: 0.5
+      #family_mixing_tolerance: 0.5
+      #off_diagonal_tolerance: 0.5
+      #gauge_mixing_tolerance_invalidates_point_only: false
+      #family_mixing_tolerance_invalidates_point_only: false
+      #off_diagonal_tolerance_invalidates_point_only: false
 
   - capability:  HardScatteringSim
     function:  getPythia
@@ -273,7 +281,7 @@ Logger:
   # Redirectory of specific messages according to tags
   # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
 
-  prefix : "runs/example_minimal_test/logs/"
+  prefix : "runs/CMSSM_multinest_collider/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
