@@ -133,7 +133,7 @@ namespace Gambit
           {
             Loop::executeIteration(START_SUBPROCESS);
             if(*Loop::done) {
-              std::cout << "\n\n THIS SUBPROCESS WAS VETOED " << std::endl;
+              logger() << "This subprocess was vetoed." << EOM;
               Loop::executeIteration(END_SUBPROCESS);
             } else {
               allProcessesVetoed = false;
@@ -236,10 +236,16 @@ namespace Gambit
           // Run Pythia reading an SLHA file.
           logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
           pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
-          if (omp_get_thread_num() == 0)
-            result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-          else
-            result.init(pythia_doc_path, pythiaOptions);
+          try {
+            if (omp_get_thread_num() == 0)
+              result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+            else
+              result.init(pythia_doc_path, pythiaOptions);
+          } catch (SpecializablePythia::InitializationError &e) {
+            logger() << "     ---> initialization veto.";
+            Loop::wrapup();
+            return;
+          }
         }
         else
         {
@@ -266,10 +272,16 @@ namespace Gambit
           cout << slha << endl;
           pythiaOptions.push_back("SLHA:file = slhaea");
 
-          if (omp_get_thread_num() == 0)
-            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-          else
-            result.init(pythia_doc_path, pythiaOptions, &slha);
+          try {
+            if (omp_get_thread_num() == 0)
+              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+            else
+              result.init(pythia_doc_path, pythiaOptions, &slha);
+          } catch (SpecializablePythia::InitializationError &e) {
+            logger() << "     ---> initialization veto.";
+            Loop::wrapup();
+            return;
+          }
         }
 
         /// xsec veto
@@ -283,10 +295,14 @@ namespace Gambit
             if ((*issPtr) >> code >> _junk >> xsec) totalxsec += xsec;
             delete issPtr;
           }
-          std::cout << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << "\n";
+          logger() << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << "\n";
           
           /// TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
-          if (totalxsec * 1e12 * 20. < 1.) Loop::wrapup();
+          if (totalxsec * 1e12 * 20. < 1.) {
+            logger() << "     ---> xsec veto.";
+            Loop::wrapup();
+          }
+          logger() << EOM;
         }
       }
 
@@ -383,7 +399,13 @@ namespace Gambit
       result.clear();
 
       /// Get the next event from Pythia8
-      (*Dep::HardScatteringSim).nextEvent(result);
+      try {
+        (*Dep::HardScatteringSim).nextEvent(result);
+      } catch (SpecializablePythia::EventFailureError &e) {
+        logger() << "     ---> event faliure veto.";
+        Loop::wrapup();
+        return;
+      }
     }
 
 

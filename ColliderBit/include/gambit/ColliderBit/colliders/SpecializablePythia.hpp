@@ -25,7 +25,7 @@ namespace Gambit {
 
       /// @name Custom exceptions
       //@{
-      protected:
+      public:
         class InitializationError : public std::exception {
           virtual const char* what() const throw() {
             return "Pythia could not initialize.";
