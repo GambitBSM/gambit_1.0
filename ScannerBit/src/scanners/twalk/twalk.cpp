@@ -101,12 +101,10 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
     int numtasks = 1;
     int rank = 0;
 #endif
-    //Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
-    //if (rank == 0)
-            //out_stream->reset();
     RandomPlane gDev(proj, ma, din, alim, alimt, rand);
     
     Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
+    out_stream->reset();
     
     if (printer.resume_mode())
     {

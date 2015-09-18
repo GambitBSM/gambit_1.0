@@ -480,6 +480,9 @@ namespace Gambit
                         (*v_it)->print(out);
                     }
                 }
+                
+                printer->finalise(true);
+                std::cout << "Gambit has finished early!" << std::endl;
             }
             
             pluginInfo::~pluginInfo()
