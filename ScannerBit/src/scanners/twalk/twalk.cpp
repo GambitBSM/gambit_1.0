@@ -269,7 +269,8 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
             }
             else
             {
-                out_stream->print(-1, "chain", ranks[t], ids[t]);
+                out_stream->print(0.0, "mult", rank, next_id);
+                out_stream->print(-1, "chain", rank, next_id);
             }
         }
 #ifdef WITH_MPI
@@ -353,6 +354,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
             }
             else
                     cont = true;
+            if (cnt % 100 == 0)
             std::cout << "points = " << cnt  << "( " << cnt/double(NThreads) << ")" << "\n\taccept ratio = " << (double)cnt/(double)total/(double)numtasks << "\n\tR = " << Ravg/ma << std::endl;
             //std::cout << "\033[3A\tpoints = " << count  << "( " << count/double(NThreads) << ")" << "\n\taccept ratio = " << blank << (double)count/(double)totall << "\n\tR = " << Ravg/ma << std::endl;
 #ifdef WITH_MPI
