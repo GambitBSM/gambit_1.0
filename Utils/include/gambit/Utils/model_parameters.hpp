@@ -5,7 +5,7 @@
 ///  Class for holding model parameters. Defines the
 ///  basic container and get/set functions for
 ///  the model parameters. Originally adapted from
-///  SUfit version (the connection is almost gone 
+///  SUfit version (the connection is basically gone 
 ///  now though.)
 ///
 ///  *********************************************
@@ -29,9 +29,10 @@
 ///  \date 2015 Aug:  Added copy_parameters_from function
 ///
 ///  \author Pat Scott  
-///          (patscott@physics.mcgill.ca)
+///          (p.scott@imperial.ac.uk)
 ///  \date 2013 Oct
 ///  \date 2014 Jan, Nov
+///  \date 2015 Sep
 ///
 ///  *********************************************
 
@@ -74,13 +75,13 @@ namespace Gambit {
       double getValue(std::string const & inkey) const;
     
       /// Get values of all parameters
-      std::map<std::string, double> getValues() const;
+      const std::map<std::string, double>& getValues() const;
    
-      /// Get pointer to map of all parameters 
-      ///TODO(Ben) I was going to delete this, but it seems to be used in some macros somewhere. 
-      ///          I haven't checked what for, but probably whatever the macros want this pointer
-      ///          for can be replaced by a new member function, to maintain better encapsulation.
-      const std::map<std::string, double>* getValuesPtr() const; 
+      /// Get a const iterator to the first parameter map entry
+      std::map<std::string, double>::const_iterator begin() const;
+
+      /// Get a const iterator to the last parameter map entry
+      std::map<std::string, double>::const_iterator end() const;
 
       /// Get number of parameters stored in this object
       int getNumberOfPars() const;
@@ -94,11 +95,9 @@ namespace Gambit {
       /// Set many parameter values using a map
       void setValues(std::map<std::string,double> const &params_map);
 
-      /// Copy all the parameters from one ModelParameters object into another
-      /// (useful, for example, if the target contains a superset of the original parameter set)
-      /// Will throw an error if there is a match failure.
-      void copy_parameters_from(const ModelParameters&);   
- 
+      /// Set many parameter values using another ModelParameters object (error if a mismatch occurs)
+      void setValues(ModelParameters const& donor);
+
       /// Get parameter keys (names), probably for external iteration
       std::vector<std::string> getKeys() const;
 

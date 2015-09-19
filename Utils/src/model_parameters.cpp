@@ -3,11 +3,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Class for holding model parameters. Defines the
-///  basic container and get/set functions for
-///  the model parameters. Originally adapted from
-///  SUfit version (the connection is almost gone 
-///  now though.)
+///  Definitions for ModelParameters class. 
 ///
 ///  *********************************************
 ///
@@ -18,21 +14,14 @@
 ///
 ///  \author Ben Farmer
 ///  \date 2013 May, Jun 
-///  \date 2014 Aug:  Went through and cut out some 
-///                   stuff that seemed unused: removed
-///                   the old ModelParametersBase class
-///                   that didn't do much; removed the
-///                   virtualisation since nothing derives
-///                   from this class at the moment; 
-///                   incorporated the proper error 
-///                   handling system; put class 
-///                   definitions into a seperate source file.
-///  \date 2015 Aug:  Added copy_all function
+///  \date 2014 Aug 
+///  \date 2015 Aug
 ///
 ///  \author Pat Scott  
-///          (patscott@physics.mcgill.ca)
+///          (p.scott@imperial.ac.uk)
 ///  \date 2013 Oct
 ///  \date 2014 Jan, Nov
+///  \date 2015 Sep
 ///
 ///  *********************************************
 
@@ -48,13 +37,11 @@ namespace Gambit
 
    /// ModelParameters class member function definitions
  
-   /// Checks if this model container holds a parameter match the supplied name
+   /// Checks if this model container holds a parameter matching the supplied name
    void ModelParameters::assert_contains(std::string inkey) const
    {
      if(_values.count(inkey)!=1) 
      { 
-       //??? this message doesn't seem to make sense, so I am changing it.
-       //model_error().raise(LOCAL_INFO, "No throwing functor in invalid_point_exception.");
        model_error().raise(LOCAL_INFO, "ModelParameters object does not contain the requested parameter '"+inkey+"'.");
      }
    }
@@ -82,18 +69,21 @@ namespace Gambit
    }
    
    /// Get values of all parameters
-   std::map<std::string, double> ModelParameters::getValues() const
+   const std::map<std::string, double>& ModelParameters::getValues() const
    {
      return _values;
    }
    
-   /// Get pointer to map of all parameters 
-   ///TODO(Ben) I was going to delete this, but it seems to be used in some macros somewhere. 
-   ///          I haven't checked what for, but probably whatever the macros want this pointer
-   ///          for can be replaced by a new member function, to maintain better encapsulation.
-   const std::map<std::string, double>* ModelParameters::getValuesPtr() const 
+   /// Get a const iterator to the first parameter map entry
+   std::map<std::string, double>::const_iterator ModelParameters::begin() const
    {
-     return &_values;
+     return getValues().begin();
+   }
+  
+   /// Get a const iterator to the last parameter map entry
+   std::map<std::string, double>::const_iterator ModelParameters::end() const
+   {
+     return getValues().end();
    }
 
    /// Get number of parameters stored in this object
@@ -116,8 +106,14 @@ namespace Gambit
      _values[inkey]=value;
    }
   
+   /// Set many parameter values using another ModelParameters object (error if a mismatch occurs)
+   void ModelParameters::setValues(ModelParameters const& donor)
+   {
+     setValues(donor.getValues()); 
+   }
+
    /// Set many parameter values using a map
-   void ModelParameters::setValues(std::map<std::string,double> const &params_map)
+   void ModelParameters::setValues(std::map<std::string,double> const& params_map)
    {
      typedef std::map<std::string,double>::const_iterator it_type;
      for(it_type iterator = params_map.begin();
@@ -128,19 +124,9 @@ namespace Gambit
        // iterator->second = value
        assert_contains(iterator->first);
        _values[iterator->first]=iterator->second;
-       ///TODO Should probably do some extra checks, duplicate keys, all parameters
-       // used, etc.
      }
    }
-  
-   /// Copy all the parameters from one ModelParameters object into another
-   /// (useful, for example, if the target contains a superset of the original parameter set)
-   /// Will throw an error if there is a match failure.
-   void ModelParameters::copy_parameters_from(const ModelParameters& in_params)
-   {
-     setValues(in_params.getValues());
-   }
- 
+
    /// Get parameter keys (names), probably for external iteration
    std::vector<std::string> ModelParameters::getKeys() const
    {

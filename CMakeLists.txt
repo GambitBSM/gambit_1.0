@@ -243,8 +243,8 @@ add_gambit_custom(printer_harvest printers_harvested ${PRINTER_HARVESTER} ${PRIN
 add_dependencies(module_harvest backend_harvest)
 add_dependencies(printer_harvest module_harvest)
 
-# Generate the CMakeLists.txt files for GAMBIT modules (and backends, and printers)
-message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files.${ColourReset}")
+# Generate the CMakeLists.txt files for GAMBIT modules, Backends, Models and Printers)
+message("${Yellow}-- Updating GAMBIT module, model, backend, and printer CMake files.${ColourReset}")
 set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 check_result(${result} ${update_cmakelists})

@@ -1618,8 +1618,8 @@ namespace Gambit
     /// Function for handing over parameter identities to another model_functor
     void model_functor::donateParameters(model_functor &receiver)
     {
-      for(std::map<std::string,double>::const_iterator it = myValue->getValuesPtr()->begin();
-          it != myValue->getValuesPtr()->end();
+      for(std::map<std::string,double>::const_iterator it = myValue->begin();
+          it != myValue->end();
           it++)
       {
         receiver.addParameter(it->first);

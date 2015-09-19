@@ -42,8 +42,8 @@ void MODEL_NAMESPACE::MSSM78atMGUT_to_MSSM78atQ (const ModelParameters &myP, Mod
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
    logger()<<"Running interpret_as_parent calculations for MSSM78atMGUT --> MSSM78atQ..."<<LogTags::info<<EOM;
   
-   // Copy all the parameters MSSM78atMGUT into MSSM78atQ
-   targetP.copy_parameters_from(myP);
+   // Copy all the parameters of MSSM78atMGUT into MSSM78atQ
+   targetP.setValues(myP);
 
    // Now only the "Qin" parameter is left unset. Need to extract this from the Spectrum object dependency.
    const Spectrum* spec = *Dep::unimproved_MSSM_spectrum;
