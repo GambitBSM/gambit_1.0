@@ -74,6 +74,15 @@ START_MODULE
 
   #undef CAPABILITY
 
+  #define CAPABILITY xsection               // For testing nevents
+  START_CAPABILITY
+
+     #define FUNCTION test_xsection
+     START_FUNCTION(double)
+     #undef FUNCTION
+
+  #undef CAPABILITY
+
 
   #define CAPABILITY nevents                // A physical observable or likelihood that this module can calculate.  There may be one or more
   START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
@@ -143,7 +152,6 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
-
 
   #define CAPABILITY damu                   // Muon (g-2) anomalous contribution
   START_CAPABILITY
