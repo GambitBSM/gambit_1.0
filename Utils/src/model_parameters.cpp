@@ -106,14 +106,14 @@ namespace Gambit
      _values[inkey]=value;
    }
   
-   /// Set many parameter values using another ModelParameters object (error if a mismatch occurs)
-   void ModelParameters::setValues(ModelParameters const& donor)
+   /// Set many parameter values using another ModelParameters object
+   void ModelParameters::setValues(ModelParameters const& donor, bool missing_is_error)
    {
-     setValues(donor.getValues()); 
+     setValues(donor.getValues(), missing_is_error); 
    }
 
    /// Set many parameter values using a map
-   void ModelParameters::setValues(std::map<std::string,double> const& params_map)
+   void ModelParameters::setValues(std::map<std::string,double> const& params_map, bool missing_is_error)
    {
      typedef std::map<std::string,double>::const_iterator it_type;
      for(it_type iterator = params_map.begin();
@@ -122,8 +122,8 @@ namespace Gambit
      {
        // iterator->first = key
        // iterator->second = value
-       assert_contains(iterator->first);
-       _values[iterator->first]=iterator->second;
+       if (missing_is_error) assert_contains(iterator->first);
+       if (_values.count(iterator->first)==1) _values[iterator->first]=iterator->second;
      }
    }
 

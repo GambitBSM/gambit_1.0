@@ -93,10 +93,10 @@ namespace Gambit {
       void setValue(std::string const &inkey,double const&value);
   
       /// Set many parameter values using a map
-      void setValues(std::map<std::string,double> const &params_map);
+      void setValues(std::map<std::string,double> const &params_map, bool missing_is_error = true);
 
-      /// Set many parameter values using another ModelParameters object (error if a mismatch occurs)
-      void setValues(ModelParameters const& donor);
+      /// Set many parameter values using another ModelParameters object
+      void setValues(ModelParameters const& donor, bool missing_is_error = true);
 
       /// Get parameter keys (names), probably for external iteration
       std::vector<std::string> getKeys() const;

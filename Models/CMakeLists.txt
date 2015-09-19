@@ -17,7 +17,7 @@
 #  Authors:                                     
 #                                               
 #  \author The GAMBIT Collaboration            
-#  \date 04:33PM on September 19, 2015
+#  \date 06:27PM on September 19, 2015
 #                                               
 #***********************************************
                                                 
@@ -27,13 +27,19 @@ src/particle_database.cpp
 src/models.cpp
 src/claw_singleton.cpp
 src/models/extraCMSSM.cpp
+src/models/MSSM15atQ.cpp
 src/models/MSSM25atQ.cpp
 src/models/MSSM24atQ.cpp
+src/models/MSSM19atQ.cpp
 src/models/nuclear_params.cpp
+src/models/MSSM20atQ.cpp
 src/models/MSSM78atMGUT.cpp
 src/models/CMSSM.cpp
+src/models/MSSM16atQ.cpp
 src/models/MSSM30atMGUT.cpp
+src/models/MSSM7atQ.cpp
 src/models/MSSM30atQ.cpp
+src/models/MSSM11atQ.cpp
 )
 
 set(header_files
@@ -49,10 +55,14 @@ include/gambit/Models/model_rollcall.hpp
 include/gambit/Models/model_types_rollcall.hpp
 include/gambit/Models/models/MSSM30atQ.hpp
 include/gambit/Models/models/MSSM24atQ.hpp
+include/gambit/Models/models/MSSM7atQ.hpp
+include/gambit/Models/models/MSSM16atQ.hpp
 include/gambit/Models/models/MSSM78atQ.hpp
 include/gambit/Models/models/MSSM25atQ.hpp
+include/gambit/Models/models/MSSM15atQ.hpp
 include/gambit/Models/models/nuclear_params.hpp
 include/gambit/Models/models/StandardModel_SLHA2.hpp
+include/gambit/Models/models/MSSM20atQ.hpp
 include/gambit/Models/models/CMSSM.hpp
 include/gambit/Models/models/MSSM78atMGUT.hpp
 include/gambit/Models/models/MSSM30atMGUT.hpp
@@ -60,6 +70,8 @@ include/gambit/Models/models/extraCMSSM.hpp
 include/gambit/Models/models/demo.hpp
 include/gambit/Models/models/SingletDM.hpp
 include/gambit/Models/models/StandardModel_Higgs.hpp
+include/gambit/Models/models/MSSM11atQ.hpp
+include/gambit/Models/models/MSSM19atQ.hpp
 )
 
 add_gambit_library(Models OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
