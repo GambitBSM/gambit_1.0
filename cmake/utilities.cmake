@@ -178,7 +178,7 @@ function(add_gambit_custom target filename HARVESTER HARVESTER_FILES OTHER_DEPS)
 endfunction()
 
 # Function to remove specific GAMBIT scratch files
-function(remove_scratch_files FILENAMES)
+function(remove_scratch_files)
   foreach (f ${ARGN})
     if (EXISTS "${PROJECT_SOURCE_DIR}/scratch/${f}")
       file(REMOVE "${PROJECT_SOURCE_DIR}/scratch/${f}")
