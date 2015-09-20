@@ -121,3 +121,21 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
     add_definitions(-DSTANDALONE=1)
   endif()
 endif()
+
+# Add the DarkBit_standalone executable
+if(EXISTS "${PROJECT_SOURCE_DIR}/DarkBit/" AND ";${GAMBIT_BITS};" MATCHES ";DarkBit;")
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    set(DarkBit_XTRA ${flexiblesusy_LDFLAGS})
+  endif()
+  set(DarkBit_XTRA ${gambit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  add_gambit_executable(DarkBit_standalone "${DarkBit_XTRA}"
+                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_example.cpp
+                                ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
+                                $<TARGET_OBJECTS:DarkBit>
+                                ${GAMBIT_ALL_COMMON_OBJECTS}
+  )
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    add_dependencies(DarkBit_standalone flexiblesusy)
+  endif()
+  add_dependencies(DarkBit_standalone delphes)
+endif()

@@ -461,7 +461,7 @@ START_MODULE
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(DarkBit::DD_couplings)
       DEPENDENCY(SingletDM_spectrum, const Spectrum*)
-      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
+      //DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
      #undef FUNCTION
   #undef CAPABILITY
