@@ -18,7 +18,7 @@
 #define __MSSM7atQ_hpp__
 
 // Parent model must be declared first! Include it here to ensure that this happens.
-#include "gambit/Models/models/MSSM11atQ.hpp" 
+#include "gambit/Models/models/MSSM9atQ.hpp" 
 
 #define MODEL MSSM7atQ
 #define PARENT MSSM9atQ
