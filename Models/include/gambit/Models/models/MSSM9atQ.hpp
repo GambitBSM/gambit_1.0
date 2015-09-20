@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  MSSM19atQ ('pMSSM') model definition. 
+///  MSSM9atQ model definition. 
 ///
 ///  *********************************************
 ///
@@ -14,38 +14,28 @@
 ///
 ///  *********************************************
 
-#ifndef __MSSM19atQ_hpp__
-#define __MSSM19atQ_hpp__
+#ifndef __MSSM9atQ_hpp__
+#define __MSSM9atQ_hpp__
 
 // Parent and friend models must be declared first! Include them here to ensure that this happens.
-#include "gambit/Models/models/MSSM24atQ.hpp"
-#include "gambit/Models/models/MSSM20atQ.hpp"
+#include "gambit/Models/models/MSSM10atQ.hpp" 
+#include "gambit/Models/models/MSSM10batQ.hpp" 
 
-#define MODEL MSSM19atQ
-#define PARENT MSSM24atQ
+#define MODEL MSSM9atQ
+#define PARENT MSSM10atQ
   START_MODEL
 
   DEFINEPARS(Qin,TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
 
-  DEFINEPARS(mq2_12, mq2_3)
+  DEFINEPARS(mf2)
  
-  DEFINEPARS(ml2_12, ml2_3)
-
-  DEFINEPARS(md2_12, md2_3)
-
-  DEFINEPARS(mu2_12, mu2_3)
-
-  DEFINEPARS(me2_12, me2_3)
-
-  DEFINEPARS(Ae_3)
-  
   DEFINEPARS(Ad_3)
 
   DEFINEPARS(Au_3)
 
-  INTERPRET_AS_PARENT__FUNCTION(MSSM19atQ_to_MSSM24atQ)
-  INTERPRET_AS_X__FUNCTION(MSSM20atQ, MSSM19atQ_to_MSSM20atQ)
+  INTERPRET_AS_PARENT__FUNCTION(MSSM9atQ_to_MSSM10atQ)
+  INTERPRET_AS_X__FUNCTION(MSSM10batQ, MSSM9atQ_to_MSSM10batQ)
 
 #undef PARENT
 #undef MODEL

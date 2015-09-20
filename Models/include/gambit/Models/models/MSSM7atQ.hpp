@@ -21,7 +21,7 @@
 #include "gambit/Models/models/MSSM11atQ.hpp" 
 
 #define MODEL MSSM7atQ
-#define PARENT MSSM11atQ
+#define PARENT MSSM9atQ
   START_MODEL
 
   DEFINEPARS(Qin,TanBeta,SignMu,
@@ -33,7 +33,7 @@
 
   DEFINEPARS(Au_3)
 
-  INTERPRET_AS_PARENT__FUNCTION(MSSM7atQ_to_MSSM11atQ)
+  INTERPRET_AS_PARENT__FUNCTION(MSSM7atQ_to_MSSM9atQ)
 
 #undef PARENT
 #undef MODEL

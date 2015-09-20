@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  MSSM7atQ translation function definitions. 
+///  MSSM10batQ translation function definitions. 
 ///
 ///  *********************************************
 ///
@@ -18,30 +18,30 @@
 #include "gambit/Models/model_helpers.hpp"
 #include "gambit/Logs/log.hpp"
 
-#include "gambit/Models/models/MSSM7atQ.hpp"
+#include "gambit/Models/models/MSSM10batQ.hpp"
 
 
 // Activate debug output
-//#define MSSM7atQ_DBUG
+//#define MSSM10batQ_DBUG
 
-#define MODEL MSSM7atQ
+#define MODEL MSSM10batQ
 
-  void MODEL_NAMESPACE::MSSM7atQ_to_MSSM9atQ (const ModelParameters &myP, ModelParameters &targetP)
+  void MODEL_NAMESPACE::MSSM10batQ_to_MSSM11atQ (const ModelParameters &myP, ModelParameters &targetP)
   {
-     logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> MSSM9atQ."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> MSSM11atQ."<<LogTags::info<<EOM;
 
      // Send all parameter values upstream to matching parameters in parent.
      // Ignore that some parameters don't exist in the parent, as these are set below.
      targetP.setValues(myP,false);
 
-     // Gaugino masses
-     targetP.setValue("M1", myP["M2"]); //FIXME *5/3 sin2thew / (1-sin2thew)
-     targetP.setValue("M3", myP["M2"]); //FIXME *alpha_s/alpha sin2thew
-
+     // Sfermion mass matrix entries.
+     targetP.setValue("mq2", myP["mf2"]);
+     targetP.setValue("ml2", myP["mf2"]);
+     
      // Done
-     #ifdef MSSM7atQ_DBUG
+     #ifdef MSSM10batQ_DBUG
        std::cout << STRINGIFY(MODEL) " parameters:" << myP << std::endl;
-       std::cout << "MSSM9atQ parameters:" << targetP << std::endl;
+       std::cout << "MSSM11atQ parameters:" << targetP << std::endl;
      #endif
   }
   

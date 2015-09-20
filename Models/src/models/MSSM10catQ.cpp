@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  MSSM7atQ translation function definitions. 
+///  MSSM10catQ translation function definitions. 
 ///
 ///  *********************************************
 ///
@@ -18,30 +18,33 @@
 #include "gambit/Models/model_helpers.hpp"
 #include "gambit/Logs/log.hpp"
 
-#include "gambit/Models/models/MSSM7atQ.hpp"
+#include "gambit/Models/models/MSSM10catQ.hpp"
 
 
 // Activate debug output
-//#define MSSM7atQ_DBUG
+//#define MSSM10catQ_DBUG
 
-#define MODEL MSSM7atQ
+#define MODEL MSSM10catQ
 
-  void MODEL_NAMESPACE::MSSM7atQ_to_MSSM9atQ (const ModelParameters &myP, ModelParameters &targetP)
+  void MODEL_NAMESPACE::MSSM10catQ_to_MSSM15atQ (const ModelParameters &myP, ModelParameters &targetP)
   {
-     logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> MSSM9atQ."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for " STRINGIFY(MODEL) " --> MSSM15atQ."<<LogTags::info<<EOM;
 
      // Send all parameter values upstream to matching parameters in parent.
      // Ignore that some parameters don't exist in the parent, as these are set below.
      targetP.setValues(myP,false);
 
-     // Gaugino masses
-     targetP.setValue("M1", myP["M2"]); //FIXME *5/3 sin2thew / (1-sin2thew)
-     targetP.setValue("M3", myP["M2"]); //FIXME *alpha_s/alpha sin2thew
+     // Sfermion masses
+     set_many_to_one(targetP, initVector<str>("mu2_3", "md2_3"), myP["mq2_3"]);
+     set_many_to_one(targetP, initVector<str>("ml2_12", "ml2_3", "me2_3"), myP["ml2"]);
 
+     // 3rd gen up-type trilinear coupling.
+     targetP.setValue("At", myP["A0"]);
+     
      // Done
-     #ifdef MSSM7atQ_DBUG
+     #ifdef MSSM15atQ_DBUG
        std::cout << STRINGIFY(MODEL) " parameters:" << myP << std::endl;
-       std::cout << "MSSM9atQ parameters:" << targetP << std::endl;
+       std::cout << "MSSM15atQ parameters:" << targetP << std::endl;
      #endif
   }
   

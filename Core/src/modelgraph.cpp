@@ -31,6 +31,7 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_types.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
@@ -117,16 +118,18 @@ namespace Gambit
 #ifdef HAVE_GRAPHVIZ
       // Property writer for graph; see http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/write-graphviz.html
       // Also for valid properties see http://www.graphviz.org/pdf/dotguide.pdf
-      struct graphWriter{
-          void operator()(std::ostream& out) const {
-            out << "rankdir = LR;"    << std::endl; // Turn graph orientation left to right.
-            out << "edge [dir=back];" << std::endl; // Reverse all the arrows
-          }
-        };
- 
+      struct graphWriter
+      {
+        void operator()(std::ostream& out) const
+        {
+          out << "rankdir = LR;"    << std::endl; // Turn graph orientation left to right.
+          out << "edge [dir=back];" << std::endl; // Reverse all the arrows
+        }
+      };
       // Generate graphviz plot
       std::ofstream outf(filename);
       // args: output stream, vertex list, vertex property writer (PW), edge PW, graph PW. 
+      cout << "about to write graphviz to " << filename << endl;
       write_graphviz(outf, modelGraph, labelWriter(&modelGraph), colorWriter(&modelGraph), graphWriter()); 
 #endif
     }

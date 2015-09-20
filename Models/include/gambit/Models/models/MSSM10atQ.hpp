@@ -2,9 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  MSSM15atQ model definition. 
-///  This model matches the one explored in 
-///  arXiv:1405.0622.
+///  MSSM10atQ model definition. 
 ///
 ///  *********************************************
 ///
@@ -16,26 +14,28 @@
 ///
 ///  *********************************************
 
-#ifndef __MSSM15atQ_hpp__
-#define __MSSM15atQ_hpp__
+#ifndef __MSSM10atQ_hpp__
+#define __MSSM10atQ_hpp__
 
 // Parent model must be declared first! Include it here to ensure that this happens.
-#include "gambit/Models/models/MSSM16atQ.hpp" 
+#include "gambit/Models/models/MSSM11atQ.hpp" 
 
-#define MODEL MSSM15atQ
-#define PARENT MSSM16atQ
+#define MODEL MSSM10atQ
+#define PARENT MSSM11atQ
   START_MODEL
 
   DEFINEPARS(Qin,TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
 
-  DEFINEPARS(mq2_12, mq2_3, mu2_3, md2_3)
+  DEFINEPARS(mq2)
  
-  DEFINEPARS(ml2_12, ml2_3, me2_3)
+  DEFINEPARS(ml2)
 
-  DEFINEPARS(A0, At)
+  DEFINEPARS(Ad_3)
 
-  INTERPRET_AS_PARENT__FUNCTION(MSSM15atQ_to_MSSM16atQ)
+  DEFINEPARS(Au_3)
+
+  INTERPRET_AS_PARENT__FUNCTION(MSSM10atQ_to_MSSM11atQ)
 
 #undef PARENT
 #undef MODEL
