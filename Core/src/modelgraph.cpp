@@ -129,7 +129,6 @@ namespace Gambit
       // Generate graphviz plot
       std::ofstream outf(filename);
       // args: output stream, vertex list, vertex property writer (PW), edge PW, graph PW. 
-      cout << "about to write graphviz to " << filename << endl;
       write_graphviz(outf, modelGraph, labelWriter(&modelGraph), colorWriter(&modelGraph), graphWriter()); 
 #endif
     }
