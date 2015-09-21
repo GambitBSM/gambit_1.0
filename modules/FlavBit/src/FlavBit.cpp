@@ -990,7 +990,7 @@ namespace Gambit
       double Fl=obs[2];
       result.AFB=obs[1];
 
-      result.S3=obs[4]; // THIS FOR SURE IS WRONG!!!! send email to Nazila 12 August.
+      result.S3=obs[5]*(1.-Fl)/2.; // THIS FOR SURE IS WRONG!!!! send email to Nazila 12 August.
       result.S4=obs[17]*sqrt(Fl*(1.-Fl));
       result.S5=obs[18]*sqrt(Fl*(1.-Fl));
       result.S7=obs[19]*sqrt(Fl*(1.-Fl));

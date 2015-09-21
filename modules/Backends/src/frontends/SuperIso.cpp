@@ -35,7 +35,7 @@ BE_NAMESPACE
 {
   #define Nobs_BKsll 21
 
-  FlavBit::Flav_KstarMuMu_obs SI_BRBKstarmumu_hack(struct parameters param, double Q2_min, double Q2_max)
+  FlavBit::Flav_KstarMuMu_obs SI_BRBKstarmumu_CONV(struct parameters param, double Q2_min, double Q2_max)
   {
     assert( abs(Q2_max-Q2_min)>0.01   ); // it's not safe to have so small bins, propably you fucked up
 
@@ -56,9 +56,28 @@ BE_NAMESPACE
     CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
     Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
     double BR = BRBKstarmumu(byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-    
+
+
+    // filling results
     FlavBit::Flav_KstarMuMu_obs results;
+    results.q2_min=Q2_min;
+    results.q2_max=Q2_max;      
     
+    results.FL=obs[2];                                                                  
+    double Fl=obs[2];                                                                  
+    results.AFB=obs[1];                                                                 
+                                                                                    
+    results.S3=obs[5]*(1.-Fl)/2.; // this is ok
+    results.S4=obs[17]*sqrt(Fl*(1.-Fl))/(2.);                                                 
+    results.S5=obs[18]*sqrt(Fl*(1.-Fl));                                                
+    results.S7=(-1.)*obs[19]*sqrt(Fl*(1.-Fl));                                                
+    results.S8=obs[21]*sqrt(Fl*(1.-Fl))/(2.);                                                
+    results.S9=(-1.)*obs[15]*(1.-Fl); // this is ok                                                  
+
+    
+    
+
+
     return results;
   }
 
