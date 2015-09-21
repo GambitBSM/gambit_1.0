@@ -15,6 +15,8 @@
 ///
 ///  *********************************************
 
+
+
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -28,7 +30,7 @@ LOAD_LIBRARY
 // Can't do anything non-MSSM with SuperIso
 BE_ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
 
-BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
+//BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
 BE_FUNCTION(slha_adjust, void, (struct parameters*), "slha_adjust", "slha_adjust")
 
 BE_FUNCTION(CW_calculator, void, (double*, double*, double*, double, struct parameters*), "CW_calculator", "CW_calculator")
@@ -60,15 +62,18 @@ BE_FUNCTION(BRBXstautau_highq2, double, (double*, double*, double*, std::complex
 BE_FUNCTION(A_BXstautau_highq2, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "A_BXstautau_highq2", "A_BXstautau_highq2")
 BE_FUNCTION(BRBKstarmumu, double, (double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "BRBKstarmumu", "BRBKstarmumu")
 
-BE_CONV_FUNCTION(SI_BRBKstarmumu_hack, void, (struct parameters, double, double), "SI_BRBKstarmumu_hack_dunno")
-
 
 BE_FUNCTION(AI_BKstarmumu, double, (double, double, double*, double*, double*, struct parameters*, double), "AI_BKstarmumu", "AI_BKstarmumu")
 BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, struct parameters*, double), "AI_BKstarmumu_zero", "AI_BKstarmumu_zero")
 
-BE_INI_FUNCTION{}
-END_BE_INI_FUNCTION
+
+BE_CONV_FUNCTION(SI_BRBKstarmumu_hack, FlavBit::Flav_KstarMuMu_obs, (struct parameters, double, double), "SI_BRBKstarmumu_hack_dunno")    
+
+// moved to SuperIso.cpp
+//BE_INI_FUNCTION{}
+//END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
+
 

@@ -108,23 +108,6 @@ namespace Gambit
   
     };                               
     
-    struct Flav_KstarMuMu_obs 
-    {
-      double BR;
-      double AFB;
-      double FL;
-      double S3;
-      double S4;
-      double S5;
-      double S7;
-      double S8;
-      double S9;
-      double q2_min;
-      double q2_max;
-
-    };
-    
-    
 
     
     

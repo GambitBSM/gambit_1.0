@@ -35,6 +35,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
 #include "gambit/FlavBit/FlavBit_types.hpp"
+#include "gambit/Backends/backend_types/SuperIso.hpp"
 #include "SLHAea/slhaea.h"
 #include "gambit/Elements/spectrum.hpp"
 #include "gambit/FlavBit/flav_obs.hpp"
