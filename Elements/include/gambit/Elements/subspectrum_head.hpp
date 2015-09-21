@@ -233,6 +233,33 @@ namespace Gambit
          /// somewhat dangerous to allow this but may be needed
          virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
          
+         /// Add simple symmetric uncertainty data to a vector of parameters
+         /// 'Phys' tag only. Could easily add equivalent for 'Running', but
+         /// these uncertainties probably don't make sense for them.
+         /// (uncertainities are input as fractional values, or 'relative deviation')
+         /// Various "helper" overloads are included, for dealing with special case of
+         /// single parameter/index input, and separate high/low uncertainties.
+
+         void add_uncertainty     (double rd, Par::Phys tag, std::vector<str>& params);
+         void add_uncertainty_high(double rd, Par::Phys tag, std::vector<str>& params);
+         void add_uncertainty_low (double rd, Par::Phys tag, std::vector<str>& params);
+         void add_uncertainty     (double rd, Par::Phys tag, str& par);
+         void add_uncertainty_high(double rd, Par::Phys tag, str& par);
+         void add_uncertainty_low (double rd, Par::Phys tag, str& par);
+
+         void add_uncertainty     (double rd, Par::Phys tag, std::vector<str>& params, std::vector<int> indices);
+         void add_uncertainty_high(double rd, Par::Phys tag, std::vector<str>& params, std::vector<int> indices);
+         void add_uncertainty_low (double rd, Par::Phys tag, std::vector<str>& params, std::vector<int> indices);
+         void add_uncertainty     (double rd, Par::Phys tag, std::vector<str>& params, int i);
+         void add_uncertainty_high(double rd, Par::Phys tag, std::vector<str>& params, int i);
+         void add_uncertainty_low (double rd, Par::Phys tag, std::vector<str>& params, int i);
+         void add_uncertainty     (double rd, Par::Phys tag, str& par, std::vector<int> indices);
+         void add_uncertainty_high(double rd, Par::Phys tag, str& par, std::vector<int> indices);
+         void add_uncertainty_low (double rd, Par::Phys tag, str& par, std::vector<int> indices);
+         void add_uncertainty     (double rd, Par::Phys tag, str& par, int i);
+         void add_uncertainty_high(double rd, Par::Phys tag, str& par, int i);
+         void add_uncertainty_low (double rd, Par::Phys tag, str& par, int i);
+
    };
    
   

@@ -191,68 +191,37 @@ namespace Gambit
       
       /// add theory errors
       MSSM_strs ms;
-     
-      typedef std::vector<str>::iterator iter;
-      for(iter it = ms.pole_mass_pred.begin();
-	  it != ms.pole_mass_pred.end(); ++it)
-	{
-	  str low =  "rd_m" + *it + "_low";
-	  str high = "rd_m" + *it + "_high";
-	  mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, false);
-	  mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high,false);
-	}
+ 
+      static const int i12v[] = {1,2};
+      static const std::vector<int> i12(i12v, Utils::endA(i12v));
+      static const int i123v[] = {1,2,3};
+      static const std::vector<int> i123(i123v, Utils::endA(i123v));
+      static const int i1234v[] = {1,2,3,4};
+      static const std::vector<int> i1234(i1234v, Utils::endA(i1234v));
+      static const int i123456v[] = {1,2,3,4,5,6};
+      static const std::vector<int> i123456(i123456v, Utils::endA(i123456v));
 
-      for(iter it = ms.pole_mass_strs_1_6.begin();
-	  it != ms.pole_mass_strs_1_6.end(); ++it)
-	{
-	  for(int i = 1; i <=6; i++){
-	    str low =  "rd_m" + *it + "_low";
-	    str high = "rd_m" + *it + "_high";
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
-	  }
-	}
-
-
-      
-      for(int i = 1; i <=4; i++){
-	    str low =  "rd_mchi0_low";
-	    str high = "rd_mchi0_high";
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
-	  }
-      
-
-      for(iter it = ms.pole_mass_strs_1_3.begin();
-	  it != ms.pole_mass_strs_1_3.end(); ++it)
-	{
-	  for(int i = 1; i <=3; i++){
-	    str low =  "rd_m" + *it  + "_low";
-	    str high = "rd_m" + *it  + "_high";
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
-	  }
-	}
-      
-      for(iter it = ms.pole_mass_strs_1_2.begin();
-	  it != ms.pole_mass_strs_1_2.end(); ++it)
-	{
-	  for(int i = 1; i <=2; i++){
-	    str low =  "rd_m" + *it + "_low";
-	    str high = "rd_m" + *it + "_high";
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, low, i, false);
-	    mssmspec.phys().set_override(Par::Pole_Mass, 0.03, high, i, false);
-	  }
-	}
-
+      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_pred, 0.03); // 3% theory "error" 
+      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_6, i123456);
+      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, "chi0", i1234);
+      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_3, i123);
+      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_2, i12);
+    
       /// do the Higgs mass seperately
       /// Default in most codes is 3 GeV,
       /// seems like an underestimate if the stop masses are heavy enough.  
-      double rd_mh_low = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      double rd_mh_high =  3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-     
-      mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_low,"rd_mh0_low", 1, false);
-      mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_high,"rd_mh0_high",1, false);
+      double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
+      mssmspec.add_uncertainty(rd_mh, Par::Pole_Mass, "mh0", i1234);
+ 
+      // For different high and low errors:
+      // mssmspec.add_uncertainty_high(rd_mh_low, Par::Pole_Mass, "mh0", i1234);
+      // mssmspec.add_uncertainty_low(rd_mh_high, Par::Pole_Mass, "mh0", i1234);
+
+      // Or could do it manually 
+      //double rd_mh_low = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
+      //double rd_mh_high =  3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
+      //mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_low,"rd_h0_low", 1, false);
+      //mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_high,"rd_h0_high",1, false);
      
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
