@@ -146,6 +146,7 @@ START_MODULE
 
   #define CAPABILITY RD_oh2
   START_CAPABILITY 
+
     #define FUNCTION RD_oh2_general
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
@@ -176,7 +177,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      ALLOW_MODELS(MSSM25atQ, SingletDM)  // TODO: (CW) Check for which models this works
+      //ALLOW_MODELS(MSSM25atQ, SingletDM)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(oh2, (), double, (double*,int,double))
     #undef FUNCTION
   #undef CAPABILITY
