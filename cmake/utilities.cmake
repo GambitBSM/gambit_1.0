@@ -89,6 +89,20 @@ macro(retrieve_bits bits root excludes quiet)
 
 endmacro()
 
+# Macro to clear the build stamp manually for an external project
+macro(enable_auto_rebuild package)
+  set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-build")
+  add_custom_target(check-rebuild-${package} ${CMAKE_COMMAND} -E remove -f ${rmstring}) 
+  add_dependencies(${package} check-rebuild-${package})
+endmacro()
+
+# Macro to write some shell commands to clean an external code
+macro(add_external_clean package dir target)
+  set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
+  add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install
+                                     COMMAND cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
+endmacro()
+
 # Function to add GAMBIT directory if and only if it exists
 function(add_subdirectory_if_present dir)
   if(EXISTS "${PROJECT_SOURCE_DIR}/${dir}")
@@ -151,23 +165,23 @@ endmacro()
 
 # Function to add a GAMBIT custom command and target
 function(add_gambit_custom target filename HARVESTER HARVESTER_FILES OTHER_DEPS) 
-  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/scratch/${filename}
+  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${filename}
                      COMMAND python ${HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                     COMMAND touch ${PROJECT_SOURCE_DIR}/scratch/${filename}
+                     COMMAND touch ${CMAKE_BINARY_DIR}/${filename}
                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                      DEPENDS ${HARVESTER}
                              ${HARVEST_TOOLS}
                              ${HARVESTER_FILES}
                              ${PROJECT_BINARY_DIR}/CMakeCache.txt
                              ${OTHER_DEPS})
-  add_custom_target(${target} DEPENDS ${PROJECT_SOURCE_DIR}/scratch/${filename})
+  add_custom_target(${target} DEPENDS ${CMAKE_BINARY_DIR}/${filename})
 endfunction()
 
-# Function to remove specific GAMBIT scratch files
-function(remove_scratch_files FILENAMES)
+# Function to remove specific GAMBIT build files
+function(remove_build_files)
   foreach (f ${ARGN})
-    if (EXISTS "${PROJECT_SOURCE_DIR}/scratch/${f}")
-      file(REMOVE "${PROJECT_SOURCE_DIR}/scratch/${f}")
+    if (EXISTS "${CMAKE_BINARY_DIR}/${f}")
+      file(REMOVE "${CMAKE_BINARY_DIR}/${f}")
     endif()
   endforeach()
 endfunction()
