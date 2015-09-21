@@ -59,6 +59,10 @@ BE_FUNCTION(A_BXsmumu_zero, double, (double*, double*, double*, std::complex<dou
 BE_FUNCTION(BRBXstautau_highq2, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "BRBXstautau_highq2", "BRBXstautau_highq2")
 BE_FUNCTION(A_BXstautau_highq2, double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "A_BXstautau_highq2", "A_BXstautau_highq2")
 BE_FUNCTION(BRBKstarmumu, double, (double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double), "BRBKstarmumu", "BRBKstarmumu")
+
+BE_CONV_FUNCTION(SI_BRBKstarmumu_hack, void, (struct parameters, double, double), "SI_BRBKstarmumu_hack_dunno")
+
+
 BE_FUNCTION(AI_BKstarmumu, double, (double, double, double*, double*, double*, struct parameters*, double), "AI_BKstarmumu", "AI_BKstarmumu")
 BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, struct parameters*, double), "AI_BKstarmumu_zero", "AI_BKstarmumu_zero")
 

@@ -425,7 +425,7 @@ START_MODULE
   #undef CAPABILITY
 
 
-
+// complicated likelihoods
  #define CAPABILITY b2sll_M                                      
  START_CAPABILITY                                                
    #define FUNCTION b2sll_measurements                           
@@ -441,10 +441,10 @@ START_MODULE
     #define FUNCTION b2sll_likelihood                                      
     START_FUNCTION(double)                                                 
           DEPENDENCY(FlavBit_fill, parameters)
-
+          DEPENDENCY(b2sll_M, parameters)
     #undef FUNCTION                                                        
   #undef CAPABILITY                                                        
-
+//#################################################
   #define CAPABILITY b2ll_LL                      
   START_CAPABILITY                                 
     #define FUNCTION b2ll_likelihood              

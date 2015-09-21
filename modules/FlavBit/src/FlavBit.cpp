@@ -907,7 +907,7 @@ namespace Gambit
     }
 
      // *************************************************
-
+    // This function has to be BE_CONV_FUNCTION
     void SI_BRBKstarmumu( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu;
