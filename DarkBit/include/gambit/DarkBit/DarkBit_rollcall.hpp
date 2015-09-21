@@ -74,7 +74,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*) 
-      ALLOW_MODELS(CMSSM,MSSM25atQ)
+      ALLOW_MODELS(CMSSM,MSSM30atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
       BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
@@ -169,7 +169,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      //ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
+      //ALLOW_MODELS(MSSM30atQ)  // TODO: (CW) Check for which models this works
       DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
@@ -177,7 +177,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      //ALLOW_MODELS(MSSM25atQ, SingletDM)  // TODO: (CW) Check for which models this works
+      //ALLOW_MODELS(MSSM30atQ, SingletDM)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(oh2, (), double, (double*,int,double))
     #undef FUNCTION
   #undef CAPABILITY
@@ -347,7 +347,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_MSSM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
-      //ALLOW_MODELS(CMSSM, MSSM25atQ)
+      //ALLOW_MODELS(CMSSM, MSSM30atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*)      
       DEPENDENCY(DarkMatter_ID, std::string)
@@ -1267,9 +1267,9 @@ START_MODULE
     START_FUNCTION(std::string)
     ALLOW_MODELS(SingletDM)
     #undef FUNCTION
-    #define FUNCTION DarkMatter_ID_MSSM25atQ
+    #define FUNCTION DarkMatter_ID_MSSM30atQ
     START_FUNCTION(std::string)
-    ALLOW_MODELS(MSSM25atQ, CMSSM)
+    ALLOW_MODELS(MSSM30atQ, CMSSM)
     #undef FUNCTION
   #undef CAPABILITY
 
