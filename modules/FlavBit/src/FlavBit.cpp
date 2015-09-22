@@ -36,6 +36,7 @@
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
 #include "gambit/FlavBit/FlavBit_types.hpp"
 #include "gambit/Backends/backend_types/SuperIso.hpp"
+
 #include "SLHAea/slhaea.h"
 #include "gambit/Elements/spectrum.hpp"
 #include "gambit/FlavBit/flav_obs.hpp"
@@ -911,6 +912,13 @@ namespace Gambit
     // This function has to be BE_CONV_FUNCTION
     void SI_BRBKstarmumu( Flav_KstarMuMu_obs &result)
     {
+      using namespace Pipes::SI_BRBKstarmumu; 
+      struct parameters param = *Dep::FlavBit_fill;
+
+      result=SI_BRBKstarmumu_CONV(param, 1.1,2.5);
+
+
+      /*
       using namespace Pipes::SI_BRBKstarmumu;
       cout<<"Calculating the B-> K*mumu observables!"<<endl;
 
@@ -996,9 +1004,10 @@ namespace Gambit
       result.S7=obs[19]*sqrt(Fl*(1.-Fl));
       result.S8=obs[21]*sqrt(Fl*(1.-Fl));
       result.S9=(-1.)*obs[15]*(1.-Fl);
-
+      
 
       }
+      */
     }
 
     // *************************************************
