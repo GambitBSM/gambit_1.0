@@ -362,9 +362,9 @@ START_MODULE
   #define CAPABILITY BRBKstarmumu
   START_CAPABILITY
     #define FUNCTION SI_BRBKstarmumu 
-    START_FUNCTION(FlavBit::Flav_KstarMuMu_obs)
+    START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(FlavBit_fill, parameters)
-    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters, double, double))
+BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
 /*
     BACKEND_REQ(BRBKstarmumu, (libsuperiso), double, (double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
     BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))

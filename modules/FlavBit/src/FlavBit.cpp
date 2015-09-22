@@ -35,7 +35,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
 #include "gambit/FlavBit/FlavBit_types.hpp"
-#include "gambit/Backends/backend_types/SuperIso.hpp"
+//#include "gambit/Backends/backend_types/SuperIso.hpp"
 
 #include "SLHAea/slhaea.h"
 #include "gambit/Elements/spectrum.hpp"
@@ -915,8 +915,10 @@ namespace Gambit
       using namespace Pipes::SI_BRBKstarmumu; 
       struct parameters param = *Dep::FlavBit_fill;
 
-      result=BEreq::SI_BRBKstarmumu_CONV(param, 1.1,2.5);
-
+      
+      double q2min=1.1;
+      double q2max=2.5;
+      result=BEreq::SI_BRBKstarmumu_CONV(&param, &q2min, &q2max );
 
       /*
       using namespace Pipes::SI_BRBKstarmumu;
