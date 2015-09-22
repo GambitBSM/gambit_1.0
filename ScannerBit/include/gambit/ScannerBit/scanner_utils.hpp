@@ -160,23 +160,6 @@ namespace Gambit
 #endif
                 }
                 
-                /*****************************************************/
-                /****** convert string to upper case function ********/
-                /*****************************************************/
-                
-                inline std::string stringToUpper(const std::string &s)
-                {
-                        std::string ret;
-                        ret.resize(s.size());
-                        
-                        for(unsigned int l = 0; l < s.length(); l++)
-                        {
-                                ret[l] = std::toupper(s[l]);
-                        }
-                        
-                        return ret;
-                }
-                
                 /*****************************/
                 /****** func_ptr_type ********/
                 /*****************************/
@@ -532,6 +515,62 @@ namespace Gambit
                 operator << (std::ostream &out, const T &in)
                 {
                         return out << "{" << in.first << " : " << in.second << "}";
+                }
+                
+                /********************************/
+                /****** Output Functions ********/
+                /********************************/
+                
+                template<typename T>
+                inline typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, void>::type
+                resume_file_output(std::ofstream &out, T &param)
+                {
+                        out.write(reinterpret_cast<char *>(&param), sizeof(T));
+                        //out << param << std::endl;
+                };
+                
+                template <typename T>
+                inline typename std::enable_if <is_container<T>::value, void>::type
+                resume_file_output (std::ofstream &out, T &param)
+                {
+                        for (auto it = param.begin(), end = param.end(); it != end; it++)
+                        {
+                                resume_file_output(out, *it);
+                        }
+                }
+                
+                template <typename T>
+                inline typename std::enable_if <is_pair<T>::value, void>::type
+                resume_file_output (std::ofstream &out, T &param)
+                {
+                        resume_file_output(out, param.first);
+                        resume_file_output(out, param.second);
+                }
+                
+                template<typename T>
+                typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, void>::type
+                resume_file_input(std::ifstream &in, T &param)
+                {
+                        in.read(reinterpret_cast<char *>(&param), sizeof(T));
+                        //in >> param;
+                };
+                
+                template <typename T>
+                inline typename std::enable_if <is_container<T>::value, void>::type
+                resume_file_input (std::ifstream &in, T &param)
+                {
+                        for (auto it = param.begin(), end = param.end(); it != end; it++)
+                        {
+                                resume_file_input(in, *it);
+                        }
+                }
+                
+                template <typename T>
+                inline typename std::enable_if <is_pair<T>::value, void>::type
+                resume_file_input (std::ifstream &in, T &param)
+                {
+                        resume_file_input(in, param.first);
+                        resume_file_input(in, param.second);
                 }
         }
 }

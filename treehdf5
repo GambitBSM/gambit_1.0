@@ -50,12 +50,14 @@ space='    '
 
 def islast(item,iterator):
     """Check if an item is the last one in an iterator"""
+    i = [None,None]
     for i in iterator:
         pass    #go through the iterator to the end
     return item==i 
 
 def lastitem(iterator):
     """Check if an item is the last one in an iterator"""
+    i = [None,None]
     for i in iterator:
         pass    #go through the iterator to the end
     return i
@@ -94,9 +96,52 @@ def printcontents(item,prelines):
 
 printcontents(f,'')
                                         
-quit()
+#quit()
 
 ##  #test extraction of data from dataset
+
+import numpy as np
+def preview(name,D,Dv_in):
+   print "preview: ",name
+   Dv = np.array(Dv_in,dtype=np.bool)
+   print D[:50], D[-50:]
+   print Dv[:50], Dv[-50:]
+   print np.sum(Dv)
+   print D[Dv]
+ 
+
+dset1=f['test/test2/#normaldist_loglike @ExampleBit_A::normaldist_loglike']
+dset2=f['test/test2/#normaldist_loglike @ExampleBit_A::normaldist_loglike_isvalid']
+preview("normaldist_loglike",dset1,dset2)
+
+dset1=f['test/test2/Likelihood']
+dset2=f['test/test2/Likelihood_isvalid']
+preview("Likelihood",dset1,dset2)      
+
+dset1=f['test/test2/Posterior']
+dset2=f['test/test2/Posterior_isvalid']
+preview("Posterior",dset1,dset2)
+
+pid=f['test/test2/pointID']
+pidv=np.array(f['test/test2/pointID_isvalid'],dtype=np.bool)
+preview("pointID",pid,pidv)
+
+rank=f['test/test2/MPIrank']
+rankv=np.array(f['test/test2/MPIrank_isvalid'],dtype=np.bool)
+preview("MPIrank",rank,rankv)
+
+# Check for duplicates
+seen = []
+dup  = []
+for p,r in zip(pid[pidv],rank[rankv]):
+   if (p,r) not in seen:
+      seen+=[(p,r)]
+   else:
+      print "Duplicate detected! :", (p,r)
+      dup +=[(p,r)]
+
+
+
 ##  
 ##  #dset=f['prelep/CCR/mu+/txt']
 ##  #print dset[150000:150020,0:10]

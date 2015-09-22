@@ -18,6 +18,7 @@
 #include "mpi.h"
 #endif
 
+#include "plugin_interface.hpp"
 #include "scanner_plugin.hpp"
 #include "twalk.hpp"
 
@@ -35,14 +36,13 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                 numtasks = 1;
 #endif
                 
-                
                 Gambit::Options txt_options;
                 txt_options.setValue("synchronised",false);
                 txt_options.setValue("output_file", "output");
                 txt_options.setValue("info_file", "info");
                 get_printer().new_stream("txt", txt_options);
 
-                TWalk(LogLike, get_printer(),
+                TWalk(LogLike, get_printer(), set_resume_params,
                                 dim,
                                 get_inifile_value<double>("kwalk_ratio", 0.9836),
                                 get_inifile_value<int>("projection_dimension", 4),
@@ -53,13 +53,14 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                                 get_inifile_value<double>("tolerance", 1.001),
                                 get_inifile_value<int>("chain_number", 5 + numtasks),
                                 get_inifile_value<bool>("hyper_grid", true),
-                                get_inifile_value<int>("cut", 1000));
+                                get_inifile_value<int>("cut", 1000)
+                     );
                 
                 return 0;
         }
 }
 
-void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
+void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
 {
         std::vector<double> chisq(NThreads);
         std::vector<double> aNext(ma, 0.0);
@@ -82,7 +83,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         std::vector<int> ranks(NThreads);
         unsigned long long int next_id;
         double logZ, Ravg = 0.0;
-        
+        set_resume_params(mult, chisqnext);
 #ifdef WITH_MPI
         int rank;
         int numtasks;
@@ -95,12 +96,12 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
 #endif
         //Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
         //if (rank == 0)
-                //out_stream.reset();
+                //out_stream->reset();
         RandomPlane gDev(proj, ma, din, alim, alimt, rand);
-        Gambit::Scanner::assign_aux_numbers("LogLike", "id", "rank", "mult", "chain");
+        Gambit::Scanner::assign_aux_numbers("mult", "chain");
        
-        Gambit::Scanner::aux_printer_stream out_stream(printer.get_stream("txt"));
-        Gambit::Scanner::aux_printer_stream main_stream(printer.get_stream(""));
+        Gambit::Scanner::printer *out_stream = printer.get_stream("txt");
+        //Gambit::Scanner::printer *main_stream = printer.get_stream("");
         for (t = 0; t < NThreads; t++)
         {
                 if (rank == 0)
@@ -110,9 +111,6 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         chisq[t] = -LogLike(a0[t]);
                         ids[t] = LogLike->getPtID();
                         ranks[t] = rank;
-                        main_stream.print(-chisq[t], "LogLike", rank, ids[t]);
-                        main_stream.print(int(ids[t]), "id", rank, ids[t]);
-                        main_stream.print(rank, "rank", rank, ids[t]);
                 }
 #ifdef WITH_MPI
                 MPI_Barrier(MPI_COMM_WORLD);
@@ -234,14 +232,11 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         chisqnext = -LogLike(aNext);
                         ans = chisqnext - chisq[t] - logZ;
                         next_id = LogLike->getPtID();
-                        main_stream.print(-chisqnext, "LogLike", rank, next_id);
-                        main_stream.print(int(next_id), "id", rank, next_id);
-                        main_stream.print(rank, "rank", rank, next_id);
                         
                         if ((ans <= 0.0)||(gDev.ExpDev() >= ans))
                         {
-                                out_stream.print(mult[t], "mult", ranks[t], ids[t]);
-                                out_stream.print(t, "chain", ranks[t], ids[t]);
+                                out_stream->print(mult[t], "mult", ranks[t], ids[t]);
+                                out_stream->print(t, "chain", ranks[t], ids[t]);
                                 ids[t] = next_id;
                                 a0[t] = aNext;
                                 chisq[t] = chisqnext;
@@ -251,7 +246,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
                         }
                         else
                         {
-                                out_stream.print(-1, "chain", ranks[t], ids[t]);
+                                out_stream->print(-1, "chain", ranks[t], ids[t]);
                         }
                 }
 #ifdef WITH_MPI

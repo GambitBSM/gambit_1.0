@@ -72,6 +72,12 @@ def readlines_nocomments(f):
 def neatsplit(regex,string):
     return [x for x in re.split(regex,string) if x != '']
 
+# Check if a string matches the start of any entry in a set
+def excluded(string,st):
+    for x in st:
+        if string.startswith(x): return True
+    return False
+
 # Nice sorting function (from http://stackoverflow.com/a/2669120/1447953)
 def sorted_nicely( l ): 
     """ Sort the given iterable in the way that humans expect.""" 

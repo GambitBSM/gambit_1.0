@@ -50,6 +50,15 @@ namespace Gambit {
             /// flag to disable any writing (turns this into a null buffer)
             bool silenced;
 
+            /// flag to indicate that GAMBIT is attempting to resume a run, so we need to
+            /// hook into existing output streams rather than create new ones
+            bool resume; 
+
+            /// flag to indicate whether full buffers should be written to disk,
+            /// or whether they should be send to the master node via MPI.
+            /// Different printers can use different modes.
+            bool MPImode;
+
          protected:
             /// flag to indicate if the sync buffer is full (and ready for sending/dumping)
             bool sync_buffer_full = false;
@@ -58,22 +67,26 @@ namespace Gambit {
          public:
             VertexBufferBase()
               : label("None (Bug!)")
-              , vertexID()
-              , index()
-              , synchronised()
-              , silenced()
+              , vertexID(0)
+              , index(0)
+              , synchronised(true)
+              , silenced(false)
+              , resume(false)
+              , MPImode(false)
             {
               #ifdef HDF5_DEBUG
               std::cout<<"Default constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
               #endif
             }   
 
-            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil) 
+            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil, const bool r, const bool mode) 
               : label(l)
               , vertexID(vID)
               , index(i)
               , synchronised(sync)
               , silenced(sil)
+              , resume(r)
+              , MPImode(mode)
             {
               #ifdef HDF5_DEBUG
               std::cout<<"Constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
@@ -92,13 +105,28 @@ namespace Gambit {
             uint get_index()          { return index; }
             std::string get_label()   { return label; }
 
-            // Buffer status getters
+            /// @{ Buffer status getters
             bool sync_buffer_is_full(){ return sync_buffer_full; }
             bool sync_buffer_is_empty(){ return sync_buffer_empty; }
             bool is_synchronised()    { return synchronised; }
             bool is_silenced()        { return silenced; }
+            bool resume_mode()        { return resume; }
+            bool MPI_mode()           { return MPImode; }
             unsigned int get_head_position() { return head_position; }
+            /// @}
 
+            /// MPI mode error
+            /// Put in functions which should not run if MPImode=false
+            void MPImode_only(std::string local_info)
+            {
+               if(not MPImode)
+               {
+                  std::ostringstream errmsg;
+                  errmsg << "Error! Attempted to use forbidden function in buffer "<<this->get_label()<<". This function is flagged as usable only if MPImode=true, however currently it is the case that MPImode=false.";
+                  printer_error().raise(local_info, errmsg.str());           
+               }
+            }
+ 
             // Get the current head position in the output dataset  
             virtual unsigned long dset_head_pos() = 0;
 
@@ -113,6 +141,9 @@ namespace Gambit {
             // know where in the output datasets they are supposed to write.
             virtual void RA_flush(const std::map<PPIDpair, ulong>& PPID_to_dsetindex) = 0;
 
+            // Finalise writing to underlying output. Do not do any more writing after this!
+            virtual void finalise() = 0;
+   
             // For debugging purposes only
             virtual std::size_t postponed_RA_queue_length() = 0;
             virtual uint get_RA_queue_length() = 0;

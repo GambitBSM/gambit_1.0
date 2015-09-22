@@ -132,6 +132,10 @@ namespace Gambit
       /// Flags set by command line options
       /// Flag to trigger dependency resolver to report functor run order
       int show_runorder;
+
+      /// Flag to trigger "resume" mode
+      bool resume;
+
       /// Verbosity mode
       // Set 'true' by '--verbose'
       bool verbose_flag;

@@ -221,12 +221,16 @@ set(HARVEST_TOOLS ${PROJECT_SOURCE_DIR}/Utils/scripts/harvesting_tools.py)
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
 # model_types_rollcall.hpp, backend_rollcall.hpp, backend_types_rollcall.hpp, printer_rollcall.hpp
 # and the various standalone_functors.cpp.
-file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/models/*.hpp")
-file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
-file(GLOB PRINTER_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printers/*.hpp")
+file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/models/*.hpp"
+                                  "${PROJECT_SOURCE_DIR}/Models/CMakeLists.txt")
+file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp"
+                                  "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
+file(GLOB PRINTER_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printers/*.hpp"
+                                  "${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
                                   "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp"
-                                  "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
+                                  "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp"
+                                  "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
 foreach(bit ${GAMBIT_BITS})
@@ -235,7 +239,7 @@ foreach(bit ${GAMBIT_BITS})
     file(WRITE ${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp "#include \"gambit/Elements/functor_definitions.hpp\"")
   endif()
 endforeach()
-remove_scratch_files(models_harvested backends_harvested modules_harvested printers_harvested)
+remove_build_files(models_harvested backends_harvested modules_harvested printers_harvested)
 add_gambit_custom(model_harvest   models_harvested   ${MODEL_HARVESTER}   ${MODEL_HARVESTER_FILES})
 add_gambit_custom(backend_harvest backends_harvested ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
 add_gambit_custom(module_harvest  modules_harvested  ${MODULE_HARVESTER}  ${MODULE_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml)
@@ -243,8 +247,8 @@ add_gambit_custom(printer_harvest printers_harvested ${PRINTER_HARVESTER} ${PRIN
 add_dependencies(module_harvest backend_harvest)
 add_dependencies(printer_harvest module_harvest)
 
-# Generate the CMakeLists.txt files for GAMBIT modules (and backends, and printers)
-message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files.${ColourReset}")
+# Generate the CMakeLists.txt files for GAMBIT modules, Backends, Models and Printers)
+message("${Yellow}-- Updating GAMBIT module, model, backend, and printer CMake files.${ColourReset}")
 set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 check_result(${result} ${update_cmakelists})
