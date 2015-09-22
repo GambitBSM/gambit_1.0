@@ -35,7 +35,7 @@ BE_NAMESPACE
 {
   #define Nobs_BKsll 21
 
-  FlavBit::Flav_KstarMuMu_obs SI_BRBKstarmumu_CONV(struct parameters param, double Q2_min, double Q2_max)
+  Flav_KstarMuMu_obs SI_BRBKstarmumu_CONV(struct parameters param, double Q2_min, double Q2_max)
   {
     assert( abs(Q2_max-Q2_min)>0.01   ); // it's not safe to have so small bins, propably you fucked up
 
@@ -59,7 +59,7 @@ BE_NAMESPACE
 
 
     // filling results
-    FlavBit::Flav_KstarMuMu_obs results;
+    Flav_KstarMuMu_obs results;
     results.q2_min=Q2_min;
     results.q2_max=Q2_max;      
     

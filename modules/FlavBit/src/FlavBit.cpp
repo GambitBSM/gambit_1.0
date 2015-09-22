@@ -915,7 +915,7 @@ namespace Gambit
       using namespace Pipes::SI_BRBKstarmumu; 
       struct parameters param = *Dep::FlavBit_fill;
 
-      result=SI_BRBKstarmumu_CONV(param, 1.1,2.5);
+      result=BEreq::SI_BRBKstarmumu_CONV(param, 1.1,2.5);
 
 
       /*

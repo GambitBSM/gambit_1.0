@@ -90,10 +90,8 @@ namespace Gambit
  };
   // now the class that is needed for the hack for superiso
 
-  namespace FlavBit
-  {
-    struct Flav_KstarMuMu_obs
-    {                        
+  struct Flav_KstarMuMu_obs
+  {                        
       double BR;             
       double AFB;            
       double FL;             
@@ -107,7 +105,7 @@ namespace Gambit
       double q2_max;         
                          
     };    
-  }
+  
 }
 
 #endif /* defined __SuperIso_types_hpp__ */
