@@ -45,12 +45,7 @@ void scan_terminator()
 
 void sighandler(int sig)
 {
-    Gambit::Scanner::Plugins::plugin_info.dump();
-    if (printerInterface != NULL)
-        printerInterface->finalise();
-
-    std::cout << "ScannerBit has finished early!" << std::endl;
-    exit(sig);
+    Gambit::Scanner::Plugins::plugin_info.set_running(false);
 }
 
 void bail()
