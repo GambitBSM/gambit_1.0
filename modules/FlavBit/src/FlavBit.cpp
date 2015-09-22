@@ -918,7 +918,9 @@ namespace Gambit
       
       double q2min=1.1;
       double q2max=2.5;
-      result=BEreq::SI_BRBKstarmumu_CONV(param, q2min, q2max );
+      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+      
+
 
       /*
       using namespace Pipes::SI_BRBKstarmumu;

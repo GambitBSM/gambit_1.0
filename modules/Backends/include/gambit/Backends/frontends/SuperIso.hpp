@@ -67,7 +67,7 @@ BE_FUNCTION(AI_BKstarmumu, double, (double, double, double*, double*, double*, s
 BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, struct parameters*, double), "AI_BKstarmumu_zero", "AI_BKstarmumu_zero")
 
 
-BE_CONV_FUNCTION(SI_BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters, double, double), "SI_BRBKstarmumu_CONV")    
+BE_CONV_FUNCTION(SI_BRBKstarmumu_CONV, Flav_KstarMuMu_obs, (struct parameters*, double, double), "SI_BRBKstarmumu_CONV")    
 
 // moved to SuperIso.cpp
 //BE_INI_FUNCTION{}
