@@ -612,6 +612,14 @@ BE_NAMESPACE
       mssmpar->asoftu(i)=to<double>(mySLHA.at("TU").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqu(i));
       mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
     } 
+
+    mssmswitch->higwid = 1;  // FIXME: Update to latest Higgs width treatment in DS file
+    mssmtype->modeltype = 0;
+    dsvertx();
+    dshigwid();
+    dsspwid();
+    int u = 6;
+    dswspectrum(u);
     return 0;  // everything OK
   }
 

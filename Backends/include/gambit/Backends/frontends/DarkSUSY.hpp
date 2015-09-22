@@ -81,6 +81,10 @@ BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", 
 BE_FUNCTION(dswwidth, void, (int&), "dswwidth_", "dswwidth")
 BE_FUNCTION(dsntcapsuntab, double, (const double&, const double&, const double&), "dsntcapsuntab_", "capture_rate_Sun")
 BE_FUNCTION(dsntmuonyield, double, (const double&, const double&, const char&, const int&, const int&, const int&, const int&), "dsntmuonyield_", "raw_muonyield")
+BE_FUNCTION(dswspectrum, void, (int&), "dswspectrum_", "dswspectrum")
+BE_FUNCTION(dsvertx, void, (), "dsvertx_", "dsvertx")
+BE_FUNCTION(dshigwid, void, (), "dshigwid_", "dshigwid")
+BE_FUNCTION(dsspwid, void, (), "dsspwid_", "dsspwid")
 
 // Variables
 // Below are output (slightly modified) from cbgb.py, the ones already specified are commented out further below
