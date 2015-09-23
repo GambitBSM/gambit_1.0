@@ -20,7 +20,6 @@
 // Always required in any standalone module main file
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
-#include "gambit/SpecBit/SpecBit_rollcall.hpp"
 
 // Only needed here
 #include "gambit/Utils/util_functions.hpp"
@@ -86,8 +85,41 @@ int main()
   SingletDM_parameters->setValue("lambda_hS", 1e-3);
   SingletDM_parameters->setValue("mS", 100.);
 
-  DD_couplings_SingletDM.notifyOfModel("SingletDM");
-  DD_couplings_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+//  RD_spectrum_from_ProcessCatalog.resolveDependency(&
+//  RD_spectrum_from_ProcessCatalog.reset_and_calculate();
+
+  DarkMatter_ID_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+  DarkMatter_ID_SingletDM.reset_and_calculate();
+
+  // TH_ProcessCatalog_SingletDM.resolveDependency(&all_decays);  // DecayBit
+  // TH_ProcessCatalog_SingletDM.resolveDependency(&get_SingletDM_spectrum);  // Specbit
+  TH_ProcessCatalog_SingletDM.reset_and_calculate();
+
+  RD_spectrum_from_ProcessCatalog.resolveDependency(&TH_ProcessCatalog_SingletDM);
+  RD_spectrum_from_ProcessCatalog.resolveDependency(&DarkMatter_ID_SingletDM);
+  RD_spectrum_from_ProcessCatalog.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+  RD_spectrum_from_ProcessCatalog.reset_and_calculate();
+
+  RD_eff_annrate_from_ProcessCatalog.resolveDependency(&TH_ProcessCatalog_SingletDM);
+  RD_eff_annrate_from_ProcessCatalog.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+  RD_eff_annrate_from_ProcessCatalog.resolveDependency(&DarkMatter_ID_SingletDM);
+  RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
+
+  RD_spectrum_ordered_func.resolveDependency(&RD_spectrum_from_ProcessCatalog);
+  RD_spectrum_ordered_func.reset_and_calculate();
+
+  RD_oh2_general.resolveDependency(&RD_eff_annrate_from_ProcessCatalog);
+  RD_oh2_general.resolveDependency(&RD_spectrum_ordered_func);
+  RD_oh2_general.resolveDependency(&DarkSUSY_5_1_1_init);
+  RD_oh2_general.reset_and_calculate();
+
+  lnL_oh2_Simple.resolveDependency(&RD_oh2_general);
+  lnL_oh2_Simple.reset_and_calculate();
+
+  // Running
+
+//  DD_couplings_SingletDM.notifyOfModel("SingletDM");
+//  DD_couplings_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
 //  SpecBit::get_SingletDM_spectrum.resolveDependency(&SpecBit::get_SMINPUTS);
 
 //  // Call the initialisation functions for all backends that are in use. 
