@@ -81,7 +81,7 @@ namespace Gambit {
      * indicating if point initialization was successful, which is essentially
      * always true for models that satisfy the dependency resolver.
      *
-     * Supported models: CMSSM, MSSM25atQ
+     * Supported models: CMSSM, MSSM30atQ
      */
     void DarkSUSY_PointInit_MSSM(bool &result)
     {
@@ -153,8 +153,8 @@ namespace Gambit {
         }
       }
 
-      // use SLHA for initialization initialization of MSSM25atQ or CMSSM
-      else if (ModelInUse("MSSM25atQ") or ModelInUse("CMSSM"))
+      // use SLHA for initialization initialization of MSSM30atQ or CMSSM
+      else if (ModelInUse("MSSM30atQ") or ModelInUse("CMSSM"))
       {
         // Save SLHA file to disk
         const Spectrum* mySpec = *Dep::MSSM_spectrum;
@@ -540,9 +540,9 @@ namespace Gambit {
       result = catalog;
     }
 
-    void DarkMatter_ID_MSSM25atQ(std::string & result)
+    void DarkMatter_ID_MSSM30atQ(std::string & result)
     {
-      using namespace Pipes::DarkMatter_ID_MSSM25atQ;
+      using namespace Pipes::DarkMatter_ID_MSSM30atQ;
       // FIXME: This should return the lightest neutralino identifier
       result = "~chi0_1";
     }

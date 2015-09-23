@@ -50,7 +50,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
 endif()
 
 # Add the ExampleBit_A_standalone executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;")
+if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND (";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;"))
   if (NOT EXCLUDE_FLEXIBLESUSY)
     set(ExampleBit_A_XTRA ${flexiblesusy_LDFLAGS})
   endif()
@@ -72,7 +72,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
 endif()
 
 # Add the ColliderBit_standalone executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND (";${GAMBIT_BITS};" MATCHES ";ColliderBit;"))
   if (NOT EXCLUDE_FLEXIBLESUSY)
     set(ColliderBit_XTRA ${flexiblesusy_LDFLAGS})
   endif()

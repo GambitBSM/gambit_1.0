@@ -62,7 +62,8 @@ macro(retrieve_bits bits root excludes quiet)
   file(GLOB children RELATIVE ${root} ${root}/*Bit*)
 
   foreach(child ${children})
-    if(IS_DIRECTORY ${root}/${child})
+    string(FIND ${child} ".dSYM" FOUND_DSYM)  
+    if(IS_DIRECTORY ${root}/${child} AND ${FOUND_DSYM} EQUAL -1)
 
       # Work out if this Bit should be excluded or not.  Never exclude ScannerBit.
       set(excluded "NO")
@@ -165,23 +166,23 @@ endmacro()
 
 # Function to add a GAMBIT custom command and target
 function(add_gambit_custom target filename HARVESTER HARVESTER_FILES OTHER_DEPS) 
-  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/scratch/${filename}
+  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${filename}
                      COMMAND python ${HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                     COMMAND touch ${PROJECT_SOURCE_DIR}/scratch/${filename}
+                     COMMAND touch ${CMAKE_BINARY_DIR}/${filename}
                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                      DEPENDS ${HARVESTER}
                              ${HARVEST_TOOLS}
                              ${HARVESTER_FILES}
                              ${PROJECT_BINARY_DIR}/CMakeCache.txt
                              ${OTHER_DEPS})
-  add_custom_target(${target} DEPENDS ${PROJECT_SOURCE_DIR}/scratch/${filename})
+  add_custom_target(${target} DEPENDS ${CMAKE_BINARY_DIR}/${filename})
 endfunction()
 
-# Function to remove specific GAMBIT scratch files
-function(remove_scratch_files FILENAMES)
+# Function to remove specific GAMBIT build files
+function(remove_build_files)
   foreach (f ${ARGN})
-    if (EXISTS "${PROJECT_SOURCE_DIR}/scratch/${f}")
-      file(REMOVE "${PROJECT_SOURCE_DIR}/scratch/${f}")
+    if (EXISTS "${CMAKE_BINARY_DIR}/${f}")
+      file(REMOVE "${CMAKE_BINARY_DIR}/${f}")
     endif()
   endforeach()
 endfunction()

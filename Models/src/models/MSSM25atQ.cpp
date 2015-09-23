@@ -53,7 +53,7 @@ using namespace Gambit::Utils;
      // Off-diagonal elements set to zero by parent model
      targetP.setValue("mq2_1",  myP["mq2_1"] ); // mq2_11 in MSSM78
      targetP.setValue("mq2_2",  myP["mq2_2"] ); // mq2_22   " "
-     targetP.setValue("mq2_3",  myP["mq2_2"] ); // mq2_33
+     targetP.setValue("mq2_3",  myP["mq2_3"] ); // mq2_33
 
      // RH slepton soft masses
      // Off-diagonal elements set to zero by parent model
@@ -61,13 +61,13 @@ using namespace Gambit::Utils;
      targetP.setValue("ml2_2",  myP["ml2_2"] ); // ml2_22   " "
      targetP.setValue("ml2_3",  myP["ml2_3"] ); // ml2_33
 
-     // LH down-type slepton soft masses
+     // LH down-type squark soft masses
      // Off-diagonal elements set to zero by parent model
      targetP.setValue("md2_1",  myP["md2_1"] ); // ml2_11 in MSSM78
      targetP.setValue("md2_2",  myP["md2_2"] ); // ml2_22   " "
      targetP.setValue("md2_3",  myP["md2_3"] ); // ml2_33
 
-     // LH up-type slepton soft masses
+     // LH up-type squark soft masses
      // Off-diagonal elements set to zero by parent model
      targetP.setValue("mu2_1",  myP["mu2_1"] ); // mu2_11 in MSSM78
      targetP.setValue("mu2_2",  myP["mu2_2"] ); // mu2_22   " "

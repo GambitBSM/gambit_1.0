@@ -39,14 +39,8 @@ Scanner:
         nlive: 500
         tol: 0.1
         aux_printer_txt_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.txt"
-          buffer_length: 10
         aux_printer_stats_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.stats"
-          buffer_length: 10
         aux_printer_live_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.live"
-          buffer_length: 10
             
 #======== Observables of interest ========
 ObsLikes:

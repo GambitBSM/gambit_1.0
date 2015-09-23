@@ -105,7 +105,7 @@ namespace Gambit
         // The base is irrelevant since it is just a scaling factor which normalises out
         inline double logprior (double x, double a, double b) 
         {   
-                return exp( x*(log(b)-log(a)) + log(a) );
+                return std::exp( x*(log(b)-log(a)) + log(a) );
         }
         
         inline double logop (double a){return -std::log(a);}
@@ -129,10 +129,7 @@ namespace Gambit
                         // Read the entries we need from the options
                         if ( not options.hasKey("range") )
                         {
-                                std::stringstream err;
                                 scan_err << "Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')" << scan_end;
-                                //std::cout<<"Dumping content of options:"<<std::endl;
-                                //options.dumpcontents();
                         }
                         std::pair<double, double> range = options.getValue< std::pair<double, double> >("range");
                         if (range.first > range.second)
@@ -143,10 +140,7 @@ namespace Gambit
                         }
                         if (param.size()!=1)
                         {
-                                /// TODO: insert proper gambit error
-                                std::stringstream err;
                                 scan_err << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size=" << param.size() << ")" << scan_end;
-                                //exit(1);
                         }
                         lower = range.first;
                         upper = range.second;            

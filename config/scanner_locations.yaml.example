@@ -15,10 +15,6 @@ MultiNest:
   3.9: 
     - lib: ./ScannerBit/installed/MultiNest/3.9/libnest3.so
 
-square_grid:
-  1.0.0:              
-    - lib: ./ScannerBit/lib/doesntexist.so, /home/you/dunnaexisteither.so
-
 Diver:
   1.0.0:
     - lib: ./ScannerBit/installed/Diver/1.0.0/lib/libdiver.so

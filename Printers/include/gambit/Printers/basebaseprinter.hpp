@@ -31,6 +31,7 @@
 
 // Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Printers/printer_id_tools.hpp"
 
 namespace Gambit
 {
@@ -55,7 +56,12 @@ namespace Gambit
         virtual int getRank() = 0;
 
         /// Signal printer that scan is finished, and final output needs to be performed
-        virtual void finalise() = 0;
+        virtual void finalise(bool abnormal=false) = 0;
+
+        /// Ask the printer for the highest ID number known for a given rank
+        /// process (needed for resuming, so the scanner can resume assigning
+        /// point ID from this value. 
+        virtual unsigned long getHighestPointID(const int rank) = 0;
 
         /// Declarations of minimal print functions needed by ScannerBit
         #define SCANNER_PRINTABLE_TYPES \
@@ -82,7 +88,13 @@ namespace Gambit
               << "\n   vertexID   : " << vertexID                 \
               << "\n   Type       : " << STRINGIFY(elem);         \
           printer_warning().raise(LOCAL_INFO,err.str());          \
-        }                                              
+        }                                                         \
+        inline void print(elem const& in, const std::string& label, \
+                           const uint rank,                       \
+                           const ulong pointID)                   \
+        {                                                         \
+          print(in, label, get_aux_param_id(label), rank, pointID);\
+        }                                                         \
 
         #define ADD_VIRTUAL_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(VPRINT, _, TYPES)
         ADD_VIRTUAL_PRINTS(SCANNER_PRINTABLE_TYPES) 
