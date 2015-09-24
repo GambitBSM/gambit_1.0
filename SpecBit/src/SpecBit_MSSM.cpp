@@ -201,7 +201,7 @@ namespace Gambit
       static const int i123456v[] = {1,2,3,4,5,6};
       static const std::vector<int> i123456(i123456v, Utils::endA(i123456v));
 
-      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_pred, 0.03); // 3% theory "error" 
+      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_pred); // 3% theory "error" 
       mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_6, i123456);
       mssmspec.add_uncertainty(0.03, Par::Pole_Mass, "~chi0", i1234);
       mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_3, i123);

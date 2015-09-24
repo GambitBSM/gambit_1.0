@@ -20,6 +20,7 @@
 ///  *********************************************
 
 #include <fstream>
+#include <string>
 
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/spec_fptrfinder.hpp"
@@ -80,8 +81,9 @@ namespace Gambit
       for(std::vector<str>::const_iterator it = params.begin();
 	  it != params.end(); ++it)
 	{
-	  str high = "rd_" + *it + "_high";
-	  this->phys().set_override(tag, rd, high, false);
+	  std::string high = "rd_" + *it + "_high";
+	  //std::cout << "Setting override: " << Par::toString.at(tag) <<", "<<high<<std::endl;
+          this->phys().set_override(tag, rd, high, false);
 	}
    }
    void SubSpectrum::add_uncertainty_low(const double rd, const Par::Phys tag, const std::vector<str>& params)
@@ -89,7 +91,8 @@ namespace Gambit
       for(std::vector<str>::const_iterator it = params.begin();
 	  it != params.end(); ++it)
 	{
-	  str low =  "rd_" + *it + "_low";
+	  std::string low =  "rd_" + *it + "_low";
+          //std::cout << "Setting override: " << Par::toString.at(tag) <<", "<<low<<std::endl;
 	  this->phys().set_override(tag, rd, low,  false);
 	}
    }
@@ -129,7 +132,8 @@ namespace Gambit
 	  it != params.end(); ++it)
 	{
 	  for(std::vector<int>::const_iterator i = indices.begin(); i != indices.end() ; ++i){
-	    str high = "rd_" + *it + "_high";
+	    std::string high = "rd_" + *it + "_high";
+            //std::cout << "Setting override: " << Par::toString.at(tag) <<", "<<high<<", "<<*i<<std::endl;
 	    this->phys().set_override(tag, rd, high, *i, false);
 	  }
 	}
@@ -141,8 +145,9 @@ namespace Gambit
 	  it != params.end(); ++it)
 	{
 	  for(std::vector<int>::const_iterator i = indices.begin(); i != indices.end() ; ++i){
-	    str low =  "rd_" + *it + "_low";
-	    this->phys().set_override(tag, rd, low,  *i, false);
+	    std::string low =  "rd_" + *it + "_low";
+	    //std::cout << "Setting override: " << Par::toString.at(tag) <<", "<<low<<", "<<*i<<std::endl;
+            this->phys().set_override(tag, rd, low,  *i, false);
 	  }
 	}
    }
