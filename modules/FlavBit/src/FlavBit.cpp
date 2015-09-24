@@ -915,12 +915,10 @@ namespace Gambit
       cout<<"Calling SI_BRBKstarmumu_11_25"<<endl;
       using namespace Pipes::SI_BRBKstarmumu_11_25;
       struct parameters param = *Dep::FlavBit_fill;
-
+      
       double q2min=1.1;
       double q2max=2.5;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
-
-      
 
     }
     //############################################################

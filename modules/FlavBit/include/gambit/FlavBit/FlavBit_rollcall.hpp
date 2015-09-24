@@ -417,7 +417,7 @@ START_MODULE
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
-  #undef CAPABILITY
+
 
 
 
@@ -496,7 +496,7 @@ START_MODULE
     #define FUNCTION b2sll_likelihood
     START_FUNCTION(double)
           DEPENDENCY(FlavBit_fill, parameters)
-//          DEPENDENCY(b2sll_M, parameters)
+          DEPENDENCY(b2sll_M, FlavBit::Flav_measurement_assym)
     #undef FUNCTION
   #undef CAPABILITY
 //#################################################
