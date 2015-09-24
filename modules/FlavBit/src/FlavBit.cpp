@@ -1165,22 +1165,22 @@ namespace Gambit
 
       */
       cout<<"Calling dep"<<endl;
-      Flav_KstarMuMu_obs obs_out_11_25= *(Dep::SI_BRBKstarmumu_11_25);
+      Flav_KstarMuMu_obs obs_out_11_25= *(Dep::BRBKstarmumu_11_25);
       //SI_BRBKstarmumu_11_25(obs_out_11_25);
       cout<<"called"<<endl;
-      Flav_KstarMuMu_obs obs_out_25_40= *(Dep::SI_BRBKstarmumu_25_40);
+      Flav_KstarMuMu_obs obs_out_25_40= *(Dep::BRBKstarmumu_25_40);
       //   SI_BRBKstarmumu_25_40(obs_out_25_40);
 
-      Flav_KstarMuMu_obs obs_out_40_60= *(Dep::SI_BRBKstarmumu_40_60); 
+      Flav_KstarMuMu_obs obs_out_40_60= *(Dep::BRBKstarmumu_40_60); 
       //      SI_BRBKstarmumu_40_60(obs_out_40_60);
 
-      Flav_KstarMuMu_obs obs_out_60_80= *(Dep::SI_BRBKstarmumu_60_80); 
+      Flav_KstarMuMu_obs obs_out_60_80= *(Dep::BRBKstarmumu_60_80); 
       //SI_BRBKstarmumu_40_60(obs_out_60_80);
 
-      Flav_KstarMuMu_obs obs_out_15_17= *(Dep::SI_BRBKstarmumu_15_17); 
+      Flav_KstarMuMu_obs obs_out_15_17= *(Dep::BRBKstarmumu_15_17); 
       //SI_BRBKstarmumu_40_60(obs_out_15_17);
 
-      Flav_KstarMuMu_obs obs_out_17_19 = *(Dep::SI_BRBKstarmumu_17_19);
+      Flav_KstarMuMu_obs obs_out_17_19 = *(Dep::BRBKstarmumu_17_19);
       //SI_BRBKstarmumu_40_60(obs_out_17_19);  
 
 

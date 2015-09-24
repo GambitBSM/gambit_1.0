@@ -481,12 +481,12 @@ START_MODULE
    #define FUNCTION b2sll_measurements
    START_FUNCTION(FlavBit::Flav_measurement_assym)
          DEPENDENCY(FlavBit_fill, parameters)
-         DEPENDENCY(SI_BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
-         DEPENDENCY(SI_BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
-         DEPENDENCY(SI_BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
-         DEPENDENCY(SI_BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
-         DEPENDENCY(SI_BRBKstarmumu_15_17, Flav_KstarMuMu_obs) 
-         DEPENDENCY(SI_BRBKstarmumu_17_19, Flav_KstarMuMu_obs) 
+         DEPENDENCY(BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
+         DEPENDENCY(BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
+         DEPENDENCY(BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
+         DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
+         DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs) 
+         DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs) 
    #undef FUNCTION
  #undef CAPABILITY
 
