@@ -2504,7 +2504,21 @@ namespace Gambit
     {
       using namespace Pipes::get_mass_es_pseudonyms;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+
+      std::cout << "h0 uncertainty = "  << mssm->phys().get(Par::Pole_Mass, "rd_h0_low", 1) << std::endl;
       
+     std::cout << "~u3 uncertainty = "  << mssm->phys().get(Par::Pole_Mass, "rd_~u_low", 3) << std::endl;
+
+    
+
+      std::cout << "~chi0_1 uncertainty = "  << mssm->phys().get(Par::Pole_Mass, "rd_~chi0_low", 1) << std::endl;
+      
+       std::cout << "chi+_2 uncertainty = "  << mssm->phys().get(Par::Pole_Mass, "rd_~chi+_low", 2) << std::endl;
+        std::cout << "chi-_2 uncertainty = " << mssm->phys().get(Par::Pole_Mass, "rd_~chi-_low", 2) << std::endl;
+	std::cout << "mA0 uncertainty = " << mssm->phys().get(Par::Pole_Mass, "rd_A0_low") << std::endl;
+
+	// std::cout << "gluino uncertainty = "  << mssm->phys().get(Par::Pole_Mass, "rd_~g_low") << std::endl;
+	
       double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");
