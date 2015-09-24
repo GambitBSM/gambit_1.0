@@ -527,6 +527,12 @@ namespace Gambit
         Utils::ensure_path_exists(tmpfile);
         //file_id = HDF5::openFile(tmpfile,overwrite,oldfile);
         file_id = HDF5::openFile(tmpfile,true,oldfile); // Now that this is a temp file, we always want to overwrite it (it should only still exist if some error occurred finalising the last run, so starting a new run should mean that it can be discarded)
+        if(oldfile)
+        {
+           std::ostringstream errmsg;
+           errmsg << "Error! HDF5Printer attempted to open a temporary file for storing output data ("<<tmpfile<<"), however it found an existing file of the same name! This is a bug; existing files should be overwritten.";
+           printer_error().raise(LOCAL_INFO, errmsg.str()); 
+        }
 
         // Open requested group (creating it plus parents if needed)
         group_id = HDF5::openGroup(file_id,group);
