@@ -203,7 +203,7 @@ namespace Gambit
 
       mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_pred, 0.03); // 3% theory "error" 
       mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_6, i123456);
-      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, "chi0", i1234);
+      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, "~chi0", i1234);
       mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_3, i123);
       mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_2, i12);
     
@@ -211,7 +211,7 @@ namespace Gambit
       /// Default in most codes is 3 GeV,
       /// seems like an underestimate if the stop masses are heavy enough.  
       double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.add_uncertainty(rd_mh, Par::Pole_Mass, "mh0", i1234);
+      mssmspec.add_uncertainty(rd_mh, Par::Pole_Mass, "h0", i1234);
  
       // For different high and low errors:
       // mssmspec.add_uncertainty_high(rd_mh_low, Par::Pole_Mass, "mh0", i1234);
