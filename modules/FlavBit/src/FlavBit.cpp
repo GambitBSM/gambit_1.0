@@ -910,109 +910,84 @@ namespace Gambit
 
      // *************************************************
     // This function has to be BE_CONV_FUNCTION
-    void SI_BRBKstarmumu( Flav_KstarMuMu_obs &result)
+    void SI_BRBKstarmumu_11_25( Flav_KstarMuMu_obs &result)
     {
-      using namespace Pipes::SI_BRBKstarmumu; 
+      cout<<"Calling SI_BRBKstarmumu_11_25"<<endl;
+      using namespace Pipes::SI_BRBKstarmumu_11_25;
       struct parameters param = *Dep::FlavBit_fill;
 
-      
       double q2min=1.1;
       double q2max=2.5;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+
       
 
-
-      /*
-      using namespace Pipes::SI_BRBKstarmumu;
-      cout<<"Calculating the B-> K*mumu observables!"<<endl;
-
-
-
-      struct parameters param = *Dep::FlavBit_fill;
-      //double S3, S4, S5, AFB, S7, S8, S9, FL;
-      //      Flav_KstarMuMu_obs obs_out;
-      if(param.model<0)
-	{
-	result.BR=0.;
-	cout<<"You idiot you fucked up!!!"<<endl;
-	}
-      else
-      {
-	cout<<"Entering else"<<endl;
-	double C0b[11],C1b[11],C2b[11],C0w[11],C1w[11],C2w[11],Cpb[11];
-	std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
-	double obs[Nobs_BKsll+1];
-
-	double mu_W=2.*param.mass_W;
-	double mu_b=param.mass_b_pole;
-
-	cout<<"Got the mass"<<endl;
-
-	double tmp_q2_min=result.q2_min;
-	double tmp_q2_max=result.q2_max;
-
-
-	if(abs(tmp_q2_min-tmp_q2_max)<0.0001)
-	  {
-	    cout<<"Using this function with empty Flav_KstarMuMu_obs"<<endl;
-	    tmp_q2_min=1.;
-	    tmp_q2_max=6.;
-	  }
-
-	const double q2_min=tmp_q2_min;
-	const double q2_max=tmp_q2_max;
-
-	cout<<"Q2 min = "<<q2_min<<endl;
-	cout<<"Q2 max = "<<q2_max<<endl;
-
-
-
-    BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
-    BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-    BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-    BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
-    result.BR = BEreq::BRBKstarmumu(byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
-
-
-      printf("BR(B->K* mu mu)_lowq2=%.3e\n",result);
-      printf("AFB(B->K* mu mu)_zero=%.3e\n",obs[0]);
-      printf("AFB(B->K* mu mu)_lowq2=%.3e\n",obs[1]);
-      printf("FL(B->K* mu mu)_lowq2=%.3e\n",obs[2]);
-      printf("AT1(B->K* mu mu)_lowq2=%.3e\n",obs[4]);
-      printf("AT2(B->K* mu mu)_lowq2=%.3e\n",obs[5]);
-      printf("AT3(B->K* mu mu)_lowq2=%.3e\n",obs[6]);
-      printf("AT4(B->K* mu mu)_lowq2=%.3e\n",obs[7]);
-      printf("AT5(B->K* mu mu)_lowq2=%.3e\n",obs[8]);
-      printf("HT1(B->K* mu mu)_lowq2=%.3e\n",obs[9]);
-      printf("HT2(B->K* mu mu)_lowq2=%.3e\n",obs[10]);
-      printf("HT3(B->K* mu mu)_lowq2=%.3e\n",obs[11]);
-      printf("P2(B->K* mu mu)_lowq2=%.3e\n",obs[14]);
-      printf("P3(B->K* mu mu)_lowq2=%.3e\n",obs[15]);
-      printf("P6(B->K* mu mu)_lowq2=%.3e\n",obs[16]);
-      printf("P4prime(B->K* mu mu)_lowq2=%.3e\n",obs[17]);
-      printf("P5prime(B->K* mu mu)_lowq2=%.3e\n",obs[18]);
-      printf("P6prime(B->K* mu mu)_lowq2=%.3e\n",obs[19]);
-      printf("P8(B->K* mu mu)_lowq2=%.3e\n",obs[20]);
-      printf("P8prime(B->K* mu mu)_lowq2=%.3e\n",obs[21]);
-
-
-      // nowe we have the Piss, we need to recalculate the S, hate theorists for this
-
-      result.FL=obs[2];
-      double Fl=obs[2];
-      result.AFB=obs[1];
-
-      result.S3=obs[5]*(1.-Fl)/2.; // THIS FOR SURE IS WRONG!!!! send email to Nazila 12 August.
-      result.S4=obs[17]*sqrt(Fl*(1.-Fl));
-      result.S5=obs[18]*sqrt(Fl*(1.-Fl));
-      result.S7=obs[19]*sqrt(Fl*(1.-Fl));
-      result.S8=obs[21]*sqrt(Fl*(1.-Fl));
-      result.S9=(-1.)*obs[15]*(1.-Fl);
-      
-
-      }
-      */
     }
+    //############################################################
+
+    void SI_BRBKstarmumu_25_40( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_25_40;
+      struct parameters param = *Dep::FlavBit_fill;
+
+
+      double q2min=2.5;
+      double q2max=4.0;
+      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+
+    }
+
+    void SI_BRBKstarmumu_40_60( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_40_60;
+      struct parameters param = *Dep::FlavBit_fill;
+
+
+      double q2min=4.0;
+      double q2max=6.0;
+      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+
+    }
+
+    void SI_BRBKstarmumu_60_80( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_60_80;
+      struct parameters param = *Dep::FlavBit_fill;
+
+
+      double q2min=6.0;
+      double q2max=8.0;
+      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+
+    }
+
+
+    void SI_BRBKstarmumu_15_17( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_15_17;
+      struct parameters param = *Dep::FlavBit_fill;
+
+
+      double q2min=15.0;
+      double q2max=17.0;
+      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+
+    }
+
+    void SI_BRBKstarmumu_17_19( Flav_KstarMuMu_obs &result)
+    {
+      using namespace Pipes::SI_BRBKstarmumu_17_19;
+      struct parameters param = *Dep::FlavBit_fill;
+
+
+      double q2min=17.0;
+      double q2max=19.0;
+      result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
+
+    }
+
+
+
 
     // *************************************************
 
@@ -1111,6 +1086,9 @@ namespace Gambit
 
     void b2sll_measurements(Flav_measurement_assym &measurement_assym)
     {
+      using namespace Pipes::b2sll_measurements;
+
+
       //B2sll
       cout<<"In b2sll_measurements"<<endl;
       cout<<GAMBIT_DIR  "/FlavBit/Measurements"<<endl;
@@ -1155,12 +1133,12 @@ namespace Gambit
       }
 
       // We read the measurements, now for the fucking theory part ;(
-
+      /*
       Flav_KstarMuMu_obs obs_out_11_25;
       obs_out_11_25.q2_min=1.1;
       obs_out_11_25.q2_max=2.5;
       cout<<"Before the crash!"<<endl;
-      SI_BRBKstarmumu(obs_out_11_25);
+      SI_BRBKstarmumu_11_25(obs_out_11_25);
       // we got observables
       Flav_KstarMuMu_obs obs_out_25_40;
       obs_out_25_40.q2_min=2.5;
@@ -1186,6 +1164,29 @@ namespace Gambit
       obs_out_17_19.q2_min=17.0;
       obs_out_17_19.q2_max=19.0;
       SI_BRBKstarmumu(obs_out_17_19);
+
+      */
+      cout<<"Calling dep"<<endl;
+      Flav_KstarMuMu_obs obs_out_11_25= *(Dep::SI_BRBKstarmumu_11_25);
+      //SI_BRBKstarmumu_11_25(obs_out_11_25);
+      cout<<"called"<<endl;
+      Flav_KstarMuMu_obs obs_out_25_40= *(Dep::SI_BRBKstarmumu_25_40);
+      //   SI_BRBKstarmumu_25_40(obs_out_25_40);
+
+      Flav_KstarMuMu_obs obs_out_40_60= *(Dep::SI_BRBKstarmumu_40_60); 
+      //      SI_BRBKstarmumu_40_60(obs_out_40_60);
+
+      Flav_KstarMuMu_obs obs_out_60_80= *(Dep::SI_BRBKstarmumu_60_80); 
+      //SI_BRBKstarmumu_40_60(obs_out_60_80);
+
+      Flav_KstarMuMu_obs obs_out_15_17= *(Dep::SI_BRBKstarmumu_15_17); 
+      //SI_BRBKstarmumu_40_60(obs_out_15_17);
+
+      Flav_KstarMuMu_obs obs_out_17_19 = *(Dep::SI_BRBKstarmumu_17_19);
+      //SI_BRBKstarmumu_40_60(obs_out_17_19);  
+
+
+
 
       // we got observables, now fucking errors
 
@@ -1271,12 +1272,18 @@ namespace Gambit
       cout<<"diff done"<<endl;
       measurement_assym.diff=diff;
       measurement_assym.dim=n_experiments;
+
+
+
     }
 
     void b2sll_likelihood(double &result)
     {
+      using namespace Pipes::b2sll_likelihood;
+
+
       cout<<"Doing the likelihood for b2sll"<<endl;
-      Flav_measurement_assym measurement_assym;
+      Flav_measurement_assym measurement_assym;//=*(Dep::b2sll_M);
       b2sll_measurements(measurement_assym);
       // got everything ;)
       cout<<"Dimension= "<<measurement_assym.dim<<endl;
@@ -1335,6 +1342,7 @@ namespace Gambit
       result+=0.5*Chi2;
       cout<<0.5*Chi2<<endl;
       cout<<"DONE the likelihood for b2sll"<<endl;
+
 
     }
 

@@ -30,7 +30,7 @@ LOAD_LIBRARY
 // Can't do anything non-MSSM with SuperIso
 BE_ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
 
-//BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
+BE_FUNCTION(Init_param, void, (struct parameters*), "Init_param", "Init_param")
 BE_FUNCTION(slha_adjust, void, (struct parameters*), "slha_adjust", "slha_adjust")
 
 BE_FUNCTION(CW_calculator, void, (double*, double*, double*, double, struct parameters*), "CW_calculator", "CW_calculator")

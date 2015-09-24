@@ -69,10 +69,10 @@
 
 #define MODULE FlavBit
 START_MODULE
- 
+
 
   // Initialization capability (fill the SuperIso structure)
-  #define CAPABILITY FlavBit_fill              
+  #define CAPABILITY FlavBit_fill
   START_CAPABILITY
     #define FUNCTION SI_FlavBit_fill
     START_FUNCTION(parameters)
@@ -98,9 +98,9 @@ START_MODULE
   #undef CAPABILITY
 
   // Observable: BR(Bs -> mu+ mu-)
-  #define CAPABILITY Bsmumu  
+  #define CAPABILITY Bsmumu
   START_CAPABILITY
-    #define FUNCTION SI_Bsmumu 
+    #define FUNCTION SI_Bsmumu
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(Bsmumu, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -115,7 +115,7 @@ START_MODULE
   // Observable: BR(Bs -> mu+ mu-)_untag
   #define CAPABILITY Bsmumu_untag
   START_CAPABILITY
-    #define FUNCTION SI_Bsmumu_untag 
+    #define FUNCTION SI_Bsmumu_untag
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(Bsmumu_untag, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -243,7 +243,7 @@ START_MODULE
   // Observable: Delta0(B -> K* gamma)
   #define CAPABILITY delta0
   START_CAPABILITY
-    #define FUNCTION SI_delta0 
+    #define FUNCTION SI_delta0
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(delta0, (libsuperiso), double, (double*, double*, double*, double*, double*, struct parameters*, double, double, double))
@@ -257,7 +257,7 @@ START_MODULE
   // Observable: BR(B -> Xs mu mu)_lowq2
   #define CAPABILITY BRBXsmumu_lowq2
   START_CAPABILITY
-    #define FUNCTION SI_BRBXsmumu_lowq2 
+    #define FUNCTION SI_BRBXsmumu_lowq2
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(BRBXsmumu_lowq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -272,7 +272,7 @@ START_MODULE
   // Observable: BR(B -> Xs mu mu)_highq2
   #define CAPABILITY BRBXsmumu_highq2
   START_CAPABILITY
-    #define FUNCTION SI_BRBXsmumu_highq2 
+    #define FUNCTION SI_BRBXsmumu_highq2
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(BRBXsmumu_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -287,7 +287,7 @@ START_MODULE
   // Observable: AFB(B -> Xs mu mu)_lowq2
   #define CAPABILITY A_BXsmumu_lowq2
   START_CAPABILITY
-    #define FUNCTION SI_A_BXsmumu_lowq2 
+    #define FUNCTION SI_A_BXsmumu_lowq2
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(A_BXsmumu_lowq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -301,7 +301,7 @@ START_MODULE
 
   #define CAPABILITY A_BXsmumu_highq2               // Observable: AFB(B -> Xs mu mu)_highq2
   START_CAPABILITY
-    #define FUNCTION SI_A_BXsmumu_highq2 
+    #define FUNCTION SI_A_BXsmumu_highq2
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(A_BXsmumu_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -316,7 +316,7 @@ START_MODULE
   // Observable: zero of AFB(B -> Xs mu mu)
   #define CAPABILITY A_BXsmumu_zero
   START_CAPABILITY
-    #define FUNCTION SI_A_BXsmumu_zero 
+    #define FUNCTION SI_A_BXsmumu_zero
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(A_BXsmumu_zero, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -331,7 +331,7 @@ START_MODULE
   // Observable: BR(B -> Xs tau tau)_highq2
   #define CAPABILITY BRBXstautau_highq2
   START_CAPABILITY
-    #define FUNCTION SI_BRBXstautau_highq2 
+    #define FUNCTION SI_BRBXstautau_highq2
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(BRBXstautau_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -346,7 +346,7 @@ START_MODULE
   // Observable: AFB(B -> Xs tau tau)_highq2
   #define CAPABILITY A_BXstautau_highq2
   START_CAPABILITY
-    #define FUNCTION SI_A_BXstautau_highq2 
+    #define FUNCTION SI_A_BXstautau_highq2
     START_FUNCTION(double)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(A_BXstautau_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
@@ -359,15 +359,66 @@ START_MODULE
   #undef CAPABILITY
 
   // Observable: BR(B -> K* mu mu)_lowq2
-  #define CAPABILITY BRBKstarmumu
+  #define CAPABILITY BRBKstarmumu_11_25
   START_CAPABILITY
-    #define FUNCTION SI_BRBKstarmumu 
+    #define FUNCTION SI_BRBKstarmumu_11_25
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_25_40
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_25_40
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(FlavBit_fill, parameters)
+    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_40_60
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_40_60
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(FlavBit_fill, parameters)
+    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_60_80
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_60_80
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(FlavBit_fill, parameters)
+    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_15_17
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_15_17
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(FlavBit_fill, parameters)
+    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY BRBKstarmumu_17_19
+  START_CAPABILITY
+    #define FUNCTION SI_BRBKstarmumu_17_19
+    START_FUNCTION(Flav_KstarMuMu_obs)
+    DEPENDENCY(FlavBit_fill, parameters)
+    BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
+    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
 
 
@@ -408,7 +459,7 @@ START_MODULE
       BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
-  #undef CAPABILITY 
+  #undef CAPABILITY
 
 
   //###############################################
@@ -425,73 +476,77 @@ START_MODULE
 
 
 // complicated likelihoods
- #define CAPABILITY b2sll_M                                      
- START_CAPABILITY                                                
-   #define FUNCTION b2sll_measurements                           
-   START_FUNCTION(FlavBit::Flav_measurement_assym)               
-         DEPENDENCY(FlavBit_fill, parameters)                    
-         DEPENDENCY(SI_BRBKstarmumu, Flav_KstarMuMu_obs)         
-   #undef FUNCTION                                               
- #undef CAPABILITY                                               
-                                                                 
+ #define CAPABILITY b2sll_M
+ START_CAPABILITY
+   #define FUNCTION b2sll_measurements
+   START_FUNCTION(FlavBit::Flav_measurement_assym)
+         DEPENDENCY(FlavBit_fill, parameters)
+         DEPENDENCY(SI_BRBKstarmumu_11_25, Flav_KstarMuMu_obs)
+         DEPENDENCY(SI_BRBKstarmumu_25_40, Flav_KstarMuMu_obs)
+         DEPENDENCY(SI_BRBKstarmumu_40_60, Flav_KstarMuMu_obs)
+         DEPENDENCY(SI_BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
+         DEPENDENCY(SI_BRBKstarmumu_15_17, Flav_KstarMuMu_obs) 
+         DEPENDENCY(SI_BRBKstarmumu_17_19, Flav_KstarMuMu_obs) 
+   #undef FUNCTION
+ #undef CAPABILITY
 
-  #define CAPABILITY b2sll_LL                                              
-  START_CAPABILITY                                                         
-    #define FUNCTION b2sll_likelihood                                      
-    START_FUNCTION(double)                                                 
+
+  #define CAPABILITY b2sll_LL
+  START_CAPABILITY
+    #define FUNCTION b2sll_likelihood
+    START_FUNCTION(double)
           DEPENDENCY(FlavBit_fill, parameters)
-          DEPENDENCY(b2sll_M, parameters)
-    #undef FUNCTION                                                        
-  #undef CAPABILITY                                                        
+//          DEPENDENCY(b2sll_M, parameters)
+    #undef FUNCTION
+  #undef CAPABILITY
 //#################################################
-  #define CAPABILITY b2ll_LL                      
-  START_CAPABILITY                                 
-    #define FUNCTION b2ll_likelihood              
-    START_FUNCTION(double)                         
-          DEPENDENCY(FlavBit_fill, parameters)     
-          DEPENDENCY(b2ll_M, FlavBit::Flav_measurement_assym) 
+  #define CAPABILITY b2ll_LL
+  START_CAPABILITY
+    #define FUNCTION b2ll_likelihood
+    START_FUNCTION(double)
+          DEPENDENCY(FlavBit_fill, parameters)
+          DEPENDENCY(b2ll_M, FlavBit::Flav_measurement_assym)
 
-    #undef FUNCTION                                
-  #undef CAPABILITY                                
-                                                                                                     
-  #define CAPABILITY b2ll_M                       
-  START_CAPABILITY                                 
-    #define FUNCTION b2ll_measurements            
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY b2ll_M
+  START_CAPABILITY
+    #define FUNCTION b2ll_measurements
     START_FUNCTION(FlavBit::Flav_measurement_assym)
           DEPENDENCY(FlavBit_fill, parameters)
-          DEPENDENCY(Bsmumu_untag, double )  
+          DEPENDENCY(Bsmumu_untag, double )
           DEPENDENCY(Bdmumu, double )
 
-   #undef FUNCTION                                
-  #undef CAPABILITY                                
+   #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY SL_M                           
-  START_CAPABILITY                                    
-    #define FUNCTION SL_measurements                
-    START_FUNCTION(FlavBit::Flav_measurement_assym)   
+  #define CAPABILITY SL_M
+  START_CAPABILITY
+    #define FUNCTION SL_measurements
+    START_FUNCTION(FlavBit::Flav_measurement_assym)
           DEPENDENCY(FlavBit_fill, parameters)
-          DEPENDENCY(Btaunu, double ) 
+          DEPENDENCY(Btaunu, double )
           DEPENDENCY(BDtaunu, double )
-          DEPENDENCY(BDtaunu_BDenu, double ) 
+          DEPENDENCY(BDtaunu_BDenu, double )
           DEPENDENCY(Kmunu_pimunu, double )
-          DEPENDENCY(Dstaunu, double ) 
-          DEPENDENCY(Dsmunu, double ) 
-          DEPENDENCY(Dmunu, double ) 
-    #undef FUNCTION                                   
-  #undef CAPABILITY                                   
+          DEPENDENCY(Dstaunu, double )
+          DEPENDENCY(Dsmunu, double )
+          DEPENDENCY(Dmunu, double )
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  #define CAPABILITY SL_LL                       
-  START_CAPABILITY                                 
-    #define FUNCTION SL_likelihood               
-    START_FUNCTION(double)                         
-          DEPENDENCY(FlavBit_fill, parameters)     
+  #define CAPABILITY SL_LL
+  START_CAPABILITY
+    #define FUNCTION SL_likelihood
+    START_FUNCTION(double)
+          DEPENDENCY(FlavBit_fill, parameters)
           DEPENDENCY(SL_M, FlavBit::Flav_measurement_assym)
-    #undef FUNCTION                                
-  #undef CAPABILITY                                
+    #undef FUNCTION
+  #undef CAPABILITY
 
 
 #undef MODULE
 
 
 #endif // defined(__FlavBit_rollcall_hpp__)
-
