@@ -34,6 +34,10 @@
 #  \author Anders Kvellestad
 #          (anderkve@fys.uio.no)
 #  \date 2015 May
+#
+#  \author Christoph Weniger
+#          (c.weniger@uva.nl)
+#  \date 2015 Sep
 #                                               
 #************************************************
 

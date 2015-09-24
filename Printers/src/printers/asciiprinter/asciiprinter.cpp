@@ -350,40 +350,14 @@ is a unique record for every rank/pointID pair.";
           //item->second - std::vector<double> (result values)
           int oldlen = newlineindexrecord[item->first];
           int newlen = (item->second).size();
-          // CW: More informative (hopefully) error message in case the printing fails
-          if ( oldlen > 0 and newlen != oldlen )
-          {
-            std::string msg = "Error! Output format has changed since last buffer dump!\n";
-            msg += "  VertexID: " + std::to_string(item->first) + "\n";
-            msg += "  label_record[0]: " + label_record.at(item->first)[0] + "\n";
-            printer_error().raise(LOCAL_INFO, msg);
-          }
           newlineindexrecord[item->first] = std::max(oldlen, newlen);
         }
       }
       DBUG( std::cout << "lfpvfc 2" << std::endl; )
 
-      // FIXME CW: Cheap hack to stop asciiprinter from stopping CMSSM scans
-      lineindexrecord = newlineindexrecord;
-
       // Check if the output format has changed, and raise an error if so
       if (lineindexrecord.size()==0)
       {
-        if (lineindexrecord!=newlineindexrecord)
-        {
-          // // Print debug information
-          // for ( auto it = lineindexrecord.begin(); it != lineindexrecord.end(); it ++ )
-          // {
-          //   std::cout << it->first << " " << it->second << std::endl;
-          // }
-          // std::cout << std::endl;
-          // for ( auto it = newlineindexrecord.begin(); it != newlineindexrecord.end(); it ++ )
-          // {
-          //   std::cout << it->first << " " << it->second << std::endl;
-          // }
-          //
-          //printer_error().raise(LOCAL_INFO,"Error! Output format has changed since last buffer dump! The asciiPrinter cannot handle this!");
-        }
         // initialise if empty
         lineindexrecord = newlineindexrecord;
       }
