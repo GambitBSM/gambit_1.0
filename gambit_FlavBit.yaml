@@ -87,7 +87,7 @@ ObsLikes:
 
 Rules:
 
-  - capability: MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum
     function: get_MSSMatQ_spectrum  
     options:
       invalid_point_fatal: true
