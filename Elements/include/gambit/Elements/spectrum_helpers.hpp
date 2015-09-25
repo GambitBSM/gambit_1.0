@@ -49,11 +49,13 @@ namespace Gambit
      enum Phys
      {
          Pole_Mass = 0,
+         Pole_Mass_1srd_high,
+         Pole_Mass_1srd_low,
          Pole_Mixing
      };
      enum Running
      {
-         mass4 = 2,
+         mass4 = Pole_Mixing+1,
          mass3,
          mass2,
          mass1,
@@ -66,6 +68,8 @@ namespace Gambit
       {
          std::map<int,std::string> name;
          name[Pole_Mass]       = "Pole_Mass";
+         name[Pole_Mass_1srd_high] = "Pole_Mass_1srd_high";
+         name[Pole_Mass_1srd_low]  = "Pole_Mass_1srd_low";
          name[Pole_Mixing]     = "Pole_Mixing";
          name[mass4]           = "mass4";
          name[mass3]           = "mass3";

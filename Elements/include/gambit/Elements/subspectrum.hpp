@@ -146,6 +146,54 @@ namespace Gambit {
       get_override_maps.at(partype).m2[name][i][j] = value;
    }
 
+   /// @{ Vector override functions
+
+   /* Helpers for override functions which take parameter names and indices as vectors, and
+      loop over them, to make it easy to set many parameters to the same value.
+      No two-index versions at the moment, but could be added if needed. */
+   template <class PT>
+   void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const std::vector<str>& params, bool safety)
+   {
+      for(std::vector<str>::const_iterator it = params.begin();
+	  it != params.end(); ++it)
+	{
+          this->set_override(tag, value, *it, safety);
+	}
+   }
+
+   template <class PT>
+   void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const std::vector<str>& params, const std::vector<int> indices, bool safety)
+   {
+      for(std::vector<str>::const_iterator it = params.begin(); it != params.end(); ++it)
+      {
+         for(std::vector<int>::const_iterator i = indices.begin(); i != indices.end() ; ++i)
+         {
+            this->set_override(tag, value, *it, *i, safety);
+         }
+      }
+   }
+
+   template <class PT>
+   void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const std::vector<str>& params, const int i, bool safety)
+   {
+      std::vector<int> indices;
+      indices.push_back(i);
+      this->set_override_vector(tag,value,params,indices,safety);    
+   }
+
+   template <class PT>
+   void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const str& par, const std::vector<int> indices, bool safety)
+   {
+      std::vector<str> params;
+      params.push_back(par);
+      this->set_override_vector(tag,value,params,indices,safety);    
+   }
+
+
+
+   /// @}
+
+
    /// @}
  
    /// @}

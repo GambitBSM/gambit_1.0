@@ -233,33 +233,6 @@ namespace Gambit
          /// somewhat dangerous to allow this but may be needed
          virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
          
-         /// Add simple symmetric uncertainty data to a vector of parameters
-         /// 'Phys' tag only. Could easily add equivalent for 'Running', but
-         /// these uncertainties probably don't make sense for them.
-         /// (uncertainities are input as fractional values, or 'relative deviation')
-         /// Various "helper" overloads are included, for dealing with special case of
-         /// single parameter/index input, and separate high/low uncertainties.
-
-         void add_uncertainty     (const double rd, const Par::Phys tag, const std::vector<str>& params);
-         void add_uncertainty_high(const double rd, const Par::Phys tag, const std::vector<str>& params);
-         void add_uncertainty_low (const double rd, const Par::Phys tag, const std::vector<str>& params);
-         void add_uncertainty     (const double rd, const Par::Phys tag, const str& par);
-         void add_uncertainty_high(const double rd, const Par::Phys tag, const str& par);
-         void add_uncertainty_low (const double rd, const Par::Phys tag, const str& par);
-                                                                               
-         void add_uncertainty     (const double rd, const Par::Phys tag, const std::vector<str>& params, const std::vector<int> indices);
-         void add_uncertainty_high(const double rd, const Par::Phys tag, const std::vector<str>& params, const std::vector<int> indices);
-         void add_uncertainty_low (const double rd, const Par::Phys tag, const std::vector<str>& params, const std::vector<int> indices);
-         void add_uncertainty     (const double rd, const Par::Phys tag, const std::vector<str>& params, const int i);
-         void add_uncertainty_high(const double rd, const Par::Phys tag, const std::vector<str>& params, const int i);
-         void add_uncertainty_low (const double rd, const Par::Phys tag, const std::vector<str>& params, const int i);
-         void add_uncertainty     (const double rd, const Par::Phys tag, const str& par, const std::vector<int> indices);
-         void add_uncertainty_high(const double rd, const Par::Phys tag, const str& par, const std::vector<int> indices);
-         void add_uncertainty_low (const double rd, const Par::Phys tag, const str& par, const std::vector<int> indices);
-         void add_uncertainty     (const double rd, const Par::Phys tag, const str& par, const int i);
-         void add_uncertainty_high(const double rd, const Par::Phys tag, const str& par, const int i);
-         void add_uncertainty_low (const double rd, const Par::Phys tag, const str& par, const int i);
-
    };
    
   
@@ -325,9 +298,17 @@ namespace Gambit
  
          /* The parameter overrides are handled entirely by this base class, so
             they are not virtual.  */
-         void set_override(const ParamType, const double, const str&, bool safety = true);
-         void set_override(const ParamType, const double, const str&, int, bool safety = true);
-         void set_override(const ParamType, const double, const str&, int, int, bool safety = true);
+         void set_override(const ParamType, const double, const str&, const bool safety = true);
+         void set_override(const ParamType, const double, const str&, const int, const bool safety = true);
+         void set_override(const ParamType, const double, const str&, const int, const int, const bool safety = true);
+
+         /* Helpers for override functions which take parameter names and indices as vectors, and
+            loop over them, to make it easy to set many parameters to the same value.
+            No two-index versions at the moment, but could be added if needed. */
+         void set_override_vector(const ParamType, const double, const std::vector<str>&, bool safety = true);
+         void set_override_vector(const ParamType, const double, const std::vector<str>&, const std::vector<int>, bool safety = true);
+         void set_override_vector(const ParamType, const double, const std::vector<str>&, const int, bool safety = true);
+         void set_override_vector(const ParamType, const double, const str&, const std::vector<int>, bool safety = true);
 
          /* Overloads of getter/checker functions to allow access using PDG codes */
          /* as defined in Models/src/particle_database.cpp */

@@ -201,27 +201,24 @@ namespace Gambit
       static const int i123456v[] = {1,2,3,4,5,6};
       static const std::vector<int> i123456(i123456v, Utils::endA(i123456v));
 
-      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_pred); // 3% theory "error" 
-      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_6, i123456);
-      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, "~chi0", i1234);
-      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_3, i123);
-      mssmspec.add_uncertainty(0.03, Par::Pole_Mass, ms.pole_mass_strs_1_2, i12);
-    
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error" 
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error" 
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, "~chi0", i1234, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_3, i123, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_3, i123, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12, false);
+
       /// do the Higgs mass seperately
       /// Default in most codes is 3 GeV,
       /// seems like an underestimate if the stop masses are heavy enough.  
       double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.add_uncertainty(rd_mh, Par::Pole_Mass, "h0", i1234);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i1234, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i1234, false);
  
-      // For different high and low errors:
-      // mssmspec.add_uncertainty_high(rd_mh_low, Par::Pole_Mass, "mh0", i1234);
-      // mssmspec.add_uncertainty_low(rd_mh_high, Par::Pole_Mass, "mh0", i1234);
-
-      // Or could do it manually 
-      //double rd_mh_low = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      //double rd_mh_high =  3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      //mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_low,"rd_h0_low", 1, false);
-      //mssmspec.phys().set_override(Par::Pole_Mass,rd_mh_high,"rd_h0_high",1, false);
      
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
