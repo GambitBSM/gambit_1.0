@@ -417,11 +417,7 @@ START_MODULE
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
-
-
-
-
-
+  #undef CAPABILITY
 
   // Observable: A_I(B -> K* mu mu)
   #define CAPABILITY AI_BKstarmumu

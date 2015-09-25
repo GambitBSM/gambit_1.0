@@ -79,6 +79,19 @@ namespace Gambit
     void FH_precision_edm_hg  (double &result) { result = Pipes::FH_precision_edm_hg::Dep::FH_Precision->edm_Hg;     }
     /// @}
 
+    /// Precision MSSM spectrum manufacturer that lies.
+    void fake_MSSM_precision_spectrum(const Spectrum* &result)
+    {
+      using namespace Pipes::fake_MSSM_precision_spectrum;
+      static Spectrum improved_spec;
+      improved_spec = **Dep::unimproved_MSSM_spectrum;
+      SubSpectrum* HE = improved_spec.get_HE();
+      SubSpectrum* LE = improved_spec.get_LE();
+      HE->phys().set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
+      LE->phys().set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
+      result = &improved_spec;
+    }
+
     /// Precision MSSM spectrum manufacturer
     void make_MSSM_precision_spectrum(const Spectrum* &result)
     {

@@ -69,6 +69,13 @@ START_MODULE
     DEPENDENCY(prec_sinW2_eff, double)
     DEPENDENCY(prec_HiggsMasses, fh_HiggsMassObs)
     #undef FUNCTION
+    //FIXME temp for getting around FH bugs
+    #define FUNCTION fake_MSSM_precision_spectrum
+    START_FUNCTION(const Spectrum*)
+    DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(prec_mw, double)
+    DEPENDENCY(prec_sinW2_eff, double)
+    #undef FUNCTION
   #undef CAPABILITY
   
   // Basic mass/coupling extractors for different types of spectra, for use with precision likelihoods
