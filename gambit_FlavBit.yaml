@@ -48,8 +48,8 @@ ObsLikes:
     capability:   Dsmunu
   - purpose:      Observable
     capability:   Dmunu
-  - purpose:      Observable
-    capability:   muon_gm2
+#  - purpose:      Observable
+#    capability:   muon_gm2
   - purpose:      Observable
     capability:   delta0
   - purpose:      Observable
@@ -91,6 +91,10 @@ Rules:
     function: get_MSSMatQ_spectrum  
     options:
       invalid_point_fatal: true
+      
+  - capability: MSSM_spectrum
+    function: fake_MSSM_precision_spectrum
+
 
 Logger:
 
