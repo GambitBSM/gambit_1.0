@@ -73,8 +73,6 @@ START_MODULE
     #define FUNCTION fake_MSSM_precision_spectrum
     START_FUNCTION(const Spectrum*)
     DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
-    DEPENDENCY(prec_mw, double)
-    DEPENDENCY(prec_sinW2_eff, double)
     #undef FUNCTION
   #undef CAPABILITY
   

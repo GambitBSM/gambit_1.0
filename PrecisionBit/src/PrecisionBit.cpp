@@ -87,8 +87,8 @@ namespace Gambit
       improved_spec = **Dep::unimproved_MSSM_spectrum;
       SubSpectrum* HE = improved_spec.get_HE();
       SubSpectrum* LE = improved_spec.get_LE();
-      HE->phys().set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
-      LE->phys().set(Par::Pole_Mass, *Dep::prec_mw, "W-");    //FIXME need to add uncertainty too
+      HE->phys().set(Par::Pole_Mass, 80.0, "W-");    //FIXME need to add uncertainty too
+      LE->phys().set(Par::Pole_Mass, 80.0, "W-");    //FIXME need to add uncertainty too
       result = &improved_spec;
     }
 
