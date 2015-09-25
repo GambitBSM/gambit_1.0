@@ -1,30 +1,9 @@
 #!/usr/bin/env python
 
-"""Displays the tree structure of the PySUSY CMSSM evidence project
-hdf5 database"""
+"""Displays the tree structure of a hdf5 file"""
 
-#import numpy as np
 import h5py
-#import matplotlib.pyplot as plt
-#import time
-#import hdf5tools as l
 import sys
-
-"""
-print list(f)
-print f['full'].name
-print f['full/log'].name
-print f['full']['log'].name
-print f['full/log/mu+'].name
-"""
-#root='/home/farmer/Projects/pysusyAnalysis/CMSSMpoints/'
-#root='/media/Elements/Computer_dumps/pysusyAnalysis/CMSSMpoints/'
-#root='/media/backup1/temp_CMSSM_backup/pysusyAnalysis/CMSSMpoints/'
-#root='/media/backup1/temp_CMSSM_backup/pysusyAnalysis/CMSSMpoints/CMSSMproject_tmp/xe/'
-#root='/media/backup1/xe_short_backups/CMSSMev-completed-runs/'
-
-#f = h5py.File(root+'CMSSMev.hdf5_test2','r')
-#f = h5py.File(root+'CMSSMev_OLD.hdf5','r')
 
 def usage():
    print ("\nusage: python treehdf5.py <path-to-hdf5-file>\n"
@@ -96,7 +75,7 @@ def printcontents(item,prelines):
 
 printcontents(f,'')
                                         
-#quit()
+quit()
 
 ##  #test extraction of data from dataset
 

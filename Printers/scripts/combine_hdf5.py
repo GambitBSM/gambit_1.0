@@ -217,16 +217,18 @@ for i in range(N):
 
       if runchecks:
          print "   checking input selection for duplicate keys..."
-         seen = []
-         allid = []       
-         for ID,p,r in zip(IDs_in,pointIDs_in[mask_in],mpiranks_in[mask_in]):
-            if ID in seen:
-               print "   Warning!", ID, "is duplicated!"
-               x=(ID,p,r)
-               if x in allid:
-                 print "   ...and so are the pointID and MPIrank:", x
-            seen+=[ID]
-            allid+=[(ID,p,r)]
+         ids  = IDs_in
+         pid  = pointIDs_in[mask_in]
+         rank = mpiranks_in[mask_in]
+         for ID,p,r in zip(ids,pid,rank):
+            Nmatches = np.sum(ID==ids)
+            if Nmatches>1:
+               print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
+               pMatch = np.sum(p==pid)
+               rMatch = np.sum(r==rank)
+               if pMatch>1 or rMatch>1:
+                 print "   ...pointID duplicate count: ", pMatch
+                 print "   ...MPIrank duplicate count: ", rMatch
 
       # Find them in the target output file
       pointIDs_out         = fout[group]["pointID"]
@@ -235,23 +237,25 @@ for i in range(N):
       mpiranks_isvalid_out = np.array(fout[group]["MPIrank_isvalid"][:],dtype=np.bool)
  
       mask_out = (pointIDs_isvalid_out & mpiranks_isvalid_out) 
-      print "...{0} RA targets found.".format(np.sum(mask_out))
+      print "...{0} possible RA targets found.".format(np.sum(mask_out))
 
       # convert entries to single values to facilitate fast comparison
       IDs_out = cantor_pairing(pointIDs_out[mask_out],mpiranks_out[mask_out])
 
       if runchecks:
          print "   checking output selection for duplicate keys..."
-         seen = []
-         allid = []       
-         for ID,p,r in zip(IDs_out,pointIDs_out[mask_out],mpiranks_out[mask_out]):
-            if ID in seen:
-               print "   Warning!", ID, "is duplicated!"
-               x=(ID,p,r)
-               if x in allid:
-                 print "   ...and so are the pointID ({0}) and MPIrank ({0})".format(p,r)
-            seen+=[ID]
-            allid+=[(ID,p,r)]
+         ids  = IDs_out
+         pid  = pointIDs_out[mask_out]
+         rank = mpiranks_out[mask_out]
+         for ID,p,r in zip(ids,pid,rank):
+            Nmatches = np.sum(ID==ids)
+            if Nmatches>1:
+               print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
+               pMatch = np.sum(p==pid)
+               rMatch = np.sum(r==rank)
+               if pMatch>1 or rMatch>1:
+                 print "   ...pointID duplicate count: ", pMatch
+                 print "   ...MPIrank duplicate count: ", rMatch
 
       # Find which IDs in the output dataset are write targets
       target_mask_small = np.in1d(IDs_out,IDs_in)
