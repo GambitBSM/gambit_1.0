@@ -1,33 +1,29 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  CMSSM model declaration
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Ben Farmer
-//  2015 Jan
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  CMSSM model definition. 
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Ben Farmer  
+///  \date 2015 Jan
+///
+///  *********************************************
 
 #ifndef __CMSSM_hpp__
 #define __CMSSM_hpp__
 
-#include "gambit/Models/models/MSSM30atMGUT.hpp" // Must include models which are targets of translation functions
+// Must include models which are targets of translation functions
+#include "gambit/Models/models/NUHM1.hpp"
 
 #define MODEL CMSSM
-#define PARENT MSSM30atMGUT
+#define PARENT NUHM1
   START_MODEL
   DEFINEPARS(M0,M12,A0,tanb,signmu)
-
-  //INTERPRET_AS_X__FUNCTION(MSSM78atMGUT, CMSSM_to_MSSM78atMGUT)
-  INTERPRET_AS_PARENT__FUNCTION(CMSSM_to_MSSM30atMGUT)
-
+  INTERPRET_AS_PARENT__FUNCTION(CMSSM_to_NUHM1)
   // Translation functions defined in CMSSM.cpp
 #undef PARENT
 #undef MODEL
