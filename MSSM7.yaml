@@ -120,9 +120,17 @@ ObsLikes:
 
     - capability: lnL_deltarho  
       purpose:  Likelihood
-      
+
+    - purpose:      Likelihood
+      capability:   b2ll_LL
+
+    - purpose:      Likelihood
+      capability:   SL_LL
+
+    - purpose:      Likelihood                                                                                       
+      capability:   b2sll_LL
+        
     # Missing:
-    # 3 x Flav likelihoods
     # LHC combined likelihood
     # LEP Likelihood
     # Higgs bounds and signals likelihoods
