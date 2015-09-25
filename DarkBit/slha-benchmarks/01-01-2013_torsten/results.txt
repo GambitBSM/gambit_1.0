@@ -1,0 +1,6 @@
+GAMBIT test SLHA interface
+           DS, MI
+- test_100.slha, 0.0743, 0.0725
+- test_200.slha, 0.114, 0.116
+- test_300.slha, 0.131, 0.136
+- test_co.slha,  0.52781 (0.0489 with coannihilation switched on and fast=0, 1min), 0.04828 (0.0483 with fast=0, 1sec)

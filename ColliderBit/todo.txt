@@ -1,0 +1,30 @@
+get rid of 'iter'
+'getOptions' from within 'getPythia' should be enough
+Anything else which 'getPythia' needs should be a dependency
+Allow Gambit to hook up and run the various Pythias in whatever order
+
+See if I can get rid of flags... or pass as dependencies.
+
+Try to statically declare and "reset" subclasses of things...
+  - ex. getPythia can simply return a PythiaBase... no need for a pointer
+  - no need for things to be new'd
+
+Eliminate range-based for loops... Not supported by all compiler versions in
+Code Policies document.
+
+
+How to valgrind to find ColliderBit memory issues:
+valgrind --tool=memcheck --memcheck:leak-check=full --show-reachable=yes --suppressions=valgrindColliderBit.supp ./gambit -f gambit_Collider.yaml
+
+
+
+
+Two protons walked into a bar and said, "Ouch."
+They MET, but then they had two jet(s).
+The headline said that the LHC has still not found SUSY.
+
+
+
+
+
+

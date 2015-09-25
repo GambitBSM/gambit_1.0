@@ -1,0 +1,51 @@
+#! /usr/bin/env python
+
+"""\
+Usage: %prog <slha_template_file>
+"""
+
+import optparse, os
+op = optparse.OptionParser(usage=__doc__)
+op.add_option("-n", "--name", help="name to be used as output dir & base name of scanned SLHA files; default to based on name of input file", dest="NAME", default=None)
+# TODO: add options like PID:numpoints:low..high to define the scan?
+opts, args = op.parse_args()
+
+import pyslha
+infile = args[0]
+doc = pyslha.read(infile)
+
+import numpy as np
+# mg_range = np.arange(200, 1601, 50)
+# mX_range = np.arange(50, 801, 50)
+mq_range = np.arange(50, 1101, 50)
+mX_range = np.arange(50, 551, 50)
+
+
+numpts = 0
+# for mg in mg_range:
+for mx in mq_range: #< gluino or squark
+    for mX in mX_range:
+        if mX > mx: continue #< kinematic limit, since x -> X decay is needed
+        numpts += 1
+        ## Neutralino
+        doc.blocks["MASS"][1000022] = mX
+        ## Gluino
+        # doc.blocks["MASS"][1000021] = m1
+        ## Squarks
+        for i in range(1000001, 1000005): #< q_L
+            doc.blocks["MASS"][i] = mx
+        for i in range(2000001, 2000005): #< q_R, comment this out for the onestep non-degenerate scenario
+            doc.blocks["MASS"][i] = mx
+        #print doc.blocks["MASS"]
+        if opts.NAME:
+            outdir = opts.NAME
+            basename = opts.NAME
+        else:
+            outdir = infile.replace(".slha", "_scan")
+            basename = infile.replace(".slha", "")
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        outfile = basename + "_{:04d}_{:04d}.slha".format(int(mx), int(mX))
+        doc.write(os.path.join(outdir, outfile))
+
+print "Num points = %d" % numpts

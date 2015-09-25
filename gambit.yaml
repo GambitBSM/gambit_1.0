@@ -1,0 +1,473 @@
+# GAMBIT Initialization file (in YAML)
+#
+# Christoph Weniger <c.weniger@uva.nl>
+# June, July 2013
+#
+# Ben Farmer <ben.farmer@gmail.com>
+# Dec 2013
+#
+
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters: 
+ !import parameters.yaml
+
+
+##############################
+# Prior setup
+##############################
+
+Priors:
+
+  # Here specify the priors, the parameters they work with, and any options as needed for that prior
+  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
+  # and then they are combined into a "composite" prior 
+
+  # (I put this is a section outside of CMSSM_I, since in principle we could create composite priors that
+  # mix together parameters of different models, though that would be weird. Might have to specify the
+  # model name along with the parameter... e.g. CMSSM_I::M0, as in the "same_as" option.
+  # The category names for each sub-prior are arbitrary, but I think needed due to the way yaml works.
+  # (since I can't have several categories with the same name, e.g. "log")
+  # Will need to think about how to deal with "effective" priors also...
+  # Maybe just specify a module function which computes the effective prior factor?
+  # Gambit will have to know to use this effective prior to weight the likelihood.
+  # Really it can go straight into the likelihood, it is just that we need to keep
+  # track of it so that it can be REMOVED from the likelihood when plotting
+  # the likelihood itself (since it is NOT a likelihood). Actually, I think we
+  # decided that we can deal with this via the "purpose" system.
+
+  #m0_prior:
+  #  parameters: [CMSSM::M0]
+  #  prior_type: log
+  #  range: [0.001,1000]
+
+  m12_prior: 
+    parameters: [CMSSM::M12]
+    prior_type: composite
+    options: 
+      new_prior: 
+        parameters: [CMSSM::M12]
+        prior_type: log
+        range: [100,2000]
+
+  tanbA0_prior: 
+    parameters: [CMSSM::tanb, CMSSM::A0]
+    prior_type: cauchy
+    options:
+      cov: [[0.5, 0.1],[0.1, 0.6]]
+      demo: 45
+
+
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer. 
+  options:
+    # name of output file
+    output_file: "runs/example_minimal_test/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/example_minimal_test/samples/gambit_output.info"
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+#  use_objectives: [uniform]
+  use_scanner: mcmc
+  
+# Scanners
+
+  scanners:
+    mcmc:
+      plugin: toy_mcmc
+      options:
+        point_number: 2
+        output_file:  output
+        like:  Likelihood
+
+    random:
+      plugin: random_sampler
+      point_number: 20
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
+    
+    nested:
+      plugin: multinest
+      nlive: 500
+      tol: 0.1
+      output_file:  output
+    
+    twalk_beta:
+      plugin: twalk
+      kwalk_ratio: 0.9836
+      projection_dimension: 4
+      gaussian_distance: 2.4
+      walk_distance: 2.5
+      transverse_distance: 6.0
+      ran_seed: 0
+      file_name: output_file
+      tolorance: 1.01
+      thread_number: 10
+      cut: 100
+                
+    square_grid:
+      plugin: square_grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
+        
+    grid:
+      plugin: grid
+      version: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: [4, 2]
+    
+  objectives:
+
+    uniform:
+      plugin: uniform
+      parameters:
+        param...2:
+          range: [-1, 1]
+
+
+
+###############################
+# Observables of interest
+###############################
+
+ObsLikes:
+
+  # Ben: In order to make the printer system robust, I believe we 
+  # have to specify here explicitly everything that we want to print.
+  # For now, I am taking it that we want to print the 'observables
+  # of interest' and nothing else.
+  # In the future, we may want to add extra flags here like 
+  # "do not print me", and extra options to be passed from that
+  # function to the printer, say if we want it to print to a different
+  # file or database or something.
+  # In factor, for types that have mutable size, say vectors, we will
+  # probably need to pass in a parameter saying how to reserve output
+  # space for the observable (e.g. number of columns to give it in a
+  # table), and will have to throw an error if this is exceeded. I
+  # don't think we can reasonably do this dynamically... some printers
+  # may be able to handle it though. Anyway the simple ones won't be
+  # able to do this.
+  # Oh, actually some kinds of databases would allow us print different
+  # obserables at different iterations. So it will depend on the printer.
+
+  # Uncomment to test DarkBit
+  #- purpose:      Likelihood
+  #  capability:   RD_oh2
+
+  # Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
+  - purpose:      Likelihood
+    capability:   lnL_ExampleBitB
+    type:         double
+    function:     ""
+    module:       ""
+
+  # Uncomment to test neutrino likelihoods
+  #- purpose:      Likelihood
+  #  capability:   IceCube_likelihood
+  #  function:     IC79_loglike
+
+  # Uncomment to test DD likelihoods
+#  - purpose:      Likelihood
+#    capability:   lnL_LUX_2013
+
+  # Uncomment to test FastSim
+  #- purpose:      Likelihood
+  #  capability:   fast_sim
+
+  # Uncomment to test array and -> operators in safety buckets.
+  - purpose:      Observable
+    capability:   ptrmeth_arr_tester
+
+  # Uncomment to test Farrays.
+  - purpose:      Observable
+    capability:   doFarrayStuff
+
+  # Uncomment 'purpose' and one of the 'capability' entries to test BOSS
+  - purpose:      Observable
+    capability:   Pythia_tester
+  #  capability:   BOSS_tester
+
+  # Test multi-required-models
+  - purpose:      Observable
+    capability:   normaldist_loglike
+
+  # Test loop manager
+  - purpose:      Likelihood
+    capability:   nevents_like
+    type:         double
+
+  # Test marginalised Poisson likelihood
+  - purpose:  Likelihood
+    capability: marg_lnlike_test
+
+  # Uncomment to test FlavBit
+  #- purpose:      NotLikelihood
+    #capability:   SI_fill
+    #printme:      false
+  #- purpose:      Likelihood
+    #capability:   SI_bsgamma
+  #- purpose:      Likelihood
+    #capability:   SI_Bsmumu
+  #- purpose:      Likelihood
+    #capability:   SI_Bsmumu_untag
+  #- purpose:      Likelihood
+    #capability:   SI_Bdmumu
+  #- purpose:      Likelihood
+    #capability:   SI_Btaunu
+  #- purpose:      Likelihood
+    #capability:   SI_BDtaunu
+  #- purpose:      Likelihood
+    #capability:   SI_BDtaunu_BDenu
+  #- purpose:      Likelihood
+    #capability:   SI_Kmunu_pimunu
+  #- purpose:      Likelihood
+    #capability:   SI_Rmu23
+  #- purpose:      Likelihood
+    #capability:   SI_Dstaunu
+  #- purpose:      Likelihood
+    #capability:   SI_Dsmunu
+  #- purpose:      Likelihood
+    #capability:   SI_Dmunu
+  #- purpose:      Likelihood
+    #capability:   SI_muon_gm2
+  #- purpose:      Likelihood
+    #capability:   SI_delta0
+  #- purpose:      Likelihood
+    #capability:   SI_BRBXsmumu_lowq2
+  #- purpose:      Likelihood
+    #capability:   SI_BRBXsmumu_highq2
+  #- purpose:      Likelihood
+    #capability:   SI_A_BXsmumu_lowq2
+  #- purpose:      Likelihood
+    #capability:   SI_A_BXsmumu_highq2
+  #- purpose:      Likelihood
+    #capability:   SI_A_BXsmumu_zero
+  #- purpose:      Likelihood
+    #capability:   SI_BRBXstautau_highq2
+  #- purpose:      Likelihood
+    #capability:   SI_A_BXstautau_highq2
+  #- purpose:      Likelihood
+    #capability:   SI_BRBKstarmumu
+  #- purpose:      Likelihood
+    #capability:   SI_AI_BKstarmumu
+  #- purpose:      Likelihood
+    #capability:   SI_AI_BKstarmumu_zero
+    
+  # Uncomment to test HiggsBit
+  #- purpose:  Likelihood
+  #  capability:  HB_LEPchisq
+  #- purpose:  Likelihood
+  #  capability:  HS_LHCchisq
+
+  # Uncomment to test ColliderBit
+  #- purpose:      Observable
+  #  capability:   analysisAccumulator
+
+  # Test vector output of printer
+  #- purpose:      Observable
+  #  capability:   test_vector
+  #  type:         std::vector<double>
+
+  ## Test DarkBit relic density with Micromegas
+  #- purpose:      Likelihood
+  #  capability:   RD_oh2
+  #  type:         double
+  #  function:     RD_oh2_micromegas
+  #  function:     RD_oh2_DarkSUSY
+  
+  ## Test DarkBit DD couplings with micrOMEGAs and DarkSUSY
+  #- purpose:      Observable
+  #  capability:   DD_couplings
+  #  type:         DarkBit::DD_couplings
+  #  function:     DD_couplings_micrOMEGAs
+  #  function:     DD_couplings_DarkSUSY
+
+#########################
+# Auxiliary entries
+#########################
+
+Rules:
+  - capability: A0_decay_rates
+    function: A0_decays
+  - capability: Higgs_decay_rates
+    function: MSSM_h0_1_decays
+  - capability: Hplus_decay_rates
+    function: Hplus_decays
+  - capability: h0_2_decay_rates
+    function: h0_2_decays
+  - capability: t_decay_rates
+    function: t_decays
+
+  - capability: unimproved_MSSM_spectrum
+    options:
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: true
+
+  - capability: DD_couplings
+    function: DD_couplings_DarkSUSY
+
+  - !weak
+    capability: DD_couplings
+    function: DD_couplings_MicrOmegas
+
+  #ColliderBit options (note, these ones are mandatory at this moment)
+  - capability:  colliderLoopManager
+    function:    manageVanillaLoop
+    options:
+      nEvents:   2000
+
+  - capability:  GambitColliderEvent
+    function:    reconstructDelphesEvent
+    options:
+      delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl" 
+
+  - capability:  hardScatteringEvent
+    function:    generatePythia8Event
+    options:
+      slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
+
+  - capability:   analysisAccumulator
+    dependencies:
+    - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
+
+#Choose either a log-normal or a Gaussian distribution to marginalise over
+  #for the marginalised Poisson likelihood example.
+  - capability: marg_lnlike_test
+    backends:
+    - {capability: lnlike_marg_poisson_lognormal_error}
+
+  - capability:   RD_oh2
+    function:     RD_oh2_micromegas
+    options:
+      fast: 1
+      Beps: 1e-5
+
+  - capability:   RD_oh2
+    function:     RD_oh2_DarkSUSY
+    options:
+      fast: 0
+      omtype: 1
+
+  - capability:   "omega_DM"
+    type:         ""
+    function:     ""
+    module:       ""
+    dependencies:
+    - {capability: "Weff", type: "", function: "Weff", module: ""}
+    backends:
+    - {capability: "", function: "", backend: "", version: ""}
+
+  - capability:   "LibFirst_1_1_init"
+    dependencies:
+    - {capability: "nevents", module: "ExampleBit_A"}  
+
+  - capability:    "nevents_postcuts"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
+
+  - capability:    "MSSM_demo_parameters"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
+
+  - capability:    "xsection"
+    options:
+      scale: 15.5
+
+  - capability:    "function_pointer"
+    backends:
+    - {function: "externalFunction2"}
+
+  #- capability:   "awesomeness"
+  #  type:         ""
+  #  function:     ""
+  #  backend:      "libFirst"
+
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirectory of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
+
+  prefix : "runs/example_minimal_test/logs/"
+  redirection:
+    [Debug] : stdout # "debug.log"
+    [Default] : stdout #"default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+    [Core,Error] : "core_errors.log"
+    [Core,Error,Fatal] : "fatal_core_errors.log"
+    [Dependency Resolver] : stdout #"dependency_resolver.log"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [BackendIniBit]: "BackendIniBit.log"
+    [LibFirst] : "libfirst.log"
+  #  [Logger, Debug] : "stdout"
+    [Core] : "Core.log"
+  #  [Dependency Resolver] : "stdout"
+
+
+###############################
+## Printer (output) setup
+###############################
+
+# Ben: Here we will choose which printer(s?) we want to use. For now
+# it is hardcoded: I'll come back to this.
+
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    ExampleBit_A_error: non-fatal

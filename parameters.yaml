@@ -1,0 +1,69 @@
+# First, simply register parameters, whether they are fixed, what value they are fixed to etc
+# Ben: the 'ranges' keyword CAN be entered here. If this is done, GAMBIT assumes you want
+# to sample from a flat prior over this range. For any other prior, you need to specify it
+# properly in the "priors" section.
+
+#StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+CMSSM:
+  A0:
+  #  range: [-1000, 1000]
+  M0:
+    prior_type: log
+    range: [0.001,1000]
+  M12:
+  #  same_as: CMSSM::M0
+  signmu:
+    range: [-1, 1]
+    fixed_value: 1
+  tanb:
+  #  fixed_value: 1
+
+NormalDist:
+  mu:
+    fixed_value: 1
+  sigma:
+    fixed_value: 1
+
+#nuclear_params_fnq:
+#  # proton hadronic matrix elements
+#  fpd:
+#    fixed_value: 0.0191
+#  fpu:
+#    fixed_value: 0.0153
+#  fps:
+#    fixed_value: 0.0447
+#  # neutron hadronic matrix elements
+#  fnd:
+#    fixed_value: 0.0273
+#  fnu:
+#    fixed_value: 0.011
+#  fns:
+#    fixed_value: 0.0447
+#  # proton spin content
+#  deltad:
+#    fixed_value: -0.427
+#  deltau:
+#    fixed_value: 0.842
+#  deltas:
+#    fixed_value: -0.085
+
+# Ben: this was in the old inifile: I don't know what it does 
+#  param_not_in_gambit:
+    # range: [-1, 1]
+
+# The "adhoc" model bypasses ModelBit and produces some model parameter nodes
+# on the fly. This can be used for testing purposes.
+#adhoc:
+#  m0:
+#    fixed: true
+#    range: [0, 5]
+#  m1:
+#    fixed: true
+#    range: [6, 10]
+#  m2:
+#    fixed: true
+#    range: [50, 500]
+
+# Ben: proposed replacement for the input parameters section (to allow more general treatment of priors)
+

@@ -1,0 +1,113 @@
+# DecayBit test file (in YAML)
+# Only needs DecayBit and backend SUSYHIT.
+#
+# Pat Scott <p.scott@imperial.ac.uk>
+# Oct 2014
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters:
+
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+  StandardModel_Higgs:
+    mH:
+      fixed_value: 125.9
+    vev:
+      fixed_value: 246.0
+
+  SingletDM:
+    mS:
+      range: [45, 100]
+      prior_type: log
+    lambda_hS:
+      range: [0.005, 0.5]
+      prior_type: log
+
+Priors:
+    # set in parameters section
+
+Scanner:
+
+  use_scanner: toy_mcmc
+  
+  scanners:
+    toy_mcmc:
+      plugin: toy_mcmc
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
+            
+ObsLikes:
+
+  # Test DecayBit    
+  - purpose:      Test
+    capability:   decay_rates
+    type:         DecayTable
+
+Rules:
+
+  - capability: decay_rates
+    function: all_decays
+
+      
+            
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer. 
+  options:
+    # name of output file
+    output_file: "runs/DecayBit_test/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/DecayBit_test/samples/gambit_output.info"
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
+
+  prefix : "runs/DecayBit_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+    [Core,Error] : "core_errors.log"
+    [Core,Error,Fatal] : "fatal_core_errors.log"
+    [Dependency Resolver] : "dependency_resolver.log"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [DecayBit] : "DecayBit.log"
+
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+

@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+
+mkdir run
+for i in slha/*.slha; do
+    name=`basename $i .slha`
+    mkdir run/$name
+    cp $i run/$name/spectrum.slha
+done

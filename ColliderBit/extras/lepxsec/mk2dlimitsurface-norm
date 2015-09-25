@@ -1,0 +1,123 @@
+#! /usr/bin/env python
+
+from p2 import *
+import numpy as np
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+from pprint import pprint
+
+
+## Define limit contour and find norms on double-sampled line
+LIMIT_POINTS = [P2(0,9), P2(1,8), P2(2,6), P2(3,4.5), P2(4,4), P2(6,5), P2(8,5.5), P2(9,6), P2(10,6)]
+#pprint(LIMIT_POINTS)
+
+
+## First construct the list of (point,norm) for points _between_ the originals
+points_norms = [[midpoint(LIMIT_POINTS[i], LIMIT_POINTS[i+1]),
+                 unitnormal(LIMIT_POINTS[i], LIMIT_POINTS[i+1])] for i in xrange(len(LIMIT_POINTS)-1)]
+#print; pprint(points_norms)
+
+## Then fill the gaps
+assert len(points_norms) == len(LIMIT_POINTS)-1
+for ipt, pt in enumerate(LIMIT_POINTS[1:-1]):
+    norm = (points_norms[2*ipt][1] + points_norms[2*ipt+1][1])/2.0
+    points_norms.insert(2*ipt+1, [pt, norm])
+    #print; pprint(points_norms)
+
+## Put on the original end points, with duplicated norms
+points_norms = [[LIMIT_POINTS[0], points_norms[0][1]]] + points_norms
+points_norms += [[LIMIT_POINTS[-1], points_norms[-1][1]]]
+#print; pprint(points_norms)
+
+## And fill the gaps again and again...
+for n in xrange(2):
+    for ipt in xrange(len(points_norms)-1):
+        pt = midpoint(points_norms[2*ipt][0], points_norms[2*ipt+1][0])
+        norm = (points_norms[2*ipt][1] + points_norms[2*ipt+1][1])/2.0
+        points_norms.insert(2*ipt+1, [pt, norm])
+        #print; pprint(points_norms)
+#print; pprint(points_norms)
+
+## Plot contour and normal arrows
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+ax.set_ylim(2,10)
+ax.hold(True)
+ax.plot([p.x for (p,v) in points_norms], [p.y for (p,v) in points_norms], "b-")
+ax.quiver([p.x for (p,v) in points_norms], [p.y for (p,v) in points_norms],
+          [v.x for (p,v) in points_norms], [v.y for (p,v) in points_norms])
+fig.savefig("norms.pdf")
+
+
+## Construct off-contour points along norm vectors
+NUM_NORMPOINTS = 15
+def sigmoid(x, width=1):
+    return (1 + np.tanh(x/width/2)) / 2
+newpoints = []
+for (p, v) in points_norms:
+    for a in np.linspace(-1.5, 1.5, NUM_NORMPOINTS):
+        newpoints.append( [p+a*v, sigmoid(a, 0.3)] )
+#print; pprint(newpoints)
+
+## Plot norm-sampled points
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+ax.set_ylim(2,10)
+ax.plot([p.x for (p,v) in newpoints], [p.y for (p,v) in newpoints], "r.")
+for p, v in newpoints[::3]:
+    ax.text(p.x, p.y, "{:0.2g}".format(v), fontsize="xx-small", color="gray")
+ax.axhline(max(p.y for p in LIMIT_POINTS), linestyle=":")
+ax.axvline(min(p.x for p in LIMIT_POINTS), linestyle=":")
+fig.savefig("newpoints.pdf")
+
+
+## Fill the 0 and 1 regions far from the limit curve... manually :-/
+MIN_POINTS = [P2(0,y) for y in xrange(6)] + [P2(x,0) for x in xrange(10)]
+MAX_POINTS = [P2(10,y) for y in xrange(8,11)] + [P2(x,10) for x in xrange(3,11)]
+
+
+# ## Interpolate into a full 2D grid
+from scipy import interpolate
+xs = [p.x for (p,val) in newpoints] + [p.x for p in MIN_POINTS] + [p.x for p in MAX_POINTS]
+ys = [p.y for (p,val) in newpoints] + [p.y for p in MIN_POINTS] + [p.y for p in MAX_POINTS]
+vs = [val for (p,val) in newpoints] + [1e-6 for p in MIN_POINTS] + [1 for p in MAX_POINTS]
+ipol = interpolate.SmoothBivariateSpline(xs, ys, vs) #, kx=5, ky=5)
+ipolv = np.vectorize(ipol)
+#
+xs2 = np.linspace(min(p.x for p in LIMIT_POINTS), max(p.x for p in LIMIT_POINTS), 100)
+ys2 = np.linspace(min(p.y for p in LIMIT_POINTS), max(p.y for p in LIMIT_POINTS), 100)
+xx, yy = np.meshgrid(xs2, ys2)
+vv = ipolv(xx, yy)
+vv_clipped = np.clip(vv, 0, 1)
+#np.set_printoptions(threshold=np.nan)
+#print vv #abs(vv) > 1
+
+
+## Smear with another 2D Gaussian
+from scipy import signal
+# TODO: use signal.convolve2d
+
+
+# ## Mask kinematically inaccessible regions
+# for i, x in enumerate(xs2):
+#     for j, y in enumerate(ys2):
+#         if y > 8/5*x + 4 or y > 16 - 8/5*x + 4:
+#             #print x, y
+#             vv_clipped[j,i] = 1.0
+
+
+## Plot interpolated contour
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+#ax.set_ylim(2,10)
+ax.hold(True)
+c = ax.contourf(xx, yy, vv_clipped, vmin=0, vmax=1)
+ax.contour(xx, yy, vv_clipped, [0.5], colors="white", linestyles="dashed", linewidths=2, interpolation="gaussian")
+#cb = mpl.colorbar.ColorbarBase(boundaries=np.linspace(0,1,6))
+cb = fig.colorbar(c) #, cmap=mpl.cm.hot)
+#cb.set_clim(0,0.5)
+# for i, x in enumerate(xs2):
+#     for j, y in enumerate(ys2):
+#         if i and i % 10 == 0 and j and j % 10 == 0:
+#             ax.text(x, y, "{:0.2g}".format(vv_clipped[j,i]), ha="center", va="center", fontsize="xx-small",color="white")
+fig.savefig("contour.pdf")

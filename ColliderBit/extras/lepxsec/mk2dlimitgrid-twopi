@@ -1,0 +1,123 @@
+#! /usr/bin/env python
+
+from __future__ import division
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.colors import BoundaryNorm
+
+from p2 import P2, LineSegment
+
+import optparse
+op = optparse.OptionParser()
+opts, args = op.parse_args()
+
+## Limit contours read from file. Plot limits read from extremum of the data.
+limitContours = {}
+
+# For the xsection limit plot: x = some mass, y = some other mass, z = xsec limit
+xmin = np.inf
+xmax = -np.inf
+ymin = np.inf
+ymax = -np.inf
+zmin = np.inf
+zmax = -np.inf
+
+for a in args:
+    try:
+        # NOTE: An input of the lowest xsec limit...
+        if float(a) < zmin:
+            zmin = float(a)
+        continue
+    except:
+        pass
+    fname, xsec = a.split(":")
+    limitContours[xsec] = []
+    limitPoints = []
+    if float(xsec) > zmax:
+        zmax = float(xsec)
+    with open(fname) as f:
+        for line in f:
+            xy = [float(i) for i in line.strip().split()]
+            if xy[0] > xmax:
+                xmax = xy[0]
+            if xy[0] < xmin:
+                xmin = xy[0]
+            if xy[1] > ymax:
+                ymax = xy[1]
+            if xy[1] < ymin:
+                ymin = xy[1]
+            limitPoints.append(P2(xy[0], xy[1]))
+    for i in xrange(len(limitPoints) - 1):
+        limitContours[xsec].append(LineSegment(limitPoints[i], limitPoints[i+1], 0.01))
+    # NOTE: The data will enforce closed contours, so this is unneccessary
+    ###### limitContours[xsec].append(LineSegment(limitPoints[-1], limitPoints[0]))
+
+if xmin < 0.:
+    xmin = 0.
+if ymin < 0.:
+    ymin = 0.
+
+ngrid = 100
+x = np.linspace(xmin, xmax, ngrid+1)
+y = np.linspace(ymin, ymax, ngrid+1)
+xx, yy = np.meshgrid(x, y, indexing='ij')
+xcent = 0.5*(x[1:] + x[:-1])
+ycent = 0.5*(y[1:] + y[:-1])
+xc, yc = np.meshgrid(xcent, ycent, indexing='ij')
+zc = np.zeros_like(xc)
+
+xc.tofile('xdata.txt', ' ')
+yc.tofile('ydata.txt', ' ')
+
+for i in xrange(ngrid):
+    if not (i+1) % (ngrid // 10):
+        print "xindex @ " + str(i+1)
+    for j in xrange(ngrid):
+        if yc[i,j] > xc[i,j]:
+            zc[i,j] = np.nan
+            continue
+        point = P2(xc[i,j], yc[i,j])
+        xsecAverage = 0.
+        totalWeight = 0.
+        for angle in np.arange(0., 2.*np.pi, np.pi/21):
+            rayMaker = P2(1000. * np.cos(angle), 1000. * np.sin(angle))
+            ray = LineSegment(point, point + rayMaker)
+            rmin = np.inf
+            xsec_at_rmin = 0.
+            for xsec in limitContours.keys():
+                for segment in limitContours[xsec]:
+                    intersection = ray.intersectsAt(segment)
+                    raydius = abs(LineSegment(point, intersection))
+                    if raydius < rmin:
+                        rmin = raydius
+                        xsec_at_rmin = float(xsec)
+            if rmin == 0:
+                totalWeight = 0.
+                xsecAverage = xsec_at_rmin
+                break
+            elif rmin == np.inf:
+                totalWeight = 0.
+                xsecAverage = np.nan
+                break
+            else:
+                weight = np.sqrt(1./rmin)
+                totalWeight += weight
+                xsecAverage += weight * xsec_at_rmin
+        if totalWeight == 0:
+            zc[i,j] = xsecAverage
+        else:
+            zc[i,j] = xsecAverage / totalWeight
+
+zc.tofile('zdata_python.txt', '\n')
+
+fig, axes = plt.subplots(figsize=(11,7), facecolor='#ffffff')
+levels = np.arange(0, 2.01, 0.05)
+cmap = plt.get_cmap('Dark2')
+norm = BoundaryNorm(levels, ncolors=cmap.N, clip=True)
+contours = plt.pcolormesh(xx, yy, np.around(zc,3), cmap=cmap, norm=norm)
+for xsec in limitContours.keys():
+    for segment in limitContours[xsec]:
+        x, y = segment.allpoints(1000)
+        plt.plot(x, y, linewidth=2, color='black', alpha=0.4, zorder=20)
+cb = fig.colorbar(contours, cmap=cmap)
+fig.savefig("xsecGridWithTwoPiInterpolation.pdf")

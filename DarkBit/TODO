@@ -1,0 +1,85 @@
+DarkBit TODO list
+=================
+
+
+Reminder about primary goals from Gambit III
+--------------------------------------------
+
+The agreed on deadline for these tasks: Oct 2014
+
+- Physics
+    - Gamma-rays: dwarfs (1/2 finished), lines (0 finished), GC (1/2 finished)
+    - nu from Sun & IceCube (1/2 finished)
+    - DD Lux (3/4 finished), CDMS
+    - Relic density (3/4 finished)
+
+- Backends
+    - DarkSUSY, DONE
+    - MicrOMEGAS, DONE
+    - NuLike, DONE
+    - optional: 
+        - SuperIsoRelic
+        - simpleCR
+
+
+What we have 
+------------
+
+1200 lines of DarkBit.cpp, with
+
+- Rudimentary calculation of dNdE_gam
+- Relic density calculation (abstracted and simple)
+- Backends to
+    - DDCalc
+    - DS
+    - micromegas
+    - nulike
+- Coupling to direct detection codes
+- Robust coupling to nulike
+
+
+List with *necessary* tasks for first DarkBit version
+-----------------------------------------------------
+
+- Remove initialization functions from DarkBit --> backends
+- Use doxygen for starting a manual
+- Finish dNdE_gam annihilation yields from DS (include VIB, lines, etc)
+- Finish annihilation catalogue
+- Cross-checks between relic density from DarkSUSY and Micromegas
+- Simple OmegaDM likelihood function with different values from the literature
+- Write printer for BaseFunction object (to dump e.g. gamma-ray spectra)
+- Finish and check coupling to Chris' LUX likelihood code
+- Make neutrino IceCube likelihoods optional in the inifile
+- Calculation of neutrino spectra with DarkSUSY
+- Construct void pointer interface to nulike (for feeding in basefunction
+  objects)
+- Check direct detection coupling definitions
+- Backend fermilike
+- Use farrays for DarkSUSY relic density solver
+- Make use of print functions, once completed
+- Make use error system, once there
+- Implementation of minimal model (singlet DM) for prototypical model and
+  cross-section definitions etc.
+- J-value calculations
+
+- Many validation tests
+- Writing the paper with e.g.
+    - systematic comparison of relic density results
+    - comparison of various ID limits on simple benchmark models (e.g. the GeV
+      excess?)
+
+
+Long-term wishlist
+------------------
+
+- Backending SuperIsoRelic
+- Make RD codes adaptive to other sources for Weff etc
+- Lars' p-/e+ propagation codes
+- PPPC (tables only?)
+- CR data (PAMELA, AMS-02 etc)
+- Planck, ATC, BESS, WMAP pol, HST... (CosmoBit)
+- Astrophysical probes in general (stars, DM self-interaction)
+- Implementation of CMB limits (starting with codes from singlet paper)
+- Astrophysical DM distributions (substucture & phase space)
+- Decaying dark matter
+- Asymmetric dark matter
