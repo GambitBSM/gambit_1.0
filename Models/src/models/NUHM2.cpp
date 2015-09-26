@@ -42,12 +42,12 @@
        /**/
        "me2_1", "me2_2", "me2_3",
        };
-     static const std::vector<std::string> M0vec(M0init,endA(M0init));
+     static const std::vector<std::string> M0vec(M0init,Utils::endA(M0init));
      set_many_to_one(targetP, M0vec, myP["M0"]);
 
      // MH2
-     tartgetP.setValue("mHu2", myP["mHu2"]);
-     tartgetP.setValue("mHd2", myP["mHd2"]);
+     targetP.setValue("mHu2", myP["mHu2"]);
+     targetP.setValue("mHd2", myP["mHd2"]);
 
      // M12
      targetP.setValue("M1",  myP["M12"] );
@@ -62,7 +62,7 @@
        /**/
        "Au_1", "Au_2", "Au_3",
        };
-     static const std::vector<std::string> A0vec(A0init,endA(A0init));
+     static const std::vector<std::string> A0vec(A0init,Utils::endA(A0init));
      set_many_to_one(targetP, A0vec, myP["A0"]);
 
   }

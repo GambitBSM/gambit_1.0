@@ -32,8 +32,8 @@
      targetP.setValues(myP,false);
 
      // MH2
-     tartgetP.setValue("mHu2", myP["mH2"]);
-     tartgetP.setValue("mHd2", myP["mH2"]);
+     targetP.setValue("mHu2", myP["mH2"]);
+     targetP.setValue("mHd2", myP["mH2"]);
 
   }
 
