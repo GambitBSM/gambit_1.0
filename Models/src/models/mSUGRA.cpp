@@ -3,9 +3,8 @@
 ///  \file
 ///
 ///  mSUGRA model definition.  Basically just an
-///  alias for the CMSSM.  See mSUGRA_nonstandard
-///  for a more constrained definition that some
-///  people prefer. 
+///  alias for the CMSSM.  See mSUGRAb for a more
+///  constrained definition that some people prefer. 
 ///
 ///  *********************************************
 ///

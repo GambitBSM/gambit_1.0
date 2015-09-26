@@ -2,14 +2,11 @@
 //   *********************************************
 ///  \file
 ///
-///  CMSSM model declaration. 
+///  VCMSSM model declaration.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Ben Farmer 
-///  \date 2015 Jan
 ///   
 ///  \author Pat Scott  
 ///          (p.scott@imperial.ac.uk)
@@ -18,18 +15,18 @@
 ///  *********************************************
 
 
-#ifndef __CMSSM_hpp__
-#define __CMSSM_hpp__
+#ifndef __VCMSSM_hpp__
+#define __VCMSSM_hpp__
 
 // Must include models which are targets of translation functions
-#include "gambit/Models/models/NUHM1.hpp" 
+#include "gambit/Models/models/CMSSM.hpp" 
 
-#define MODEL CMSSM
-#define PARENT NUHM1
+#define MODEL VCMSSM
+#define PARENT CMSSM
   START_MODEL
-  DEFINEPARS(M0,M12,A0,TanBeta,SignMu)
-  INTERPRET_AS_PARENT__FUNCTION(CMSSM_to_NUHM1)
-  // Translation functions defined in CMSSM.cpp
+  DEFINEPARS(M0,M12,A0)
+  INTERPRET_AS_PARENT__FUNCTION(VCMSSM_CMSSM)
+  // Translation functions defined in VCMSSM.cpp
 #undef PARENT
 #undef MODEL
 

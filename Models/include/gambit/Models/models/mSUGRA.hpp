@@ -27,7 +27,7 @@
 #define MODEL mSUGRA
 #define PARENT CMSSM
   START_MODEL
-  DEFINEPARS(M0,M12,A0,TanBeta,signmu)
+  DEFINEPARS(M0,M12,A0,TanBeta,SignMu)
   INTERPRET_AS_PARENT__FUNCTION(mSUGRA_CMSSM)
   // Translation functions defined in mSUGRA.cpp
 #undef PARENT
