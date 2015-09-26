@@ -136,7 +136,6 @@ namespace Gambit {
               return;
             }
 
-         protected:
             /// Map filler overrides
 
             /// Runnning parameter map fillers (access parameters via spectrum.runningpar)

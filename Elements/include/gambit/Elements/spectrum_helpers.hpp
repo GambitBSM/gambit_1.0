@@ -53,6 +53,18 @@ namespace Gambit
          Pole_Mass_1srd_low,
          Pole_Mixing
      };
+
+     // Stick enum values in a vector to help auto-generate maps that use them as keys
+     inline std::vector<Phys> get_Phys_all()
+     {
+        std::vector<Phys> vec;
+        vec.push_back(Pole_Mass);
+        vec.push_back(Pole_Mass_1srd_high);
+        vec.push_back(Pole_Mass_1srd_low);
+        vec.push_back(Pole_Mixing);
+        return vec;
+     }
+
      enum Running
      {
          mass4 = Pole_Mixing+1,
@@ -62,6 +74,19 @@ namespace Gambit
          dimensionless,
          mass_eigenstate
       };
+
+      // Stick enum values in a vector to help auto-generate maps that use them as keys
+      inline std::vector<Running> get_Running_all()
+      {
+         std::vector<Running> vec;
+         vec.push_back(mass4);
+         vec.push_back(mass3);
+         vec.push_back(mass2);
+         vec.push_back(mass1);
+         vec.push_back(dimensionless);
+         vec.push_back(mass_eigenstate);
+         return vec;
+      }
 
       /// Map from enum value to string, for error messages
       static std::map<int,std::string> fill_map()
