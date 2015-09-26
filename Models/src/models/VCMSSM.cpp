@@ -38,7 +38,7 @@
      double B0 = A0 - M0;
      double mu = 1;
      targetP.setValue("SignMu", sgn(mu));
-     targetP.setVale("TanBeta", 50.0); //fixme set from:
+     targetP.setValue("TanBeta", 50.0); //fixme set from:
                                        // sin2beta = -B0 mu / (M0^2 + mu^2).
                                        //          = +/- B0 sqrt(1/2 tan2beta m0^2 (tanbeta - cotbeta) - 1/2 MZ^2)
                                        //                -----------------------------------------------------------
