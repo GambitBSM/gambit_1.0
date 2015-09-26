@@ -36,10 +36,13 @@
      double A0 = myP["A0"];
      double M0 = myP["M0"];
      double B0 = A0 - M0;
-     double mu = 1000. // ?? need to set according to regular cmssm definition, i.e. via radiative EWSB, but also get sign.
+     double mu = 1;
      targetP.setValue("SignMu", sgn(mu));
-     targetP.setVale("TanBeta", 1000.0); //fixme set from sin2beta = -B0 *absmu / (M0*M0 + absmu*absmu).
-
+     targetP.setVale("TanBeta", 50.0); //fixme set from:
+                                       // sin2beta = -B0 mu / (M0^2 + mu^2).
+                                       //          = +/- B0 sqrt(1/2 tan2beta m0^2 (tanbeta - cotbeta) - 1/2 MZ^2)
+                                       //                -----------------------------------------------------------
+                                       //                 1/2 tan2beta M0^2 (tanbeta - cotbeta) - 1/2 MZ^2 + M0^2
   }
 
 #undef MODEL
