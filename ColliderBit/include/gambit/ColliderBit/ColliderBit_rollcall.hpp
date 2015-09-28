@@ -390,9 +390,9 @@ START_MODULE
   #undef CAPABILITY 
 
   // Get a LEP chisq from HiggsBounds
-  #define CAPABILITY HB_LEPchisq
+  #define CAPABILITY HB_LEP_lnL
   START_CAPABILITY
-    #define FUNCTION HB_LEPchisq
+    #define FUNCTION HB_LEP_lnL
     START_FUNCTION(double)
     DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
        BACKEND_REQ(HiggsBounds_neutral_input_part, (libhiggsbounds), void, 
@@ -414,9 +414,9 @@ START_MODULE
   #undef CAPABILITY
 
   // Get an LHC chisq from HiggsSignals
-  #define CAPABILITY HS_LHCchisq
+  #define CAPABILITY HS_LHC_lnL
     START_CAPABILITY
-      #define FUNCTION HS_LHCchisq
+      #define FUNCTION HS_LHC_lnL
       START_FUNCTION(double)
       DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
          BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
