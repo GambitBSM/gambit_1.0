@@ -320,6 +320,10 @@ ObsLikes:
 
 
 Rules:
+  - capability: DarkSUSY_PointInit
+    options:
+      use_dsSLHAread: true
+
   # General options, accessible to multiple capabilities
   - options: 
         # Cascade decay settings
