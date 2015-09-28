@@ -344,6 +344,10 @@ Rules:
         invalid_point_fatal:    true
 
 
+  - capability: lnL_oh2
+    function: lnL_oh2_Simple
+
+
   # SM information from SpecBit
   - capability: SM_spectrum 
     function: get_QedQcd_spectrum  # Use this function to compute this capability
