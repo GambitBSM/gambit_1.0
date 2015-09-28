@@ -27,15 +27,27 @@ using namespace LogTags;
 void sighandler(int sig)
 {
     Gambit::Scanner::Plugins::plugin_info.set_running(false);
+    
+    if (!Gambit::Scanner::Plugins::plugin_info.func_calculating())
+    {
+       Gambit::Scanner::Plugins::plugin_info.dump();
+       exit(0);
+    }
+}
+
+void sighandler2(int)
+{
+    std::cout << "trying to kill" << std::endl;
 }
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
-  signal(SIGABRT, sighandler);
+  //signal(SIGABRT, sighandler);
   signal(SIGTERM, sighandler);
   signal(SIGINT, sighandler);
+  signal(SIGKILL, sighandler2);
 
   try
   {

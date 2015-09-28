@@ -269,7 +269,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
             }
             else
             {
-                out_stream->print(0.0, "mult", rank, next_id);
+                out_stream->print(0, "mult", rank, next_id);
                 out_stream->print(-1, "chain", rank, next_id);
             }
         }

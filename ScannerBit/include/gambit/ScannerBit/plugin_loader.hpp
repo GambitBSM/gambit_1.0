@@ -123,6 +123,7 @@ namespace Gambit
             {
             private:
                 bool keepRunning;
+                bool funcCalculating;
                 std::map<std::string, std::map<std::string, Proto_Plugin_Details> > selectedPlugins;
                 mutable Plugins::Plugin_Loader plugins;
                 std::map<std::string, std::vector<__plugin_resume_base__ *>> resume_data;
@@ -157,12 +158,14 @@ namespace Gambit
                 }
                 
             public:
-                pluginInfo() : keepRunning(true) {}
+                pluginInfo() : keepRunning(true), funcCalculating(false) {}
                 ///Enter plugin inifile
                 void iniFile(const Options &, printer_interface &);
                 
                 bool keep_running() const {return keepRunning;}
                 void set_running(bool b){keepRunning = b;}
+                bool func_calculating() const {return funcCalculating;}
+                void set_calculating(bool b){funcCalculating = b;}
                 
                 ///resume function
                 template <typename... T>

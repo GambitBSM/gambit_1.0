@@ -89,7 +89,7 @@ Scanner:
       plugin: Diver
       like: Likelihood
       NP: 1000
-      path: "runs/spartan_diver/diver_native"
+      path: "runs"
       verbosity: 1
       aux_printer_txt_options:
         output_file: "runs/spartan_diver/samples/gambit_output.txt"

@@ -93,86 +93,118 @@ namespace Gambit
         // 'flat' prior
         // Transforms x to a sample from the uniform interval [a,b].
         
-        inline double flatprior (double x, double a, double b) 
-        { 
-                return x*(b-a) + a;
-        }
+        struct flatprior
+        {
+            static double limits(double x) {return x;}
+            static double inv(double x) {return x;}
+            static double prior (double) {return 0;}
+        };
         
-        inline double flatop (double){return 0.0;}
+        struct logprior
+        {
+            static double limits(double x) {return std::log(x);}
+            static double inv(double x) {return std::exp(x);}
+            static double prior(double x){return -std::log(x);}
+        };
         
-        // 'log' prior
-        // Transforms x=log(y) to a sample from the uniform interval [log(a),log(b)].
-        // The base is irrelevant since it is just a scaling factor which normalises out
-        inline double logprior (double x, double a, double b) 
-        {   
-                return std::exp( x*(log(b)-log(a)) + log(a) );
-        }
+        struct sinprior
+        {
+            static double limits(double x) {return std::cos(x);}
+            static double inv(double x) {return std::acos(x);}
+            static double prior(double x){return std::log(std::sin(x));}
+        };
         
-        inline double logop (double a){return -std::log(a);}
+        struct cosprior
+        {
+            static double limits(double x) {return std::sin(x);}
+            static double inv(double x) {return std::asin(x);}
+            static double prior(double x){return std::log(std::cos(x));}
+        };
         
+        struct tanprior
+        {
+            inline static double SQR(double x){return x*x;}
+            static double limits(double x) {return 1.0/SQR(std::cos(x));}
+            static double inv(double x) {return std::acos(1.0/std::sqrt(x));}
+            static double prior(double x){return std::log(std::tan(x));}
+        };
+        
+        struct cotprior
+        {
+            inline static double SQR(double x){return x*x;}
+            static double limits(double x) {return 1.0/SQR(std::sin(x));}
+            static double inv(double x) {return std::asin(1.0/std::sqrt(x));}
+            static double prior(double x){return -std::log(std::tan(x));}
+        };
+
         /// Template class for 1d priors which need only a "range" option in their constructor
         // See factory function map to see how to use this class to quickly create new priors of this kind
-        template <double Func(double,double,double), double op(double)>
+        template <class T>
         class RangePrior1D : public BasePrior
         {
         private:
-                // Name of the parameter that this prior is supposed to transform
-                std::string myparameter;
-                // Ranges for parameters
-                double lower;
-                double upper;
+            // Name of the parameter that this prior is supposed to transform
+            std::string myparameter;
+            // Ranges for parameters
+            double lower;
+            double upper;
+            double scale;
+            
         public:
-        
-                // Constructor
-                RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(1), myparameter(param[0])
+    
+            // Constructor
+            RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(1), myparameter(param[0]), scale(1.0)
+            {
+                // Read the entries we need from the options
+                if ( not options.hasKey("range") )
                 {
-                        // Read the entries we need from the options
-                        if ( not options.hasKey("range") )
-                        {
-                                scan_err << "Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')" << scan_end;
-                        }
-                        std::pair<double, double> range = options.getValue< std::pair<double, double> >("range");
-                        if (range.first > range.second)
-                        {
-                                double temp = range.first;
-                                range.first = range.second;
-                                range.second = temp;
-                        }
-                        if (param.size()!=1)
-                        {
-                                scan_err << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size=" << param.size() << ")" << scan_end;
-                        }
-                        lower = range.first;
-                        upper = range.second;            
+                    scan_err << "Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')" << scan_end;
                 }
-        
-                // Constructor (for auto creation of flat prior; other priors don't need this kind of constructor! It won't hurt the other 1D range priors to have this though)
-                RangePrior1D(const std::string &param, const std::pair<double, double>& range) : BasePrior(1), myparameter(param)
+                std::pair<double, double> range = options.getValue< std::pair<double, double> >("range");
+                if (range.first > range.second)
                 {
-                        if (range.first > range.second)
-                        {
-                                lower = range.second;
-                                upper = range.first;  
-                        }
-                        else
-                        {
-                                lower = range.first;
-                                upper = range.second;      
-                        }
+                    double temp = range.first;
+                    range.first = range.second;
+                    range.second = temp;
                 }
                 
-                // Transformation from unit interval to specified range
-                // (need to use vectors to be compatible with BasePrior virtual function)
-                void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &output) const
+                if (param.size()!=1)
                 {
-                        output[myparameter] = Func(unitpars[0],lower,upper);
+                    scan_err << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size=" << param.size() << ")" << scan_end;
                 }
                 
-                double operator()(const std::vector<double> &vec){return op(vec[0]);}
+                if (options.hasKey("scale"))
+                {
+                    if (options.getValue<std::string>("scale") == "degrees")
+                    {
+                        scale = 0.0174532925199;
+                    }
+                    else
+                    {
+                        scale = options.getValue<double>("scale");
+                    }
+                }
+                
+                lower = T::limits(range.first*scale);
+                upper = T::limits(range.second*scale);            
+            }
+            
+            // Transformation from unit interval to specified range
+            // (need to use vectors to be compatible with BasePrior virtual function)
+            void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &output) const
+            {
+                output[myparameter] = T::inv(unitpars[0]*(upper-lower) + lower);
+            }
+            
+            double operator()(const std::vector<double> &vec) {return T::prior(vec[0]*scale)/scale;}
         };
         
-        LOAD_PRIOR(log, RangePrior1D<logprior, logop>)
-        LOAD_PRIOR(flat, RangePrior1D<flatprior, flatop>)
+        LOAD_PRIOR(log, RangePrior1D<logprior>)
+        LOAD_PRIOR(flat, RangePrior1D<flatprior>)
+        LOAD_PRIOR(cos, RangePrior1D<cosprior>)
+        LOAD_PRIOR(sin, RangePrior1D<sinprior>)
+        LOAD_PRIOR(tan, RangePrior1D<tanprior>)
+        LOAD_PRIOR(cot, RangePrior1D<cotprior>)
    }
 }
 
