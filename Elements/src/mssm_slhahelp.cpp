@@ -709,7 +709,6 @@ namespace Gambit
                                           double tol, str context, bool pterror)
       {
          double sum_sq_mix;
-
          std::vector<double> mass_comp;
          str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, 
                                                   mass_comp, mssm);

@@ -64,10 +64,20 @@ namespace Gambit
     class BasePrinter: public BaseBasePrinter
     {
       private:
-        BasePrinter* primary_printer = NULL;
-        bool is_aux = false; 
+        BasePrinter* primary_printer;
+        bool is_aux; 
 
       public:
+        BasePrinter()
+          : primary_printer(NULL)
+          , is_aux(false)
+        {}
+
+        BasePrinter(BasePrinter* const primary, bool is_aux_IN)
+          : primary_printer(primary)
+          , is_aux(is_aux_IN)
+        {}
+
         /// Destructor
         virtual ~BasePrinter() {}
 
@@ -75,18 +85,15 @@ namespace Gambit
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true. (TODO: probably extend this to be a list of functors THIS printer is supposed to print, since we may want several printers handling different functors, for SLHA output or some such perhaps).
         virtual void initialise(const std::vector<int>&) = 0;
 
+        /// Set this as an auxilliary printer
+        void set_as_aux() { is_aux = true; }
+
         /// Helper initialisation for auxilliary printers
         /// Will be run when the auxilliary printer is
         /// created by a PrinterManager.
-        // Implementation provided so that pri
+        /// Define override of this if two-stage initialisation is needed
         virtual void auxilliary_init() {};
 
-        void set_primary_printer(BasePrinter* const p)
-        { 
-          primary_printer = p; 
-          is_aux = true;
-          auxilliary_init();
-        }
         BasePrinter* get_primary_printer() 
         {
           if(not is_aux)
@@ -119,7 +126,7 @@ namespace Gambit
     // (uses the same machinery as in priors.hpp)
     registry
     { 
-            typedef BasePrinter* create_printer_function(const Options &); //arguments need to match constructor for printer object
+            typedef BasePrinter* create_printer_function(const Options&, BasePrinter* const&); //arguments need to match constructor for printer object
             reg_elem <create_printer_function> printer_creators;
     }
 

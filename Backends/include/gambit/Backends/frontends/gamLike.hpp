@@ -30,11 +30,9 @@
 LOAD_LIBRARY
 
 // Import functions
-BE_FUNCTION(fermi_dwarfs_init, void, (int), "fermi_dwarfs_init_", "fermi_dwarfs_init")
-BE_FUNCTION(fermi_gc_init, void, (int, int), "fermi_gc_init_", "fermi_gc_init")
-BE_FUNCTION(fermi_dwarfs_likelihood, double, (const std::vector<double> &, const std::vector<double> &), "fermi_dwarfs_likelihood_vec_", "lnL_dwarfs")
-BE_FUNCTION(fermi_gc_likelihood, double, (const std::vector<double> &, const std::vector<double> &), "fermi_gc_likelihood_vec_", "lnL_GC")
-BE_FUNCTION(set_data_path, void, (const char *), "set_data_path_", "set_data_path")
+BE_FUNCTION(init, void, (int), "init", "init")
+BE_FUNCTION(set_data_path, void, (const std::string &), "set_data_path", "set_data_path")
+BE_FUNCTION(lnL, double, (int, const std::vector<double> &, const std::vector<double> &), "lnL", "lnL")
 
 BE_INI_FUNCTION
 {
@@ -44,9 +42,7 @@ BE_INI_FUNCTION
   {
     scan_level = false;
     std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/data/", "datapath");
-    set_data_path(path.c_str());
-    fermi_dwarfs_init(0);
-    fermi_gc_init(0, 1);
+    set_data_path(path);
   }
 }
 END_BE_INI_FUNCTION

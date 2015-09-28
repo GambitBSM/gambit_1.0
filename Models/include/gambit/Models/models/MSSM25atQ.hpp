@@ -1,24 +1,23 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-//
-//  MSSM25atQ model definition
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Ben Farmer
-//  2015 Jan
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  MSSM25atQ model definition. 
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Ben Farmer  
+///  \date 2015 Jan
+///
+///  *********************************************
 
 #ifndef __MSSM25atQ_hpp__
 #define __MSSM25atQ_hpp__
 
-#include "gambit/Models/models/MSSM30atQ.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
+// Parent model must be declared first! Include it here to ensure that this happens.
+#include "gambit/Models/models/MSSM30atQ.hpp"
 
 #define MODEL MSSM25atQ
 #define PARENT MSSM30atQ

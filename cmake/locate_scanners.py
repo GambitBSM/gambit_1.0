@@ -102,6 +102,7 @@ def main(argv):
     scanbit_lib_hints = dict()
     scanbit_inc_files = dict()
     scanbit_flags = dict()
+    scanbit_cxx_flags = dict()
     #scanbit_static_links = dict()
 
     ## begin adding scannerbit files to CMakeLists.txt ##
@@ -169,6 +170,7 @@ def main(argv):
         scanbit_lib_hints[plug_type[i]] = dict()
         scanbit_inc_files[plug_type[i]] = dict()
         scanbit_flags[plug_type[i]] = dict()
+        scanbit_cxx_flags[plug_type[i]] = dict()
         #scanbit_static_links[plug_type[i]] = dict()
 
     # loop through the different plugin types
@@ -198,9 +200,9 @@ def main(argv):
                     text = comment_remover(f.read())
                     it = re.finditer(r'\breqd_inifile_entries\s*?\(.*?\)|\bREQD_INIFILE_ENTRIES\s*?\(.*?\)', text, re.DOTALL)
                     ini_finds = [[m.span()[0], -1, re.sub(r'\s', '', m.group())] for m in it]
-                    it = re.finditer(r'\bobjective_plugin\s*?\(.*?\)\s*?\{', text, re.DOTALL)
+                    it = re.finditer(r'\bobjective_plugin\s*?\(.*?\)\s*?\{|\bOBJECTIVE_PLUGIN\s*?\(.*?\)\s*?\{', text, re.DOTALL)
                     obj_finds = [[m.span()[0], 0, m.group()] for m in it]
-                    it = re.finditer(r'\bscanner_plugin\s*?\(.*?\)\s*?\{', text, re.DOTALL)
+                    it = re.finditer(r'\bscanner_plugin\s*?\(.*?\)\s*?\{|\bSCANNER_PLUGIN\s*?\(.*?\)\s*?\{', text, re.DOTALL)
                     scan_finds = [[m.span()[0], 1, m.group()] for m in it]
                     it = re.finditer(r'\breqd_libraries\s*?\(.*?\)|\bREQD_LIBRARIES\s*?\(.*?\)', text, re.DOTALL)
                     lib_finds = [[m.span()[0], -2, re.sub(r'\s', '', m.group())] for m in it]
@@ -208,7 +210,9 @@ def main(argv):
                     inc_finds = [[m.span()[0], -3, re.sub(r'\s', '', m.group())] for m in it]
                     it = re.finditer(r'\bset_flag\s*?\(.*?\)|\bSET_FLAG\s*?\(.*?\)', text, re.DOTALL)
                     flag_finds = [[m.span()[0], -4, re.sub(r'\s', '', m.group())] for m in it]
-                    all_finds  = sorted(scan_finds + obj_finds + ini_finds + lib_finds + inc_finds + flag_finds)
+                    it = re.finditer(r'\bcxx_flags\s*?\(.*?\)|\bCXX_FLAGS\s*?\(.*?\)', text, re.DOTALL)
+                    cxx_finds = [[m.span()[0], -5, re.sub(r'\s|"', '', m.group())] for m in it]
+                    all_finds  = sorted(scan_finds + obj_finds + ini_finds + lib_finds + inc_finds + flag_finds + cxx_finds)
                     for find in all_finds:
                         if find[1] >= 0:
                             processed = False
@@ -295,6 +299,13 @@ def main(argv):
                                     scanbit_flags[plug_type[i]][last_plugin][last_version] = dict()
                                     scanbit_flags[plug_type[i]][last_plugin][last_version][flags[0]] = []
                                 scanbit_flags[plug_type[i]][last_plugin][last_version][flags[0]] += flags[1:]
+                                
+                        elif find[1] == -5:
+                            flags = neatsplit(",", find[2][10:-1]);
+                            if len(flags) > 0:
+                                if not scanbit_cxx_flags[plug_type[i]].has_key(directory):
+                                    scanbit_cxx_flags[plug_type[i]][directory] = []
+                                scanbit_cxx_flags[plug_type[i]][directory] += flags
 
             ## begin adding plugin files to CMakeLists.txt ##
                 cmakelist_txt_out += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
@@ -386,7 +397,8 @@ def main(argv):
                                                     scanbit_reqs[plugin[7]][plugin_name][version][1] += ",\"" + lib + "\""
                                             else:
                                                 [libdir, lib] = os.path.split(lib)
-                                                lib = re.sub("^lib|\..*$","",lib)
+                                                #lib = re.sub("^lib|\..*$","",lib)
+                                                lib = "\"" + lib + "\""
                                                 scanbit_reqs[plugin[7]][plugin_name][version][4] += [lib]
                                             
                                     elif key in ("inc", "incs", "include", "includes", "include_path", "include_paths", "-inc", "-incs", "-include", "-includes", "-include_path", "-include_paths", "hdr", "hdrs", "header", "headers", "-hdr", "-hdrs", "-header", "-headers"):
@@ -580,12 +592,18 @@ endif()                                          \n\n"
         for directory in sorted(directories):
 
             towrite += "#################### lib" + plug_type[i] + "_" + directory + ".so ####################\n\n"
-
-            towrite += "set (" + plug_type[i] + "_compile_flag_" + directory + " \"\")\n"
+            towrite += "set (" + plug_type[i] + "_ok_flag_" + directory + " \"\")\n\n"
+            
+            towrite += "set (" + plug_type[i] + "_compile_flags_" + directory + " \"${PLUGIN_COMPILE_FLAGS}"
+            if scanbit_cxx_flags.has_key(plug_type[i]):
+                if scanbit_cxx_flags[plug_type[i]].has_key(directory):
+                    towrite += " "
+                    towrite += " ".join(scanbit_cxx_flags[plug_type[i]][directory])
+            towrite += "\")\n\n"
 
             for plug in scanbit_plugins[plug_type[i]][directory]:
                 if plug[3] == "excluded":
-                    towrite += "set (" + plug_type[i] + "_compile_flag_" + directory + "\"    user: " + plug[4] + "\\n\")\n"
+                    towrite += "set (" + plug_type[i] + "_ok_flag_" + directory + "\"    user: " + plug[4] + "\\n\")\n"
 
             towrite += "\n"
 
@@ -626,7 +644,7 @@ endif()                                          \n\n"
                     for lib in scanbit_link_libs[plug_type[i]][directory]:
                         towrite += "set (" + plug_type[i] + "_plugin_linked_libs_" + directory + " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory + "}"
                         towrite += "    " + lib[0] + ": " + lib[1] + "\\n\")\n"
-                        
+            towrite += "\n"
             towrite += "set (" + plug_type[i] + "_plugin_lib_full_paths_" + directory + "\n"
             if scanbit_link_libs.has_key(plug_type[i]):
                 if scanbit_link_libs[plug_type[i]].has_key(directory):
@@ -729,7 +747,7 @@ endif()                                          \n\n"
                             towrite += "    \\\"" + inc + "\\\": ${" + inc_name + "}\\n\")\n"
                             towrite += "    message(\"-- Found " + plug_type[i] + " header: ${inc_name}/" + inc + "\")\n"
                             towrite += "else()\n"
-                            towrite += " "*4 + "set (" + plug_type[i] + "_compile_flag_" + directory + " \"    file_missing: \\\"" + inc + "\\\"\")\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_ok_flag_" + directory + " \"    file_missing: \\\"" + inc + "\\\"\")\n"
                             towrite += "    message(\"-- Did not find "+ plug_type[i] + " header " + inc + ". Disabling scanners that depend on this.\")\n"
                             towrite += "endif()\n\n"
             towrite += "if( NOT ${" + plug_type[i] + "_plugin_linked_libs_" + directory + "} STREQUAL \"\" OR NOT ${" + plug_type[i] + "_plugin_found_incs_" + directory + "} STREQUAL \"\")\n"
@@ -742,13 +760,13 @@ endif()                                          \n\n"
             towrite += " "*4 + "endif()\n"
             towrite += "endif()\n\n"
 
-            towrite += "if ( " + plug_type[i] + "_compile_flag_" + directory + " STREQUAL \"\" )\n"
+            towrite += "if ( " + plug_type[i] + "_ok_flag_" + directory + " STREQUAL \"\" )\n"
             towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${"
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
             towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-            towrite += " "*23 + "COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS}\"\n"
+            towrite += " "*23 + "COMPILE_FLAGS \"${" + plug_type[i] + "_compile_flags_" + directory + "}\"\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"
@@ -761,7 +779,7 @@ endif()                                          \n\n"
             towrite += "  plugins:\\n"
             for plug in scanbit_plugins[plug_type[i]][directory]:
                 towrite += "    - " + plug[4] + "\\n"
-            towrite += "  reason: \\n${" + plug_type[i] + "_compile_flag_" + directory + "}\\n\" )\n"
+            towrite += "  reason: \\n${" + plug_type[i] + "_ok_flag_" + directory + "}\\n\" )\n"
             towrite += "endif()\n\n"
 
     towrite += "set(SCANNERBIT_PLUGINS ${SCANNERBIT_PLUGINS} PARENT_SCOPE)\n"

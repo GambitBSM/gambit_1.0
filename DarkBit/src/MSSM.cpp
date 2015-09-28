@@ -28,6 +28,8 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 
+#include "gambit/Utils/mpiwrapper.hpp"
+
 namespace Gambit {
   namespace DarkBit {
 
@@ -79,7 +81,7 @@ namespace Gambit {
      * indicating if point initialization was successful, which is essentially
      * always true for models that satisfy the dependency resolver.
      *
-     * Supported models: CMSSM, MSSM25atQ
+     * Supported models: CMSSM, MSSM30atQ
      */
     void DarkSUSY_PointInit_MSSM(bool &result)
     {
@@ -151,8 +153,8 @@ namespace Gambit {
         }
       }
 
-      // use SLHA for initialization initialization of MSSM25atQ or CMSSM
-      else if (ModelInUse("MSSM25atQ") or ModelInUse("CMSSM"))
+      // use SLHA for initialization initialization of MSSM30atQ or CMSSM
+      else if (ModelInUse("MSSM30atQ") or ModelInUse("CMSSM"))
       {
         // Save SLHA file to disk
         const Spectrum* mySpec = *Dep::MSSM_spectrum;
@@ -167,14 +169,25 @@ namespace Gambit {
 
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
-          std::ofstream ofs("DarkBit_temp.slha");
+#ifdef WITH_MPI
+          GMPI::Comm comm;
+          int rank = comm.Get_rank();
+#else
+          int rank = 0;
+#endif
+          // Set filename
+          std::string fstr = "DarkBit_temp_";
+          fstr += std::to_string(rank) + ".slha";
+
+          // Dump SLHA onto disk
+          std::ofstream ofs(fstr);
           ofs << mySLHA;
           ofs.close();
 
           // Initialize SUSY spectrum from SLHA
-          int len = 17;
+          int len = fstr.size();
           int flag = 15;
-          const char * filename = "DarkBit_temp.slha";
+          const char * filename = fstr.c_str();
           logger() << "Initializing DarkSUSY via SLHA." << std::endl;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();
@@ -527,9 +540,9 @@ namespace Gambit {
       result = catalog;
     }
 
-    void DarkMatter_ID_MSSM25atQ(std::string & result)
+    void DarkMatter_ID_MSSM30atQ(std::string & result)
     {
-      using namespace Pipes::DarkMatter_ID_MSSM25atQ;
+      using namespace Pipes::DarkMatter_ID_MSSM30atQ;
       // FIXME: This should return the lightest neutralino identifier
       result = "~chi0_1";
     }

@@ -723,7 +723,7 @@ namespace Gambit
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
-          cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
+          //cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
           // Finalize is currently only used to report a cut flow.... rename?
           (*anaPtr)->finalize();
           result.push_back((*anaPtr)->get_results());

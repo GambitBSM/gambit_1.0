@@ -28,6 +28,7 @@ namespace Gambit
 {
 
   const double pi = 3.141592653589793238462643383279502884197;
+  const double root2 = sqrt(2.0);
   const double gev2cm2 = pow(197.327053e-16, 2.0);              // cm^2 per GeV^-2
   const double gev2pb = gev2cm2*1e36;                           // pb per GeV^-2
   const double s2cm = 2.99792458e10;                            // cm per s

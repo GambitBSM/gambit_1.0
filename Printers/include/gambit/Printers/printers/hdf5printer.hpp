@@ -35,6 +35,7 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/VertexBufferNumeric1D_HDF5.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Logs/log.hpp"
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
@@ -111,7 +112,7 @@ namespace Gambit
         bool ready() { if(printer==NULL){return false;}else{return true;} }
 
         /// Retrieve a buffer for an IDcode/auxilliary-index pair
-        BuffType& get_buffer(const int vID, const uint i, const std::string& label); 
+        BuffType& get_buffer(const int vID, const unsigned int i, const std::string& label); 
     
     };
 
@@ -121,13 +122,14 @@ namespace Gambit
     {
       public:
         /// Constructor (for construction via inifile options)
-        HDF5Printer(const Options&);
+        HDF5Printer(const Options&, BasePrinter* const primary = NULL);
 
-        /// Auxilliary mode constructor (for construction in scanner plugins)
-        HDF5Printer(const Options&, std::string&, bool synchronised);
+        /// Auxilliary mode constructor (for construction in scanner plugins) 
+        // **deprecated**
+        //HDF5Printer(const Options&, std::string&, bool synchronised);
 
         /// Tasks common to the various constructors
-        //void common_constructor();
+        void common_constructor(const Options&);
 
         /// Destructor
         // Overload the base class virtual destructor
@@ -139,18 +141,18 @@ namespace Gambit
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         void initialise(const std::vector<int>&);
-        void auxilliary_init();
         void flush();
         void reset(bool force=false);
         int getRank();
-        void finalise();
+        void finalise(bool abnormal=false);
 
         ///@}
      
         /// @{ HDF5Printer-specific functions
 
         /// Retrieve pointer to HDF5 location to which datasets are added
-        H5FGPtr get_location();
+        hid_t get_location();
+        hid_t get_RA_location();
 
         /// Add a pointer to a new buffer to the global list
         void insert_buffer(VBIDpair& key, VertexBufferBase& newbuffer);
@@ -161,26 +163,26 @@ namespace Gambit
         /// Add PPIDpair to global index list
         void add_PPID_to_list(const PPIDpair&);
 
+        /// Ask the printer for the highest ID number known for a given rank
+        /// process (needed for resuming, so the scanner can resume assigning
+        /// point ID from this value. 
+        unsigned long getHighestPointID(const int rank);
+
         /// Check if PPIDpair exists in global index list
         bool seen_PPID_before(const PPIDpair& ppid);
 
         #ifdef WITH_MPI
-        /// Send PPID lists to the master and clear them (master process should never do this!)
-        void send_PPID_lists(bool finalsend=false);
-
-        /// Update the master node PPID lists with IDs from a worker node
-        void receive_PPID_list(uint source);
- 
-        /// Master waits until all processes send the specified tag, and monitors
-        /// for tag requests in the meantime. Used during initialise and finalise to
-        /// ensure monitoring for tag requests continues until it is no longer needed
-        /// by the workers.
+        /// Master waits until all processes send the specified tag.
+        /// Used during finalise to allow master to wait for other
+        /// processes to finish before attempting to stitch together
+        /// output.
         void master_wait_for_tag(Tags tag);
 
         /// MPI variables to use in the above function;
         int waitfortag_send_buffer = 0;
         MPI_Request req_null = MPI_REQUEST_NULL;
         #endif
+
 
         /// Function to ensure buffers are all synchronised to the same absolute position
         void synchronise_buffers();
@@ -189,7 +191,7 @@ namespace Gambit
         /// Flag sets whether "perfect" sync is required, or whether
         /// some buffers can be ahead by one slot (due to having
         /// performed prints that other buffers have not yet done)
-        void check_sync(const std::string& label, const int sync_type);
+        void check_sync(const std::string& label, const int sync_type, bool checkall);
  
         #ifdef WITH_MPI
         /// Reserved tags for MPI messages
@@ -198,43 +200,53 @@ namespace Gambit
 
         /// Retrieve MPI communicator object used by this printer
         GMPI::Comm& get_Comm() { return myComm; }
-
-        /// Request existing buffer MPI-tag set or register a new set for a buffer
-        BuffTags get_bufftags(VBIDpair);
-
-        /// Check for tag requests from worker nodes
-        //void check_for_bufftag_requests();
- 
-        /// Check for buffers waiting to be delivered from other processes 
-        bool collect_mpi_buffers();
- 
-        // Check for MPI tag messages waiting to be delivered from the master
-        void check_for_bufftag_deliveries();
         #endif  
 
         // Check if the buffers are full and waiting to be emptied
-        // (this will trigger MPI sends if needed)
         // By default this only empties buffers if they are full. Use
         // flag to force the flush for the finalise buffer dumps.
         void empty_sync_buffers(bool force=false);
 
         /// Check whether printing to a new parameter space point is about to occur
         // and perform adjustments needed to prepare the printer.
-        void check_for_new_point(const ulong, const uint);
+        void check_for_new_point(const unsigned long, const unsigned int);
  
         /// Function used by print functions to retrieve their local buffer manager object
         template<class BuffType>
-        H5P_LocalBufferManager<BuffType>& get_mybuffermanager(ulong pointID, uint mpirank);
+        H5P_LocalBufferManager<BuffType>& get_mybuffermanager(unsigned long pointID, unsigned int mpirank);
 
         /// Retrieve index from global lookup table, with error checking
-        ulong get_global_index(const ulong pointID, const uint mpirank);
+        unsigned long get_global_index(const unsigned long pointID, const unsigned int mpirank);
  
         /// Get the name of this printer
         std::string get_printer_name() { return printer_name; }
 
+        /// Get the number of RA write locations known to the primary printer
+        unsigned long get_N_RApointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
+
         /// Get the number of pointIDs know to this printer
         /// (should correspond to the number of "appends" each active buffer has received)
-        ulong get_N_pointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
+        unsigned long get_sync_pos() { return sync_pos; }
+        void increment_sync_pos() { sync_pos+=1; }
+
+        /// Retrieve the "resume" flag
+        bool get_resume() { return resume; }
+
+        /// Retrieve the starting position in output datasets for new data
+        bool get_startpos() { return startpos; }
+
+        /// Retreive any stored PPIDpairs from previous runs (resume mode)
+        const std::vector<PPIDpair>& get_previous_points() { return previous_points; }
+
+        /// Clear previous points list
+        void clear_previous_points() { std::vector<PPIDpair>().swap(previous_points); } // This technique also shrinks the capacity of the vector, which 'clear' does not do.
+
+        /// Attempt to read an existing output file, and prepare it for
+        /// resumed writing (e.g. fix up dataset lengths if data missing)
+        std::vector<PPIDpair> verify_existing_output(const std::string& file, const std::string& group);
+
+        /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
+        void combine_output(const int N, const bool resume);
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
@@ -256,7 +268,7 @@ namespace Gambit
         #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME)                               \
          template<>                                                                \
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
-           HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
+           HDF5Printer::get_mybuffermanager<BUFFTYPE>(unsigned long pointID, unsigned int mpirank) \
           {                                                                        \
              /* If the buffermanger hasn't been initialised, do so now */          \
              if( not CAT(hdf5_localbufferman_,NAME).ready() )                      \
@@ -282,27 +294,36 @@ namespace Gambit
         // Could use macros again to generate identical print functions 
         // for all types that have a << operator already defined.
 
-        /// List the types for which print functions are defined
-        #define HDF5_PRINTABLE_TYPES \
-          (int)(uint)(long)(ulong)   \
-          (float)(double)            \
-          (bool)(std::vector<bool>)  \
-          (std::vector<int>)         \
-          (std::vector<double>)      \
-          (triplet<double>)          \
-          (ModelParameters)  
+        // Types compatible with the template print function
+        #define TEMPLATE_TYPES      \
+         (int)(unsigned int)(long)(unsigned long)   \
+         (float)(double)        
+         // Add more as needed
+         // TODO needs to be converted to int to work with MPI
+         // (bool)
+
+        // Types for which custom print functions are defined
+        #define NON_TEMPLATE_TYPES \
+          (std::vector<double>)    \
+          (ModelParameters)        \
+          (triplet<double>)        \
+          /*(std::vector<bool>)        \
+             (std::vector<int>)        */
+
+        // All printable types
+        #define HDF5_PRINTABLE_TYPES TEMPLATE_TYPES NON_TEMPLATE_TYPES
 
         #define DECLARE_PRINT(r,data,ELEM) \
-          void print(ELEM const& value, const std::string& label, const int IDcode, const int rank, const ulong pointID); \
+          void print(ELEM const& value, const std::string& label, const int IDcode, const unsigned int mpirank, const unsigned long pointID); \
                                                                               
         #define DECLARE_PRINT_FUNCTIONS(TYPES) BOOST_PP_SEQ_FOR_EACH(DECLARE_PRINT, _, TYPES)
-        DECLARE_PRINT_FUNCTIONS(HDF5_PRINTABLE_TYPES)       
+        DECLARE_PRINT_FUNCTIONS(NON_TEMPLATE_TYPES)       
 
         /// Helper print functions
         // Used to reduce repetition in definitions of virtual function overloads 
         // (useful since there is no automatic type conversion possible)
         template<class T>
-        void template_print(T const& value, const std::string& label, const int IDcode, const uint mpirank, const ulong pointID)
+        void template_print(T const& value, const std::string& label, const int IDcode, const unsigned int mpirank, const unsigned long pointID)
         {
            // Define what output format will be used for this type (by choosing an appropriate buffer type)  
            typedef VertexBufferNumeric1D_HDF5<T,BUFFERLENGTH> BuffType;
@@ -314,37 +335,41 @@ namespace Gambit
            // Extract a buffer from the manager corresponding to this 
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
 
+           // { debug
+           //if(label=="pointID") std::cout << "rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<label<<" = "<<value<<std::endl;
+           // }
+
+
            #ifdef HDEBUG_MODE
-           std::cout<<"printing "<<typeid(T).name()<<": "<<label<<std::endl;
-           std::cout<<"pointID: "<<pointID<<", mpirank: "<<mpirank<<std::endl;
+           std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": printing "<<typeid(T).name()<<", "<<label<<" = "<<value<<std::endl;
+           std::cout<<"rank "<<myRank<<", printer "<<this->get_printer_name()<<": pointID="<<pointID<<", mpirank="<<mpirank<<std::endl;
            #endif
  
+           PPIDpair ppid(pointID,mpirank);
            if(synchronised)
            {
              // Write the data to the selected buffer ("just works" for simple numeric types)
-             selected_buffer.append(value,PPIDpair(pointID,mpirank));
+             selected_buffer.append(value,ppid);
            }
            else
            {
              // Queue up a desynchronised ("random access") dataset write to previous scan iteration
-             selected_buffer.RA_write(value,PPIDpair(pointID,mpirank),primary_printer->global_index_lookup); 
+             if(not seen_PPID_before(ppid))
+             {
+               add_PPID_to_list(ppid);
+             }
+             selected_buffer.RA_write(value,ppid,primary_printer->global_index_lookup); 
            }
         }
  
         /// @{ Helper macros to write all the print functions which can use the "easy" template
-        #define TEMPLATE_TYPES      \
-         (int)(uint)(long)(ulong)   \
-         (float)(double)        
-         // Add more as needed
-         // TODO needs to be converted to int to work with MPI
-         // (bool)
 
         // The type of the template print function buffers
         #define TEMPLATE_BUFFTYPE(TYPE) VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>
         #define TEMPLATE_PRINT(r,data,i,elem)                                   \
           NEW_BUFFMAN(TEMPLATE_BUFFTYPE(elem),CAT(template_,i))                 \
           void print(elem const& value, const std::string& label, const int vID, \
-                       const uint mpirank, const ulong pointID)                 \
+                       const unsigned int mpirank, const unsigned long pointID)                 \
           {                                                                     \
             template_print(value,label,vID,mpirank,pointID);                    \
           }                                                          
@@ -367,18 +392,26 @@ namespace Gambit
         // etc...
 
         /// Regular print functions
-        void print(std::vector<double> const&, const std::string&, const int, const uint, const ulong);
-        void print(triplet<double> const&,     const std::string&, const int, const uint, const ulong);
-        void print(ModelParameters const&,     const std::string&, const int, const uint, const ulong);
+        // Now already declared in macro above
+        //void print(std::vector<double> const&, const std::string&, const int, const unsigned int, const unsigned long);
+        //void print(ModelParameters     const&, const std::string&, const int, const unsigned int, const unsigned long);
+        //void print(triplet<double> const&,     const std::string&, const int, const unsigned int, const unsigned long);
 
       private:
-        // Pointers to HDF5 file and group objects containing the datasets
-        H5FilePtr fileptr;
-        H5GroupPtr groupptr;
+        // String names for output file and group
+        std::string file;    // final combined output filename
+        std::string tmpfile; // temporary filename (unique to each process)
+        std::string group;   // HDF5 group location to store datasets
 
-        // Pointer to a location in a HDF5 to which the datasets will be written
+        // Handles for HDF5 files and groups containing the datasets
+        hid_t file_id;
+        hid_t group_id;
+        hid_t RA_group_id;
+
+        // Handle to a location in a HDF5 to which the datasets will be written
         // i.e. a file or a group.
-        H5FGPtr location;
+        hid_t location_id;
+        hid_t RA_location_id;
 
         /// Pointer to the primary printer object 
         // (if this is an auxilliary printer, else it is "this" //NULL)
@@ -394,15 +427,15 @@ namespace Gambit
         /// Map recording which model point this process is working on
         // Need this so that we can compute when (at least initial) writing to a model point has ceased
         // Key: rank; Value: last pointID sent by that rank.
-        std::map<uint,ulong> lastPointID;
+        std::map<unsigned int,unsigned long> lastPointID;
 
         /// Current absolute dataset index
         // i.e. this location in the output dataset is currently the target of print functions
-        ulong current_dset_position; 
+        unsigned long current_dset_position; 
 
         /// Map from pointID,thread pairs to absolute dataset indices
         //  Needed for dataset writes which return to old points.
-        std::map<PPIDpair, ulong> global_index_lookup; 
+        std::map<PPIDpair, unsigned long> global_index_lookup; 
 
         // Matching vector for the above, for reverse lookup
         std::vector<PPIDpair> reverse_global_index_lookup;
@@ -411,28 +444,11 @@ namespace Gambit
         std::string printer_name;
 
         /// MPI rank and size
-        uint myRank;  // Needed even without MPI available, for some default behaviour.
+        unsigned int myRank;  // Needed even without MPI available, for some default behaviour.
+        unsigned int mpiSize; //            "                           "
         #ifdef WITH_MPI
         // Gambit MPI communicator context for use within the hdf5 printer system
         GMPI::Comm myComm;
- 
-        uint mpiSize;
- 
-        /// Tag manager object (only the primary printer has one of these) 
-        MPITagManager* tag_manager = NULL;
-
-        /// Buffer and flag for tracking the status of the PPIDpair Isend to master (in clear_PPID_lists)
-        PPIDpair PPID_send_buffer[BUFFERLENGTH];
-        bool PPID_send_buffer_ready = true;
-        /// Request and status handles for tracking status of the above message
-        MPI_Request req_PPIDsend = MPI_REQUEST_NULL;
-        MPI_Status stat_PPIDsend; 
-
-        /// Buffer, Flag, request, and status handles for N_buffers_sent messages
-        uint N_buffers_sent;
-        bool N_buffers_sent_buf_ready = true;
-        MPI_Request req_N_buffers_sent = MPI_REQUEST_NULL;
-        MPI_Status  stat_N_buffers_sent;
         #endif
 
         /// Flag to specify whether all buffers created by this printer 
@@ -445,7 +461,22 @@ namespace Gambit
         // but will be "global" data about the whole scan (e.g. max log likelihood 
         // found, scan statistics, etc.)
         bool global = false;
- 
+
+        /// Flag to trigger "resume" mode.
+        /// i.e. during initialisation, we attempt to read the output file and
+        /// work out where to write new data.
+        bool resume;
+
+        /// Position to start writing new output. Should be zero unless we are in
+        /// resume mode.
+        unsigned long startpos = 0;
+
+        /// Write position to which output buffers should be synchronised
+        unsigned long sync_pos = 0;
+
+        /// In resume mode: storage for PPIDpairs harvested from previous scan data 
+        std::vector<PPIDpair> previous_points;
+
       protected:
         /// Things which other printers need access to
 
@@ -494,4 +525,4 @@ namespace Gambit
 
 #undef DEBUG_MODE
 
-#endif //ifndef __hdf5printer_hpp__
+#endif

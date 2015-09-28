@@ -47,6 +47,7 @@ build/*
 # Generated cmake files
 cmake/linkedout.cmake
 *Bit*/CMakeLists.txt
+Models/CMakeLists.txt
 Backends/CMakeLists.txt
 Printers/CMakeLists.txt
 ScannerBit/CMakeLists.txt

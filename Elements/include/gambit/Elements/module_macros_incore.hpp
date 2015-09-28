@@ -859,19 +859,17 @@
         /* Get a pointer to the parameter map provided by this MODEL */        \
         safe_ptr<ModelParameters> model_safe_ptr =                             \
          Pipes::FUNCTION::Dep::CAT(MODEL,_parameters).safe_pointer();          \
-        const std::map<str,double>* parameterMap =                             \
-         model_safe_ptr->getValuesPtr();                                       \
         /* Use that to add the parameters provided by this MODEL to the map    \
         of safe pointers to model parameters. */                               \
-        for (std::map<str,double>::const_iterator it = parameterMap->begin();  \
-         it != parameterMap->end(); ++it)                                      \
+        for (std::map<str,double>::const_iterator it = model_safe_ptr->begin();\
+         it != model_safe_ptr->end(); ++it)                                    \
         {                                                                      \
           if (Pipes::FUNCTION::Param.find(it->first) ==                        \
               Pipes::FUNCTION::Param.end())                                    \
           { /* Add a safe pointer to the value of this parameter to the map*/  \
             Pipes::FUNCTION::Param.insert(                                     \
              std::pair<str,safe_ptr<const double> >(it->first,                 \
-             safe_ptr<const double>(&(parameterMap->at(it->first))))           \
+             safe_ptr<const double>(&(it->second)))                            \
             );                                                                 \
           }                                                                    \
           else                                                                 \

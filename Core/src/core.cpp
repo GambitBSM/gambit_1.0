@@ -47,20 +47,21 @@ namespace Gambit
     /// Definitions of public methods in GAMBIT core class.
 
     /// Constructor
-    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
-     modelInfo(&claw),
-     backendData(&beinfo),
-     capability_dbase_file(GAMBIT_DIR "/scratch/central_capabilities.dat"),
-     model_dbase_file(GAMBIT_DIR "/scratch/central_models.dat"),
-     input_capability_descriptions(GAMBIT_DIR "/config/capabilities.dat"),
-     input_model_descriptions(GAMBIT_DIR "/config/models.dat"),
-     report_file(GAMBIT_DIR "/config/report.txt"),
-     report(report_file.c_str()),
+    gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo )
+     : modelInfo(&claw)
+     , backendData(&beinfo)
+     , capability_dbase_file(GAMBIT_DIR "/scratch/central_capabilities.dat")
+     , model_dbase_file(GAMBIT_DIR "/scratch/central_models.dat")
+     , input_capability_descriptions(GAMBIT_DIR "/config/capabilities.dat")
+     , input_model_descriptions(GAMBIT_DIR "/config/models.dat")
+     , report_file(GAMBIT_DIR "/config/report.txt")
+     , report(report_file.c_str())
      /* command line flags */ 
-     processed_options(false),
-     show_runorder(false),
-     verbose_flag(false),
-     found_inifile(false)
+     , processed_options(false)
+     , show_runorder(false)
+     , resume(false)
+     , verbose_flag(false)
+     , found_inifile(false)
     {}
 
     /// Inform the user of the ways to invoke GAMBIT, then die.
@@ -81,6 +82,7 @@ namespace Gambit
                 "\n   models                List registered models and output model graph     "
                 "\n   capabilities          List all registered function capabilities         "
                 "\n   scanners              List registered scanners                          "
+                "\n   test-functions        List registered scanner test objective functions  "
                 "\n   <name>                Give info on a specific module, backend, model,   "
                 "\n                           capability or scanner                           "
                 "\n                           e.g.: gambit DarkBit                            "       
@@ -94,8 +96,9 @@ namespace Gambit
                 "\n   -h/--help             Display this usage information                    "
                 "\n   -f <inifile>          Start scan using <inifile>                        "
                 "\n   -v/--verbose          Turn on verbose mode                              "
-                "\n   -r/--runorder         List the function evaluation order computed based " 
+                "\n   -d/--dryrun           List the function evaluation order computed based " 
                 "\n                           on inifile                                      "
+                "\n   -r/--resume           Resume a previously initiated scan                "
                 "\n" << endl << endl; 
       }
       logger().disable();
@@ -119,7 +122,8 @@ namespace Gambit
         {"version", no_argument, 0, 10}, /*10 is just a unique integer key to identify this argument*/
         {"verbose", no_argument, 0, 'v'},
         {"help",    no_argument, 0, 'h'},
-        {"runorder", no_argument,0, 'r'},
+        {"dryrun",  no_argument,0, 'd'},
+        {"resume",  no_argument,0, 'r'},
         {0,0,0,0},
       };
 
@@ -128,7 +132,7 @@ namespace Gambit
 
       while(iarg != -1)
       {
-        iarg = getopt_long(argc, argv, "vhrf:", primary_options, &index);
+        iarg = getopt_long(argc, argv, "vhdrf:", primary_options, &index);
 
         switch (iarg)
         {
@@ -150,9 +154,13 @@ namespace Gambit
             // display usage message and quit (also happens on unrecognised options)
             bail();
             break;
-          case 'r':
+          case 'd':
             // Display proposed functor evaluation order and quit
             show_runorder = true; // Sorted out in dependency resolver
+            break;
+          case 'r':
+            // Turn on "resume" mode
+            resume = true;
             break;
           case 'f':
             // Argument must contain the ini-filename 

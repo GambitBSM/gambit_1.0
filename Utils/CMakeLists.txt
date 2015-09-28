@@ -26,9 +26,11 @@ set(source_files src/ascii_table_reader.cpp
                  src/mpiwrapper.cpp
                  src/new_mpi_datatypes.cpp
                  src/model_parameters.cpp
+                 src/screen_print_utils.cpp
                  src/standalone_error_handlers.cpp
                  src/statistics.cpp
                  src/stream_overloads.cpp
+                 src/table_formatter.cpp
                  src/threadsafe_rng.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
@@ -44,11 +46,13 @@ set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/new_mpi_datatypes.hpp
                  include/gambit/Utils/factory_registry.hpp
                  include/gambit/Utils/model_parameters.hpp
+                 include/gambit/Utils/screen_print_utils.hpp
                  include/gambit/Utils/standalone_error_handlers.hpp
                  include/gambit/Utils/static_members.hpp
                  include/gambit/Utils/statistics.hpp
                  include/gambit/Utils/stream_overloads.hpp 
                  include/gambit/Utils/threadsafe_rng.hpp
+                 include/gambit/Utils/table_formatter.hpp
                  include/gambit/Utils/type_equivalency.hpp
                  include/gambit/Utils/type_index.hpp
                  include/gambit/Utils/type_macros.hpp
