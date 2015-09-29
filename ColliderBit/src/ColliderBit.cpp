@@ -242,7 +242,7 @@ namespace Gambit
             else
               result.init(pythia_doc_path, pythiaOptions);
           } catch (SpecializablePythia::InitializationError &e) {
-            logger() << "     ---> initialization veto.";
+            logger() << "     ---> initialization veto." << EOM;
             Loop::wrapup();
             return;
           }
@@ -282,7 +282,7 @@ namespace Gambit
           }
           catch (SpecializablePythia::InitializationError &e)
           {
-            logger() << "     ---> initialization veto.";
+            logger() << "     ---> initialization veto." << EOM;
             Loop::wrapup();
             return;
           }
@@ -406,7 +406,7 @@ namespace Gambit
       try {
         (*Dep::HardScatteringSim).nextEvent(result);
       } catch (SpecializablePythia::EventFailureError &e) {
-        logger() << "     ---> event faliure veto.";
+        logger() << "     ---> event faliure veto." << EOM;
         Loop::wrapup();
         return;
       }
