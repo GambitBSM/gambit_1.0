@@ -58,9 +58,9 @@
     START_FUNCTION(double)
     DEPENDENCY(SMINPUTS, SMInputs)
     //DEPENDENCY(SingletDM_spectrum, Spectrum*)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs, SingletDM)
-    MODEL_GROUP(higgs,   (StandardModel_Higgs))
-    MODEL_GROUP(singlet, (SingletDM))
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDM_running))
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 

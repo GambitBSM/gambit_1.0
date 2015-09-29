@@ -28,6 +28,7 @@
 #include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 
+
 // Switch for debug mode
 #define SpecBit_DBUG
 
@@ -150,7 +151,9 @@ namespace Gambit
       input.Lambda2Input=lambda_hs;
       input.Lambda3Input=0;
       input.Qin=173.15;  // scale where EWSB conditions are applied
-            
+      
+      
+      
       spectrum_generator.run(oneset, input);
       SSDM_slha<Two_scale> model(spectrum_generator.get_model());
       
@@ -191,19 +194,65 @@ namespace Gambit
 
       QedQcd oneset;
       SSDM_input_parameters input;
+      SSDM_slha_io slha_io;
       
       SSDM_spectrum_generator<Two_scale> spectrum_generator;
-      // Fill QedQcd object with SMInputs values
+      
+      
+      
+      const Options runOptions;
+      #define SPECGEN_SET(NAME,TYPE,DEFAULTVAL) \
+         CAT_2(spectrum_generator.set_, NAME) BOOST_PP_LPAREN() runOptions.getValueOrDef<TYPE> \
+               BOOST_PP_LPAREN() DEFAULTVAL BOOST_PP_COMMA() STRINGIFY(NAME) \
+               BOOST_PP_RPAREN() BOOST_PP_RPAREN()
+      // Ugly I know. It expands to:
+      // spectrum_generator.set_NAME(runOptions.getValueOrDef<TYPE>(DEFAULTVAL,"NAME"))
+
+      // For debugging only; check expansions
+      // #ifdef SpecBit_DBUG
+      //    #define ECHO(COMMAND) std::cout << SAFE_STRINGIFY(COMMAND) << std::endl
+      //    ECHO(  SPECGEN_SET(precision_goal,                 double, 1.0e-4)  );
+      //    #undef ECHO
+      // #endif
+
+      SPECGEN_SET(precision_goal,                    double, 1.0e-4);
+      SPECGEN_SET(max_iterations,                    double, 0 );
+      SPECGEN_SET(calculate_sm_masses,               bool, false );
+      SPECGEN_SET(pole_mass_loop_order,              int, 2 );
+      SPECGEN_SET(ewsb_loop_order,                   int, 2 );
+      SPECGEN_SET(beta_loop_order,                   int, 2 );
+      SPECGEN_SET(threshold_corrections_loop_order,  int, 1 );
+
+      #undef SPECGEN_SET
+
+      // Higgs loop corrections are a little different... sort them out now     
+      Two_loop_corrections two_loop_settings;
+
+      // alpha_t alpha_s
+      // alpha_b alpha_s
+      // alpha_t^2 + alpha_t alpha_b + alpha_b^2
+      // alpha_tau^2
+      two_loop_settings.higgs_at_as
+         = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_as");
+      two_loop_settings.higgs_ab_as
+         = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_ab_as");
+      two_loop_settings.higgs_at_at
+         = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_at");
+      two_loop_settings.higgs_atau_atau
+         = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_atau_atau");
+
+      spectrum_generator.set_two_loop_corrections(two_loop_settings);      // Fill QedQcd object with SMInputs values
+      
+      
       // Run everything to Mz
       oneset.toMz();
-      double mH,mS,lambda_hs;
-      setup_QedQcd(oneset,sminputs);
-      mH = *myPipe::Param.at("mH");
-      mS = *myPipe::Param.at("mS");
-      lambda_hs   = *myPipe::Param.at("lambda_hS");
       
-      input.HiggsIN=-pow(mH,2)/2;
-      input.mS2Input=pow(mS,2)-lambda_hs*15;
+      double mH2,mS2,lambda_hs;
+      mH2 = *myPipe::Param.at("mH2");
+      mS2 = *myPipe::Param.at("mS2");
+      lambda_hs = *myPipe::Param.at("lambda_hS");
+      input.HiggsIN=-mH2;//-pow(mH,2)/2;
+      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
       input.Lambda2Input=lambda_hs;
       input.Lambda3Input=0;
       input.Qin=173.15;  // scale where EWSB conditions are applied
@@ -213,204 +262,210 @@ namespace Gambit
       
       SSDM<Two_scale> tmp_model(model);
       SSDM_parameter_getter parameter_getter;
+      double Mpl=1.1e19;// Define upper cutoff
+      tmp_model.run_to(Mpl);
+      result=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+
+      
+      
       //double MS_pole_mass;
-      //SSDM_physical& pole_masses = model.get_physical_slha();
+      SSDM_physical& pole_masses = model.get_physical_slha();
       //MS_pole_mass=pole_masses.Mss;
      // mtop=pole_masses.MFu(2);
-     // cout<< "Scalar pole mass from spectrum generator = "<< MS_pole_mass << endl;
+        cout<< "Scalar pole mass from spectrum generator = "<< pole_masses.Mss << endl;
 
-      
-      // vvvvvvvvvvvv    Finding minimum value of Lambda      vvvvvvvvvvvvv
-      
-      double MZ, a,b,Mpl,fa,fb,fc;
-      double ax,bx,cx,LamZ;
-      double fMpl,DeltaLamZ,DeltafMpl;
-      double fu,ftmp;
-      double ulim,u,utmp;const double GOLD=1.618034,GLIMIT=100.0;//TINY=1.0e-20;
-      
-      //vvvvvvvvvvvv    Bracketing of minimum Lambda      vvvvvvvvvvvvv
-      
-      const int ITMAX=100;
-      double tol=3e-8;
-      MZ=92;
-      Mpl=1.1e19;// Define upper cutoff
-      tmp_model.run_to(MZ);
-      LamZ=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-      tmp_model.run_to(MZ+MZ*0.01);
-      DeltaLamZ=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-      tmp_model.run_to(Mpl);
-      fMpl=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-      tmp_model.run_to(Mpl+0.01*Mpl);
-      DeltafMpl=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-      if (DeltafMpl<fMpl)
-      {
-      a=Mpl;b=(Mpl+0.01*Mpl);fa=Mpl;fb=DeltafMpl;
-      }
-      else if (DeltaLamZ<LamZ)
-      {
-      a=MZ,b=(MZ+MZ*0.01);fa=LamZ;fb=DeltaLamZ;
-      }
-      //Here GOLD is the default ratio by which successive intervals are magnified and GLIMIT
-      //is the maximum magnification allowed for a parabolic-fit step.
-      ax=a; bx=b;
-      if (fb > fa) { //Switch roles of a and b so that we can go downhill in the direction from a to b.
-      SWAP(ax,bx);
-      SWAP(fb,fa);
-      }
-      cx=bx+GOLD*(bx-ax); //First guess for c.
-      tmp_model.run_to(cx);
-      fc=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-      while (fb > fc)
-      { //Keep returning here until we bracket.
-        double r=(bx-ax)*(fb-fc);
-        double q=(bx-cx)*(fb-fa);
-        u=bx-((bx-cx)*q-(bx-ax)*r)/(2.0*SIGN(abs(q-r),q-r)); // need to be careful of division by zero here
-        ulim=bx+GLIMIT*(cx-bx);
-        //We won’t go farther than this. Test various possibilities:
-        if ((bx-u)*(u-cx) > 0.0) { //Parabolic u is between b and c: try it.
-        tmp_model.run_to(u);
-        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-        if (fu < fc) { //Got a minimum between b and c.
-        ax=bx;
-        bx=u;
-        fa=fb;
-        fb=fu;
-        break;
-        } else if (fu > fb) {// Got a minimum between between a and u.
-        cx=u;
-        fc=fu;
-        break;
-        }
-        u=cx+GOLD*(cx-bx); //Parabolic fit was no use. Use default magfu=
-        tmp_model.run_to(u);
-        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-        } else if ((cx-u)*(u-ulim) > 0.0) { //Parabolic fit is between c and
-        tmp_model.run_to(u);
-        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-        if (fu < fc) {
-        utmp=u+GOLD*(u-cx);shft3a(bx,cx,u,utmp);tmp_model.run_to(u);
-        ftmp=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-        shft3a(fb,fc,fu,ftmp);
-        }
-        } else if ((u-ulim)*(ulim-cx) >= 0.0) { //Limit parabolic u to maximum
-        u=ulim; //allowed value.
-        tmp_model.run_to(u);
-        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-        } else { //Reject parabolic u, use default magnificau=
-        u=cx+GOLD*(cx-bx); //tion.
-        tmp_model.run_to(u);
-        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-        }
-        shft3a(ax,bx,cx,u); //Eliminate oldest point and continue.
-        shft3a(fa,fb,fc,fu);
-      }
-    
-      
-      // ^^^^^^^^^^^^^^^^^^^^^^^^ bracketing complete ^^^^^^^^^^^^^^^^^^^^^^^^^
-      
-      
-      // bracketing complete now need to find minimum lambda value, using Brent's method
-      
-      
-
-      const double CGOLD=0.3819660;
-      const double ZEPS=numeric_limits<double>::epsilon()*1.0e-3;
-      //Here ITMAX is the maximum allowed number of iterations;
-      //and ZEPS is a small number that protects against trying to achieve fractional accuracy
-      //for a minimum that happens to be exactly zero.
-      double d=0.0,etemp,fv,fw,fx;
-      double p,q,r,tol1,tol2,v,w,x,xm;
-      double e=0.0;                                                   //This will be the distance moved on the step before last.
-      a=(ax < cx ? ax : cx);                                          //a and b must be in ascending order,
-      b=(ax > cx ? ax : cx);                                          //but input abscissas need not be.
-      x=w=v=bx;                                                       // Initializations...
-      tmp_model.run_to(x);
-      double iterations;
-      fw=fv=fx=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-      for (int iter=0;iter<ITMAX;iter++)
-      {                            //  Main program loop.
-          xm=0.5*(a+b);
-          tol2=2.0*(tol1=tol*abs(x)+ZEPS);
-          if (abs(x-xm) <= (tol2-0.5*(b-a)))
-          {                      //Test for done here.
-              iterations=iter;
-              cout << "minimum found after " << iterations << " iterations" << endl;
-              break;
-          }
-          if (abs(e) > tol1)
-          {                       //Construct a trial parabolic fit.
-              r=(x-w)*(fx-fv);
-              q=(x-v)*(fx-fw);
-              p=(x-v)*q-(x-w)*r;
-              q=2.0*(q-r);
-              if (q > 0.0) p = -p;
-              q=abs(q);
-              etemp=e;
-              e=d;
-              if (abs(p) >= abs(0.5*q*etemp) || p <= q*(a-x)
-                  || p >= q*(b-x))
-                  d=CGOLD*(e=(x >= xm ? a-x : b-x));
-              //The above conditions determine the acceptability of the parabolic fit. Here
-              //we take the golden section step into the larger of the two segments.
-              else
-              {
-                  d=p/q;                                              //Take the parabolic step.
-                  u=x+d;
-                  if (u-a < tol2 || b-u < tol2)
-                      d=SIGN(tol1,xm-x);
-              }
-          } else
-          {
-              d=CGOLD*(e=(x >= xm ? a-x : b-x));
-          }
-          u=(abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
-          
-          tmp_model.run_to(u);
-          fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
-          //This is the one function evaluation per iteration.
-          
-          //cout<< u << endl;
-          if (fu <= fx)
-          {                                             //Now decide what to do with our func
-              if(u >= x) a=x; else b=x;
-              shft3a(v,w,x,u);                             //Housekeeping follows:
-              shft3a(fv,fw,fx,fu);
-              
-          }
-          else
-          {
-              if (u < x) a=u; else b=u;
-              if (fu <= fw || w == x)
-              {
-                  v=w;
-                  w=u;
-                  fv=fw;
-                  fw=fu;
-              } else if (fu <= fv || v == x || v == w)
-              {
-                  v=u;
-                  fv=fu;
-              }
-          }
-      }
-      // cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<endl;
-      
-      
-      // ^^^^^^^^^^^^^^^^^^  minimumn value of Lambda found   ^^^^^^^^^^^^^^^^^^^^^^
-      double prob;
-      if (fu<0)
-      {
-      // Calculate probability function for transition rate to false vacuum
-      prob=exp(-exp(4*140-2600/(abs(fu)/0.01))*pow(u/(1.2e19),4)); //probability of 0 decays
-
-      }
-      else
-      {
-      prob=1; // vacuum is absolutely stable
-      }
-      
-
-      result=prob;
+      // below is commented out for testing compare with spectrum generator running
+//      // vvvvvvvvvvvv    Finding minimum value of Lambda      vvvvvvvvvvvvv
+//      
+//      double MZ, a,b,Mpl,fa,fb,fc;
+//      double ax,bx,cx,LamZ;
+//      double fMpl,DeltaLamZ,DeltafMpl;
+//      double fu,ftmp;
+//      double ulim,u,utmp;const double GOLD=1.618034,GLIMIT=100.0;//TINY=1.0e-20;
+//      
+//      //vvvvvvvvvvvv    Bracketing of minimum Lambda      vvvvvvvvvvvvv
+//      
+//      const int ITMAX=100;
+//      double tol=3e-8;
+//      MZ=92;
+//      Mpl=1.1e19;// Define upper cutoff
+//      tmp_model.run_to(MZ);
+//      LamZ=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//      tmp_model.run_to(MZ+MZ*0.01);
+//      DeltaLamZ=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//      tmp_model.run_to(Mpl);
+//      fMpl=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//      tmp_model.run_to(Mpl+0.01*Mpl);
+//      DeltafMpl=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//      if (DeltafMpl<fMpl)
+//      {
+//      a=Mpl;b=(Mpl+0.01*Mpl);fa=Mpl;fb=DeltafMpl;
+//      }
+//      else if (DeltaLamZ<LamZ)
+//      {
+//      a=MZ,b=(MZ+MZ*0.01);fa=LamZ;fb=DeltaLamZ;
+//      }
+//      //Here GOLD is the default ratio by which successive intervals are magnified and GLIMIT
+//      //is the maximum magnification allowed for a parabolic-fit step.
+//      ax=a; bx=b;
+//      if (fb > fa) { //Switch roles of a and b so that we can go downhill in the direction from a to b.
+//      SWAP(ax,bx);
+//      SWAP(fb,fa);
+//      }
+//      cx=bx+GOLD*(bx-ax); //First guess for c.
+//      tmp_model.run_to(cx);
+//      fc=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//      while (fb > fc)
+//      { //Keep returning here until we bracket.
+//        double r=(bx-ax)*(fb-fc);
+//        double q=(bx-cx)*(fb-fa);
+//        u=bx-((bx-cx)*q-(bx-ax)*r)/(2.0*SIGN(abs(q-r),q-r)); // need to be careful of division by zero here
+//        ulim=bx+GLIMIT*(cx-bx);
+//        //We won’t go farther than this. Test various possibilities:
+//        if ((bx-u)*(u-cx) > 0.0) { //Parabolic u is between b and c: try it.
+//        tmp_model.run_to(u);
+//        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//        if (fu < fc) { //Got a minimum between b and c.
+//        ax=bx;
+//        bx=u;
+//        fa=fb;
+//        fb=fu;
+//        break;
+//        } else if (fu > fb) {// Got a minimum between between a and u.
+//        cx=u;
+//        fc=fu;
+//        break;
+//        }
+//        u=cx+GOLD*(cx-bx); //Parabolic fit was no use. Use default magfu=
+//        tmp_model.run_to(u);
+//        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//        } else if ((cx-u)*(u-ulim) > 0.0) { //Parabolic fit is between c and
+//        tmp_model.run_to(u);
+//        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//        if (fu < fc) {
+//        utmp=u+GOLD*(u-cx);shft3a(bx,cx,u,utmp);tmp_model.run_to(u);
+//        ftmp=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//        shft3a(fb,fc,fu,ftmp);
+//        }
+//        } else if ((u-ulim)*(ulim-cx) >= 0.0) { //Limit parabolic u to maximum
+//        u=ulim; //allowed value.
+//        tmp_model.run_to(u);
+//        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//        } else { //Reject parabolic u, use default magnificau=
+//        u=cx+GOLD*(cx-bx); //tion.
+//        tmp_model.run_to(u);
+//        fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//        }
+//        shft3a(ax,bx,cx,u); //Eliminate oldest point and continue.
+//        shft3a(fa,fb,fc,fu);
+//      }
+//    
+//      
+//      // ^^^^^^^^^^^^^^^^^^^^^^^^ bracketing complete ^^^^^^^^^^^^^^^^^^^^^^^^^
+//      
+//      
+//      // bracketing complete now need to find minimum lambda value, using Brent's method
+//      
+//      
+//
+//      const double CGOLD=0.3819660;
+//      const double ZEPS=numeric_limits<double>::epsilon()*1.0e-3;
+//      //Here ITMAX is the maximum allowed number of iterations;
+//      //and ZEPS is a small number that protects against trying to achieve fractional accuracy
+//      //for a minimum that happens to be exactly zero.
+//      double d=0.0,etemp,fv,fw,fx;
+//      double p,q,r,tol1,tol2,v,w,x,xm;
+//      double e=0.0;                                                   //This will be the distance moved on the step before last.
+//      a=(ax < cx ? ax : cx);                                          //a and b must be in ascending order,
+//      b=(ax > cx ? ax : cx);                                          //but input abscissas need not be.
+//      x=w=v=bx;                                                       // Initializations...
+//      tmp_model.run_to(x);
+//      double iterations;
+//      fw=fv=fx=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//      for (int iter=0;iter<ITMAX;iter++)
+//      {                            //  Main program loop.
+//          xm=0.5*(a+b);
+//          tol2=2.0*(tol1=tol*abs(x)+ZEPS);
+//          if (abs(x-xm) <= (tol2-0.5*(b-a)))
+//          {                      //Test for done here.
+//              iterations=iter;
+//              cout << "minimum found after " << iterations << " iterations" << endl;
+//              break;
+//          }
+//          if (abs(e) > tol1)
+//          {                       //Construct a trial parabolic fit.
+//              r=(x-w)*(fx-fv);
+//              q=(x-v)*(fx-fw);
+//              p=(x-v)*q-(x-w)*r;
+//              q=2.0*(q-r);
+//              if (q > 0.0) p = -p;
+//              q=abs(q);
+//              etemp=e;
+//              e=d;
+//              if (abs(p) >= abs(0.5*q*etemp) || p <= q*(a-x)
+//                  || p >= q*(b-x))
+//                  d=CGOLD*(e=(x >= xm ? a-x : b-x));
+//              //The above conditions determine the acceptability of the parabolic fit. Here
+//              //we take the golden section step into the larger of the two segments.
+//              else
+//              {
+//                  d=p/q;                                              //Take the parabolic step.
+//                  u=x+d;
+//                  if (u-a < tol2 || b-u < tol2)
+//                      d=SIGN(tol1,xm-x);
+//              }
+//          } else
+//          {
+//              d=CGOLD*(e=(x >= xm ? a-x : b-x));
+//          }
+//          u=(abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
+//          
+//          tmp_model.run_to(u);
+//          fu=parameter_getter.get_parameters(tmp_model)[5]; //function evaluation
+//          //This is the one function evaluation per iteration.
+//          
+//          //cout<< u << endl;
+//          if (fu <= fx)
+//          {                                             //Now decide what to do with our func
+//              if(u >= x) a=x; else b=x;
+//              shft3a(v,w,x,u);                             //Housekeeping follows:
+//              shft3a(fv,fw,fx,fu);
+//              
+//          }
+//          else
+//          {
+//              if (u < x) a=u; else b=u;
+//              if (fu <= fw || w == x)
+//              {
+//                  v=w;
+//                  w=u;
+//                  fv=fw;
+//                  fw=fu;
+//              } else if (fu <= fv || v == x || v == w)
+//              {
+//                  v=u;
+//                  fv=fu;
+//              }
+//          }
+//      }
+//      // cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<endl;
+//      
+//      
+//      // ^^^^^^^^^^^^^^^^^^  minimumn value of Lambda found   ^^^^^^^^^^^^^^^^^^^^^^
+//      double prob;
+//      if (fu<0)
+//      {
+//      // Calculate probability function for transition rate to false vacuum
+//      prob=exp(-exp(4*140-2600/(abs(fu)/0.01))*pow(u/(1.2e19),4)); //probability of 0 decays
+//
+//      }
+//      else
+//      {
+//      prob=1; // vacuum is absolutely stable
+//      }
+//      
+//
+//      result=prob;
     }
 
 
