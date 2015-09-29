@@ -90,6 +90,8 @@ namespace Gambit {
       // Construct interpolated function, using GAMBIT base functions.
       auto dwarf_likelihood = Funk::interp("phi", xgrid, ygrid);
 
+      double fraction = *Dep::RD_fraction;
+
       // Integate spectrum 
       // (the zero velocity limit of the differential annihilation
       // cross-section as function of individual final state photons)
@@ -103,7 +105,7 @@ namespace Gambit {
       logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
       // Calculate phi-value
-      double phi = AnnYieldint / 8. / M_PI * 1e26;
+      double phi = AnnYieldint / 8. / M_PI * 1e26 * fraction * fraction;
 
       // And return final likelihood
       result = 0.5*dwarf_likelihood->bind("phi")->eval(phi);
@@ -125,10 +127,7 @@ namespace Gambit {
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
-      if ( runOptions->getValueOrDef<bool>(true, "use_dwarfs") )
-        result += BEreq::lnL(1, x, y);
-      if ( runOptions->getValueOrDef<bool>(false, "use_GC") )
-        result += BEreq::lnL(2, x, y);
+      result += BEreq::lnL(1, x, y);
 
       logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
@@ -139,16 +138,15 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_FermiGC_gamLike;
 
-      std::string DMid = *Dep::DarkMatter_ID;
-
-      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
+      double fraction = *Dep::RD_fraction;
+      result = 0;
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
-      std::vector<double> y = (*Dep::GA_AnnYield/(mass*mass*8*M_PI))->
-        set("v",0.)->bind("E")->vect(x);
+      std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
+        set("v", 0)->bind("E")->vect(x);
 
-      result = BEreq::lnL_GC(x, y);
+      result += BEreq::lnL(2, x, y);
 
       logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
