@@ -28,6 +28,8 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 
+#include "gambit/Utils/mpiwrapper.hpp"
+
 namespace Gambit {
   namespace DarkBit {
 
@@ -167,14 +169,25 @@ namespace Gambit {
 
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
-          std::ofstream ofs("DarkBit_temp.slha");
+#ifdef WITH_MPI
+          GMPI::Comm comm;
+          int rank = comm.Get_rank();
+#else
+          int rank = 0;
+#endif
+          // Set filename
+          std::string fstr = "DarkBit_temp_";
+          fstr += std::to_string(rank) + ".slha";
+
+          // Dump SLHA onto disk
+          std::ofstream ofs(fstr);
           ofs << mySLHA;
           ofs.close();
 
           // Initialize SUSY spectrum from SLHA
-          int len = 17;
+          int len = fstr.size();
           int flag = 15;
-          const char * filename = "DarkBit_temp.slha";
+          const char * filename = fstr.c_str();
           logger() << "Initializing DarkSUSY via SLHA." << std::endl;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();

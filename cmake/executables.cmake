@@ -50,7 +50,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
 endif()
 
 # Add the ExampleBit_A_standalone executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;")
+if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND (";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;"))
   if (NOT EXCLUDE_FLEXIBLESUSY)
     set(ExampleBit_A_XTRA ${flexiblesusy_LDFLAGS})
   endif()
@@ -72,7 +72,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
 endif()
 
 # Add the ColliderBit_standalone executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND (";${GAMBIT_BITS};" MATCHES ";ColliderBit;"))
   if (NOT EXCLUDE_FLEXIBLESUSY)
     set(ColliderBit_XTRA ${flexiblesusy_LDFLAGS})
   endif()
@@ -120,4 +120,15 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
     # Make sure the printers compile OK if the rest of GAMBIT is missing
     add_definitions(-DSTANDALONE=1)
   endif()
+endif()
+
+# Add the DarkBit_standalone executable
+if(EXISTS "${PROJECT_SOURCE_DIR}/DarkBit/" AND ";${GAMBIT_BITS};" MATCHES ";DarkBit;")
+  set(DarkBit_XTRA ${gambit_XTRA})
+  add_gambit_executable(DarkBit_standalone "${DarkBit_XTRA}"
+                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_example.cpp
+                                ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
+                                $<TARGET_OBJECTS:DarkBit>
+                                ${GAMBIT_ALL_COMMON_OBJECTS}
+  )
 endif()

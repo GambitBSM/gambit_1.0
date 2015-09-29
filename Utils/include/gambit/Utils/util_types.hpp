@@ -438,18 +438,66 @@ namespace Gambit
     public:
       T re;
       T im;
+      /// Default constructor
+      FcomplexT() {}
+      /// Default destructor
+      ~FcomplexT() {}
+      /// Default copy constructor
       template<typename T2>
-      FcomplexT& operator= (const FcomplexT<T2> &in)
+      FcomplexT(const FcomplexT<T>& in)
+      {
+        re = in.re;
+        im = in.im;
+      }
+      /// Constructor from a C++ complex type
+      FcomplexT(const std::complex<T>& in)
+      {
+        re = in.real();
+        im = in.imag();
+      }
+      /// Constructor from a single instance of some type
+      FcomplexT(const T& in)
+      {
+        re = in;
+        im = 0.0;
+      }
+      /// Assignment from another Fortran complex type
+      template<typename T2>
+      FcomplexT& operator = (const FcomplexT<T2> &in)
       {
         re = in.re;
         im = in.im;
         return *this;
       }
-      // TODO: Implement convenient operators here...
+      /// Assignment from a C++ complex type
+      FcomplexT& operator = (const std::complex<T> &in)
+      {
+        re = in.real();
+        im = in.imag();
+        return *this;
+      }
+      /// Assignment from a single instance of some type
+      FcomplexT& operator = (const T &in)
+      {
+        re = in;
+        im = 0.0;
+        return *this;
+      }
+      /// Type casting to another Fortran complex type
+      template<typename T2>
+      operator FcomplexT<T2>()
+      {
+        return FcomplexT<T2>(std::complex<T2>(re, im));
+      }
+      /// Type casting to a C++ complex type
+      operator std::complex<T>()
+      {
+        return std::complex<T>(re, im);
+      }
   };
 
   /// Fortran type typedefs
-  /// Todo: Implement compiler dependent macros ensuring that these are always correct
+  /// TODO: Implement compiler dependent macros ensuring that these are always correct
   typedef FcomplexT<float>  Fcomplex;
   typedef FcomplexT<float>  Fcomplex8;
   typedef FcomplexT<double> Fcomplex16;

@@ -106,12 +106,12 @@ namespace Gambit {
 
 
       // determine resonances for LSP annihilation
-      int reslist[] = {DarkBit_utils::DSparticle_code("Z0"),
-                       DarkBit_utils::DSparticle_code("h0_2"),
-                       DarkBit_utils::DSparticle_code("h0_1"),
-                       DarkBit_utils::DSparticle_code("A0"),
-                       DarkBit_utils::DSparticle_code("W+"),
-                       DarkBit_utils::DSparticle_code("H+")};
+      int reslist[] = {BEreq::particle_code("Z0"),
+                       BEreq::particle_code("h0_2"),
+                       BEreq::particle_code("h0_1"),
+                       BEreq::particle_code("A0"),
+                       BEreq::particle_code("W+"),
+                       BEreq::particle_code("H+")};
       int resmax=sizeof(reslist) / sizeof(reslist[0]);
       // the last 2 resonances in the list can only appear for coannihilations
       if (result.coannihilatingParticles.size() == 1)
@@ -124,7 +124,7 @@ namespace Gambit {
         {
         
           // FIXME: This is no longer needed here!
-          if (reslist[i]==DarkBit_utils::DSparticle_code("h0_2") && mywidths->width(DarkBit_utils::DSparticle_code("h0_2")) < 0.1)
+          if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
             // wide res treatment adopted in DS
             result.resonances.push_back(
                 TH_Resonance(mymspctm->mass(reslist[i]), 0.1)); 
@@ -139,9 +139,9 @@ namespace Gambit {
       // convention!)
       result.threshold_energy.push_back(
           2*result.coannihilatingParticles[0].mass);
-      int thrlist[] = {DarkBit_utils::DSparticle_code("W+"),
-                       DarkBit_utils::DSparticle_code("Z0"),
-                       DarkBit_utils::DSparticle_code("t")};
+      int thrlist[] = {BEreq::particle_code("W+"),
+                       BEreq::particle_code("Z0"),
+                       BEreq::particle_code("t")};
       int thrmax=sizeof(thrlist) / sizeof(thrlist[0]);
       for (int i=0; i<thrmax; i++)
         if (mymspctm->mass(thrlist[i])>result.coannihilatingParticles[0].mass)
@@ -179,8 +179,8 @@ namespace Gambit {
       
 //      std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
 
-//      std::cout << "Test : " << DarkBit_utils::DSparticle_code("d_3")
-//      << " " << DarkBit_utils::DSparticle_code("u_3") << std::endl;
+//      std::cout << "Test : " << BEreq::particle_code("d_3")
+//      << " " << BEreq::particle_code("u_3") << std::endl;
       
 
     } // function RD_spectrum_from_ProcessCatalog
@@ -429,9 +429,9 @@ namespace Gambit {
 
         // follow wide res treatment for heavy Higgs adopted in DS
         double widthheavyHiggs=
-               (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"));
+               (*BEreq::widths).width(BEreq::particle_code("h0_2"));
         if (widthheavyHiggs<0.1) 
-          (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))=0.1;
+          (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
         for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
@@ -456,7 +456,7 @@ namespace Gambit {
         // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
 
         // change heavy Higgs width in DS back to standard value
-        (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))
+        (*BEreq::widths).width(BEreq::particle_code("h0_2"))
            =widthheavyHiggs;
 
         //capture NAN result and map it to zero RD

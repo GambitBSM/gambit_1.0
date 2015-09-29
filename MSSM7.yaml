@@ -97,7 +97,7 @@ ObsLikes:
     - capability: lnL_LUX_2013
       purpose:  Likelihood
       
-    - capability: IceCube_likelihood
+    - capability: IC79_loglike
       purpose:  Likelihood
 
     - capability: lnL_t_mass
@@ -120,9 +120,17 @@ ObsLikes:
 
     - capability: lnL_deltarho  
       purpose:  Likelihood
-      
+
+    - purpose:      Likelihood
+      capability:   b2ll_LL
+
+    - purpose:      Likelihood
+      capability:   SL_LL
+
+    - purpose:      Likelihood                                                                                       
+      capability:   b2sll_LL
+        
     # Missing:
-    # 3 x Flav likelihoods
     # LHC combined likelihood
     # LEP Likelihood
     # Higgs bounds and signals likelihoods
@@ -146,10 +154,6 @@ Rules:
   # Choose to use PPPC4DMID yield tables for indirect detection rather than DarkSUSY or MicrOmegas
   - capability: SimYieldTable
     function: SimYieldTable_PPPC
-
-  # Choose to only include IC79 in neutrino telescope likelihoods
-  - capability: IceCube_likelihood
-    function:  IC79_loglike
     
   # Choose to use function that calls DarkSUSY for calculating direct detection couplings
   - capability: DD_couplings

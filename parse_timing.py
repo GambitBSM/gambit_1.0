@@ -24,7 +24,8 @@ def getTimes(log):
     capability = ''
     time = 0
     for line in log:
-        if line[:7] == "Runtime":
+        if line[:41] == "Runtime, averaged over multiple calls [s]":
+            print line
             time = float(line[43:])
         if line[:7] == "Calling":
             capability = line.split()[1]
@@ -34,7 +35,7 @@ def getTimes(log):
     return d
 
 # Import times
-with open('depres.log', 'r') as log:
+with open(filename, 'r') as log:
     d = getTimes(log)
 
 # Only last times

@@ -62,7 +62,8 @@ macro(retrieve_bits bits root excludes quiet)
   file(GLOB children RELATIVE ${root} ${root}/*Bit*)
 
   foreach(child ${children})
-    if(IS_DIRECTORY ${root}/${child})
+    string(FIND ${child} ".dSYM" FOUND_DSYM)  
+    if(IS_DIRECTORY ${root}/${child} AND ${FOUND_DSYM} EQUAL -1)
 
       # Work out if this Bit should be excluded or not.  Never exclude ScannerBit.
       set(excluded "NO")

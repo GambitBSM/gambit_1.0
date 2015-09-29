@@ -70,8 +70,6 @@ namespace Gambit
             virtual ~SingletDMContainer() {};
             /// @}
  
-
-         protected:
             /// (Derived class) Map fillers
             /// These are not the normal map fillers called by the Spec class
             /// They are called from the base class BaseHiggsContainer and used

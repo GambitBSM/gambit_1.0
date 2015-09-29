@@ -2,7 +2,7 @@
 #************************************************
 # \file                                          
 #                                                
-#  Cmake configuration scripts for obtaining,
+#  CMake configuration scripts for obtaining,
 #  configuring, compiling and installing 
 #  backends.
 #  
@@ -20,6 +20,7 @@
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)              
 #  \date 2014 Sep, Oct, Nov
+#  \date 2015 Sep
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
@@ -33,9 +34,12 @@
 #  \author Anders Kvellestad
 #          (anderkve@fys.uio.no)
 #  \date 2015 May
+#
+#  \author Christoph Weniger
+#          (c.weniger@uva.nl)
+#  \date 2015 Sep
 #                                               
 #************************************************
-
 
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
@@ -57,13 +61,15 @@ ExternalProject_Add(darksusy
   SOURCE_DIR ${darksusy_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}//patchDS.dif 
-        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
+  PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
+        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif 
+        COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif 
+        COMMAND patch -b -p1 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif 
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
-  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so 
+  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
 )
 enable_auto_rebuild(darksusy)
 add_external_clean(darksusy ${darksusy_dir} distclean)
@@ -124,6 +130,7 @@ if (NOT GSL_INCLUDE_DIRS STREQUAL "")
 endif()
 set(gamlike_location "${GAMBIT_INTERNAL}/gamLike")
 set(gamlike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gamLike/1.0.0")
+set(gamlike_data_path "${gamlike_dir}/data/")
 ExternalProject_Add(gamlike
   DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
            COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
@@ -132,7 +139,7 @@ ExternalProject_Add(gamlike
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS} GAMLIKE_DATA_PATH=${gamlike_data_path}
   INSTALL_COMMAND ""
 )
 enable_auto_rebuild(gamlike)
@@ -324,11 +331,11 @@ ExternalProject_Add(higgsbounds_tables
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
 )
-set(higgsbounds_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0")
+set(higgsbounds_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.1")
 ExternalProject_Add(higgsbounds
   DEPENDS higgsbounds_tables
-  URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.0.tar.gz
-  URL_MD5 9d76eefecea870d941a6fe8c0ee7a6ae
+  URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.1.tar.gz
+  URL_MD5 47b93330d4e0fddcc23b381548db355b
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgsbounds_dir}
   BUILD_IN_SOURCE 1
@@ -346,18 +353,18 @@ enable_auto_rebuild(higgsbounds)
 add_external_clean(higgsbounds ${higgsbounds_dir} hyperclean)
 
 # HiggsSignals
-set(higgssignals_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.3.2")
+set(higgssignals_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.4.0")
 ExternalProject_Add(higgssignals
   DEPENDS higgsbounds
-  URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.3.2.tar.gz
-  URL_MD5 2e300a3784eb5d3a9e1dd905d2af7676
+  URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.4.0.tar.gz
+  URL_MD5 00b8ac655e357c7cba9ca786f8f2ddee
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgssignals_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND cp configure my_configure 
-            COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.0|" <SOURCE_DIR>/my_configure
-            COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.0|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
@@ -365,7 +372,7 @@ ExternalProject_Add(higgssignals
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND mkdir -p lib 
         COMMAND rm HiggsSignals.o 
-        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.0/*.o" > make_so.sh 
+        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.1/*.o" > make_so.sh 
         COMMAND chmod u+x make_so.sh 
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""
