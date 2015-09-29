@@ -524,6 +524,8 @@ namespace Gambit
       // tree-level Higgs mixing parameters sin alpha
       fh_real SAtree;
 
+       cout << "****** calling FHGetPara ******" << endl;
+      
       int error = 1;
       BEreq::FHGetPara(error, nmfv, MSf, USf, MASf, UASf,
            MCha, UCha, VCha, MNeu, ZNeu, 
@@ -571,6 +573,8 @@ namespace Gambit
     {
       using namespace Pipes::FH_HiggsMasses;
 
+      cout << "****** calling FH_HiggsMasses ******" << endl;
+
       // Higgs mass with
       // 0 - m1 (Mh in rMSSM)
       // 1 - m2 (MH in rMSSM)
@@ -593,8 +597,12 @@ namespace Gambit
       Farray<fh_complex, 1,3, 1,3> ZHiggs;
       Farray<fh_complex, 1,3, 1,3> DeltaZHiggs;
 
+      cout << "****** calling FHHiggsCorr ******" << endl;
+
       int error = 1;
       BEreq::FHHiggsCorr(error, MHiggs, SAeff, UHiggs, ZHiggs);
+
+      cout << "****** calling FHUncertainties ******" << endl;
 
       error = 1;
       BEreq::FHUncertainties(error, DeltaMHiggs, DeltaSAeff, DeltaUHiggs, DeltaZHiggs);
@@ -625,6 +633,8 @@ namespace Gambit
     {
       using namespace Pipes::FH_Couplings;
       
+      cout << "****** calling FH_Couplings ******" << endl;
+
       // what to use for internal Higgs mixing
       // (ex. in couplings)
       // (default = 1)
@@ -642,6 +652,8 @@ namespace Gambit
       // which effective bottom mass to use
       int mfeff = 1;
 
+      cout << "****** calling FHSelectUZ ******" << endl;
+
       int error = 1;
       BEreq::FHSelectUZ(error, uzint, uzext, mfeff);
 
@@ -650,6 +662,8 @@ namespace Gambit
       Farray<fh_real, 1,978> gammas;           // Higgs decay widths and BR's (MSSM)
       Farray<fh_real, 1,250> gammas_sm;        // Higgs decay widths and BR's (SM)
       int fast = 1;  // include off-diagonal fermion decays? (1 = no)
+
+      cout << "****** calling FHCouplings ******" << endl;
 
       error = 1;
       BEreq::FHCouplings(error, couplings, couplings_sm,
