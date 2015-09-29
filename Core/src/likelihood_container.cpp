@@ -162,8 +162,9 @@ namespace Gambit
         }
         catch(Gambit::invalid_point_exception& e)
         {
-          logger() << LogTags::core << "The calculation was declared invalid by " << e.thrower()->origin()
-                   << "::" << e.thrower()->name() << ".  *Shrug*." << EOM;
+          logger() << LogTags::core << "The calculation of auxilliary vertex "<<*it<<" was declared invalid by " << e.thrower()->origin()
+                   << "::" << e.thrower()->name() << ", however no primary vertex depends on it. Continuing other calculations." << std::endl
+                   << "Message: " << e.message() << EOM;
         }
       }
     }

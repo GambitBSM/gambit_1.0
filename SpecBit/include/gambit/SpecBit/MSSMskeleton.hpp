@@ -112,7 +112,6 @@ namespace Gambit {
             virtual int get_index_offset() const;
             virtual SLHAstruct getSLHAea() const;
  
-         protected:
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)

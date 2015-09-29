@@ -41,7 +41,7 @@ namespace Gambit
                 typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
                 typedef std::map<std::string, plugin_map> plugin_mapmap;
                 
-                table_formatter table(plugins->first + " PLUGINS", "STATUS", "VERSION");
+                table_formatter table(plugins->first + " PLUGINS", "VERSION", "STATUS");
                 table.capitalize_title();
                 table.padding(1);
                 
@@ -480,6 +480,9 @@ namespace Gambit
                         (*v_it)->print(out);
                     }
                 }
+                
+                //printer->finalise(true);
+                std::cout << "Gambit has finished early!" << std::endl;
             }
             
             pluginInfo::~pluginInfo()

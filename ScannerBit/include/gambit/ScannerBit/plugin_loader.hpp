@@ -122,13 +122,16 @@ namespace Gambit
             class pluginInfo
             {
             private:
+                bool keepRunning;
+                bool funcCalculating;
                 std::map<std::string, std::map<std::string, Proto_Plugin_Details> > selectedPlugins;
                 mutable Plugins::Plugin_Loader plugins;
                 std::map<std::string, std::vector<__plugin_resume_base__ *>> resume_data;
+                std::map<std::string, std::ifstream> resume_streams;
                 printer_interface *printer;
                 Options options;
                 
-                void set_resume(std::vector<__plugin_resume_base__ *> &){}
+                inline void set_resume(std::vector<__plugin_resume_base__ *> &){}
                                 
                 template<typename U, typename... T>
                 void set_resume(std::vector<__plugin_resume_base__ *> &r_data, U& param, T&... params)
@@ -137,7 +140,7 @@ namespace Gambit
                     set_resume(r_data, params...); 
                 }
                 
-                void get_resume(std::ifstream &){}
+                inline void get_resume(std::ifstream &){}
                 
                 template<typename U, typename... T>
                 void get_resume(std::ifstream &in, U& param, T&... params)
@@ -146,24 +149,38 @@ namespace Gambit
                     get_resume(in, params...);
                 }
                 
+                inline size_t get_size_of(){return 0;}
+                
+                template<typename U, typename... T>
+                inline size_t get_size_of(U& param, T&... params)
+                {
+                    return resume_size_of(param) + get_size_of(params...);
+                }
+                
             public:
+                pluginInfo() : keepRunning(true), funcCalculating(false) {}
                 ///Enter plugin inifile
                 void iniFile(const Options &, printer_interface &);
+                
+                bool keep_running() const {return keepRunning;}
+                void set_running(bool b){keepRunning = b;}
+                bool func_calculating() const {return funcCalculating;}
+                void set_calculating(bool b){funcCalculating = b;}
                 
                 ///resume function
                 template <typename... T>
                 void resume(const std::string &name, T&... data)
                 {
-                    if (false)//(printer->resume_mode())
+                    if (printer->resume_mode())
                     {
-                        if (resume_data.find(name) == resume_data.end())
+                        resume_streams[name].open((std::string(GAMBIT_DIR) + "/scratch/" + name).c_str(), std::ifstream::binary);
+                        if (resume_streams[name].is_open())
                         {
-                            scan_err << "Can not load resume data." << scan_end;
+                            get_resume(resume_streams[name], data...);
                         }
                         else
                         {
-                            std::ifstream in((std::string(GAMBIT_DIR) + "/scratch/" + name).c_str(), std::ifstream::binary);
-                            get_resume(in, data...);
+                            scan_err << "Could not load resume data." << scan_end;
                         }
                     }
                     
