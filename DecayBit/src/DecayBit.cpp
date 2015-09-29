@@ -2513,6 +2513,7 @@ namespace Gambit
 
     /// @}
 
+    // Read and interpolate chi2 table
     Funk::Funk get_Higgs_invWidth_chi2(std::string filename)
     {
       ASCIItableReader table(filename);
@@ -2521,6 +2522,7 @@ namespace Gambit
       return Funk::interp("BR", table["BR"], table["Delta_chi2"]);
     }
 
+    // Implemented: Belanger et al. 2013, arXiv:1306.2941
     void lnL_Higgs_invWidth_SMonly(double& result)
     {
       using namespace Pipes::lnL_Higgs_invWidth_SMonly;
