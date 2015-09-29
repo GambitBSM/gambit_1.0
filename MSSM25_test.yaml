@@ -63,13 +63,11 @@ Scanner:
 
 ObsLikes:
   - purpose:      Test
-    capability:   SpecBit_examples
-    type:         bool
-    function:     exampleRead
+    capability:   run_MSSMspectrum_test
 
-  #- purpose:      Test
-  #  capability:   decay_rates
-  #  type:         DecayTable
+#  - purpose:      Test
+#    capability:   decay_rates
+#    type:         DecayTable
 
 Rules:
   - capability: SpecBit_examples
