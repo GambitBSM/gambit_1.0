@@ -211,9 +211,10 @@ namespace Gambit
       /// do the Higgs mass seperately
       /// Default in most codes is 3 GeV,
       /// seems like an underestimate if the stop masses are heavy enough.  
+      /// (TODO: are we happy assigning the same for both higgses?)
       double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i1234, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i1234, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
  
      
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
@@ -222,6 +223,7 @@ namespace Gambit
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Deal with points where spectrum generator encountered a problem
+      std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
       if( problems.have_problem() ) 
       {
          if( runOptions.getValue<bool>("invalid_point_fatal") )
@@ -254,7 +256,7 @@ namespace Gambit
 
             /// Fast way for now:
             problems.print_problems(msg);
-            invalid_point().raise(msg.str());
+            invalid_point().raise(msg.str()); //TODO: This message isn't ending up in the logs.
          }
       }
 
@@ -262,7 +264,7 @@ namespace Gambit
       {
          std::ostringstream msg;
          problems.print_warnings(msg);
-         SpecBit_warning().raise(LOCAL_INFO,msg.str());
+         SpecBit_warning().raise(LOCAL_INFO,msg.str()); //TODO: Is a warning the correct thing to do here?
       }
 
       // Write SLHA file (for debugging purposes...)

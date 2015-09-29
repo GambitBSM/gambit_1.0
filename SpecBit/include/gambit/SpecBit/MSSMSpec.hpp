@@ -536,10 +536,16 @@ namespace Gambit
          // Can't use C++11 initializer lists, se have to initialise the index sets like this.
          // Would be e.g. this in C++11:
          // static const std::set<int> i01 = {0,1};
-         MAKE_STATIC_SET(int,i01,(0,1)) 
-         MAKE_STATIC_SET(int,i012,(0,1,2)) 
-         MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
-         MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
+         static const std::set<int> i01 = initSet(0,1);
+         static const std::set<int> i012 = initSet(0,1,2);
+         static const std::set<int> i0123 = initSet(0,1,2,3);
+         static const std::set<int> i012345 = initSet(0,1,2,3,4,5);
+   
+         // Old macro way
+         //MAKE_STATIC_SET(int,i01,(0,1)) 
+         //MAKE_STATIC_SET(int,i012,(0,1,2)) 
+         //MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
+         //MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
 
          // Old manual way:
          //static const int i01v[] = {0,1};
@@ -702,10 +708,16 @@ namespace Gambit
 
          // Can't use c++11 initialise lists, se have to initialise the index sets like this.
          // static const std::set<int> i01 = {0,1};
-         MAKE_STATIC_SET(int,i01,(0,1)) 
-         MAKE_STATIC_SET(int,i012,(0,1,2)) 
-         MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
-         MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
+         static const std::set<int> i01 = initSet(0,1);
+         static const std::set<int> i012 = initSet(0,1,2);
+         static const std::set<int> i0123 = initSet(0,1,2,3);
+         static const std::set<int> i012345 = initSet(0,1,2,3,4,5);
+   
+         // Old macro way
+         //MAKE_STATIC_SET(int,i01,(0,1)) 
+         //MAKE_STATIC_SET(int,i012,(0,1,2)) 
+         //MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
+         //MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
 
          // static const int i01v[] = {0,1};
          // static const std::set<int> i01(i01v, Utils::endA(i01v));
@@ -854,10 +866,16 @@ namespace Gambit
         // so have to initialise the index sets like this.
  
         // static const std::set<int> i01 = {0,1};
-        MAKE_STATIC_SET(int,i01,(0,1)) 
-        MAKE_STATIC_SET(int,i012,(0,1,2)) 
-        MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
-        MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
+        static const std::set<int> i01 = initSet(0,1);
+        static const std::set<int> i012 = initSet(0,1,2);
+        static const std::set<int> i0123 = initSet(0,1,2,3);
+        static const std::set<int> i012345 = initSet(0,1,2,3,4,5);
+   
+        // Old macro way
+        //MAKE_STATIC_SET(int,i01,(0,1)) 
+        //MAKE_STATIC_SET(int,i012,(0,1,2)) 
+        //MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
+        //MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
 
         // static const int i01v[] = {0,1};
         // static const std::set<int> i01(i01v, Utils::endA(i01v));
@@ -965,10 +983,16 @@ namespace Gambit
 
          // Can't use c++11 initialise lists, so have to initialise the index sets like this.
          // static const std::set<int> i01 = {0,1};
-         MAKE_STATIC_SET(int,i01,(0,1)) 
-         MAKE_STATIC_SET(int,i012,(0,1,2)) 
-         MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
-         MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
+         static const std::set<int> i01 = initSet(0,1);
+         static const std::set<int> i012 = initSet(0,1,2);
+         static const std::set<int> i0123 = initSet(0,1,2,3);
+         static const std::set<int> i012345 = initSet(0,1,2,3,4,5);
+   
+         // Old macro way
+         //MAKE_STATIC_SET(int,i01,(0,1)) 
+         //MAKE_STATIC_SET(int,i012,(0,1,2)) 
+         //MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
+         //MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
  
          //static const int i01v[] = {0,1};
          //static const std::set<int> i01(i01v, Utils::endA(i01v));
