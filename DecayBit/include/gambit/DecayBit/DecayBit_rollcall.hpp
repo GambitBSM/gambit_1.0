@@ -694,6 +694,9 @@ QUICK_FUNCTION(DecayBit, snubar_muonl_decay_rates,     NEW_CAPABILITY, snubar_mu
 QUICK_FUNCTION(DecayBit, snubar_taul_decay_rates,      NEW_CAPABILITY, snubar_taul_decays,      DecayTable::Entry, (MSSM78atQ, MSSM78atMGUT), (snu_taul_decay_rates,       DecayTable::Entry)) 
 QUICK_FUNCTION(DecayBit, charginominus_1_decay_rates,  NEW_CAPABILITY, charginominus_1_decays,  DecayTable::Entry, (MSSM78atQ, MSSM78atMGUT), (charginoplus_1_decay_rates, DecayTable::Entry)) 
 QUICK_FUNCTION(DecayBit, charginominus_2_decay_rates,  NEW_CAPABILITY, charginominus_2_decays,  DecayTable::Entry, (MSSM78atQ, MSSM78atMGUT), (charginoplus_2_decay_rates, DecayTable::Entry)) 
+
+// Likelihoods
+QUICK_FUNCTION(DecayBit, lnL_Higgs_invWidth, NEW_CAPABILITY, lnL_Higgs_invWidth_SMonly, double, (SingletDM), (Higgs_decay_rates, DecayTable::Entry)) 
  
 #endif /* defined(__DecayBit_rollcall_hpp__) */
 

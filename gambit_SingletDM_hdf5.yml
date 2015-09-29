@@ -20,7 +20,7 @@ Parameters:
             range: [0.001, 1.00]
             #fixed_value: 0.0366524 
             prior_type: log
-	    
+  
     nuclear_params_fnq:
       # proton hadronic matrix elements
       fpd:
@@ -130,6 +130,7 @@ ObsLikes:
     - capability: lnL_FermiLATdwarfs
       function: lnL_FermiLATdwarfs_gamLike
       purpose:  Observable
+    - capability: lnL_Higgs_invWidth
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable

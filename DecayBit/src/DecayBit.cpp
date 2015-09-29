@@ -28,6 +28,7 @@
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
 #include "gambit/Utils/version.hpp"
+#include "gambit/Utils/ascii_table_reader.hpp"
 
 #include <string>
 #include <map>
@@ -2511,6 +2512,24 @@ namespace Gambit
     }
 
     /// @}
+
+    Funk::Funk get_Higgs_invWidth_chi2(std::string filename)
+    {
+      ASCIItableReader table(filename);
+      std::vector<std::string> colnames = initVector<std::string>("BR", "Delta_chi2");
+      table.setcolnames(colnames);
+      return Funk::interp("BR", table["BR"], table["Delta_chi2"]);
+    }
+
+    void lnL_Higgs_invWidth_SMonly(double& result)
+    {
+      using namespace Pipes::lnL_Higgs_invWidth_SMonly;
+      double gamma_SS = Dep::Higgs_decay_rates->width_in_GeV*1000;
+      double gamma_SM = runOptions->getValueOrDef<double>(4.07, "SM_width_MeV");
+      double BR = (gamma_SS-gamma_SM)/gamma_SS;
+      static Funk::Funk chi2 = get_Higgs_invWidth_chi2("Elements/data/GammaInv_SM_higgs_DeltaChi2.dat");
+      result = -chi2->bind("BR")->eval(BR)*0.5;
+    }
 
   }
 
