@@ -184,6 +184,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY RD_fraction
+  START_CAPABILITY 
+    #define FUNCTION RD_fraction
+      START_FUNCTION(double)
+      DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   // Cascade decays --------------------------------------------
 
   // Function for retrieving list of final states for cascade decays
@@ -384,6 +393,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(RD_fraction, double)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY

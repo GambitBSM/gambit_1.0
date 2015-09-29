@@ -506,5 +506,30 @@ namespace Gambit {
       oh2 = BEreq::oh2(&Xf, byVal(fast), byVal(Beps));
       logger() << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
     }
+
+
+    //////////////////////////////////////////////////////////////////////////
+    //
+    //   Infer fraction of Dark matter that is made up by scanned DM particles
+    //
+    //////////////////////////////////////////////////////////////////////////
+
+    void RD_fraction(double &result)
+    {
+      using namespace Pipes::RD_fraction;
+      result = -1;
+      double oh2_theory = *Dep::RD_oh2;
+      double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
+      std::string mode = runOptions->getValueOrDef<std::string>("one", "mode");
+      if (mode ==  "one")
+        result = 1;
+      if (mode == "leq_one")
+        result = std::min(1., oh2_theory/oh2_obs);
+      if (mode == "any")
+        result = oh2_theory/oh2_obs;
+      if (result == -1)
+        DarkBit_error().raise(LOCAL_INFO, "ERROR in RD_fraction: Unknown mode (options: one, leq_one, any)");
+      logger() << "Fraction of dark matter that the scanned model accounts for: " << result << std::endl;
+    }
   }
 }

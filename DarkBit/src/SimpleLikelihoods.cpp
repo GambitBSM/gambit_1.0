@@ -117,11 +117,12 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_FermiLATdwarfs_gamLike;
 
+      double fraction = *Dep::RD_fraction;
       result = 0;
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
-      std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI)->
+      std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
       if ( runOptions->getValueOrDef<bool>(true, "use_dwarfs") )
