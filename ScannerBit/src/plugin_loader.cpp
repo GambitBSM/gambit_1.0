@@ -494,6 +494,11 @@ namespace Gambit
                         delete (*v_it);
                     }
                 }
+                
+                for (auto it = resume_streams.begin(), end = resume_streams.end(); it != end; ++it)
+                {
+                    delete it->second;
+                }
             }
             
             pluginInfo plugin_info;

@@ -127,7 +127,7 @@ namespace Gambit
                 std::map<std::string, std::map<std::string, Proto_Plugin_Details> > selectedPlugins;
                 mutable Plugins::Plugin_Loader plugins;
                 std::map<std::string, std::vector<__plugin_resume_base__ *>> resume_data;
-                std::map<std::string, std::ifstream> resume_streams;
+                std::map<std::string, std::ifstream *> resume_streams;
                 printer_interface *printer;
                 Options options;
                 
@@ -173,10 +173,11 @@ namespace Gambit
                 {
                     if (printer->resume_mode())
                     {
-                        resume_streams[name].open((std::string(GAMBIT_DIR) + "/scratch/" + name).c_str(), std::ifstream::binary);
-                        if (resume_streams[name].is_open())
+                        if (resume_streams.find(name) != resume_streams.end())
+                            resume_streams[name] = new std::ifstream((std::string(GAMBIT_DIR) + "/scratch/" + name).c_str(), std::ifstream::binary);
+                        if (resume_streams[name]->is_open())
                         {
-                            get_resume(resume_streams[name], data...);
+                            get_resume(*resume_streams[name], data...);
                         }
                         else
                         {
