@@ -21,13 +21,13 @@ DDCalc0:
   0.0:         ./Backends/installed/DDCalc/0.0/libDDCalc0.so
 
 HiggsBounds:
-  4.1:         ./Backends/installed/HiggsBounds/4.2.0/lib/libhiggsbounds.so
+  4.2:         ./Backends/installed/HiggsBounds/4.2.1/lib/libhiggsbounds.so
 
 HiggsSignals:
-  1.2:         ./Backends/installed/HiggsSignals/1.3.2/lib/libhiggssignals.so
+  1.4:         ./Backends/installed/HiggsSignals/1.4.0/lib/libhiggssignals.so
 
 FeynHiggs:
-  2.10:        ./Backends/installed/FeynHiggs/2.10.4/lib/libFH.so
+  2.11:        ./Backends/installed/FeynHiggs/2.11.2/lib/libFH.so
 
 LibFarrayTest:
   1.0:         ./Backends/examples/libFarrayTest.so

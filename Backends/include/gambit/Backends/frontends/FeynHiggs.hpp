@@ -2,7 +2,7 @@
  * Frontend for FeynHiggs backend
  * 
  * Last modified:
- * Christopher Rogan Apr 2015
+ * Christopher Rogan Sept 2015
  */
 
 #ifdef BACKENDRENAME
@@ -10,8 +10,8 @@
 #else
   #define BACKENDNAME FeynHiggs
 #endif
-#define VERSION 2.10
-#define SAFE_VERSION 2_10
+#define VERSION 2.11
+#define SAFE_VERSION 2_11
 
 /* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */

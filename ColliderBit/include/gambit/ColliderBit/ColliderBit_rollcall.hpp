@@ -360,7 +360,7 @@ START_MODULE
     START_FUNCTION(fh_HiggsProd)
     DEPENDENCY(Higgs_Couplings, fh_Couplings)
     BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs, 2.11), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
@@ -409,7 +409,7 @@ START_MODULE
        BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (double&, int&, double&, int&))            
        BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
        
-       BACKEND_OPTION( (HiggsBounds, 4.1), (libhiggsbounds) )
+       BACKEND_OPTION( (HiggsBounds, 4.2), (libhiggsbounds) )
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -432,7 +432,7 @@ START_MODULE
         BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))  
         BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
         BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
-        BACKEND_OPTION( (HiggsSignals, 1.2), (libhiggssignals) )
+        BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
      #undef FUNCTION
   #undef CAPABILITY
 
