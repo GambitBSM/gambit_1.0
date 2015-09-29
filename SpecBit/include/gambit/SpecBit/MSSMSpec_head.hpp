@@ -258,15 +258,14 @@ namespace Gambit {
 						     Wplus, Wminus);
 
        /// pole mass strings with 1 index
-       std::vector<str> pole_mass_strs_1 = initVector( su, sd, se, seminus, snu,
-						       chiplus, chi0, h0, subar,
-						       sdbar, sebar, seplus,
-						       snubar, chiminus );
+       std::vector<str> pole_mass_strs_1 = initVector( su, sd, seminus, 
+                                                       subar, sdbar, seplus,
+						       chiplus, chiminus, chi0, h0, 
+						       snu, snubar);
 
        ///  pole mass strings with 1 index and six entries
-       std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, se, seminus,
-							  subar, sdbar, sebar,
-							  seplus );
+       std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, seminus,
+							  subar, sdbar, seplus );
 
        ///  pole mass strings with 1 index and four entries
        std::vector<str> pole_mass_strs_1_4  = initVector(chi0);

@@ -533,18 +533,26 @@ namespace Gambit
          typedef typename MTget::FInfo1 FInfo1;
          typedef typename MTget::FInfo2 FInfo2;
 
-         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
-         static const int i01v[] = {0,1};
-         static const std::set<int> i01(i01v, Utils::endA(i01v));
+         // Can't use C++11 initializer lists, se have to initialise the index sets like this.
+         // Would be e.g. this in C++11:
+         // static const std::set<int> i01 = {0,1};
+         MAKE_STATIC_SET(int,i01,(0,1)) 
+         MAKE_STATIC_SET(int,i012,(0,1,2)) 
+         MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
+         MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
 
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
+         // Old manual way:
+         //static const int i01v[] = {0,1};
+         //static const std::set<int> i01(i01v, Utils::endA(i01v));
 
-         static const int i0123v[] = {0,1,2,3};
-         static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+         //static const int i012v[] = {0,1,2};
+         //static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-         static const int i012345v[] = {0,1,2,3,4,5};
-         static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
+         //static const int i0123v[] = {0,1,2,3};
+         //static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+
+         //static const int i012345v[] = {0,1,2,3,4,5};
+         //static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
          
          /// @{ mass2 - mass dimension 2 parameters
          //
@@ -693,17 +701,23 @@ namespace Gambit
          typedef typename MTset::FInfo2 FInfo2;
 
          // Can't use c++11 initialise lists, se have to initialise the index sets like this.
-         static const int i01v[] = {0,1};
-         static const std::set<int> i01(i01v, Utils::endA(i01v));
+         // static const std::set<int> i01 = {0,1};
+         MAKE_STATIC_SET(int,i01,(0,1)) 
+         MAKE_STATIC_SET(int,i012,(0,1,2)) 
+         MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
+         MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
 
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
+         // static const int i01v[] = {0,1};
+         // static const std::set<int> i01(i01v, Utils::endA(i01v));
 
-         static const int i0123v[] = {0,1,2,3};
-         static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+         // static const int i012v[] = {0,1,2};
+         // static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-         static const int i012345v[] = {0,1,2,3,4,5};
-         static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
+         // static const int i0123v[] = {0,1,2,3};
+         // static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+
+         // static const int i012345v[] = {0,1,2,3,4,5};
+         // static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
          
          /// @{ mass2 - mass dimension 2 parameters
          //
@@ -838,17 +852,24 @@ namespace Gambit
 
         // Can't use c++11 initialise lists,
         // so have to initialise the index sets like this.
-        static const int i01v[] = {0,1};
-        static const std::set<int> i01(i01v, Utils::endA(i01v));
+ 
+        // static const std::set<int> i01 = {0,1};
+        MAKE_STATIC_SET(int,i01,(0,1)) 
+        MAKE_STATIC_SET(int,i012,(0,1,2)) 
+        MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
+        MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
 
-        static const int i012v[] = {0,1,2};
-        static const std::set<int> i012(i012v, Utils::endA(i012v));
+        // static const int i01v[] = {0,1};
+        // static const std::set<int> i01(i01v, Utils::endA(i01v));
 
-        static const int i0123v[] = {0,1,2,3};
-        static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+        // static const int i012v[] = {0,1,2};
+        // static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-        static const int i012345v[] = {0,1,2,3,4,5};
-        static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
+        // static const int i0123v[] = {0,1,2,3};
+        // static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+
+        // static const int i012345v[] = {0,1,2,3,4,5};
+        // static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
         {  
           typename MTset::fmap0_extraM tmp_map;
@@ -943,17 +964,23 @@ namespace Gambit
          typedef typename MTget::FInfo2 FInfo2;
 
          // Can't use c++11 initialise lists, so have to initialise the index sets like this.
-         static const int i01v[] = {0,1};
-         static const std::set<int> i01(i01v, Utils::endA(i01v));
+         // static const std::set<int> i01 = {0,1};
+         MAKE_STATIC_SET(int,i01,(0,1)) 
+         MAKE_STATIC_SET(int,i012,(0,1,2)) 
+         MAKE_STATIC_SET(int,i0123,(0,1,2,3)) 
+         MAKE_STATIC_SET(int,i012345,(0,1,2,3,4,5)) 
+ 
+         //static const int i01v[] = {0,1};
+         //static const std::set<int> i01(i01v, Utils::endA(i01v));
 
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
+         //static const int i012v[] = {0,1,2};
+         //static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-         static const int i0123v[] = {0,1,2,3};
-         static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+         //static const int i0123v[] = {0,1,2,3};
+         //static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
 
-         static const int i012345v[] = {0,1,2,3,4,5};
-         static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
+         //static const int i012345v[] = {0,1,2,3,4,5};
+         //static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
          
          /// @{ Pole_Mass - Pole mass parameters
          //

@@ -222,9 +222,10 @@ namespace Gambit
          /// Functions to be overridden in classes derived from Spec<Derived> 
          /// (i.e. the final wrappers)
          /// Not actually called via SubSpectrum object directly; call via 
-         /// SubSpectrum.runningpars
+         /// SubSpectrum.runningpars()
          /// These virtual functions are here just to simplify the wrapper definitions.
-   
+         /// TODO: Can we hide these from the user? Currently won't compile unless these are public, but can perhaps add more friend declarations and make protected.
+
          /// Run object to a particular scale
          virtual void RunToScale(double) { vfcn_error(LOCAL_INFO); }
          /// Returns the renormalisation scale of parameters
@@ -319,6 +320,17 @@ namespace Gambit
          double get(const ParamType, const std::pair<int,int>) const; /* Input PDG code plus context integer */
          bool   has(const ParamType, const std::pair<str,int>) const; /* Input short name plus index */
          double get(const ParamType, const std::pair<str,int>) const; /* Input short name plus index */
+
+         /// @{ PDB overloads for setters
+
+         /* Input PDG code plus context integer */
+         void set_override(const ParamType, const double, const int, const int,     const bool safety = true);  
+         void set_override(const ParamType, const double, const std::pair<int,int>, const bool safety = true);
+
+         /* Input short name plus index */
+         void set_override(const ParamType, const double, const std::pair<str,int>, const bool safety = true);
+
+         /// @}
 
          /// TODO: extra PDB overloads to handle all the one and two index cases (well all the ones that are feasible...)
    };

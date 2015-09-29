@@ -191,15 +191,11 @@ namespace Gambit
       
       /// add theory errors
       MSSM_strs ms;
- 
-      static const int i12v[] = {1,2};
-      static const std::vector<int> i12(i12v, Utils::endA(i12v));
-      static const int i123v[] = {1,2,3};
-      static const std::vector<int> i123(i123v, Utils::endA(i123v));
-      static const int i1234v[] = {1,2,3,4};
-      static const std::vector<int> i1234(i1234v, Utils::endA(i1234v));
-      static const int i123456v[] = {1,2,3,4,5,6};
-      static const std::vector<int> i123456(i123456v, Utils::endA(i123456v));
+
+      static const std::vector<int> i12     = initVector(1,2);
+      static const std::vector<int> i123    = initVector(1,2,3);
+      static const std::vector<int> i1234   = initVector(1,2,3,4);
+      static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error" 
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error" 
@@ -225,17 +221,49 @@ namespace Gambit
       // extracted from the QedQcd object, so use the values that we put into it.)
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
-      if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
+      // Deal with points where spectrum generator encountered a problem
+      if( problems.have_problem() ) 
       {
-         ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
-         // just die.
-         std::ostringstream errmsg;
-         errmsg << "A serious problem was encountered during spectrum generation!; ";
-         errmsg << "Message from FlexibleSUSY below:" << std::endl;
-         problems.print_problems(errmsg); 
-         problems.print_warnings(errmsg); 
-         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
-      }  
+         if( runOptions.getValue<bool>("invalid_point_fatal") )
+         {
+            ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
+            // just die.
+            std::ostringstream errmsg;
+            errmsg << "A serious problem was encountered during spectrum generation!; ";
+            errmsg << "Message from FlexibleSUSY below:" << std::endl;
+            problems.print_problems(errmsg); 
+            problems.print_warnings(errmsg); 
+            SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
+         }
+         else
+         {
+            /// Check what the problem was
+            /// see: contrib/MassSpectra/flexiblesusy/src/problems.hpp
+            std::ostringstream msg;
+            //msg << "";
+            //if( have_bad_mass()      ) msg << "bad mass " << std::endl; // TODO: check which one
+            //if( have_tachyon()       ) msg << "tachyon" << std::endl;
+            //if( have_thrown()        ) msg << "error" << std::endl;
+            //if( have_non_perturbative_parameter()   ) msg << "non-perturb. param" << std::endl; // TODO: check which
+            //if( have_failed_pole_mass_convergence() ) msg << "fail pole mass converg." << std::endl; // TODO: check which
+            //if( no_ewsb()            ) msg << "no ewsb" << std::endl;
+            //if( no_convergence()     ) msg << "no converg." << std::endl;
+            //if( no_perturbative()    ) msg << "no pertub." << std::endl;
+            //if( no_rho_convergence() ) msg << "no rho converg." << std::endl;
+            //if( msg.str()=="" ) msg << " Unrecognised problem! ";
+
+            /// Fast way for now:
+            problems.print_problems(msg);
+            invalid_point().raise(msg.str());
+         }
+      }
+
+      if( problems.have_warning() )
+      {
+         std::ostringstream msg;
+         problems.print_warnings(msg);
+         SpecBit_warning().raise(LOCAL_INFO,msg.str());
+      }
 
       // Write SLHA file (for debugging purposes...)
       #ifdef SpecBit_DBUG

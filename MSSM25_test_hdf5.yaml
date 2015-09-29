@@ -9,7 +9,7 @@ Printer:
   printer: hdf5
   options:
     output_file: "runs/MSSM25_test/samples/gambit_output.hdf5"
-    group: "/test/test2"
+    group: "/"
     delete_file_if_exists: true
 
 Scanner:
@@ -25,19 +25,13 @@ Scanner:
 
 ObsLikes:
   - purpose:      Test
-    capability:   SpecBit_examples
-    type:         bool
-    function:     exampleRead
+    capability:   run_MSSMspectrum_test
 
-  - purpose:      Test
-    capability:   decay_rates
-    type:         DecayTable
+#  - purpose:      Test
+#    capability:   decay_rates
+#    type:         DecayTable
 
 Rules:
-  - capability: SpecBit_examples
-    options:
-      output_slha_filename: "SpecBit/MSSM_benchmark_points/gambit.LesHouches.out.MSSM_1"
-
   - capability: unimproved_MSSM_spectrum 
     function: get_MSSMatQ_spectrum  # Use this function to compute this capability
     options:
