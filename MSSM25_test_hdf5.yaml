@@ -2,7 +2,7 @@ Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
   #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml # for fixed point
   MSSM25atQ:
-    Qin: 1.9422e+16
+    Qin: 5000 #1.9422e+16
     SignMu: 1
     TanBeta: 10
     mHu2: 15625
@@ -76,11 +76,11 @@ Rules:
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
-      precision_goal:        1.0e-4
-      max_iterations:        0
+      precision_goal:        1.0e-3 #1.0e-4
+      max_iterations:        10
       calculate_sm_masses:   false
-      pole_mass_loop_order:  2
-      ewsb_loop_order:       2
+      pole_mass_loop_order:  1
+      ewsb_loop_order:       1
       beta_loop_order:       2
       threshold_corrections_loop_order: 1
       use_higgs_2loop_at_as: true
