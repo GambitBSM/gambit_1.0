@@ -73,15 +73,15 @@
 #undef PARENT
 #undef MODEL
 
-#define MODEL nuclear_params_sigmas_sigmaL
+#define MODEL nuclear_params_sigmaS_sigmaL
 #define PARENT nuclear_params_sigma0_sigmaL
-    void MODEL_NAMESPACE::sigmas_to_sigma0 (const ModelParameters &myP, ModelParameters &targetP)
+    void MODEL_NAMESPACE::sigmaS_to_sigma0 (const ModelParameters &myP, ModelParameters &targetP)
     {
         USE_MODEL_PIPE(PARENT)
 
-        logger()<<"Converting sigmas to sigma0 ..."<<LogTags::info<<EOM;
+        logger()<<"Converting sigmaS to sigma0 ..."<<LogTags::info<<EOM;
 
-        double sigmas = myP["sigmas"];
+        double sigmaS = myP["sigmaS"];
         double sigmaL = myP["sigmaL"];
 
         const SMInputs& SM = *Dep::SMINPUTS;
@@ -89,7 +89,7 @@
         double mud = SM.mU/SM.mD;
         double msd = SM.mS/SM.mD;
 
-        double sigma0 = sigmaL*(1 - (sigmas/sigmaL)*(1 + mud)*(1/msd));
+        double sigma0 = sigmaL*(1 - (sigmaS/sigmaL)*(1 + mud)*(1/msd));
 
         targetP.setValue("sigma0", sigma0);
         targetP.setValue("sigmaL", sigmaL);

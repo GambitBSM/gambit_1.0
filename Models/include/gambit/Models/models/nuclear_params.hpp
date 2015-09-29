@@ -36,13 +36,13 @@
 #undef PARENT
 #undef MODEL
 
-// sigmas and sigmaL used to calculate hadronic matrix elements
-#define MODEL nuclear_params_sigmas_sigmaL
+// sigmaS and sigmaL used to calculate hadronic matrix elements
+#define MODEL nuclear_params_sigmaS_sigmaL
 #define PARENT nuclear_params_sigma0_sigmaL
   START_MODEL
-  DEFINEPARS(sigmas, sigmaL)
+  DEFINEPARS(sigmaS, sigmaL)
   DEFINEPARS(deltad, deltau, deltas)
-  INTERPRET_AS_PARENT__FUNCTION(sigmas_to_sigma0)
+  INTERPRET_AS_PARENT__FUNCTION(sigmaS_to_sigma0)
   INTERPRET_AS_PARENT__DEPENDENCY(SMINPUTS, SMInputs)
 #undef PARENT
 #undef MODEL

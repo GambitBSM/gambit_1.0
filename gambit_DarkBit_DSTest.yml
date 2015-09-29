@@ -167,8 +167,8 @@ Parameters:
 #      deltas:
 #        fixed_value: -0.085
 
-#    nuclear_params_sigmas_SigmaL:
-#      sigmas:
+#    nuclear_params_sigmaS_SigmaL:
+#      sigmaS:
 #        fixed_value: 42.0
 #      SigmaL:
 #        fixed_value: 34.0
