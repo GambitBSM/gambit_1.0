@@ -149,11 +149,12 @@ namespace Gambit
             double lower;
             double upper;
             double scale;
+            double shift;
             
         public:
     
             // Constructor
-            RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(1), myparameter(param[0]), scale(1.0)
+            RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(1), myparameter(param[0]), scale(1.0), shift(0.0)
             {
                 // Read the entries we need from the options
                 if ( not options.hasKey("range") )
@@ -185,8 +186,13 @@ namespace Gambit
                     }
                 }
                 
-                lower = T::limits(range.first*scale);
-                upper = T::limits(range.second*scale);            
+                if (options.hasKey("shift"))
+                {
+                    shift = options.getValue<double>("shift");
+                }
+                
+                lower = T::limits(range.first*scale + shift);
+                upper = T::limits(range.second*scale + shift);
             }
             
             // Transformation from unit interval to specified range

@@ -98,6 +98,7 @@ namespace Gambit
         CompositePrior::CompositePrior(const Options &model_options, const Options &prior_options)
         {       
             std::unordered_map<std::string, std::string> sameMap;
+            std::unordered_map<std::string, std::pair<double, double>> sameMapOptions;
             std::vector<BasePrior *> phantomPriors;
             std::unordered_set<std::string> needSet;
             
@@ -158,6 +159,19 @@ namespace Gambit
                         }
                         
                         sameMap[mod + std::string("::") + par_name] = connectedName;
+                        
+                        auto opt = std::pair<double, double>(1.0, 0.0);
+                        if (par_options.hasKey("scale"))
+                        {
+                            opt.first = par_options.getValue<double>("scale");
+                        }
+                        
+                        if (par_options.hasKey("shift"))
+                        {
+                            opt.second = par_options.getValue<double>("shift");
+                        }
+                        
+                        sameMapOptions[mod + std::string("::") + par_name] = opt;
                     }
                     else if (par_options.hasKey("fixed_value"))
                     {
@@ -177,6 +191,19 @@ namespace Gambit
                                 if (options.hasKey("same_as"))
                                 {
                                     sameMap[joined_parname] = options.getValue<std::string>("same_as");
+                                    
+                                    auto opt = std::pair<double, double>(1.0, 0.0);
+                                    if (par_options.hasKey("scale"))
+                                    {
+                                        opt.first = par_options.getValue<double>("scale");
+                                    }
+                                    
+                                    if (par_options.hasKey("shift"))
+                                    {
+                                        opt.second = par_options.getValue<double>("shift");
+                                    }
+                                    
+                                    sameMapOptions[joined_parname] = opt;
                                 }
                                 else
                                 {
@@ -280,7 +307,7 @@ namespace Gambit
                             if (options.hasKey("same_as"))
                             {
                                 std::string same_name = options.getValue<std::string>("same_as");
-                                for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
+                                for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; ++par_it)
                                 {
                                     shown_param_names.erase
                                     (
@@ -321,7 +348,7 @@ namespace Gambit
             std::unordered_map<std::string, std::string> keyMap;
             std::string index, result;
             unsigned int reps;
-            for (auto strMap = sameMap.begin(), strMap_end = sameMap.end(); strMap != strMap_end; strMap++)
+            for (auto strMap = sameMap.begin(), strMap_end = sameMap.end(); strMap != strMap_end; ++strMap)
             {
                 index = strMap->first;
                 result = strMap->second;
@@ -368,7 +395,7 @@ namespace Gambit
                 }
                 else
                 {
-                    my_subpriors.push_back(new MultiPriors(key_it->second));
+                    my_subpriors.push_back(new MultiPriors(key_it->second, sameMapOptions));
                 }
             }
             
@@ -386,6 +413,7 @@ namespace Gambit
         CompositePrior::CompositePrior(const std::vector<std::string> &params_in, const Options &options_in) : param_names(params_in), shown_param_names(params_in)
         {       
                 std::unordered_map<std::string, std::string> sameMap;
+                std::unordered_map<std::string, std::pair<double, double>> sameMapOptions;
                 std::unordered_set<std::string> needSet(params_in.begin(), params_in.end());
                 std::unordered_set<std::string> paramSet(params_in.begin(), params_in.end()); 
 
@@ -536,7 +564,7 @@ namespace Gambit
                         }
                         else
                         {
-                                my_subpriors.push_back(new MultiPriors(key_it->second));
+                                my_subpriors.push_back(new MultiPriors(key_it->second, sameMapOptions));
                         }
                 }
                 
