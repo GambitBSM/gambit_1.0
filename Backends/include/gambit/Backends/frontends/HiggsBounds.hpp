@@ -10,8 +10,8 @@
 #else
   #define BACKENDNAME HiggsBounds
 #endif
-#define VERSION 4.1
-#define SAFE_VERSION 4_1
+#define VERSION 4.2
+#define SAFE_VERSION 4_2
 
 /* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */

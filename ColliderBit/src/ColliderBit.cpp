@@ -3176,7 +3176,7 @@ namespace Gambit
       // BEreq::setup_rate_uncertainties(dCS,dBR);
 
       // run HiggsSignals
-      int mode = 1;
+      int mode = 1; // 1- peak-centered chi2 method (recommended)
       double csqmu, csqmh, csqtot, Pvalue;
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);

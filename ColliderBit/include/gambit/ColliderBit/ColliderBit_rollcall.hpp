@@ -383,7 +383,7 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(decay_rates, DecayTable)
     DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency 
-    DEPENDENCY(FH_HiggsProd, fh_HiggsProd) // temporary dependency 
+    DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency 
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
