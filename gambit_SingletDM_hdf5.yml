@@ -246,7 +246,6 @@ Logger:
     [ExampleBit_B] : "ExampleBit_B.log"
     [BackendIniBit]: "BackendIniBit.log"
     [LibFirst] : "libfirst.log"
-    [Models] : stdout
   #  [Logger, Debug] : "stdout"
   #  [Core] : "stdout"
   #  [Dependency Resolver] : "stdout"
