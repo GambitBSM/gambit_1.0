@@ -15,8 +15,6 @@ Parameters:
   StandardModel_Higgs:
     mH:
       fixed_value: 125.9
-    vev:
-      fixed_value: 246.0
 
   SingletDM:
     mS:
