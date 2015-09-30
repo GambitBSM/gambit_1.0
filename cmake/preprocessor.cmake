@@ -31,8 +31,14 @@ endif()
 check_include_files(link.h HAVE_LINK_H)
 
 # Check for Graphviz
-include(cmake/FindGraphviz.cmake)
-find_package(Graphviz)
+find_program(GRAPHVIZ_FOUND dot)
+if (GRAPHVIZ_FOUND)
+  message("${BoldYellow}   Found graphviz.${ColourReset} Model and module function hierarchy plots will be enabled.")
+else()
+  message("${BoldRed}   Did not find graphviz. Model and module function hierarchy plots will not be produced.${ColourReset}")
+endif()
+#include(cmake/FindGraphviz.cmake)
+#find_package(Graphviz)
 
 # Define HAVE_GRAPHVIZ compiler option
 include(CMakeDependentOption)

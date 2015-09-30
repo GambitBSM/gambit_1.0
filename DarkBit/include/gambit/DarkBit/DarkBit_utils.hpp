@@ -36,11 +36,6 @@ namespace Gambit
 
       // Functions
 
-      // DSparticle_code translates GAMBIT string identifiers to the SUSY
-      // particle codes used internally in DS (as stored in common block /pacodes/)          
-//      int DSparticle_code(const str particleID);
-      int DSparticle_code(std::string particleID);
-
       // Helper function for recursively importing decays and decays of resulting final states into a process catalog
       void ImportDecays(std::string pID, TH_ProcessCatalog &catalog, 
                         std::set<std::string> &importedDecays, 

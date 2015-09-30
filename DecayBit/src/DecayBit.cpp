@@ -2504,6 +2504,17 @@ namespace Gambit
     {
       using namespace Pipes::get_mass_es_pseudonyms;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+
+      std::cout << "has h0 uncertainty (low) ? "<< mssm->phys().has(Par::Pole_Mass_1srd_low, "h0", 1) << std::endl;
+      std::cout << "h0 uncertainty (low) = "<< mssm->phys().get(Par::Pole_Mass_1srd_low, "h0", 1) << std::endl;
+      std::cout << "h0 uncertainty (high)= "<< mssm->phys().get(Par::Pole_Mass_1srd_high,"h0", 1) << std::endl;
+      std::cout << "~u3 uncertainty = "     << mssm->phys().get(Par::Pole_Mass_1srd_low, "~u", 3) << std::endl;
+      std::cout << "~chi0_1 uncertainty = " << mssm->phys().get(Par::Pole_Mass_1srd_low, "~chi0", 1) << std::endl;
+      std::cout << "chi+_2 uncertainty = "  << mssm->phys().get(Par::Pole_Mass_1srd_low, "~chi+", 2) << std::endl;
+      std::cout << "chi-_2 uncertainty = "  << mssm->phys().get(Par::Pole_Mass_1srd_low, "~chi-", 2) << std::endl;
+      std::cout << "mA0 uncertainty = "     << mssm->phys().get(Par::Pole_Mass_1srd_low, "A0") << std::endl;
+      std::cout << "gluino uncertainty = "  << mssm->phys().get(Par::Pole_Mass_1srd_low, "~g") << std::endl;
+	
       double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");

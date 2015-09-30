@@ -36,6 +36,8 @@ twalk: |
   implementation also mixes in normal "Gaussian" jumps to add variability.  M-H 
   jumps are done on a random lower dimension subspace of the full parameter space.
   The Gelman-Rubin statistic is used as the second moment convergence criterion.  
+  This implementation is based on the algorithm developed by Christen and Fox: 
+  http://ba.stat.cmu.edu/journal/2010/vol05/issue02/christen.pdf
   
   MCMC inifile options:
       kwalk_ratio (0.9836):      The ratio of kwalk jumps to Gaussian jumps. 

@@ -17,6 +17,7 @@
 
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Logs/log.hpp"
+#include "gambit/Elements/numerical_constants.hpp"
 
 #include "gambit/Models/models/nuclear_params.hpp"
 
@@ -31,8 +32,8 @@
         double sigma0 = myP["sigma0"];
         double SigmaPiN = myP["SigmaPiN"];
 
-        double mp = 938.272046; // MeV from PDG 2014
-        double mn = 939.565379; // MeV from PDG 2014
+        double mp = m_proton*1e3;  // MeV
+        double mn = m_neutron*1e3; // MeV
 
         const SMInputs& SM = *Dep::SMINPUTS;
 

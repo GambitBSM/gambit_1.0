@@ -26,16 +26,35 @@ using namespace LogTags;
 
 void sighandler(int sig)
 {
+    Gambit::Scanner::Plugins::plugin_info.dump();
+    std::cout << "Gambit has performed an emergency shutdown!" << std::endl;
+    exit(sig);
+}
+
+void sighandler2(int sig)
+{
     Gambit::Scanner::Plugins::plugin_info.set_running(false);
+    std::cout << "Gambit is performing soft shutdown! -- catch SIGUSR" << std::endl;
+    if (!Gambit::Scanner::Plugins::plugin_info.func_calculating())
+    {
+       Gambit::Scanner::Plugins::plugin_info.dump();
+#ifdef WITH_MPI
+       MPI_Finalize();
+#endif
+       exit(sig);
+    }
 }
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
-  signal(SIGABRT, sighandler);
+  //signal(SIGABRT, sighandler);
   signal(SIGTERM, sighandler);
   signal(SIGINT, sighandler);
+  //signal(SIGKILL, sighandler);
+  signal(SIGUSR1, sighandler2);
+  signal(SIGUSR2, sighandler2);
 
   try
   {

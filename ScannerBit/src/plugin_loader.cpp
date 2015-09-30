@@ -41,7 +41,7 @@ namespace Gambit
                 typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
                 typedef std::map<std::string, plugin_map> plugin_mapmap;
                 
-                table_formatter table(plugins->first + " PLUGINS", "STATUS", "VERSION");
+                table_formatter table(plugins->first + " PLUGINS", "VERSION", "STATUS");
                 table.capitalize_title();
                 table.padding(1);
                 
@@ -231,6 +231,14 @@ namespace Gambit
                 }
                 
                 return vec;
+            }
+            
+            std::string Plugin_Loader::print_priors() const
+            {
+                std::string path = GAMBIT_DIR "/config/priors.dat";
+                YAML::Node node = YAML::LoadFile(path);
+                
+                return node["priors"].as<std::string>();
             }
             
             std::string Plugin_Loader::print_all(const std::string &plug_type) const
@@ -482,7 +490,7 @@ namespace Gambit
                 }
                 
                 printer->finalise(true);
-                std::cout << "Gambit has finished early!" << std::endl;
+                std::cout << "Gambit info dump, preparing to stop!" << std::endl;
             }
             
             pluginInfo::~pluginInfo()
@@ -493,6 +501,11 @@ namespace Gambit
                     {
                         delete (*v_it);
                     }
+                }
+                
+                for (auto it = resume_streams.begin(), end = resume_streams.end(); it != end; ++it)
+                {
+                    delete it->second;
                 }
             }
             

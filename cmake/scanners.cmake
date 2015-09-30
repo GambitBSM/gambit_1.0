@@ -45,12 +45,13 @@ ExternalProject_Add(diver
            COMMAND ${CMAKE_COMMAND} -E copy_directory ${diver_location} ${diver_dir}
   SOURCE_DIR ${diver_dir}
   BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
   INSTALL_COMMAND "" 
 )
-set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
+enable_auto_rebuild(diver)
+add_external_clean(diver ${diver_dir} cleanall)
 
 # MultiNest
 set(mn_location "${GAMBIT_INTERNAL}/MultiNest_v3.9")
@@ -58,7 +59,7 @@ set(mn_ver "3\\.9")
 set(mn_lib "libnest3")
 set(mn_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/MultiNest/3.9")
 set(mnLAPACK "${LAPACK_LINKLIBS}")
-set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
+set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${OpenMP_Fortran_FLAGS} ${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
 if(MPI_Fortran_FOUND)
   set(mnFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
 else()
@@ -80,15 +81,16 @@ ExternalProject_Add(multinest
             COMMAND sed ${dashi} -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
                                  -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g"
                                  <SOURCE_DIR>/cwrapper.f90
-  BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LIBS=${mn_dir}/
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LIBS=${mn_dir}/
   INSTALL_COMMAND "" 
 )
-set_property(TARGET multinest PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${mn_dir}/${mn_lib}.so")
+enable_auto_rebuild(multinest)
+add_external_clean(multinest ${mn_dir} clean)
 
 # All other scanners are implemented natively in ScannerBit.
 
 
 set_target_properties(diver multinest PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(scanners COMMAND make diver multinest)
+add_custom_target(scanners DEPENDS diver multinest)
+add_custom_target(clean-scanners DEPENDS clean-diver clean-multinest)

@@ -15,7 +15,7 @@
 
 LOAD_LIBRARY
 
-BE_ALLOW_MODELS(MSSM25atQ)
+BE_ALLOW_MODELS(MSSM30atQ)
 
 BE_FUNCTION(assignVal, int, (char*,double),"assignVal","assignVal")
 BE_FUNCTION(vSigma, double, (double, double, int), "vSigma","vSigma")

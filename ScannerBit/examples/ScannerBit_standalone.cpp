@@ -43,7 +43,7 @@ void scan_terminator()
     exit(1);
 }
 
-void sighandler(int sig)
+void sighandler(int)
 {
     Gambit::Scanner::Plugins::plugin_info.set_running(false);
 }
