@@ -2517,8 +2517,8 @@ namespace Gambit
       std::cout << "mA0 uncertainty = "     << mssm->phys().get(Par::Pole_Mass_1srd_low, "A0") << std::endl;
       std::cout << "gluino uncertainty = "  << mssm->phys().get(Par::Pole_Mass_1srd_low, "~g") << std::endl;
 	
-      double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");
       result.refill(mssm, tol, pt_error, debug);
     }
