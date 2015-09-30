@@ -47,7 +47,7 @@ namespace Gambit {
         BaseAnalysis() : _ntot(0), _xsec(-1), _xsecerr(-1) {  }
         virtual ~BaseAnalysis() { }
         /// @brief Reset this instance for reuse, avoiding the need for "new" or "delete".
-        virtual void clear() { }
+        virtual void clear() { _ntot = 0; _xsec = -1; _xsecerr = -1; _results.clear(); }
       //@}
 
       /// @name Event analysis, event number, and cross section functions

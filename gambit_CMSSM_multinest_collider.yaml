@@ -42,7 +42,7 @@ Printer:
   # printer.
   options:
     # size of write buffer
-    buffer_length: 1
+    buffer_length: 100
     # name of output file
     output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
     # name of info file (explains content of output file)

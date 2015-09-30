@@ -85,7 +85,7 @@ namespace Gambit
     bool allProcessesVetoed;
     int pythiaConfigurations, pythiaNumber;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses,allProcessesVetoed
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,analysisNames,globalAnalyses,allProcessesVetoed
 
 
     /// *************************************************
@@ -98,7 +98,6 @@ namespace Gambit
       using namespace Pipes::operatePythia;
       int nEvents = 0;
       allProcessesVetoed = true;
-      globalAnalyses->clear();
 
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
@@ -354,19 +353,10 @@ namespace Gambit
 
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
-      if (*Loop::iteration == INIT)
-      {
-        #pragma omp critical (runOptions)
-        {
-          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-        }
-        #pragma omp critical (access_globalAnalyses)
-        {
-          if(!globalAnalyses->ready) {
-            /// A global Analyses container exists to hold combined results from all threads.
-            globalAnalyses->init(analysisNames);
-          }
-        }
+      if (*Loop::iteration == BASE_INIT) {
+        GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
+        globalAnalyses->clear();
+        globalAnalyses->init(analysisNames);
         return;
       }
 
@@ -374,7 +364,7 @@ namespace Gambit
       {
         /// Each thread gets its own Analysis container.
         /// Thus, their initialization is *after* INIT, within omp parallel.
-        /// @TODO Can we test for xsec veto here? Might be analysis dependent...
+        result.clear();
         result.init(analysisNames);
         return;
       }
