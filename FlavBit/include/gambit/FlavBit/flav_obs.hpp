@@ -108,7 +108,7 @@ namespace Gambit
       void read_yaml_mesurement(string name, string measurement_name) ;
       void construct_theory_b2sll();
       void print(Measurement);
-      void debug_mode() {debug= true;};
+      void debug_mode(bool k) {debug= k;};
       void create_global_corr();
       void print_corr_matrix();
       void print_cov_matrix(); 

@@ -117,11 +117,11 @@ namespace Gambit
       c.corr_val = node["value"].as<double>();
     }
     void operator >> (const YAML::Node& node, Measurement& v) {
-      //cout<<"Op"<<endl;
+      
       v.name=node["name"].as<std::string>();
-      //cout<<"passed"<<endl;
+      
       v.is_limit = node["islimit"].as<bool>();
-      // cout<<"passed"<<endl;
+      
 
       if(v.is_limit== true)
 	{
@@ -189,7 +189,7 @@ namespace Gambit
 	  measurements.push_back(mes_tmp);
 	  number_measurements++;
 	}
-      cout<<"Number of measurements: "<<number_measurements<<endl;
+      if(debug) cout<<"Number of measurements: "<<number_measurements<<endl;
       return OK;
     }
     void Flav_reader::read_yaml_mesurement(string name, string measurement_name)
@@ -199,9 +199,8 @@ namespace Gambit
       //YAML::Parser parser(fin);      
       YAML::Node doc = YAML::Load(fin);
       Measurement mes_tmp;
-      cout<<"here?"<<endl;
-      cout<<"Size:"<<doc.size()<<endl;
-      cout<<measurement_name.c_str()<<endl;
+
+      if(debug) cout<<measurement_name.c_str()<<endl;
       
       for(unsigned i=0;i<doc.size();++i)   
 	{                                  
@@ -211,10 +210,10 @@ namespace Gambit
 	  
 	  measurements.push_back(mes_tmp); 
 	  number_measurements++;  
-	  cout<<"Increasing "<<measurement_name<<" "<< mes_tmp.name<<" "<<mes_tmp.value<<endl;
+	  if(debug) cout<<"Increasing "<<measurement_name<<" "<< mes_tmp.name<<" "<<mes_tmp.value<<endl;
 	}                                  
 
-      cout<<"does this work?"<<endl;
+
     }
     
     
@@ -307,26 +306,26 @@ namespace Gambit
 
       // InvertMatrix(M_glob_correlation, M_glob_cov_inv);
       
-      cout<<"Inversing: "<<endl;
-      cout<<M_glob_cov_dd<<endl;
+      if(debug) cout<<"Inverting: "<<endl;
+      if(debug) cout<<M_glob_cov_dd<<endl;
 
       InvertMatrix(M_glob_cov_uu, M_glob_cov_inv_uu);
       InvertMatrix(M_glob_cov_ud, M_glob_cov_inv_ud);
       InvertMatrix(M_glob_cov_du, M_glob_cov_inv_du);
       InvertMatrix(M_glob_cov_dd, M_glob_cov_inv_dd);
       
-      cout<<"Inversed"<<endl;
-      cout<<M_glob_cov_inv_dd<<endl;
+      if(debug) cout<<"Inverted"<<endl;
+      if(debug) cout<<M_glob_cov_inv_dd<<endl;
 
       // calcul;atin the the measurement vector:
       M_measurement= boost::numeric::ublas::matrix<double> (number_measurements,1);
-      cout<<"measurement vector"<<number_measurements <<endl;
+      
       for(int i=0; i<number_measurements;++i)   
 	{                                       
 	  M_measurement(i,0)=measurements[i].value;
 	}
-      cout<<M_measurement<<endl;
-      cout<<"DONE"<<endl;
+      if(debug) cout<<M_measurement<<endl;
+      
 
 
 
@@ -346,10 +345,10 @@ namespace Gambit
     }
     void Flav_reader::print_corr_matrix()
     {
-      if(!debug) cout<<"Correlation matrix:"<<endl;
-      if(!debug)  cout<<M_glob_correlation<<endl; // this is ugly
+      if(debug) cout<<"Correlation matrix:"<<endl;
+      if(debug)  cout<<M_glob_correlation<<endl; // this is ugly
 
-      if(debug) cout<<"Correlation matrix"<<endl;
+
       if(debug){
 	for(int i=0; i < number_measurements; ++i)
 	  {
@@ -365,8 +364,8 @@ namespace Gambit
 
     void Flav_reader::print_cov_matrix()
     {
-      if(!debug) cout<<"Mean Cov matrix:"<<endl;
-      if(!debug)  cout<<M_glob_cov<<endl; // this is ugly
+      if(debug) cout<<"Mean Cov matrix:"<<endl;
+      if(debug)  cout<<M_glob_cov<<endl; // this is ugly
       
       if(debug) cout<<"Mean Cov matrix"<<endl;
       if(debug){
@@ -380,7 +379,7 @@ namespace Gambit
 	    cout<<endl;
 	  }
       }
-      cout<<"finishing printing"<<endl;
+      if(debug)  cout<<"finishing printing"<<endl;
     }
 
 
@@ -395,7 +394,7 @@ namespace Gambit
 	      if(i==j&&M_glob_correlation(i,i)!=1) { cout<<"Error, diagonal element diff. 1!!"<<endl; return false; }
 	      if(M_glob_correlation(i,j) !=M_glob_correlation(j,i)){ cout<<"Error: Matrix not symmetric"<<endl; return false; }
 	    }
-	  cout<<endl;
+
 	}
       return OK;
     }
