@@ -155,10 +155,15 @@ Rules:
   - capability: SimpleSmearingSim
     function: getBuckFast
     options:
-      buckFastOption: "BuckFastSmear"
  
   - capability: ReconstructedEvent
     function: reconstructBuckFastEvent
+    dependencies:
+    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
+    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
+
+  - capability: ReconstructedEvent
+    function: reconstructBuckFastIdentityEvent
     dependencies:
     - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
     #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
@@ -210,6 +215,7 @@ Rules:
   - capability: AnalysisNumbers
     dependencies:
     - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
+    #- {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastIdentityEvent"}
     
 #########################
 # Logging setup

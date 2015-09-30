@@ -352,6 +352,23 @@ namespace Gambit
     }
 
 
+    void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
+    {
+      using namespace Pipes::getBuckFastIdentity;
+      std::string buckFastOption;
+      if (*Loop::iteration == INIT)
+      {
+        result.clear();
+        #pragma omp critical (BuckFast)
+        {
+          /// Setup new BuckFast
+          /// @note There's really nothing to do. BuckFast doesn't even have class variables.
+          result.init();
+        }
+      }
+    }
+
+
 
     /// *** Initialization for analyses ***
 
@@ -704,6 +721,15 @@ namespace Gambit
 
     void reconstructBuckFastEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructBuckFastEvent;
+      if (*Loop::iteration <= BASE_INIT) return;
+      result.clear();
+
+      (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
+    }
+
+
+    void reconstructBuckFastIdentityEvent(HEPUtils::Event& result) {
+      using namespace Pipes::reconstructBuckFastIdentityEvent;
       if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
