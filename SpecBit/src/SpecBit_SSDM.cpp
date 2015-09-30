@@ -91,7 +91,7 @@ namespace Gambit
       QedQcd oneset;
 
       // Fill QedQcd object with SMInputs values
-      //setup_QedQcd(oneset,sminputs);   //  FIX THIS
+      setup_QedQcd(oneset,sminputs);   //  FIX THIS
 
       // Run everything to Mz
       oneset.toMz();

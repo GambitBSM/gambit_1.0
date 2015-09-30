@@ -200,27 +200,13 @@ namespace Gambit
             typename MTget::fmap0 tmp_map;
             tmp_map["mS2"]  = &Model::get_mS2;
             tmp_map["mu2"] = &Model::get_mu2;
-
-
             map_collection[Par::mass2].map0 = tmp_map;
          }
         
 
-         /// @{ mass1 - mass dimension 1 parameters
-         //
-         // Functions utilising the "plain-vanilla" function signature
-         // (Zero index member functions of model object)
-         {
-            typename MTget::fmap0 tmp_map;
-            tmp_map["v"] = &Model::get_v;
 
-            map_collection[Par::mass1].map0 = tmp_map;
-         }
+         //dimensionless - mass dimension 0 parameters
 
-         // @{ dimensionless - mass dimension 0 parameters
-         //
-         // Functions utilising the "plain-vanilla" function signature
-         // (Zero index member functions of model object)
          {
             typename MTget::fmap0 tmp_map;
             tmp_map["g1"]= &Model::get_g1;
@@ -229,7 +215,7 @@ namespace Gambit
             tmp_map["Lambda1"]= &Model::get_Lambda1;
             tmp_map["Lambda2"]= &Model::get_Lambda2;
             tmp_map["Lambda3"]= &Model::get_Lambda3;
-
+            tmp_map["v"] = &Model::get_v;
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
 
@@ -417,7 +403,7 @@ namespace Gambit
 
           tmp_map["h0"] = &set_Mhh_pole_slha<Model>;
           tmp_map["s0"] = &set_Mss_pole_slha<Model>;
-            
+          
           map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
         }
 
