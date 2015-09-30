@@ -103,6 +103,7 @@ namespace Gambit
       void model_diagnostic();
       void scanner_diagnostic();
       void test_function_diagnostic();
+      void prior_diagnostic();
 
       /// Free-form diagnostic functions
       /// @{
@@ -132,6 +133,10 @@ namespace Gambit
       /// Flags set by command line options
       /// Flag to trigger dependency resolver to report functor run order
       int show_runorder;
+
+      /// Flag to trigger "resume" mode
+      bool resume;
+
       /// Verbosity mode
       // Set 'true' by '--verbose'
       bool verbose_flag;

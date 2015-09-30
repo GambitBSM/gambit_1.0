@@ -1,4 +1,5 @@
 #pragma once
+#include <ostream>
 #include "gambit/ColliderBit/colliders/BaseCollider.hpp"
 #include "SLHAea/slhaea.h"
 
@@ -12,7 +13,7 @@ namespace Gambit {
       protected:
         Pythia8::Pythia* _pythiaInstance;
       public:
-        Pythia8::Pythia* const pythia() const { return _pythiaInstance; }
+        const Pythia8::Pythia* pythia() const { return _pythiaInstance; }
       //@}
 
       /// @name Specialization function pointers
@@ -53,8 +54,19 @@ namespace Gambit {
 
         /// @brief Add a command to the list of settings used by "init"
         void init(const std::vector<std::string>& externalSettings,
-                  const SLHAea::Coll* slhaea=nullptr);
+                  const SLHAea::Coll* slhaea=nullptr, std::ostream& os=std::cout);
 
+        void init_external(const std::vector<std::string>& externalSettings,
+                  const SLHAea::Coll* slhaea=nullptr, std::ostream& os=std::cout);
+
+        void init(const std::vector<std::string>& externalSettings, std::ostream& os) {
+          init(externalSettings, nullptr, os);
+        }
+
+        void init_external(const std::vector<std::string>& externalSettings, std::ostream& os) {
+          init_external(externalSettings, nullptr, os);
+        }
+      
         /// @brief Specialize this Pythia interface to Gambit with a specialization function.
         void resetSpecialization(const std::string&);
       //@}

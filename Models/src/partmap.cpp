@@ -52,6 +52,20 @@ namespace Gambit
       pdg_pair_to_long_name[pdgpr] = long_name;
     } 
 
+    /// Add a new Standard Model particle to the database
+    void partmap::add_SM(str long_name, std::pair<int, int> pdgpr)
+    {
+      add(long_name, pdgpr);
+      SM.push_back(pdgpr);
+    }  
+
+    /// Add a new generic particle class to the database
+    void partmap::add_generic(str long_name, std::pair<int, int> pdgpr)
+    {
+      add(long_name, pdgpr);
+      generic.push_back(pdgpr);
+    }  
+
     /// Add a new particle to the database with a short name and an index
     void partmap::add_with_short_pair(str long_name, std::pair<int, int> pdgpr, std::pair<str, int> shortpr)
     {
@@ -60,6 +74,13 @@ namespace Gambit
       short_name_pair_to_long_name[shortpr] = long_name;
       pdg_pair_to_short_name_pair[pdgpr] = shortpr;
       long_name_to_short_name_pair[long_name] = shortpr;
+    }
+
+    /// Add a new Standard Model particle to the database with a short name and an index
+    void partmap::add_SM_with_short_pair(str long_name, std::pair<int, int> pdgpr, std::pair<str, int> shortpr)
+    {
+      add_with_short_pair(long_name, pdgpr, shortpr);
+      SM.push_back(pdgpr);
     }
 
     /// Retrieve the PDG code and context integer, from the long name
@@ -160,6 +181,18 @@ namespace Gambit
       return short_name_pair(std::make_pair(pdg_code,context));
     }
 
+    /// Get a vector PDG codes and context integers of Standard Model particles in the database
+    const std::vector<std::pair<int, int> >& partmap::get_SM_particles()
+    {
+      return SM;  
+    }
+    
+    /// Get a vector PDG codes and context integers of generic particle classes in the database
+    const std::vector<std::pair<int, int> >& partmap::get_generic_particles()
+    {
+      return generic; 
+    }
+    
     /// Check if a particle is in the database, using the long name 
     bool partmap::has_particle(str long_name)
     { 

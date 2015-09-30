@@ -7,6 +7,7 @@
 # ROOT_LIBRARIES      Most common libraries
 # ROOT_<name>_LIBRARY Full path to the library <name>
 # ROOT_LIBRARY_DIR    PATH to the library directory
+# ROOT_DEFINITIONS    Compiler definitions and flags
 #
 # Updated by K. Smith (ksmith37@nd.edu) to properly handle
 #  dependencies in ROOT_GENERATE_DICTIONARY
@@ -46,9 +47,15 @@ foreach(_cpt ${rootlibs} ${ROOT_FIND_COMPONENTS})
     list(REMOVE_ITEM ROOT_FIND_COMPONENTS ${_cpt})
   endif()
 endforeach()
-if(ROOT_LIBRARIES)
+if (ROOT_LIBRARIES)
   list(REMOVE_DUPLICATES ROOT_LIBRARIES)
 endif()
+
+execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --cflags
+    OUTPUT_VARIABLE ROOT_DEFINITIONS
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX REPLACE "(^|[ ]*)-I[^ ]*" "" ROOT_DEFINITIONS "${ROOT_DEFINITIONS}")
 
 execute_process(
   COMMAND ${ROOT_CONFIG_EXECUTABLE} --features

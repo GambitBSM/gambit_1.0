@@ -25,7 +25,7 @@
 alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
 GF      :  1.16637870E-05 # G_Fermi **
 alphaS  :  1.18500000E-01 # alpha_s(mZ)^MSbar ^
-mZ      :  9.118760000E+01 # mZ(pole) !
+mZ      :  9.11876000E+01 # mZ(pole) !
 mBmB    :  4.18000000E+00 # mb(mb)^MSbar &
 mT      :  1.73340000E+02 # mtop(pole) $
 mTau    :  1.77682000E+00 # mtau(pole) §

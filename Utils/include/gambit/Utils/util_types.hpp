@@ -55,6 +55,44 @@ namespace Gambit
   using std::cout;
   using std::endl;
 
+  // A simple triplet class for holding a central value and aysmmetric +/- variations
+  template<typename TYPE>
+  struct triplet
+  {
+    TYPE central, upper, lower;
+    /// Default constructor
+    triplet()
+     : central(0.),
+       upper(0.),
+       lower(0.)
+    {}
+    /// One-value constructor
+    triplet(TYPE centralval)
+     : central(centralval),
+       upper(0.),
+       lower(0.)
+    {}
+    /// Three-value constructor
+    triplet(TYPE centralval, TYPE upperval, TYPE lowerval)
+     : central(centralval),
+       upper(upperval),
+       lower(lowerval)
+    {}
+    /// Copy constructor
+    triplet(const triplet<TYPE>& in)
+     : central(in.central),
+       upper(in.upper),
+       lower(in.lower)
+    {}    
+    /// Copy assignment operator
+    triplet<TYPE>& operator = (const triplet<TYPE>& in) {
+      central = in.central;
+      upper = in.upper;
+      lower = in.lower;
+      return *this;
+    }
+  }; 
+
   /// A safe pointer that throws an informative error if you try to dereference
   /// it when nullified, and cannot be used to overwrite the thing it points to.
   template <typename TYPE> 
@@ -400,18 +438,66 @@ namespace Gambit
     public:
       T re;
       T im;
+      /// Default constructor
+      FcomplexT() {}
+      /// Default destructor
+      ~FcomplexT() {}
+      /// Default copy constructor
       template<typename T2>
-      FcomplexT& operator= (const FcomplexT<T2> &in)
+      FcomplexT(const FcomplexT<T>& in)
+      {
+        re = in.re;
+        im = in.im;
+      }
+      /// Constructor from a C++ complex type
+      FcomplexT(const std::complex<T>& in)
+      {
+        re = in.real();
+        im = in.imag();
+      }
+      /// Constructor from a single instance of some type
+      FcomplexT(const T& in)
+      {
+        re = in;
+        im = 0.0;
+      }
+      /// Assignment from another Fortran complex type
+      template<typename T2>
+      FcomplexT& operator = (const FcomplexT<T2> &in)
       {
         re = in.re;
         im = in.im;
         return *this;
       }
-      // TODO: Implement convenient operators here...
+      /// Assignment from a C++ complex type
+      FcomplexT& operator = (const std::complex<T> &in)
+      {
+        re = in.real();
+        im = in.imag();
+        return *this;
+      }
+      /// Assignment from a single instance of some type
+      FcomplexT& operator = (const T &in)
+      {
+        re = in;
+        im = 0.0;
+        return *this;
+      }
+      /// Type casting to another Fortran complex type
+      template<typename T2>
+      operator FcomplexT<T2>()
+      {
+        return FcomplexT<T2>(std::complex<T2>(re, im));
+      }
+      /// Type casting to a C++ complex type
+      operator std::complex<T>()
+      {
+        return std::complex<T>(re, im);
+      }
   };
 
   /// Fortran type typedefs
-  /// Todo: Implement compiler dependent macros ensuring that these are always correct
+  /// TODO: Implement compiler dependent macros ensuring that these are always correct
   typedef FcomplexT<float>  Fcomplex;
   typedef FcomplexT<float>  Fcomplex8;
   typedef FcomplexT<double> Fcomplex16;

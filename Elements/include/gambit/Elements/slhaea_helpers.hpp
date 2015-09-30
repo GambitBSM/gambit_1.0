@@ -38,13 +38,16 @@ namespace Gambit
   typedef SLHAea::Coll SLHAstruct;
   
   /// Get an entry from an SLHAea object as a double, with some error checking
-  double SLHAea_get(const SLHAstruct& data, const str& block, const int index);
+  double SLHAea_get(const SLHAstruct& slha, const str& block, const int index);
   
   /// Get an entry from an SLHAea object as a double; raise a warning and use a default value if the entry is missing
-  double SLHAea_get_or_def(const SLHAstruct& data, const str& block, const int index, const double defvalue);
+  double SLHAea_get(const SLHAstruct& slha, const str& block, const int index, const double defvalue);
 
   /// Add a new block to an SLHAea object, with our without a scale
   void SLHAea_add_block(SLHAstruct&, const str& name, const double scale = -1);
+
+  /// Check if a block exists in an SLHAea object, add it if not, and check if it has an entry at a given index
+  bool SLHAea_check_block(SLHAstruct& slha, const str& block, const int index, const bool overwrite);
 
   /// Add an entry to an SLHAea object (if overwrite=false, only if it doesn't already exist)
   /// @{
@@ -52,7 +55,24 @@ namespace Gambit
    const str& comment="", const bool overwrite=false);
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index, const str& value, 
    const str& comment="", const bool overwrite=false);
+  void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index, const int value, 
+   const str& comment="", const bool overwrite=false);
   /// @}
+
+  /// Add a whole matrix to an SLHAea object if it doesn't already exist
+  template<typename T>
+  void SLHAea_add_matrix(SLHAstruct& slha /*modify*/, const str& block, const std::vector<T>& matrix, 
+                 const int rows, const int cols, const str& comment="", const bool overwrite=false)
+  {
+   if (SLHAea_check_block(slha, block, 1, overwrite)) return;
+   std::ostringstream commentwhash;
+   if (comment != "") commentwhash << "# " << comment;
+   for (int i = 0; i < rows; i++) for (int j = 0; j < cols; j++)
+   {
+     slha[block][""] << i+1 << j+1 << matrix.at(i*rows + j) << commentwhash.str();
+   }
+   return;
+  }
 
   /// Add an entry from a subspectrum getter to an SLHAea object; SLHA index given by pdg code
   template<class PhysOrRun, class PT>

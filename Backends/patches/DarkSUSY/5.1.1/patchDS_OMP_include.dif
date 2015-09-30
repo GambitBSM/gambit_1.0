@@ -1,0 +1,53 @@
+diff -rupN include/dsandiacom.h include2/dsandiacom.h
+--- include/dsandiacom.h	2006-06-19 08:36:02.000000000 -0600
++++ include2/dsandiacom.h	2015-09-01 22:09:54.110543380 -0600
+@@ -18,6 +18,10 @@ c  modified: 96-03-23
+      &  efpl,efmi,kk,e1,e2,e3,e4,s,t,u,wd
+ c save common block
+       save /diacom/
++
++*$OMP THREADPRIVATE (/diacom/)
++
++      
+ ***                                                                 ***
+ ************************* end of diacom.h *****************************
+ 
+diff -rupN include/dsandwcom.h include2/dsandwcom.h
+--- include/dsandwcom.h	2010-08-06 02:27:44.000000000 -0600
++++ include2/dsandwcom.h	2015-09-01 22:09:54.418543387 -0600
+@@ -10,6 +10,7 @@
+ c----------------------------------------------------------------------c
+ c  author: joakim edsjo (edsjo@physto.se) 97-09-09
+ c  modified: 01-09-12
++c  modified for OpenMP: TB 
+ c....dwcom - common block needed for the dwdcos optimization
+       real*8 parts(6,6,54)
+       logical tur(6,6,54)
+@@ -26,6 +27,8 @@ c....dwcom - common block needed for the
+       real*8 prtial(54)
+       common /partials/ prtial
+ 
++*$OMP THREADPRIVATE (/dwcom1/,/dwcom2/,/partials/)
++
+ ***                                                                 ***
+ ************************** end of dwcom.h *****************************
+ 
+diff -rupN include/dsanstau.h include2/dsanstau.h
+--- include/dsanstau.h	2006-06-19 08:36:02.000000000 -0600
++++ include2/dsanstau.h	2015-09-01 22:09:54.606543392 -0600
+@@ -12,3 +12,4 @@
+       COMMON /dsinomass/nevals,mx
+ 
+       save /dsstauconst/,/dsstaupar/,/dsinomix/,/dsinomass/
++*$OMP THREADPRIVATE (/dsstauconst/,/dsstaupar/,/dsinomix/,/dsinomass/)
+diff -rupN include/dsascom.h include2/dsascom.h
+--- include/dsascom.h	2008-06-23 15:39:47.000000000 -0600
++++ include2/dsascom.h	2015-09-01 22:09:55.086543403 -0600
+@@ -66,3 +66,7 @@ c logical value to set whether you want
+ c case of negative partial results
+       logical aszeroprint
+       common/aswprintcom/aszeroprint
++
++*$OMP THREADPRIVATE (/aswsfsfcom/,/aswsfchicom/, /asfamilyint/)
++*$OMP THREADPRIVATE (/asparmass/,/aspartype/,/askin/, /askinder/, /asampli/)
++*$OMP THREADPRIVATE ( /asamplic/, /astoll/)

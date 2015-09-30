@@ -16,31 +16,44 @@
 #  "special" metacharacters may                                             #
 #  appear here. The extent of this string is                                #
 #  indicated by indentation.                                                #
+#                                                                           #
+# You may tell gambit to ignore any new lines with                          #
+# #remove_newlines                                                          #
+# text                                                                      #
+# #dont_remove_newlines                                                     #
+#                                                                           #
+# Or you can end the ignore scope the a blank line                          #
+# #remove_newlines                                                          #
+# text                                                                      #
+#                                                                           #
+# unaffected_text                                                           #
 #############################################################################
 
 twalk: |
-  The twalk sampler is a ensemble MCMC.  Its a multiple chain MCMC that advances 
-  each chain by jumping over or away from a current point in another chain.  This
+  #remove_newlines
+  The twalk sampler is a ensemble MCMC.  Its a multiple chain MCMC that advances each 
+  chain by jumping over or away from a current point in another chain.  This
   implementation also mixes in normal "Gaussian" jumps to add variability.  M-H 
   jumps are done on a random lower dimension subspace of the full parameter space.
   The Gelman-Rubin statistic is used as the second moment convergence criterion.  
+  This implementation is based on the algorithm developed by Christen and Fox: 
+  http://ba.stat.cmu.edu/journal/2010/vol05/issue02/christen.pdf
   
   MCMC inifile options:
-    kwalk_ratio (0.9836):      The ratio of kwalk jumps to Gaussian jumps. 
-    projection_dimension (4):  The dimension of the space being projected onto.
-    gaussian_distance (2.4):   The distance of the Gaussian jump.
-    walk_distance: (2.5):      The distance of the kwalk jump over a point.
-    transverse_distance (6.0): The distance of the kwalk jump away from a point.
-    chain_number (5+proc_num): The number of MCMC chains.  Default is 5 + number
-                               of processes.
-    hyper_grid (true):         Confines the search to the hypercube defined by
-                               the priors.
+      kwalk_ratio (0.9836):      The ratio of kwalk jumps to Gaussian jumps. 
+      projection_dimension (4):  The dimension of the space being projected onto.
+      gaussian_distance (2.4):   The distance of the Gaussian jump.
+      walk_distance: (2.5):      The distance of the kwalk jump over a point.
+      transverse_distance (6.0): The distance of the kwalk jump away from a point.
+      chain_number (5+proc_num): The number of MCMC chains.  Default is 5 + number of processes.
+      hyper_grid (true):         Confines the search to the hypercube defined by the priors.
     
   Convergence inifile options:
-    tolerance (1.001): The accuracy of the second order moment (1 is perfect).
-    cut: (1000):       Number of burn-in points that are not considered.
+      tolerance (1.001): The accuracy of the second order moment (1 is perfect).
+      cut: (1000):       Number of burn-in points that are not considered.
     
 MultiNest: |
+  #remove_newlines
   Multinest is a nested sampling algorithm that calculates the evidence and
   explores the posterior.  It continuously updates a random set of "live" points
   by removing the point of lowest likelihood and replaces to with a point of
@@ -49,23 +62,23 @@ MultiNest: |
   code developed by Feroz et. al.:  http://arxiv.org/abs/0809.3437
 
   Inifile options:
-    IS (1):          do Nested Importance Sampling?
-    mmodal (1):      do mode separation?
-    ceff (0):        run in constant efficiency mode?
-    nlive (1000):    number of live points
-    efr (0.8):       set the required efficiency
-    tol (0.5):       tol, defines the stopping criteria
-    nClsPar (dim):   No. of parameters to do mode separation on. 
-                     Default set to parameter dimension.
-    updInt (1000):   after how many iterations feedback is required & 
-                     the output files should be updated (*10 for dumper)
-    Ztol (-1E90):    all the modes with logZ < Ztol are ignored
-    maxModes (100):  expected max no. of modes (used only for memory allocation)
-    seed (-1):       random no. generator seed, if < 0 then take the seed 
-                     from system clock
-    fb (1):          need feedback on standard output?
-    resume (1):      resume from a previous job?
-    outfile (0):     write output files?
-    logZero (-1E90): points with loglike < logZero will be ignored by MultiNest
-    maxiter (0):     Max no. of iterations, a non-positive value means infinity.
+      IS (1):          do Nested Importance Sampling?
+      mmodal (1):      do mode separation?
+      ceff (0):        run in constant efficiency mode?
+      nlive (1000):    number of live points
+      efr (0.8):       set the required efficiency
+      tol (0.5):       tol, defines the stopping criteria
+      nClsPar (dim):   No. of parameters to do mode separation on. Default set to parameter dimension.
+  #remove_newlines
+      updInt (1000):   after how many iterations feedback is required & the output 
+                     files should be updated (*10 for dumper)
+  #dont_remove_newlines
+      Ztol (-1E90):    all the modes with logZ < Ztol are ignored
+      maxModes (100):  expected max no. of modes (used only for memory allocation)
+      seed (-1):       random no. generator seed, if < 0 then take the seed from system clock
+      fb (1):          need feedback on standard output?
+      resume (1):      resume from a previous job?
+      outfile (0):     write output files?
+      logZero (-1E90): points with loglike < logZero will be ignored by MultiNest
+      maxiter (0):     Max no. of iterations, a non-positive value means infinity.
   

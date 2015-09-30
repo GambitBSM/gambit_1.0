@@ -14,12 +14,14 @@ namespace Gambit {
       return HEPUtils::rand01() < eff;
     }
 
+
     /// Return a random true/false at a success rate given by a 2D efficiency map
     inline bool random_bool(const HEPUtils::BinnedFn2D<double>& effmap, double x, double y) {
       const double eff = effmap.get_at(x, y);
       /// @todo Handle out-of-range x,y and eff values
       return HEPUtils::rand01() < eff;
     }
+
 
     /// Randomly get a tag result (can be anything) from a 2D |eta|-pT efficiency map
     /// @todo Also need 1D? Sampling in what variable?

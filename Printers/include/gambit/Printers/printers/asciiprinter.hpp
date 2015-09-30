@@ -81,13 +81,13 @@ namespace Gambit
         //asciiPrinter(std::ofstream&, std::ofstream&);
   
         /// Constructor (for construction via inifile options)
-        asciiPrinter(const Options&);
+        asciiPrinter(const Options&, BasePrinter* const primary = NULL);
 
         // /// Auxilliary mode constructor (for construction in scanner plugins)
         // asciiPrinter(const Options&, std::string&, bool global=0);
 
         /// Tasks common to the various constructors
-        void common_constructor();
+        void common_constructor(const Options&);
 
         /// Destructor
         // Overload the base class virtual destructor
@@ -101,7 +101,13 @@ namespace Gambit
         void initialise(const std::vector<int>&);
         void reset(bool force=false);
         int getRank();
-        void finalise();
+        void finalise(bool abnormal=false);
+
+        /// Ask the printer for the highest ID number known for a given rank
+        /// process (needed for resuming, so the scanner can resume assigning
+        /// point ID from this value. 
+        /// TODO: This does not work yet! Needed for resuming, which is not yet implemented in the asciiprinter
+        unsigned long getHighestPointID(const int rank) { return -1; }
 
         ///@}
       
@@ -119,7 +125,12 @@ namespace Gambit
         // write the printer buffer to file       
         void dump_buffer(bool force=false);
          
- 
+        // retrieve the name of the main output file (used by auxilliary printers to match the names)
+        std::string get_output_filename();
+
+        // retrieve the bufferlength (used by auxilliary printers to match the primary printer)
+        int get_bufferlength();
+
         // PRINT FUNCTIONS
         //----------------------------
         // Need to define one of these for every type we want to print!
@@ -130,6 +141,7 @@ namespace Gambit
         void print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void print(triplet<double> const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
 
         // Scanner-unfriendly print functions
@@ -160,6 +172,15 @@ namespace Gambit
         /// Number of lines to store in buffer before printing
         unsigned int bufferlength;
 
+        /// Flag to trigger "global" print mode. 
+        // In this mode, the output file will be *overwritten* when reset() is 
+        // called. Use this for printing information global to the scan (i.e. 
+        // via auxilliary printers in ScannerBit)
+        bool global;
+
+        /// Label for printer, mostly for more helpful error messages
+        std::string printer_name;
+
         /// MPI rank
         uint myRank;  // Needed even without MPI available, for some default behaviour.
         #ifdef WITH_MPI
@@ -189,15 +210,6 @@ namespace Gambit
         /// Record a set of labels for each printer item: used to write "info" file explain what is in each column
         std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
         bool info_file_written = false; // Flag to let us know that the info file has been written
-
-        /// Flag to trigger "global" print mode. 
-        // In this mode, the output file will be *overwritten* when reset() is 
-        // called. Use this for printing information global to the scan (i.e. 
-        // via auxilliary printers in ScannerBit)
-        bool global;
-
-        /// Label for printer, mostly for more helpful error messages
-        std::string printer_name;
     };
 
     // Register printer so it can be constructed via inifile instructions

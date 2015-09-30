@@ -45,7 +45,7 @@ namespace Gambit
 
     /////////////// Standard Model ///////////////////
 
-    /// SM decays: W+/W-
+    /// SM decays: W+
     void W_plus_decays (DecayTable::Entry& result) 
     {
       result.calculator = "GAMBIT::DecayBit";
@@ -56,6 +56,7 @@ namespace Gambit
       result.set_BF(0.1071, 0.0016, "e+", "nu_e");              
       result.set_BF(0.1063, 0.0015, "mu+", "nu_mu");              
       result.set_BF(0.1138, 0.0021, "tau+", "nu_tau");              
+      result.set_BF(0.6741, 0.0027, "hadron", "hadron");
     }
 
     /// SM decays: W-
@@ -75,8 +76,7 @@ namespace Gambit
       result.set_BF(0.03363, 0.00004, "e+", "e-");              
       result.set_BF(0.03366, 0.00007, "mu+", "mu-");              
       result.set_BF(0.03370, 0.00008, "tau+", "tau-");              
-      result.set_BF(0.1203, 0.0021, "c", "cbar");        
-      result.set_BF(0.1512, 0.0005, "b", "bbar");        
+      result.set_BF(0.6991, 0.0006, "hadron", "hadron");
     }
 
     /// SM decays: t
@@ -814,7 +814,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,2), 0.0, psn.ist1, psn.isb2bar);
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,1), 0.0, psn.ist2, psn.isb1bar);
 
-      cout <<  "H+ Decay Table entry as an SLHA DECAY block: \n" << result.as_slhaea_block("H+") << endl;
+      //cout <<  "H+ Decay Table entry as an SLHA DECAY block: \n" << result.as_slhaea_block("H+") << endl;
       
     }
 
@@ -908,8 +908,6 @@ namespace Gambit
       result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,3)+offset], 0.0, psn.ist2, psn.isb1bar);
       result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,3)+offset], 0.0, psn.ist2, psn.isb2bar);
 
-      cout <<  "H+ Decay Table entry as an SLHA DECAY block: \n" << result.as_slhaea_block("H+") << endl;
-      
     }
 
     /// MSSM decays: Hminus
@@ -2477,7 +2475,7 @@ namespace Gambit
         
       }
 
-      cout << "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
+      //cout << "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
   
     }
 
@@ -2506,6 +2504,17 @@ namespace Gambit
     {
       using namespace Pipes::get_mass_es_pseudonyms;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+
+      std::cout << "has h0 uncertainty (low) ? "<< mssm->phys().has(Par::Pole_Mass_1srd_low, "h0", 1) << std::endl;
+      std::cout << "h0 uncertainty (low) = "<< mssm->phys().get(Par::Pole_Mass_1srd_low, "h0", 1) << std::endl;
+      std::cout << "h0 uncertainty (high)= "<< mssm->phys().get(Par::Pole_Mass_1srd_high,"h0", 1) << std::endl;
+      std::cout << "~u3 uncertainty = "     << mssm->phys().get(Par::Pole_Mass_1srd_low, "~u", 3) << std::endl;
+      std::cout << "~chi0_1 uncertainty = " << mssm->phys().get(Par::Pole_Mass_1srd_low, "~chi0", 1) << std::endl;
+      std::cout << "chi+_2 uncertainty = "  << mssm->phys().get(Par::Pole_Mass_1srd_low, "~chi+", 2) << std::endl;
+      std::cout << "chi-_2 uncertainty = "  << mssm->phys().get(Par::Pole_Mass_1srd_low, "~chi-", 2) << std::endl;
+      std::cout << "mA0 uncertainty = "     << mssm->phys().get(Par::Pole_Mass_1srd_low, "A0") << std::endl;
+      std::cout << "gluino uncertainty = "  << mssm->phys().get(Par::Pole_Mass_1srd_low, "~g") << std::endl;
+	
       double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
       bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
       bool debug = runOptions->getValueOrDef<bool>(false, "debug");
