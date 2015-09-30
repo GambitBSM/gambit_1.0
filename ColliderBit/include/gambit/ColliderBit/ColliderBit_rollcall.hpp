@@ -80,6 +80,11 @@ START_MODULE
     START_FUNCTION(Gambit::ColliderBit::BuckFastSmear)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
+
+    #define FUNCTION getBuckFastIdentity
+    START_FUNCTION(Gambit::ColliderBit::BuckFastIdentity)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    #undef FUNCTION
   #undef CAPABILITY
 
 
@@ -157,6 +162,13 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmear)
+    #undef FUNCTION
+
+    #define FUNCTION reconstructBuckFastIdentityEvent
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastIdentity)
     #undef FUNCTION
   #undef CAPABILITY
 
