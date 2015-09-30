@@ -10,7 +10,6 @@ Parameters:
     StandardModel_Higgs:
       mH:
             #fixed_value: 125.7
-      vev: 246
 
     SingletDM:
         mS:
@@ -247,6 +246,7 @@ Logger:
     [ExampleBit_B] : "ExampleBit_B.log"
     [BackendIniBit]: "BackendIniBit.log"
     [LibFirst] : "libfirst.log"
+    [Models] : stdout
   #  [Logger, Debug] : "stdout"
   #  [Core] : "stdout"
   #  [Dependency Resolver] : "stdout"
