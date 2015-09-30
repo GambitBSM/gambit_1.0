@@ -2,6 +2,7 @@
 
 #include "gambit/ColliderBit/detectors/BaseDetector.hpp"
 
+#ifndef DITCH_DELPHES
 #include "TROOT.h"
 #include "TTask.h"
 #include "TApplication.h"
@@ -80,3 +81,4 @@ namespace Gambit {
 
   }
 }
+#endif // not defined DITCH_DELPHES

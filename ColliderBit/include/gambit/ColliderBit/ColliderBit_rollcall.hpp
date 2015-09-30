@@ -63,6 +63,7 @@ START_MODULE
 
 
   /// Detector sim capabilities
+#ifndef DITCH_DELPHES
   #define CAPABILITY DetectorSim
   START_CAPABILITY
     #define FUNCTION getDelphes
@@ -71,6 +72,7 @@ START_MODULE
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
+#endif // not defined DITCH_DELPHES
 
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
@@ -140,6 +142,7 @@ START_MODULE
   /// Detector simulators which directly produce the standard event format
   #define CAPABILITY ReconstructedEvent
   START_CAPABILITY
+#ifndef DITCH_DELPHES
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
@@ -147,6 +150,7 @@ START_MODULE
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
     #undef FUNCTION
+#endif // not defined DITCH_DELPHES
 
     #define FUNCTION reconstructBuckFastEvent
     START_FUNCTION(HEPUtils::Event)

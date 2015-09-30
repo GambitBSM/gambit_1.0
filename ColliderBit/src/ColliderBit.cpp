@@ -76,9 +76,6 @@ namespace Gambit
     /// Analysis stuff
     HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
     std::vector<std::string> analysisNames;
-    /// Delphes stuff
-    /// @TODO BOSS delphes? Euthanize delphes?
-    std::string delphesConfigFilename;
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
@@ -315,6 +312,7 @@ namespace Gambit
 
     /// *** Detector Simulators ***
 
+#ifndef DITCH_DELPHES
     void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
@@ -329,6 +327,7 @@ namespace Gambit
         }
       }
     }
+#endif // not defined DITCH_DELPHES
 
 
     void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result)
@@ -681,6 +680,7 @@ namespace Gambit
 
     /// *** Standard Event Format Functions ***
 
+#ifndef DITCH_DELPHES
     void reconstructDelphesEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructDelphesEvent;
       if (*Loop::iteration <= BASE_INIT) return;
@@ -691,6 +691,7 @@ namespace Gambit
         (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
       }
     }
+#endif // not defined DITCH_DELPHES
 
     void reconstructBuckFastEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructBuckFastEvent;
