@@ -11,11 +11,11 @@ import sys
 chunksize = 1000
 
 def usage():
-   print ("\nusage: python combine_hdf5.py <path-to-hdf5-file-root-name> <root group in hdf5 files> <Number of files> <resume> [--runchecks]"
+   print ("\nusage: python combine_hdf5.py <path-to-target-hdf5-file> <path-to-root-temporary-hdf5-file-name> <root group in hdf5 files> <Number of files> <resume> [--runchecks]"
           "\n"
           "Attempts to combine the data in a group of hdf5 files produced by HDF5Printer but by separate processes during a GAMBIT run.\n"
           "Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)")
-   quit()  
+   exit(1)  
  
 def get_dset_lengths(d,group,dsets):
    for itemname in group: 
@@ -59,24 +59,25 @@ def cantor_pairing(x,y):
 
 #====Begin "main"=================================
 
-if len(sys.argv)!=5 and len(sys.argv)!=6: usage()
+if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
 
 runchecks=False
-if len(sys.argv)==6:
-   if sys.argv[5]=="--runchecks": 
+if len(sys.argv)==7:
+   if sys.argv[6]=="--runchecks": 
       runchecks=True
    else:
       usage()
 
-rootfname = sys.argv[1]
-outfname = rootfname
-group = sys.argv[2]
+outfname = sys.argv[1]
+rootfname = sys.argv[2]
+group = sys.argv[3]
 RA_group = group + "/RA"
-N = int(sys.argv[3])
-resume = bool(int(sys.argv[4]))
+N = int(sys.argv[4])
+resume = bool(int(sys.argv[5]))
 
 print(os.getcwd())
-print "Root filename:", rootfname
+print "Target combined filename:", outfname
+print "Temporary file root name:", rootfname
 print "Root group: ", group
 print "Number of files to combine: ", N
 print "Resume:", resume
