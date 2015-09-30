@@ -27,8 +27,8 @@
     #define FUNCTION get_SingletDM_spectrum
     START_FUNCTION(const Spectrum*)
     DEPENDENCY(SMINPUTS, SMInputs)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs, SingletDM)
-    MODEL_GROUP(higgs,   (StandardModel_Higgs))
+    ALLOW_MODEL_DEPENDENCE(StandardModel_HiggsSector, SingletDM)
+    MODEL_GROUP(higgs,   (StandardModel_HiggsSector))
     MODEL_GROUP(singlet, (SingletDM))
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
