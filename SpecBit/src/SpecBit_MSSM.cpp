@@ -381,8 +381,8 @@ namespace Gambit
    
       input.m0      = *myPipe::Param["M0"];
       input.m12     = *myPipe::Param["M12"];
-      input.TanBeta = *myPipe::Param["tanb"];
-      input.SignMu  = *myPipe::Param["signmu"];
+      input.TanBeta = *myPipe::Param["TanBeta"];
+      input.SignMu  = *myPipe::Param["SignMu"];
       input.Azero   = *myPipe::Param["A0"];
   
       // Run spectrum generator
