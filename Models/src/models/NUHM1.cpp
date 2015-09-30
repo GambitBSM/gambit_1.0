@@ -2,14 +2,11 @@
 //   *********************************************
 ///  \file
 ///
-///  CMSSM model definitions. 
+///  NUHM1 model declarations. 
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Ben Farmer 
-///  \date 2015 Jan
 ///   
 ///  \author Pat Scott  
 ///          (p.scott@imperial.ac.uk)
@@ -17,25 +14,26 @@
 ///
 ///  *********************************************
 
-
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Models/model_helpers.hpp"
 #include "gambit/Logs/log.hpp"
 
-#include "gambit/Models/models/CMSSM.hpp"
+#include "gambit/Models/models/NUHM1.hpp"
 
 
-#define MODEL CMSSM 
-  void MODEL_NAMESPACE::CMSSM_to_NUHM1 (const ModelParameters &myP, ModelParameters &targetP)
+#define MODEL NUHM1 
+  void MODEL_NAMESPACE::NUHM1_to_NUHM2 (const ModelParameters &myP, ModelParameters &targetP)
   {
 
-     logger()<<"Running interpret_as_parent calculations for CMSSM --> NUHM1."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for NUHM1 --> NUHM2."<<LogTags::info<<EOM;
      
      // Send all parameter values upstream to matching parameters in parent.
-     targetP.setValues(myP);
+     // Ignore that some parameters don't exist in the parent, as these are set below.
+     targetP.setValues(myP,false);
 
      // MH2
-     targetP.setValue("mH2", myP["M0"]);
+     targetP.setValue("mHu2", myP["mH2"]);
+     targetP.setValue("mHd2", myP["mH2"]);
 
   }
 

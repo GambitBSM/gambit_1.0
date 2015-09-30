@@ -92,7 +92,6 @@ namespace Gambit
             virtual double hard_lower() const {return 0.;}     /*O*/
             /// @}
    
-         protected:
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)

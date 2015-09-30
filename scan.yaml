@@ -66,9 +66,9 @@ Printer:
 
 Scanner:
 
-  use_objectives: EggBox
+  use_objectives: EggBox, gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: twalk
+  use_scanner:  multinest
   #find_shift
   #find_kernel
   #object_detection
@@ -89,7 +89,7 @@ Scanner:
       plugin: Diver
       like: Likelihood
       NP: 1000
-      path: "runs/spartan_diver/diver_native"
+      path: "runs"
       verbosity: 1
       aux_printer_txt_options:
         output_file: "runs/spartan_diver/samples/gambit_output.txt"
@@ -403,7 +403,11 @@ Scanner:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
       parameters:
-        param...100:
+        same:
+          same_as: "EggBox::param_0"
+          scale: 2
+          shift: 1
+        param...10:
           range: [-5, 5]
       
     test:
