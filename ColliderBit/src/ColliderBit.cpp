@@ -80,9 +80,10 @@ namespace Gambit
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
     bool allProcessesVetoed;
-    int pythiaConfigurations, pythiaNumber;
+    double xsecGen;
+    int pythiaConfigurations, pythiaNumber, nEvents;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,analysisNames,globalAnalyses,allProcessesVetoed
+    #define SHARED_OVER_OMP iter,xsecGen,pythiaNumber,pythiaConfigurations,nEvents,analysisNames,globalAnalyses,allProcessesVetoed
 
 
     /// *************************************************
@@ -93,7 +94,7 @@ namespace Gambit
     void operatePythia()
     {
       using namespace Pipes::operatePythia;
-      int nEvents = 0;
+      nEvents = 0;
       allProcessesVetoed = true;
 
       // Do the base-level initialisation
@@ -122,6 +123,7 @@ namespace Gambit
 
         while (pythiaNumber < pythiaConfigurations)
         {
+          xsecGen = 0.;
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
@@ -288,11 +290,14 @@ namespace Gambit
         if (omp_get_thread_num() == 0) {
           code = -1;
           totalxsec = 0.;
-          while(code < 2026) {
+          while(true) {
             std::getline(processLevelOutput, line);
             issPtr = new std::istringstream(line);
             issPtr->seekg(47, issPtr->beg);
-            if ((*issPtr) >> code >> _junk >> xsec) totalxsec += xsec;
+            (*issPtr) >> code;
+            if (!issPtr->good() && totalxsec > 0.) break;
+            (*issPtr) >> _junk >> xsec;
+            if (issPtr->good()) totalxsec += xsec;
             delete issPtr;
           }
           logger() << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << "\n";
@@ -372,6 +377,10 @@ namespace Gambit
       {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
+        #pragma omp critical (access_xsecGen)
+        {
+          xsecGen += xs;
+        }
         result.add_xsec(xs, xserr);
         #pragma omp critical (access_globalAnalyses)
         {
@@ -711,6 +720,8 @@ namespace Gambit
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
+        const double scale = xsecGen * 20.3*1000 / nEvents;
+        globalAnalyses->scale(scale);
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
@@ -792,7 +803,7 @@ namespace Gambit
             llb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
             llsb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          //cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
+          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
           // Calculate the expected dll and set the bestexp values for exp and obs dll if this one is the best so far
           const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention -> more exclusion here

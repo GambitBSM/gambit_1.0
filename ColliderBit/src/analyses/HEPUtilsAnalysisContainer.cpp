@@ -100,6 +100,16 @@ namespace Gambit {
         (*myIter++)->add(*otherIter++);
       }
     }
+
+
+    void HEPUtilsAnalysisContainer::scale(double factor) {
+      assert(!analyses.empty());
+      assert(ready);
+      auto myIter = analyses.begin();
+      while (myIter != analyses.end()) {
+        (*myIter++)->scale(factor);
+      }
+    }
     //@}
 
   }
