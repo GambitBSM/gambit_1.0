@@ -176,7 +176,7 @@ namespace Gambit
                // Check whether other processes have caught up yet
                for(std::size_t dest=1; dest<mpiSize; dest++)
                {
-                  std::cout<<"rank "<<myRank<<": Sending tag "<<tag<<" to process "<<dest<<std::endl;
+                  //std::cout<<"rank "<<myRank<<": Sending tag "<<tag<<" to process "<<dest<<std::endl;
                   Isend(&null_send_buffer, 1, dest, tag, &req_null);
                }
             }
@@ -185,12 +185,12 @@ namespace Gambit
                // Keep this simple for now, and just block until message received.
                // Like above, could modify so that work could be done while waiting.
                int recv_buffer = 0; // To receive the null message
-               std::cout<<"rank "<<myRank<<": Waiting for tag "<<tag<<" from process "<<0<<std::endl;
+               //std::cout<<"rank "<<myRank<<": Waiting for tag "<<tag<<" from process "<<0<<std::endl;
                Recv(&recv_buffer, 1, 0 /*source*/, tag);
-               std::cout<<"rank "<<myRank<<": Received tag "<<tag<<" from process "<<0<<std::endl;
+               //std::cout<<"rank "<<myRank<<": Received tag "<<tag<<" from process "<<0<<std::endl;
             }
          }
-         std::cout<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
+         //std::cout<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
       }
 
       /// @}

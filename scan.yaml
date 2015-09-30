@@ -129,6 +129,7 @@ Scanner:
         like:  Likelihood
         nlive: 2000
         tol: 0.1
+        root: "runs/spartan_multinest_hdf5/samples/native-"
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
