@@ -163,7 +163,8 @@ namespace Gambit
         catch(Gambit::invalid_point_exception& e)
         {
           logger() << LogTags::core << "Observable calculation was declared invalid by " << e.thrower()->origin()
-                   << "::" << e.thrower()->name() << ".  Not declaring point invalid, as no likelihood depends on this." << EOM;
+                   << "::" << e.thrower()->name() << ".  Not declaring point invalid, as no likelihood depends on this."
+                   << "Message: " << e.message() << EOM;
         }
       }
     }
