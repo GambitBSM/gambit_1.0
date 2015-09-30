@@ -246,7 +246,7 @@ namespace Gambit
         std::vector<PPIDpair> verify_existing_output(const std::string& file, const std::string& group);
 
         /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
-        void combine_output(const int N, const bool resume);
+        void combine_output(const int N, const bool resume, const bool finalcombine);
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
@@ -399,9 +399,10 @@ namespace Gambit
 
       private:
         // String names for output file and group
-        std::string file;    // final combined output filename
-        std::string tmpfile; // temporary filename (unique to each process)
-        std::string group;   // HDF5 group location to store datasets
+        std::string file;      // temporary combined output filename
+        std::string tmpfile;   // temporary filename (unique to each process)
+        std::string finalfile; // Combined results moved here only upon successful scan completion
+        std::string group;     // HDF5 group location to store datasets
 
         // Handles for HDF5 files and groups containing the datasets
         hid_t file_id;
