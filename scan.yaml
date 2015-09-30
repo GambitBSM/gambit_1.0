@@ -398,10 +398,10 @@ Scanner:
       #  mean: [1.5, 1.5]
       parameters:
         same:
-          same_as: "EggBox::param_0"
-          scale: 2
-          shift: 1
-        param...10:
+          same_as: "gaussian::param_0"
+          scale: -2
+          shift: -1
+        param...1:
           range: [-5, 5]
       
     test:

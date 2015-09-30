@@ -489,8 +489,8 @@ namespace Gambit
                     }
                 }
                 
-                //printer->finalise(true);
-                std::cout << "Gambit has finished early!" << std::endl;
+                printer->finalise(true);
+                std::cout << "Gambit info dump, preparing to stop!" << std::endl;
             }
             
             pluginInfo::~pluginInfo()
