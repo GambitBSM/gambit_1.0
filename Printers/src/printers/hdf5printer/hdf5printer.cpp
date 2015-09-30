@@ -496,8 +496,25 @@ namespace Gambit
         group = options.getValueOrDef<std::string>("/","group");
 
         // Delete final target file if one with same name already exists?
-        //overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists"); //TODO; UNUSED! Need this.
-       
+        // TODO: rank 0 only!
+        bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists"); //TODO; UNUSED! Need this.
+ 
+        std::string msg_finalfile;
+        if(HDF5::checkFileReadable(finalfile, msg_finalfile) and overwrite)
+        {
+           // Delete existing output file
+           std::ostringstream command;
+           command << "rm "<<finalfile;
+           FILE* fp = popen(command.str().c_str(), "r");
+           if(fp==NULL)
+           {
+              // Error running popen
+              std::ostringstream errmsg;
+              errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_if_exists' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
+              printer_error().raise(LOCAL_INFO, errmsg.str());
+           }
+        }
+
         if(resume)
         {
           //if(myRank==0) // Let only the master node verify previous data
@@ -604,7 +621,7 @@ namespace Gambit
          // Check if temporary files from previous run exist.
             
          // TODO: assumes mpiSize the same as last run, can we relax this? Try to auto-detect files?
-         for(int i=0; i<mpiSize; i++)
+         for(std::size_t i=0; i<mpiSize; i++)
          {
             std::ostringstream tmpfile;
             tmpfile << finalfile << "_temp_" << i;
