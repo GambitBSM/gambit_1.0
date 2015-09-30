@@ -25,24 +25,24 @@
   DEFINEPARS(deltad, deltau, deltas)
 #undef MODEL
 
-// sigma0 and sigmaL used to calculate hadronic matrix elements
-#define MODEL nuclear_params_sigma0_sigmaL
+// sigma0 and sigmal used to calculate hadronic matrix elements
+#define MODEL nuclear_params_sigma0_sigmal
 #define PARENT nuclear_params_fnq
   START_MODEL
-  DEFINEPARS(sigma0, sigmaL)
+  DEFINEPARS(sigma0, sigmal)
   DEFINEPARS(deltad, deltau, deltas)
-  INTERPRET_AS_PARENT__FUNCTION(sigma0_sigmaL_to_fnq)
+  INTERPRET_AS_PARENT__FUNCTION(sigma0_sigmal_to_fnq)
   INTERPRET_AS_PARENT__DEPENDENCY(SMINPUTS, SMInputs)
 #undef PARENT
 #undef MODEL
 
-// sigmaS and sigmaL used to calculate hadronic matrix elements
-#define MODEL nuclear_params_sigmaS_sigmaL
-#define PARENT nuclear_params_sigma0_sigmaL
+// sigmas and sigmal used to calculate hadronic matrix elements
+#define MODEL nuclear_params_sigmas_sigmal
+#define PARENT nuclear_params_sigma0_sigmal
   START_MODEL
-  DEFINEPARS(sigmaS, sigmaL)
+  DEFINEPARS(sigmas, sigmal)
   DEFINEPARS(deltad, deltau, deltas)
-  INTERPRET_AS_PARENT__FUNCTION(sigmaS_to_sigma0)
+  INTERPRET_AS_PARENT__FUNCTION(sigmas_to_sigma0)
   INTERPRET_AS_PARENT__DEPENDENCY(SMINPUTS, SMInputs)
 #undef PARENT
 #undef MODEL

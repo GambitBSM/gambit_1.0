@@ -152,10 +152,10 @@ Parameters:
         fixed_value: -0.085
 
 
-#    nuclear_params_sigma0_SigmaL:
+#    nuclear_params_sigma0_sigmal:
 #      sigma0:
 #        fixed_value: 30.76
-#      SigmaL:
+#      sigmal:
 #        fixed_value: 34.0
 #      # proton spin content
 #      deltad:
@@ -165,10 +165,10 @@ Parameters:
 #      deltas:
 #        fixed_value: -0.085
 
-#    nuclear_params_sigmaS_SigmaL:
-#      sigmaS:
+#    nuclear_params_sigmas_sigmal:
+#      sigmas:
 #        fixed_value: 42.0
-#      SigmaL:
+#      sigmal:
 #        fixed_value: 34.0
 #      # proton spin content
 #      deltad:
