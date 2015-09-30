@@ -2,14 +2,11 @@
 //   *********************************************
 ///  \file
 ///
-///  CMSSM model declaration. 
+///  NUHM2 model declaration. 
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Ben Farmer 
-///  \date 2015 Jan
 ///   
 ///  \author Pat Scott  
 ///          (p.scott@imperial.ac.uk)
@@ -17,19 +14,18 @@
 ///
 ///  *********************************************
 
-
-#ifndef __CMSSM_hpp__
-#define __CMSSM_hpp__
+#ifndef __NUHM2_hpp__
+#define __NUHM2_hpp__
 
 // Must include models which are targets of translation functions
-#include "gambit/Models/models/NUHM1.hpp" 
+#include "gambit/Models/models/MSSM30atMGUT.hpp" 
 
-#define MODEL CMSSM
-#define PARENT NUHM1
+#define MODEL NUHM2
+#define PARENT MSSM30atMGUT
   START_MODEL
-  DEFINEPARS(M0,M12,A0,TanBeta,SignMu)
-  INTERPRET_AS_PARENT__FUNCTION(CMSSM_to_NUHM1)
-  // Translation functions defined in CMSSM.cpp
+  DEFINEPARS(M0,M12,mHu2,mHd2,A0,TanBeta,SignMu)
+  INTERPRET_AS_PARENT__FUNCTION(NUHM2_to_MSSM30atMGUT)
+  // Translation functions defined in NUHM2.cpp
 #undef PARENT
 #undef MODEL
 

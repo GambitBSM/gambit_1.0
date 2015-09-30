@@ -88,11 +88,11 @@ objective_plugin(gaussian, version(1, 0, 0))
     
     double plugin_main(const std::vector<double> &vec)
     {
-        //std::vector<double> &params = prior_transform(vec);
+        std::vector<double> &params = prior_transform(vec);
         //std::unordered_map<std::string, double> map;
         //prior_transform(vec, map);
         
-        return 0.0;// -chol.Square(params, mean)/2.0;
+        return -chol.Square(params, mean)/2.0;
     }
 }
 

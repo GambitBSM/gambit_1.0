@@ -1,9 +1,48 @@
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
+  #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml # for fixed point
+  MSSM25atQ:
+    Qin: 1.9422e+16
+    SignMu: 1
+    TanBeta: 10
+    mHu2: 15625
+    mHd2: 15625    
+
+    M1:
+      range: [0, 1000]      
+    M2:
+      range: [0, 1000]      
+    M3:
+      range: [0, 1000]      
+
+    mq2_1: 15625.0
+    mq2_2: 15625.0
+    mq2_3: 15625.0
+
+    ml2_1: 15625.0
+    ml2_2: 15625.0
+    ml2_3: 15625.0
+    
+    md2_1: 15625.0
+    md2_2: 15625.0
+    md2_3: 15625.0
+    
+    mu2_1: 15625.0
+    mu2_2: 15625.0
+    mu2_3: 15625.0
+    
+    me2_1: 15625.0
+    me2_2: 15625.0
+    me2_3: 15625.0
+    
+    Ae_12:
+      range: [-1000, 1000]      
+    Ae_3: 0
+    Ad_3: 0
+    Au_3: 0
 
 Priors:
-    # none: all parameters fixed.
+    # none: all parameters fixed or have simple priors
     
 Printer:
   printer: ascii
@@ -24,13 +63,11 @@ Scanner:
 
 ObsLikes:
   - purpose:      Test
-    capability:   SpecBit_examples
-    type:         bool
-    function:     exampleRead
+    capability:   run_MSSMspectrum_test
 
-  #- purpose:      Test
-  #  capability:   decay_rates
-  #  type:         DecayTable
+#  - purpose:      Test
+#    capability:   decay_rates
+#    type:         DecayTable
 
 Rules:
   - capability: SpecBit_examples

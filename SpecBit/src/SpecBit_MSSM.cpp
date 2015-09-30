@@ -188,22 +188,84 @@ namespace Gambit
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 
+      
+      /// add theory errors
+      MSSM_strs ms;
+
+      static const std::vector<int> i12     = initVector(1,2);
+      static const std::vector<int> i123    = initVector(1,2,3);
+      static const std::vector<int> i1234   = initVector(1,2,3,4);
+      static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
+
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error" 
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error" 
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, "~chi0", i1234, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_3, i123, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_3, i123, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12, false);
+
+      /// do the Higgs mass seperately
+      /// Default in most codes is 3 GeV,
+      /// seems like an underestimate if the stop masses are heavy enough.  
+      /// (TODO: are we happy assigning the same for both higgses?)
+      double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
+ 
+     
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
-      if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
+      // Deal with points where spectrum generator encountered a problem
+      std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
+      if( problems.have_problem() ) 
       {
-         ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
-         // just die.
-         std::ostringstream errmsg;
-         errmsg << "A serious problem was encountered during spectrum generation!; ";
-         errmsg << "Message from FlexibleSUSY below:" << std::endl;
-         problems.print_problems(errmsg); 
-         problems.print_warnings(errmsg); 
-         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
-      }  
+         if( runOptions.getValue<bool>("invalid_point_fatal") )
+         {
+            ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
+            // just die.
+            std::ostringstream errmsg;
+            errmsg << "A serious problem was encountered during spectrum generation!; ";
+            errmsg << "Message from FlexibleSUSY below:" << std::endl;
+            problems.print_problems(errmsg); 
+            problems.print_warnings(errmsg); 
+            SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
+         }
+         else
+         {
+            /// Check what the problem was
+            /// see: contrib/MassSpectra/flexiblesusy/src/problems.hpp
+            std::ostringstream msg;
+            //msg << "";
+            //if( have_bad_mass()      ) msg << "bad mass " << std::endl; // TODO: check which one
+            //if( have_tachyon()       ) msg << "tachyon" << std::endl;
+            //if( have_thrown()        ) msg << "error" << std::endl;
+            //if( have_non_perturbative_parameter()   ) msg << "non-perturb. param" << std::endl; // TODO: check which
+            //if( have_failed_pole_mass_convergence() ) msg << "fail pole mass converg." << std::endl; // TODO: check which
+            //if( no_ewsb()            ) msg << "no ewsb" << std::endl;
+            //if( no_convergence()     ) msg << "no converg." << std::endl;
+            //if( no_perturbative()    ) msg << "no pertub." << std::endl;
+            //if( no_rho_convergence() ) msg << "no rho converg." << std::endl;
+            //if( msg.str()=="" ) msg << " Unrecognised problem! ";
+
+            /// Fast way for now:
+            problems.print_problems(msg);
+            invalid_point().raise(msg.str()); //TODO: This message isn't ending up in the logs.
+         }
+      }
+
+      if( problems.have_warning() )
+      {
+         std::ostringstream msg;
+         problems.print_warnings(msg);
+         SpecBit_warning().raise(LOCAL_INFO,msg.str()); //TODO: Is a warning the correct thing to do here?
+      }
 
       // Write SLHA file (for debugging purposes...)
       #ifdef SpecBit_DBUG
@@ -319,8 +381,8 @@ namespace Gambit
    
       input.m0      = *myPipe::Param["M0"];
       input.m12     = *myPipe::Param["M12"];
-      input.TanBeta = *myPipe::Param["tanb"];
-      input.SignMu  = *myPipe::Param["signmu"];
+      input.TanBeta = *myPipe::Param["TanBeta"];
+      input.SignMu  = *myPipe::Param["SignMu"];
       input.Azero   = *myPipe::Param["A0"];
   
       // Run spectrum generator
@@ -524,6 +586,8 @@ namespace Gambit
       // tree-level Higgs mixing parameters sin alpha
       fh_real SAtree;
 
+       cout << "****** calling FHGetPara ******" << endl;
+      
       int error = 1;
       BEreq::FHGetPara(error, nmfv, MSf, USf, MASf, UASf,
            MCha, UCha, VCha, MNeu, ZNeu, 
@@ -571,6 +635,8 @@ namespace Gambit
     {
       using namespace Pipes::FH_HiggsMasses;
 
+      cout << "****** calling FH_HiggsMasses ******" << endl;
+
       // Higgs mass with
       // 0 - m1 (Mh in rMSSM)
       // 1 - m2 (MH in rMSSM)
@@ -593,8 +659,12 @@ namespace Gambit
       Farray<fh_complex, 1,3, 1,3> ZHiggs;
       Farray<fh_complex, 1,3, 1,3> DeltaZHiggs;
 
+      cout << "****** calling FHHiggsCorr ******" << endl;
+
       int error = 1;
       BEreq::FHHiggsCorr(error, MHiggs, SAeff, UHiggs, ZHiggs);
+
+      cout << "****** calling FHUncertainties ******" << endl;
 
       error = 1;
       BEreq::FHUncertainties(error, DeltaMHiggs, DeltaSAeff, DeltaUHiggs, DeltaZHiggs);
@@ -625,6 +695,8 @@ namespace Gambit
     {
       using namespace Pipes::FH_Couplings;
       
+      cout << "****** calling FH_Couplings ******" << endl;
+
       // what to use for internal Higgs mixing
       // (ex. in couplings)
       // (default = 1)
@@ -642,6 +714,8 @@ namespace Gambit
       // which effective bottom mass to use
       int mfeff = 1;
 
+      cout << "****** calling FHSelectUZ ******" << endl;
+
       int error = 1;
       BEreq::FHSelectUZ(error, uzint, uzext, mfeff);
 
@@ -650,6 +724,8 @@ namespace Gambit
       Farray<fh_real, 1,978> gammas;           // Higgs decay widths and BR's (MSSM)
       Farray<fh_real, 1,250> gammas_sm;        // Higgs decay widths and BR's (SM)
       int fast = 1;  // include off-diagonal fermion decays? (1 = no)
+
+      cout << "****** calling FHCouplings ******" << endl;
 
       error = 1;
       BEreq::FHCouplings(error, couplings, couplings_sm,
