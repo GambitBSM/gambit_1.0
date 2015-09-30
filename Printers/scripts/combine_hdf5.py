@@ -294,10 +294,6 @@ for i in range(N):
       target_mask = np.zeros(target_length, dtype=bool)
       target_mask[maskindices] = True
 
-      index = np.where( (np.array(pointIDs_out[mask_out])==45000) &
-                        (np.array(mpiranks_out[mask_out])==0) )[0][0]
-
-      # TODO: I think this is screwing up; after masking, I think there are still output dset IDs left that are not targets (i.e. not in the IDs_in list) check:
       if runchecks:
          print "   Double-checking that all selected input dset entries have matching targets in the output dsets..." 
          for ID,pid,rank in zip(IDs_in,pointIDs_in[mask_in],mpiranks_in[mask_in]):
