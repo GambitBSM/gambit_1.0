@@ -123,8 +123,8 @@ ObsLikes:
 #      options:
 #        GA_AnnYield:
 #          nbins: 20
-#    - capability: IceCube_likelihood
-#      purpose: Likelihood
+    - capability: IC79_loglike
+      purpose: Likelihood
 
 # Fermi LAT dwarf limits
     - capability: lnL_FermiLATdwarfs
