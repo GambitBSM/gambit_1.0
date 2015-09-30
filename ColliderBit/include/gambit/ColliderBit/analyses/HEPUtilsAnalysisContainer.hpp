@@ -46,6 +46,8 @@ namespace Gambit {
         void add_xsec(double xs, double xserr);
         /// @brief Add the results of all analyses from this instance to the given one.
         void add(const HEPUtilsAnalysisContainer&); 
+        /// @brief Set cross-sections and errors for each analysis.
+        void scale(double factor);
       //@}
     };
 

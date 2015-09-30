@@ -363,9 +363,6 @@ namespace Gambit {
 
 
       void collect_results() {
-        // const double scale = xsec() * 20.3*1000 / num_events();
-        const double scale = xsec() * 20.3*1000 / cutFlowVector[0];
-
         //Now fill a results object with the results for each SR
         //Numbers are taken from CONF note
         SignalRegionData results_2jl;
@@ -373,7 +370,7 @@ namespace Gambit {
         results_2jl.set_background(13000.);
         results_2jl.set_backgroundsys(1000.);
         results_2jl.set_signalsys(0.);
-        results_2jl.set_signal(_num2jl*scale);
+        results_2jl.set_signal(_num2jl);
         add_result(results_2jl);
 
         SignalRegionData results_2jm;
@@ -381,7 +378,7 @@ namespace Gambit {
         results_2jm.set_background(760.);
         results_2jm.set_backgroundsys(50.);
         results_2jm.set_signalsys(0.);
-        results_2jm.set_signal(_num2jm*scale);
+        results_2jm.set_signal(_num2jm);
         add_result(results_2jm);
 
         SignalRegionData results_2jt;
@@ -389,7 +386,7 @@ namespace Gambit {
         results_2jt.set_background(125.);
         results_2jt.set_backgroundsys(10.);
         results_2jt.set_signalsys(0.);
-        results_2jt.set_signal(_num2jt*scale);
+        results_2jt.set_signal(_num2jt);
         add_result(results_2jt);
 
         SignalRegionData results_3j;
@@ -397,7 +394,7 @@ namespace Gambit {
         results_3j.set_background(5.);
         results_3j.set_backgroundsys(1.2);
         results_3j.set_signalsys(0.);
-        results_3j.set_signal(_num3j*scale);
+        results_3j.set_signal(_num3j);
         add_result(results_3j);
 
         SignalRegionData results_4jlm;
@@ -405,7 +402,7 @@ namespace Gambit {
         results_4jlm.set_background(2120.);
         results_4jlm.set_backgroundsys(110.);
         results_4jlm.set_signalsys(0.);
-        results_4jlm.set_signal(_num4jlm*scale);
+        results_4jlm.set_signal(_num4jlm);
         add_result(results_4jlm);
 
         SignalRegionData results_4jl;
@@ -413,7 +410,7 @@ namespace Gambit {
         results_4jl.set_background(630.);
         results_4jl.set_backgroundsys(50.);
         results_4jl.set_signalsys(0.);
-        results_4jl.set_signal(_num4jl*scale);
+        results_4jl.set_signal(_num4jl);
         add_result(results_4jl);
 
         SignalRegionData results_4jm;
@@ -421,7 +418,7 @@ namespace Gambit {
         results_4jm.set_background(37.);
         results_4jm.set_backgroundsys(6.);
         results_4jm.set_signalsys(0.);
-        results_4jm.set_signal(_num4jm*scale);
+        results_4jm.set_signal(_num4jm);
         add_result(results_4jm);
 
         SignalRegionData results_4jt;
@@ -429,7 +426,7 @@ namespace Gambit {
         results_4jt.set_background(2.5);
         results_4jt.set_backgroundsys(1.);
         results_4jt.set_signalsys(0.);
-        results_4jt.set_signal(_num4jt*scale);
+        results_4jt.set_signal(_num4jt);
         add_result(results_4jt);
 
         SignalRegionData results_5j;
@@ -437,7 +434,7 @@ namespace Gambit {
         results_5j.set_background(126.);
         results_5j.set_backgroundsys(13.);
         results_5j.set_signalsys(0.);
-        results_5j.set_signal(_num5j*scale);
+        results_5j.set_signal(_num5j);
         add_result(results_5j);
 
         SignalRegionData results_6jl;
@@ -445,7 +442,7 @@ namespace Gambit {
         results_6jl.set_background(111.);
         results_6jl.set_backgroundsys(11.);
         results_6jl.set_signalsys(0.);
-        results_6jl.set_signal(_num6jl*scale);
+        results_6jl.set_signal(_num6jl);
         add_result(results_6jl);
 
         SignalRegionData results_6jm;
@@ -453,7 +450,7 @@ namespace Gambit {
         results_6jm.set_background(33.);
         results_6jm.set_backgroundsys(6.);
         results_6jm.set_signalsys(0.);
-        results_6jm.set_signal(_num6jm*scale);
+        results_6jm.set_signal(_num6jm);
         add_result(results_6jm);
 
         SignalRegionData results_6jt;
@@ -461,7 +458,7 @@ namespace Gambit {
         results_6jt.set_background(5.2);
         results_6jt.set_backgroundsys(1.4);
         results_6jt.set_signalsys(0.);
-        results_6jt.set_signal(_num6jt*scale);
+        results_6jt.set_signal(_num6jt);
         add_result(results_6jt);
 
         SignalRegionData results_6jtp;
@@ -469,7 +466,7 @@ namespace Gambit {
         results_6jtp.set_background(4.9);
         results_6jtp.set_backgroundsys(1.6);
         results_6jtp.set_signalsys(0.);
-        results_6jtp.set_signal(_num6jt*scale);
+        results_6jtp.set_signal(_num6jt);
         add_result(results_6jtp);
       }
 
