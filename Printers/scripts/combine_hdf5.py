@@ -184,14 +184,14 @@ for dsetname,dt in sorted(all_sync_dsets):
       print "   Creating empty dset:", dsetname
       target_dsets[dsetname] = gout.create_dataset(dsetname, (init_output_length+total_sync_length,), chunks=(chunksize,), dtype=dt, maxshape=(None,))
    else:
-      target_dsets[dsetname] = existing_dsets[dsetname]
+      target_dsets[dsetname] = gout[dsetname]
 for dsetname,dt in sorted(all_RA_dsets):
    if not dsetname in RA_dsets_exclude:
       if not dsetname in gout:
          print "   Creating empty dset:", dsetname
          target_dsets[dsetname] = gout.create_dataset(dsetname, (init_output_length+total_sync_length,), chunks=(chunksize,), dtype=dt, maxshape=(None,))
       else:
-         target_dsets[dsetname] = existing_dsets[dsetname]
+         target_dsets[dsetname] = gout[dsetname]
 
 # Copy data from separate sync datasets into combined datasets
 nextempty=init_output_length
