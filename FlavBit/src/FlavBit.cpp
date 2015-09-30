@@ -95,7 +95,7 @@ namespace Gambit
     // *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     // *************************************************
-    
+
     void SI_FlavBit_fill(struct parameters &result)
     {
       namespace myPipe = Pipes::SI_FlavBit_fill;
@@ -445,9 +445,9 @@ namespace Gambit
     }
 
     // *************************************************
-    /// Calculating observables in b-> s gamma decays
-    // ************************************************* 
-    
+    /// Calculating Br in b-> s gamma decays
+    // *************************************************
+
     void SI_bsgamma(double &result)
     {
       using namespace Pipes::SI_bsgamma;
@@ -475,8 +475,8 @@ namespace Gambit
     }
 
     // *************************************************
-    /// Calculating observables in b-> s gamma decays     
-    // *************************************************  
+    /// Calculating Br in Bs->mumu decays
+    // *************************************************
 
     void SI_Bsmumu(double &result)
     {
@@ -503,10 +503,12 @@ namespace Gambit
     }
 
       if(*Dep::Debug_Cap)      printf("BR(Bs->mumu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Bsmumu"<<endl; 
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_Bsmumu"<<endl;
 
     }
 
+    // *************************************************
+    /// Calculating Br in Bs->mumu decays for the untaged case
     // *************************************************
 
     void SI_Bsmumu_untag(double &result)
@@ -536,15 +538,17 @@ namespace Gambit
       if(*Dep::Debug_Cap) printf("BR(Bs->mumu)_untag=%.3e\n",result);
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Bsmumu_untag"<<endl;
 
-      
+
     }
 
+    // *************************************************
+    /// Calculating Br in B0->mumu decays
     // *************************************************
 
     void SI_Bdmumu(double &result)
     {
       using namespace Pipes::SI_Bdmumu;
-      
+
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Bdmumu"<<endl;
 
       struct parameters param = *Dep::FlavBit_fill;
@@ -565,9 +569,11 @@ namespace Gambit
     }
 
       if(*Dep::Debug_Cap) printf("BR(Bd->mumu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Bdmumu"<<endl; 
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_Bdmumu"<<endl;
     }
 
+    // *************************************************
+    /// Calculating Br in B->tau nu_tau decays
     // *************************************************
 
     void SI_Btaunu(double &result)
@@ -588,6 +594,8 @@ namespace Gambit
 
 
     // *************************************************
+    /// Calculating Br in B->D tau nu_tau decays
+    // *************************************************
 
     void SI_BDtaunu(double &result)
     {
@@ -601,10 +609,12 @@ namespace Gambit
       else result = BEreq::BDtaunu(&param);
 
       if(*Dep::Debug_Cap) printf("BR(B->D tau nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BDtaunu"<<endl;   
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_BDtaunu"<<endl;
 
     }
 
+    // *************************************************
+    /// Calculating  B->tau nu_tau / B-> D e nu_e decays
     // *************************************************
 
     void SI_BDtaunu_BDenu(double &result)
@@ -623,7 +633,9 @@ namespace Gambit
 
     }
 
-      // *************************************************
+    // *************************************************
+    /// Calculating B->K mu nu / B-> pi mu nu
+    // *************************************************
 
     void SI_Kmunu_pimunu(double &result)
     {
@@ -637,10 +649,10 @@ namespace Gambit
       else result = BEreq::Kmunu_pimunu(&param);
 
       if(*Dep::Debug_Cap) printf("BR(K->mu nu)/BR(pi->mu nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Kmunu_pimunu"<<endl; 
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_Kmunu_pimunu"<<endl;
     }
 
-      // *************************************************
+    // *************************************************
 
     void SI_Rmu23(double &result)
     {
@@ -654,29 +666,33 @@ namespace Gambit
       else result = BEreq::Rmu23(&param);
 
       if(*Dep::Debug_Cap) printf("Rmu23=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Rmu23"<<endl;  
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_Rmu23"<<endl;
 
     }
 
-      // *************************************************
+    // *************************************************
+    /// Calculating Br B->D* tau nu
+    // *************************************************
 
     void SI_Dstaunu(double &result)
     {
       using namespace Pipes::SI_Dstaunu;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_Dstaunu"<<endl;
-      
+
       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dstaunu(&param);
 
       if(*Dep::Debug_Cap) printf("BR(Ds->tau nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Dstaunu"<<endl; 
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_Dstaunu"<<endl;
 
     }
 
-      // *************************************************
+    // *************************************************
+    /// Calculating Br B->Ds mu nu
+    // *************************************************
 
     void SI_Dsmunu(double &result)
     {
@@ -693,7 +709,9 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_Dsmunu"<<endl;
     }
 
-      // *************************************************
+    // *************************************************
+    /// Calculating Br B -> D mu nu
+    // *************************************************
 
     void SI_Dmunu(double &result)
     {
@@ -707,16 +725,18 @@ namespace Gambit
       else result = BEreq::Dmunu(&param);
 
       if(*Dep::Debug_Cap) printf("BR(D->mu nu)=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_Dmunu"<<endl;  
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_Dmunu"<<endl;
     }
 
-      // *************************************************
+    // *************************************************
+    /// Calculating g-2
+    // *************************************************
 
     void SI_muon_gm2(double &result)
     {
       using namespace Pipes::SI_muon_gm2;
 
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_muon_gm2"<<endl; 
+      if(*Dep::Debug_Cap)  cout<<"Starting SI_muon_gm2"<<endl;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -727,14 +747,14 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_muon_gm2"<<endl;
     }
 
-     // *************************************************
+    // *************************************************
 
     void SI_delta0(double &result)
     {
       using namespace Pipes::SI_delta0;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_delta0"<<endl;
-      
+
       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
@@ -768,7 +788,7 @@ namespace Gambit
       using namespace Pipes::SI_BRBXsmumu_lowq2;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBXsmumu_lowq2"<<endl;
-      
+
       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
@@ -788,7 +808,7 @@ namespace Gambit
     }
 
       if(*Dep::Debug_Cap) printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl; 
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBXsmumu_lowq2"<<endl;
     }
 
      // *************************************************
@@ -818,7 +838,7 @@ namespace Gambit
     }
 
       if(*Dep::Debug_Cap) printf("BR(B->Xs mu mu)_highq2=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBXsmumu_highq2"<<endl; 
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBXsmumu_highq2"<<endl;
     }
 
      // *************************************************
@@ -828,7 +848,7 @@ namespace Gambit
       using namespace Pipes::SI_A_BXsmumu_lowq2;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXsmumu_lowq2"<<endl;
-      
+
       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
@@ -887,7 +907,7 @@ namespace Gambit
     void SI_A_BXsmumu_zero(double &result)
     {
       using namespace Pipes::SI_A_BXsmumu_zero;
-      
+
       if(*Dep::Debug_Cap)  cout<<"Starting SI_A_BXsmumu_zero"<<endl;
 
       struct parameters param = *Dep::FlavBit_fill;
@@ -919,7 +939,7 @@ namespace Gambit
       using namespace Pipes::SI_BRBXstautau_highq2;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBXstautau_highq2"<<endl;
-      
+
       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
@@ -972,8 +992,10 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_A_BXstautau_highq2"<<endl;
     }
 
-     // *************************************************
-    // This function has to be BE_CONV_FUNCTION
+    // *************************************************
+    /// Calculating B-> K* mu mu observables in 1.1-2.5 GeV
+    // *************************************************
+
     void SI_BRBKstarmumu_11_25( Flav_KstarMuMu_obs &result)
     {
 
@@ -982,14 +1004,16 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_11_25"<<endl;
 
       struct parameters param = *Dep::FlavBit_fill;
-      
+
       double q2min=1.1;
       double q2max=2.5;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
       if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_11_25"<<endl;
 
     }
-    //############################################################
+    // *************************************************
+    /// Calculating B-> K* mu mu observables in 2.5-4.0 GeV
+    // *************************************************
 
     void SI_BRBKstarmumu_25_40( Flav_KstarMuMu_obs &result)
     {
@@ -1006,6 +1030,10 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
     }
 
+    // *************************************************
+    /// Calculating B-> K* mu mu observables in 4.0-6.0 GeV
+    // *************************************************
+
     void SI_BRBKstarmumu_40_60( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_40_60;
@@ -1019,16 +1047,20 @@ namespace Gambit
       double q2max=6.0;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
 
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl; 
-      
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_25_40"<<endl;
+
     }
+
+    // *************************************************
+    /// Calculating B-> K* mu mu observables in 6.0-8.0 GeV
+    // *************************************************
 
     void SI_BRBKstarmumu_60_80( Flav_KstarMuMu_obs &result)
     {
       using namespace Pipes::SI_BRBKstarmumu_60_80;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_BRBKstarmumu_60_80"<<endl;
-      
+
       struct parameters param = *Dep::FlavBit_fill;
 
 
@@ -1038,10 +1070,13 @@ namespace Gambit
       if(*Dep::Debug_Cap)  cout<<"Finished SI_BRBKstarmumu_60_80"<<endl;
     }
 
+    // *************************************************
+    /// Calculating B-> K* mu mu observables in 15.0-17.0 GeV
+    // *************************************************
 
     void SI_BRBKstarmumu_15_17( Flav_KstarMuMu_obs &result)
     {
-      using namespace Pipes::SI_BRBKstarmumu_15_17; 
+      using namespace Pipes::SI_BRBKstarmumu_15_17;
 
       if(*Dep::Debug_Cap) cout<<"Starting SI_BRBKstarmumu_15_17 "<<endl;
 
@@ -1055,10 +1090,14 @@ namespace Gambit
 
     }
 
+    // *************************************************
+    /// Calculating B-> K* mu mu observables in 17.0-19.0 GeV
+    // *************************************************
+
     void SI_BRBKstarmumu_17_19( Flav_KstarMuMu_obs &result)
     {
-      using namespace Pipes::SI_BRBKstarmumu_17_19; 
-      
+      using namespace Pipes::SI_BRBKstarmumu_17_19;
+
       if(*Dep::Debug_Cap) cout<<"Starting SI_BRBKstarmumu_17_19 "<<endl;
 
       struct parameters param = *Dep::FlavBit_fill;
@@ -1067,12 +1106,15 @@ namespace Gambit
       double q2min=17.0;
       double q2max=19.0;
       result=BEreq::SI_BRBKstarmumu_CONV(&param, byVal(q2min), byVal(q2max) );
-      
+
       if(*Dep::Debug_Cap) cout<<"Finished SI_BRBKstarmumu_17_19 "<<endl;
 
     }
 
 
+
+    // *************************************************
+    /// Calculating Cp assymetries in B-> K* mu mu
     // *************************************************
 
     void SI_AI_BKstarmumu(double &result)
@@ -1080,7 +1122,7 @@ namespace Gambit
       using namespace Pipes::SI_AI_BKstarmumu;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SI_AI_BKstarmumu"<<endl;
-      
+
       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
@@ -1105,9 +1147,9 @@ namespace Gambit
 
     void SI_AI_BKstarmumu_zero(double &result)
     {
-      using namespace Pipes::SI_AI_BKstarmumu_zero; 
-      
-      if(*Dep::Debug_Cap)  cout<<"Starting SI_AI_BKstarmumu_zero"<<endl; 
+      using namespace Pipes::SI_AI_BKstarmumu_zero;
+
+      if(*Dep::Debug_Cap)  cout<<"Starting SI_AI_BKstarmumu_zero"<<endl;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -1125,7 +1167,7 @@ namespace Gambit
     }
 
       if(*Dep::Debug_Cap) printf("A_I(B->K* mu mu)_zero=%.3e\n",result);
-      if(*Dep::Debug_Cap)  cout<<"Finished SI_AI_BKstarmumu_zero"<<endl;  
+      if(*Dep::Debug_Cap)  cout<<"Finished SI_AI_BKstarmumu_zero"<<endl;
 
     }
 
@@ -1133,9 +1175,9 @@ namespace Gambit
 
     void FH_FlavorObs(fh_FlavorObs &result)
     {
-      using namespace Pipes::FH_FlavorObs; 
-      
-      if(*Dep::Debug_Cap)  cout<<"Starting FH_FlavorObs"<<endl; 
+      using namespace Pipes::FH_FlavorObs;
+
+      if(*Dep::Debug_Cap)  cout<<"Starting FH_FlavorObs"<<endl;
 
       fh_real bsgMSSM;     // B -> Xs gamma in MSSM
       fh_real bsgSM;       // B -> Xs gamma in SM
@@ -1161,25 +1203,26 @@ namespace Gambit
       if(*Dep::Debug_Cap) cout<<"Finished FH_FlavorObs"<<endl;
     }
 
-    //#######################################
-    // likelihood stuff:
- 
-    //#######################################
-    // function that returns a debug status used in couts
+    // *************************************************
+    /// Debugging function, change to false to get ride of couts
+    // *************************************************
+
     void Debug(bool &deb)
     {
       deb=true;
     }
-    //##########################################
-    // now let's do a real likelihood
-    //##########################################
+
+    // *************************************************
+    /// reading measurements for b->sll
+    // *************************************************
+
 
     void b2sll_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2sll_measurements;
-      
+
       if(*Dep::Debug_Cap)  cout<<"Starting b2sll_measurements function"<<endl;
-      
+
       Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
       red->debug_mode(*Dep::Debug_Cap);
       if(*Dep::Debug_Cap)  cout<<"init Flav Reader the B2sll "<<endl;
@@ -1190,14 +1233,12 @@ namespace Gambit
       {
         for(int j=0;j<observablesn.size();++j)
           {
-            
+
             observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
 
           }
       }
-          // we have all names
-      // cout<<"Number of K*mumu observables: "<<observables.size()<<endl;
-          //##############################################
+
       for(int i=0;i<observables.size();++i)
       {
         red->read_yaml_mesurement("example.yaml", observables[i]);
@@ -1214,24 +1255,24 @@ namespace Gambit
 
       // we assert if the exrimental size and the observables are differnt size
       assert(! ( M_exp.size1() != observables.size()  ));
-      
+
       Flav_KstarMuMu_obs obs_out_11_25= *(Dep::BRBKstarmumu_11_25);
       //SI_BRBKstarmumu_11_25(obs_out_11_25);
-      
+
       Flav_KstarMuMu_obs obs_out_25_40= *(Dep::BRBKstarmumu_25_40);
       //   SI_BRBKstarmumu_25_40(obs_out_25_40);
 
-      Flav_KstarMuMu_obs obs_out_40_60= *(Dep::BRBKstarmumu_40_60); 
+      Flav_KstarMuMu_obs obs_out_40_60= *(Dep::BRBKstarmumu_40_60);
       //      SI_BRBKstarmumu_40_60(obs_out_40_60);
 
-      Flav_KstarMuMu_obs obs_out_60_80= *(Dep::BRBKstarmumu_60_80); 
+      Flav_KstarMuMu_obs obs_out_60_80= *(Dep::BRBKstarmumu_60_80);
       //SI_BRBKstarmumu_40_60(obs_out_60_80);
 
-      Flav_KstarMuMu_obs obs_out_15_17= *(Dep::BRBKstarmumu_15_17); 
+      Flav_KstarMuMu_obs obs_out_15_17= *(Dep::BRBKstarmumu_15_17);
       //SI_BRBKstarmumu_40_60(obs_out_15_17);
 
       Flav_KstarMuMu_obs obs_out_17_19 = *(Dep::BRBKstarmumu_17_19);
-      //SI_BRBKstarmumu_40_60(obs_out_17_19);  
+      //SI_BRBKstarmumu_40_60(obs_out_17_19);
 
       Kstarmumu_theory_errr th_reader;
       boost::numeric::ublas::matrix<double> M_cov_th = th_reader.get_cov_theory(observables);  //(M_exp.size1(),M_exp.size2());
@@ -1311,13 +1352,18 @@ namespace Gambit
       {
         diff.push_back(M_exp(i,0)-M_th(i,0));
       }
-      
+
       measurement_assym.diff=diff;
       measurement_assym.dim=n_experiments;
 
 
       if(*Dep::Debug_Cap)  cout<<"Finished b2sll_measurements function"<<endl;
     }
+
+    // *************************************************
+    /// likelihood for b->sll
+    // *************************************************
+
 
     void b2sll_likelihood(double &result)
     {
@@ -1329,7 +1375,7 @@ namespace Gambit
       Flav_measurement_assym measurement_assym;//=*(Dep::b2sll_M);
       b2sll_measurements(measurement_assym);
       // got everything ;)
-      
+
       boost::numeric::ublas::matrix<double> cov_uu=measurement_assym.cov_exp_uu;
       boost::numeric::ublas::matrix<double> cov_du=measurement_assym.cov_exp_du;
       boost::numeric::ublas::matrix<double> cov_ud=measurement_assym.cov_exp_ud;
@@ -1344,7 +1390,7 @@ namespace Gambit
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
-      
+
 
       boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim);
       boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim);
@@ -1376,30 +1422,35 @@ namespace Gambit
 
       Chi2=Chi2/measurement_assym.dim;
       result+=0.5*Chi2;
-      
+
       if(*Dep::Debug_Cap)  cout<<"Finished b2sll_likelihood"<<endl;
-      
+
     }
+
+    // *************************************************
+    /// measurement for b->mumu
+    // *************************************************
+
 
     void b2ll_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::b2ll_measurements;
-      
+
       if(*Dep::Debug_Cap)  cout<<"Starting b2ll_measurements"<<endl;
-      
-      
+
+
       // experimental measurement
       //Bsmumu
-     
+
       Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
-      red->debug_mode(*Dep::Debug_Cap); 
+      red->debug_mode(*Dep::Debug_Cap);
 
       if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;
       red->read_yaml_mesurement("example.yaml", "BR_Bs2mumu");
-    
+
       red->read_yaml_mesurement("example.yaml", "BR_B02mumu");
 
-    
+
       red->create_global_corr();
 
       double theory_bs2mumu=*(Dep::Bsmumu_untag);
@@ -1411,7 +1462,7 @@ namespace Gambit
       // Naliza doesn't provide the errors, need to take them from paper
       double theory_bs2mumu_error=0.23e-9;
       double theory_bd2mumu_error=0.09e-10;
-      
+
       // we have everything, correlation
 
       boost::numeric::ublas::matrix<double> M_cov_th(2,2);
@@ -1454,7 +1505,7 @@ namespace Gambit
 
 
       vector<double> diff;
-      
+
       for(int i=0;i<2;++i)
       {
         diff.push_back(M_exp(i,0)-M_th(i,0));
@@ -1462,10 +1513,15 @@ namespace Gambit
       measurement_assym.diff=diff;
       measurement_assym.dim=2;
 
-      if(*Dep::Debug_Cap)  cout<<"Finished b2ll_measurements"<<endl; 
+      if(*Dep::Debug_Cap)  cout<<"Finished b2ll_measurements"<<endl;
 
 
     }
+
+    // *************************************************
+    /// likelihood for b->mumu
+    // *************************************************
+
 
     void b2ll_likelihood(double &result)
     {
@@ -1491,13 +1547,13 @@ namespace Gambit
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
-     
+
       boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim);
       boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim);
       boost::numeric::ublas::matrix<double> cov_ud_inv(measurement_assym.dim, measurement_assym.dim);
       boost::numeric::ublas::matrix<double> cov_dd_inv(measurement_assym.dim, measurement_assym.dim);
 
-     
+
       InvertMatrix(cov_uu, cov_uu_inv);
       InvertMatrix(cov_du, cov_du_inv);
       InvertMatrix(cov_ud, cov_ud_inv);
@@ -1505,7 +1561,7 @@ namespace Gambit
 
       // calculating the chi2
       double Chi2=0;
-      
+
       for(int i=0; i < measurement_assym.dim; ++i)
       {
         for(int j=0; j<measurement_assym.dim; ++j)
@@ -1523,45 +1579,46 @@ namespace Gambit
       Chi2=Chi2/measurement_assym.dim;
       result+=0.5*Chi2;
 
-      if(*Dep::Debug_Cap)  cout<<"Finished b2ll_likelihood"<<endl;  
+      if(*Dep::Debug_Cap)  cout<<"Finished b2ll_likelihood"<<endl;
     }
 
-
-    //#########################################
+    // *************************************************
+    /// measurement Semileptonic B decays
+    // *************************************************
 
     void SL_measurements(Flav_measurement_assym &measurement_assym)
     {
       using namespace Pipes::SL_measurements;
-     
+
       if(*Dep::Debug_Cap)  cout<<"Starting SL_measurements"<<endl;
 
       int n_experiments=5;
       // experimental measurement
 
       Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
-      red->debug_mode(*Dep::Debug_Cap); 
-      
+      red->debug_mode(*Dep::Debug_Cap);
+
       if(*Dep::Debug_Cap)   cout<<"inited falv reader"<<endl;
       red->read_yaml_mesurement("example.yaml", "BR_Btaunu");
 
       //#####################################################################
       red->read_yaml_mesurement("example.yaml", "BR_BDtaunu");
-      
+
 
       //#####################################################################
       red->read_yaml_mesurement("example.yaml", "BR_Dstaunu");
-      
+
 
       //#####################################################################
       red->read_yaml_mesurement("example.yaml", "BR_Dsmunu");
-      
+
 
       //#####################################################################
       red->read_yaml_mesurement("example.yaml", "BR_Dmunu");
-      
+
       red->create_global_corr();
 
-      
+
 
       double theory_Btaunu=*(Dep::Btaunu);
 
@@ -1652,7 +1709,10 @@ namespace Gambit
 
     }
 
-    /// semileptonic likelihood
+    // *************************************************
+    /// likelihood for  Semileptonic B decays
+    // *************************************************
+
     void SL_likelihood(double &result)
     {
 
@@ -1678,20 +1738,20 @@ namespace Gambit
       //calculating a diff
       vector<double> diff;
       diff=measurement_assym.diff;
-      
+
 
       boost::numeric::ublas::matrix<double> cov_uu_inv(measurement_assym.dim, measurement_assym.dim);
       boost::numeric::ublas::matrix<double> cov_du_inv(measurement_assym.dim, measurement_assym.dim);
       boost::numeric::ublas::matrix<double> cov_ud_inv(measurement_assym.dim, measurement_assym.dim);
       boost::numeric::ublas::matrix<double> cov_dd_inv(measurement_assym.dim, measurement_assym.dim);
 
-      
+
       InvertMatrix(cov_uu, cov_uu_inv);
       InvertMatrix(cov_du, cov_du_inv);
       InvertMatrix(cov_ud, cov_ud_inv);
       InvertMatrix(cov_dd, cov_dd_inv);
 
-      
+
       double Chi2=0;
       for(int i=0; i < measurement_assym.dim; ++i)
       {
