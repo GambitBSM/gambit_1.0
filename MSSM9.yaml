@@ -1,0 +1,217 @@
+Parameters:
+
+  #SM nuisance parameters fixed for now.
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+  #Nuclear matrix parameters fixed for now.
+  nuclear_params_sigmas_sigmal:
+    sigmas:
+      fixed_value:  43.0 
+    sigmal:
+      fixed_value:  58.0
+    deltau:
+      fixed_value:  0.842
+    deltad:
+      fixed_value: -0.427
+    deltas:
+      fixed_value: -0.085
+
+  MSSM9atQ:
+    Qin: 
+      fixed_value: 1000.0
+    SignMu:
+      fixed_value: 1
+    Ad_3:
+      range: [1e2, 1e4]
+      prior_type: log
+    Au_3:
+      range: [1e2, 1e4]
+      prior_type: log
+    M1:
+      range: [1e2, 1e4]
+      prior_type: log
+    M2:
+      range: [1e2, 1e4]
+      prior_type: log
+    M3:
+      range: [1e2, 1e4]
+      prior_type: log
+    TanBeta:
+      range: [3.0, 100.0]
+      prior_type: log
+    mHd2:
+      range: [1e4, 1e8]
+      prior_type: log
+    mHu2:
+      range: [1e4, 1e8]
+      prior_type: log
+    mf2:
+      range: [1e4, 1e8]
+      prior_type: log
+
+Priors:
+
+  # All priors simple, so specified in Parameters section
+    
+Printer:
+
+  printer: hdf5
+
+  options:
+    output_file: "runs/MSSM9/samples/MSSM9.hdf5"
+    group: "/MSSM9"
+    delete_file_if_exists: true
+
+Scanner:
+
+  use_scanner: multinest
+
+  scanners:
+    multinest:
+      plugin: MultiNest
+      options:
+        like:  Likelihood
+        nlive: 2000
+        tol: 0.1
+        mmodal: 1
+        # write native MultiNest ascii output files?
+        outfile: 0
+        # this needs to default to the prinnter output location
+        root: "runs/MSSM9/samples/native-"
+        # resuming doesn't work yet
+        resume: 0
+        # No options to set, but still need the nodes at the moment...
+        aux_printer_txt_options:
+        aux_printer_stats_options:
+        aux_printer_live_options:  
+
+ObsLikes:
+
+    - capability: lnL_oh2
+      purpose: Likelihood 
+
+    - capability: RD_oh2
+      purpose: Observable
+
+    - capability: lnL_FermiLATdwarfs
+      purpose:  Likelihood
+
+    - capability: lnL_XENON100_2012
+      purpose:  Likelihood
+
+    - capability: lnL_LUX_2013
+      purpose:  Likelihood
+      
+    - capability: IceCube_likelihood
+      purpose:  Likelihood
+
+    - capability: lnL_t_mass
+      purpose:  Likelihood
+
+    - capability: lnL_mbmb
+      purpose:  Likelihood
+
+    - capability: lnL_alpha_em
+      purpose:  Likelihood
+
+    - capability: lnL_alpha_s
+      purpose:  Likelihood
+
+    - capability: lnL_W_mass
+      purpose:  Likelihood
+    
+    - capability: lnL_sinW2_eff
+      purpose:  Likelihood
+
+    - capability: lnL_deltarho  
+      purpose:  Likelihood
+      
+    # Missing:
+    # 3 x Flav likelihoods
+    # LHC combined likelihood
+    # LEP Likelihood
+    # Higgs bounds and signals likelihoods
+    # CMB likelihood
+
+
+Rules:
+
+  # Choose to implement the relic density as an upper bound, not a detection
+  - capability: lnL_oh2
+    function: lnL_oh2_upperlimit
+
+  # Use the DarkBit native relic density calculator
+  - capability: RD_oh2
+    function: RD_oh2_general
+
+  # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
+  - capability: lnL_FermiLATdwarfs
+    function:  lnL_FermiLATdwarfs_gamLike
+
+  # Choose to use PPPC4DMID yield tables for indirect detection rather than DarkSUSY or MicrOmegas
+  - capability: SimYieldTable
+    function: SimYieldTable_PPPC
+
+  # Choose to only include IC79 in neutrino telescope likelihoods
+  - capability: IceCube_likelihood
+    function:  IC79_loglike
+    
+  # Choose to use function that calls DarkSUSY for calculating direct detection couplings
+  - capability: DD_couplings
+    function: DD_couplings_DarkSUSY
+  
+  # Choose to get decays from DecayBit proper, not from an SLHA file.
+  - capability: decay_rates
+    function: all_decays
+
+  # Choose to get the spectrum from SpecBit proper, not an SLHA file.
+  - capability: unimproved_MSSM_spectrum 
+    function: get_MSSMatQ_spectrum
+    options:
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+  # Choose to use functions that get Higgs and top decays from FeynHiggs (rather than SUSY-HIT)
+  - capability: A0_decay_rates
+    function: FH_A0_decays
+  - capability: Higgs_decay_rates
+    function: FH_MSSM_h0_1_decays
+  - capability: Hplus_decay_rates
+    function: FH_Hplus_decays
+  - capability: h0_2_decay_rates
+    function: FH_h0_2_decays
+  - capability: t_decay_rates
+    function: t_decays
+
+Logger:
+
+  prefix : "runs/MSSM9/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [DecayBit] : "DecayBit.log"
+    [DarkBit] : "DarkBit.log"
+    [PrecisionBit] : "PrecisionBit.log"
+    [FlavBit] : "FlavBit.log"
+    #[ColliderBit] : "ColliderrBit.log"
+    [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+ 

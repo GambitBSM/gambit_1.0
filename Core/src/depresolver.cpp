@@ -65,22 +65,21 @@ namespace Gambit
     // Functions that act on a resolved dependency graph
     //
 
-    // Collect parent vertices recursively (including root vertex)
-    std::set<VertexID> getParentVertices(const VertexID & vertex, const
-        DRes::MasterGraphType & graph)
+    // Collect parent vertices recursively (excluding root vertex)
+    void getParentVertices(const VertexID & vertex, const
+        DRes::MasterGraphType & graph, std::set<VertexID> & myVertexList)
     {
-      std::set<VertexID> myVertexList;
-      myVertexList.insert(vertex);
-      std::set<VertexID> parentVertexList;
+      graph_traits<DRes::MasterGraphType>::in_edge_iterator it, iend;
 
-      graph_traits<DRes::MasterGraphType>::in_edge_iterator ibegin, iend;
-      for (boost::tie(ibegin, iend) = in_edges(vertex, graph);
-          ibegin != iend; ++ibegin)
+      for (boost::tie(it, iend) = in_edges(vertex, graph);
+          it != iend; ++it)
       {
-        parentVertexList = getParentVertices(source(*ibegin, graph), graph);
-        myVertexList.insert(parentVertexList.begin(), parentVertexList.end());
+        if ( std::find(myVertexList.begin(), myVertexList.end(), source(*it, graph)) == myVertexList.end() )
+        {
+          myVertexList.insert(source(*it, graph));
+          getParentVertices(source(*it, graph), graph, myVertexList);
+        }
       }
-      return myVertexList;
     }
 
     // Sort given list of vertices (according to topological sort result)
@@ -100,7 +99,9 @@ namespace Gambit
     std::vector<VertexID> getSortedParentVertices(const VertexID & vertex, const
         DRes::MasterGraphType & graph, const std::list<VertexID> & topoOrder)
     {
-      std::set<VertexID> set = getParentVertices(vertex, graph);
+      std::set<VertexID> set;
+      getParentVertices(vertex, graph, set);
+      set.insert(vertex);
       return sortVertices(set, topoOrder);
     }
 
@@ -445,7 +446,9 @@ namespace Gambit
                   vi != order.end(); ++vi) 
       {
         // loop through parents of each target functor
-        parents = getParentVertices(*vi, masterGraph);
+        parents.clear();
+        getParentVertices(*vi, masterGraph, parents);
+        parents.insert(*vi);
         bool first = true;
         for (std::set<VertexID>::const_iterator 
                   vi2  = parents.begin(); 
@@ -526,7 +529,7 @@ namespace Gambit
     {
       std::vector<VertexID> unsorted;
       std::vector<VertexID> sorted;
-      std::set<VertexID> parents, friends;
+      std::set<VertexID> parents, colleages, colleages_min;
       // Copy unsorted vertexIDs --> unsorted
       for (std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
           it != outputVertexInfos.end(); it++)
@@ -542,16 +545,23 @@ namespace Gambit
         for (std::vector<VertexID>::iterator it = unsorted.begin(); it !=
             unsorted.end(); ++it)
         {
-          parents = getParentVertices(*it, masterGraph);
-          parents.insert(friends.begin(), friends.end()); // parents and friends
+          parents.clear();
+          getParentVertices(*it, masterGraph, parents);
+          parents.insert(*it);
+          // FIXME: Causes segfault for whatever reason
+          // Remove vertices that were already calculated from the ist
+          //parents.erase(colleages.begin(), colleages.end());
           t2p_now = (double) getTimeEstimate(parents, masterGraph);
           t2p_now /= masterGraph[*it]->getInvalidationRate();
           if (t2p_min < 0 or t2p_now < t2p_min)
           {
             t2p_min = t2p_now;
             it_min = it;
+            colleages_min = parents;
           }
         }
+        // Extent list of calculated vertices
+        colleages.insert(colleages_min.begin(), colleages_min.end());
         double prop = masterGraph[*it_min]->getInvalidationRate();
         logger() << LogTags::dependency_resolver << "Estimated T [s]: " << t2p_min*prop << EOM;
         logger() << LogTags::dependency_resolver << "Estimated p: " << prop<< EOM;
@@ -798,13 +808,16 @@ namespace Gambit
 
           // Trigger a dummy print call for all printable functors. This is used by some printers
           // to set up buffers for each of these output streams.
-          logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << std::endl;
-          masterGraph[*vi]->print(boundPrinter,0);     
+          logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
+
+          masterGraph[*vi]->print(boundPrinter,-1);     
         }    
       }
-      logger() << EOM;
+
       // Force-reset the printer to erase the dummy calls
-      boundPrinter->reset(true);
+      // (but don't do this if we are in resume mode!)
+      //if(not boundCore->resume) boundPrinter->reset(true);
+      boundPrinter->reset(true); // Actually *do* do it in resume mode as well. Printers should only reset new data, not destroy old data.
 
       // sent vector of ID's of functors to be printed to printer.
       // (if we want to only print functor output sometimes, and dynamically

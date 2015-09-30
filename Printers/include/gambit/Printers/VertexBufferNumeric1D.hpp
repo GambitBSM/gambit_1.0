@@ -26,8 +26,8 @@
 #include <sstream>
 #include <iostream>
 
-// HDF5 C++ bindings
-#include "H5Cpp.h" 
+// HDF5 C bindings
+#include <hdf5.h> 
  
 // Gambit
 #include "gambit/Printers/VertexBufferBase.hpp"
@@ -168,28 +168,24 @@ namespace Gambit {
             , PPID_of_last_append(null_PPID)
           {}
 
+          #ifdef WITH_MPI
           VertexBufferNumeric1D(
                 const std::string& label 
               , const int vID
               , const unsigned int i
               , const bool sync
               , const bool sil
-              #ifdef WITH_MPI
+              , const bool resume
               , const BuffTags& tags
               , const GMPI::Comm& pComm
-              #endif
-           ): VertexBufferBase(label,vID,i,sync,sil)
+           ): VertexBufferBase(label,vID,i,sync,sil,resume,true)
             , buffer_valid() 
             , buffer_entries()
-            #ifdef WITH_MPI
             , myTags(tags)
             , printerComm(pComm)
-            #endif
             , PPID_of_last_append(null_PPID)
           {
-             #ifdef WITH_MPI
              myRank = pComm.Get_rank();
-             #endif
 
              //Debugging
              #ifdef BUF_DEBUG
@@ -201,8 +197,32 @@ namespace Gambit {
                 <<tags.RA_length  <<", "
                 <<std::endl; 
              #endif
-
           }
+          #endif
+
+          // No-MPI constructor. Can also be used with MPI, if output
+          // is to be combined post-run.
+          VertexBufferNumeric1D(
+                const std::string& label 
+              , const int vID
+              , const unsigned int i
+              , const bool sync
+              , const bool sil
+              , const bool resume
+           ): VertexBufferBase(label,vID,i,sync,sil,resume,false)
+            , buffer_valid() 
+            , buffer_entries()
+            #ifdef WITH_MPI
+            , myTags()
+            , printerComm()
+            #endif
+            , PPID_of_last_append(null_PPID)
+          {
+             #ifdef WITH_MPI
+             myRank = printerComm.Get_rank();
+             #endif
+          }
+
 
           /// Destructor
           ~VertexBufferNumeric1D()
@@ -290,7 +310,7 @@ namespace Gambit {
       {
          if(not this->is_silenced())
          {
-            //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"): running append()"<<std::endl;
+            //std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<", head_position ("<<this->get_head_position()<<"), pID ("<<pID.pointID<<","<<pID.rank<<"): running append()"<<std::endl;
 
             if(pID!=null_PPID and pID==PPID_of_last_append)
             {
@@ -384,8 +404,8 @@ namespace Gambit {
             #ifdef WITH_MPI
             // Prepate to send buffer data to master node
             const int masterRank = 0;
-            if(myRank!=masterRank)
-            { // Worker node instructions
+            if(this->MPI_mode()==true and myRank!=masterRank)
+            { // MPI-mode worker node instructions
                if(not send_buffer_ready)
                { 
                   // Make sure previous messages are out of the send buffer before sending new ones.
@@ -428,7 +448,8 @@ namespace Gambit {
                send_buffer_ready = false;
             }
             else
-            { // Master node instructions
+            {  // Master node instructions
+               // (and worker node instructions in non-MPI mode)
                write_to_disk();
             }
             #else
@@ -442,15 +463,18 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::RA_flush(const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
       {
+        if(this->is_synchronised())
+        {
+           std::ostringstream errmsg;
+           errmsg << "rank "<<this->myRank<<": Error! Non-synchronised buffer attempted to perform RA_flush! Only non-synchronised buffers are permitted to do this. (buffer name = "<<this->get_label()<<")";
+           printer_error().raise(LOCAL_INFO, errmsg.str()); 
+        }
+
         if(not this->is_silenced()) {
             #ifdef WITH_MPI
             // Prepate to send buffer data to master node
-            const int masterRank = 0;
-            if(myRank==masterRank)
-            { // Master node instructions
-               RA_write_to_disk(PPID_to_dsetindex);
-            }
-            else if(RA_queue_length!=0)
+            const int masterRank = 0;            
+            if(this->MPI_mode()==true and myRank!=masterRank and RA_queue_length!=0)
             { // Worker node instructions
                if(not RA_send_buffer_ready)
                { 
@@ -493,6 +517,11 @@ namespace Gambit {
                this->printerComm.Isend(&null_message,             1,            masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
                RA_send_buffer_ready = false;
             }
+            else
+            { // Master node instructions
+              // (and worker node instructions in non-MPI mode)
+              RA_write_to_disk(PPID_to_dsetindex);
+            }
             #else
             RA_write_to_disk(PPID_to_dsetindex);
             #endif
@@ -529,6 +558,7 @@ namespace Gambit {
       template<class T, std::size_t L>
       bool VertexBufferNumeric1D<T,L>::probe_sync_mpi_message(uint source, int* msgsize)
       {
+         this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
          if(not myTags.valid)
          {
             // Cannot probe for messages until we receive our MPI tags. Ignore them for now
@@ -557,6 +587,7 @@ namespace Gambit {
       template<class T, std::size_t L>
       bool VertexBufferNumeric1D<T,L>::probe_RA_mpi_message(uint source)
       {
+         this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
          if(not myTags.valid)
          {
             // Cannot probe for messages until we receive our MPI tags. Ignore them for now
@@ -574,6 +605,7 @@ namespace Gambit {
       template<class T, std::size_t LENGTH>
       void VertexBufferNumeric1D<T,LENGTH>::get_sync_mpi_message(uint source, int exp_length)
       {
+        this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
         if(exp_length < 0)
         {
           std::ostringstream errmsg;
@@ -672,6 +704,7 @@ namespace Gambit {
       template<class T, std::size_t LENGTH>
       void VertexBufferNumeric1D<T,LENGTH>::get_RA_mpi_message(uint source, const std::map<PPIDpair, ulong>& PPID_to_dsetindex)
       {
+        this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
         // An MPI_Iprobe should have been done prior to calling this function, 
         // in order to trigger delivery of the message to the correct buffer. 
         // So now we trust that this buffer is indeed supposed to receive the 
@@ -718,6 +751,7 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::update_myTags(uint first_tag)
       {
+        this->MPImode_only(LOCAL_INFO); // throws error if MPI_mode()==false
         if(myTags.valid)
         {
           std::ostringstream errmsg;

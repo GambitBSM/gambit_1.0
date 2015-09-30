@@ -19,13 +19,35 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
+#include <csignal> // For definitions of SIGTERM etc
+
 using namespace Gambit;
 using namespace LogTags;
+
+void sighandler(int sig)
+{
+    Gambit::Scanner::Plugins::plugin_info.set_running(false);
+    
+    if (!Gambit::Scanner::Plugins::plugin_info.func_calculating())
+    {
+       Gambit::Scanner::Plugins::plugin_info.dump();
+       exit(0);
+    }
+}
+
+void sighandler2(int)
+{
+    std::cout << "trying to kill" << std::endl;
+}
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
+  //signal(SIGABRT, sighandler);
+  signal(SIGTERM, sighandler);
+  signal(SIGINT, sighandler);
+  signal(SIGKILL, sighandler2);
 
   try
   {
@@ -47,6 +69,7 @@ int main(int argc, char* argv[])
     for(int i=0;i<argc;i++){ logger() << arguments[i] << " "; }
     logger() << endl;
     logger() << core << "Starting GAMBIT" << endl << EOM;
+    if( Core().resume ) logger() << core << "Attempting to resume scan..." << endl << EOM;
     logger() << core << "Registered module functors [Core().getModuleFunctors().size()]: ";
     logger() << Core().getModuleFunctors().size() << endl;
     logger() << "Registered backend functors [Core().getBackendFunctors().size()]: ";
@@ -69,7 +92,7 @@ int main(int argc, char* argv[])
     Core().accountForMissingClasses();
 
     // Set up the printer manager for redirection of scan output.
-    Printers::PrinterManager printerManager(iniFile.getPrinterNode());
+    Printers::PrinterManager printerManager(iniFile.getPrinterNode(),Core().resume);
 
     // Set up dependency resolver
     DRes::DependencyResolver dependencyResolver(Core(), Models::ModelDB(), iniFile, Utils::typeEquivalencies(), *(printerManager.printerptr));

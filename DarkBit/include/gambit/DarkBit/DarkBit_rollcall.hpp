@@ -74,7 +74,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*) 
-      ALLOW_MODELS(CMSSM,MSSM25atQ)
+      ALLOW_MODELS(CMSSM,MSSM30atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
       BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
@@ -147,6 +147,7 @@ START_MODULE
 
   #define CAPABILITY RD_oh2
   START_CAPABILITY 
+
     #define FUNCTION RD_oh2_general
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
@@ -170,7 +171,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      //ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
+      //ALLOW_MODELS(MSSM30atQ)  // TODO: (CW) Check for which models this works
       DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
@@ -178,10 +179,19 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      ALLOW_MODELS(MSSM25atQ, SingletDM)  // TODO: (CW) Check for which models this works
+      //ALLOW_MODELS(MSSM30atQ, SingletDM)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(oh2, (), double, (double*,int,double))
     #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY RD_fraction
+  START_CAPABILITY 
+    #define FUNCTION RD_fraction
+      START_FUNCTION(double)
+      DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Cascade decays --------------------------------------------
 
@@ -348,7 +358,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_MSSM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
-      //ALLOW_MODELS(CMSSM, MSSM25atQ)
+      //ALLOW_MODELS(CMSSM, MSSM30atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*)      
       DEPENDENCY(DarkMatter_ID, std::string)
@@ -378,11 +388,12 @@ START_MODULE
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(RD_fraction, double)
     #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
-      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(RD_fraction, double)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -392,9 +403,8 @@ START_MODULE
     #define FUNCTION lnL_FermiGC_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
-      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(DarkMatter_ID, std::string)
-      BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
+      DEPENDENCY(RD_fraction, double)
+      BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -450,9 +460,9 @@ START_MODULE
       BACKEND_REQ(nucleonAmplitudes, (backends), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
       BACKEND_REQ(FeScLoop, (backends), double, (double, double, double, double))
       BACKEND_REQ(MOcommon, (backends), MicrOmegas::MOcommonSTR)
-      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, MSSM25atQ, SingletDM)
+      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, MSSM30atQ, SingletDM)
       MODEL_GROUP(group1, (nuclear_params_fnq))
-      MODEL_GROUP(group2, (MSSM25atQ, SingletDM))
+      MODEL_GROUP(group2, (MSSM30atQ, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
       BACKEND_OPTION((MicrOmegas),(backends))
       BACKEND_OPTION((MicrOmegasSingletDM),(backends))
@@ -1319,9 +1329,9 @@ START_MODULE
     START_FUNCTION(std::string)
     ALLOW_MODELS(SingletDM)
     #undef FUNCTION
-    #define FUNCTION DarkMatter_ID_MSSM25atQ
+    #define FUNCTION DarkMatter_ID_MSSM30atQ
     START_FUNCTION(std::string)
-    ALLOW_MODELS(MSSM25atQ, CMSSM)
+    ALLOW_MODELS(MSSM30atQ, CMSSM)
     #undef FUNCTION
   #undef CAPABILITY
 

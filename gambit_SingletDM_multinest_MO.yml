@@ -9,7 +9,6 @@ Parameters:
 
     StandardModel_Higgs:
       mH: 125.9
-      vev: 246
 
     SingletDM:
         mS:

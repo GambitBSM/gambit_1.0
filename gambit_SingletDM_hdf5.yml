@@ -8,17 +8,18 @@ Parameters:
     StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
     StandardModel_Higgs:
-      mH: 125.9
-      vev: 246
+      mH:
+            #fixed_value: 125.7
 
     SingletDM:
         mS:
-            range: [50., 1000.]
+            range: [10., 10000.]
             prior_type: log
         lambda_hS:
             range: [0.001, 1.00]
             #fixed_value: 0.0366524 
             prior_type: log
+  
     nuclear_params_fnq:
       # proton hadronic matrix elements
       fpd:
@@ -50,6 +51,12 @@ Parameters:
 ##############################
 
 Priors:
+    mH_prior: # PDG 2014
+      parameters: [StandardModel_Higgs::mH]
+      prior_type: gaussian
+      options:
+        sigs: [.4]
+        mean: [125.7]
 
 ##############################
 # Printer setup
@@ -115,11 +122,14 @@ ObsLikes:
 #      options:
 #        GA_AnnYield:
 #          nbins: 20
+    - capability: IC79_loglike
+      purpose: Likelihood
 
 # Fermi LAT dwarf limits
     - capability: lnL_FermiLATdwarfs
       function: lnL_FermiLATdwarfs_gamLike
       purpose:  Observable
+    - capability: lnL_Higgs_invWidth
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
@@ -194,6 +204,7 @@ Rules:
     options:
        oh2_mean: 0.11
        oh2_err: 0.07
+
   # Direct detection -------------------
   # For MSSM-based models, which of the DarkSUSY or micrOMEGAs routines
   # to use must be explicitly specified here (uncomment the desired one).

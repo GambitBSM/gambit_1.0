@@ -9,7 +9,6 @@ Parameters:
 
     StandardModel_Higgs:
       mH: 125.9
-      vev: 246
 
     SingletDM:
         mS:
@@ -115,11 +114,11 @@ ObsLikes:
     - capability: lnL_oh2
       purpose: Likelihood 
 # XENON100 2012 direct detection likelihood
-    - capability: lnL_XENON100_2012
-      purpose:  Likelihood
+#    - capability: lnL_XENON100_2012
+#      purpose:  Likelihood
 # LUX 2013 direct detection likelihood
-    - capability: lnL_LUX_2013
-      purpose:  Likelihood
+#    - capability: lnL_LUX_2013
+#      purpose:  Likelihood
 # DARWIN argon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!
 #    - capability: lnL_DARWIN_Ar_2015

@@ -30,23 +30,26 @@
 ///\name Scanner Plugin Macros 
 ///Macros used by the scanner plugin
 ///@{
-#define get_dimension()                 GET_DIMENSION()
-///Gets the functor corresponding to the purpose "__VA_ARGS__".
-#define get_purpose(...)                GET_PURPOSE( __VA_ARGS__ )
 ///Defines a scanner plugin.  Has the form:  scanner_plugin(name, version).
 #define scanner_plugin(...)             SCANNER_PLUGIN(__VA_ARGS__)
 ///@}
 
-#define GET_DIMENSION()                 get_input_value<unsigned int>(0)
-#define GET_PURPOSE(...)                (get_input_value<Factory_Base>(1))(__VA_ARGS__)
+#define __SCANNER_SETUP__                                                                   \
+using namespace Gambit::Scanner;                                                            \
+                                                                                            \
+void *get_purpose(const std::string &purpose)                                               \
+{                                                                                           \
+    void *ptr = (get_input_value<Factory_Base>(1))(purpose);                                \
+    static_cast <Function_Base<void(void)>*>(ptr)->setPurpose(purpose);                     \
+    static_cast <Function_Base<void(void)>*>(ptr)->setPrinter(get_printer().get_stream());  \
+    assign_aux_numbers(purpose, "pointID", "MPIrank");                                      \
+                                                                                            \
+    return ptr;                                                                             \
+}                                                                                           \
+                                                                                            \
+inline unsigned int &get_dimension() {return get_input_value<unsigned int>(0);}             \
 
-#define SCANNER_SETUP                                                                                                   \
-using namespace Gambit::Scanner;                                                                                        \
-/*Gambit::Scanner::scan::ScanFileOutput scan_ios(get_keys(), &get_input_value<PriorTransform>(2));*/                    \
-
-/*#define SET_SCAN_IOS(file) 
-scan_ios.setOutput((get_input_value<IniFileInterface>(3)).getNode(#file)); */
-
-#define SCANNER_PLUGIN(plug_name, ...) GAMBIT_PLUGIN_INITIALIZE(SCANNER_SETUP, plug_name, scanner, __VA_ARGS__)
+#define SCANNER_PLUGIN(plug_name, ...)                                                      \
+    GAMBIT_PLUGIN_INITIALIZE(__SCANNER_SETUP__, plug_name, scanner, __VA_ARGS__)            \
         
 #endif

@@ -39,8 +39,8 @@ namespace Gambit
       // Helper function for recursively importing decays and decays of resulting final states into a process catalog
       void ImportDecays(std::string pID, TH_ProcessCatalog &catalog, 
                         std::set<std::string> &importedDecays, 
-                        const DecayTable* tbl, double minBranching);
-
+                        const DecayTable* tbl, double minBranching,
+                        std::vector<std::string> excludeDecays = std::vector<std::string>());
     }
 
   }

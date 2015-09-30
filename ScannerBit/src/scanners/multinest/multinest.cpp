@@ -71,6 +71,13 @@ scanner_plugin(MultiNest, version(3, 9))
       // Retrieve the external likelihood calculator
       scanPtr LogLike = get_purpose(get_inifile_value<std::string>("like"));
 
+      /// ************
+      /// TODO: Replace with some wrapper? Maybe not, this is already pretty straightforward,
+      /// though perhaps a little counterintuitive that the printer is the place to get this
+      /// information.
+      bool resume_mode = get_printer().resume_mode();
+      /// ************
+
       // Retrieve the dimensionality of the scan.
       int ma = get_dimension();
 
@@ -89,7 +96,7 @@ scanner_plugin(MultiNest, version(3, 9))
       int maxModes (get_inifile_value<int>("maxModes", 100) );  // expected max no. of modes (used only for memory allocation)
       int seed (get_inifile_value<int>("seed", -1) );           // random no. generator seed, if < 0 then take the seed from system clock
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
-      int resume (get_inifile_value<int>("resume", 1) );        // resume from a previous job?
+      int resume ( resume_mode );                               // resume from a previous job?
       int outfile (get_inifile_value<int>("outfile", 0) );      // write output files?
       double logZero (get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
@@ -115,20 +122,22 @@ scanner_plugin(MultiNest, version(3, 9))
       {
          // Get inifile options for each print stream
          Gambit::Options txt_options   = get_inifile_node("aux_printer_txt_options");
-         Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
+         //Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options"); //FIXME
          Gambit::Options live_options  = get_inifile_node("aux_printer_live_options");
 
          // Options to desynchronise print streams from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
-         stats_options.setValue("synchronised",false); 
+         //stats_options.setValue("synchronised",false); //FIXME
          txt_options.setValue("synchronised",false);
          live_options.setValue("synchronised",false);
 
          // Initialise auxiliary print streams
          get_printer().new_stream("txt",txt_options);
-         get_printer().new_stream("stats",stats_options);            
+         //get_printer().new_stream("stats",stats_options); //FIXME       
          get_printer().new_stream("live",live_options);
       }
-
+      //ensure mpi processes has same id for parameters;
+      Gambit::Scanner::assign_aux_numbers("Posterior", "LogLike", "pointID", "MPIrank", "Parameters");
+      
       // Create the object that interfaces to the MultiNest LogLike callback function
       Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, get_printer(), ndims);
       Gambit::MultiNest::global_loglike_object = &loglwrapper;
@@ -211,16 +220,24 @@ namespace Gambit {
          double lnew = (*boundLogLike)(unitpars); 
 
          // Extract the primary printer from the printer manager
-         printer* primary_stream( boundPrinter.get_stream() );
+         //printer* primary_stream( boundPrinter.get_stream() );
 
          // Get, set and ouptut the process rank and this point's ID
-         int myrank  = primary_stream->getRank(); // MPI rank of this process
+         int myrank  = boundLogLike->getRank(); // MPI rank of this process
          int pointID = boundLogLike->getPtID();   // point ID number
          Cube[ndim+0] = myrank;
          Cube[ndim+1] = pointID;
          //std::cout << "Cube input: rank="<<myrank<<", pointID="<<pointID<<std::endl;
-         primary_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
-         primary_stream->print( pointID, "pointID", -8, myrank, pointID);
+
+         // Ben: No need to do this anymore, hdf5printer will do it automatically.
+         // However, asciiPrinter won't, so we can still output it anyway. But to make
+         // sure that the hdf5printer only outputs it once (and to avoid the name clash
+         // arising from duplicating the output) please use the ID codes -1000 and -1001 for
+         // these two special outputs) 
+         // Edit: add total LogLike to this list? Special code?
+         //primary_stream->print(pointID, "pointID", -1000, myrank, pointID);
+         //primary_stream->print(myrank,  "MPIrank", -1001, myrank, pointID);
+         //primary_stream->print(lnew,    "LogLike",    -4, myrank, pointID);
 
          // Done! (lnew will be used by MultiNest to guide the search)
          return lnew;                  
@@ -261,14 +278,20 @@ namespace Gambit {
       void LogLikeWrapper::dumper(int nSamples, int nlive, int nPar, double *physLive, double *posterior, double* /*paramConstr*/, 
        double maxLogLike, double logZ, double logZerr)
       {
+          int thisrank = boundPrinter.get_stream()->getRank(); // MPI rank of this process
+          if(thisrank!=0)
+          {
+             std::cout<<"Error! ScannerBit MultiNest plugin attempted to run 'dumper' function on a worker process (thisrank=="<<thisrank<<")! MultiNest should only try to run this function on the master process. Most likely this means that your multinest installation is not running in MPI mode correctly, and is actually running independent scans on each process. Alternatively, the version of MultiNest you are using may be too far ahead of what this plugin can handle, if e.g. the described behaviour has changed since this plugin was written."<<std::endl;
+             exit(1);
+          } 
 
           // Get printers for each auxiliary stream
-          printer* stats_stream( boundPrinter.get_stream("stats") );
+          //printer* stats_stream( boundPrinter.get_stream("stats") ); //FIXME see below
           printer* txt_stream(   boundPrinter.get_stream("txt")   );
           printer* live_stream(  boundPrinter.get_stream("live")  );
 
           // Reset the print streams. WARNING! This potentially deletes the old data (here we overwrite it on purpose)
-          stats_stream->reset();  
+          //stats_stream->reset();  // FIXME
           txt_stream->reset();   
           live_stream->reset();
 
@@ -298,17 +321,17 @@ namespace Gambit {
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
            
              //std::cout << "Posterior output: i="<<i<<", rank="<<myrank<<", pointID="<<pointID<<std::endl;
-             txt_stream->print( myrank,  "MPIrank", -7, myrank, pointID);
-             txt_stream->print( pointID, "pointID", -8, myrank, pointID);
-             txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   -4, myrank, pointID);
-             txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", -5, myrank, pointID);
+             //txt_stream->print( myrank,  "MPIrank", myrank, pointID);
+             //txt_stream->print( pointID, "pointID", myrank, pointID);
+             //txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   myrank, pointID);
+             txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", myrank, pointID);
              // Put rest of parameters into a vector for printing all together
              std::vector<double> parameters;
              for( int j = 0; j < nPar-2; j++ )
              {
                  parameters.push_back( posterior[j*nSamples + i] );
              }
-             txt_stream->print(parameters, "Parameters", -6, myrank, pointID);
+             txt_stream->print(parameters, "Parameters", myrank, pointID);
           }
 
           // The last set of live points
@@ -316,16 +339,17 @@ namespace Gambit {
           {
              myrank  = physLive[(nPar-2)*nlive + i]; //MPI rank number stored in second last entry of cube
              pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
-             live_stream->print( myrank,  "MPIrank",  -7, myrank, pointID);
-             live_stream->print( pointID, "pointID", -8, myrank, pointID);
-             live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", -4, myrank, pointID);
+             //live_stream->print( myrank,  "MPIrank",  myrank, pointID);
+             //live_stream->print( pointID, "pointID", myrank, pointID);
+             //live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", myrank, pointID);
+             live_stream->print( true, "LastLive", myrank, pointID); // Flag which points were the last live set
              // Put rest of parameters into a vector for printing all together
              std::vector<double> parameters;
              for( int j = 0; j < nPar-2; j++ )
              {
                  parameters.push_back( physLive[j*nlive + i] );
              }
-             live_stream->print(parameters, "Parameters", -6, myrank, pointID);
+             //live_stream->print(parameters, "Parameters", myrank, pointID);
           }
 
           // OLD DEBUG CODE, probably not ready to be tossed just yet.
