@@ -229,6 +229,13 @@ namespace Gambit
         print_to_screen(output, "objectives");
   }
   
+  void gambit_core::prior_diagnostic()
+  {
+    std::string output = Scanner::Plugins::plugin_info().print_priors();
+    if (output.length() > 0)
+        print_to_screen(output, "priors"); 
+  }
+  
   /// Free-form module diagnostic function
   void gambit_core::ff_module_diagnostic(str& command)
   {

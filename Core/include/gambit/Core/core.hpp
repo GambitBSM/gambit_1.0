@@ -103,6 +103,7 @@ namespace Gambit
       void model_diagnostic();
       void scanner_diagnostic();
       void test_function_diagnostic();
+      void prior_diagnostic();
 
       /// Free-form diagnostic functions
       /// @{
