@@ -383,16 +383,16 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(decay_rates, DecayTable)
     DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency 
-    DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency 
+    DEPENDENCY(FH_HiggsProd, fh_HiggsProd) // temporary dependency 
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
   #undef CAPABILITY 
 
   // Get a LEP chisq from HiggsBounds
-  #define CAPABILITY HB_LEP_lnL
+  #define CAPABILITY HB_LEPchisq
   START_CAPABILITY
-    #define FUNCTION HB_LEP_lnL
+    #define FUNCTION HB_LEPchisq
     START_FUNCTION(double)
     DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
        BACKEND_REQ(HiggsBounds_neutral_input_part, (libhiggsbounds), void, 
@@ -414,9 +414,9 @@ START_MODULE
   #undef CAPABILITY
 
   // Get an LHC chisq from HiggsSignals
-  #define CAPABILITY HS_LHC_lnL
+  #define CAPABILITY HS_LHCchisq
     START_CAPABILITY
-      #define FUNCTION HS_LHC_lnL
+      #define FUNCTION HS_LHCchisq
       START_FUNCTION(double)
       DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
          BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 

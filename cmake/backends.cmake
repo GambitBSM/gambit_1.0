@@ -331,11 +331,11 @@ ExternalProject_Add(higgsbounds_tables
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
 )
-set(higgsbounds_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.1")
+set(higgsbounds_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.0")
 ExternalProject_Add(higgsbounds
   DEPENDS higgsbounds_tables
-  URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.1.tar.gz
-  URL_MD5 47b93330d4e0fddcc23b381548db355b
+  URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.0.tar.gz
+  URL_MD5 9d76eefecea870d941a6fe8c0ee7a6ae
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgsbounds_dir}
   BUILD_IN_SOURCE 1
@@ -353,18 +353,18 @@ enable_auto_rebuild(higgsbounds)
 add_external_clean(higgsbounds ${higgsbounds_dir} hyperclean)
 
 # HiggsSignals
-set(higgssignals_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.4.0")
+set(higgssignals_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.3.2")
 ExternalProject_Add(higgssignals
   DEPENDS higgsbounds
-  URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.4.0.tar.gz
-  URL_MD5 00b8ac655e357c7cba9ca786f8f2ddee
+  URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.3.2.tar.gz
+  URL_MD5 2e300a3784eb5d3a9e1dd905d2af7676
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgssignals_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND cp configure my_configure 
-            COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
-            COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.0|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.0|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
@@ -372,7 +372,7 @@ ExternalProject_Add(higgssignals
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND mkdir -p lib 
         COMMAND rm HiggsSignals.o 
-        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.1/*.o" > make_so.sh 
+        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.0/*.o" > make_so.sh 
         COMMAND chmod u+x make_so.sh 
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""

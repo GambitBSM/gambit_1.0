@@ -22,6 +22,9 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Logs/log.hpp"
 
+// HDF5 C++ bindings
+#include "H5Cpp.h" 
+
 #include <stdio.h>
 #include <iostream>
   

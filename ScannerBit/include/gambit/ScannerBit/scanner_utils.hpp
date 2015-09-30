@@ -488,31 +488,6 @@ namespace Gambit
                         static const bool value = true;
                 };
                 
-                /****************************/
-                /****** triple class ********/
-                /****************************/
-                
-                template <typename T1, typename T2, typename T3>
-                struct triple
-                {
-                    typedef T1 first_type;
-                    typedef T1 second_type;
-                    typedef T1 third_type;
-                    T1 first;
-                    T2 second;
-                    T3 third;
-                    
-                    triple(){}
-                    triple(const T1 &first, const T2 &second, const T3 &third) : first(first), second(second), third(third) {}
-                    triple(const triple &trip) : first(trip.first), second(trip.second), third(trip.third) {}
-                    
-                    triple &operator = (const triple &trip)
-                    {
-                        first = trip.first, trip.second = second, trip.third = third; 
-                        return *this;
-                    }
-                };
-                
                 /********************************/
                 /****** Stream Operators ********/
                 /********************************/
@@ -576,7 +551,7 @@ namespace Gambit
                 typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, void>::type
                 resume_file_input(std::ifstream &in, T &param)
                 {
-                        in.read((char *)&param, sizeof(T));
+                        in.read(reinterpret_cast<char *>(&param), sizeof(T));
                         //in >> param;
                 };
                 
@@ -596,42 +571,6 @@ namespace Gambit
                 {
                         resume_file_input(in, param.first);
                         resume_file_input(in, param.second);
-                }
-                
-                template<typename T>
-                inline typename std::enable_if<!is_container<T>::value && !is_pair<T>::value, size_t>::type
-                resume_size_of(T &)
-                {
-                        return sizeof(T);
-                };
-                
-                template <typename T>
-                inline typename std::enable_if <is_container<T>::value, size_t>::type
-                resume_size_of (T &param)
-                {
-                        return param.size()*sizeof(typename is_container<T>::type);
-                }
-                
-                template <typename T>
-                inline typename std::enable_if <is_pair<T>::value, size_t>::type
-                resume_size_of (T &)
-                {
-                        return sizeof(typename is_pair<T>::first_type) + sizeof(typename is_pair<T>::second_type);
-                }
-                
-                inline void resume_file_input(std::ifstream &in, std::string &param)
-                {
-                        in.read((char *)param.c_str(), param.length());
-                }
-                
-                inline void resume_file_output(std::ofstream &out, std::string &param)
-                {
-                        out.write((char *)param.c_str(), param.length());
-                }
-                
-                inline size_t resume_size_of(std::string &param)
-                {
-                        return param.length();
                 }
         }
 }

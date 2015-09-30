@@ -82,40 +82,6 @@ namespace Gambit
             return vector;
         }
 
-        /// Same as above, but for sets
-
-        template <typename T>
-        std::set<T> initSet(std::set<T> set)
-        {
-            return set;
-        }
-
-        template <typename T, typename... Args>
-        std::set<T> initSet(std::set<T> set, T value, Args... args)
-        {
-            set.insert(value);
-            return initSet(set, args...);
-        }
-
-        // This function causes a (readable) compile-time error when T != U.
-        // In case types are convertable, they are converted.
-        template <typename T, typename U, typename... Args>
-        std::set<T> initSet(std::set<T> set, U value, Args... args)
-        {
-            T value_converted = value;
-            set.insert(value_converted);
-            return initSet(set, args...);
-        }
-
-        template <typename T, typename... Args>
-        std::set<T> initSet(T value, Args... args)
-        {
-            std::set<T> set;
-            set.insert(value);
-            set = initSet(set, args...);
-            return set;
-        }
-
 
         //////////////////////
         //div_ints_by_half

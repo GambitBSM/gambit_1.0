@@ -32,7 +32,6 @@
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
-#include "gambit/ScannerBit/plugin_loader.hpp"
 
 namespace Gambit
 {
@@ -91,26 +90,14 @@ namespace Gambit
             
             ret operator () (const args&... params) 
             {
-                    if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
-                    {
-                            Gambit::Scanner::Plugins::plugin_info.dump();
-                            exit(0);
-                    }
-                    Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
                     unsigned long long int id = ++Gambit::Printers::get_point_id();
                     ret ret_val = main(params...);
-                    Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
+                    
                     if (sizeof...(params) == 1)
                             main_printer->print(params..., "unitCubeParameters", rank, id);
                     main_printer->print(ret_val, purpose, rank, id);
                     main_printer->print(int(id), "pointID", rank, id);
                     main_printer->print(rank, "MPIrank", rank, id);
-                    
-//                     if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
-//                     {
-//                             Gambit::Scanner::Plugins::plugin_info.dump();
-//                             exit(0);
-//                     }
                     
                     return ret_val;
             }

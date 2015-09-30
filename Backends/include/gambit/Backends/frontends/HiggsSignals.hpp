@@ -10,8 +10,8 @@
 #else
   #define BACKENDNAME HiggsSignals
 #endif
-#define VERSION 1.4
-#define SAFE_VERSION 1_4
+#define VERSION 1.2
+#define SAFE_VERSION 1_2
 
 /* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */
@@ -54,6 +54,29 @@ BE_FUNCTION(HiggsBounds_neutral_input_part_HS, void, (double*, double*, int*, do
 						      double*, double*, Farray<double, 1,3, 1,3>&), "higgsbounds_neutral_input_part_", "HiggsBounds_neutral_input_part_HS")
 BE_FUNCTION(HiggsBounds_charged_input_HS, void, (double*, double*, double*, double*,
 						 double*, double*, double*, double*), "higgsbounds_charged_input_", "HiggsBounds_charged_input_HS")
+
+BE_INI_FUNCTION{
+
+  // Scan-level initialisation
+  static bool scan_level = true;
+  if(scan_level){
+    int nHneut = 3; // number of neutral higgses
+    int nHplus = 1; // number of charged higgses
+    
+    // initialize HiggsSignals with the latest results
+    initialize_HiggsSignals_latestresults(nHneut,nHplus);
+
+    // choose which pdf style to use for Higgs lineshape
+    int pdf = 2; // Gaussian
+    setup_pdf(pdf);
+  }
+  scan_level = false;
+
+  // clean-up
+  // finish_HiggsSignals();
+
+}
+END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

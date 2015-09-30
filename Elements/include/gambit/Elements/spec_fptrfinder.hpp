@@ -252,18 +252,16 @@ namespace Gambit {
            errmsg << "Error retrieving particle spectrum data!" << std::endl;
            errmsg << "No "<<label<<" with string reference '"<<lastname<<"' exists!" <<std::endl;
            errmsg << "Search failed with error_code "<<error_code<<" from FptrFinder with label "<<label<<": "<<get_error_message();
-           if(index1!=-1) errmsg << "  index1: "<<index1<<std::endl;
-           if(index2!=-1) errmsg << "  index2: "<<index2<<std::endl;
            utils_error().forced_throw(origin,errmsg.str());  
          }
          // Check if an index has been set, and raise error if not
-         void check_index_initd(const std::string& origin, const int index, const std::string& label)
+         void check_index_initd(const std::string& origin, const int index)
          {
            if(index==-1)
            {
              std::ostringstream errmsg;
              errmsg << "Error retrieving particle spectrum data!" << std::endl;
-             errmsg << "An index ("<<label<<") was not set when retrieving item of type '"<<label<<"' with string reference '"<<lastname<<"'!" <<std::endl;
+             errmsg << "An index was not set when retrieving item of type '"<<label<<"' with string reference '"<<lastname<<"'!" <<std::endl;
              errmsg << "This is a bug in the FptrFinder class, please report it."<<std::endl;
              utils_error().forced_throw(origin,errmsg.str());  
            }
@@ -537,13 +535,13 @@ namespace Gambit {
                  break;}
                case 1: {
                  ff->check(ff->ito1_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  result = (ff->ito1->second).at(ff->index1);
                  break;}
                case 2: {
                  ff->check(ff->ito2_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
-                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  result = (ff->ito2->second).at(ff->index1).at(ff->index2);
                  break;}
                // Wrapper class function call cases
@@ -564,40 +562,40 @@ namespace Gambit {
                  break;}
                case 6: {
                  ff->check(ff->it1_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
                  result = (model.*f)(ff->index1);
                  break;}
                case 7: {
                  ff->check(ff->it1M_safe);
                  typename MT::plainfptrM1 f = ff->it1M->second.fptr;
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  result = (*f)(model,ff->index1);
                  break;}
                case 8: {
                  ff->check(ff->it1I_safe);
                  typename MT::plainfptrI1 f = ff->it1I->second.fptr;
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  result = (*f)(input,ff->index1);
                  break;}
               case 9: {
                  ff->check(ff->it2_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
-                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
                  result = (model.*f)(ff->index1,ff->index2);
                  break;}
                case 10: {
                  ff->check(ff->it2M_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
-                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrM2 f = ff->it2M->second.fptr;
                  result = (*f)(model,ff->index1,ff->index2);
                  break;}
                case 11: {
                  ff->check(ff->it2I_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
-                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;
                  result = (*f)(input,ff->index1,ff->index2);
                  break;}
@@ -670,40 +668,40 @@ namespace Gambit {
                  break;}
                case 6: {
                  ff->check(ff->it1_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
                  (model.*f)(set_value,ff->index1);
                  break;}
                case 7: {
                  ff->check(ff->it1M_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::plainfptrM1 f = ff->it1M->second.fptr;
                  (*f)(model,set_value,ff->index1);
                  break;}
                case 8: {
                  ff->check(ff->it1I_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
                  typename MT::plainfptrI1 f = ff->it1I->second.fptr;
                  (*f)(input,set_value,ff->index1);
                  break;}
                case 9: {
                  ff->check(ff->it2_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
-                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
                  (model.*f)(set_value,ff->index1,ff->index2);
                  break;}
                case 10: {
                  ff->check(ff->it2M_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
-                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrM2 f = ff->it2M->second.fptr;
                  (*f)(model,set_value,ff->index1,ff->index2);
                  break;}
                case 11: {
                  ff->check(ff->it2I_safe);
-                 ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
-                 ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
+                 ff->check_index_initd(LOCAL_INFO,ff->index1);
+                 ff->check_index_initd(LOCAL_INFO,ff->index2);
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;
                  (*f)(input,set_value,ff->index1,ff->index2);
                  break;}

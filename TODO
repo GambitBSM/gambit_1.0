@@ -8,8 +8,16 @@ Core / Scanner / Models
 
 For first analyses:
 
+Printers:
+* MPI initialisation in ScannerBit if needed (Ben, Greg)
+* MPI-compatible printer system (Ben)
+* Correlation of scanner printer system and GAMBIT printer system (Ben)
+
 Spectrum objects:
 * Make spectrum scale limit getter public (Ben)
+
+DecayBit:
+* Make decay table type from SLHAea (Pat)
 
 EWPOBit:
 * SUSY-POPE interface (Peter)
@@ -21,8 +29,14 @@ BOSS:
 * Wrap global backend functions requiring BOSSed classes (Anders)
 
 ScannerBit:
+* Give full info on scanners with ./gambit <scannername> (Greg)
 * Plugins need the option to link standard GAMBIT/ScannerBit libraries: etc (Greg)
 * Get rid of 'optional options:' entries in yaml options object. (Greg)
+
+Repo/cmake:
+* Split repo into public (code) bit and private extras, Collab doc etc, using git filter-branch (Pat)
+* Add check and check-ignore switch for graphviz (Antje)
+* Implement proper scanner ditching (Ben)
 
 
 For first release:
@@ -36,6 +50,7 @@ General:
 * Add credit/citation system (Pat)
 * Fill out capabilities database (all)
 * Fill out models database (all)
+* Make an alternative release setup that also includes some version of all backends (Antje, Pat)
 * Fix naming conventions for filenames (lowercase+underscore) (Pat)
 * Convert comment headers in source/header files to doxygen (///) format; many are still in old-style (//) format (all)
 * Convert comments to Doxygen (all)
@@ -69,6 +84,7 @@ Release:
 cmake:
 * general stocktake of backend make system
 * info message about things not reverted/deleted after make distclean
+* make clean_backends (Pat)
 * switching off openmp (Antje, Pat)
 
 
@@ -144,12 +160,6 @@ Core done:
 * Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file
 * Make bossed-type-requirements trigger a dependency on the providing backend's ini function.
 * Connect Diver
-* Make decay table type from SLHAea
-* Give full info on scanners with ./gambit <scannername>
-* Split repo into public (code) bit and private extras, Collab doc etc, using git filter-branch
-* Add check and check-ignore switch for graphviz
-* Implement proper scanner ditching
-
 
 Models done:
 * Remove automatic declaration of "little guys"
@@ -164,10 +174,6 @@ Models done:
 * Add scalar singlet Higgs partial decay widths (SM + invisible)
 * SUSYHIT SLHA replacement interface
 * SUSYHIT observable getters
-* MPI initialisation in ScannerBit if needed
-* MPI-compatible printer system
-* Correlation of scanner printer system and GAMBIT printer system
-* make clean_backends
 
 
 HE Collider

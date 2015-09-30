@@ -113,6 +113,7 @@ namespace Gambit {
             }
 
 
+         protected:
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)

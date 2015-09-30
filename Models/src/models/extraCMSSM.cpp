@@ -35,7 +35,7 @@
      parentP.setValue("M0",     myP["M0"] );
      parentP.setValue("A0",     myP["M0"] );
      parentP.setValue("M12",    myP["M12"] );
-     parentP.setValue("TanBeta",   myP["tanb"] );
-     parentP.setValue("SignMu", myP["signmu"] );
+     parentP.setValue("tanb",   myP["tanb"] );
+     parentP.setValue("signmu", myP["signmu"] );
   } 
 #undef MODEL

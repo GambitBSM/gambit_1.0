@@ -3302,9 +3302,9 @@ namespace Gambit
     }
 
     /// Get a LEP chisq from HiggsBounds
-    void HB_LEP_lnL(double &result)
+    void HB_LEPchisq(double &result)
     {
-      using namespace Pipes::HB_LEP_lnL;
+      using namespace Pipes::HB_LEPchisq;
 
       hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
 
@@ -3352,15 +3352,15 @@ namespace Gambit
       double theor_unc = 1.5; // theory uncertainty
       BEreq::HB_calc_stats(theor_unc,chisq_withouttheory,chisq_withtheory,chan2);
 
-      result = -0.5*chisq_withouttheory;
+      result = chisq_withouttheory;
       std::cout << "Calculating LEP chisq: " << chisq_withouttheory << " (no theor), " << chisq_withtheory << " (with theor)" << endl;
 
     }
 
     /// Get an LHC chisq from HiggsSignals
-    void HS_LHC_lnL(double &result)
+    void HS_LHCchisq(double &result)
     {
-      using namespace Pipes::HS_LHC_lnL;
+      using namespace Pipes::HS_LHCchisq;
 
       hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
 
@@ -3403,13 +3403,13 @@ namespace Gambit
       // BEreq::setup_rate_uncertainties(dCS,dBR);
 
       // run HiggsSignals
-      int mode = 1; // 1- peak-centered chi2 method (recommended)
+      int mode = 1;
       double csqmu, csqmh, csqtot, Pvalue;
       int nobs;
       BEreq::run_HiggsSignals(mode, csqmu, csqmh, csqtot, nobs, Pvalue);
 
 
-      result = -0.5*csqtot;
+      result = csqtot;
       std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";
       std::cout << csqtot << " (both), Nobs: " << nobs << ", Pvalue: " << Pvalue << endl;
 

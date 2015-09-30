@@ -786,11 +786,6 @@ endif()                                          \n\n"
     towrite += "file( WRITE ${PROJECT_SOURCE_DIR}/scratch/scanbit_excluded_libs.yaml \"${exclude_lib_output}\" )\n"
     towrite += "file( WRITE ${PROJECT_SOURCE_DIR}/scratch/scanbit_linked_libs.yaml \"${reqd_lib_output}\" )\n\n"
     
-    towrite += "#################################################################################\n\n"
-    towrite += "foreach (plugin ${SCANNERBIT_PLUGINS})\n"
-    towrite += " "*4 + "add_dependencies(ScannerBit ${plugin})\n"
-    towrite += "endforeach()\n"
-    
     cmake = "./ScannerBit/CMakeLists.txt"
     candidate = build_dir+"/ScannerBit_CMakeLists.txt.candidate"
     with open(candidate,"w") as f: f.write(towrite)
