@@ -92,7 +92,6 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <time.h> // For short sleeps in master_wait_for_tag function
 #include <cstdlib> // For popen in finalise() 
 
 // Gambit
@@ -498,21 +497,29 @@ namespace Gambit
         // Delete final target file if one with same name already exists?
         // TODO: rank 0 only!
         bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists"); //TODO; UNUSED! Need this.
- 
-        std::string msg_finalfile;
-        if(HDF5::checkFileReadable(finalfile, msg_finalfile) and overwrite)
+          
+        if(myRank==0)
         {
-           // Delete existing output file
-           std::ostringstream command;
-           command << "rm "<<finalfile;
-           FILE* fp = popen(command.str().c_str(), "r");
-           if(fp==NULL)
+           std::string msg_finalfile;
+           if(HDF5::checkFileReadable(finalfile, msg_finalfile) and overwrite)
            {
-              // Error running popen
-              std::ostringstream errmsg;
-              errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_if_exists' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
-              printer_error().raise(LOCAL_INFO, errmsg.str());
+              // Delete existing output file
+              std::ostringstream command;
+              command << "rm "<<finalfile;
+              FILE* fp = popen(command.str().c_str(), "r");
+              if(fp==NULL)
+              {
+                 // Error running popen
+                 std::ostringstream errmsg;
+                 errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_if_exists' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
+                 printer_error().raise(LOCAL_INFO, errmsg.str());
+              }
            }
+        }
+        else
+        {
+           // Everyone wait until the master finishes pre-processing of existing files 
+           myComm.allWaitForMaster(PPFILES_PASS);
         }
 
         if(resume)
@@ -534,7 +541,13 @@ namespace Gambit
 
           //}
         }
-  
+ 
+        if(myRank==0)
+        {
+           // Signal that file preprocessing is complete
+           myComm.allWaitForMaster(PPFILES_PASS);
+        }
+ 
         // Specify temporary output file name to use for this process
         // Will combine with data from other processes when run is finished,
         // or when resuming a run.
@@ -604,9 +617,10 @@ namespace Gambit
     /// Returns all the PPIDs found in the existing datasets
     std::vector<PPIDpair> HDF5Printer::verify_existing_output(const std::string& file, const std::string& group)
     {
-       //TODO!!! Need to do combination before trying to get previous points
-       //        Also need a barrier or something to make sure master node does combination before workers try to 
-       //        retrieve previous points
+       // Need to do combination before trying to get previous points.
+       // Make sure a barrier or similar exists outside this function to make
+       // sure master node does combination before workers try to retrieve 
+       // previous points
 
        if(resume)
        {
@@ -617,46 +631,49 @@ namespace Gambit
          {
            file_readable=true;                 
          }
-  
-         // Check if temporary files from previous run exist.
-            
-         // TODO: assumes mpiSize the same as last run, can we relax this? Try to auto-detect files?
-         for(std::size_t i=0; i<mpiSize; i++)
-         {
-            std::ostringstream tmpfile;
-            tmpfile << finalfile << "_temp_" << i;
-            std::string msg2;
-            if(not HDF5::checkFileReadable(tmpfile.str(), msg2))
+ 
+         if(myRank==0)
+         { 
+            // Check if temporary files from previous run exist.
+               
+            // TODO: assumes mpiSize the same as last run, can we relax this? Try to auto-detect files?
+            for(std::size_t i=0; i<mpiSize; i++)
             {
-               // We are supposed to be resuming, but no readable output file was found, so we can't.
-               std::ostringstream errmsg;
-               errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate/read all the required temporary files from the previous run (possibly there is no unfinished run to continue from). Resuming is therefore not possible; aborting run... (see below for IO error messages)";
-               errmsg << std::endl << "IO message for temporary combined output file read attempt: ";
-               errmsg << std::endl << "    " << msg;
-               errmsg << std::endl << "IO message for temporary uncombined output file read attempt: ";
-               errmsg << std::endl << "    " << msg2;
-               printer_error().raise(LOCAL_INFO, errmsg.str()); 
+               std::ostringstream tmpfile;
+               tmpfile << finalfile << "_temp_" << i;
+               std::string msg2;
+               if(not HDF5::checkFileReadable(tmpfile.str(), msg2))
+               {
+                  // We are supposed to be resuming, but no readable output file was found, so we can't.
+                  std::ostringstream errmsg;
+                  errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate/read all the required temporary files from the previous run (possibly there is no unfinished run to continue from). Resuming is therefore not possible; aborting run... (see below for IO error messages)";
+                  errmsg << std::endl << "IO message for temporary combined output file read attempt: ";
+                  errmsg << std::endl << "    " << msg;
+                  errmsg << std::endl << "IO message for temporary uncombined output file read attempt: ";
+                  errmsg << std::endl << "    " << msg2;
+                  printer_error().raise(LOCAL_INFO, errmsg.str()); 
+               }
             }
+            // Ok all the temporary files exist: combine them
+            // (but do it in non-resume mode, since any potentially existing output file is unreadable anyway)
+            std::ostringstream logmsg;
+            if(file_readable)
+            {
+               logmsg << "HDF5Printer: Temporary combined output file detected (found "<<file<<")"<<std::endl;
+               logmsg << "             Will merge temporary files from last run into this file"<<std::endl;
+               logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
+            }
+            else
+            {
+               logmsg << "HDF5Printer: No temporary combined output file detected (searched for "<<file<<")"<<std::endl;
+               logmsg << "             Will attempt to create it from temporary files from last run"<<std::endl;
+               logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
+            }
+            logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<file<<"...";
+            std::cout << logmsg.str() << std::endl;
+            logger() << LogTags::printers << logmsg.str();
+            combine_output(mpiSize,file_readable,false);
          }
-         // Ok all the temporary files exist: combine them
-         // (but do it in non-resume mode, since any potentially existing output file is unreadable anyway)
-         std::ostringstream logmsg;
-         if(file_readable)
-         {
-            logmsg << "HDF5Printer: Temporary combined output file detected (found "<<file<<")"<<std::endl;
-            logmsg << "             Will merge temporary files from last run into this file"<<std::endl;
-            logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
-         }
-         else
-         {
-            logmsg << "HDF5Printer: No temporary combined output file detected (searched for "<<file<<")"<<std::endl;
-            logmsg << "             Will attempt to create it from temporary files from last run"<<std::endl;
-            logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
-         }
-         logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<file<<"...";
-         std::cout << logmsg.str() << std::endl;
-         logger() << LogTags::printers << logmsg.str();
-         combine_output(mpiSize,file_readable,false);
 
          // Open HDF5 file
          bool oldfile; 
@@ -809,59 +826,6 @@ namespace Gambit
        return highest;
     }
 
-    #ifdef WITH_MPI
-    /// Master waits until all processes send the specified tag.
-    /// Acts similarly to a Barrier for the master process, but lets it continue
-    /// doing work (though it doesn't do anything at the moment)
-    void HDF5Printer::master_wait_for_tag(Tags tag)
-    {
-       if(mpiSize>1)
-       {
-          if(myRank==0)
-          {
-             MPI_Status status;
-             int recv_buffer = 0; // To receive the null message
-             std::vector<bool> passed(mpiSize); // should init to "false"
-             passed[0] = true; // Set rank zero entry to 'true' so we don't wait for ourselves.
-
-             // sleep setup
-             struct timespec sleep_time;
-             sleep_time.tv_sec  = 0.1 ; // 1/10th of second 
-             sleep_time.tv_nsec = 0; // plus no nanoseconds
-
-             while( std::find(passed.begin(), passed.end(), false) != passed.end() ) // Pass when 'false' cannot be found
-             {
-                // Check whether other processes have caught up yet
-                for(unsigned int source=1;source<mpiSize;source++)
-                {
-                   //std::cout<<"rank "<<myRank<<": process "<<source<<" passed block? "<<passed[source]<<std::endl;
-                   if(not passed[source])
-                   {
-                      if( myComm.Iprobe(source, tag, &status) )
-                      {
-                         // Ok the source has now reached this function.
-                         passed[source] = true;
-                         myComm.Recv(&recv_buffer, 1, source, tag);
-                      } 
-                   }
-                }
-
-                // While waiting, do work here.
-  
-                // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
-                nanosleep(&sleep_time,NULL);
-            }
-          }
-          else
-          {
-             // Other processes simply signal that they have passed this point.
-             myComm.Isend(&waitfortag_send_buffer, 1, 0 /*master*/, tag, &req_null);
-          }
-       }
-    }
-    #endif
-
-
     /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     void HDF5Printer::initialise(const std::vector<int>& /*printmevec*/)
@@ -999,7 +963,7 @@ namespace Gambit
           if(not abnormal) // Don't do the combination in case of abnormal termination, since we cannot reliably wait for all the other processes to finish
           {
              #ifdef WITH_MPI
-             master_wait_for_tag(FINAL_SYNC);
+             myComm.masterWaitForAll(FINAL_SYNC);
              #endif
 
              logger() << LogTags::printers << "rank "<<myRank<<": passed FINAL_SYNC point in HDF5Printer finalise() routine" << EOM;

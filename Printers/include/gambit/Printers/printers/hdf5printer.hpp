@@ -171,19 +171,6 @@ namespace Gambit
         /// Check if PPIDpair exists in global index list
         bool seen_PPID_before(const PPIDpair& ppid);
 
-        #ifdef WITH_MPI
-        /// Master waits until all processes send the specified tag.
-        /// Used during finalise to allow master to wait for other
-        /// processes to finish before attempting to stitch together
-        /// output.
-        void master_wait_for_tag(Tags tag);
-
-        /// MPI variables to use in the above function;
-        int waitfortag_send_buffer = 0;
-        MPI_Request req_null = MPI_REQUEST_NULL;
-        #endif
-
-
         /// Function to ensure buffers are all synchronised to the same absolute position
         void synchronise_buffers();
  
