@@ -22,6 +22,11 @@
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
 ///  \date 2013 Nov
+///
+///  \author Ben Farmer
+///          (ben.farmer@gmail.com)
+///  \date 2015 Sep
+///
 ///  *********************************************
 
 #include <string>
@@ -76,14 +81,19 @@ namespace Gambit
     {
       result = (int) (*Pipes::nevents_int::Dep::nevents);
       // Randomly raise some ficticious alarms about this point, with probability x.
-      double x = 0.0;
+      double x = 0.5;
       if (Random::draw() < x)
       {
         //Example of how to raise an error from a module function.
-        ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
+        //ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
         //Example of how to declare a point invalid.
         invalid_point().raise("I don't like this point.");
       }
+    }
+
+    void test_xsection(double &result)
+    {
+       result = 1.; //trivial test
     }
 
     void function_pointer_retriever( double(*&result)(int&) )

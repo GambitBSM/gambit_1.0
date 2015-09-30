@@ -127,17 +127,11 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 500
+        nlive: 2000
         tol: 0.1
         aux_printer_txt_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.txt"
-          info_file: "runs/spartan_multinest/samples/gambit_output.txt_info"
         aux_printer_stats_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.stats"
-          info_file: "runs/spartan_multinest/samples/gambit_output.stats_info"
         aux_printer_live_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.live"
-          info_file: "runs/spartan_multinest/samples/gambit_output.live_info"
           
     gnest:
       plugin: gnest
