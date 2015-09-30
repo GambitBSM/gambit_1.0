@@ -75,7 +75,7 @@ def printcontents(item,prelines):
 
 printcontents(f,'')
                                         
-quit()
+#quit()
 
 ##  #test extraction of data from dataset
 
@@ -97,9 +97,9 @@ dset1=f['test/test2/Likelihood']
 dset2=f['test/test2/Likelihood_isvalid']
 preview("Likelihood",dset1,dset2)      
 
-dset1=f['test/test2/Posterior']
-dset2=f['test/test2/Posterior_isvalid']
-preview("Posterior",dset1,dset2)
+# dset1=f['test/test2/Posterior']
+# dset2=f['test/test2/Posterior_isvalid']
+# preview("Posterior",dset1,dset2)
 
 pid=f['test/test2/pointID']
 pidv=np.array(f['test/test2/pointID_isvalid'],dtype=np.bool)
@@ -108,6 +108,15 @@ preview("pointID",pid,pidv)
 rank=f['test/test2/MPIrank']
 rankv=np.array(f['test/test2/MPIrank_isvalid'],dtype=np.bool)
 preview("MPIrank",rank,rankv)
+
+print zip(pid[46300:46400],rank[46300:46400])
+index = np.where(np.array(pid)==46355)[0][0]
+print index
+print "46355? ", pid[index]
+print "valid? ", pidv[index]
+print "rank? ", rank[index]
+print "valid? ", rankv[index]
+#46355
 
 # Check for duplicates
 seen = []
