@@ -183,6 +183,28 @@ namespace Gambit {
     }
 
 
+    /// \brief Likelihoods for spin independent nuclear parameters. Follow treatment
+    /// of Cline, et. al. Phys. Rev. D. 88, 055025 (2013)
+    /// Default data:
+    ///  sigma_s = 43 +/- 8 MeV arXiv:1112.2435v1
+    ///  sigma_s < 70 MeV arXiv:1301.1765 -- Top-hat function not yet implemented
+    ///  sigma_l = 58 +/- 9 MeV
+
+    void lnL_sigmas_sigmal(double &result)
+    {
+        using namespace Pipes::lnL_sigmas_sigmal;
+        double sigmas = *Param["sigmas"];
+        double sigmal = *Param["sigmal"];
+        double sigmas_central = runOptions->getValueOrDef<double>(43., "sigmas_central");
+        double sigmas_error = runOptions->getValueOrDef<double>(8., "sigmas_error");
+        double sigmal_central = runOptions->getValueOrDef<double>(58., "sigmal_central");
+        double sigmal_error = runOptions->getValueOrDef<double>(9., "sigmal_error");
+
+        result = Stats::gaussian_loglikelihood(sigmas, sigmas_central, 0, sigmas_error)
+            + Stats::gaussian_loglikelihood(sigmal, sigmal_central, 0, sigmal_error);
+        logger() << "lnL for SI nuclear parameters is " << result << EOM;
+    }
+
     /*! \brief Helper function to dump gamma-ray spectra.
      *
      * NOTE: DEPRECATED!! (replaced by UnitTest)

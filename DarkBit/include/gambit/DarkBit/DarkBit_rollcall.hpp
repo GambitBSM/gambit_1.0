@@ -428,6 +428,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY lnL_SI_nuclear_parameters
+  START_CAPABILITY
+    #define FUNCTION lnL_sigmas_sigmal
+      START_FUNCTION(double)
+      ALLOW_MODELS(nuclear_params_sigma0_sigmal)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   // Simple WIMP property extractors =======================================
 
