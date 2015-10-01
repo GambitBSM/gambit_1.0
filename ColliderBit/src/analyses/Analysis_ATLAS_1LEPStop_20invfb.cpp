@@ -8,8 +8,6 @@
 #include "gambit/ColliderBit/mt2_bisect.h"
 
 /// @todo Remove the ROOT classes
-#include <TLorentzVector.h>
-#include <TVector2.h>
 
 using namespace std;
 
@@ -113,9 +111,11 @@ namespace Gambit {
 
         if(nTrueBJets<2)return results;
 
-        TLorentzVector jet1B,jet2B;
-        jet1B.SetPtEtaPhiE(trueBjet1->pT(),trueBjet1->eta(),trueBjet1->phi(),trueBjet1->E());
-        jet2B.SetPtEtaPhiE(trueBjet2->pT(),trueBjet2->eta(),trueBjet2->phi(),trueBjet2->E());
+
+	HEPUtils::P4 jet1B, jet2B;
+	jet1B.setXYZE(trueBjet1->mom().px(), trueBjet1->mom().py(), trueBjet1->mom().pz(), trueBjet1->E());
+	jet2B.setXYZE(trueBjet2->mom().px(), trueBjet2->mom().py(), trueBjet2->mom().pz(), trueBjet2->E());
+
 
         HEPUtils::P4 leptontmp;
         double leptonmass = 0;
@@ -128,21 +128,20 @@ namespace Gambit {
           leptontmp = muons[0]->mom();
         }
 
-        TLorentzVector lepton;
-        lepton.SetPtEtaPhiM(leptontmp.pT(),leptontmp.eta(),leptontmp.phi(),leptonmass/1000.);
 
-        TLorentzVector MET;
-        MET.SetXYZM(metVec.px(),metVec.py(),0.,0.);
+	HEPUtils::P4 lepton;
+	lepton.setXYZE(leptontmp.px(),leptontmp.py(),leptontmp.pz(),leptontmp.E());
 
-        TLorentzVector lepton_plus_jet1B;
-        TLorentzVector lepton_plus_jet2B;
 
+	HEPUtils::P4 lepton_plus_jet1B;
+	HEPUtils::P4 lepton_plus_jet2B;
+	
         lepton_plus_jet1B = lepton+jet1B;
         lepton_plus_jet2B = lepton+jet2B;
 
-        double pa_a[3] = { 0, lepton_plus_jet1B.Px(), lepton_plus_jet1B.Py() };
-        double pb_a[3] = { 80, jet2B.Px(), jet2B.Py() };
-        double pmiss_a[3] = { 0, MET.Px(), MET.Py() };
+        double pa_a[3] = { 0, lepton_plus_jet1B.px(), lepton_plus_jet1B.py() };
+        double pb_a[3] = { 80, jet2B.px(), jet2B.py() };
+        double pmiss_a[3] = { 0, metVec.px(), metVec.py() };
         double mn_a = 0.;
 
         mt2_bisect::mt2 mt2_event_a;
@@ -152,11 +151,11 @@ namespace Gambit {
 
         double mt2a = mt2_event_a.get_mt2();
 
-        double pa_b[3] = { 0, lepton_plus_jet2B.Px(), lepton_plus_jet2B.Py() };
-        double pb_b[3] = { 80, jet1B.Px(), jet1B.Py() };
-        double pmiss_b[3] = { 0, MET.Px(), MET.Py() };
+        double pa_b[3] = { 0, lepton_plus_jet2B.px(), lepton_plus_jet2B.py() };
+        double pb_b[3] = { 80, jet1B.px(), jet1B.py() };
+        double pmiss_b[3] = { 0, metVec.px(), metVec.py() };
         double mn_b = 0.;
-
+	
         mt2_bisect::mt2 mt2_event_b;
 
         mt2_event_b.set_momenta(pa_b,pb_b,pmiss_b);
@@ -165,7 +164,7 @@ namespace Gambit {
 
         double aMT2_BM = min(mt2a,mt2b);
         results.aMT2_BM=aMT2_BM;
-
+	
         if (nJet > 3){
           HEPUtils::Jet* jet3=0;
           for(HEPUtils::Jet* current: jets){
@@ -175,13 +174,13 @@ namespace Gambit {
             break;
           }
 
-          TLorentzVector jet3B;
-          jet3B.SetPtEtaPhiE(jet3->pT(),jet3->eta(),jet3->phi(),jet3->E());
-          //  std::cout<<"jet 3 "<<jet3B.Px()<<" "<<jet3B.Py()<<std::endl;
 
-          double pa_tau[3] = { 0, jet3B.Px(), jet3B.Py() };
-          double pb_tau[3] = { 0, lepton.Px(), lepton.Py() };
-          double pmiss_tau[3] = { 0, MET.Px(), MET.Py() };
+	  HEPUtils::P4 jet3B;
+	  jet3B.setXYZE(jet3->mom().px(), jet3->mom().py(), jet3->mom().pz(), jet3->mom().E());
+
+          double pa_tau[3] = { 0, jet3B.px(), jet3B.py() };
+          double pb_tau[3] = { 0, lepton.px(), lepton.py() };
+          double pmiss_tau[3] = { 0, metVec.px(), metVec.py() };
           double mn_tau = 0.;
 
           mt2_bisect::mt2 mt2_event_tau;
@@ -197,6 +196,7 @@ namespace Gambit {
         return results;
       }
 
+      
 
       void analyze(const HEPUtils::Event* event) {
         // Missing energy
@@ -311,7 +311,7 @@ namespace Gambit {
         //double mT = sqrt(2.*lepVec.pT()*met*(1.-cos(ptot.deltaPhi(lepVec))));
         //This is the ATLAS definition of dphi for this analysis
         //Note that it gives different answers to our dphi function (given above)
-        double mT=sqrt(2.*lepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
+        double mT=sqrt(2.*lepVec.pT()*met*(1. - cos(lepVec.deltaPhi(ptot))));
 
         //Calculate meff (all jets with pT>30 GeV, lepton pT and met)
         double meff = met + lepVec.pT();
@@ -383,12 +383,16 @@ namespace Gambit {
         for(int iJet=0;iJet<nJets;iJet++){
           for(int jJet=0;jJet<nJets;jJet++){
             if(iJet != jJet){
-              TLorentzVector iJetVec;
-              iJetVec.SetPtEtaPhiE(signalJets[iJet]->pT(),signalJets[iJet]->eta(),signalJets[iJet]->phi(),signalJets[iJet]->E());
-              TLorentzVector jJetVec;
-              jJetVec.SetPtEtaPhiE(signalJets[jJet]->pT(),signalJets[jJet]->eta(),signalJets[jJet]->phi(),signalJets[jJet]->E());
-              if(iJetVec.DeltaR(jJetVec) < mindR1 && (iJetVec+jJetVec).M() > 60.){
-                mindR1 =iJetVec.DeltaR(jJetVec);
+             
+	      HEPUtils::P4 iJetVec;
+	      iJetVec.setXYZE(signalJets[iJet]->mom().px(),signalJets[iJet]->mom().py(),signalJets[iJet]->mom().pz(),signalJets[iJet]->E());
+	      
+             
+	      HEPUtils::P4 jJetVec;
+	      jJetVec.setXYZE(signalJets[jJet]->mom().px(),signalJets[jJet]->mom().py(),signalJets[jJet]->mom().pz(),signalJets[jJet]->E());
+	      
+              if(iJetVec.deltaR_eta(jJetVec) < mindR1 && (iJetVec+jJetVec).m() > 60.){
+                mindR1 =iJetVec.deltaR_eta(jJetVec);
                 index1 = iJet;
                 index2 = jJet;
                 whad   = true;
@@ -399,14 +403,22 @@ namespace Gambit {
         if(whad){
           for(int kJet=0;kJet<nJets;kJet++){
             if(kJet !=index1 && kJet !=index2){
-              TLorentzVector kJetVec;
-              kJetVec.SetPtEtaPhiE(signalJets[kJet]->pT(),signalJets[kJet]->eta(),signalJets[kJet]->phi(),signalJets[kJet]->E());
-              TLorentzVector JetVec1;
-              JetVec1.SetPtEtaPhiE(signalJets[index1]->pT(),signalJets[index1]->eta(),signalJets[index1]->phi(),signalJets[index1]->E());
-              TLorentzVector JetVec2;
-              JetVec2.SetPtEtaPhiE(signalJets[index2]->pT(),signalJets[index2]->eta(),signalJets[index2]->phi(),signalJets[index2]->E());
-              if(kJetVec.DeltaR(JetVec1+JetVec2)<mindR2 && (JetVec1+JetVec2+kJetVec).M() > 130.){
-                mindR2=kJetVec.DeltaR(JetVec1+JetVec2);
+             
+
+	      HEPUtils::P4 kJetVec;
+	      kJetVec.setXYZE(signalJets[kJet]->mom().px(),signalJets[kJet]->mom().py(),signalJets[kJet]->mom().pz(),signalJets[kJet]->E());
+	      
+             
+	      HEPUtils::P4 JetVec1;
+	      JetVec1.setXYZE(signalJets[index1]->mom().px(),signalJets[index1]->mom().py(),signalJets[index1]->mom().pz(),signalJets[index1]->E());
+	      
+             
+	      HEPUtils::P4 JetVec2;
+	      JetVec2.setXYZE(signalJets[index2]->mom().px(),signalJets[index2]->mom().py(),signalJets[index2]->mom().pz(),signalJets[index2]->E());
+	      
+	      
+              if(kJetVec.deltaR_eta(JetVec1+JetVec2)<mindR2 && (JetVec1+JetVec2+kJetVec).m() > 130.){
+                mindR2=kJetVec.deltaR_eta(JetVec1+JetVec2);
                 index3=kJet;
                 Thad=true;
               }
@@ -414,13 +426,18 @@ namespace Gambit {
           }
         }
         if(Thad){
-          TLorentzVector JetVec1;
-          JetVec1.SetPtEtaPhiE(signalJets[index1]->pT(),signalJets[index1]->eta(),signalJets[index1]->phi(),signalJets[index1]->E());
-          TLorentzVector JetVec2;
-          JetVec2.SetPtEtaPhiE(signalJets[index2]->pT(),signalJets[index2]->eta(),signalJets[index2]->phi(),signalJets[index2]->E());
-          TLorentzVector JetVec3;
-          JetVec3.SetPtEtaPhiE(signalJets[index3]->pT(),signalJets[index3]->eta(),signalJets[index3]->phi(),signalJets[index3]->E());
-          mHadTop = (JetVec1+JetVec2+JetVec3).M();
+         
+	  HEPUtils::P4 JetVec1;
+	  JetVec1.setXYZE(signalJets[index1]->mom().px(),signalJets[index1]->mom().py(),signalJets[index1]->mom().pz(),signalJets[index1]->E());
+	          
+	  HEPUtils::P4 JetVec2;
+	  JetVec2.setXYZE(signalJets[index2]->mom().px(),signalJets[index2]->mom().py(),signalJets[index2]->mom().pz(),signalJets[index2]->E());
+
+	  HEPUtils::P4 JetVec3;
+	  JetVec3.setXYZE(signalJets[index3]->mom().px(),signalJets[index3]->mom().py(),signalJets[index3]->mom().pz(),signalJets[index3]->E());
+
+	  
+          mHadTop = (JetVec1+JetVec2+JetVec3).m();
         }
 
         bool passHadTop=false;
@@ -741,18 +758,18 @@ namespace Gambit {
         double scale_to = 100000.0;
         double trigger_cleaning_eff = 0.85;
 
-        /*
+        
           cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
           cout << "CUT FLOW: ATLAS-CONF-2013-037 - Appendix, Table 10 - stop -> top + LSP, stop 500, LSP 200 "<<std::endl;
           cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
           cout << "(NB: In Cut-flows in Appendices mjjj/mHadTop cut doesn't appear - is apparantly applied for all SRtN regions)"<<std::endl;
           cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        */
+        
 
-        //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
-        //for(int j=0; j<NCUTS; j++) {
-	//std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
-        //}
+        std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
+        for(int j=0; j<NCUTS; j++) {
+	std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
+        }
         /*
           cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
           cout << "BONUS amt2/mt2tau check - needs stop 700, LSP 1 "<<std::endl;
