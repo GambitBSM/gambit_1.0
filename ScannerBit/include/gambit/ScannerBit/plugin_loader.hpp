@@ -87,6 +87,7 @@ namespace Gambit
                 int print_all_to_screen (const std::string &plug_type = "") const;
                 std::string print_plugin (const std::string &) const;
                 std::string print_plugin (const std::string &, const std::string &) const;
+                std::string print_priors () const;
                 int print_plugin_to_screen (const std::string &) const;
                 int print_plugin_to_screen (const std::string &, const std::string &) const;
                 int print_plugin_to_screen (const std::vector<std::string> &) const;

@@ -37,7 +37,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 500
+        nlive: 10000
         tol: 0.1
         mmodal: 0
         # write native MultiNest ascii output files?
