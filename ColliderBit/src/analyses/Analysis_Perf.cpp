@@ -8,10 +8,12 @@
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 
 // ROOT
+#ifndef EXCLUDE_DELPHES
 #include <TH1.h>
 #include <TVirtualPad.h>
 #include <TApplication.h>
 #include <TFile.h>
+#endif
 
 using namespace std;
 
@@ -24,6 +26,8 @@ namespace Gambit {
 
     class Analysis_Perf : public HEPUtilsAnalysis {
     private:
+
+#ifndef EXCLUDE_DELPHES
       TH1F *_hElectron1Pt, *_hElectron1Eta, *_hElectron1Phi;
       TH1F *_hElectron2Pt, *_hElectron2Eta, *_hElectron2Phi;
       TH1F *_hMuon1Pt;
@@ -47,16 +51,20 @@ namespace Gambit {
       TFile *_ROOToutFile;
       static bool _openTFile;
       bool _hasTFile;
-
+#endif
     public:
 
       ~Analysis_Perf() {
-        if(_hasTFile)
+#ifndef EXCLUDE_DELPHES
+	if(_hasTFile)
           delete _ROOToutFile;
+#endif
       }
 
 
       Analysis_Perf() {
+#ifndef EXCLUDE_DELPHES
+	
         _output_filename = "SimOutput.root";
         _hasTFile = false;
         if(!Analysis_Perf::_openTFile) {
@@ -134,7 +142,8 @@ namespace Gambit {
         //
         _hCentralJetPt = new TH1F("CentralJetPt",";Jet p_{T} [GeV];", 50, 0., 500.);
         _hCentralJetE = new TH1F("CentralJetE",";Jet E [GeV];", 50, 0., 500.); 
-
+#endif
+	
       }
 
 
@@ -206,6 +215,9 @@ namespace Gambit {
 
 	// We now have the signal electrons, muons and jets; fill the histograms
 
+
+#ifndef EXCLUDE_DELPHES
+	
         // MET
         _hmet->Fill(event->met());
 	
@@ -305,6 +317,9 @@ namespace Gambit {
 
         if (signalMuons.size() > 0) _hMuon1Pt->Fill(signalMuons[0]->pT());
         if (signalMuons.size() > 1) _hMuon2Pt->Fill(signalMuons[1]->pT());
+
+#endif
+
       }
 
 
@@ -315,7 +330,9 @@ namespace Gambit {
         Analysis_Perf* specificOther = dynamic_cast<Analysis_Perf*>(other);
 
         // Here we will add the subclass member variables:
-        _hElectron1Pt->Add(specificOther->_hElectron1Pt);
+#ifndef EXCLUDE_DELPHES
+
+	_hElectron1Pt->Add(specificOther->_hElectron1Pt);
         _hElectron1Eta->Add(specificOther->_hElectron1Eta);
         _hElectron1Phi->Add(specificOther->_hElectron1Phi);
         _hElectron2Pt->Add(specificOther->_hElectron2Pt);
@@ -361,6 +378,8 @@ namespace Gambit {
         _hBJetEta->Add(specificOther->_hBJetEta);
         _hBJetPhi->Add(specificOther->_hBJetPhi);
         _hBJetE->Add(specificOther->_hBJetE);
+#endif
+
       }
 
 
@@ -397,10 +416,12 @@ namespace Gambit {
           _hJetE->Write();
 
           _hNmuon->Write();*/
+#ifndef EXCLUDE_DELPHES
+	
         if(_hasTFile)
           _ROOToutFile->Write();
         //_ROOToutFile->Close();
-
+#endif
         /// @todo We should close the file. Shouldn't we also delete the histo pointers?... or are they owned by the file?
       }
 

@@ -5,9 +5,6 @@
 
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 
-#include <TLorentzVector.h>
-#include <TVector2.h>
-
 /* The ATLAS 3 lepton EW analysis (20fb^-1)
 
    based on: ATLAS-CONF-2013-035
@@ -288,7 +285,7 @@ namespace Gambit {
         double mT=0;
         if(signalLeptons.size()==3 && extralepID!=-1){
           HEPUtils::P4 extralepVec=signalLeptons.at(extralepID)->mom();
-          mT=sqrt(2.*extralepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(extralepVec.phi()-ptot.phi()))));
+          mT=sqrt(2.*extralepVec.pT()*met*(1. - cos(extralepVec.deltaPhi(ptot))));
         }
 
         bool isSRNoZc=false;

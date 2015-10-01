@@ -759,17 +759,17 @@ namespace Gambit {
         double trigger_cleaning_eff = 0.85;
 
         
-          cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-          cout << "CUT FLOW: ATLAS-CONF-2013-037 - Appendix, Table 10 - stop -> top + LSP, stop 500, LSP 200 "<<std::endl;
-          cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-          cout << "(NB: In Cut-flows in Appendices mjjj/mHadTop cut doesn't appear - is apparantly applied for all SRtN regions)"<<std::endl;
-          cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+	//cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+	// cout << "CUT FLOW: ATLAS-CONF-2013-037 - Appendix, Table 10 - stop -> top + LSP, stop 500, LSP 200 "<<std::endl;
+	//cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
+	//cout << "(NB: In Cut-flows in Appendices mjjj/mHadTop cut doesn't appear - is apparantly applied for all SRtN regions)"<<std::endl;
+	//cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
         
 
-        std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
-        for(int j=0; j<NCUTS; j++) {
-	std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
-        }
+        //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
+        //for(int j=0; j<NCUTS; j++) {
+	//std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
+        //}
         /*
           cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
           cout << "BONUS amt2/mt2tau check - needs stop 700, LSP 1 "<<std::endl;

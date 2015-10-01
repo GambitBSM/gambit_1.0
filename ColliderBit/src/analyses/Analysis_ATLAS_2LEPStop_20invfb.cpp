@@ -26,7 +26,6 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    //Function that mimics the TLorentzVector deltaPhi function
     //Puts dphi in the range -pi to pi
     double Phi_mpi_pi(double x){
       while (x >= M_PI) x -= 2*M_PI;
@@ -166,16 +165,8 @@ namespace Gambit {
         bool isdphib=false;
 
 
-        //TLorentzVector lep1; TLorentzVector lep2;
-
-        //TLorentzVector metvec;
-        //metvec.SetPtEtaPhiE(ptot.pT(),ptot.eta(),ptot.phi(),ptot.E());
-
         //Calculate MT2
         if (nLeptons==2) {
-
-          //lep1.SetPtEtaPhiE(signalLeptons.at(0)->pT(),signalLeptons.at(0)->eta(),signalLeptons.at(0)->phi(),signalLeptons.at(0)->E());
-          //lep2.SetPtEtaPhiE(signalLeptons.at(1)->pT(),signalLeptons.at(1)->eta(),signalLeptons.at(1)->phi(),signalLeptons.at(1)->E());
 
 
           if(((signalLeptons.at(0)->pid()<0 && signalLeptons.at(1)->pid()>0) || (signalLeptons.at(0)->pid()>0 && signalLeptons.at(1)->pid()<0))) isOS=true;
@@ -203,11 +194,6 @@ namespace Gambit {
           double temp=ptllmet.phi()-ptot.phi();
           double dphib=Phi_mpi_pi((double)temp);
 
-          //TLorentzVector ptllmet_root;
-          //ptllmet_root = lep1 + lep2 + metvec;
-          //double temp_root = ptllmet_root.DeltaPhi(metvec);
-
-          //std::cout << "DPHIB " << dphib << " DPHIBROOT " << temp_root << " ele " << signalElectrons.size() << " muo " << signalMuons.size() << std::endl;
 
           if(fabs(dphib)<1.5) isdphib=true;
 
