@@ -187,9 +187,9 @@ set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
 set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.209")
 # - Actual configure and compile commands
 ExternalProject_Add(pythia
-  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-           COMMAND ${CMAKE_COMMAND} -E copy_directory ${pythia_location} ${pythia_dir}
+  URL http://home.thep.lu.se/~torbjorn/pythia8/pythia8209.tgz
+  URL_MD5 1b9e9dc2f8a2c2db63bce739242fbc12
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${pythia_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
@@ -202,6 +202,61 @@ ExternalProject_Add(pythia
 )
 enable_auto_rebuild(pythia)
 add_external_clean(pythia ${pythia_dir} distclean)
+
+ExternalProject_Add_Step(pythia apply_hacks
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.cc ${pythia_dir}/src/Pythia.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.cc ${pythia_dir}/src/SusyLesHouches.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ResonanceDecays.cc ${pythia_dir}/src/ResonanceDecays.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.h ${pythia_dir}/include/Pythia8/Pythia.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.h ${pythia_dir}/include/Pythia8/SusyLesHouches.h
+  DEPENDEES download
+  DEPENDERS patch
+)
+
+ExternalProject_Add_Step(pythia BOSSing
+  COMMAND cd ../../gambit_internal/extras/boss && cp modules/cfg_Pythia_8_209.py modules/cfg.py
+  COMMAND cd ../../gambit_internal/extras/boss && rm -r pythia_BOSS_output
+  COMMAND cd ../../gambit_internal/extras/boss && python boss.py ../../../gambit_repos_main/Backends/installed/Pythia/8.209/include/Pythia8/Pythia.h
+  DEPENDEES apply_hacks
+  DEPENDERS patch
+)
+
+
+
+## Pythia
+## - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
+#string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
+## - Add compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
+#if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
+#  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -xavx")
+#elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
+#  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -O3 -ffast-math")
+#  if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+#    set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -mavx")  
+#  endif()
+#endif()
+## - Set include directories
+#set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
+## - Set local paths
+#set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
+#set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.209")
+## - Actual configure and compile commands
+#ExternalProject_Add(pythia
+#  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
+#           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
+#           COMMAND ${CMAKE_COMMAND} -E copy_directory ${pythia_location} ${pythia_dir}
+#  SOURCE_DIR ${pythia_dir}
+#  BUILD_IN_SOURCE 1
+#  DOWNLOAD_ALWAYS 0
+#  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so"
+#  COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
+#  COMMAND echo "OSX DEBUG: pythia_CXXFLAGS = ${pythia_CXXFLAGS}"
+#  COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
+#  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}"
+#  INSTALL_COMMAND ""
+#)
+#enable_auto_rebuild(pythia)
+#add_external_clean(pythia ${pythia_dir} distclean)
 
 # Fastsim
 set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
