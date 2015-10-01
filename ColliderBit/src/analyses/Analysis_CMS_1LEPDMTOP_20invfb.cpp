@@ -95,7 +95,8 @@ namespace Gambit {
         }
 
         vector<HEPUtils::Jet*> baselineJets;
-	vector<LorentzVector> jets;
+	//vector<LorentzVector> jets;
+	vector<HEPUtils::P4> jets;
         vector<HEPUtils::Jet*> bJets;
 	vector<bool> btag;
 	
@@ -107,8 +108,9 @@ namespace Gambit {
         for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 4.0) {
 	    baselineJets.push_back(jet);
-	    LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ; 
-	    jets.push_back(j1);
+	    //LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ; 
+	    //jets.push_back(j1);
+	    jets.push_back(jet->mom());
 	    bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
 	    bool isB=false;
 
@@ -146,12 +148,14 @@ namespace Gambit {
 
 	//Calculate MT2W
 	double MT2W=0;
+	double MT2W_HU=0;
 	if (nJets > 1 && nLeptons==1) {
           HEPUtils::P4 lepVec;
 	  lepVec=baselineLeptons[0]->mom();
-          LorentzVector lep (lepVec.px(),lepVec.py(),lepVec.pz(),lepVec.E()); 
+          //LorentzVector lep (lepVec.px(),lepVec.py(),lepVec.pz(),lepVec.E()); 
 	  float phi=float (ptot.phi());
-          MT2W=calculateMT2w(jets, btag, lep, met, phi);
+          //MT2W=calculateMT2w(jets, btag, lep, met, phi);
+	  MT2W=calculateMT2wHepUtils(jets,btag,lepVec,met,phi);
 	}
 
 	//Calculate dPhi variable
