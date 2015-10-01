@@ -1,0 +1,117 @@
+
+
+  ========================================
+  ||                                    ||
+  ||  BOSS - Backend-On-a-Stick-Script  ||
+  ||                                    ||
+  ========================================
+
+
+Author: 
+  Anders Kvellestad 
+  (with much appreciated help from Pat Scott, Lars A. Dal and Abram Krislock.)
+
+Date:
+  May 2015
+
+Short description:
+  BOSS is a tool for turning a C++ code into a suitable
+  GAMBIT backend, including dynamic loading of classes.
+
+
+
+Requirements:
+-------------
+
+gccxml: 
+  For parsing C++ code BOSS makes use of the tool 'gccxml',
+  available from http://gccxml.github.io. 
+
+  On many Linux systems gccxml can be installed via the 
+  following command: apt-get install gccxml
+
+
+
+Quick guide:
+------------
+
+1. Edit the settings in modules/cfg.py.
+   
+   This is where you specify what classes and functions BOSS should
+   try to make available from GAMBIT, and provide further information
+   about the C++ code, such as paths and file extensions.
+
+
+2. Run BOSS: ./boss.py [options] <input files>
+   
+   <input files> is a list of C++ header or source files that contain
+   the requested classes and functions. It is sufficient that declarations
+   of the classes/functions are reachable through a chain of C++ include
+   statements. Thus, if there is one "main" header that includes most
+   other parts of the code, it will usually be sufficient to list only
+   this file.
+
+   Example: ./boss.py path_to_Pythia/include/Pythia8/Pythia.h
+
+   To list the available command line options, run: ./boss.py --help
+
+
+3. When BOSS has finished, a list of further instructions on how to make
+   the backend accessible from GAMBIT is shown.
+
+
+
+Limitations:
+------------
+
+First of all, any limitation of gccxml will automatically also be a limitation of BOSS.
+As gccxml cannot properly parse some of the new C++11 syntax, BOSS will not be able to
+understand such code. (However, see the section 'Future plans' below.)
+
+To accomplish dynamic loading of classes while maintaining the original class interface,
+BOSS constructs a "wrapper class" for every loaded class. This wrapper class type is
+shared by both the backend library and GAMBIT. However, there are several scenarios that
+BOSS cannot yet deal with properly, either because of limitations in gccxml or due to
+challenges related to this wrapper class system. In such cases BOSS will usually be able
+to generate functioning code, but there will be no interface to the problematic elements.
+The limitations most commonly encountered are:
+
+- Class members that make use of another class that is not loaded.
+
+- Class member variables that are of type pointer-to-loaded-class.
+
+- Function pointers.
+
+- Templated classes and functions.
+
+- Arrays containing a loaded class.
+
+Often the limitations can easily be overcome by small additions to the C++ code.
+For instance, if a class contains a member variable 'x_arr' that is an array containing 
+instances of some loaded type 'X', BOSS cannot generate an interface to the 'x_arr' variable.
+However, if the original class also contains some simple interface functions, e.g. 
+  
+  X& get_x(int i)  { return x_arr[i]; }
+
+and
+
+  void set_x(int i, X x_in) { x_arr[i] = x_in; },
+
+BOSS will happily generate an interface to these functions, allowing the user to access the
+content of 'x_arr'.
+
+
+
+Future plans:
+-------------
+
+Several of the current limitations of BOSS are due to limitations in gccxml. However, gccxml 
+was recently superseeded by a new tool 'CastXML'. The development of CastXML is supposed to
+follow that of new compilers more closely compared to what has been the case for gccxml.
+Among other things, this implies the ability to parse new C++11 syntax. Future versions of BOSS 
+will therefore most probably be based CastXML, with the expectation that this will help
+extend the current functionality.
+
+
+
+
