@@ -37,6 +37,9 @@
 #************************************************
 
 
+# Set BOSS directory
+set(BOSS_dir "${PROJECT_SOURCE_DIR}/BOSS")
+
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
 set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
@@ -214,9 +217,9 @@ ExternalProject_Add_Step(pythia apply_hacks
 )
 
 ExternalProject_Add_Step(pythia BOSSing
-  COMMAND cd ../../gambit_internal/extras/boss && cp modules/cfg_Pythia_8_209.py modules/cfg.py
-  COMMAND cd ../../gambit_internal/extras/boss && rm -r pythia_BOSS_output
-  COMMAND cd ../../gambit_internal/extras/boss && python boss.py ../../../gambit_repos_main/Backends/installed/Pythia/8.209/include/Pythia8/Pythia.h
+  COMMAND cd ${BOSS_dir} && cp modules/cfg_Pythia_8_209.py modules/cfg.py 
+  COMMAND cd ${BOSS_dir} && rm -r BOSS_output
+  COMMAND cd ${BOSS_dir} && python boss.py ${pythia_dir}/include/Pythia8/Pythia.h
   DEPENDEES apply_hacks
   DEPENDERS patch
 )

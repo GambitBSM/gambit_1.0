@@ -20,10 +20,10 @@ gambit_base_namespace  = ''
 
 # ~~~~~ Information about the external code ~~~~~
 
-include_paths = ['pythia8209/include', '../../modules/contrib/slhaea/include']
-source_path   = 'pythia8209/src'
+include_paths = ['../Backends/installed/Pythia/8.209/include', '../contrib/slhaea/include']
+source_path   = '../Backends/installed/Pythia/8.209/src'
 
-accepted_paths = ['pythia8209']
+accepted_paths = ['../Backends/installed/Pythia/8.209/']
 
 
 loaded_classes = [

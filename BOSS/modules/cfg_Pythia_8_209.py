@@ -20,10 +20,10 @@ gambit_base_namespace  = ''
 
 # ~~~~~ Information about the external code ~~~~~
 
-include_paths = ['../../../gambit_repos_main/Backends/installed/Pythia/8.209/include', '../../../gambit_repos_main/contrib/slhaea/include']
-source_path   = '../../../gambit_repos_main/Backends/installed/Pythia/8.209/src'
+include_paths = ['../Backends/installed/Pythia/8.209/include', '../contrib/slhaea/include']
+source_path   = '../Backends/installed/Pythia/8.209/src'
 
-accepted_paths = ['../../../gambit_repos_main/Backends/installed/Pythia/8.209/']
+accepted_paths = ['../Backends/installed/Pythia/8.209/']
 
 
 loaded_classes = [
