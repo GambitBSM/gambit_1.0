@@ -5,7 +5,6 @@
 
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
-#include "gambit/ColliderBit/mt2w.h"
 
 /// @todo Remove the ROOT classes...
 
@@ -89,7 +88,7 @@ namespace Gambit {
         }
 
         vector<HEPUtils::Jet*> baselineJets;
-	vector<LorentzVector> jets;
+	vector<HEPUtils::P4> jets;
         vector<HEPUtils::Jet*> bJets;
 	vector<bool> btag;
 	
@@ -101,8 +100,8 @@ namespace Gambit {
         for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 5.0) {
 	    baselineJets.push_back(jet);
-	    LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ; 
-	    jets.push_back(j1);
+	    //LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ; 
+	    jets.push_back(jet->mom());
 	    bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
 	    bool isB=false;
 
