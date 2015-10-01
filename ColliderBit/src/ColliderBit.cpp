@@ -79,11 +79,11 @@ namespace Gambit
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
-    bool allProcessesVetoed;
+    bool thisProcessVetoed, allProcessesVetoed;
     double xsecGen;
-    int pythiaConfigurations, pythiaNumber, nEvents;
+    int pythiaConfigurations, pythiaNumber, nEvents, it;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,xsecGen,pythiaNumber,pythiaConfigurations,nEvents,analysisNames,globalAnalyses,allProcessesVetoed
+    #define SHARED_OVER_OMP iter,xsecGen,pythiaNumber,pythiaConfigurations,nEvents,it,analysisNames,globalAnalyses,thisProcessVetoed,allProcessesVetoed
 
 
     /// *************************************************
@@ -95,6 +95,7 @@ namespace Gambit
     {
       using namespace Pipes::operatePythia;
       nEvents = 0;
+      // Set allProcessesVetoed to false once some events are generated.
       allProcessesVetoed = true;
 
       // Do the base-level initialisation
@@ -114,6 +115,7 @@ namespace Gambit
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
       {
+        piped_invalid_point.check();
         pythiaNumber = 0;
         #pragma omp critical (runOptions)
         {
@@ -123,24 +125,23 @@ namespace Gambit
 
         while (pythiaNumber < pythiaConfigurations)
         {
+          piped_invalid_point.check();
           xsecGen = 0.;
+          thisProcessVetoed = false;
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             Loop::executeIteration(START_SUBPROCESS);
-            if(*Loop::done) {
+            if(*Loop::done and thisProcessVetoed) {
               logger() << "This subprocess was vetoed." << EOM;
-              Loop::executeIteration(END_SUBPROCESS);
-            } else {
+            } else if (not *Loop::done) {
               allProcessesVetoed = false;
-              #pragma omp for
-              for (int i = 1; i <= nEvents; ++i) {
-                Loop::executeIteration(i);
-              }
-              Loop::executeIteration(END_SUBPROCESS);
+              it = 1;
+              while(not *Loop::done and it <= nEvents) { Loop::executeIteration(it++); }
             }
+            Loop::executeIteration(END_SUBPROCESS);
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
                     << " number " << std::to_string(pythiaNumber) << " has finished." << std::endl;
@@ -240,7 +241,7 @@ namespace Gambit
             else
               result.init(pythia_doc_path, pythiaOptions);
           } catch (SpecializablePythia::InitializationError &e) {
-            logger() << "     ---> initialization veto." << EOM;
+            piped_invalid_point.request("Bad point: Pythia can't initialize");
             Loop::wrapup();
             return;
           }
@@ -280,7 +281,7 @@ namespace Gambit
           }
           catch (SpecializablePythia::InitializationError &e)
           {
-            logger() << "     ---> initialization veto." << EOM;
+            piped_invalid_point.request("Bad point: Pythia can't initialize");
             Loop::wrapup();
             return;
           }
@@ -300,14 +301,10 @@ namespace Gambit
             if (issPtr->good()) totalxsec += xsec;
             delete issPtr;
           }
-          logger() << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << "\n";
+          logger() << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << EOM;
           
           /// TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
-          if (totalxsec * 1e12 * 20. < 1.) {
-            logger() << "     ---> xsec veto.";
-            Loop::wrapup();
-          }
-          logger() << EOM;
+          if (totalxsec * 1e12 * 20. < 1.) Loop::wrapup();
         }
       }
 
@@ -421,7 +418,7 @@ namespace Gambit
       try {
         (*Dep::HardScatteringSim).nextEvent(result);
       } catch (SpecializablePythia::EventFailureError &e) {
-        logger() << "     ---> event faliure veto." << EOM;
+        piped_invalid_point.request("Bad point: Pythia can't generate events");
         Loop::wrapup();
         return;
       }

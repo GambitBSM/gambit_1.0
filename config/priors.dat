@@ -1,0 +1,77 @@
+#############################################################################
+# GAMBIT central scanner plugin description database                        #
+#                                                                           #
+# GAMBIT will parse this file and try to match the entries                  #
+# to the models it has registered. If there are any                         #
+# conflicts it will report them, and if any models                          #
+# are lacking descriptions those will be reported too.                      #
+# This is then merged with internally known information                     #
+# to create a centralised database of model information.                    #
+# This is found in the file "<insert name here>"                            #
+#                                                                           #
+# Note: Yaml syntax for multi-line strings is this:                         #
+#                                                                           #
+#body: |                                                                    #
+#  This is a multi-line string.                                             #
+#  "special" metacharacters may                                             #
+#  appear here. The extent of this string is                                #
+#  indicated by indentation.                                                #
+#                                                                           #
+# You may tell gambit to ignore any new lines with                          #
+# #remove_newlines                                                          #
+# text                                                                      #
+# #dont_remove_newlines                                                     #
+#                                                                           #
+# Or you can end the ignore scope the a blank line                          #
+# #remove_newlines                                                          #
+# text                                                                      #
+#                                                                           #
+# unaffected_text                                                           #
+#############################################################################
+
+priors: |
+  one dimensional priors:
+  #remove_newlines
+      Specifies a 1 dimensional prior.  Different prior types that fall into this
+      catagory are flat (uniform distribution), log (1/x distribution), and trig
+      functions (sin, cos, tan, cot).  If same_as, fixed_value and prior_type are not
+      specified, a flat prior is assumed.
+    
+      Inifile entries:
+          range:       specifies the range in the form [low, hi]
+          shift (0):   adds the shift value to the parameter 
+          scale (1):   multiplies the scale value to the parameter 
+          
+  multidimensional priors:
+  #remove_newlines
+      Specifies the a multi-variate prior.  There are two priors of this type -- 
+      gaussian and cauchy
+
+      Inifile entries:
+          cov:   coveriance matrix
+  #remove_newlines
+          sigs ([1...]):  specifies the sqrt of the diagonal components of the coveriance matrix.
+                        Defaults to 1 if not specified.
+  #dont_remove_newlines
+          mean ([0...]):  specifies the mean or median.  Defaults to 0 if not specified.
+        
+  same_as:
+  #remove_newlines
+      Specifies that this parameter is the same as another parameter.  This prior
+      does not need the prior_type tag
+    
+      Inifile entries:
+          same_as:     parameter that is the same as the current parameter
+          shift (0):   adds the shift value to the parameter 
+          scale (1):   multiplies the scale value to the parameter 
+        
+  fixed_value:
+  #remove_newlines
+      Sets the parameter to a fixed value.  This prior
+      does not need the prior_type tag
+    
+  dummy: 
+      Does absolutly nothing.
+        
+
+      

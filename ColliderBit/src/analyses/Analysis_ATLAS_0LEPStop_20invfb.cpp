@@ -7,9 +7,6 @@
 #include "gambit/ColliderBit/mt2_bisect.h"
 
 /// @todo Eliminate the ROOT vectors!
-#include <TLorentzVector.h>
-#include <TVector2.h>
-
 
 using namespace std;
 
@@ -301,18 +298,21 @@ namespace Gambit {
         }
 
         //mjjj combinations
-        TLorentzVector mbjj0; TLorentzVector mbjj1;
-        double mindphi_12 = 9999.;
-        TLorentzVector W1;
-        TLorentzVector W2;
-        TLorentzVector T1;
-        TLorentzVector T2;
-        TLorentzVector jet1;
-        TLorentzVector jet2;
-        TLorentzVector jet3;
-        TLorentzVector jet4;
-        TLorentzVector jet5;
-        TLorentzVector jet6;
+      
+	HEPUtils::P4 mbjj0, mbjj1;
+
+	double mindphi_12 = 9999.;
+      	
+	HEPUtils::P4 W1;
+	HEPUtils::P4 W2;
+	HEPUtils::P4 T1;
+	HEPUtils::P4 T2;
+	HEPUtils::P4 jet1;
+	HEPUtils::P4 jet2;
+	HEPUtils::P4 jet3;
+	HEPUtils::P4 jet4;
+	HEPUtils::P4 jet5;
+	HEPUtils::P4 jet6;
 
         //Need to form top quark four vectors from jets
         //Use the two leading b jets as the b jets (a slight departure from ATLAS which uses the two jets with the highest b weight)
@@ -344,36 +344,47 @@ namespace Gambit {
           unsigned int b1 = 0;
           for(unsigned int k=0; k<selectNonBJets.size(); k++) {
             for(unsigned int l=k+1; l<selectNonBJets.size(); l++) {
-              jet1.SetPtEtaPhiE(selectNonBJets[k]->pT(),selectNonBJets[k]->eta(),selectNonBJets[k]->phi(),selectNonBJets[k]->E());
-              jet2.SetPtEtaPhiE(selectNonBJets[l]->pT(),selectNonBJets[l]->eta(),selectNonBJets[l]->phi(),selectNonBJets[l]->E());
-              if(jet1.DeltaR(jet2)<mindphi_12) {
+	      jet1.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
+	      jet2.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
+	     
+	      if(jet1.deltaR_eta(jet2)<mindphi_12) {
                 j1 = k;
                 j2 = l;
-                mindphi_12 = jet1.DeltaR(jet2);
+                mindphi_12 = jet1.deltaR_eta(jet2);
                 W1 = jet1+jet2;
+
               }
+	      
             }
           }
+
+	  
           double mindphi_w1j3 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
-            jet3.SetPtEtaPhiE(selectBJets[p]->pT(),selectBJets[p]->eta(),selectBJets[p]->phi(),selectBJets[p]->E());
-            if(jet3.DeltaR(W1)<mindphi_w1j3) {
+          
+	    jet3.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
+            if(jet3.deltaR_eta(W1)<mindphi_w1j3) {
               b1 = p;
-              mindphi_w1j3 = jet3.DeltaR(W1);
+              mindphi_w1j3 = jet3.deltaR_eta(W1);
               T1 = W1+jet3;
+	  
             }
           }
-          double mindphi_45 = 9999.;
+
+	  double mindphi_45 = 9999.;
           for(unsigned int k=0; k<selectNonBJets.size(); k++) {
             for(unsigned int l=k; l<selectNonBJets.size(); l++) {
               if(k!=j1 && k!=j2 && l!=j1 && l!=j2) {
-                jet4.SetPtEtaPhiE(selectNonBJets[k]->pT(),selectNonBJets[k]->eta(),selectNonBJets[k]->phi(),selectNonBJets[k]->E());
-                jet5.SetPtEtaPhiE(selectNonBJets[l]->pT(),selectNonBJets[l]->eta(),selectNonBJets[l]->phi(),selectNonBJets[l]->E());
-                if(jet4.DeltaR(jet5)<mindphi_45) {
+              
+		jet4.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
+		jet5.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
+
+		if(jet4.deltaR_eta(jet5)<mindphi_45) {
                   //j4 = k;
                   //j5 = l;
-                  mindphi_45 = jet4.DeltaR(jet5);
+                  mindphi_45 = jet4.deltaR_eta(jet5);
                   W2 = jet4+jet5;
+		
                 }
               }
             }
@@ -381,11 +392,14 @@ namespace Gambit {
           double mindphi_w2j6 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
             if(p!=b1) {
-              jet6.SetPtEtaPhiE(selectBJets[p]->pT(),selectBJets[p]->eta(),selectBJets[p]->phi(),selectBJets[p]->E());
-              if(jet6.DeltaR(W2)<mindphi_w2j6) {
+           
+	      jet6.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
+
+              if(jet6.deltaR_eta(W2)<mindphi_w2j6) {
                 //j6 = p;
-                mindphi_w2j6 = jet6.DeltaR(W2);
+                mindphi_w2j6 = jet6.deltaR_eta(W2);
                 T2 = W2+jet6;
+	
               }
             }
           }
@@ -423,8 +437,8 @@ namespace Gambit {
         if(met>300.)cut_METGt300=true;
         if(met>350.)cut_METGt350=true;
         //if(nJets>=6) {
-        //if(mbjj0.M()<270 && mjjj0.M()>80) cut_mjjj0=true;
-        //if(mjjj1.M()<270 && mjjj1.M()>80) cut_mjjj1=true;
+        //if(mbjj0.m()<270 && mjjj0.m()>80) cut_mjjj0=true;
+        //if(mjjj1.m()<270 && mjjj1.m()>80) cut_mjjj1=true;
         //}
 
         //Calculate min transverse mass between signal jets and ptmiss
@@ -441,13 +455,13 @@ namespace Gambit {
         bool isSRA3=false;
         bool isSRA4=false;
 
-        if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_6jets && mbjj0.M() < 225. && mbjj1.M() < 250. && cut_tau && cut_METGt150)isSRA1=true;
+        if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_6jets && mbjj0.m() < 225. && mbjj1.m() < 250. && cut_tau && cut_METGt150)isSRA1=true;
 
-        if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_6jets && mbjj0.M() < 225. && mbjj1.M() < 250. && cut_tau && cut_METGt250)isSRA2=true;
+        if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_6jets && mbjj0.m() < 225. && mbjj1.m() < 250. && cut_tau && cut_METGt250)isSRA2=true;
 
-        if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_6jets && mbjj0.M() > 50. && mbjj0.M() < 250. && mbjj1.M() > 50. && mbjj1.M() < 400. && mtMin > 50. && cut_tau && cut_METGt300)isSRA3=true;
+        if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_6jets && mbjj0.m() > 50. && mbjj0.m() < 250. && mbjj1.m() > 50. && mbjj1.m() < 400. && mtMin > 50. && cut_tau && cut_METGt300)isSRA3=true;
 
-        if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_6jets && mbjj0.M() > 50. && mbjj0.M() < 250. && mbjj1.M() > 50. && mbjj1.M() < 400. && mtMin > 50. && cut_tau && cut_METGt350)isSRA4=true;
+        if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_6jets && mbjj0.m() > 50. && mbjj0.m() < 250. && mbjj1.m() > 50. && mbjj1.m() < 400. && mtMin > 50. && cut_tau && cut_METGt350)isSRA4=true;
 
         //Now do the mixed regions
 

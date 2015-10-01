@@ -8,10 +8,12 @@
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 
 // ROOT
+#ifndef EXCLUDE_DELPHES
 #include <TH1.h>
 #include <TVirtualPad.h>
 #include <TApplication.h>
 #include <TFile.h>
+#endif
 
 using namespace std;
 
@@ -24,14 +26,13 @@ namespace Gambit {
 
     class Analysis_Perf : public HEPUtilsAnalysis {
     private:
-      TH1F *_hBosonPt, *_hBosonEta, *_hBosonPhi;
+
+#ifndef EXCLUDE_DELPHES
       TH1F *_hElectron1Pt, *_hElectron1Eta, *_hElectron1Phi;
       TH1F *_hElectron2Pt, *_hElectron2Eta, *_hElectron2Phi;
       TH1F *_hMuon1Pt;
       TH1F *_hMuon2Pt;
-      TH1F *_hElectron1Pt_truth, *_hElectron1Eta_truth, *_hElectron1Phi_truth;
-      TH1F *_hElectron2Pt_truth, *_hElectron2Eta_truth, *_hElectron2Phi_truth;
-      TH1F *_hNelec, *_hNelec_truth, *_hNelec30, *_hNelec100, *_hNelec500;
+      TH1F *_hNelec, *_hNelec30, *_hNelec100, *_hNelec500;
       TH1F *_hNtau, *_hNtau30, *_hNtau100, *_hNtau500;
       TH1F *_hNmuon, *_hNmuon30, *_hNmuon100, *_hNmuon500;
       TH1F *_hNjet30, *_hNjet100, *_hNjet500;
@@ -50,16 +51,20 @@ namespace Gambit {
       TFile *_ROOToutFile;
       static bool _openTFile;
       bool _hasTFile;
-
+#endif
     public:
 
       ~Analysis_Perf() {
-        if(_hasTFile)
+#ifndef EXCLUDE_DELPHES
+	if(_hasTFile)
           delete _ROOToutFile;
+#endif
       }
 
 
       Analysis_Perf() {
+#ifndef EXCLUDE_DELPHES
+	
         _output_filename = "SimOutput.root";
         _hasTFile = false;
         if(!Analysis_Perf::_openTFile) {
@@ -69,87 +74,76 @@ namespace Gambit {
           _hasTFile = true;
         }
 
-        _hBosonPt = new TH1F("BosonPt", "Boson generated p_{T};GeV;", 100, 0., 200.);
-        _hBosonEta = new TH1F("BosonEta", "Boson generated #eta;", 100, -5., 5.);
-        _hBosonPhi = new TH1F( "BosonPhi", "Boson generated #phi;", 100, -6.0, 6.0);
+        _hElectron1Pt = new TH1F("Electron1Pt", ";Leading e p_{T} [GeV];", 40, 0., 200.);
+        _hElectron1Eta = new TH1F("Electron1Eta", ";Leading e #eta;", 40, -5., 5.);
+        _hElectron1Phi = new TH1F("Electron1Phi", ";Leading e #phi;", 40, -6.0, 6.0);
 
-        _hElectron1Pt = new TH1F("Electron1Pt", "Leading electron p_{T};GeV;", 100, 0., 200.);
-        _hElectron1Eta = new TH1F("Electron1Eta", "Leading electron #eta;", 100, -5., 5.);
-        _hElectron1Phi = new TH1F("Electron1Phi", "Leading electron #phi;", 100, -6.0, 6.0);
-        _hElectron1Pt_truth = new TH1F("Electron1PtTruth", "Leading electron p_{T} (truth);GeV;", 100, 0., 200.);
-        _hElectron1Eta_truth = new TH1F("Electron1EtaTruth", "Leading electron #eta (truth);", 100, -5., 5.);
-        _hElectron1Phi_truth = new TH1F("Electron1PhiTruth", "Leading electron #phi (truth);", 100, -6.0, 6.0);
+        _hElectron2Pt = new TH1F("Electron2Pt","Subleading e p_{T};GeV;", 40, 0., 200.);
+        _hElectron2Eta = new TH1F("Electron2Eta","Subleading e #eta;", 40, -5., 5.);
+        _hElectron2Phi = new TH1F("Electron2Phi","Subleading e #phi;", 40, -6.0, 6.0);
 
-        _hElectron2Pt_truth = new TH1F("Electron2PtTruth", "Subleading electron p_{T} (truth);GeV;", 100, 0., 200.);
-        _hElectron2Eta_truth = new TH1F("Electron2EtaTruth", "Subleading electron #eta (truth);", 100, -5., 5.);
-        _hElectron2Phi_truth = new TH1F("Electron2PhiTruth", "Subleading electron #phi (truth);", 100, -6.0, 6.0);
-        _hElectron2Pt = new TH1F("Electron2Pt","Subleading electron p_{T};GeV;", 100, 0., 200.);
-        _hElectron2Eta = new TH1F("Electron2Eta","Subleading electron #eta;", 100, -5., 5.);
-        _hElectron2Phi = new TH1F("Electron2Phi","Subleading electron #phi;", 100, -6.0, 6.0);
+        _hMuon1Pt = new TH1F("Muon1Pt",";Leading #mu p_{T} [GeV];", 40, 0., 200.);
+        _hMuon2Pt = new TH1F("Muon2Pt",";Leading #mu p_{T} [GeV];", 40, 0., 200.);
 
-        _hMuon1Pt = new TH1F("Muon1Pt","Leading muon p_{T};GeV;", 100, 0., 200.);
-        _hMuon2Pt = new TH1F("Muon2Pt","Leading muon p_{T};GeV;", 100, 0., 200.);
+        _hNelec = new TH1F("Nelec",";N_e/Event", 5, -0.5, 4.5);
 
-        _hNelec = new TH1F("Nelec","Number of isolated electrons;Number/Event", 5, -0.5, 4.5);
-        _hNelec_truth = new TH1F("NelecTruth","Number of electrons (truth);Number/Event", 5, -0.5, 4.5);
+        _hNmuon = new TH1F("Nmuon",";N_{#mu}/Event", 5, -0.5, 4.5);
 
-        _hNmuon = new TH1F("Nmuon","Number of muons;Number/Event", 5, -0.5, 4.5);
+	_hNtau = new TH1F("Ntau",";N_{#tau}/Event", 5, -0.5, 4.5);
 
-	_hNtau = new TH1F("Ntau","Number of taus;Number/Event", 5, -0.5, 4.5);
-
-        _hNjet30 = new TH1F("Njet30","Number of jets with p_T > 30 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNjet100 = new TH1F("Njet100","Number of jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNjet500 = new TH1F("Njet500","Number of jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNjet30 = new TH1F("Njet30","N_{jet}/Event", 10, -0.5, 9.5);
+        _hNjet100 = new TH1F("Njet100","N_{jet}/Event", 10, -0.5, 9.5);
+        _hNjet500 = new TH1F("Njet500","N_{jet}/Event", 10, -0.5, 9.5);
 
 
-        _hNbjet30 = new TH1F("Nbjet30","Number of b jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNbjet100 = new TH1F("Nbjet100","Number of b jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNbjet500 = new TH1F("Nbjet500","Number of b jets with p_{T} > 500 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNbjet30 = new TH1F("Nbjet30",";N_{bjet}/Event", 10, -0.5, 9.5);
+        _hNbjet100 = new TH1F("Nbjet100",";N_{bjet}/Event", 10, -0.5, 9.5);
+        _hNbjet500 = new TH1F("Nbjet500",";N_{bjet}/Event", 10, -0.5, 9.5);
 
-        _hNcentraljet30 = new TH1F("Ncentraljet30","Number of central jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNcentraljet100 = new TH1F("Ncentraljet100","Number of central jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNcentraljet500 = new TH1F("Ncentraljet500","Number of central jets with p_{T} > 500 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNcentraljet30 = new TH1F("Ncentraljet30",";N_{central-jet}/Event", 10, -0.5, 9.5);
+        _hNcentraljet100 = new TH1F("Ncentraljet100",";N_{central-jet}/Event", 10, -0.5, 9.5);
+        _hNcentraljet500 = new TH1F("Ncentraljet500",";N_{central-jet}/Event", 10, -0.5, 9.5);
 
-        _hinv = new TH1F("Inv","Z invariant mass;GeV", 100, 0, 200);
-        _hinv_truth = new TH1F("InvTruth", "Z invariant mass (truth);GeV", 100, 0, 200);
+        _hinv = new TH1F("Inv","Z invariant mass;GeV", 40, 0, 200);
 
-        _hmet = new TH1F( "MET","MET;GeV", 50, 0, 1000);
+        _hmet = new TH1F( "MET",";E_{T}^{miss} [GeV]", 50, 0, 1000);
 	_hmet_1_muon = new TH1F( "MET_1muon","MET;GeV", 50, 0, 1000);
 	_hmet_1_electron = new TH1F( "MET_1electron","MET;GeV", 50, 0, 1000);
 
 
-        _hmet_truth = new TH1F("METTruth", "MET (truth);GeV", 100, 0, 200);
+        _hmet_truth = new TH1F("METTruth", "MET (truth);GeV", 40, 0, 200);
 
-        _hElectronPt = new TH1F("ElectronPt", "Electron p_{T};GeV;", 50, 0., 500.);
-        _hElectronEta = new TH1F("ElectronEta", "Electron #eta;", 50, -5., 5.);
-        _hElectronPhi = new TH1F("ElectronPhi", "Electron #phi;", 50, -6.0, 6.0);
-        _hElectronE = new TH1F("ElectronE", "Electron E;GeV;", 50, 0., 500.);
+        _hElectronPt = new TH1F("ElectronPt", ";e p_{T} [GeV];", 50, 0., 500.);
+        _hElectronEta = new TH1F("ElectronEta", ";e #eta;", 50, -5., 5.);
+        _hElectronPhi = new TH1F("ElectronPhi", ";e #phi;", 50, -6.0, 6.0);
+        _hElectronE = new TH1F("ElectronE", ";e E [GeV];", 50, 0., 500.);
 
 
-	_hTauPt = new TH1F("TauPt", "Tau p_T;GeV;", 50, 0., 500.);
-        _hTauEta = new TH1F("TauEta", "Tau #eta;", 50, -5., 5.);
-        _hTauPhi = new TH1F("TauPhi", "Tau #phi;", 50, -6.0, 6.0);
-        _hTauE = new TH1F("TauE", "Tau E;GeV;", 50, 0., 500.);
+	_hTauPt = new TH1F("TauPt", ";#tau p_T [GeV];", 50, 0., 500.);
+        _hTauEta = new TH1F("TauEta", ";#tau #eta;", 50, -5., 5.);
+        _hTauPhi = new TH1F("TauPhi", ";#tau #phi;", 50, -6.0, 6.0);
+        _hTauE = new TH1F("TauE", ";#tau E [GeV];", 50, 0., 500.);
 
-        _hMuonPt = new TH1F("MuonPt","Muon p_T;GeV;", 50, 0., 500.);
-        _hMuonEta = new TH1F("MuonEta","Muon #eta;", 50, -5., 5.);
-        _hMuonPhi = new TH1F("MuonPhi","Muon #phi;", 50, -6.0, 6.0);
-        _hMuonE = new TH1F("MuonE","Muon E;GeV;", 50, 0., 500.);
+        _hMuonPt = new TH1F("MuonPt",";#mu p_T [GeV];", 50, 0., 500.);
+        _hMuonEta = new TH1F("MuonEta",";#mu #eta;", 50, -5., 5.);
+        _hMuonPhi = new TH1F("MuonPhi",";#mu #phi;", 50, -6.0, 6.0);
+        _hMuonE = new TH1F("MuonE",";#mu E [GeV];", 50, 0., 500.);
 
         /// @todo Use log/exp binning for E and pT; increase range past 1 TeV?
-        _hJetPt = new TH1F("JetPt","Jet p_{T};GeV;", 50, 0., 500.);
-        _hJetE = new TH1F("JetE","Jet E;GeV;", 50, 0., 500.);
-        _hJetEta = new TH1F("JetEta","Jet #eta;", 50, -5., 5.);
-        _hJetPhi = new TH1F("JetPhi","Jet #phi;", 50, -6.0, 6.0);
+        _hJetPt = new TH1F("JetPt",";Jet p_{T} [GeV];", 50, 0., 500.);
+        _hJetE = new TH1F("JetE",";Jet E [GeV];", 50, 0., 500.);
+        _hJetEta = new TH1F("JetEta",";Jet #eta;", 50, -5., 5.);
+        _hJetPhi = new TH1F("JetPhi",";Jet #phi;", 50, -6.0, 6.0);
         //
-        _hBJetPt = new TH1F("BJetPt","b-jet p_{T};GeV;", 50, 0., 500.);
-        _hBJetE = new TH1F("BJetE","b-jet E;GeV;", 50, 0., 500.);
+        _hBJetPt = new TH1F("BJetPt",";b-jet p_{T} [GeV];", 50, 0., 500.);
+        _hBJetE = new TH1F("BJetE",";b-jet E [GeV];", 50, 0., 500.);
         _hBJetEta = new TH1F("BJetEta","b-jet #eta;", 50, -5., 5.);
         _hBJetPhi = new TH1F("BJetPhi","b-jet #phi;", 50, -6.0, 6.0);
         //
-        _hCentralJetPt = new TH1F("CentralJetPt","Jet p_{T} for |#eta| < 2.5;GeV;", 50, 0., 500.);
-        _hCentralJetE = new TH1F("CentralJetE","Jet E for |#eta| < 2.5;GeV;", 50, 0., 500.);
-
+        _hCentralJetPt = new TH1F("CentralJetPt",";Jet p_{T} [GeV];", 50, 0., 500.);
+        _hCentralJetE = new TH1F("CentralJetE",";Jet E [GeV];", 50, 0., 500.); 
+#endif
+	
       }
 
 
@@ -221,6 +215,9 @@ namespace Gambit {
 
 	// We now have the signal electrons, muons and jets; fill the histograms
 
+
+#ifndef EXCLUDE_DELPHES
+	
         // MET
         _hmet->Fill(event->met());
 	
@@ -320,6 +317,9 @@ namespace Gambit {
 
         if (signalMuons.size() > 0) _hMuon1Pt->Fill(signalMuons[0]->pT());
         if (signalMuons.size() > 1) _hMuon2Pt->Fill(signalMuons[1]->pT());
+
+#endif
+
       }
 
 
@@ -330,10 +330,9 @@ namespace Gambit {
         Analysis_Perf* specificOther = dynamic_cast<Analysis_Perf*>(other);
 
         // Here we will add the subclass member variables:
-        _hBosonPt->Add(specificOther->_hBosonPt);
-        _hBosonEta->Add(specificOther->_hBosonEta);
-        _hBosonPhi->Add(specificOther->_hBosonPhi);
-        _hElectron1Pt->Add(specificOther->_hElectron1Pt);
+#ifndef EXCLUDE_DELPHES
+
+	_hElectron1Pt->Add(specificOther->_hElectron1Pt);
         _hElectron1Eta->Add(specificOther->_hElectron1Eta);
         _hElectron1Phi->Add(specificOther->_hElectron1Phi);
         _hElectron2Pt->Add(specificOther->_hElectron2Pt);
@@ -341,25 +340,9 @@ namespace Gambit {
         _hElectron2Phi->Add(specificOther->_hElectron2Phi);
         _hMuon1Pt->Add(specificOther->_hMuon1Pt);
         _hMuon2Pt->Add(specificOther->_hMuon2Pt);
-        _hElectron1Pt_truth->Add(specificOther->_hElectron1Pt_truth);
-        _hElectron1Eta_truth->Add(specificOther->_hElectron1Eta_truth);
-        _hElectron1Phi_truth->Add(specificOther->_hElectron1Phi_truth);
-        _hElectron2Pt_truth->Add(specificOther->_hElectron2Pt_truth);
-        _hElectron2Eta_truth->Add(specificOther->_hElectron2Eta_truth);
-        _hElectron2Phi_truth->Add(specificOther->_hElectron2Phi_truth);
         _hNelec->Add(specificOther->_hNelec);
-        _hNelec_truth->Add(specificOther->_hNelec_truth);
-        _hNelec30->Add(specificOther->_hNelec30);
-        _hNelec100->Add(specificOther->_hNelec100);
-        _hNelec500->Add(specificOther->_hNelec500);
         _hNtau->Add(specificOther->_hNtau);
-        _hNtau30->Add(specificOther->_hNtau30);
-        _hNtau100->Add(specificOther->_hNtau100);
-        _hNtau500->Add(specificOther->_hNtau500);
         _hNmuon->Add(specificOther->_hNelec);
-        _hNmuon30->Add(specificOther->_hNmuon30);
-        _hNmuon100->Add(specificOther->_hNmuon100);
-        _hNmuon500->Add(specificOther->_hNmuon500);
         _hNjet30->Add(specificOther->_hNjet30);
         _hNjet100->Add(specificOther->_hNjet100);
         _hNjet500->Add(specificOther->_hNjet500);
@@ -373,8 +356,7 @@ namespace Gambit {
         _hmet->Add(specificOther->_hmet);
         _hmet_1_electron->Add(specificOther->_hmet_1_electron);
         _hmet_1_muon->Add(specificOther->_hmet_1_muon);
-        _hinv_truth->Add(specificOther->_hinv_truth);
-        _hElectronPt->Add(specificOther->_hElectronPt);
+	_hElectronPt->Add(specificOther->_hElectronPt);
         _hElectronEta->Add(specificOther->_hElectronEta);
         _hElectronPhi->Add(specificOther->_hElectronPhi);
         _hElectronE->Add(specificOther->_hElectronE);
@@ -396,6 +378,8 @@ namespace Gambit {
         _hBJetEta->Add(specificOther->_hBJetEta);
         _hBJetPhi->Add(specificOther->_hBJetPhi);
         _hBJetE->Add(specificOther->_hBJetE);
+#endif
+
       }
 
 
@@ -432,10 +416,12 @@ namespace Gambit {
           _hJetE->Write();
 
           _hNmuon->Write();*/
+#ifndef EXCLUDE_DELPHES
+	
         if(_hasTFile)
           _ROOToutFile->Write();
         //_ROOToutFile->Close();
-
+#endif
         /// @todo We should close the file. Shouldn't we also delete the histo pointers?... or are they owned by the file?
       }
 

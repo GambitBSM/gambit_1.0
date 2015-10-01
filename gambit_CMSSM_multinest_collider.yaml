@@ -17,14 +17,16 @@ Parameters:
   #MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
   CMSSM:
       M0:
-        range: [30, 1000]
+        range: [550, 6000]
         prior_type: flat
       M12:
-        range: [30, 1000]
+        range: [300, 1000]
         prior_type: flat
-      A0: 0
-      tanb: 10
-      signmu: 1
+      A0:
+        same_as: CMSSM::M0
+        scale: -2
+      TanBeta: 10
+      SignMu: 1
       
 ##############################
 # Printer setup
@@ -54,7 +56,7 @@ Printer:
 
 Scanner:
 
-  use_scanner: random 
+  use_scanner: multinest
 
   scanners:
 

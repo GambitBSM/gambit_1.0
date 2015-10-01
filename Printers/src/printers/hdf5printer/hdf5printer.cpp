@@ -527,6 +527,12 @@ namespace Gambit
         Utils::ensure_path_exists(tmpfile);
         //file_id = HDF5::openFile(tmpfile,overwrite,oldfile);
         file_id = HDF5::openFile(tmpfile,true,oldfile); // Now that this is a temp file, we always want to overwrite it (it should only still exist if some error occurred finalising the last run, so starting a new run should mean that it can be discarded)
+        if(oldfile)
+        {
+           std::ostringstream errmsg;
+           errmsg << "Error! HDF5Printer attempted to open a temporary file for storing output data ("<<tmpfile<<"), however it found an existing file of the same name! This is a bug; existing files should be overwritten.";
+           printer_error().raise(LOCAL_INFO, errmsg.str()); 
+        }
 
         // Open requested group (creating it plus parents if needed)
         group_id = HDF5::openGroup(file_id,group);
@@ -697,18 +703,21 @@ namespace Gambit
            if(dsetdata.pointIDs_isvalid[i] and dsetdata.mpiranks_isvalid[i])
            {
               //std::cout<<"  Loading PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<")"<<std::endl;
-              if(allvalid==false)
-              {
-                 // If invalid pointIDs occur, it is only permitted at the end
-                 // of the dataset. If valid pointIDs are detected after that,
-                 // then there is a problem with the dataset.
-                 std::ostringstream errmsg;
-                 errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! While retrieving previous pointID and MPIrank entries, an entry with _isvalid==true was detected following one with _isvalid==false. The first _isvalid==false should mark the end of previously written data, so an _isvalid==true following that indicates corruption of the file" <<std::endl;
-                 errmsg << "  lastvalid = " << lastvalid << std::endl;
-                 errmsg << "  current slot = " << i;
-                 printer_error().raise(LOCAL_INFO, errmsg.str());
-              }  
-              lastvalid = i;
+              
+              //if(allvalid==false) // REMOVED FOR NOW; since several resumes in a row can lead to several datasets stiched together with gaps in between.
+              //{
+              //   // If invalid pointIDs occur, it is only permitted at the end
+              //   // of the dataset. If valid pointIDs are detected after that,
+              //   // then there is a problem with the dataset.
+              //   std::ostringstream errmsg;
+              //   errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! While retrieving previous pointID and MPIrank entries, an entry with _isvalid==true was detected following one with _isvalid==false. The first _isvalid==false should mark the end of previously written data, so an _isvalid==true following that indicates corruption of the file" <<std::endl;
+              //   errmsg << "  lastvalid = " << lastvalid << std::endl;
+              //   errmsg << "  current slot = " << i;
+              //   printer_error().raise(LOCAL_INFO, errmsg.str());
+              //}  
+
+              lastvalid = i;  // use to overwrite empty slots at end of last dataset
+
               //add_PPID_to_list(PPIDpair(dsetdata.pointIDs[i],dsetdata.mpiranks[i]));
               // Postpone actually adding the PPID, because this triggers writing of RA_pointID and RA_mpirank,
               // and we don't want to try and write those to this old file. Return the list, and then add it
@@ -724,13 +733,14 @@ namespace Gambit
            }
            else
            {
-              allvalid=false;
+              //allvalid=false;  // don't need if we aren't checking for gaps in dataset
            }
          }
 
          // Set the starting position for new output
-         startpos = dsetdata.lengths[0];
- 
+         //startpos = dsetdata.lengths[0]; // don't overwrite final is_valid==false entries
+         startpos = lastvalid+1;             // do overwrite final is_valid==false entries
+
          // Checks finished, close file and group
          HDF5::closeGroup(group_id);
          HDF5::closeFile(file_id);

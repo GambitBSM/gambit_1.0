@@ -25,7 +25,7 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    //Function that mimics the TLorentzVector deltaPhi function
+
     //Puts dphi in the range -pi to pi
     double _Phi_mpi_pi(double x){
       while (x >= M_PI) x -= 2*M_PI;
