@@ -102,12 +102,10 @@ namespace Gambit
       //const double m2 = spec->get_Pole_Mass(Models::ParticleDB().get_antiparticle(mass_es2));
       // until then
       const double m2 = spec->get_Pole_Mass(mass_es2);
-      // FIXME when mass uncertainties are available from the spectrum objects
-      //std::pair<double,double> m1_uncerts = spec->get_Pole_Mass_Uncert(mass_es1); 
-      //std::pair<double,double> m2_uncerts = spec->get_Pole_Mass_Uncert(Models::ParticleDB().get_antiparticle(mass_es2)); 
-      // Until then
-      const std::pair<double,double> m1_uncerts(0.05, 0.05);
-      const std::pair<double,double> m2_uncerts = m1_uncerts;
+      std::pair<double,double> m1_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, mass_es1),
+                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  mass_es1));
+      std::pair<double,double> m2_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, mass_es2),
+                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  mass_es2));
       
       // If the final state is kinematically inaccessible *even* if both masses 
       // are 2simga lower than their central values, then return zero. 
@@ -124,7 +122,6 @@ namespace Gambit
                                    spec->get_Pole_Mass(1000025,0), spec->get_Pole_Mass(1000035,0) };
       // Get the 4x4 neutralino mixing matrix
       MixMatrix neutmix(4,std::vector<double>(4));
-      //FIXME use PDG code instead of "~chi0" once the spectrum object supports such an interface
       for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->phys().get_Pole_Mixing("~chi0",i+1,j+1);
 
       // Convert neutralino mixing matrix to BFM convention
@@ -164,11 +161,7 @@ namespace Gambit
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
       const double g2 = mssm->runningpars().get_dimensionless_parameter("g2");
-      // FIXME sinW2 should be gotten from the spectrum object once that is possible (where it is calculated from DRbar parameters at Q_SUSY)
-      // ***replace
-      const double g1 = mssm->runningpars().get_dimensionless_parameter("g1") * sqrt(3./5.);
-      const double sinW2 = g1*g1/(g2*g2+g1*g1);
-      // ***end replace
+      const double sinW2 = mssm->runningpars().get_dimensionless_parameter("sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
 
       // MSSM parameters
@@ -181,12 +174,10 @@ namespace Gambit
       // Get the neutralino masses
       const double m1 = spec->get_Pole_Mass(id1,0); 
       const double m2 = spec->get_Pole_Mass(id2,0); 
-      // FIXME when mass uncertainties are available from the spectrum objects
-      //std::pair<double,double> m1_uncerts = spec->get_pole_mass_uncert(id1,0); 
-      //std::pair<double,double> m2_uncerts = spec->get_pole_mass_uncert(id2,0); 
-      // Until then
-      const std::pair<double,double> m1_uncerts(0.05, 0.05);
-      const std::pair<double,double> m2_uncerts = m1_uncerts;
+      std::pair<double,double> m1_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, id1, 0),
+                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  id1, 0));
+      std::pair<double,double> m2_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, id2, 0),
+                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  id2, 0));
  
       // Just return zero if the final state is kinematically inaccessible
       // *even* if both masses are 2simga lower than their central values 
@@ -200,7 +191,6 @@ namespace Gambit
  
       // Get the 4x4 neutralino mixing matrix
       MixMatrix neutmix(4,std::vector<double>(4));
-      //FIXME use PDG code instead of "~chi0" once the spectrum object supports such an interface
       for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->phys().get_Pole_Mixing("~chi0",i+1,j+1);
 
       // Convert neutralino mixing matrix to BFM convention
@@ -239,11 +229,7 @@ namespace Gambit
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
       const double g2 = mssm->runningpars().get_dimensionless_parameter("g2");
-      // FIXME sinW2 should be gotten from the spectrum object once that is possible (where it is calculated from DRbar parameters at Q_SUSY)
-      // ***replace
-      const double g1 = mssm->runningpars().get_dimensionless_parameter("g1") * sqrt(3./5.);
-      const double sinW2 = g1*g1/(g2*g2+g1*g1);
-      // ***end replace
+      const double sinW2 = mssm->runningpars().get_dimensionless_parameter("sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
 
       // MSSM parameters
@@ -254,12 +240,10 @@ namespace Gambit
       // Get the chargino masses
       const double m1 = spec->get_Pole_Mass(id1,0); 
       const double m2 = spec->get_Pole_Mass(id2,0); 
-      // FIXME when mass uncertainties are available from the spectrum objects
-      //std::pair<double,double> m1_uncerts = spec->get_pole_mass_uncert(id1,0); 
-      //std::pair<double,double> m2_uncerts = spec->get_pole_mass_uncert(id2,0); 
-      // Until then
-      const std::pair<double,double> m1_uncerts(0.05, 0.05);
-      const std::pair<double,double> m2_uncerts = m1_uncerts;
+      std::pair<double,double> m1_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, id1, 0),
+                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  id1, 0));
+      std::pair<double,double> m2_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, id2, 0),
+                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  id2, 0));
 
       // Just return zero if the final state is kinematically inaccessible
       // *even* if both masses are 2simga lower than their central values 
@@ -274,7 +258,6 @@ namespace Gambit
       // Get the 2x2 chargino mixing matrices
       MixMatrix charginomixV(2,std::vector<double>(2));
       MixMatrix charginomixU(2,std::vector<double>(2));
-      //FIXME use PDG code instead of "~chi+/-" once the spectrum object supports such an interface
       for (int i=0; i<2; i++) for (int j=0; j<2; j++)
       { 
         charginomixV[i][j] = mssm->phys().get_Pole_Mixing("~chi+",i+1,j+1);

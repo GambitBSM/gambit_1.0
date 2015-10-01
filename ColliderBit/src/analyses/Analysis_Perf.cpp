@@ -6,6 +6,7 @@
 
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 // ROOT
 #ifndef EXCLUDE_DELPHES
@@ -56,7 +57,7 @@ namespace Gambit {
 
       ~Analysis_Perf() {
 #ifndef EXCLUDE_DELPHES
-	if(_hasTFile)
+  if(_hasTFile)
           delete _ROOToutFile;
 #endif
       }
@@ -64,7 +65,7 @@ namespace Gambit {
 
       Analysis_Perf() {
 #ifndef EXCLUDE_DELPHES
-	
+  
         _output_filename = "SimOutput.root";
         _hasTFile = false;
         if(!Analysis_Perf::_openTFile) {
@@ -89,7 +90,7 @@ namespace Gambit {
 
         _hNmuon = new TH1F("Nmuon",";N_{#mu}/Event", 5, -0.5, 4.5);
 
-	_hNtau = new TH1F("Ntau",";N_{#tau}/Event", 5, -0.5, 4.5);
+  _hNtau = new TH1F("Ntau",";N_{#tau}/Event", 5, -0.5, 4.5);
 
         _hNjet30 = new TH1F("Njet30","N_{jet}/Event", 10, -0.5, 9.5);
         _hNjet100 = new TH1F("Njet100","N_{jet}/Event", 10, -0.5, 9.5);
@@ -107,8 +108,8 @@ namespace Gambit {
         _hinv = new TH1F("Inv","Z invariant mass;GeV", 40, 0, 200);
 
         _hmet = new TH1F( "MET",";E_{T}^{miss} [GeV]", 50, 0, 1000);
-	_hmet_1_muon = new TH1F( "MET_1muon","MET;GeV", 50, 0, 1000);
-	_hmet_1_electron = new TH1F( "MET_1electron","MET;GeV", 50, 0, 1000);
+  _hmet_1_muon = new TH1F( "MET_1muon","MET;GeV", 50, 0, 1000);
+  _hmet_1_electron = new TH1F( "MET_1electron","MET;GeV", 50, 0, 1000);
 
 
         _hmet_truth = new TH1F("METTruth", "MET (truth);GeV", 40, 0, 200);
@@ -119,7 +120,7 @@ namespace Gambit {
         _hElectronE = new TH1F("ElectronE", ";e E [GeV];", 50, 0., 500.);
 
 
-	_hTauPt = new TH1F("TauPt", ";#tau p_T [GeV];", 50, 0., 500.);
+  _hTauPt = new TH1F("TauPt", ";#tau p_T [GeV];", 50, 0., 500.);
         _hTauEta = new TH1F("TauEta", ";#tau #eta;", 50, -5., 5.);
         _hTauPhi = new TH1F("TauPhi", ";#tau #phi;", 50, -6.0, 6.0);
         _hTauE = new TH1F("TauE", ";#tau E [GeV];", 50, 0., 500.);
@@ -143,14 +144,14 @@ namespace Gambit {
         _hCentralJetPt = new TH1F("CentralJetPt",";Jet p_{T} [GeV];", 50, 0., 500.);
         _hCentralJetE = new TH1F("CentralJetE",";Jet E [GeV];", 50, 0., 500.); 
 #endif
-	
+  
       }
 
 
       void analyze(const HEPUtils::Event* event) {
 
        
-	// Now define vectors of baseline objects
+  // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineElectrons;
         for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && electron->abseta() < 2.47 &&
@@ -162,7 +163,7 @@ namespace Gambit {
               !object_in_cone(*event, *muon, 1.8, 0.2)) baselineMuons.push_back(muon);
         }
 
-	// Get b jets with efficiency and mistag (fake) rates
+  // Get b jets with efficiency and mistag (fake) rates
         vector<HEPUtils::Jet*> baselineJets, bJets; // trueBJets; //for debugging
         for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && jet->abseta() < 10.0) baselineJets.push_back(jet);
@@ -170,9 +171,9 @@ namespace Gambit {
             if ((jet->btag() && HEPUtils::rand01() < 0.75) || (!jet->btag() && HEPUtils::rand01() < 0.02)) bJets.push_back(jet);
           }
 
-	}
+  }
 
-	// Overlap removal
+  // Overlap removal
         vector<HEPUtils::Particle*> signalElectrons, signalMuons;
         vector<HEPUtils::Particle*> electronsForVeto, muonsForVeto;
         vector<HEPUtils::Jet*> goodJets, signalJets;
@@ -201,10 +202,10 @@ namespace Gambit {
             muonsForVeto.push_back(m);
             if (m->pT() > 10) signalMuons.push_back(m);
           }
-        }	
+        } 
 
-	// Taus
-	vector<HEPUtils::Particle*> signalTaus;
+  // Taus
+  vector<HEPUtils::Particle*> signalTaus;
         for (HEPUtils::Particle* tau : event->taus()) {
           if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
         }
@@ -213,16 +214,16 @@ namespace Gambit {
         // Do further electron selection
         applyMediumIDElectronSelection(signalElectrons);
 
-	// We now have the signal electrons, muons and jets; fill the histograms
+  // We now have the signal electrons, muons and jets; fill the histograms
 
 
 #ifndef EXCLUDE_DELPHES
-	
+  
         // MET
         _hmet->Fill(event->met());
-	
-	if(signalElectrons.size()==1 && signalMuons.size()==0)_hmet_1_electron->Fill(event->met());
-	if(signalMuons.size()==1 && signalElectrons.size()==0)_hmet_1_muon->Fill(event->met());
+  
+  if(signalElectrons.size()==1 && signalMuons.size()==0)_hmet_1_electron->Fill(event->met());
+  if(signalMuons.size()==1 && signalElectrons.size()==0)_hmet_1_muon->Fill(event->met());
 
 
         // Electrons
@@ -246,13 +247,13 @@ namespace Gambit {
 
         // Taus
 
-	_hNtau->Fill(signalTaus.size());
-	for (HEPUtils::Particle* tau : signalTaus) {
-	  _hTauPt->Fill(tau->pT(),1.);
+  _hNtau->Fill(signalTaus.size());
+  for (HEPUtils::Particle* tau : signalTaus) {
+    _hTauPt->Fill(tau->pT(),1.);
           _hTauEta->Fill(tau->eta(),1.);
           _hTauPhi->Fill(tau->phi(),1.);
           _hTauE->Fill(tau->E(),1.);
-	}
+  }
 
         // Jets
         int numJets30(0), numJets100(0), numJets500(0);
@@ -332,7 +333,7 @@ namespace Gambit {
         // Here we will add the subclass member variables:
 #ifndef EXCLUDE_DELPHES
 
-	_hElectron1Pt->Add(specificOther->_hElectron1Pt);
+  _hElectron1Pt->Add(specificOther->_hElectron1Pt);
         _hElectron1Eta->Add(specificOther->_hElectron1Eta);
         _hElectron1Phi->Add(specificOther->_hElectron1Phi);
         _hElectron2Pt->Add(specificOther->_hElectron2Pt);
@@ -356,7 +357,7 @@ namespace Gambit {
         _hmet->Add(specificOther->_hmet);
         _hmet_1_electron->Add(specificOther->_hmet_1_electron);
         _hmet_1_muon->Add(specificOther->_hmet_1_muon);
-	_hElectronPt->Add(specificOther->_hElectronPt);
+  _hElectronPt->Add(specificOther->_hElectronPt);
         _hElectronEta->Add(specificOther->_hElectronEta);
         _hElectronPhi->Add(specificOther->_hElectronPhi);
         _hElectronE->Add(specificOther->_hElectronE);
@@ -417,7 +418,7 @@ namespace Gambit {
 
           _hNmuon->Write();*/
 #ifndef EXCLUDE_DELPHES
-	
+  
         if(_hasTFile)
           _ROOToutFile->Write();
         //_ROOToutFile->Close();
@@ -446,8 +447,10 @@ namespace Gambit {
 
     DEFINE_ANALYSIS_FACTORY(Perf)
 
-    // Weird, but necessary, static member initialization:
+#ifndef EXCLUDE_DELPHES
+    // Static member initialization
     bool Analysis_Perf::_openTFile = false;
+#endif
 
   }
 }
