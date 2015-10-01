@@ -34,6 +34,9 @@
 /// Found Graphviz
 #cmakedefine HAVE_GRAPHVIZ 1
 
+/// Leave Delphes out of the compile
+#cmakedefine EXCLUDE_DELPHES 1
+
 /// Version info
 /// @{
 #cmakedefine GAMBIT_VERSION_MAJOR    1

@@ -317,7 +317,7 @@ namespace Gambit
 
     /// *** Detector Simulators ***
 
-#ifndef DITCH_DELPHES
+#ifndef EXCLUDE_DELPHES
     void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
@@ -332,7 +332,7 @@ namespace Gambit
         }
       }
     }
-#endif // not defined DITCH_DELPHES
+#endif // not defined EXCLUDE_DELPHES
 
 
     void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result)
@@ -706,7 +706,7 @@ namespace Gambit
 
     /// *** Standard Event Format Functions ***
 
-#ifndef DITCH_DELPHES
+#ifndef EXCLUDE_DELPHES
     void reconstructDelphesEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructDelphesEvent;
       if (*Loop::iteration <= BASE_INIT) return;
@@ -717,7 +717,7 @@ namespace Gambit
         (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
       }
     }
-#endif // not defined DITCH_DELPHES
+#endif // not defined EXCLUDE_DELPHES
 
     void reconstructBuckFastEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructBuckFastEvent;

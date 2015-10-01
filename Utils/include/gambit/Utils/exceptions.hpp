@@ -223,6 +223,9 @@ namespace Gambit
       /// The functor responsible for throwing this exception.
       functor* myThrower;
 
+      /// Cause the code to print the exception and abort.
+      void abort_here_and_now();
+
     public:
 
       /// Constructor

@@ -37,7 +37,7 @@ namespace Gambit {
       /// @name (Re-)Initialization functions
       //@{
         /// @brief General init for any collider of this type.
-        virtual void init(const std::vector<std::string>& externalSettings) { };
+        virtual void init(const std::vector<std::string>&) {};
         /// @brief General init for any collider of this type - no settings version.
         virtual void init() { };
       //@}

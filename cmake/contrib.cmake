@@ -45,12 +45,17 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
 
 #contrib/Delphes-3.1.2; include only if ColliderBit is in use
 set (DELPHES_DIR "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
-if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+string(REGEX MATCH ";D;|;De;|;Del;|;Delp;|;Delph;|;Delphe;|;Delphes" DITCH_DELPHES ";${itch};")
+include_directories("${DELPHES_DIR}" "${DELPHES_DIR}/external" "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
+if(DITCH_DELPHES OR NOT ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  set (EXCLUDE_DELPHES TRUE)
+  add_custom_target(clean-delphes COMMAND "")
+  message("${BoldCyan} X Excluding Delphes from GAMBIT configuration.${ColourReset}")
+else()
   set (EXCLUDE_DELPHES FALSE)
   set (DELPHES_LDFLAGS "-L${DELPHES_DIR} -lDelphes")
   set (DELPHES_BAD_LINE "\\(..CC)\ ..patsubst\ -std=%,,..CXXFLAGS))\\)\ \\(..CXXFLAGS.\\)")
   set (CMAKE_INSTALL_RPATH "${DELPHES_DIR}")
-  include_directories("${DELPHES_DIR}" "${DELPHES_DIR}/external" "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
   ExternalProject_Add(delphes
     SOURCE_DIR ${DELPHES_DIR}
     BUILD_IN_SOURCE 1
@@ -73,9 +78,6 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   # Add clean info
   add_external_clean(delphes ${DELPHES_DIR} distclean)
   add_dependencies(distclean clean-delphes)
-else()
-  set (EXCLUDE_DELPHES TRUE)
-  add_custom_target(clean-delphes COMMAND "")
 endif()
 
 

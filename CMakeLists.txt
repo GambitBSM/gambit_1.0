@@ -182,9 +182,6 @@ set(GAMBIT_VERSION_REVISION 0)
 # Reprocess the ditch set into a comma-separated list
 string (REPLACE ";" "," itch_with_commas "${itch}")
 
-# Generate the cmake_variables.hpp file
-include(cmake/preprocessor.cmake)
-
 # Create the scratch directory if it isn't there already
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/scratch")
   message("${Yellow}-- Creating scratch directory${ColourReset}")
@@ -207,6 +204,9 @@ retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 
 # Include contributed packages
 include(cmake/contrib.cmake)
+
+# Generate the cmake_variables.hpp file
+include(cmake/preprocessor.cmake)
 
 # Generate the backend_locations.yaml file if there isn't one
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")

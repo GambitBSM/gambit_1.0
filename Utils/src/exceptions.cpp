@@ -239,7 +239,7 @@ namespace Gambit
         logger() << nonfatal;
         myWhat = myShortWhat; 
       }
-      for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; }	
+      for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; } 
       logger() << msg1.str() << msg1.str() << EOM;
     }
 
@@ -396,11 +396,38 @@ namespace Gambit
     /// Raise the exception, i.e. throw it with a message.
     void invalid_point_exception::raise(const std::string& msg)
     {
-      #pragma omp critical (GAMBIT_exception)
+      if (omp_get_level()==0) // If not in an OpenMP parallel block, throw onwards
       {
-        myMessage = msg;
+        #pragma omp critical (GAMBIT_exception)
+        {
+          myMessage = msg;
+        }
+        throw(*this);
       }
-      throw(*this);
+      else
+      {
+        std::ostringstream full_msg;
+        full_msg << "Sorry, you cannot raise an invalid point exception inside an OpenMP block." << endl
+                 << "Please use piped_invalid_point.request() in your block, then check it with " << endl
+                 << "piped_invalid_point.check() to raise the exception outside the block." << endl
+                << "Message: " << msg;
+        #pragma omp critical (GAMBIT_exception)
+        {
+          myMessage = full_msg.str();
+        }  
+        abort_here_and_now(); // If in an OpenMP parallel block, just abort immediately.
+      }
+    }
+
+    /// Cause the code to print the exception and abort.
+    void invalid_point_exception::abort_here_and_now()
+    {
+      #pragma omp critical (GABMIT_invalid_pt_exception)
+      {
+        cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
+        cout << "An invalid_point exception is fatal inside an OpenMP block. " << endl << what() << endl << message() << endl;
+        abort();
+      }
     }
 
     /// Request a piped invalid point exception.
