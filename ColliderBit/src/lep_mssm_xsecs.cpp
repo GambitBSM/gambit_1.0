@@ -67,11 +67,7 @@ namespace Gambit
       // SM parameters
       const double mZ = spec->get_Pole_Mass(23,0);
       const double g2 = mssm->runningpars().get_dimensionless_parameter("g2");
-      // FIXME sinW2 should be gotten from the spectrum object once that is possible (where it is calculated from DRbar parameters at Q_SUSY)
-      // ***replace
-      const double g1 = mssm->runningpars().get_dimensionless_parameter("g1") * sqrt(3./5.);
-      const double sinW2 = g1*g1/(g2*g2+g1*g1);
-      // ***end replace
+      const double sinW2 = mssm->runningpars().get_dimensionless_parameter("sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
 
       // MSSM parameters
