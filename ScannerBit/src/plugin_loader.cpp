@@ -233,6 +233,14 @@ namespace Gambit
                 return vec;
             }
             
+            std::string Plugin_Loader::print_priors() const
+            {
+                std::string path = GAMBIT_DIR "/config/priors.dat";
+                YAML::Node node = YAML::LoadFile(path);
+                
+                return node["priors"].as<std::string>();
+            }
+            
             std::string Plugin_Loader::print_all(const std::string &plug_type) const
             {
                 if (plug_type != "")
@@ -481,8 +489,8 @@ namespace Gambit
                     }
                 }
                 
-                //printer->finalise(true);
-                std::cout << "Gambit has finished early!" << std::endl;
+                printer->finalise(true);
+                std::cout << "Gambit info dump, preparing to stop!" << std::endl;
             }
             
             pluginInfo::~pluginInfo()

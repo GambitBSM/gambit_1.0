@@ -100,10 +100,7 @@ Scanner:
         like:  Likelihood
         nlive: 1000
         tol: 0.1
-        outfile: 0
         root: "runs/singletDM_multinest_hdf5/samples/native-"
-        # resuming doesn't work yet
-        resume: 0
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
