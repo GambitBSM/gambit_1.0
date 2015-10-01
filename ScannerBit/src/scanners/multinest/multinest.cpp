@@ -97,7 +97,7 @@ scanner_plugin(MultiNest, version(3, 9))
       int seed (get_inifile_value<int>("seed", -1) );           // random no. generator seed, if < 0 then take the seed from system clock
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
       int resume ( resume_mode );                               // resume from a previous job?
-      int outfile (get_inifile_value<int>("outfile", 0) );      // write output files?
+      int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
       double logZero (get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
@@ -113,7 +113,14 @@ scanner_plugin(MultiNest, version(3, 9))
       // Print some basic startup diagnostics.      
       std::cout << "MultiNest ndims:" << ndims << std::endl;
       std::cout << "MultiNest nPar: " << nPar  << std::endl;
-  
+ 
+      if(resume==1 and outfile==0)
+      {
+        // It is stupid to be in resume mode while not writing output files. 
+        // Means subsequent resumes will be impossible. Throw an error.
+        scan_error().raise(LOCAL_INFO,"Error from MultiNest ScannerBit plugin! Resume mode is activated, however MultiNest native output files are set to not be written. These are needed for resuming; please change this setting in your yaml file (set option \"outfile: 1\)");
+      }
+ 
       // Setup auxilliary streams. These are only needed by the master process,
       // so let's create them only for that process
       int myrank = get_printer().get_stream()->getRank(); // MPI rank of this process

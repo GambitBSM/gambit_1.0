@@ -8,17 +8,19 @@ Parameters:
     StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
     StandardModel_Higgs:
-      mH: 125.9
+      mH:
+            #fixed_value: 125.7
       vev: 246
 
     SingletDM:
         mS:
-            range: [50., 1000.]
+            range: [10., 10000.]
             prior_type: log
         lambda_hS:
             range: [0.001, 1.00]
             #fixed_value: 0.0366524 
             prior_type: log
+  
     nuclear_params_fnq:
       # proton hadronic matrix elements
       fpd:
@@ -50,6 +52,12 @@ Parameters:
 ##############################
 
 Priors:
+    mH_prior: # PDG 2014
+      parameters: [StandardModel_Higgs::mH]
+      prior_type: gaussian
+      options:
+        sigs: [.4]
+        mean: [125.7]
 
 ##############################
 # Printer setup
@@ -93,10 +101,7 @@ Scanner:
         like:  Likelihood
         nlive: 1000
         tol: 0.1
-        outfile: 0
         root: "runs/singletDM_multinest_hdf5/samples/native-"
-        # resuming doesn't work yet
-        resume: 0
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
@@ -115,11 +120,14 @@ ObsLikes:
 #      options:
 #        GA_AnnYield:
 #          nbins: 20
+#    - capability: IceCube_likelihood
+#      purpose: Likelihood
 
 # Fermi LAT dwarf limits
     - capability: lnL_FermiLATdwarfs
       function: lnL_FermiLATdwarfs_gamLike
       purpose:  Observable
+    - capability: lnL_Higgs_invWidth
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable

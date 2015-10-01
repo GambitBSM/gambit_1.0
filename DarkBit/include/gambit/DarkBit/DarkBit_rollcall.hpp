@@ -184,6 +184,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY RD_fraction
+  START_CAPABILITY 
+    #define FUNCTION RD_fraction
+      START_FUNCTION(double)
+      DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   // Cascade decays --------------------------------------------
 
   // Function for retrieving list of final states for cascade decays
@@ -379,11 +388,12 @@ START_MODULE
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
+      DEPENDENCY(RD_fraction, double)
     #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
-      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(RD_fraction, double)
       BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -393,9 +403,8 @@ START_MODULE
     #define FUNCTION lnL_FermiGC_gamLike
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
-      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(DarkMatter_ID, std::string)
-      BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
+      DEPENDENCY(RD_fraction, double)
+      BACKEND_REQ(lnL, (gamLike), double, (int, const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
 

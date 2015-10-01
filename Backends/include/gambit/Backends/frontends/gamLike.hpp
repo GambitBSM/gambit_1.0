@@ -41,7 +41,7 @@ BE_INI_FUNCTION
   if (scan_level)
   {
     scan_level = false;
-    std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/data/", "datapath");
+    std::string path = runOptions->getValueOrDef<std::string>(backendDir+"/../data/", "datapath");
     set_data_path(path);
   }
 }
