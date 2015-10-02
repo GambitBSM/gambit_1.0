@@ -66,6 +66,7 @@ Scanner:
         like:  Likelihood
         nlive: 20
         tol: 0.1
+        root: "runs/CMSSM_multinest_collider/samples/native-"
         aux_printer_txt_options:
           output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
           info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt_info"
