@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "gambit/Utils/yaml_parser_base.hpp"
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Logs/log.hpp"
 
 namespace Gambit
@@ -127,8 +128,22 @@ namespace Gambit
       priorsNode = root["Priors"];
       printerNode = root["Printer"];
       scannerNode = root["Scanner"];
-      YAML::Node logNode = root["Logger"];
+      logNode = root["Logger"];
       keyValuePairNode = root["KeyValues"];
+
+      // Set default output path
+      std::string defpath;
+      if(hasKey("default_output_path"))
+      {
+         defpath = getValue<std::string>("default_output_path");
+      }
+      else
+      {
+         inifile_error().raise(LOCAL_INFO,"No inifile entry found for 'default_output_path' in the KeyValue section. Please add this entry to your yaml file.");
+      }
+      scannerNode["default_output_path"] = Utils::ensure_path_exists(defpath+"scanner_plugins/");
+      logNode    ["default_output_path"] = Utils::ensure_path_exists(defpath+"logs/");
+      printerNode["options"]["default_output_path"] = Utils::ensure_path_exists(defpath+"samples/");
 
       // Set fatality of exceptions
       if (hasKey("exceptions"))
@@ -160,7 +175,15 @@ namespace Gambit
       }
 
       // Parse the logging setup node, and initialise the LogMaster object
-      std::string prefix = logNode["prefix"].as<std::string>();
+      std::string prefix;
+      if(logNode["prefix"])
+      {
+         prefix = logNode["prefix"].as<std::string>();
+      }
+      else
+      {
+         prefix = logNode["default_output_path"].as<std::string>()+"/";
+      }
       YAML::Node redir = logNode["redirection"];
       // map storing info used to set up logger objects
       std::map<std::set<std::string>,std::string> loggerinfo;
@@ -231,6 +254,7 @@ namespace Gambit
     YAML::Node Parser::getPriorsNode()       const {return priorsNode;}
     YAML::Node Parser::getPrinterNode()      const {return printerNode;}
     YAML::Node Parser::getScannerNode()      const {return scannerNode;}
+    YAML::Node Parser::getLoggerNode()       const {return logNode;}
     YAML::Node Parser::getKeyValuePairNode() const {return keyValuePairNode;}
     /// @}
 
