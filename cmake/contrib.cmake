@@ -83,7 +83,7 @@ else()
   endif()
   message("${Yellow}-- Generating Delphes ROOT dictionaries - done.${ColourReset}")
   # Add clean info
-  foreach(DICT ${DELPHES_DICTS)
+  foreach(DICT ${DELPHES_DICTS})
     set(clean_files ${clean_files} ${DICT})
   endforeach()
   add_external_clean(delphes ${DELPHES_DIR} distclean)
