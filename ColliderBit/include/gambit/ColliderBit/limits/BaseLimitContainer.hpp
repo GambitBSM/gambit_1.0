@@ -52,15 +52,15 @@ namespace Gambit {
         /// @brief Convert a point from pixel units to axis units, creating a P2
         virtual P2 convertPt(double x, double y) = 0;
         /// @brief Check to see if the point is within the exclusion region
-        virtual bool isWithinExclusionRegion(double x, double y) = 0;
+        virtual bool isWithinExclusionRegion(double x, double y, double mZ) = 0;
         /// @brief Return the limit value outside of the exclusion region
         virtual double specialLimit(double, double)
         {
           return std::numeric_limits<double>::infinity();
         }
         /// @brief Two-pi averaging interpolator to find limits between limit curves
-        double limitAverage(double x, double y) {
-          if (!isWithinExclusionRegion(x, y)) return specialLimit(x, y);
+        double limitAverage(double x, double y, double mZ) {
+          if (!isWithinExclusionRegion(x, y, mZ)) return specialLimit(x, y);
           const P2& point = P2(x, y);
           const LineSegment& externalLine = LineSegment(point, _externalPoint);
           P2 rayMaker;
@@ -139,22 +139,26 @@ namespace Gambit {
           else
             return average;
         }
+
         /// @brief Dump limit average data into a file for average debugging
         void dumpPlotData(double xlow, double xhigh, double ylow, double yhigh,
-                          std::string filename, int ngrid=1000) {
+                          double mZ, std::string filename, int ngrid=1000)
+        {
           double x,y;
           std::ofstream outFile(filename.c_str(), std::ofstream::trunc);
           for (int xi=0; xi<=ngrid; xi++) {
             x = xlow + (xhigh - xlow) * xi / ngrid;
             for (int yi=0; yi<=ngrid; yi++) {
               y = ylow + (yhigh - ylow) * yi / ngrid;
-              outFile << x << " " << y << " " << limitAverage(x,y) << "\n";
+              outFile << x << " " << y << " " << limitAverage(x,y,mZ) << "\n";
             }
           }
           outFile.close();
         }
+
         /// @brief Dump input limit contour data into a file for limit debugging
-        void dumpLightPlotData(std::string filename, int nperLine=20) {
+        void dumpLightPlotData(std::string filename, int nperLine=20)
+        {
           P2 point;
           std::ofstream outFile(filename.c_str(), std::ofstream::trunc);
           for (auto limitIter = _limitContours.begin(); limitIter != _limitContours.end(); ++limitIter) {

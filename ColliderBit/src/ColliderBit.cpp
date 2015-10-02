@@ -1760,6 +1760,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_seL = spec->get_Pole_Mass(1000011, 0); 
       const double mass_seR = spec->get_Pole_Mass(2000011, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1768,7 +1769,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // se_L, se_L
-      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1782,7 +1783,7 @@ namespace Gambit
       }
 
       // se_R, se_R
-      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_serserbar;
       xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1816,6 +1817,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_smuL = spec->get_Pole_Mass(1000013, 0); 
       const double mass_smuR = spec->get_Pole_Mass(2000013, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1824,7 +1826,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // smu_L, smu_L
-      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1838,7 +1840,7 @@ namespace Gambit
       }
 
       // smu_R, smu_R
-      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_smursmurbar;
       xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1872,6 +1874,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_stau1 = spec->get_Pole_Mass(1000015, 0); 
       const double mass_stau2 = spec->get_Pole_Mass(2000015, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1880,7 +1883,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // stau_1, stau_1
-      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_stau1stau1bar;
       xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -1894,7 +1897,7 @@ namespace Gambit
       }
 
       // stau_2, stau_2
-      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_stau2stau2bar;
       xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -1928,6 +1931,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_seL = spec->get_Pole_Mass(1000011, 0); 
       const double mass_seR = spec->get_Pole_Mass(2000011, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1936,7 +1940,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // se_L, se_L
-      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1950,7 +1954,7 @@ namespace Gambit
       }
 
       // se_R, se_R
-      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_serserbar;
       xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1984,6 +1988,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_smuL = spec->get_Pole_Mass(1000013, 0); 
       const double mass_smuR = spec->get_Pole_Mass(2000013, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1992,7 +1997,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // smu_L, smu_L
-      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -2006,7 +2011,7 @@ namespace Gambit
       }
 
       // smu_R, smu_R
-      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_smursmurbar;
       xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -2040,6 +2045,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_stau1 = spec->get_Pole_Mass(1000015, 0); 
       const double mass_stau2 = spec->get_Pole_Mass(2000015, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -2048,7 +2054,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // stau_1, stau_1
-      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_stau1stau1bar;
       xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2062,7 +2068,7 @@ namespace Gambit
       }
 
       // stau_2, stau_2
-      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_stau2stau2bar;
       xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2101,6 +2107,7 @@ namespace Gambit
       const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
       const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
       const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2109,7 +2116,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like Z* decays
@@ -2137,7 +2144,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like Z* decays
@@ -2165,7 +2172,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like Z* decays
@@ -2215,6 +2222,7 @@ namespace Gambit
       const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
       const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
       const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2223,7 +2231,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like leptonic Z* decays
@@ -2248,7 +2256,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like leptonic Z* decays
@@ -2273,7 +2281,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like leptonic Z* decays
@@ -2319,6 +2327,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
       const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2327,7 +2336,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like W* decays
@@ -2349,7 +2358,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like W* decays
@@ -2392,6 +2401,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
       const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2400,7 +2410,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2425,7 +2435,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2471,6 +2481,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
       const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2479,7 +2490,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like hadronic W* decays
@@ -2500,7 +2511,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like hadronic W* decays
@@ -2549,6 +2560,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
       const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2557,7 +2569,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2599,7 +2611,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2669,6 +2681,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
       const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2677,7 +2690,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2708,7 +2721,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2767,6 +2780,7 @@ namespace Gambit
       const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
       const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
       const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2775,7 +2789,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like W* decays
@@ -2803,7 +2817,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like W* decays
@@ -2853,6 +2867,7 @@ namespace Gambit
       const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
       const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
       const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      const double mZ = spec->get_Pole_Mass(23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2861,7 +2876,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_12;
       // Total up all channels which look like Z* decays
@@ -2883,7 +2898,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_13;
       // Total up all channels which look like Z* decays
@@ -2905,7 +2920,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_14;
       // Total up all channels which look like Z* decays
