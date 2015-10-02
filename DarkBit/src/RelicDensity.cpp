@@ -514,9 +514,9 @@ namespace Gambit {
     //
     //////////////////////////////////////////////////////////////////////////
 
-    void RD_fraction(double &result)
+    void RD_fraction_from_oh2(double &result)
     {
-      using namespace Pipes::RD_fraction;
+      using namespace Pipes::RD_fraction_from_oh2;
       result = -1;
       double oh2_theory = *Dep::RD_oh2;
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
@@ -530,6 +530,12 @@ namespace Gambit {
       if (result == -1)
         DarkBit_error().raise(LOCAL_INFO, "ERROR in RD_fraction: Unknown mode (options: one, leq_one, any)");
       logger() << "Fraction of dark matter that the scanned model accounts for: " << result << std::endl;
+    }
+
+    void RD_fraction_fixed(double &result)
+    {
+      using namespace Pipes::RD_fraction_fixed;
+      result = 1;
     }
   }
 }
