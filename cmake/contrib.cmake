@@ -43,15 +43,7 @@ set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
 include_directories("${yaml_INCLUDE_DIR}")
 add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
 
-#contrib/fjcore-3.1.3
-set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
-include_directories("${fjcore_INCLUDE_DIR}")
-add_gambit_library(fjcore OPTION OBJECT 
-                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc 
-                          HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fastjet/fjcore.hh)
-set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
-
-#contrib/Delphes-3.1.2; include only if ColliderBit is in use
+#contrib/Delphes-3.1.2; include only if ColliderBit is in use and Delphes is not intentionally ditched.
 set (DELPHES_DIR "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
 set (DELPHES_DICTS "${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes/BTaggingWithTruthModule_dict.cc"
                    "${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes/AbsoluteIsolationModule_dict.cc"
@@ -98,6 +90,15 @@ else()
   add_dependencies(distclean clean-delphes)
 endif()
 
+#contrib/fjcore-3.1.3; include only if Delphes is ditched and ColliderBit is not.
+if(EXCLUDE_DELPHES AND ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
+  include_directories("${fjcore_INCLUDE_DIR}")
+  add_gambit_library(fjcore OPTION OBJECT 
+                            SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc 
+                            HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fastjet/fjcore.hh)
+  set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
+endif()
 
 #contrib/MassSpectra; include only if SpecBit is in use
 set (FS_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy")
