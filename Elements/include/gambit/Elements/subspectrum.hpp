@@ -401,7 +401,7 @@ namespace Gambit {
                               .map1(  mapcoll.map1 )
                               .map1M( mapcoll.map1_extraM )
                               .map1I( mapcoll.map1_extraI );
-     if( finder.find(name,i) ){ result = finder.callfcn(); }
+      if( finder.find(name,i) ){ result = finder.callfcn(); }
       else { finder.raise_error(LOCAL_INFO); }
       return result;
    }                                                                        

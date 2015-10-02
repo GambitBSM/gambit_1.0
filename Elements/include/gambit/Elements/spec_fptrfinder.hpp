@@ -236,6 +236,7 @@ namespace Gambit {
             std::string msg;
             switch(error_code)
             {
+                case -2: msg = "Search began but did not properly set the error code!"; break; 
                 case -1: msg = "Search not yet attempted"; break; 
                 case 0:  msg = "No problem, search succeeded"; break;
                 case 1:  msg = "String name lookup failed"; break;
@@ -282,7 +283,7 @@ namespace Gambit {
               utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
            }
            it = map->find(name);
-           if( it == map->end() ){ found = false; }
+           if( it == map->end() ){ found = false; lastname = name; }
            return found; 
          }
 
@@ -309,7 +310,8 @@ namespace Gambit {
          bool find(const std::string& name, bool doublecheck=true, bool check_antiparticle=true)
          {
             bool found = false;   
-            error_code = 0;
+            lastname = name;
+            error_code = -2;
 
             //  Search maps for function; if found then store it
             //std::cout << "Searching 0-index maps for "<<name<<std::endl;
@@ -343,9 +345,9 @@ namespace Gambit {
             // If no override, search the wrapper class maps
             if(not found)
             {
-               if( search_map(name,map0_,it0)   ){ it0_safe=true; whichiter=3; }
-               else if( search_map(name,map0M_,it0M) ){ it0M_safe=true; whichiter=4; }
-               else if( search_map(name,map0I_,it0I) ){ it0I_safe=true; whichiter=5; }
+               if     ( search_map(name,map0_,it0)   ){ it0_safe=true;  found=true; whichiter=3; }
+               else if( search_map(name,map0M_,it0M) ){ it0M_safe=true; found=true; whichiter=4; }
+               else if( search_map(name,map0I_,it0I) ){ it0I_safe=true; found=true; whichiter=5; }
                else if( doublecheck and PDB.has_short_name(name) )
                {
                   // Didn't find it in 0-index maps; translate using PDB entry and try 1-index maps
@@ -354,17 +356,18 @@ namespace Gambit {
                   found = find(p.first, p.second, false, false);
                }
                else { 
-                 found = false;
-                 lastname = name;
-                 error_code = 1; 
+                  found = false;
+                  error_code = 1; 
                }
             }
             
             // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
             if(not found and check_antiparticle and PDB.has_particle(name) and PDB.has_antiparticle(name)) 
             {  
-              found = find(PDB.get_antiparticle(name), true, false);
+               found = find(PDB.get_antiparticle(name), true, false);
             }
+
+            if(found) error_code = 0; // Should be no problem!
             return found;
          }
 
@@ -372,7 +375,8 @@ namespace Gambit {
          bool find(const std::string& name, int i, bool doublecheck=true, bool check_antiparticle=true)
          {
             bool found = false;
-            error_code = 0;
+            lastname = name;
+            error_code = -2;
 
             //  Search maps for function; if found then store it
 
@@ -414,11 +418,11 @@ namespace Gambit {
                   { \
                      /* index1 out of bounds */ \
                      found = false; \
-                     lastname = name; \
                      error_code = 2; \
                   } \
                   else { \
                      /* everything cool. */ \
+                     found = true;        \
                      whichiter=WHICHITER; \
                   }  \
 
@@ -432,9 +436,8 @@ namespace Gambit {
                   found = find(PDB.long_name(name,i), false, false);
                }
                else { 
-                 found = false;
-                 lastname = name;
-                 error_code = 1;
+                  found = false;
+                  error_code = 1;
                }
             }
  
@@ -444,6 +447,8 @@ namespace Gambit {
                std::pair<str,int> shortpr = PDB.get_antiparticle(name,i);
                found = find(shortpr.first,shortpr.second,true, false); 
             }
+ 
+            if(found) error_code = 0; // Should be no problem!
             return found;
          }
 
@@ -451,7 +456,8 @@ namespace Gambit {
          bool find(const std::string& name, int i, int j)
          {
             bool found = false;   
-            error_code = 0;
+            lastname = name;
+            error_code = -2;
 
             //  Search maps for function; if found then store it
 
@@ -490,18 +496,17 @@ namespace Gambit {
                   { \
                      /* index1 out of bounds */ \
                      found = false; \
-                     lastname = name; \
                      error_code = 2; \
                   } \
                   else if( not within_bounds(index2, ITER->second.iset2) ) \
                   { \
                      /* index2 out of bounds */ \
                      found = false; \
-                     lastname = name; \
                      error_code = 3; \
                   } \
                   else { \
                      /* everything cool. */ \
+                     found = true;        \
                      whichiter=WHICHITER; \
                   } \
 
@@ -510,10 +515,11 @@ namespace Gambit {
                else if( search_map(name,map2I_,it2I) ){ CHECK_INDICES_2(it2I,11) }
                else { 
                  found = false;
-                 lastname = name;
                  error_code = 1;
                }
             }
+ 
+            if(found) error_code = 0; // Should be no problem!
             return found;
          }
 
