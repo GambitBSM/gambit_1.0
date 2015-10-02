@@ -134,9 +134,7 @@ namespace Gambit
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             Loop::executeIteration(START_SUBPROCESS);
-            if(*Loop::done and thisProcessVetoed) {
-              logger() << "This subprocess was vetoed." << EOM;
-            } else if (not *Loop::done) {
+            if (not *Loop::done) {
               allProcessesVetoed = false;
               it = 1;
               while(not *Loop::done and it <= nEvents) { Loop::executeIteration(it++); }
@@ -233,7 +231,8 @@ namespace Gambit
         if (SLHA_debug_mode)
         {
           // Run Pythia reading an SLHA file.
-          logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
+          if (omp_get_thread_num() == 0)
+            logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
           pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
           try {
             if (omp_get_thread_num() == 0)
@@ -301,7 +300,6 @@ namespace Gambit
             if (issPtr->good()) totalxsec += xsec;
             delete issPtr;
           }
-          logger() << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << EOM;
           
           /// TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
           if (totalxsec * 1e12 * 20. < 1.) Loop::wrapup();
@@ -769,6 +767,7 @@ namespace Gambit
       using namespace Pipes::calc_LHC_LogLike;
       // xsec veto
       if (allProcessesVetoed) {
+        logger() << "This point was xsec vetoed." << EOM;
         result = 0.;
         return;
       }
