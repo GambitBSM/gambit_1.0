@@ -201,6 +201,14 @@ namespace Gambit
     channels[key] = std::pair<double, double>(BF, error);
   }
 
+  /// Check if a given final state exists in this DecayTable::Entry; vector of PDG-context integer pair version.
+  bool DecayTable::Entry::has_channel(std::vector<std::pair<int,int> >& daughters)
+  {
+    std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
+    check_particles_exist(key);
+    return channels.find(key) != channels.end();
+  }
+
   /// Output a decay table entry as an SLHAea DECAY block
   /// @{
   SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, bool z)         const { return as_slhaea_block(Models::ParticleDB().pdg_pair(p), z); }
