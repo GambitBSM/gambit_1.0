@@ -90,10 +90,10 @@ else()
   add_dependencies(distclean clean-delphes)
 endif()
 
-#contrib/fjcore-3.1.3; include only if Delphes is ditched and ColliderBit is not.
+#contrib/fjcore-3.1.3; compile only if Delphes is ditched and ColliderBit is not.
+set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
+include_directories("${fjcore_INCLUDE_DIR}")
 if(EXCLUDE_DELPHES AND ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
-  set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
-  include_directories("${fjcore_INCLUDE_DIR}")
   add_gambit_library(fjcore OPTION OBJECT 
                             SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc 
                             HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fastjet/fjcore.hh)
