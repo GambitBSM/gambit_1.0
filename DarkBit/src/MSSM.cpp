@@ -93,10 +93,10 @@ namespace Gambit {
       if (runOptions->hasKey("debug_SLHA_filenames"))
       {
         static unsigned int counter = 0;
-        logger() << 
+        logger() <<
           "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
 
-        std::vector<str> filenames = 
+        std::vector<str> filenames =
           runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
         const char * filename = filenames[counter].c_str();
         int len = filenames[counter].length();
@@ -111,7 +111,7 @@ namespace Gambit {
 
       // CMSSM with DS-internal ISASUGRA (should be avoided, only for
       // debugging)
-      else if (ModelInUse("CMSSM") and 
+      else if (ModelInUse("CMSSM") and
           runOptions->getValueOrDef<bool>(false, "use_DS_isasugra")
           )
       {
