@@ -27,40 +27,37 @@ accepted_paths = ['../Backends/installed/Pythia/8.209/']
 
 
 loaded_classes = [
-                    'Pythia8::Pythia',
-                    'Pythia8::Hist',
-                    'Pythia8::Event',
-                    'Pythia8::Particle',
-                    'Pythia8::Info',
-                    'Pythia8::Vec4',
-                    'Pythia8::Rndm',
-                    'Pythia8::SlowJet',
-                    'Pythia8::ParticleData',
-                    'Pythia8::ParticleDataEntry',
-                    'Pythia8::Settings',
-                    'Pythia8::SigmaTotal',
-                    'Pythia8::SigmaProcess',
-                    'Pythia8::PartonLevel',
-                    'Pythia8::Couplings',
-                    # 'Pythia8::ResonanceWidths',
-                    'Pythia8::ResonanceGmZ',   # test class
-                    'Pythia8::CoupSUSY',
-                    'Pythia8::SLHAinterface',
-                    'Pythia8::SusyLesHouches',
-                    'Pythia8::LHdecayTable',
-                    'Pythia8::LHdecayChannel',
-                    'Pythia8::ResonanceDecays',
-                    'Pythia8::DecayChannel',
-                    # 'Pythia8::History',       # test class
-                    'Pythia8::CoupSUSY',
-                    'Pythia8::ParticleDecays',
-                    'Pythia8::CoupSM',
-                    'Pythia8::BeamParticle',
-                    'Pythia8::UserHooks',
-                    'Pythia8::Parm',
-                    'Pythia8::PDF',
+                    'Pythia8::AlphaEM',
                     'Pythia8::AlphaStrong',
-                    'Pythia8::AlphaEM'
+                    'Pythia8::BeamParticle',
+                    'Pythia8::Couplings',
+                    'Pythia8::CoupSM',
+                    'Pythia8::CoupSUSY',
+                    'Pythia8::DecayChannel',
+                    'Pythia8::Event',
+                    'Pythia8::Hist',
+                    'Pythia8::Info',
+                    'Pythia8::LHdecayChannel',
+                    'Pythia8::LHdecayTable',
+                    'Pythia8::Parm',
+                    'Pythia8::ParticleDataEntry',
+                    'Pythia8::ParticleData',
+                    'Pythia8::ParticleDecays',
+                    'Pythia8::Particle',
+                    'Pythia8::PartonLevel',
+                    'Pythia8::Pythia',
+                    'Pythia8::ResonanceDecays',
+                    'Pythia8::ResonanceGmZ',
+                    'Pythia8::ResonanceWidths',
+                    'Pythia8::Rndm',
+                    'Pythia8::Settings',
+                    'Pythia8::SigmaProcess',
+                    'Pythia8::SigmaTotal',
+                    'Pythia8::SLHAinterface',
+                    'Pythia8::SlowJet',
+                    'Pythia8::SusyLesHouches',
+                    'Pythia8::UserHooks',
+                    'Pythia8::Vec4'
                  ]
 
 loaded_functions = [
@@ -73,7 +70,7 @@ ditch = [
         ]
 
 
-load_parent_classes    = True
+load_parent_classes    = False
 wrap_inherited_members = False
 
 

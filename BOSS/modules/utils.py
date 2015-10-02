@@ -2601,9 +2601,9 @@ def fillParentsOfLoadedClassesList():
                         class_name = classutils.getClassNameDict(parent_el)
 
                         # Append to gb.parents_of_loaded_classes
+                        print '  %s is parent of %s.' % (class_name['long_templ'], el.get('demangled'))
                         if class_name['long_templ'] not in gb.parents_of_loaded_classes:
                             gb.parents_of_loaded_classes.append(class_name['long_templ'])
-                            print '  %s is parent of %s.' % (class_name['long_templ'], el.get('demangled'))
 
 # ====== END: fillParentsOfLoadedClassesList ========
 
