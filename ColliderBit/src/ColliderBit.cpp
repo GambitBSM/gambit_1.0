@@ -83,7 +83,7 @@ namespace Gambit
     double xsecGen;
     int pythiaConfigurations, pythiaNumber, nEvents, it;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,xsecGen,pythiaNumber,pythiaConfigurations,nEvents,it,analysisNames,globalAnalyses,thisProcessVetoed,allProcessesVetoed
+    #define SHARED_OVER_OMP iter,xsecGen,pythiaNumber,pythiaConfigurations,nEvents,analysisNames,globalAnalyses,thisProcessVetoed,allProcessesVetoed
 
 
     /// *************************************************
@@ -130,14 +130,23 @@ namespace Gambit
           thisProcessVetoed = false;
           ++pythiaNumber;
           Loop::reset();
+	  bool finished = false;
+	  int counter = 0;
           Loop::executeIteration(INIT);
-          #pragma omp parallel shared(SHARED_OVER_OMP)
+#pragma omp parallel private(it) shared(SHARED_OVER_OMP, finished, counter)
           {
             Loop::executeIteration(START_SUBPROCESS);
-            if (not *Loop::done) {
-              allProcessesVetoed = false;
-              it = 1;
-              while(not *Loop::done and it <= nEvents) { Loop::executeIteration(it++); }
+            //if (not *Loop::done) {
+	    while(!finished){
+#pragma omp critical (pythia_Counter)
+	      {
+		allProcessesVetoed = false;
+		counter++;
+		it=counter;
+	      }
+	      Loop::executeIteration(it);
+#pragma omp critical (pythia_Counter)	      
+              if((*Loop::done and counter >= nEvents) or (counter >= nEvents))finished=true;
             }
             Loop::executeIteration(END_SUBPROCESS);
           }

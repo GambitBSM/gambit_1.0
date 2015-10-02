@@ -145,7 +145,7 @@ Rules:
   - capability: AnalysisContainer
     function: getAnalysisContainer
     options:  
-      analysisNames: ["ATLAS_0LEPStop_20invfb", "ATLAS_1LEPStop_20invfb"]
+      analysisNames: ["ATLAS_0LEP_20invfb", "ATLAS_1LEPStop_20invfb"]
 
   - capability: DetectorSim
     function: getDelphes
@@ -171,7 +171,7 @@ Rules:
   - capability:  ColliderOperator
     function: operatePythia
     options:
-      nEvents: 1000
+      nEvents: 5000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
