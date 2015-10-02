@@ -360,7 +360,7 @@ namespace Gambit
       // Import relevant decays (only Higgs and subsequent decays)
       std::cout << "Importing decays..." << std::endl;
       using DarkBit_utils::ImportDecays;
-      ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching);
+      ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching, Funk::vec<std::string>("Z0", "W+", "W-"));
 
       // Instantiate new SingletDM object
       // FIXME: Probably this can be speed up f_vs_mass

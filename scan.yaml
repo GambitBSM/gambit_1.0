@@ -129,6 +129,7 @@ Scanner:
         like:  Likelihood
         nlive: 2000
         tol: 0.1
+        root: "runs/spartan_multinest_hdf5/samples/native-"
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
@@ -398,10 +399,10 @@ Scanner:
       #  mean: [1.5, 1.5]
       parameters:
         same:
-          same_as: "EggBox::param_0"
-          scale: 2
-          shift: 1
-        param...10:
+          same_as: "gaussian::param_0"
+          scale: -2
+          shift: -1
+        param...1:
           range: [-5, 5]
       
     test:

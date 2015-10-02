@@ -55,7 +55,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND (";${GAMBIT_BITS};" MATCHES 
     set(ExampleBit_A_XTRA ${flexiblesusy_LDFLAGS})
   endif()
   if (NOT EXCLUDE_DELPHES)
-    set(ExampleBit_A_XTRA ${gambit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+    set(ExampleBit_A_XTRA ${ExampleBit_A_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
   endif()
   add_gambit_executable(ExampleBit_A_standalone "${ExampleBit_A_XTRA}"
                         SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp 
@@ -76,7 +76,9 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND (";${GAMBIT_BITS};" MATCHES "
   if (NOT EXCLUDE_FLEXIBLESUSY)
     set(ColliderBit_XTRA ${flexiblesusy_LDFLAGS})
   endif()
-  set(ColliderBit_XTRA ${gambit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  if (NOT EXCLUDE_DELPHES)
+    set(ColliderBit_XTRA ${ColliderBit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  endif()
   add_gambit_executable(ColliderBit_standalone "${ColliderBit_XTRA}"
                         SOURCES ${PROJECT_SOURCE_DIR}/ColliderBit/examples/ColliderBit_standalone_example.cpp
                                 ${PROJECT_SOURCE_DIR}/ColliderBit/examples/standalone_functors.cpp
@@ -86,7 +88,9 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND (";${GAMBIT_BITS};" MATCHES "
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(ColliderBit_standalone flexiblesusy)
   endif()
-  add_dependencies(ColliderBit_standalone delphes)
+  if (NOT EXCLUDE_DELPHES)
+    add_dependencies(ColliderBit_standalone delphes)
+  endif()
 endif()
 
 # Add the ScannerBit standalone executable
@@ -96,7 +100,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
       set(ScannerBit_XTRA ${flexiblesusy_LDFLAGS})
     endif()
     if (NOT EXCLUDE_DELPHES)
-      set(ScannerBit_XTRA ${gambit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+      set(ScannerBit_XTRA ${ScannerBit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
     endif()
   endif()
   add_gambit_executable(ScannerBit_standalone "${ScannerBit_XTRA}"
@@ -106,9 +110,6 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
                                 ${GAMBIT_BASIC_COMMON_OBJECTS}
   )
   set_target_properties(ScannerBit_standalone PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/ScannerBit/bin")
-#  foreach (plugin ${SCANNERBIT_PLUGINS})
-#    add_dependencies(ScannerBit_standalone ${plugin})
-#  endforeach()
   if(EXISTS "${PROJECT_SOURCE_DIR}/Elements/") 
     if (NOT EXCLUDE_FLEXIBLESUSY)
       add_dependencies(ScannerBit_standalone flexiblesusy)
@@ -124,11 +125,22 @@ endif()
 
 # Add the DarkBit_standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/DarkBit/" AND ";${GAMBIT_BITS};" MATCHES ";DarkBit;")
-  set(DarkBit_XTRA ${gambit_XTRA})
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    set(DarkBit_XTRA ${flexiblesusy_LDFLAGS})
+  endif()
+  if (NOT EXCLUDE_DELPHES)
+    set(DarkBit_XTRA ${DarkBit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  endif()
   add_gambit_executable(DarkBit_standalone "${DarkBit_XTRA}"
                         SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_example.cpp
                                 ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
                                 $<TARGET_OBJECTS:DarkBit>
                                 ${GAMBIT_ALL_COMMON_OBJECTS}
   )
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    add_dependencies(DarkBit_standalone flexiblesusy)
+  endif()
+  if (NOT EXCLUDE_DELPHES)
+    add_dependencies(DarkBit_standalone delphes)
+  endif()
 endif()

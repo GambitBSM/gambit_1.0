@@ -30,7 +30,8 @@ namespace Gambit
 
       void ImportDecays(std::string pID, TH_ProcessCatalog &catalog, 
                         std::set<std::string> &importedDecays, 
-                        const DecayTable* tbl, double minBranching)
+                        const DecayTable* tbl, double minBranching,
+                        std::vector<std::string> excludeDecays)
       {
         if(importedDecays.count(pID) == 1) return;
         //std::cout << "Importing decay information for: " << pID << std::endl;
@@ -74,7 +75,8 @@ namespace Gambit
                 // Recursively import decays of final states (for cascades)
                 for(auto f_it=pIDs.begin(); f_it!=pIDs.end();++f_it)
                 {
-                  ImportDecays(*f_it, catalog, importedDecays, tbl, minBranching);
+                  if (std::find(excludeDecays.begin(), excludeDecays.end(), *f_it) == excludeDecays.end())
+                    ImportDecays(*f_it, catalog, importedDecays, tbl, minBranching);
                 }
               }
               //else

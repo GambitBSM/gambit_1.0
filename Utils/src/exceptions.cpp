@@ -197,13 +197,13 @@ namespace Gambit
       {
         log_exception(origin, specific_message);
       }
-      throw_iff_outside_parallel();
+      throw(*this);
     }
 
     /// As per forced_throw but without logging.
     void exception::silent_forced_throw()
     {
-      throw_iff_outside_parallel();
+      throw(*this);
     }
 
     /// Get a read-only map of pointers to all instances of this class.
@@ -239,7 +239,7 @@ namespace Gambit
         logger() << nonfatal;
         myWhat = myShortWhat; 
       }
-      for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; }	
+      for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; } 
       logger() << msg1.str() << msg1.str() << EOM;
     }
 

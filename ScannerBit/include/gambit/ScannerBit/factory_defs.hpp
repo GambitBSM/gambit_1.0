@@ -94,6 +94,9 @@ namespace Gambit
                     if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
                     {
                             Gambit::Scanner::Plugins::plugin_info.dump();
+#ifdef WITH_MPI
+                            MPI_Finalize();
+#endif
                             exit(0);
                     }
                     Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
