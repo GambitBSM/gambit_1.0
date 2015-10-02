@@ -431,20 +431,20 @@ namespace Gambit
          /// @{ Old interface; remove eventually
 
          /// getters using map (and "checkers")
-   DECLARE_GETTERS(mass4_parameter,Par::mass4)
-   DECLARE_GETTERS(mass3_parameter,Par::mass3)
-   DECLARE_GETTERS(mass2_parameter,Par::mass2)
-   DECLARE_GETTERS(mass_parameter,Par::mass1)
-   DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
-   DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
+   //DECLARE_GETTERS(mass4_parameter,Par::mass4)
+   //DECLARE_GETTERS(mass3_parameter,Par::mass3)
+   //DECLARE_GETTERS(mass2_parameter,Par::mass2)
+   //DECLARE_GETTERS(mass_parameter,Par::mass1)
+   //DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
+   //DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
   
-   /// setters (and parameter overrides)
-   DECLARE_SETTERS(mass4_parameter,Par::mass4)
-   DECLARE_SETTERS(mass3_parameter,Par::mass3)
-   DECLARE_SETTERS(mass2_parameter,Par::mass2)
-   DECLARE_SETTERS(mass_parameter,Par::mass1)
-   DECLARE_SETTERS(dimensionless_parameter,Par::dimensionless)
-   DECLARE_SETTERS(mass_eigenstate,Par::mass_eigenstate)
+   ///// setters (and parameter overrides)
+   //DECLARE_SETTERS(mass4_parameter,Par::mass4)
+   //DECLARE_SETTERS(mass3_parameter,Par::mass3)
+   //DECLARE_SETTERS(mass2_parameter,Par::mass2)
+   //DECLARE_SETTERS(mass_parameter,Par::mass1)
+   //DECLARE_SETTERS(dimensionless_parameter,Par::dimensionless)
+   //DECLARE_SETTERS(mass_eigenstate,Par::mass_eigenstate)
          /// @}
    };
 
@@ -474,12 +474,12 @@ namespace Gambit
          /// @{ Old interface; remove eventually
 
          /// getters using map (and "checkers")
-   DECLARE_GETTERS(Pole_Mass,Par::Pole_Mass)
-   DECLARE_GETTERS(Pole_Mixing,Par::Pole_Mixing)
+   //DECLARE_GETTERS(Pole_Mass,Par::Pole_Mass)
+   //DECLARE_GETTERS(Pole_Mixing,Par::Pole_Mixing)
   
-   /// setters (and parameter overrides)
-   DECLARE_SETTERS(Pole_Mass,Par::Pole_Mass)
-   DECLARE_SETTERS(Pole_Mixing,Par::Pole_Mixing)
+   ///// setters (and parameter overrides)
+   //DECLARE_SETTERS(Pole_Mass,Par::Pole_Mass)
+   //DECLARE_SETTERS(Pole_Mixing,Par::Pole_Mixing)
          /// @}
    };
    

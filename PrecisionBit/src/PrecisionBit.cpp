@@ -99,9 +99,9 @@ namespace Gambit
     }
      
     /// Basic mass/coupling extractors for different types of spectra, for use with precision likelihoods below
-    void mw_from_MSSM_spectrum(double &result) { result = (*Pipes::mw_from_MSSM_spectrum::Dep::MSSM_spectrum)   ->get_Pole_Mass("W-");  } //FIXME add uncerts
-    void mw_from_SM_spectrum  (double &result) { result = (*Pipes::mw_from_SM_spectrum::Dep::SM_spectrum)       ->get_Pole_Mass("W-");  } //FIXME add uncerts
-    void mw_from_SS_spectrum  (double &result) { result = (*Pipes::mw_from_SS_spectrum::Dep::SingletDM_spectrum)->get_Pole_Mass("W-");  } //FIXME add uncerts
+    void mw_from_MSSM_spectrum(double &result) { result = (*Pipes::mw_from_MSSM_spectrum::Dep::MSSM_spectrum)   ->get(Par::Pole_Mass,"W-");  } //FIXME add uncerts
+    void mw_from_SM_spectrum  (double &result) { result = (*Pipes::mw_from_SM_spectrum::Dep::SM_spectrum)       ->get(Par::Pole_Mass,"W-");  } //FIXME add uncerts
+    void mw_from_SS_spectrum  (double &result) { result = (*Pipes::mw_from_SS_spectrum::Dep::SingletDM_spectrum)->get(Par::Pole_Mass,"W-");  } //FIXME add uncerts
     //void sinW2_eff_from_MSSM_spectrum(double &result) { result = (*Pipes::sinW2_eff_from_MSSM_spectrum::Dep::MSSM_spectrum)   ->get_sinW2_eff; } //FIXME add uncerts
     //void sinW2_eff_from_SM_spectrum  (double &result) { result = (*Pipes::sinW2_eff_from_SM_spectrum::Dep::SM_spectrum)       ->get_sinW2_eff; } //FIXME add uncerts
     //void sinW2_eff_from_SS_spectrum  (double &result) { result = (*Pipes::sinW2_eff_from_SS_spectrum::Dep::SingletDM_spectrum)->get_sinW2_eff; } //FIXME add uncerts

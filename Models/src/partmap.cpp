@@ -261,6 +261,7 @@ namespace Gambit
     /// @}
 
     /// Check if a particle has a matching anti-particle in the database, using the long name 
+    /// Note: will throw an error if the particle itself is not in the database!
     bool partmap::has_antiparticle(str long_name)
     {
       return has_antiparticle(pdg_pair(long_name)); 

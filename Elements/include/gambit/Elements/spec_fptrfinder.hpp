@@ -306,22 +306,22 @@ namespace Gambit {
          /// is good enough for the use here I think.
       
          /// Search function for 0-index maps
-         bool find(const std::string& name, bool doublecheck=true)
+         bool find(const std::string& name, bool doublecheck=true, bool check_antiparticle=true)
          {
-            bool override_found = false;
-            bool found = true;   
+            bool found = false;   
             error_code = 0;
 
             //  Search maps for function; if found then store it
             //std::cout << "Searching 0-index maps for "<<name<<std::endl;
 
             //  Search override maps first
+
             if(doublecheck)
             {
                if( omap0_!=NULL and search_map(name,omap0_,ito0) )
                { 
                   ito0_safe=true; 
-                  override_found=true; 
+                  found=true; 
                   whichiter=0; 
                }
                else if( omap1_!=NULL and PDB.has_short_name(name) )
@@ -332,7 +332,7 @@ namespace Gambit {
                   if  ( search_map(p.first,omap1_,ito1) )
                   { 
                      ito1_safe=true; 
-                     override_found=true; 
+                     found=true; 
                      index1=p.second;
                      whichiter=1; 
                   }
@@ -341,7 +341,7 @@ namespace Gambit {
             }        
  
             // If no override, search the wrapper class maps
-            if(not override_found)
+            if(not found)
             {
                if( search_map(name,map0_,it0)   ){ it0_safe=true; whichiter=3; }
                else if( search_map(name,map0M_,it0M) ){ it0M_safe=true; whichiter=4; }
@@ -351,7 +351,7 @@ namespace Gambit {
                   // Didn't find it in 0-index maps; translate using PDB entry and try 1-index maps
                   std::pair<str, int> p = PDB.short_name_pair(name);
                   //std::cout << "running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
-                  found = find(p.first, p.second, false);
+                  found = find(p.first, p.second, false, false);
                }
                else { 
                  found = false;
@@ -359,14 +359,19 @@ namespace Gambit {
                  error_code = 1; 
                }
             }
+            
+            // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
+            if(not found and check_antiparticle and PDB.has_particle(name) and PDB.has_antiparticle(name)) 
+            {  
+              found = find(PDB.get_antiparticle(name), true, false);
+            }
             return found;
          }
 
          /// Search function for 1-index maps
-         bool find(const std::string& name, int i, bool doublecheck=true)
+         bool find(const std::string& name, int i, bool doublecheck=true, bool check_antiparticle=true)
          {
-            bool override_found = false;
-            bool found = true;
+            bool found = false;
             error_code = 0;
 
             //  Search maps for function; if found then store it
@@ -381,7 +386,7 @@ namespace Gambit {
                   if( it != ito1->second.end() )
                   { 
                      ito1_safe=true; 
-                     override_found=true; 
+                     found=true; 
                      index1=i;
                      whichiter=1; 
                   }
@@ -390,14 +395,14 @@ namespace Gambit {
                      // Didn't find it in 1-index override map; translate using PDB entry and try
                      // 0-index override map
                      ito0_safe=true; 
-                     override_found=true; 
+                     found=true; 
                      whichiter=0;
                   }
                }
             }
 
             // If no override, search the wrapper class maps
-            if(not override_found)
+            if(not found)
             {
                #define CHECK_INDICES_1(ITER,WHICHITER)   \
                   CAT(ITER,_safe)=true;   \
@@ -424,7 +429,7 @@ namespace Gambit {
                {
                   // Didn't find it in 1-index maps; translate using PDB entry and try 0-index maps
                   //std::cout << "running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
-                  found = find(PDB.long_name(name,i), false);
+                  found = find(PDB.long_name(name,i), false, false);
                }
                else { 
                  found = false;
@@ -432,14 +437,20 @@ namespace Gambit {
                  error_code = 1;
                }
             }
+ 
+            // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
+            if(not found and check_antiparticle and PDB.has_particle(name) and PDB.has_antiparticle(name,i)) 
+            {  
+               std::pair<str,int> shortpr = PDB.get_antiparticle(name,i);
+               found = find(shortpr.first,shortpr.second,true, false); 
+            }
             return found;
          }
 
          /// Search function for 2-index maps
          bool find(const std::string& name, int i, int j)
          {
-            bool override_found = false;
-            bool found = true;   
+            bool found = false;   
             error_code = 0;
 
             //  Search maps for function; if found then store it
@@ -456,7 +467,7 @@ namespace Gambit {
                   if( jt2 != jt->second.end() )
                   { 
                      ito2_safe=true; 
-                     override_found=true; 
+                     found=true; 
                      index1=i;
                      index2=j;
                      whichiter=2; 
@@ -465,7 +476,7 @@ namespace Gambit {
             }
  
             // If no override, search the wrapper class maps
-            if(not override_found)
+            if(not found)
             {
 
                #define CHECK_INDICES_2(ITER,WHICHITER)   \
