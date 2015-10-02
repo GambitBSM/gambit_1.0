@@ -467,7 +467,9 @@ namespace Gambit
                 if (selectedPlugins.find(type) != selectedPlugins.end() && selectedPlugins[type].find(tag) != selectedPlugins[type].end())
                 {
                     Proto_Plugin_Details &detail = selectedPlugins[type][tag];
-                    return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, options.getOptions(type + "s", tag).getNode());
+                    YAML::Node plugin_options = options.getOptions(type + "s", tag).getNode();
+                    plugin_options["default_output_path"] = options.getValue<std::string>("default_output_path");
+                    return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, plugin_options);
                 }
                 else
                 {
