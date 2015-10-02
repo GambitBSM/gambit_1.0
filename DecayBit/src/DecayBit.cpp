@@ -131,7 +131,7 @@ namespace Gambit
       result.set_BF(0.0930, 0.0011, "pi+", "pi0", "pi0", "nubar_tau");              
       result.set_BF(0.0105, 0.0007, "pi+", "pi0", "pi0", "pi0", "nubar_tau");              
       result.set_BF(0.0931, 0.0006, "pi+", "pi+", "pi-", "nubar_tau");              
-      result.set_BF(0.0462, 0.0006, "pi+", "pi+", "pi-", "pi0", "nubar_tau");              
+      result.set_BF(0.0462, 0.0006, "pi+", "pi+", "pi-", "pi0", "nubar_tau");        
     }
 
     /// SM decays: tau-
