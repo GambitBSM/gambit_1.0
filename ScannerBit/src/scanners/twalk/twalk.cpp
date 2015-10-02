@@ -38,8 +38,8 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
         
         Gambit::Options txt_options;
         txt_options.setValue("synchronised",false);
-        txt_options.setValue("output_file", "output");
-        txt_options.setValue("info_file", "info");
+        //txt_options.setValue("output_file", "output");
+        //txt_options.setValue("info_file", "info");
         get_printer().new_stream("txt", txt_options);
 
         TWalk(LogLike, get_printer(), set_resume_params,

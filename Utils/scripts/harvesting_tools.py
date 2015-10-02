@@ -455,9 +455,17 @@ def same(f1,f2):
     for l1,l2 in itertools.izip_longest(file1,file2,fillvalue=''): 
         if l1 != l2:
               l1nospace = ''.join(l1.split()).lower() #remove spaces and make lowercase
-              if not l1nospace.startswith("#\\date") \
+              #print l1
+              #print l2
+              #print l1nospace
+              if      not l1nospace.startswith("#\date") \
+                  and not l1nospace.startswith("#\\date") \
+                  and not l1nospace.startswith("//\date") \
                   and not l1nospace.startswith("//\\date") \
+                  and not l1nospace.startswith("///\date") \
                   and not l1nospace.startswith("///\\date"): 
+                 #print "Doesn't match!", file1, file2
+                 #quit()
                  return False
     return True
 
