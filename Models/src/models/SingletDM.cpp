@@ -50,7 +50,7 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
   tree_level_S_mass=myP.getValue("mS");
   Lambda_hS=myP.getValue("lambda_hS");
   
-  ms2=pow(tree_level_S_mass,2)-0.5*Lambda_hS*pow(246.2,2);
+  ms2=pow(tree_level_S_mass,2)-Lambda_hS*pow(246.2,2);
   
   targetP.setValue("lambda_hS",Lambda_hS);
   

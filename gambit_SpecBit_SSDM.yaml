@@ -25,7 +25,7 @@ Parameters:
 
     SingletDM:
         mS:
-            range: [10, 100]
+            range: [45, 100]
             prior_type: log
         lambda_hS:
             range: [0.002, 0.2]
@@ -57,6 +57,7 @@ Printer:
     output_file: "runs/VS_spartan/samples/gambit_output.txt"
     # name of info file (explains content of output file)
     info_file: "runs/VS_spartan/samples/gambit_output.info"
+    buffer_length: 10
 
 ##############################
 # Scanner setup
@@ -114,18 +115,19 @@ ObsLikes:
 
 # simple test vacuum stability function in SpecBit (observable only for now)
 
-    - capability: VS
+    - capability: VS_age
       purpose: Observable
-      function: VS_SSDM
+      function: VS_age_func
+
+    - capability: VS_likelihood
+      purpose: Observable
+      function: VS_likelihood_func
 
       
 #    - capability: SSDM_spectrum
 #      purpose: Observable
 #      function: get_SSDM_spectrum
 
-    - capability: test_spectrum
-      purpose: Observable
-      function: test_SSDM_spectrum
 
 
 #########################

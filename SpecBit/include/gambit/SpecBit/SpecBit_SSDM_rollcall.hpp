@@ -38,13 +38,28 @@
   #undef CAPABILITY
 
 
-  #define CAPABILITY test_spectrum
+  #define CAPABILITY VS_age
   START_CAPABILITY                          
 
-    #define FUNCTION test_SSDM_spectrum
+    #define FUNCTION VS_age_func
     START_FUNCTION(double)
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(SSDM_spectrum,const Spectrum*)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDM_running))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
+  #define CAPABILITY VS_likelihood
+  START_CAPABILITY                          
+
+    #define FUNCTION VS_likelihood_func
+    START_FUNCTION(double)
+    DEPENDENCY(VS_age, double)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
     MODEL_GROUP(singlet, (SingletDM_running))
