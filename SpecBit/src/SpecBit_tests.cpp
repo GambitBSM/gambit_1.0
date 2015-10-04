@@ -623,6 +623,23 @@ namespace Gambit
          /// Tests of spectrum/particle database antiparticle getters/setters interaction
          cout << "Test retrieval of antiparticle entries" << endl;
 
+         cout << "has '~e+' pole mass? " << clonedspec->phys().has(Par::Pole_Mass,"~e+",1) << endl;
+         cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
+         cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
+         cout << "Setting new ~e+ pole mass value" << endl;
+         clonedspec->phys().set(Par::Pole_Mass,-666,"~e+");
+         cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
+         cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
+         cout << "Setting override ~e+ pole mass value" << endl;
+         clonedspec->phys().set_override(Par::Pole_Mass,-999,"~e+");
+         cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
+         cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
+         cout << "Set ~e+ pole mass via PDG code" << endl;
+         clonedspec->phys().set_override(Par::Pole_Mass,-111,std::make_pair(-1000011,0));
+         cout << "'(-1000011,0)' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,std::make_pair(-1000011,0)) << endl;
+         cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
+         cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
+
          cout << "Test report:" << std::endl << report.str();
 
          /// Turn SpecBit warnings to 'fatal' in order to trigger stop after this function runs. 

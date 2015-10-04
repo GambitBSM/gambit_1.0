@@ -190,7 +190,7 @@ namespace Gambit
 
       
       /// add theory errors
-      MSSM_strs ms;
+      static const MSSM_strs ms;
 
       static const std::vector<int> i12     = initVector(1,2);
       static const std::vector<int> i123    = initVector(1,2,3);
@@ -742,6 +742,46 @@ namespace Gambit
       result = Couplings;
     }
 
+    /// Convert MSSM type Spectrum object into a map, so it can be printed
+    void get_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
+    {
+      namespace myPipe = Pipes::get_MSSM_spectrum_as_map;
+      const Spectrum* mssmspec(*myPipe::Dep::MSSM_spectrum);
+
+      /// Add everything... use metadata to loop when available.
+      #define ADD_ALL(strings)\
+         for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
+         {\
+            std::ostringstream label;\
+            label << *it << "_Pole_Mass";\
+            specmap[label.str()] = mssmspec->get_HE()->phys().get(Par::Pole_Mass,*it);\
+         }
+
+      #define ADD_ALL1(strings,indices)\
+         for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
+         {\
+            for(std::vector<int>::const_iterator it2=indices.begin(); it2!=indices.end(); ++it2)\
+            {\
+               std::ostringstream label;\
+               label << Models::ParticleDB().long_name(*it,*it2) << "_Pole_Mass";\
+               specmap[label.str()] = mssmspec->get_HE()->phys().get(Par::Pole_Mass,*it,*it2);\
+            }\
+         }
+
+      static const MSSM_strs ms;
+
+      static const std::vector<int> i12     = initVector(1,2);
+      static const std::vector<int> i123    = initVector(1,2,3);
+      static const std::vector<int> i1234   = initVector(1,2,3,4);
+      static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
+
+      ADD_ALL(ms.pole_mass_strs)         // no-index strings
+      ADD_ALL1(ms.pole_mass_strs_1_2,i12)     // 1-index with two allowed values
+      ADD_ALL1(ms.pole_mass_strs_1_3,i123)    // 1-index with three allowed values
+      ADD_ALL1(ms.pole_mass_strs_1_4,i1234)   // 1-index with four allowed values
+      ADD_ALL1(ms.pole_mass_strs_1_6,i123456) // 1-index with six allowed values
+    }
+   
 
     /// @} End Gambit module functions
 

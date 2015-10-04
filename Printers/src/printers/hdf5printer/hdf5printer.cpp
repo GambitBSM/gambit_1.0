@@ -1519,7 +1519,7 @@ namespace Gambit
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
   
-    void HDF5Printer::print(std::vector<double> const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    void HDF5Printer::print(const std::vector<double>& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
        // We will write to several 'double' buffers, rather than a single vector buffer.
        // Change this once a vector buffer is actually available
@@ -1561,7 +1561,7 @@ namespace Gambit
        }
     }
    
-    void HDF5Printer::print(triplet<double> const& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
+    void HDF5Printer::print(const triplet<double>& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
     {
       // Retrieve the buffer manager for buffers with this type
       typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
@@ -1596,20 +1596,24 @@ namespace Gambit
       }
     }
 
-    void HDF5Printer::print(ModelParameters const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
-   {
-       // We will write to several 'double' buffers, since modelparameters are often retrieved separately
+    void HDF5Printer::print(const ModelParameters& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    {
+       std::map<std::string, double> parameter_map = value.getValues();
+       print(parameter_map, label, vID, mpirank, pointID);
+    }
+ 
+    void HDF5Printer::print(const std::map<std::string,double>& map, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    {
+       // We will write to one 'double' buffer for each map entry
        typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
       
        // Retrieve the buffer manager for buffers with this type
        typedef H5P_LocalBufferManager<BuffType> BuffMan;
        BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
 
-       std::map<std::string, double> parameter_map = value.getValues();
- 
        unsigned int i=0; // index for each buffer 
-       for (std::map<std::string, double>::iterator 
-         it = parameter_map.begin(); it != parameter_map.end(); it++)
+       for (std::map<std::string, double>::const_iterator 
+         it = map.begin(); it != map.end(); it++)
        {
          std::stringstream ss;
          ss<<label<<"::"<<it->first;
@@ -1633,7 +1637,7 @@ namespace Gambit
          i++;
        }
     }
- 
+
     /// @}  
    
   } // end namespace printers

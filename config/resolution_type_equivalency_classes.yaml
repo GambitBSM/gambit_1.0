@@ -33,6 +33,9 @@
 # Floating point conveniences
 ["std::pair<double, double>", ddpair]
 
+# String-to-double map
+["std::map<std::string,double>", map_str_dbl]
+
 # Fortran data types
 [bool, Flogical, Flogical1]
 [char, Fcharacter]

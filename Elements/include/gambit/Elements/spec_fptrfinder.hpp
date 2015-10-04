@@ -362,11 +362,15 @@ namespace Gambit {
             }
             
             // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
-            if(not found and check_antiparticle and PDB.has_particle(name) and PDB.has_antiparticle(name)) 
-            {  
-               found = find(PDB.get_antiparticle(name), true, false);
+            if(not found and check_antiparticle) 
+            {
+               std::cout << "Considering conversion of "<<name<<" to antiparticle" <<std::endl;
+               if(PDB.has_particle(name) and PDB.has_antiparticle(name)) 
+               {  
+                  std::cout << "Converting "<<name<<" to "<<PDB.get_antiparticle(name)<<std::endl;
+                  found = find(PDB.get_antiparticle(name), true, false);
+               }
             }
-
             if(found) error_code = 0; // Should be no problem!
             return found;
          }
@@ -442,12 +446,16 @@ namespace Gambit {
             }
  
             // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
-            if(not found and check_antiparticle and PDB.has_particle(name) and PDB.has_antiparticle(name,i)) 
-            {  
-               std::pair<str,int> shortpr = PDB.get_antiparticle(name,i);
-               found = find(shortpr.first,shortpr.second,true, false); 
-            }
- 
+            if(not found and check_antiparticle) 
+            {
+               std::cout << "Considering conversion of "<<name<<" to antiparticle" <<std::endl;
+               if(PDB.has_particle(name,i) and PDB.has_antiparticle(name,i)) 
+               {  
+                  std::pair<str,int> shortpr = PDB.get_antiparticle(name,i);
+                  std::cout << "Converting "<<name<<","<<i<<" to "<<shortpr.first<<","<<shortpr.second<<std::endl;
+                  found = find(shortpr.first,shortpr.second,true, false); 
+               }
+            } 
             if(found) error_code = 0; // Should be no problem!
             return found;
          }

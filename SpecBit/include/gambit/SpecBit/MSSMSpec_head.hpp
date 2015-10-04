@@ -243,38 +243,38 @@ namespace Gambit {
        const str snubar    =   "~nubar";
        const str chiminus  =   "~chi-";
 
-      // pole mass strings with no index
-       std::vector<str> pole_mass_strs = initVector( gluino, A0, Hplus,
+       // pole mass strings with no index
+       const std::vector<str> pole_mass_strs = initVector( gluino, A0, Hplus,
 						     Hminus, Goldstone0,
 						     Goldstoneplus,
 						     Goldstoneminus,
 						     Wplus, Wminus, Z0 );
 
-       // as above but with Z0 since we do not predict that mass
-       std::vector<str> pole_mass_pred = initVector( gluino, A0, Hplus,
+       // as above but without Z0 since we do not predict that mass
+       const std::vector<str> pole_mass_pred = initVector( gluino, A0, Hplus,
 						     Hminus, Goldstone0,
 						     Goldstoneplus,
 						     Goldstoneminus,
 						     Wplus, Wminus );
 
        /// pole mass strings with 1 index
-       std::vector<str> pole_mass_strs_1 = initVector( su, sd, seminus, 
+       const std::vector<str> pole_mass_strs_1 = initVector( su, sd, seminus, 
                                                        subar, sdbar, seplus,
 						       chiplus, chiminus, chi0, h0, 
 						       snu, snubar );
 
        ///  pole mass strings with 1 index and six entries
-       std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, seminus,
+       const std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, seminus,
 							  subar, sdbar, seplus );
 
        ///  pole mass strings with 1 index and four entries
-       std::vector<str> pole_mass_strs_1_4  = initVector( chi0 );
+       const std::vector<str> pole_mass_strs_1_4  = initVector( chi0 );
        
        ///  pole mass strings with 1 index and three entries
-       std::vector<str> pole_mass_strs_1_3  = initVector( snu, snubar );
+       const std::vector<str> pole_mass_strs_1_3  = initVector( snu, snubar );
 
        ///  pole mass strings with 1 index and two entries
-       std::vector<str> pole_mass_strs_1_2  = initVector( chiplus, chiminus, h0 );
+       const std::vector<str> pole_mass_strs_1_2  = initVector( chiplus, chiminus, h0 );
        
      };
 

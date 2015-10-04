@@ -290,10 +290,12 @@ namespace Gambit
          // (bool)
 
         // Types for which custom print functions are defined
+        typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
         #define NON_TEMPLATE_TYPES \
           (std::vector<double>)    \
           (ModelParameters)        \
           (triplet<double>)        \
+          (map_str_dbl)\
           /*(std::vector<bool>)        \
              (std::vector<int>)        */
 

@@ -66,6 +66,10 @@ ObsLikes:
   - purpose:      Test
     capability:   run_MSSMspectrum_test
 
+  - purpose:      Observable
+    capability:   MSSM_spectrum
+    type:         std::map<std::string,double>
+
 #  - purpose:      Test
 #    capability:   decay_rates
 #    type:         DecayTable
