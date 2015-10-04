@@ -104,7 +104,7 @@ namespace Gambit
       // Create full Spectrum object from components above
       // (SubSpectrum objects will be "cloned" into the Spectrum object)
       static Spectrum full_spectrum;
-      full_spectrum = Spectrum(qedqcdspec,higgsspec,sminputs);
+      full_spectrum = Spectrum(qedqcdspec,higgsspec,sminputs,&myPipe::Param);
 
       result = &full_spectrum;
     }

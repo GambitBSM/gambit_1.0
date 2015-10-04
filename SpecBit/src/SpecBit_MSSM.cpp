@@ -77,7 +77,8 @@ namespace Gambit
     const Spectrum* run_FS_spectrum_generator
         ( const typename MI::InputParameters& input
         , const SMInputs& sminputs
-        , const Options& runOptions 
+        , const Options& runOptions
+        , const std::map<str, safe_ptr<double> >& input_Param 
         )
     {
       // SoftSUSY object used to set quark and lepton masses and gauge
@@ -187,7 +188,6 @@ namespace Gambit
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
-
       
       /// add theory errors
       MSSM_strs ms;
@@ -212,10 +212,16 @@ namespace Gambit
       /// Default in most codes is 3 GeV,
       /// seems like an underestimate if the stop masses are heavy enough.  
       /// (TODO: are we happy assigning the same for both higgses?)
+      /// FIXME this does not work for the second higgs
       double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
- 
+
+      /// Save the input value of TanBeta
+      if (input_Param.find("TanBeta") != input_Param.end())
+      {
+        mssmspec.runningpars().set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", false);
+      } 
      
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
@@ -282,7 +288,7 @@ namespace Gambit
       // and SMInputs struct.
       // Return pointer to this package.
       static Spectrum matched_spectra;
-      matched_spectra = Spectrum(qedqcdspec,mssmspec,sminputs);
+      matched_spectra = Spectrum(qedqcdspec,mssmspec,sminputs,&input_Param);
       return &matched_spectra;
     }
 
@@ -386,7 +392,7 @@ namespace Gambit
       input.Azero   = *myPipe::Param["A0"];
   
       // Run spectrum generator
-      result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
+      result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       
       // Dump spectrum information to slha file (for testing...)
       result->get_HE()->getSLHA("SpecBit/CMSSM_fromSpectrumObject.slha");
@@ -409,7 +415,7 @@ namespace Gambit
       MSSM_input_parameters input;
       input.Qin = *myPipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
       fill_MSSM78_input(input,myPipe::Param);
-      result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
+      result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }
 
     // Runs MSSM spectrum generator with GUT scale input
@@ -420,7 +426,7 @@ namespace Gambit
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSMatMGUT_input_parameters input;
       fill_MSSM78_input(input,myPipe::Param);
-      result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
+      result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }
 
     void get_GUTMSSMB_spectrum (const Spectrum* &result)
@@ -523,7 +529,7 @@ namespace Gambit
       // later. INSTEAD, we should just pass the objects themselves, and
       // then they will be CLONED and the Spectrum object will take
       // possession of them:
-      matched_spectra = Spectrum(smskel,mssmskel,sminputs);
+      matched_spectra = Spectrum(smskel,mssmskel,sminputs,NULL);
       result = &matched_spectra;
     } 
     
