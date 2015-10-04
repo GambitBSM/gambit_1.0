@@ -76,6 +76,11 @@ Rules:
   - capability: decay_rates
     function: all_decays
 
+  - capability: MSSM_spectrum
+    options:
+      Higgs_predictions_source: 2
+      Higgs_predictions_error_method: 4
+
   #- function: SUSY_HIT_1_5_init
   #  options:
   #    debug_SLHA_filenames:
