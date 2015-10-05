@@ -73,23 +73,26 @@ namespace Gambit
 
     /// Event labels
     enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
-    /// Analysis stuff
-    HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
-    std::vector<std::string> analysisNames;
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
-    bool thisProcessVetoed, allProcessesVetoed;
+    bool allProcessesVetoed;
     double xsecGen;
-    int pythiaConfigurations, pythiaNumber, nEvents, it;
+    int pythiaConfigurations, pythiaNumber, nEvents, counter;
+    /// Analysis stuff
+    std::vector<std::string> analysisNames;
+    HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,xsecGen,pythiaNumber,pythiaConfigurations,nEvents,analysisNames,globalAnalyses,thisProcessVetoed,allProcessesVetoed
+    #define SHARED_OVER_OMP iter,allProcessesVetoed,xsecGen,counter,analysisNames,globalAnalyses
 
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
     /// *** Loop Managers ***
+
+    /// @note: Much of the loop below designed for splitting up the subprocesses to be generated.
+    /// @note: For our first run, we will just run all SUSY subprocesses.
 
     void operatePythia()
     {
@@ -101,52 +104,39 @@ namespace Gambit
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
 
-      #pragma omp critical (runOptions)
-      {
-        /// Retrieve runOptions from the YAML file safely...
-        GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
-        /// @todo Subprocess specific nEvents
-        GET_COLLIDER_RUNOPTION(nEvents, int);
-      }
-
-      /// @note: Much of the loop below designed for splitting up the subprocesses to be generated.
-      /// @note: For our first run, we will just run all SUSY subprocesses.
+      // Retrieve runOptions from the YAML file safely...
+      GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
+      // @todo Subprocess specific nEvents
+      GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
       {
         piped_invalid_point.check();
         pythiaNumber = 0;
-        #pragma omp critical (runOptions)
-        {
-          // Defaults to 1 if option unspecified
-          pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
-        }
+        // Defaults to 1 if option unspecified
+        pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
 
         while (pythiaNumber < pythiaConfigurations)
         {
           piped_invalid_point.check();
           xsecGen = 0.;
-          thisProcessVetoed = false;
+          counter = 0;
           ++pythiaNumber;
           Loop::reset();
-	  bool finished = false;
-	  int counter = 0;
           Loop::executeIteration(INIT);
-#pragma omp parallel private(it) shared(SHARED_OVER_OMP, finished, counter)
+          #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             Loop::executeIteration(START_SUBPROCESS);
-            //if (not *Loop::done) {
-	    while(!finished){
-#pragma omp critical (pythia_Counter)
-	      {
-		allProcessesVetoed = false;
-		counter++;
-		it=counter;
-	      }
-	      Loop::executeIteration(it);
-#pragma omp critical (pythia_Counter)	      
-              if((*Loop::done and counter >= nEvents) or (counter >= nEvents))finished=true;
+            // post init / xsec veto synchronization
+            #pragma omp barrier
+            // main event loop
+	    while(not *Loop::done and counter < nEvents) {
+              allProcessesVetoed = false;
+              // race conditions may push counter past nEvents. But that is OK.
+              #pragma omp atomic
+              counter++;
+	      Loop::executeIteration(counter);
             }
             Loop::executeIteration(END_SUBPROCESS);
           }
@@ -295,7 +285,7 @@ namespace Gambit
           }
         }
 
-        /// xsec veto
+        // xsec veto
         if (omp_get_thread_num() == 0) {
           code = -1;
           totalxsec = 0.;
@@ -310,11 +300,11 @@ namespace Gambit
             delete issPtr;
           }
           
-          /// TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
-          if (totalxsec * 1e12 * 20. < 1.) Loop::wrapup();
+          // TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
+          if (totalxsec * 1e12 * 20.3 < 1.) Loop::wrapup();
         }
-      }
 
+      }
     }
 
 
@@ -398,10 +388,8 @@ namespace Gambit
       {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
-        #pragma omp critical (access_xsecGen)
-        {
-          xsecGen += xs;
-        }
+        #pragma omp atomic
+        xsecGen += xs;
         result.add_xsec(xs, xserr);
         #pragma omp critical (access_globalAnalyses)
         {
@@ -750,7 +738,9 @@ namespace Gambit
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        const double scale = xsecGen * 20.3*1000 / nEvents;
+        // Use counter instead of nEvents in case race conditions in the loop
+        // caused counter to be slightly larger than nEvents.
+        const double scale = xsecGen * 20.3*1000 / counter;
         globalAnalyses->scale(scale);
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
