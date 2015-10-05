@@ -69,7 +69,7 @@ ExternalProject_Add(darksusy
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
-  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${CMAKE_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
+  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
 )
 enable_auto_rebuild(darksusy)
 add_external_clean(darksusy ${darksusy_dir} distclean)
