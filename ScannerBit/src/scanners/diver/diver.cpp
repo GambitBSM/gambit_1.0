@@ -62,7 +62,8 @@ scanner_plugin(Diver, version(1, 0, 0))
 
     // Simple Diver run parameters
     int    nPar                = get_dimension();                                         // Dimensionality of the parameter space
-    str    root                = get_inifile_value<str>   ("path");                       // Path to save samples, resume files, etc 
+    str    defpath             = get_inifile_value<str>("default_output_path");           // from gambit global default
+    str    root                = get_inifile_value<str>("path",defpath);                  // Path to save samples, resume files, etc 
     int    nDerived            =                                                 0;       // Number of derived quantities to output (GAMBIT printers handle these).
     int    nDiscrete           = get_inifile_value<int>   ("nDiscrete",          0);      // Number of parameters that are to be treated as discrete
     bool   partitionDiscrete   = get_inifile_value<bool>  ("partitionDiscrete",  false);  // Split the population evenly amongst discrete parameters and evolve separately
