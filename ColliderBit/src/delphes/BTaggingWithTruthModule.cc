@@ -12,6 +12,9 @@
  *
  */
 
+#include "gambit/cmake/cmake_variables.hpp"
+#ifndef EXCLUDE_DELPHES
+
 #include "BTaggingWithTruthModule.h"
 ClassImp(BTaggingWithTruth)
 
@@ -205,3 +208,4 @@ void BTaggingWithTruth::Process()
     jet->PID = pdgCodeMax;
   }
 }
+#endif //EXCLUDE_DELPHES

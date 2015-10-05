@@ -14,8 +14,20 @@
 
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
-
+  #MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
+  CMSSM:
+      M0:
+        range: [550, 6000]
+        prior_type: flat
+      M12:
+        range: [300, 1000]
+        prior_type: flat
+      A0:
+        same_as: CMSSM::M0
+        scale: -2
+      TanBeta: 10
+      SignMu: 1
+      
 ##############################
 # Printer setup
 ##############################
@@ -31,10 +43,12 @@ Printer:
   # therefore vary according to the selected
   # printer.
   options:
+    # size of write buffer
+    buffer_length: 100
     # name of output file
-    output_file: "runs/example_minimal_test/samples/gambit_output.txt"
+    output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
     # name of info file (explains content of output file)
-    info_file: "runs/example_minimal_test/samples/gambit_output.info"
+    info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.info"
 
 ##############################
 # Scanner setup
@@ -42,14 +56,32 @@ Printer:
 
 Scanner:
 
-  use_scanner: random
+  use_scanner: multinest
 
   scanners:
+
+    multinest:
+      plugin: MultiNest
+      options:
+        like:  Likelihood
+        nlive: 20
+        tol: 0.1
+        root: "runs/CMSSM_multinest_collider/samples/native-"
+        aux_printer_txt_options:
+          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
+          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt_info"
+        aux_printer_stats_options:
+          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.stats"
+          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.stats_info"
+        aux_printer_live_options:
+          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.live"
+          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.live_info"
+
 
     random:
       plugin: random_sampler
       options:
-        point_number: 1
+        point_number: 100
         output_file:  output
         like:  Likelihood
         files:
@@ -64,6 +96,9 @@ ObsLikes:
   # Test LHC combined likelihood
   - purpose:    Likelihood
     capability: LHC_Combined_LogLike
+
+  - purpose:    Observable
+    capability: SLHA1_violation
 
   # TODO: Test the functionality of these likelihood functions
   # Test LEP SUSY limit slepton likelihoods
@@ -122,10 +157,28 @@ Rules:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
 
+  #- capability: unimproved_MSSM_spectrum 
+  #  function: get_MSSMatQ_spectrum  
+  #  options:
+  #    invalid_point_fatal: true
+
   - capability: unimproved_MSSM_spectrum 
-    function: get_MSSMatQ_spectrum  
+    function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:
-      invalid_point_fatal: true
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
 
   - capability: Higgs_decay_rates
     function: MSSM_h0_1_decays
@@ -145,7 +198,7 @@ Rules:
   - capability: AnalysisContainer
     function: getAnalysisContainer
     options:  
-      analysisNames: ["ATLAS_0LEPStop_20invfb", "ATLAS_1LEPStop_20invfb"]
+      analysisNames: ["ATLAS_0LEP_20invfb"]
 
   - capability: DetectorSim
     function: getDelphes
@@ -155,6 +208,7 @@ Rules:
   - capability: SimpleSmearingSim
     function: getBuckFast
     options:
+      buckFastOption: "BuckFastSmear"
  
   - capability: ReconstructedEvent
     function: reconstructBuckFastEvent
@@ -162,20 +216,22 @@ Rules:
     - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
     #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
 
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastIdentityEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
-    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
-
   - capability:  ColliderOperator
     function: operatePythia
     options:
-      nEvents: 1000
+      nEvents: 10000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
       #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
+
+  - options:
+      #gauge_mixing_tolerance: 0.5
+      #family_mixing_tolerance: 0.5
+      #off_diagonal_tolerance: 0.5
+      #gauge_mixing_tolerance_invalidates_point_only: false
+      #family_mixing_tolerance_invalidates_point_only: false
+      #off_diagonal_tolerance_invalidates_point_only: false
 
   - capability:  HardScatteringSim
     function:  getPythia
@@ -183,10 +239,13 @@ Rules:
       # Change to absolute paths below when running outside of the gambit/modules directory
       Pythia_doc_path: "../gambit_internal/extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["PartonLevel:MPI = off",
+        pythiaOptions_1: ["Print:quiet = on",
+                          "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
-                          "HadronLevel:all = off"]
+                          "HadronLevel:all = on",
+        "SUSY:all = on",
+        "TauDecays:mode = 0"]
       #Pythia_glusq_LHC_8TeV:
       #  pythiaOptions_1: ["PartonLevel:MPI = off",
       #                    "PartonLevel:ISR = on",
@@ -205,8 +264,8 @@ Rules:
       #                    "HadronLevel:all = off",
       #                    "SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004",
       #                    "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
-      debug_SLHA_filenames:
-        - ColliderBit/data/sps1aWithDecays.spc
+      #debug_SLHA_filenames:
+      #  - ColliderBit/data/sps1aWithDecays.spc
 
   - capability: LHC_Combined_LogLike
     backends:
@@ -215,7 +274,6 @@ Rules:
   - capability: AnalysisNumbers
     dependencies:
     - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
-    #- {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastIdentityEvent"}
     
 #########################
 # Logging setup
@@ -226,7 +284,7 @@ Logger:
   # Redirectory of specific messages according to tags
   # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
 
-  prefix : "runs/example_minimal_test/logs/"
+  prefix : "runs/CMSSM_multinest_collider/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"

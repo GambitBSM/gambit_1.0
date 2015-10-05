@@ -53,8 +53,8 @@ def main(argv):
     except getopt.GetoptError:
         print 'Usage: module_harvestor.py [flags]'
         print ' flags:'
-        print '        -v                   : More verbose output'  
-        print '        -x model1,model2,... : Exclude model1, model2, etc.' 
+        print '        -v                     : More verbose output'  
+        print '        -x module1,module2,... : Exclude module1, module2, etc.' 
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
@@ -83,6 +83,11 @@ def main(argv):
 
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
     exclude_types=set(["void"])
+    # Check if Delphes is on the exclude list, and leave out Delphes types if it is.  FIXME this is only until Delphes is BOSSed.
+    if any(x in exclude_modules for x in ["D","De","Del","Delp","Delph","Delphe","Delphes"]): 
+      exclude_types.add("Gambit::ColliderBit::DelphesVanilla")
+      exclude_types.add("ColliderBit::DelphesVanilla")
+      exclude_types.add("DelphesVanilla")
 
     # Load up the sets of equivalent types
     equiv_classes = get_type_equivalencies()

@@ -155,19 +155,12 @@ namespace Gambit {
               passSRAJetCut=true;
               if(bJets.size()==2) {
                 passSRAbJetCut=true;
-                //TLorentzVector bjet1;
-                //TLorentzVector bjet2;
-                //bjet1.SetPtEtaPhiE(bJets[0]->pT(),bJets[0]->eta(),bJets[0]->phi(),bJets[0]->E());
-                //bjet2.SetPtEtaPhiE(bJets[1]->pT(),bJets[1]->eta(),bJets[1]->phi(),bJets[1]->E());
+               
                 mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
 
                 double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
                 double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
-                //TVector2 bjet1_pT;
-                //TVector2 bjet2_pT;
-                //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
-                //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-
+               
                 double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
                   +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
 
@@ -181,18 +174,11 @@ namespace Gambit {
                 //Check that the two leading jets are the b jets
                 if(bJets.size()==2 && (signalJets[0]->pT()==bJets[0]->pT()) && (signalJets[1]->pT()==bJets[1]->pT())){
                   passSRAbJetCut=true;
-                  //TLorentzVector bjet1;
-                  //TLorentzVector bjet2;
-                  //bjet1.SetPtEtaPhiE(signalJets[0]->pT(),signalJets[0]->eta(),signalJets[0]->phi(),signalJets[0]->E());
-                  //bjet2.SetPtEtaPhiE(signalJets[1]->pT(),signalJets[1]->eta(),signalJets[1]->phi(),signalJets[1]->E());
+                 
                   mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
                   double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
                   double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
-                  //TVector2 bjet1_pT;
-                  //TVector2 bjet2_pT;
-                  //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
-                  //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-
+                 
                   double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
                     +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
 
@@ -221,19 +207,11 @@ namespace Gambit {
             //Check that the 2nd and 3rd leading jets are the b jets
             if(bJets.size()==2 && (bJets[0]->pT()==signalJets[1]->pT()) && (bJets[1]->pT()==signalJets[2]->pT())) {
               passSRBbJetCut=true;
-              //TLorentzVector bjet1;
-              //TLorentzVector bjet2;
-              //bjet1.SetPtEtaPhiE(signalJets[1]->pT(),signalJets[1]->eta(),signalJets[1]->phi(),signalJets[1]->E());
-              //bjet2.SetPtEtaPhiE(signalJets[2]->pT(),signalJets[2]->eta(),signalJets[2]->phi(),signalJets[2]->E());
-
+             
               mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
               double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
               double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
-              //TVector2 bjet1_pT;
-              //TVector2 bjet2_pT;
-              //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
-              //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-
+             
               double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
                 +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
 

@@ -5,17 +5,22 @@ namespace Gambit {
 
 
     /// @name L3SelectronLimitAt205GeV methods
-    //@{
-    P2 L3SelectronLimitAt205GeV::convertPt(double x, double y) {
+    /// @{
+
+    P2 L3SelectronLimitAt205GeV::convertPt(double x, double y)
+    {
       return P2(45. + (x - 159.00) / (700.00 - 159.00) * (100. - 45.),
                 100. + (y - 40.50) / (610.00 - 40.50) * (0. - 100.));
     }
+
     /// @brief Check to see if the point is within the exclusion region
-    bool L3SelectronLimitAt205GeV::isWithinExclusionRegion(double x, double y) {
-      /// @TODO Use actual Z mass from spectrum
-      return (y <= x and x <= 205. / 2. and x > 91.19 / 2.);
+    bool L3SelectronLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    {
+      return (y <= x and x <= 205. / 2. and x > mZ / 2.);
     }
-    L3SelectronLimitAt205GeV::L3SelectronLimitAt205GeV() {
+    
+    L3SelectronLimitAt205GeV::L3SelectronLimitAt205GeV()
+    {
       ///// Limit values /////
       _limitValuesSorted.push_back(0.03);
       _limitValuesSorted.push_back(0.06);
@@ -193,19 +198,24 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
-    //@}
+    /// @}
 
     /// @name L3SmuonLimitAt205GeV methods
-    //@{
-    P2 L3SmuonLimitAt205GeV::convertPt(double x, double y) {
+    /// @{
+
+    P2 L3SmuonLimitAt205GeV::convertPt(double x, double y)
+    {
       return P2(45. + (x - 1092.00) / (1633.00 - 1092.00) * (100. - 45.),
                 100. + (y - 40.50) / (610.00 - 40.50) * (0. - 100.));
     }
-    bool L3SmuonLimitAt205GeV::isWithinExclusionRegion(double x, double y) {
-      /// @TODO Use actual Z mass from spectrum
-      return (y <= x and x <= 205. / 2. and x > 91.19 / 2.);
+
+    bool L3SmuonLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    {
+      return (y <= x and x <= 205. / 2. and x > mZ / 2.);
     }
-    L3SmuonLimitAt205GeV::L3SmuonLimitAt205GeV() {
+
+    L3SmuonLimitAt205GeV::L3SmuonLimitAt205GeV()
+    {
       ///// Limit values /////
       _limitValuesSorted.push_back(0.04);
       _limitValuesSorted.push_back(0.07);
@@ -350,20 +360,25 @@ namespace Gambit {
                      contoursPointer->begin(), makeLine);
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
-    }
-    //@}
+    }    
+    /// @}
 
     /// @name L3StauLimitAt205GeV methods
-    //@{
-    P2 L3StauLimitAt205GeV::convertPt(double x, double y) {
+    /// @{
+
+    P2 L3StauLimitAt205GeV::convertPt(double x, double y)
+    {
       return P2(45. + (x - 625.00) / (1166.00 - 625.00) * (100. - 45.),
                 100. + (y - 948.50) / (1518.00 - 948.50) * (0. - 100.));
     }
-    bool L3StauLimitAt205GeV::isWithinExclusionRegion(double x, double y) {
-      /// @TODO Use actual Z mass from spectrum
-      return (y <= x and x <= 205. / 2. and x > 91.19 / 2.);
+    
+    bool L3StauLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    {
+      return (y <= x and x <= 205. / 2. and x > mZ / 2.);
     }
-    L3StauLimitAt205GeV::L3StauLimitAt205GeV() {
+    
+    L3StauLimitAt205GeV::L3StauLimitAt205GeV()
+    {
       ///// Limit values /////
       _limitValuesSorted.push_back(0.1);
       _limitValuesSorted.push_back(0.15);
@@ -578,7 +593,7 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(2, contoursPointer));
 
     }
-    //@}
+    /// @}
 
   }
 }

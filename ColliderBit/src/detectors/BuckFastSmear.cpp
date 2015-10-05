@@ -36,5 +36,13 @@ namespace Gambit {
       }
     //@}
 
+    /// @name BuckFastIdentity definitions.
+    //@{
+      void BuckFastIdentity::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
+        /// Clone the input event.
+        eventIn.cloneTo(eventOut);
+      }
+    //@}
+
   }
 }
