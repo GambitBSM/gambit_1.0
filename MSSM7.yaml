@@ -52,8 +52,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "runs/MSSM9/samples/MSSM9.hdf5"
-    group: "/MSSM9"
+    output_file: "samples/MSSM7.hdf5"
+    group: "/MSSM7"
     delete_file_if_exists: true
 
 Scanner:
@@ -70,8 +70,6 @@ Scanner:
         mmodal: 1
         # write native MultiNest ascii output files?
         outfile: 0
-        # this needs to default to the prinnter output location
-        root: "runs/MSSM9/samples/native-"
         # resuming doesn't work yet
         resume: 0
         # No options to set, but still need the nodes at the moment...
@@ -190,10 +188,13 @@ Rules:
     function: FH_h0_2_decays
   - capability: t_decay_rates
     function: t_decays
+    
+  # Choose to rescale signals in direct and indirect detection by the relic density fraction
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
 
 Logger:
 
-  prefix : "runs/MSSM9/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -212,4 +213,6 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
- 
+
+  default_output_path: "runs/MSSM7/"
+  
