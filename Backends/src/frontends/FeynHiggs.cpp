@@ -32,7 +32,7 @@ BE_INI_FUNCTION
     int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
     int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
     int tanbren = 0;   // one-loop one-loop tanBeta counter-term (0 -> DRbar, strongly recommended))
-    int higgsmix = 3;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector) -> HB says 2
+    int higgsmix = 2;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector) -> HB says 2
     int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended) -> HB says 0
     int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
     int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)

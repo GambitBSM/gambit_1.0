@@ -210,7 +210,7 @@ namespace Gambit
           double D_p = Dep::prec_HiggsMasses->deltaMH[i];
           if (central == 1) // Using precision calculator mass as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = D_g[i] + D_s_low;
               mh_high[i] = D_p;
@@ -223,7 +223,7 @@ namespace Gambit
           }
           else if (central == 2) // Using spectrum generator mass as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = D_s_low;
               mh_high[i] = D_g[i] + D_p;
@@ -236,7 +236,7 @@ namespace Gambit
           }
           else  // Using mean of spectrum gen and precision calc as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = 0.5*D_g[i] + D_s_low;
               mh_high[i] = 0.5*D_g[i] + D_p;
@@ -257,7 +257,7 @@ namespace Gambit
         {
           if (central == 1) // Using precision calculator mass as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = 1.5*D_g[i];
               mh_high[i] = 0.5*D_g[i];
@@ -270,7 +270,7 @@ namespace Gambit
           }
           else if (central == 2) // Using spectrum generator mass as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = 0.5*D_g[i];
               mh_high[i] = 1.5*D_g[i];
@@ -297,7 +297,7 @@ namespace Gambit
           double D_p = Dep::prec_HiggsMasses->deltaMH[i];
           if (central == 1) // Using precision calculator mass as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = 1.5*D_g[i];
               mh_high[i] = D_p;
@@ -310,7 +310,7 @@ namespace Gambit
           }
           else if (central == 2) // Using spectrum generator mass as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = 0.5*D_g[i];
               mh_high[i] = D_g[i] + D_p;
@@ -323,7 +323,7 @@ namespace Gambit
           }
           else  // Using mean of spectrum gen and precision calc as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = D_g[i];
               mh_high[i] = 0.5*D_g[i] + D_p;
@@ -346,7 +346,7 @@ namespace Gambit
           double D_s_high = mh_s[i]*HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i]);
           if (central == 1) // Using precision calculator mass as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = D_g[i] + D_s_low;
               mh_high[i] = 0.5*D_g[i];
@@ -359,7 +359,7 @@ namespace Gambit
           }
           else if (central == 2) // Using spectrum generator mass as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = D_s_low;
               mh_high[i] = 1.5*D_g[i];
@@ -372,7 +372,7 @@ namespace Gambit
           }
           else  // Using mean of spectrum gen and precision calc as central value
           {
-            if (D_g[i] > 0) // Precision calculator mass is higher than spectrum generator mass 
+            if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass 
             {
               mh_low[i] = 0.5*D_g[i] + D_s_low;
               mh_high[i] = D_g[i];
