@@ -24,6 +24,7 @@
 #include "gambit/PrecisionBit/PrecisionBit_rollcall.hpp"
 #include "gambit/Utils/statistics.hpp"
 
+//#define PRECISIONBIT_DEBUG
 
 namespace Gambit
 {
@@ -142,11 +143,13 @@ namespace Gambit
       double mh[4];
 
 
-      for (int i = 0; i < 4; i++) cout << "h masses, FS: "<< mh_s[i] << endl;
-      for (int i = 0; i < 4; i++) cout << "h masses, FS error low: "<< HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i] << endl;
-      for (int i = 0; i < 4; i++) cout << "h masses, FS error high: "<< HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i] << endl;
-      for (int i = 0; i < 4; i++) cout << "h masses, FH: "<< Dep::prec_HiggsMasses->MH[i] << endl;
-      for (int i = 0; i < 4; i++) cout << "h masses, FH error: "<< Dep::prec_HiggsMasses->deltaMH[i] << endl;
+      #ifdef PRECISIONBIT_DEBUG
+        for (int i = 0; i < 4; i++) cout << "h masses, FS: "<< mh_s[i] << endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, FS error low: "<< HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i] << endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, FS error high: "<< HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i] << endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, FH: "<< Dep::prec_HiggsMasses->MH[i] << endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, FH error: "<< Dep::prec_HiggsMasses->deltaMH[i] << endl;
+      #endif
       
       if (central == 1)
       {
@@ -399,13 +402,14 @@ namespace Gambit
       //for (int i = 0; i < 4; i++) HE->phys().set(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i]);
       //for (int i = 0; i < 4; i++) HE->phys().set(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i]);
 
-      for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE->phys().get(Par::Pole_Mass, higgses[i])<< endl;
-      for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
-      for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
+      #ifdef PRECISIONBIT_DEBUG
+        for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE->phys().get(Par::Pole_Mass, higgses[i])<< endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
+      #endif
 
       result = &improved_spec;
       
-      exit(0);
     }
      
     /// Basic mass/coupling extractors for different types of spectra, for use with precision likelihoods below
