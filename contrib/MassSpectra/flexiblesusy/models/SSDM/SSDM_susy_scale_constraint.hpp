@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 28 Aug 2015 18:02:23
+// File generated at Mon 5 Oct 2015 12:42:15
 
 #ifndef SSDM_SUSY_SCALE_CONSTRAINT_H
 #define SSDM_SUSY_SCALE_CONSTRAINT_H

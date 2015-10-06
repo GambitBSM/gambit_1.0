@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 28 Aug 2015 18:02:22
+// File generated at Mon 5 Oct 2015 12:42:14
 
 #include "SSDM_slha_io.hpp"
 #include "SSDM_input_parameters.hpp"
@@ -71,6 +71,7 @@ void SSDM_slha_io::set_extpar(const SSDM_input_parameters& input)
 
    extpar << "Block EXTPAR\n";
    extpar << FORMAT_ELEMENT(0, input.Qin, "Qin");
+   extpar << FORMAT_ELEMENT(1, input.QHin, "QHin");
    slha_io.set_block(extpar);
 
 }
@@ -341,6 +342,7 @@ void SSDM_slha_io::fill_extpar_tuple(SSDM_input_parameters& input,
 {
    switch (key) {
    case 0: input.Qin = value; break;
+   case 1: input.QHin = value; break;
    default: WARNING("Unrecognized key: " << key); break;
    }
 

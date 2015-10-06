@@ -54,6 +54,7 @@
 #define SWAP(a,b) {double temp;temp=a;a=b;b=temp;}
 
 
+
 inline void shft2a(double &a, double &b, const double c)
 {
     a=b;
@@ -270,7 +271,6 @@ namespace Gambit
       input.Lambda2Input=lambda_hs;
       input.Lambda3Input=0;
       input.Qin=173.15;  // scale where EWSB conditions are applied
-
     }
 
     void get_SSDM_spectrum(const Spectrum* &result)
@@ -281,9 +281,11 @@ namespace Gambit
       SSDM_input_parameters input;
       cout<< "get spectrum started" << endl;
       fill_SSDM_input(input,myPipe::Param);
+      input.QHin=1e3;
       cout<< "Filled input parameters" << endl;
       result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
     }
+
 
 
 
@@ -296,20 +298,20 @@ namespace Gambit
       //const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
 
       const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); // SSDMSpec SubSpectrum object
+      //const SubSpectrum* spec = fullspectrum->get_HE(); // SSDMSpec SubSpectrum object
      
-      cout<<"Scalar pole mass:" << endl;
-      cout<<spec->phys().get_Pole_Mass("S")  <<endl;
-      cout<<"Higgs pole mass:" << endl;
-      cout<<spec->phys().get_Pole_Mass("h0")  <<endl;
+//      cout<<"Scalar pole mass:" << endl;
+//      cout<<spec->phys().get_Pole_Mass("S")  <<endl;
+//      cout<<"Higgs pole mass:" << endl;
+//      cout<<spec->phys().get_Pole_Mass("h0")  <<endl;
 
-      SMInputs sminputs = fullspectrum->get_SMInputs();
+      //SMInputs sminputs = fullspectrum->get_SMInputs();
       std::unique_ptr<SubSpectrum> SM = fullspectrum->clone_HE(); // COPIES Spectrum object
-
+      //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();
       
      //    vvvvvvvvvvvv    Finding minimum value of Lambda      vvvvvvvvvvvvv
       
-      double MZ, a,b,Mpl,fa,fb,fc;
+      double a,b,fa,fb,fc;
       double ax,bx,cx;
       double fu,ftmp;
       double ulim,u,utmp;const double GOLD=1.618034,GLIMIT=100.0;//TINY=1.0e-20;
@@ -317,9 +319,9 @@ namespace Gambit
       //vvvvvvvvvvvv    Bracketing of minimum Lambda      vvvvvvvvvvvvv
       
       const int ITMAX=100;
-      double tol=3e-8;
-      MZ=92;
-      Mpl=1.1e19;// Define upper cutoff
+      double tol=3e-6;
+      double MZ=92;
+      double Mpl=1.1e19;// Define upper cutoff
       
       
       SM->runningpars().RunToScale(MZ);
@@ -328,14 +330,15 @@ namespace Gambit
       double DeltaLamZ = SM->runningpars().get_dimensionless_parameter("Lambda1");
       SM->runningpars().RunToScale(Mpl);
       double fMpl = SM->runningpars().get_dimensionless_parameter("Lambda1");
-      SM->runningpars().RunToScale(Mpl+0.01*Mpl);
+      SM->runningpars().RunToScale(Mpl-0.01*Mpl);
       double DeltafMpl = SM->runningpars().get_dimensionless_parameter("Lambda1");
 
       
       
       if (DeltafMpl<fMpl)
       {
-      a=Mpl;b=(Mpl+0.01*Mpl);fa=Mpl;fb=DeltafMpl;
+      a=Mpl;b=(Mpl-0.01*Mpl);fa=fMpl;fb=DeltafMpl;
+      cout<< "Mpl" << endl;
       }
       else if (DeltaLamZ<LamZ)
       {
@@ -354,7 +357,7 @@ namespace Gambit
       fc = SM->runningpars().get_dimensionless_parameter("Lambda1");
 
       
-      
+      cout << " c = " << cx<<endl;
       while (fb > fc)
       { //Keep returning here until we bracket.
         double r=(bx-ax)*(fb-fc);
@@ -364,7 +367,9 @@ namespace Gambit
         //We won’t go farther than this. Test various possibilities:
         if ((bx-u)*(u-cx) > 0.0) { //Parabolic u is between b and c: try it.
 
+        cout << " u 1 = " << u <<endl;
         SM->runningpars().RunToScale(u);
+        
         fu = SM->runningpars().get_dimensionless_parameter("Lambda1");
  
         if (fu < fc) { //Got a minimum between b and c.
@@ -381,10 +386,11 @@ namespace Gambit
         u=cx+GOLD*(cx-bx); //Parabolic fit was no use. Use default magfu=
 
         SM->runningpars().RunToScale(u);
+        cout << " u5 = " << u <<endl;
         fu = SM->runningpars().get_dimensionless_parameter("Lambda1");
  
         } else if ((cx-u)*(u-ulim) > 0.0) { //Parabolic fit is between c and
-
+        cout << " u2 = " << u <<endl;
         SM->runningpars().RunToScale(u);
         fu = SM->runningpars().get_dimensionless_parameter("Lambda1");
 
@@ -399,13 +405,17 @@ namespace Gambit
         } else if ((u-ulim)*(ulim-cx) >= 0.0) { //Limit parabolic u to maximum
         u=ulim; //allowed value.
 
-        
+        cout << " u3 = " << u <<endl;
         SM->runningpars().RunToScale(u);
         fu = SM->runningpars().get_dimensionless_parameter("Lambda1");
   
         } else { //Reject parabolic u, use default magnificau=
         u=cx+GOLD*(cx-bx); //tion.
-
+        
+        u=pow ( 10,  log10(abs(cx-bx))/2 );
+        
+        
+        cout << " u4 = " << u <<endl;
         SM->runningpars().RunToScale(u);
         fu = SM->runningpars().get_dimensionless_parameter("Lambda1");
 
@@ -416,7 +426,7 @@ namespace Gambit
         shft3a(fa,fb,fc,fu);
       }
     
-      
+      cout<< "here 2" <<endl;
       // ^^^^^^^^^^^^^^^^^^^^^^^^ bracketing complete ^^^^^^^^^^^^^^^^^^^^^^^^^
       
       
@@ -531,7 +541,73 @@ namespace Gambit
       prob=1; // vacuum is absolutely stable
       }
       
+      
+      SMInputs sminputs = fullspectrum->get_SMInputs();
+      //std::unique_ptr<SubSpectrum> SM = fullspectrum->clone_HE();
+      
+      SSDM_input_parameters input;
+      fill_SSDM_input(input,myPipe::Param);
+      input.QHin=Mpl;
+      cout<< "refilled input parameters" << endl;
+     // spectrum* spec2=run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
 
+
+            // Create spectrum generator object
+      
+      typename SSDM_interface<ALGORITHM1>::SpectrumGenerator spectrum_generator;
+
+      // Spectrum generator settings
+      // Default options copied from flexiblesusy/src/spectrum_generator_settings.hpp
+      //
+      // | enum                             | possible values              | default value   |
+      // |----------------------------------|------------------------------|-----------------|
+      // | precision                        | any positive double          | 1.0e-4          |
+      // | max_iterations                   | any positive double          | 0 (= automatic) |
+      // | algorithm                        | 0 (two-scale) or 1 (lattice) | 0 (= two-scale) |
+      // | calculate_sm_masses              | 0 (no) or 1 (yes)            | 0 (= no)        |
+      // | pole_mass_loop_order             | 0, 1, 2                      | 2 (= 2-loop)    |
+      // | ewsb_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
+      // | beta_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
+      // | threshold_corrections_loop_order | 0, 1                         | 1 (= 1-loop)    |
+      // | higgs_2loop_correction_at_as     | 0, 1                         | 1 (= enabled)   |
+      // | higgs_2loop_correction_ab_as     | 0, 1                         | 1 (= enabled)   |
+      // | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
+      // | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
+
+      QedQcd oneset;
+
+      // Fill QedQcd object with SMInputs values
+      setup_QedQcd(oneset,sminputs);
+
+      // Run everything to Mz
+      oneset.toMz();
+      
+      
+      
+      cout<< "Lambda 2 is " << input.Lambda2Input << endl;
+
+
+      spectrum_generator.run(oneset, input);
+      std::ostringstream warnings;
+      const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems
+      = spectrum_generator.get_problems();
+      const bool error = problems.have_problem();
+      //problems.print_warnings(warnings);
+      //std::ostringstream problems_str;
+      //problems.print_problems(problems_str);
+      //cout<< FORMAT_SPINFO(4, problems_str.str()) <<endl;
+      if (error==1)
+      {
+          //FlexibleSUSY error, may be unperturbative
+          cout<< "ERROR" << endl;
+        
+      }
+
+      
+      
+      
+
+  
       result=prob;
     }
 
@@ -545,6 +621,17 @@ namespace Gambit
       const double& age = *myPipe::Dep::VS_age;
       result=log10(  (1/age) * exp(140) * (1/ (1.2e19) )   );
     }
+    
+    // use the below to create a simple function with output pole masses to use as observables
+    
+    
+      //    const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
+      //const SubSpectrum* spec = fullspectrum->get_HE(); // SSDMSpec SubSpectrum object
+     
+//      cout<<"Scalar pole mass:" << endl;
+//      cout<<spec->phys().get_Pole_Mass("S")  <<endl;
+//      cout<<"Higgs pole mass:" << endl;
+//      cout<<spec->phys().get_Pole_Mass("h0")  <<endl;
     
     
     

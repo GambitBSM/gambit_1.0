@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 28 Aug 2015 18:02:23
+// File generated at Mon 5 Oct 2015 12:42:15
 
 #include "SSDM_two_scale_susy_scale_constraint.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -72,6 +72,9 @@ void SSDM_susy_scale_constraint<Two_scale>::apply()
    update_scale();
 
    // apply user-defined susy scale constraints
+   const auto HiggsIN = INPUTPARAMETER(HiggsIN);
+
+   MODEL->set_mu2(Re(HiggsIN));
 
 
    // the parameters, which are fixed by the EWSB eqs., will now be

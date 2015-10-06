@@ -12,7 +12,8 @@ MINPAR = {
 };
 
 EXTPAR = {
-    {0, Qin}
+    {0, Qin},
+    {1, QHin}
 };   
 
 EWSBOutputParameters = {Lambda1};
@@ -42,15 +43,27 @@ InitialGuessAtLowScale = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
-   {mu2, HiggsIN},
    {Lambda2, Lambda2Input},
    {Lambda3, Lambda3Input},
    {mS2, mS2Input}
 };
 
-HighScaleFirstGuess=(81.02)^10;
 
-HighScale=(81.02)^10;
+SUSYScaleInput = {
+   {mu2, HiggsIN}
+   }
+
+InitialGuessAtSUSYScale={
+   {mu2, HiggsIN}
+   }
+
+
+
+
+
+HighScaleFirstGuess=QHin;
+
+HighScale=QHin;
 
 SMParticles = {
     Electron, TopQuark, BottomQuark,

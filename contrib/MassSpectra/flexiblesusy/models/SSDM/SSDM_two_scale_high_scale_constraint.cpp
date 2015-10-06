@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 28 Aug 2015 18:02:23
+// File generated at Mon 5 Oct 2015 12:42:14
 
 #include "SSDM_two_scale_high_scale_constraint.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -189,7 +189,9 @@ void SSDM_high_scale_constraint<Two_scale>::initialize()
    assert(model && "SSDM_high_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   initial_scale_guess = 1.2187717762450936e19;
+   const auto QHin = INPUTPARAMETER(QHin);
+
+   initial_scale_guess = QHin;
 
    scale = initial_scale_guess;
 }
@@ -202,7 +204,9 @@ void SSDM_high_scale_constraint<Two_scale>::update_scale()
    const double currentScale = model->get_scale();
    const SSDM_soft_parameters beta_functions(model->calc_beta());
 
-   scale = 1.2187717762450936e19;
+   const auto QHin = INPUTPARAMETER(QHin);
+
+   scale = QHin;
 
 
    if (errno == ERANGE) {
