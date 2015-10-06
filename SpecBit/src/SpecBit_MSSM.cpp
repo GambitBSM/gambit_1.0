@@ -44,7 +44,7 @@
 #include "flexiblesusy/src/two_loop_corrections.hpp"
 
 // Switch for debug mode
-#define SpecBit_DBUG 
+//#define SPECBIT_DEBUG 
 
 namespace Gambit
 {
@@ -123,7 +123,7 @@ namespace Gambit
       // spectrum_generator.set_NAME(runOptions.getValueOrDef<TYPE>(DEFAULTVAL,"NAME"))
 
       // For debugging only; check expansions
-      // #ifdef SpecBit_DBUG
+      // #ifdef SPECBIT_DEBUG
       //    #define ECHO(COMMAND) std::cout << SAFE_STRINGIFY(COMMAND) << std::endl
       //    ECHO(  SPECGEN_SET(precision_goal,                 double, 1.0e-4)  );
       //    #undef ECHO
@@ -274,7 +274,7 @@ namespace Gambit
       }
 
       // Write SLHA file (for debugging purposes...)
-      #ifdef SpecBit_DBUG
+      #ifdef SPECBIT_DEBUG
          typename MI::SlhaIo slha_io;
          slha_io.set_spinfo(problems);
          slha_io.set_sminputs(oneset);
@@ -331,7 +331,7 @@ namespace Gambit
       input.Adij = fill_3x3_parameter_matrix("Ad", Param);
       input.Auij = fill_3x3_parameter_matrix("Au", Param);
 
-      #ifdef SpecBit_DBUG
+      #ifdef SPECBIT_DEBUG
         #define INPUT(p) input.p
         #define ostr std::cout
         #define oend std::endl
@@ -538,7 +538,9 @@ namespace Gambit
     {
       using namespace Pipes::FH_MSSMMasses;
 
-      cout << "****** calling FH_MSSMMasses ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FH_MSSMMasses ******" << endl;
+      #endif
    
       // zero if minimal, non-zero if non-minimal flavour violation
       int nmfv; 
@@ -592,7 +594,9 @@ namespace Gambit
       // tree-level Higgs mixing parameters sin alpha
       fh_real SAtree;
 
-       cout << "****** calling FHGetPara ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHGetPara ******" << endl;
+      #endif
       
       int error = 1;
       BEreq::FHGetPara(error, nmfv, MSf, USf, MASf, UASf,
@@ -641,7 +645,9 @@ namespace Gambit
     {
       using namespace Pipes::FH_HiggsMasses;
 
-      cout << "****** calling FH_HiggsMasses ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FH_HiggsMasses ******" << endl;
+      #endif
 
       // Higgs mass with
       // 0 - m1 (Mh in rMSSM)
@@ -665,12 +671,16 @@ namespace Gambit
       Farray<fh_complex, 1,3, 1,3> ZHiggs;
       Farray<fh_complex, 1,3, 1,3> DeltaZHiggs;
 
-      cout << "****** calling FHHiggsCorr ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHHiggsCorr ******" << endl;
+      #endif
 
       int error = 1;
       BEreq::FHHiggsCorr(error, MHiggs, SAeff, UHiggs, ZHiggs);
 
-      cout << "****** calling FHUncertainties ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHUncertainties ******" << endl;
+      #endif
 
       error = 1;
       BEreq::FHUncertainties(error, DeltaMHiggs, DeltaSAeff, DeltaUHiggs, DeltaZHiggs);
@@ -701,7 +711,9 @@ namespace Gambit
     {
       using namespace Pipes::FH_Couplings;
       
-      cout << "****** calling FH_Couplings ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FH_Couplings ******" << endl;
+      #endif
 
       // what to use for internal Higgs mixing
       // (ex. in couplings)
@@ -720,7 +732,9 @@ namespace Gambit
       // which effective bottom mass to use
       int mfeff = 1;
 
-      cout << "****** calling FHSelectUZ ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHSelectUZ ******" << endl;
+      #endif
 
       int error = 1;
       BEreq::FHSelectUZ(error, uzint, uzext, mfeff);
@@ -731,7 +745,9 @@ namespace Gambit
       Farray<fh_real, 1,250> gammas_sm;        // Higgs decay widths and BR's (SM)
       int fast = 1;  // include off-diagonal fermion decays? (1 = no)
 
-      cout << "****** calling FHCouplings ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHCouplings ******" << endl;
+      #endif
 
       error = 1;
       BEreq::FHCouplings(error, couplings, couplings_sm,
