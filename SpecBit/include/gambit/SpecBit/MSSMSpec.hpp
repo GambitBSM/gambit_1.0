@@ -110,7 +110,11 @@ namespace Gambit
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
         // FIXME this is wrong, should be at scale mZ, not be at scale Q like this
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
+        //SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
+        if (this->runningpars().has(Par::dimensionless,"TanBeta_input"))
+        {
+          SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"TanBeta_input","MINPAR",3,"# tanbeta(mZ)^DRbar");
+        }
         slha["MINPAR"][""] << 4 << sgn(this->runningpars().get(Par::mass1,"Mu")) << "# sign(mu)";
 
         SLHAea_add_block(slha, "GAUGE",this->runningpars().GetScale());
