@@ -91,8 +91,19 @@ def check_for_declaration(input_snippet,module,all_modules,local_namespace,candi
     candidate_parts = neatsplit('::',candidate_type)
     namespace_parts = neatsplit('::',local_namespace)
     right_class = False
-    # Skip out if the local namespace is inside a different module, or the input snippet is too short to contain a declaration.
-    if len(splitline) > 1 and (not local_namespace or namespace_parts[0] not in all_modules or namespace_parts[0] == module):
+    # Work out if we are in the module namespace, and if any sub-namespace matches the candidate type.
+    in_module_and_namespace_matches = False
+    if local_namespace and namespace_parts[0] == module:
+      if candidate_type.startswith(local_namespace): in_module_and_namespace_matches = True 
+      if len(namespace_parts) == 1:
+        in_module_and_namespace_matches = True
+      else:
+        addon = 0
+        if candidate_parts[0] == module: addon = 1
+        if candidate_parts[0] == "Gambit": addon = 2
+        if len(candidate_parts) == len(namespace_parts) + addon: in_module_and_namespace_matches = True
+    # Continue only if the input snippet is long enough to contain a declaration and there are no namespace issues  
+    if len(splitline) > 1 and (not local_namespace or namespace_parts[0] not in all_modules or in_module_and_namespace_matches):         
         # Look for class/struct declarations
         if splitline[0] in ["class", "struct"]: 
             if candidate_type in (splitline[1], splitline[1]+"*"):
