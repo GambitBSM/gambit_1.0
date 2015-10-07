@@ -12,6 +12,7 @@
 #include "HEPUtils/Utils.h"
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
 #include <cmath>
 
 /// @file Physics vectors stuff
@@ -157,14 +158,16 @@ namespace HEPUtils {
 
     /// Set the mass
     P4& setM(double mass) {
-      assert(mass >= 0);
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
       _m = mass;
       return *this;
     }
 
     /// Set the p coordinates and mass simultaneously
     P4& setPM(double px, double py, double pz, double mass) {
-      assert(mass >= 0);
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
       setPx(px); setPy(py); setPz(pz);
       setM(mass);
       return *this;
@@ -176,7 +179,8 @@ namespace HEPUtils {
 
     /// Set the p coordinates and energy simultaneously
     P4& setPE(double px, double py, double pz, double E) {
-      assert(E >= 0);
+      if (E < 0)
+        throw std::invalid_argument("Negative energy given as argument");
       setPx(px); setPy(py); setPz(pz);
       const double mass = sqrt( sqr(E) - sqr(p()) );
       setM(mass);
@@ -192,10 +196,13 @@ namespace HEPUtils {
     /// eta = -ln(tan(theta/2))
     /// -> theta = 2 atan(exp(-eta))
     P4& setEtaPhiME(double eta, double phi, double mass, double E) {
-      assert(mass >= 0);
-      assert(E >= 0);
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
+      if (E < 0)
+        throw std::invalid_argument("Negative energy given as argument");
       const double theta = 2 * atan(exp(-eta));
-      assert(theta >= 0 && theta <= M_PI);
+      if (theta < 0 || theta > M_PI)
+        throw std::domain_error("Polar angle outside 0..pi in calculation");
       setThetaPhiME(theta, phi, mass, E);
       return *this;
     }
@@ -205,10 +212,13 @@ namespace HEPUtils {
     /// eta = -ln(tan(theta/2))
     /// -> theta = 2 atan(exp(-eta))
     P4& setEtaPhiMPt(double eta, double phi, double mass, double pt) {
-      assert(mass >= 0);
-      assert(pt >= 0);
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
+      if (pt < 0)
+        throw std::invalid_argument("Negative transverse momentum given as argument");
       const double theta = 2 * atan(exp(-eta));
-      assert(theta >= 0 && theta <= M_PI);
+      if (theta < 0 || theta > M_PI)
+        throw std::domain_error("Polar angle outside 0..pi in calculation");
       const double p = pt / sin(theta);
       const double E = sqrt( sqr(p) + sqr(mass) );
       setThetaPhiME(theta, phi, mass, E);
@@ -224,11 +234,14 @@ namespace HEPUtils {
     /// -> pz = sqrt(pt^2 + m^2) sinh(y)
     /// -> sqrt(pt^2 + m^2) = E / cosh(y)
     P4& setRapPhiME(double y, double phi, double mass, double E) {
-      assert(mass >= 0);
-      assert(E >= 0);
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
+      if (E < 0)
+        throw std::invalid_argument("Negative energy given as argument");
       const double sqrt_pt2_m2 = E / cosh(y);
       const double pt = sqrt( sqr(sqrt_pt2_m2) - sqr(mass) );
-      assert(pt >= 0);
+      if (pt < 0)
+        throw std::domain_error("Negative transverse momentum in calculation");
       const double pz = sqrt_pt2_m2 * sinh(y);
       const double px = pt * cos(phi);
       const double py = pt * sin(phi);
@@ -241,10 +254,13 @@ namespace HEPUtils {
     /// y = 0.5 * ln((E+pz)/(E-pz))
     /// -> E = sqrt(pt^2 + m^2) cosh(y)  [see above]
     P4& setRapPhiMPt(double y, double phi, double mass, double pt) {
-      assert(mass >= 0);
-      assert(pt >= 0);
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
+      if (pt < 0)
+        throw std::invalid_argument("Negative transverse mass given as argument");
       const double E = sqrt( sqr(pt) + sqr(mass) ) * cosh(y);
-      assert(E >= 0);
+      if (E < 0)
+        throw std::domain_error("Negative energy in calculation");
       setRapPhiME(y, phi, mass, E);
       return *this;
     }
@@ -255,13 +271,17 @@ namespace HEPUtils {
     /// pz = p cos(theta)
     /// pt = p sin(theta)
     P4& setThetaPhiME(double theta, double phi, double mass, double E) {
-      assert(theta >= 0 && theta <= M_PI);
-      assert(mass >= 0);
-      assert(E >= 0);
+      if (theta < 0 || theta > M_PI)
+        throw std::invalid_argument("Polar angle outside 0..pi given as argument");
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
+      if (E < 0)
+        throw std::invalid_argument("Negative energy given as argument");
       const double p = sqrt( sqr(E) - sqr(mass) );
       const double pz = p * cos(theta);
       const double pt = p * sin(theta);
-      assert(pt >= 0);
+      if (pt < 0)
+        throw std::invalid_argument("Negative transverse momentum in calculation");
       const double px = pt * cos(phi);
       const double py = pt * sin(phi);
       setPE(px, py, pz, E);
@@ -274,9 +294,12 @@ namespace HEPUtils {
     /// pz = p cos(theta)
     /// E = sqrt(p^2 + mass^2)
     P4& setThetaPhiMPt(double theta, double phi, double mass, double pt) {
-      assert(theta >= 0 && theta <= 2*M_PI);
-      assert(pt >= 0);
-      assert(mass >= 0);
+      if (theta < 0 || theta > M_PI)
+        throw std::invalid_argument("Polar angle outside 0..pi given as argument");
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
+      if (pt < 0)
+        throw std::invalid_argument("Negative transverse momentum given as argument");
       const double p = pt / sin(theta);
       const double px = pt * cos(phi);
       const double py = pt * sin(phi);
@@ -290,9 +313,12 @@ namespace HEPUtils {
     ///
     /// pz = sqrt(E^2 - mass^2 - pt^2)
     P4& setPtPhiME(double pt, double phi, double mass, double E) {
-      assert(pt >= 0);
-      assert(mass >= 0);
-      assert(E >= 0);
+      if (pt < 0)
+        throw std::invalid_argument("Negative transverse momentum given as argument");
+      if (mass < 0)
+        throw std::invalid_argument("Negative mass given as argument");
+      if (E < 0)
+        throw std::invalid_argument("Negative energy given as argument");
       const double px = pt * cos(phi);
       const double py = pt * sin(phi);
       const double pz = sqrt(sqr(E) - sqr(mass) - sqr(pt));
