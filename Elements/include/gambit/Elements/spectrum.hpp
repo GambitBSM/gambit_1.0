@@ -52,6 +52,7 @@ namespace Gambit
          SubSpectrum* LE;
          SubSpectrum* HE;
          SMInputs SMINPUTS;
+         const std::map<str, safe_ptr<double> >* input_Param;
          bool initialised;
          void check_init() const;
          
@@ -70,10 +71,10 @@ namespace Gambit
          /// Default constructor
          Spectrum();
          /// Construct new object, cloning the SubSpectrum objects supplied and taking possession of them.
-         Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi);
+         Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
          /// Construct new object, wrapping existing SubSpectrum objects
          ///  Make sure the original objects don't get deleted before this wrapper does!
-         Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi);
+         Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
          /// Copy constructor, clones SubSpectrum objects.
          /// Make a non-const copy in order to use e.g. RunBothToScale function.
          Spectrum(const Spectrum& other);

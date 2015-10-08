@@ -14,7 +14,7 @@ namespace Gambit {
         /// @brief Convert a point from pixel units to axis units
         P2 convertPt(double x, double y);
         /// @brief Check to see if the point is within the exclusion region
-        bool isWithinExclusionRegion(double x, double y);
+        bool isWithinExclusionRegion(double x, double y, double mZ);
       //@}
 
       /// @name Construction, initializing with all necessary data from the plot
@@ -33,7 +33,7 @@ namespace Gambit {
         /// @brief Convert a point from pixel units to axis units
         P2 convertPt(double x, double y);
         /// @brief Check to see if the point is within the exclusion region
-        bool isWithinExclusionRegion(double x, double y);
+        bool isWithinExclusionRegion(double x, double y, double mZ);
       //@}
 
       /// @name Construction, initializing with all necessary data from the plot
@@ -52,7 +52,7 @@ namespace Gambit {
         /// @brief Convert a point from pixel units to axis units
         P2 convertPt(double x, double y);
         /// @brief Check to see if the point is within the exclusion region
-        bool isWithinExclusionRegion(double x, double y);
+        bool isWithinExclusionRegion(double x, double y, double mZ);
       //@}
 
       /// @name Construction, initializing with all necessary data from the plot

@@ -24,7 +24,7 @@ Priors:
 Printer:
   printer: hdf5
   options:
-    output_file: "runs/spartan_multinest_hdf5/samples/gambit_output.hdf5"
+    output_file: "gambit_output.hdf5"
     group: "/test/test2"
     delete_file_if_exists: true
 
@@ -37,14 +37,11 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 500
+        nlive: 100
         tol: 0.1
         mmodal: 0
         # write native MultiNest ascii output files?
-        outfile: 0
-        root: "runs/spartan_multinest_hdf5/samples/native-"
-        # resuming doesn't work yet
-        resume: 0
+        outfile: 1 # yes, need them for resuming
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
@@ -53,11 +50,10 @@ Scanner:
       plugin: Diver
       like: Likelihood
       NP: 100
-      path: "runs/spartan_diver/diver_native"
       verbosity: 1
       aux_printer_txt_options:
-        output_file: "runs/spartan_diver/samples/gambit_output.txt"
-        info_file: "runs/spartan_diver/samples/gambit_output.txt_info"
+        output_file:
+        info_file:
 
 #======== Observables of interest ========
 ObsLikes:
@@ -72,7 +68,6 @@ Rules:
 
 #======== Logging setup ========
 Logger:
-  prefix : "runs/spartan_multinest_hdf5/logs/"
   redirection:
     [Default]      : "default.log"
     [Utilities]    : "utils.log"
@@ -83,6 +78,8 @@ Logger:
 
 #======== Generic Name/Value Section ========
 KeyValues:
+
+  default_output_path: "runs/spartan_multinest_hdf5/"
 
   rng: ranlux48
 

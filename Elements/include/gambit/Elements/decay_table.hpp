@@ -138,7 +138,7 @@ namespace Gambit
           void set_BF(double BF, double error, std::pair<int,int> p1, Args... args)
           {
             std::pair<int,int> particles[] = {p1, args...};
-            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             check_particles_exist(key);
             channels[key] = std::pair<double, double>(BF, error);
           }
@@ -152,6 +152,34 @@ namespace Gambit
           }
           /// @}
 
+          /// Check if a given final state exists in this DecayTable::Entry.
+          /// Supports arbitrarily many final state particles.
+          /// Four ways to specify final states: 
+          ///  1. PDG-context integer pairs (vector)
+          ///  2. PDG-context integer pairs (arguments)
+          ///  3. full particle names (arguments)
+          ///  4. short particle names + index integers (arguments)
+          /// @{
+          bool has_channel(std::vector<std::pair<int,int> >&);
+
+          template <typename... Args>
+          bool has_channel(std::pair<int,int> p1, Args... args)
+          {
+            std::pair<int,int> particles[] = {p1, args...};
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
+            check_particles_exist(key);
+            return channels.find(key) != channels.end();
+          }
+
+          template <typename... Args>
+          bool has_channel(str p1, Args... args)
+          {
+            std::multiset< std::pair<int,int> > key;
+            construct_key(key, p1, args...);
+            return channels.find(key) != channels.end();
+          }
+          /// @}
+
           /// Retrieve branching fraction for decay to a given final state.
           /// Three ways to specify final states: PDG-context integer pairs, full particle names, short particle names + index integers.
           /// Supports arbitrarily many final state particles.
@@ -160,7 +188,7 @@ namespace Gambit
           double BF(std::pair<int,int> p1, Args... args) const
           {
             std::pair<int,int> particles[] = {p1, args...};
-            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             if (channels.find(key) == channels.end())
             {
               model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
@@ -189,7 +217,7 @@ namespace Gambit
           double BF_error(std::pair<int,int> p1, Args... args) const
           {
             std::pair<int,int> particles[] = {p1, args...};
-            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             if (channels.find(key) == channels.end())
             {
               model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
@@ -218,7 +246,7 @@ namespace Gambit
           std::pair<double, double> BF_with_error(std::pair<int,int> p1, Args... args) const
           {
             std::pair<int,int> particles[] = {p1, args...};
-            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             if (channels.find(key) == channels.end())
             {
               model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");

@@ -444,7 +444,7 @@ namespace Gambit
       ~FcomplexT() {}
       /// Default copy constructor
       template<typename T2>
-      FcomplexT(const FcomplexT<T>& in)
+      FcomplexT(const FcomplexT<T2>& in)
       {
         re = in.re;
         im = in.im;

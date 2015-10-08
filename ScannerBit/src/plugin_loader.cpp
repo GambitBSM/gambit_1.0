@@ -41,7 +41,7 @@ namespace Gambit
                 typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
                 typedef std::map<std::string, plugin_map> plugin_mapmap;
                 
-                table_formatter table(plugins->first + " PLUGINS", "STATUS", "VERSION");
+                table_formatter table(plugins->first + " PLUGINS", "VERSION", "STATUS");
                 table.capitalize_title();
                 table.padding(1);
                 
@@ -231,6 +231,14 @@ namespace Gambit
                 }
                 
                 return vec;
+            }
+            
+            std::string Plugin_Loader::print_priors() const
+            {
+                std::string path = GAMBIT_DIR "/config/priors.dat";
+                YAML::Node node = YAML::LoadFile(path);
+                
+                return node["priors"].as<std::string>();
             }
             
             std::string Plugin_Loader::print_all(const std::string &plug_type) const
@@ -459,7 +467,9 @@ namespace Gambit
                 if (selectedPlugins.find(type) != selectedPlugins.end() && selectedPlugins[type].find(tag) != selectedPlugins[type].end())
                 {
                     Proto_Plugin_Details &detail = selectedPlugins[type][tag];
-                    return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, options.getOptions(type + "s", tag).getNode());
+                    YAML::Node plugin_options = options.getOptions(type + "s", tag).getNode();
+                    plugin_options["default_output_path"] = options.getValue<std::string>("default_output_path");
+                    return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, plugin_options);
                 }
                 else
                 {
@@ -480,6 +490,9 @@ namespace Gambit
                         (*v_it)->print(out);
                     }
                 }
+                
+                printer->finalise(true);
+                std::cout << "Gambit info dump, preparing to stop!" << std::endl;
             }
             
             pluginInfo::~pluginInfo()
@@ -490,6 +503,11 @@ namespace Gambit
                     {
                         delete (*v_it);
                     }
+                }
+                
+                for (auto it = resume_streams.begin(), end = resume_streams.end(); it != end; ++it)
+                {
+                    delete it->second;
                 }
             }
             

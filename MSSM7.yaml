@@ -4,11 +4,10 @@ Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
   #Nuclear matrix parameters fixed for now.
-  nuclear_params_sigmas_SigmaPiN:
+  nuclear_params_sigmas_sigmal:
     sigmas:
       fixed_value:  43.0 
-    SigmaPiN:
-      # Actually, this is sigma_l; model parameter needs to be relabelled.
+    sigmal:
       fixed_value:  58.0
     deltau:
       fixed_value:  0.842
@@ -179,6 +178,14 @@ Rules:
       use_higgs_2loop_at_at: true
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
+
+  # Choose to take the spectrum generator prediction for the Higgs mass (rather then FeynHiggs')
+  # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along 
+  # with the FH error estimate, to estimate the theoretical error on the prediction.
+  - capability: MSSM_spectrum
+    options:
+      Higgs_predictions_source: 2
+      Higgs_predictions_error_method: 4
 
   # Choose to use functions that get Higgs and top decays from FeynHiggs (rather than SUSY-HIT)
   - capability: A0_decay_rates

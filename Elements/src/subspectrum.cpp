@@ -20,6 +20,7 @@
 ///  *********************************************
 
 #include <fstream>
+#include <string>
 
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/spec_fptrfinder.hpp"

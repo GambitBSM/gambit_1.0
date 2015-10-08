@@ -192,13 +192,19 @@ BE_FUNCTION(DDCalc0_SIMPLE_2014_LogLikelihood,    double, (), "C_DDCALC0_simple_
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_LogLikelihood, double, (), "C_DDCALC0_darwin_ar_2015_loglikelihood", "DDCalc0_DARWIN_Ar_2015_LogLikelihood")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_LogLikelihood, double, (), "C_DDCALC0_darwin_xe_2015_loglikelihood", "DDCalc0_DARWIN_Xe_2015_LogLikelihood")
 
+// Fraction of DM that is accounted for by model
+BE_INI_DEPENDENCY(RD_fraction, double)
+
 
 // BACKEND INITIALIZATION ==================================
 
 BE_INI_FUNCTION
 {
   // Halo model parameters
-  static double rho0,vrot,v0,vesc;
+  static double rho0,vrot,v0,vesc, rho0_eff;
+
+  // Fraction of DM
+  double fraction = *Dep::RD_fraction;
 
   // Scan-level initialization -----------------------------
   static bool scan_level = true;
@@ -239,6 +245,7 @@ BE_INI_FUNCTION
     // Model with the following parameters:
     // Local dark matter density [GeV/cm^3]
     rho0 = runOptions->getValueOrDef<double>(0.4, "LocalHalo","rho0");
+    rho0_eff = rho0*fraction;
     // Local disk rotation speed [km/s]
     vrot = runOptions->getValueOrDef<double>(235.,"LocalHalo","vrot");
     // Maxwellian most-probably speed [km/s]
@@ -246,10 +253,11 @@ BE_INI_FUNCTION
     // Local galactic escape speed [km/s]
     vesc = runOptions->getValueOrDef<double>(550.,"LocalHalo","vesc");
     std::cout << "  * Halo parameters:" << std::endl;
-    std::cout << "    rho0 [GeV/cm^3] = " << rho0 << std::endl;
-    std::cout << "    vrot [km/s]     = " << vrot << std::endl;
-    std::cout << "    v0   [km/s]     = " << v0   << std::endl;
-    std::cout << "    vesc [km/s]     = " << vesc << std::endl;
+    std::cout << "    rho0 [GeV/cm^3]     = " << rho0 << std::endl;
+    std::cout << "    rho0_eff [GeV/cm^3] = " << rho0_eff << std::endl;
+    std::cout << "    vrot [km/s]         = " << vrot << std::endl;
+    std::cout << "    v0   [km/s]         = " << v0   << std::endl;
+    std::cout << "    vesc [km/s]         = " << vesc << std::endl;
     DDCalc0_SetSHM(&rho0,&vrot,&v0,&vesc);
   }
   scan_level = false;
@@ -262,15 +270,17 @@ BE_INI_FUNCTION
   //if (ModelInUse("LocalHalo")) {
     bool halo_changed = false;
     if (Param.count("rho0") != 0) {rho0 = *Param["rho0"]; halo_changed = true;}
+    rho0_eff = rho0*fraction;
     if (Param.count("vrot") != 0) {vrot = *Param["vrot"]; halo_changed = true;}
     if (Param.count("v0")   != 0) {v0   = *Param["v0"];   halo_changed = true;}
     if (Param.count("vesc") != 0) {vesc = *Param["vesc"]; halo_changed = true;}
     if (halo_changed) {
       std::cout << "Updating DDCalc0 halo parameters:" << std::endl;
-      std::cout << "    rho0 [GeV/cm^3] = " << rho0 << std::endl;
-      std::cout << "    vrot [km/s]     = " << vrot << std::endl;
-      std::cout << "    v0   [km/s]     = " << v0   << std::endl;
-      std::cout << "    vesc [km/s]     = " << vesc << std::endl;
+      std::cout << "    rho0 [GeV/cm^3]     = " << rho0 << std::endl;
+      std::cout << "    rho0_eff [GeV/cm^3] = " << rho0_eff << std::endl;
+      std::cout << "    vrot [km/s]         = " << vrot << std::endl;
+      std::cout << "    v0   [km/s]         = " << v0   << std::endl;
+      std::cout << "    vesc [km/s]         = " << vesc << std::endl;
       DDCalc0_SetSHM(&rho0,&vrot,&v0,&vesc);
     }
   //}

@@ -22,13 +22,15 @@
 ///  *********************************************
 
 #include <dlfcn.h>
-#ifdef HAVE_LINK_H
-  #include <link.h>
-#endif
 
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
+
+#ifdef HAVE_LINK_H
+  #include <link.h>
+#endif
 
 namespace Gambit
 {
@@ -205,7 +207,7 @@ namespace Gambit
             attempt_backend_path_override(be, ver, map->l_name);
           }
         #else
-          Backends::backendInfo().override_path(be, ver, "system lacks dlinfo(); path unverifiable");
+          Backends::backendInfo().override_path(be, ver, ".so loaded but path unverified (system lacks dlinfo)");
         #endif
         logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) << std::endl 
                  << LogTags::backends << LogTags::info << EOM;

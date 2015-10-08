@@ -1,6 +1,6 @@
 #include "gambit/ColliderBit/detectors/DelphesVanilla.hpp"
 
-
+#ifndef EXCLUDE_DELPHES
 namespace Gambit {
   namespace ColliderBit {
 
@@ -159,3 +159,4 @@ namespace Gambit {
 
   }
 }
+#endif // not defined EXCLUDE_DELPHES

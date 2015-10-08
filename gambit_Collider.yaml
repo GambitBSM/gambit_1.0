@@ -155,10 +155,15 @@ Rules:
   - capability: SimpleSmearingSim
     function: getBuckFast
     options:
-      buckFastOption: "BuckFastSmear"
  
   - capability: ReconstructedEvent
     function: reconstructBuckFastEvent
+    dependencies:
+    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
+    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
+
+  - capability: ReconstructedEvent
+    function: reconstructBuckFastIdentityEvent
     dependencies:
     - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
     #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
@@ -176,29 +181,25 @@ Rules:
     function:  getPythia
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
+      Pythia_doc_path: "../gambit_internal/extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
-                          "Print:quiet = on",
-                          "PartonLevel:MPI = off",
+        pythiaOptions_1: ["PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off"]
       #Pythia_glusq_LHC_8TeV:
-      #  pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
-      #                    "PartonLevel:MPI = off",
+      #  pythiaOptions_1: ["PartonLevel:MPI = off",
       #                    "PartonLevel:ISR = on",
       #                    "PartonLevel:FSR = off",
       #                    "HadronLevel:all = off"]
       #Pythia_SUSY_LHC_8TeV:
-      #  pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
-      #                    "PartonLevel:MPI = off",
+      #  pythiaOptions_1: ["PartonLevel:MPI = off",
       #                    "PartonLevel:ISR = on",
       #                    "PartonLevel:FSR = off",
       #                    "HadronLevel:all = off",
       #                    "SUSY:idA = 1000021",
       #                    "SUSY:idB = 1000021"]
-      #  pythiaOptions_2: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
-      #                    "PartonLevel:MPI = off",
+      #  pythiaOptions_2: ["PartonLevel:MPI = off",
       #                    "PartonLevel:ISR = on",
       #                    "PartonLevel:FSR = off",
       #                    "HadronLevel:all = off",
@@ -214,6 +215,7 @@ Rules:
   - capability: AnalysisNumbers
     dependencies:
     - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
+    #- {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastIdentityEvent"}
     
 #########################
 # Logging setup

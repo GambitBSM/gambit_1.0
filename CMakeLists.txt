@@ -158,7 +158,7 @@ find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fopenmp")
 endif()
 
 # Check for Gnu Scientific Library (GSL)
@@ -174,15 +174,22 @@ endif()
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
 
-# Set the version number
+# Set the version number (later to come directly from git tag)
 set(GAMBIT_VERSION_MAJOR 1)
 set(GAMBIT_VERSION_MINOR 0)
+set(GAMBIT_VERSION_REVISION 0)
+
+# Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
+add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
+
+# Work out which modules to include in the compile
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
+
+# Include contributed packages
+include(cmake/contrib.cmake)
 
 # Reprocess the ditch set into a comma-separated list
 string (REPLACE ";" "," itch_with_commas "${itch}")
-
-# Generate the cmake_variables.hpp file
-include(cmake/preprocessor.cmake)
 
 # Create the scratch directory if it isn't there already
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/scratch")
@@ -198,14 +205,8 @@ execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING
 check_result(${result} ${locate_scanners}) 
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
 
-# Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
-add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
-
-# Work out which modules to include in the compile
-retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
-
-# Include contributed packages
-include(cmake/contrib.cmake)
+# Generate the cmake_variables.hpp file
+include(cmake/preprocessor.cmake)
 
 # Generate the backend_locations.yaml file if there isn't one
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")
@@ -237,7 +238,9 @@ list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//inclu
 foreach(bit ${GAMBIT_BITS})
   if(NOT ScannerBit STREQUAL ${bit})
     set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
-    file(WRITE ${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp "#include \"gambit/Elements/functor_definitions.hpp\"")
+    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
+      file(WRITE ${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp "#include \"gambit/Elements/functor_definitions.hpp\"")
+    endif()
   endif()
 endforeach()
 remove_build_files(models_harvested backends_harvested modules_harvested printers_harvested)
