@@ -162,18 +162,15 @@ def main():
 
 
 
-    # If the output directory is to be used, 
-    # make sure it does not already exist.
+    # If the output directory is to be used, delete the current one if it exists.
     if (not options.list_flag) and (not options.types_header_flag):
-        if os.path.isdir(cfg.extra_output_dir):
-            print 
-            print "The output directory '%s' already exists." % (cfg.extra_output_dir)
-            print "Please remove it or set a different output directory."
-            print 
-
-            sys.exit()
-
-
+        try:
+            shutil.rmtree(cfg.extra_output_dir)
+        except OSError, e:
+            if e.errno == 2:
+                pass
+            else:
+                raise e
 
     # Get the input file names from command line input. 
     input_files = args

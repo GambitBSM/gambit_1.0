@@ -38,7 +38,7 @@
 
 
 # Set BOSS directory
-set(BOSS_dir "${PROJECT_SOURCE_DIR}/BOSS")
+set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
 
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
@@ -218,7 +218,6 @@ ExternalProject_Add_Step(pythia apply_hacks
 
 ExternalProject_Add_Step(pythia BOSSing
   COMMAND cd ${BOSS_dir} && cp modules/cfg_Pythia_8_209.py modules/cfg.py 
-  COMMAND cd ${BOSS_dir} && rm -r BOSS_output
   COMMAND cd ${BOSS_dir} && python boss.py ${pythia_dir}/include/Pythia8/Pythia.h
   DEPENDEES apply_hacks
   DEPENDERS patch
