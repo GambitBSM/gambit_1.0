@@ -525,7 +525,8 @@ namespace Gambit
                                 return out << "[]";
                         
                         out << "[";
-                        auto it = in.begin(), end = in.end();
+                        auto it = in.begin();
+                        auto end = in.end();
                         end--;
                         for (; it != end; it++)
                         {
