@@ -558,7 +558,7 @@ namespace Gambit
                 inline typename std::enable_if <is_container<T>::value, void>::type
                 resume_file_output (std::ofstream &out, T &param)
                 {
-                        for (auto it = param.begin(), end = param.end(); it != end; it++)
+                        for (auto it = param.begin(); it != param.end(); it++)
                         {
                                 resume_file_output(out, *it);
                         }
@@ -584,7 +584,7 @@ namespace Gambit
                 inline typename std::enable_if <is_container<T>::value, void>::type
                 resume_file_input (std::ifstream &in, T &param)
                 {
-                        for (auto it = param.begin(), end = param.end(); it != end; it++)
+                        for (auto it = param.begin(); it != param.end(); it++)
                         {
                                 resume_file_input(in, *it);
                         }
