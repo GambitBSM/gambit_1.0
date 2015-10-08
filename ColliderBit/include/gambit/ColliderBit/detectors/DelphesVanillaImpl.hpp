@@ -72,3 +72,5 @@ namespace Gambit {
 
   }
 }
+
+#endif

@@ -1,8 +1,9 @@
 #include "gambit/ColliderBit/detectors/DelphesVanilla.hpp"
-#include "DelphesVanillaImpl.hpp"
+#ifndef EXCLUDE_DELPHES
+#include "gambit/ColliderBit/detectors/DelphesVanillaImpl.hpp"
+
 using namespace std;
 
-#ifndef EXCLUDE_DELPHES
 namespace Gambit {
   namespace ColliderBit {
 
