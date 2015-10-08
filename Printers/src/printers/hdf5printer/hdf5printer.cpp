@@ -535,8 +535,10 @@ namespace Gambit
         }
         else
         {
+           #ifdef WITH_MPI
            // Everyone wait until the master finishes pre-processing of existing files 
            myComm.allWaitForMaster(PPFILES_PASS);
+           #endif
         }
 
         if(resume)
@@ -561,8 +563,10 @@ namespace Gambit
  
         if(myRank==0)
         {
+           #ifdef WITH_MPI
            // Signal that file preprocessing is complete
            myComm.allWaitForMaster(PPFILES_PASS);
+           #endif
         }
  
         // Specify temporary output file name to use for this process
