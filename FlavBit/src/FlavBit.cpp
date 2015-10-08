@@ -1229,9 +1229,9 @@ namespace Gambit
       vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
       vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
       vector<string> observables;
-      for(int i=0;i<observablesq.size();++i)
+      for(unsigned i=0;i<observablesq.size();++i)
       {
-        for(int j=0;j<observablesn.size();++j)
+        for(unsigned j=0;j<observablesn.size();++j)
           {
 
             observables.push_back(observablesn[j]+"_B0Kstar0mumu_"+observablesq[i]);
@@ -1239,7 +1239,7 @@ namespace Gambit
           }
       }
 
-      for(int i=0;i<observables.size();++i)
+      for(unsigned i=0;i<observables.size();++i)
       {
         red->read_yaml_mesurement("example.yaml", observables[i]);
       }
@@ -1624,9 +1624,9 @@ namespace Gambit
 
       double theory_BDtaunu=*(Dep::BDtaunu);
 
-      double theory_BDtaunu_BDenu=*(Dep::BDtaunu_BDenu);
+      //double theory_BDtaunu_BDenu=*(Dep::BDtaunu_BDenu);
 
-      double theory_Kmunu_pimunu=*(Dep::Kmunu_pimunu);
+      //double theory_Kmunu_pimunu=*(Dep::Kmunu_pimunu);
 
       double theory_Dstaunu=*(Dep::Dstaunu);
 

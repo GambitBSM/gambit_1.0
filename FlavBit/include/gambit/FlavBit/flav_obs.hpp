@@ -16667,9 +16667,9 @@ covariance[127][127]=9.9732e-02;
 	 boost::numeric::ublas::matrix<double> get_cov_theory(vector<string> observables)
 	 {
 	     boost::numeric::ublas::matrix<double> cov_th(observables.size(), observables.size());
-	     for(int i=0;i<observables.size();++i)
+	     for(unsigned i=0;i<observables.size();++i)
 	       {
-		 for(int j=0;j<observables.size();++j)
+		 for(unsigned j=0;j<observables.size();++j)
 		   {                                  
 		     cov_th(i,j)=covariance[map_kstarmumu[observables[i]]][ map_kstarmumu[observables[j]]];
 		     
