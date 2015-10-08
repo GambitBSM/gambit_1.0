@@ -124,7 +124,9 @@ scanner_plugin(MultiNest, version(3, 9))
       {
         // It is stupid to be in resume mode while not writing output files. 
         // Means subsequent resumes will be impossible. Throw an error.
-        scan_error().raise(LOCAL_INFO,"Error from MultiNest ScannerBit plugin! Resume mode is activated, however MultiNest native output files are set to not be written. These are needed for resuming; please change this setting in your yaml file (set option \"outfile: 1\)");
+        scan_error().raise(LOCAL_INFO,"Error from MultiNest ScannerBit plugin! Resume mode is activated, however "
+                                      "MultiNest native output files are set to not be written. These are needed "
+                                      "for resuming; please change this setting in your yaml file (set option \"outfile: 1\")");
       }
  
       // Setup auxilliary streams. These are only needed by the master process,

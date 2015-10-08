@@ -109,7 +109,7 @@ namespace Gambit
             ret main(const args&... in)
             {
                 ret retval = 0.0;
-                for (auto it = functions.begin(), end = functions.end(); it != end; it++)
+                for (auto it = functions.begin(); it != functions.end(); it++)
                 {
                     retval += it->main(in...);
                 }
