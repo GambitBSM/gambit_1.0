@@ -40,7 +40,7 @@ runs/*
 results/*
 
 # Executables and build files
-gambit
+./gambit
 build/*
 *_standalone
 
@@ -71,4 +71,3 @@ Backends/downloaded/**
 Backends/installed/**
 ScannerBit/downloaded/**
 ScannerBit/installed/**
-
