@@ -126,6 +126,10 @@ ObsLikes:
 
     - purpose:      Likelihood
       capability:   b2sll_LL
+
+# SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:  Likelihood
         
     # Missing:
     # LHC combined likelihood
@@ -207,6 +211,15 @@ Rules:
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
     function: RD_fraction_from_oh2
+
+  # Nuclear Parameter Likelihoods (All values in MeV)
+  - capability: lnL_SI_nuclear_parameters
+    function: lnL_sigmas_sigmal
+    options:
+      sigmas_central: 43.
+      sigmas_error: 8.
+      sigmal_central: 58.
+      sigmal_error: 9.
 
 Logger:
 

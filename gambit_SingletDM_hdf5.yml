@@ -20,21 +20,47 @@ Parameters:
             #fixed_value: 0.0366524 
             prior_type: log
   
-    nuclear_params_fnq:
-      # proton hadronic matrix elements
-      fpd:
-        fixed_value: 0.0191
-      fpu:
-        fixed_value: 0.0153
-      fps:
-        fixed_value: 0.0447
-      # neutron hadronic matrix elements
-      fnd:
-        fixed_value: 0.0273
-      fnu:
-        fixed_value: 0.011
-      fns:
-        fixed_value: 0.0447
+#    nuclear_params_fnq:
+#      # proton hadronic matrix elements
+#      fpd:
+#        fixed_value: 0.0191
+#      fpu:
+#        fixed_value: 0.0153
+#      fps:
+#        fixed_value: 0.0447
+#      # neutron hadronic matrix elements
+#      fnd:
+#        fixed_value: 0.0273
+#      fnu:
+#        fixed_value: 0.011
+#      fns:
+#        fixed_value: 0.0447
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
+#    nuclear_params_sigma0_sigmal:
+#      sigma0:
+#        fixed_value: 30.76
+#      sigmal:
+#        fixed_value: 34.0
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
+    nuclear_params_sigmas_sigmal:
+      sigmas:
+        range: [27.0, 59.0]
+      sigmal:
+        fixed_value: [40.0, 76.0]
       # proton spin content
       deltad:
         fixed_value: -0.427
@@ -45,6 +71,7 @@ Parameters:
 
 #   Uncomment the below to use DarkSUSY nuclear parameters.
 #    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
+
 
 ##############################
 # Prior setup
@@ -147,6 +174,10 @@ ObsLikes:
 # NOTE: treated as observable!
 #    - capability: lnL_DARWIN_Xe_2015
 #      purpose:  Observable
+# SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:  Likelihood
+    
       
 Rules:
   # Gamma-rays -------------------------
@@ -214,6 +245,15 @@ Rules:
     function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
+# Nuclear Parameter Likelihoods (All values in MeV)
+  - capability: lnL_SI_nuclear_parameters
+    function: lnL_sigmas_sigmal
+    options:
+      sigmas_central: 43.
+      sigmas_error: 8.
+      sigmal_central: 58.
+      sigmal_error: 9.
+
   # Decays
   - capability: decay_rates
     function: all_decays

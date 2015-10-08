@@ -285,6 +285,9 @@ ObsLikes:
 # NOTE: treated as observable!
     - capability: lnL_DARWIN_Xe_2015
       purpose:  Observable
+# SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:  Likelihood
 
 # Total annihilation cross-section
     - capability: sigmav
@@ -405,6 +408,15 @@ Rules:
     function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
+  # Nuclear Parameter Likelihoods (All values in MeV)
+  - capability: lnL_SI_nuclear_parameters
+    function: lnL_sigmas_sigmal
+    options:
+      sigmas_central: 43.
+      sigmas_error: 8.
+      sigmal_central: 58.
+      sigmal_error: 9.
+
   # Miscellaneous ----------------------
   - capability: MSSMspectrum
     function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file

@@ -125,6 +125,10 @@ ObsLikes:
 
     - capability: lnL_deltarho  
       purpose:  Likelihood
+
+# SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:  Likelihood
       
     # Missing:
     # 3 x Flav likelihoods
@@ -192,6 +196,19 @@ Rules:
     function: FH_h0_2_decays
   - capability: t_decay_rates
     function: t_decays
+
+  # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:  Likelihood
+
+  # Nuclear Parameter Likelihoods (All values in MeV)
+  - capability: lnL_SI_nuclear_parameters
+    function: lnL_sigmas_sigmal
+    options:
+      sigmas_central: 43.
+      sigmas_error: 8.
+      sigmal_central: 58.
+      sigmal_error: 9.
 
 Logger:
 
