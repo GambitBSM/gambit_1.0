@@ -398,7 +398,7 @@ namespace Gambit
 	}
       return OK;
     }
-
+    /*
     double Flav_reader::calc_Chi2(vector<double> theory, vector<double> theory_error)
     {
       double Chi2=0.;
@@ -420,6 +420,7 @@ namespace Gambit
 	}
       return Chi2;
     }
+    */
     void Flav_reader::construct_theory_b2sll()
     {
       const int cov_size=128; // input from Nazila
