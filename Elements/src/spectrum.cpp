@@ -53,30 +53,33 @@ namespace Gambit
        swap(first.LE_new, second.LE_new); 
        swap(first.HE_new, second.HE_new);
        swap(first.SMINPUTS, second.SMINPUTS);
+       swap(first.input_Param, second.input_Param);
        swap(first.initialised, second.initialised);
    }
    
    /// @{ Constructors/destructors
    
    /// Default constructor
-   Spectrum::Spectrum() : initialised(false) {}
+   Spectrum::Spectrum() : input_Param(NULL), initialised(false) {}
     
    /// Construct new object, cloning the SubSpectrum objects supplied and taking possession of them.
-   Spectrum::Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi)
+   Spectrum::Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params)
      : LE_new(le.clone())
      , HE_new(he.clone())
      , LE(LE_new.get())   
      , HE(HE_new.get())
      , SMINPUTS(smi)
+     , input_Param(params)
      , initialised(true) 
    {}
    
    /// Construct new object, wrapping existing SubSpectrum objects
    ///  Make sure the original objects don't get deleted before this wrapper does!
-   Spectrum::Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi)
+   Spectrum::Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* params)
      : LE(le)
      , HE(he)
      , SMINPUTS(smi)
+     , input_Param(params)
      , initialised(true) 
    {}
    
@@ -88,6 +91,7 @@ namespace Gambit
      , LE(LE_new.get())   
      , HE(HE_new.get())
      , SMINPUTS(other.SMINPUTS)
+     , input_Param(other.input_Param)
      , initialised(other.initialised) 
    {}
    

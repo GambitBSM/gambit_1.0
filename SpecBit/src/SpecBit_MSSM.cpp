@@ -44,7 +44,7 @@
 #include "flexiblesusy/src/two_loop_corrections.hpp"
 
 // Switch for debug mode
-#define SpecBit_DBUG 
+//#define SPECBIT_DEBUG 
 
 namespace Gambit
 {
@@ -77,7 +77,8 @@ namespace Gambit
     const Spectrum* run_FS_spectrum_generator
         ( const typename MI::InputParameters& input
         , const SMInputs& sminputs
-        , const Options& runOptions 
+        , const Options& runOptions
+        , const std::map<str, safe_ptr<double> >& input_Param 
         )
     {
       // SoftSUSY object used to set quark and lepton masses and gauge
@@ -122,7 +123,7 @@ namespace Gambit
       // spectrum_generator.set_NAME(runOptions.getValueOrDef<TYPE>(DEFAULTVAL,"NAME"))
 
       // For debugging only; check expansions
-      // #ifdef SpecBit_DBUG
+      // #ifdef SPECBIT_DEBUG
       //    #define ECHO(COMMAND) std::cout << SAFE_STRINGIFY(COMMAND) << std::endl
       //    ECHO(  SPECGEN_SET(precision_goal,                 double, 1.0e-4)  );
       //    #undef ECHO
@@ -187,7 +188,6 @@ namespace Gambit
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
-
       
       /// add theory errors
       static const MSSM_strs ms;
@@ -212,10 +212,16 @@ namespace Gambit
       /// Default in most codes is 3 GeV,
       /// seems like an underestimate if the stop masses are heavy enough.  
       /// (TODO: are we happy assigning the same for both higgses?)
+      /// FIXME this does not work for the second higgs
       double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
- 
+
+      /// Save the input value of TanBeta
+      if (input_Param.find("TanBeta") != input_Param.end())
+      {
+        mssmspec.runningpars().set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", false);
+      } 
      
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
@@ -223,7 +229,9 @@ namespace Gambit
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Deal with points where spectrum generator encountered a problem
-      std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
+      #ifdef SPECBIT_DEBUG
+        std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
+      #endif
       if( problems.have_problem() ) 
       {
          if( runOptions.getValue<bool>("invalid_point_fatal") )
@@ -268,7 +276,7 @@ namespace Gambit
       }
 
       // Write SLHA file (for debugging purposes...)
-      #ifdef SpecBit_DBUG
+      #ifdef SPECBIT_DEBUG
          typename MI::SlhaIo slha_io;
          slha_io.set_spinfo(problems);
          slha_io.set_sminputs(oneset);
@@ -282,7 +290,7 @@ namespace Gambit
       // and SMInputs struct.
       // Return pointer to this package.
       static Spectrum matched_spectra;
-      matched_spectra = Spectrum(qedqcdspec,mssmspec,sminputs);
+      matched_spectra = Spectrum(qedqcdspec,mssmspec,sminputs,&input_Param);
       return &matched_spectra;
     }
 
@@ -325,7 +333,7 @@ namespace Gambit
       input.Adij = fill_3x3_parameter_matrix("Ad", Param);
       input.Auij = fill_3x3_parameter_matrix("Au", Param);
 
-      #ifdef SpecBit_DBUG
+      #ifdef SPECBIT_DEBUG
         #define INPUT(p) input.p
         #define ostr std::cout
         #define oend std::endl
@@ -381,12 +389,12 @@ namespace Gambit
    
       input.m0      = *myPipe::Param["M0"];
       input.m12     = *myPipe::Param["M12"];
-      input.TanBeta = *myPipe::Param["tanb"];
-      input.SignMu  = *myPipe::Param["signmu"];
+      input.TanBeta = *myPipe::Param["TanBeta"];
+      input.SignMu  = *myPipe::Param["SignMu"];
       input.Azero   = *myPipe::Param["A0"];
   
       // Run spectrum generator
-      result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
+      result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       
       // Dump spectrum information to slha file (for testing...)
       result->get_HE()->getSLHA("SpecBit/CMSSM_fromSpectrumObject.slha");
@@ -409,7 +417,7 @@ namespace Gambit
       MSSM_input_parameters input;
       input.Qin = *myPipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
       fill_MSSM78_input(input,myPipe::Param);
-      result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
+      result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }
 
     // Runs MSSM spectrum generator with GUT scale input
@@ -420,7 +428,7 @@ namespace Gambit
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSMatMGUT_input_parameters input;
       fill_MSSM78_input(input,myPipe::Param);
-      result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
+      result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }
 
     void get_GUTMSSMB_spectrum (const Spectrum* &result)
@@ -523,7 +531,7 @@ namespace Gambit
       // later. INSTEAD, we should just pass the objects themselves, and
       // then they will be CLONED and the Spectrum object will take
       // possession of them:
-      matched_spectra = Spectrum(smskel,mssmskel,sminputs);
+      matched_spectra = Spectrum(smskel,mssmskel,sminputs,NULL);
       result = &matched_spectra;
     } 
     
@@ -532,7 +540,9 @@ namespace Gambit
     {
       using namespace Pipes::FH_MSSMMasses;
 
-      cout << "****** calling FH_MSSMMasses ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FH_MSSMMasses ******" << endl;
+      #endif
    
       // zero if minimal, non-zero if non-minimal flavour violation
       int nmfv; 
@@ -586,7 +596,9 @@ namespace Gambit
       // tree-level Higgs mixing parameters sin alpha
       fh_real SAtree;
 
-       cout << "****** calling FHGetPara ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHGetPara ******" << endl;
+      #endif
       
       int error = 1;
       BEreq::FHGetPara(error, nmfv, MSf, USf, MASf, UASf,
@@ -635,7 +647,9 @@ namespace Gambit
     {
       using namespace Pipes::FH_HiggsMasses;
 
-      cout << "****** calling FH_HiggsMasses ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FH_HiggsMasses ******" << endl;
+      #endif
 
       // Higgs mass with
       // 0 - m1 (Mh in rMSSM)
@@ -659,12 +673,16 @@ namespace Gambit
       Farray<fh_complex, 1,3, 1,3> ZHiggs;
       Farray<fh_complex, 1,3, 1,3> DeltaZHiggs;
 
-      cout << "****** calling FHHiggsCorr ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHHiggsCorr ******" << endl;
+      #endif
 
       int error = 1;
       BEreq::FHHiggsCorr(error, MHiggs, SAeff, UHiggs, ZHiggs);
 
-      cout << "****** calling FHUncertainties ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHUncertainties ******" << endl;
+      #endif
 
       error = 1;
       BEreq::FHUncertainties(error, DeltaMHiggs, DeltaSAeff, DeltaUHiggs, DeltaZHiggs);
@@ -695,7 +713,9 @@ namespace Gambit
     {
       using namespace Pipes::FH_Couplings;
       
-      cout << "****** calling FH_Couplings ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FH_Couplings ******" << endl;
+      #endif
 
       // what to use for internal Higgs mixing
       // (ex. in couplings)
@@ -714,7 +734,9 @@ namespace Gambit
       // which effective bottom mass to use
       int mfeff = 1;
 
-      cout << "****** calling FHSelectUZ ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHSelectUZ ******" << endl;
+      #endif
 
       int error = 1;
       BEreq::FHSelectUZ(error, uzint, uzext, mfeff);
@@ -725,7 +747,9 @@ namespace Gambit
       Farray<fh_real, 1,250> gammas_sm;        // Higgs decay widths and BR's (SM)
       int fast = 1;  // include off-diagonal fermion decays? (1 = no)
 
-      cout << "****** calling FHCouplings ******" << endl;
+      #ifdef SPECBIT_DEBUG
+        cout << "****** calling FHCouplings ******" << endl;
+      #endif
 
       error = 1;
       BEreq::FHCouplings(error, couplings, couplings_sm,

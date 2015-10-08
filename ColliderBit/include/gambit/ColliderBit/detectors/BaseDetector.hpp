@@ -41,7 +41,7 @@ namespace Gambit {
       /// @name (Re-)Initialization functions
       //@{
         /// @brief Settings parsing and initialization for each sub-class.
-        virtual void init(const std::vector<std::string>& settings) { };
+        virtual void init(const std::vector<std::string>&) {};
         /// @brief General init for any collider of this type - no settings version.
         virtual void init() { };
       //@}

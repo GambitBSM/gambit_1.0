@@ -37,8 +37,6 @@ if (GRAPHVIZ_FOUND)
 else()
   message("${BoldRed}   Did not find graphviz. Model and module function hierarchy plots will not be produced.${ColourReset}")
 endif()
-#include(cmake/FindGraphviz.cmake)
-#find_package(Graphviz)
 
 # Define HAVE_GRAPHVIZ compiler option
 include(CMakeDependentOption)

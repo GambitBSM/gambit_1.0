@@ -56,7 +56,7 @@ namespace Gambit
       auto block_def = block->find_block_def();
       if (block_def != block->end())
       {
-     	  if(block_def->at(0) == "DECAY") 
+        if(block_def->at(0) == "DECAY") 
         {
           // Make sure the block definition has the particle's width and PDG code
           if (block_def->size() < 3) utils_error().raise(LOCAL_INFO, "SLHAea object has DECAY block with < 3 entries in its block definition."); 
@@ -74,7 +74,7 @@ namespace Gambit
     SLHAstruct slha;
     std::map<str, std::set<str> > calculator_map;
     str calculators = "GAMBIT, using: ";
-    str versions = version + ": ";
+    str versions = gambit_version + ": ";
 
     // Add the decay info
     for (auto particle = particles.begin(); particle != particles.end(); ++particle)  
@@ -136,7 +136,7 @@ namespace Gambit
    errors("")    
   { 
     auto block_def = block.find_block_def();
- 	  if (block_def->at(0) != "DECAY" or  block_def->size() < 3)
+    if (block_def->at(0) != "DECAY" or  block_def->size() < 3)
      utils_error().raise(LOCAL_INFO, "SLHAea block is not DECAY or has < 3 entries in its block definition."); 
     width_in_GeV = SLHAea::to<double>(block_def->at(2));
     init(block, context);
@@ -199,6 +199,14 @@ namespace Gambit
     std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
     check_particles_exist(key);
     channels[key] = std::pair<double, double>(BF, error);
+  }
+
+  /// Check if a given final state exists in this DecayTable::Entry; vector of PDG-context integer pair version.
+  bool DecayTable::Entry::has_channel(std::vector<std::pair<int,int> >& daughters)
+  {
+    std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
+    check_particles_exist(key);
+    return channels.find(key) != channels.end();
   }
 
   /// Output a decay table entry as an SLHAea DECAY block

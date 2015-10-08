@@ -19,6 +19,7 @@
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/FeynHiggs.hpp"
 
+//#define FEYNHIGGS_DEBUG
 
 BE_INI_FUNCTION
 {
@@ -32,14 +33,16 @@ BE_INI_FUNCTION
     int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
     int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
     int tanbren = 0;   // one-loop one-loop tanBeta counter-term (0 -> DRbar, strongly recommended))
-    int higgsmix = 3;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector) -> HB says 2
+    int higgsmix = 2;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector) -> HB says 2
     int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended) -> HB says 0
     int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
     int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)
     int botResum = 1;  // O(tan^n Beta) corr. ressummed? (1 -> yes, recommended)
     int tlCplxApprox = 0; // determines how 2-loop corr. are treated with complex param (0 for rMSSM, > 0 for cMSSM)
     
-    cout << "****** calling FHSetFlags ******" << endl;
+    #ifdef FEYNHIGGS_DEBUG
+      cout << "****** calling FHSetFlags ******" << endl;
+    #endif
 
     FHSetFlags(error, mssmpart, fieldren, tanbren, higgsmix,
          p2approx, looplevel, runningMT, botResum, tlCplxApprox);
@@ -87,7 +90,9 @@ BE_INI_FUNCTION
   fh_real CKMrhobar = sminputs.CKM.rhobar;
   fh_real CKMetabar = sminputs.CKM.etabar;
 
-  cout << "****** calling FHSetSMPara ******" << endl;
+  #ifdef FEYNHIGGS_DEBUG
+    cout << "****** calling FHSetSMPara ******" << endl;
+  #endif
 
   error = 1;
   FHSetSMPara(error, invAlfa, AlfasMZ, GF,
@@ -207,7 +212,9 @@ BE_INI_FUNCTION
   // the renormalization scale is Mtop times the 'scalefactor'
   fh_real scalefactor = 1.;
 
-  cout << "****** calling FHSetPara ******" << endl;
+  #ifdef FEYNHIGGS_DEBUG
+    cout << "****** calling FHSetPara ******" << endl;
+  #endif
 
   error = 1;
   FHSetPara(error, scalefactor, MT, TB, MA0, MHp,

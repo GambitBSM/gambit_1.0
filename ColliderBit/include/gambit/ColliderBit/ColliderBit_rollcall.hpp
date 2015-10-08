@@ -28,6 +28,7 @@
 
 #include <string>
 
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/shared_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
@@ -63,6 +64,7 @@ START_MODULE
 
 
   /// Detector sim capabilities
+#ifndef EXCLUDE_DELPHES
   #define CAPABILITY DetectorSim
   START_CAPABILITY
     #define FUNCTION getDelphes
@@ -71,11 +73,17 @@ START_MODULE
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
+#endif // not defined EXCLUDE_DELPHES
 
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
     #define FUNCTION getBuckFast
     START_FUNCTION(Gambit::ColliderBit::BuckFastSmear)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    #undef FUNCTION
+
+    #define FUNCTION getBuckFastIdentity
+    START_FUNCTION(Gambit::ColliderBit::BuckFastIdentity)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   #undef CAPABILITY
@@ -140,6 +148,7 @@ START_MODULE
   /// Detector simulators which directly produce the standard event format
   #define CAPABILITY ReconstructedEvent
   START_CAPABILITY
+#ifndef EXCLUDE_DELPHES
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
@@ -147,12 +156,20 @@ START_MODULE
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
     #undef FUNCTION
+#endif // not defined EXCLUDE_DELPHES
 
     #define FUNCTION reconstructBuckFastEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmear)
+    #undef FUNCTION
+
+    #define FUNCTION reconstructBuckFastIdentityEvent
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastIdentity)
     #undef FUNCTION
   #undef CAPABILITY
 

@@ -98,6 +98,7 @@ scanner_plugin(MultiNest, version(3, 9))
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
       int resume ( resume_mode );                               // resume from a previous job?
       int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
+
       double logZero (get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
@@ -105,10 +106,15 @@ scanner_plugin(MultiNest, version(3, 9))
       // Which parameters to have periodic boundary conditions?
       int pWrap[ndims];
       for(int i = 0; i < ndims; i++) pWrap[i] = 0; // (need to do more work if we actually want to allow periodic BCs)        
+
       // Root for output files
-      std::string root_str ( get_inifile_value<std::string>("root", "chains/") );
-      char root[100];
-      Gambit::Utils::strcpy2f(root, 100, root_str);// (copy std::string into char array for transport to Fortran)
+      std::string root_str;
+      std::string defpath = Gambit::Utils::ensure_path_exists(
+           get_inifile_value<std::string>("default_output_path")+"MultiNest/native-"
+           ); // from gambit global default
+      root_str = get_inifile_value<std::string>("root", defpath);
+      char root[1000];  // I think MultiNest will truncate this to 100. But lets use a larger array just in case.
+      Gambit::Utils::strcpy2f(root, 1000, root_str);// (copy std::string into char array for transport to Fortran)
 
       // Print some basic startup diagnostics.      
       std::cout << "MultiNest ndims:" << ndims << std::endl;
@@ -118,7 +124,9 @@ scanner_plugin(MultiNest, version(3, 9))
       {
         // It is stupid to be in resume mode while not writing output files. 
         // Means subsequent resumes will be impossible. Throw an error.
-        scan_error().raise(LOCAL_INFO,"Error from MultiNest ScannerBit plugin! Resume mode is activated, however MultiNest native output files are set to not be written. These are needed for resuming; please change this setting in your yaml file (set option \"outfile: 1\)");
+        scan_error().raise(LOCAL_INFO,"Error from MultiNest ScannerBit plugin! Resume mode is activated, however "
+                                      "MultiNest native output files are set to not be written. These are needed "
+                                      "for resuming; please change this setting in your yaml file (set option \"outfile: 1\")");
       }
  
       // Setup auxilliary streams. These are only needed by the master process,
