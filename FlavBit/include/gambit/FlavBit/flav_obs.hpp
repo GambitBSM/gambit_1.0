@@ -113,7 +113,7 @@ namespace Gambit
       void print_corr_matrix();
       void print_cov_matrix(); 
       void print_cov_inv_matrix();
-      double calc_Chi2(vector<double> theory, vector<double> theory_error);
+      //double calc_Chi2(vector<double> theory, vector<double> theory_error);
       boost::numeric::ublas::matrix<double> get_cov_uu(){return M_glob_cov_uu;};
       boost::numeric::ublas::matrix<double> get_cov_ud(){return M_glob_cov_ud;};  
       boost::numeric::ublas::matrix<double> get_cov_du(){return M_glob_cov_du;};  

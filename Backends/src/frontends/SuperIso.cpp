@@ -48,9 +48,6 @@ BE_NAMESPACE
 
     cout<<"Got the mass"<<endl;
 
-    const double q2_min=Q2_min;
-    const double q2_max=Q2_max;
-
     CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
     C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
     CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
