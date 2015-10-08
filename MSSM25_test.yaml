@@ -79,7 +79,7 @@ Rules:
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
-      precision_goal:        1.0e-4
+      precision_goal:        1.0e-3
       max_iterations:        0
       calculate_sm_masses:   false
       pole_mass_loop_order:  2

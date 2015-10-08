@@ -28,6 +28,7 @@
 #include <sstream>
 
 #include "gambit/Utils/cats.hpp"
+#include "gambit/Utils/safebool.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/spectrum_helpers.hpp"
@@ -258,10 +259,11 @@ namespace Gambit
          virtual ~CommonAbstract() {}      
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         virtual bool   has(const ParamType, const str&) const = 0;
-         virtual double get(const ParamType, const str&) const = 0;
-         virtual bool   has(const ParamType, const str&, int) const = 0;
-         virtual double get(const ParamType, const str&, int) const = 0;
+         /* note: set check_antiparticle = SafeBool(false) to disable matching on antiparticle entries */
+         virtual bool   has(const ParamType, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual double get(const ParamType, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual bool   has(const ParamType, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual double get(const ParamType, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
          virtual bool   has(const ParamType, const str&, int, int) const = 0;
          virtual double get(const ParamType, const str&, int, int) const = 0;
 
@@ -270,8 +272,8 @@ namespace Gambit
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         virtual void set(const ParamType, const double, const str&) = 0;
-         virtual void set(const ParamType, const double, const str&, int) = 0;
+         virtual void set(const ParamType, const double, const str&, SafeBool check_antiparticle = SafeBool(true)) = 0;
+         virtual void set(const ParamType, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true)) = 0;
          virtual void set(const ParamType, const double, const str&, int, int) = 0;
    };
  
@@ -314,12 +316,12 @@ namespace Gambit
          /* Overloads of getter/checker functions to allow access using PDG codes */
          /* as defined in Models/src/particle_database.cpp */
          /* These don't have to be virtual; they just call the virtual functions in the end. */
-         bool   has(const ParamType, const int, const int) const;     /* Input PDG code plus context integer */
-         double get(const ParamType, const int, const int) const;     /* Input PDG code plus context integer */
-         bool   has(const ParamType, const std::pair<int,int>) const; /* Input PDG code plus context integer */
-         double get(const ParamType, const std::pair<int,int>) const; /* Input PDG code plus context integer */
-         bool   has(const ParamType, const std::pair<str,int>) const; /* Input short name plus index */
-         double get(const ParamType, const std::pair<str,int>) const; /* Input short name plus index */
+         bool   has(const ParamType, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         double get(const ParamType, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         bool   has(const ParamType, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         double get(const ParamType, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         bool   has(const ParamType, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+         double get(const ParamType, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
 
          /// @{ PDB overloads for setters
 
@@ -636,10 +638,10 @@ namespace Gambit
       public:
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         bool   has(const ParamType, const str&) const;
-         double get(const ParamType, const str&) const;
-         bool   has(const ParamType, const str&, int) const;
-         double get(const ParamType, const str&, int) const;
+         bool   has(const ParamType, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         double get(const ParamType, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         bool   has(const ParamType, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
+         double get(const ParamType, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
          bool   has(const ParamType, const str&, int, int) const;
          double get(const ParamType, const str&, int, int) const;
 
@@ -648,8 +650,8 @@ namespace Gambit
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         void set(const ParamType, const double, const str&);
-         void set(const ParamType, const double, const str&, int);
+         void set(const ParamType, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
+         void set(const ParamType, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
          void set(const ParamType, const double, const str&, int, int);
    };
 

@@ -627,18 +627,48 @@ namespace Gambit
          cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
          cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
          cout << "Setting new ~e+ pole mass value" << endl;
-         clonedspec->phys().set(Par::Pole_Mass,-666,"~e+");
+         clonedspec->phys().set(Par::Pole_Mass,-666,"~e+",1);
          cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
          cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
          cout << "Setting override ~e+ pole mass value" << endl;
-         clonedspec->phys().set_override(Par::Pole_Mass,-999,"~e+");
+         // Need to turn off the safety check for this, because no explicit entry for
+         // ~e+_1 exists yet. This action will decouple the ~e-_1 and ~e+_1 masses from
+         // here onwards.
+         clonedspec->phys().set_override(Par::Pole_Mass,-999,"~e+",1,SafeBool(false));
          cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
          cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
          cout << "Set ~e+ pole mass via PDG code" << endl;
+         // Can leave safety check on this time, because now an explicit entry for 
+         // ~e+_1 DOES exist (i.e. the previous override entry)
          clonedspec->phys().set_override(Par::Pole_Mass,-111,std::make_pair(-1000011,0));
          cout << "'(-1000011,0)' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,std::make_pair(-1000011,0)) << endl;
          cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
          cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
+         cout << "Setting new ~e+ pole mass value (will be hidden by override!)" << endl;
+         // This should also throw a warning explaining that the newly set value is not retrievable by
+         // the getters, due to being hidden by an override value.
+         clonedspec->phys().set(Par::Pole_Mass,-96969,"~e+",1);
+         cout << "'~e+' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",1) << endl;
+         cout << "'~e-' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",1) << endl;
+         cout << endl;
+
+         cout << "has '~e+,2' pole mass? " << clonedspec->phys().has(Par::Pole_Mass,"~e+",2) << endl;
+         cout << "'~e+,2' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",2) << endl;
+         cout << "'~e-,2' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",2) << endl;
+         cout << "Setting new ~e+,2 pole mass value" << endl;
+         clonedspec->phys().set(Par::Pole_Mass,-666,"~e+",2);
+         cout << "'~e+,2' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",2) << endl;
+         cout << "'~e-,2' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",2) << endl;
+         cout << "Setting override ~e+,2 pole mass value" << endl;
+         clonedspec->phys().set_override(Par::Pole_Mass,-999,"~e+",2,SafeBool(false));
+         cout << "'~e+,2' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",2) << endl;
+         cout << "'~e-,2' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",2) << endl;
+         cout << "Set ~e+,2 pole mass via PDG code" << endl;
+         clonedspec->phys().set_override(Par::Pole_Mass,-111,std::make_pair(-1000013,0));
+         cout << "'(-1000013,0)' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,std::make_pair(-1000013,0)) << endl;
+         cout << "'~e+,2' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e+",2) << endl;
+         cout << "'~e-,2' pole mass = " << clonedspec->phys().get(Par::Pole_Mass,"~e-",2) << endl;
+
 
          cout << "Test report:" << std::endl << report.str();
 

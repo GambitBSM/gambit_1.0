@@ -645,6 +645,10 @@ namespace Gambit
          {
             typename MTget::fmap1 tmp_map;
 
+            // Note; only one entry required for particle/antiparticle pairs.
+            // In fact, it is preferred unless they are actually different, 
+            // since automatic conversion between them occurs.
+
             tmp_map["Sd"] = FInfo1( &Model::get_MSd, i012345 );
             tmp_map["Su"] = FInfo1( &Model::get_MSu, i012345 );
             tmp_map["Se"] = FInfo1( &Model::get_MSe, i012345 );
@@ -653,8 +657,6 @@ namespace Gambit
             //Here we may access the goldstone boson
             // and higgs. maybe too dangerous to keep?
             tmp_map["A0"] = FInfo1( &Model::get_MAh, i01 );      
-            //Here we may access the goldstone boson
-            //and higgs. maybe too dangerous to keep?
             tmp_map["H+"] = FInfo1( &Model::get_MHpm, i01 );   
             tmp_map["chi+"] = FInfo1( &Model::get_MCha, i01 );
             tmp_map["chi0"] = FInfo1( &Model::get_MChi, i0123 );
@@ -662,10 +664,6 @@ namespace Gambit
             tmp_map["d"] =    FInfo1( &Model::get_MFd, i012 );
             tmp_map["u"] =    FInfo1( &Model::get_MFu, i012 );
             tmp_map["e-"] =   FInfo1( &Model::get_MFe, i012 );
-            tmp_map["e"] =    FInfo1( &Model::get_MFe, i012 );
-            tmp_map["dbar"] = FInfo1( &Model::get_MFd, i012 );
-            tmp_map["ubar"] = FInfo1( &Model::get_MFu, i012 );
-            tmp_map["e+"] =   FInfo1( &Model::get_MFe, i012 );
 
             map_collection[Par::mass_eigenstate].map1 = tmp_map;
          }
@@ -830,7 +828,8 @@ namespace Gambit
           tmp_map["~g"] = &set_MGluino_pole_slha<Model>; 
           tmp_map["A0"] = &set_MAh1_pole_slha<Model>;
           tmp_map["H+"] = &set_MHpm1_pole_slha<Model>;
-          tmp_map["H-"] = &set_MHpm1_pole_slha<Model>;
+          /// Note; these aren't in the particle database, so no
+          /// conversion between particle/antiparticle.
           tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
           tmp_map["Goldstone+"] = &set_charged_goldstone_pole_slha<Model>;
           tmp_map["Goldstone-"] = &set_charged_goldstone_pole_slha<Model>;
@@ -839,7 +838,6 @@ namespace Gambit
           /// we agreed to add setters here unless I misunderstood.
           /// need to discuss this
           tmp_map["W+"] = &set_MW_pole_slha<Model>;
-          tmp_map["W-"] = &set_MW_pole_slha<Model>;
           tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
        
           map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
@@ -865,14 +863,6 @@ namespace Gambit
           //and higgs. maybe too dangerous to keep?
           //tmp_map["H+"] = FInfo1( &set_MHpm_pole_slha, i01 );
         
-          // Do we really want to set the massing using either the particle or anti-particel string?
-          tmp_map["~ubar"] = FInfo1M( &set_MSu_pole_slha<Model>, i012345 );
-          tmp_map["~dbar"] = FInfo1M( &set_MSd_pole_slha<Model>, i012345 );
-          tmp_map["~e+"] = FInfo1M( &set_MSe_pole_slha<Model>, i012345 );
-          tmp_map["~nubar"]=  FInfo1M( &set_MSv_pole_slha<Model>, i012 );
-          tmp_map["~chi-"] = FInfo1M( &set_MCha_pole_slha<Model>, i01 );
-          //tmp_map["H-"] = FInfo1( &set_MHpm_pole_slha, i01 );
-            
           map_collection[Par::Pole_Mass].map1_extraM = tmp_map;
         }
 
@@ -932,7 +922,6 @@ namespace Gambit
             // point in having the setters!
             tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
             tmp_map["W+"] = &Model::get_MVWm_pole_slha;
-            tmp_map["W-"] = &Model::get_MVWm_pole_slha;
             //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
             //// tmp_map["g"] = &Model::get_MVG_pole_slha;
             ////    //tmp_map["gamma"] = &Model::get_pole_MPhoton;
@@ -966,14 +955,11 @@ namespace Gambit
             tmp_map["A0"] = &get_MAh1_pole_slha<Model>;   
             tmp_map["H+"] = &get_MHpm1_pole_slha<Model>;   
       
-            // Antiparticle label 
-            tmp_map["H-"] = &get_MHpm1_pole_slha<Model>;
             // Goldstones
             // Using wrapper functions defined above
             tmp_map["Goldstone0"] = &get_neutral_goldstone_pole_slha<Model>;   
             tmp_map["Goldstone+"] = &get_charged_goldstone_pole_slha<Model>;   
-      
-            // Antiparticle label 
+            // Antiparticle label (no automatic conversion for this)
             tmp_map["Goldstone-"] = &get_charged_goldstone_pole_slha<Model>;   
       
             map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
@@ -987,7 +973,6 @@ namespace Gambit
             tmp_map["~d"] =  FInfo1( &Model::get_MSd_pole_slha, i012345 );
             tmp_map["~u"] =  FInfo1( &Model::get_MSu_pole_slha, i012345 );
             tmp_map["~e-"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
-            tmp_map["~e"] =  FInfo1( &Model::get_MSe_pole_slha, i012345 );  // Just an extra name for charged sleptons; not in PDB
             tmp_map["~nu"]=  FInfo1( &Model::get_MSv_pole_slha, i012 );
             tmp_map["h0"] =  FInfo1( &Model::get_Mhh_pole_slha, i01 );
             // NOTE: I have added the following two to the "no index" map as well, 
@@ -1009,15 +994,6 @@ namespace Gambit
             // tmp_map["dbar"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
             // tmp_map["ubar"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
             // tmp_map["e+"] =   FInfo1( &Model::get_MFe_pole_slha, i012 );
-
-            // Antiparticles (same getters, just different string name)
-            tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
-            tmp_map["~ubar"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
-            tmp_map["~e+"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
-            tmp_map["~ebar"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );  
-            tmp_map["~nubar"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
-            tmp_map["H-"] =    FInfo1( &Model::get_MHpm_pole_slha, i01 );   
-            tmp_map["~chi-"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
 
             map_collection[Par::Pole_Mass].map1 = tmp_map;
          }
