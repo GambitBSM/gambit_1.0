@@ -22,40 +22,40 @@ namespace Gambit {
 
     class Analysis_CMS_3LEPEW_20invfb : public HEPUtilsAnalysis {
     private:
-    
+
       // Array of signal regions, set to zero
       int SR [180];
       //int Region45=0;
       //int Region46=0;
       vector<double> boundsMll = {0.,75.,105.,9999.};
       vector<double> boundsMt = {0.,120.,160.,9999.};
-      vector<double> boundsmet ={0.,50.,100.,150.,200.,9999.};   
+      vector<double> boundsmet ={0.,50.,100.,150.,200.,9999.};
       vector<double> boundsMll2 = {0.,100.,9999.};
       // Debug histos
-  
+
     public:
 
       Analysis_CMS_3LEPEW_20invfb() {
-        
+
         for(int i=0;i<180;i++){
           SR[i]=0;
         }
-        
+
       }
-    
+
       void JetLeptonOverlapRemoval(vector<HEPUtils::Jet*> &jetvec, vector<HEPUtils::Particle*> &lepvec, double DeltaRMax) {
         //Routine to do jet-lepton check
         //Discards jets if they are within DeltaRMax of a lepton
-      
+
         vector<HEPUtils::Jet*> Survivors;
-      
+
         for(unsigned int itjet = 0; itjet < jetvec.size(); itjet++) {
           bool overlap = false;
           HEPUtils::P4 jetmom=jetvec.at(itjet)->mom();
           for(unsigned int itlep = 0; itlep < lepvec.size(); itlep++) {
             HEPUtils::P4 lepmom=lepvec.at(itlep)->mom();
             float dR;
-          
+
             dR=jetmom.deltaR_eta(lepmom);
 
             if(dR <= DeltaRMax) overlap=true;
@@ -64,7 +64,7 @@ namespace Gambit {
           Survivors.push_back(jetvec.at(itjet));
         }
         jetvec=Survivors;
-      
+
         return;
       }
 
@@ -73,14 +73,14 @@ namespace Gambit {
         //Discards leptons if they are within DeltaRMax of a jet
 
         vector<HEPUtils::Particle*> Survivors;
-      
+
         for(unsigned int itlep = 0; itlep < lepvec.size(); itlep++) {
           bool overlap = false;
           HEPUtils::P4 lepmom=lepvec.at(itlep)->mom();
           for(unsigned int itjet= 0; itjet < jetvec.size(); itjet++) {
             HEPUtils::P4 jetmom=jetvec.at(itjet)->mom();
             float dR;
-          
+
             dR=jetmom.deltaR_eta(lepmom);
 
             if(dR <= DeltaRMax) overlap=true;
@@ -89,7 +89,7 @@ namespace Gambit {
           Survivors.push_back(lepvec.at(itlep));
         }
         lepvec=Survivors;
-      
+
         return;
       }
 
@@ -125,25 +125,25 @@ namespace Gambit {
         vector<HEPUtils::Jet*> bJets;
 
         for (HEPUtils::Jet* jet : event->jets()) {
-          if (jet->pT() > 30. && fabs(jet->eta()) < 2.5) signalJets.push_back(jet); 
+          if (jet->pT() > 30. && fabs(jet->eta()) < 2.5) signalJets.push_back(jet);
           if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 30.) bJets.push_back(jet);
         }
-      
+
         //Overlap Removal
-     
+
         //Note that ATLAS use |eta|<10 for removing jets close to electrons
         //Then 2.8 is used for the rest of the overlap process
         //Then the signal cut is applied for signal jets
 
         JetLeptonOverlapRemoval(signalJets,signalElectrons,0.4);
-        JetLeptonOverlapRemoval(signalJets,signalMuons,0.4);     
-   
-        int numElectrons=signalElectrons.size();
-        int numMuons=signalMuons.size();
-        int numTaus=signalTaus.size();
-      
+        JetLeptonOverlapRemoval(signalJets,signalMuons,0.4);
+
+        // int numElectrons = signalElectrons.size();
+        // int numMuons = signalMuons.size();
+        int numTaus = signalTaus.size();
+
         vector<HEPUtils::Particle*> signalLeptons;
-    
+
         for (HEPUtils::Particle* ele : signalElectrons) {
           signalLeptons.push_back(ele);
         }
@@ -153,9 +153,9 @@ namespace Gambit {
         }
 
         int numLeptons = signalLeptons.size(); //Only electrons and muons
-                
+
         //Find transverse mass and invariant mass depending on presence of tau, OSSF/OSOF/SS
-    
+
         double mLL = 0;
         double mT = 0;
         vector<bool> flavourSign = {false,false,false,false};
@@ -234,9 +234,9 @@ namespace Gambit {
             }
           }
         }
-                  
+
         //Cuts to lepton energy
-      
+
 	bool signalAccepted=false;
 
 	for(HEPUtils::Particle * lepton : signalLeptons){
@@ -254,12 +254,12 @@ namespace Gambit {
 	  }
 	}
 	if(bJets.size() > 0){
-	  signalAccepted=false;	      
+	  signalAccepted=false;
 	}
 	//
 	//Fill signal vector
 	if(signalAccepted){
-	
+
 	  int m=0;
 	  int i=0;
 	  for(unsigned int j=0;j<(boundsMll.size()-1);j++){
@@ -275,15 +275,15 @@ namespace Gambit {
 	      }
 	    }
 	  }
-	
+
 	  for(unsigned int i=1;i<(flavourSign.size());i++){
 	    for(unsigned int j=0;j<(boundsMll2.size()-1);j++){
 	      for(unsigned int k=0;k<(boundsMt.size()-1);k++){
-		for(unsigned int l=0;l<(boundsmet.size()-1);l++){ 
+		for(unsigned int l=0;l<(boundsmet.size()-1);l++){
 		  if(flavourSign.at(i) && mLL>=boundsMll2.at(j) && mLL<boundsMll2.at(j+1) && mT>=boundsMt.at(k) && mT<boundsMt.at(k+1) && met>=boundsmet.at(l) && met<boundsmet.at(l+1)){
 		    SR[m]++;
 		  }
-		  
+
 		  //std::cout << "REGION " << m << " Mll bounds " << boundsMll2[j]<< " to " << boundsMll2[j+1] << " MT bound " << boundsMt[k] << " to " << boundsMt[k+1] << " MET bound " << boundsmet[l] << " to " << boundsmet[l+1] << std::endl;
 		  m++;
 		}
@@ -294,7 +294,7 @@ namespace Gambit {
 	    }
 	  }
 	}
-	         
+
 	/*Region 45 test
           double testMLL=9999;
           double testMT=9999;
@@ -310,7 +310,7 @@ namespace Gambit {
           testMT=TransMass(met,missingPhi,signalLeptons.at(2));
           reg45=true;
           }
-          
+
           if((signalLeptons.at(0)->pid()>0 && signalLeptons.at(2)->pid()<0 || signalLeptons.at(0)->pid()<0 && signalLeptons.at(2)->pid()>0) && signalLeptons.at(0)->pid()!=-1*signalLeptons.at(2)->pid()){
           HEPUtils::P4 testlep1=signalLeptons.at(0)->mom();
           HEPUtils::P4 testlep2=signalLeptons.at(2)->mom();
@@ -322,7 +322,7 @@ namespace Gambit {
           reg45=true;
           }
           }
-          
+
           if((signalLeptons.at(1)->pid()>0 && signalLeptons.at(2)->pid()<0 || signalLeptons.at(1)->pid()<0 && signalLeptons.at(2)->pid()>0) && signalLeptons.at(1)->pid()!=-1*signalLeptons.at(2)->pid()){
           HEPUtils::P4 testlep1=signalLeptons.at(1)->mom();
           HEPUtils::P4 testlep2=signalLeptons.at(2)->mom();
@@ -336,19 +336,19 @@ namespace Gambit {
           if(signalLeptons.at(1)->pid()==-1*signalLeptons.at(2)->pid())reg45=false;
           if(signalLeptons.at(0)->pid()==-1*signalLeptons.at(1)->pid())reg45=false;
           if(signalLeptons.at(0)->pid()==-1*signalLeptons.at(2)->pid())reg45=false;
-          
+
           if(reg45 && testMLL<75 && testMT<120 && met<50){
           Region45++;
           }
           }
         */
-    
+
         return;
       }
 
       void add(BaseAnalysis* other) {
         // TODO: Need to combine the signal region results here
-        // The base class add function handles the signal region vector and total # events. 
+        // The base class add function handles the signal region vector and total # events.
         HEPUtilsAnalysis::add(other);
 
         Analysis_CMS_3LEPEW_20invfb* specificOther
@@ -369,14 +369,14 @@ namespace Gambit {
         std::cout << std::endl;
       }
 
-      
+
       void collect_results() {
 
         // TODO: Need to add all of the signal region results here
-	
+
 	//First do the 3l with OSSF pair results (no tau)
 	//Table 1 in the paper
-	
+
 	//MT > 160
 	//REGION 11 Mll bounds 0.000e+00 to 7.500e+01 MT bound 1.600e+02 to 9.999e+03 MET bound 5.000e+01 to 1.000e+02
 	//REGION 12 Mll bounds 0.000e+00 to 7.500e+01 MT bound 1.600e+02 to 9.999e+03 MET bound 1.000e+02 to 1.500e+02
@@ -390,12 +390,12 @@ namespace Gambit {
 	//REGION 42 Mll bounds 1.050e+02 to 9.999e+03 MT bound 1.600e+02 to 9.999e+03 MET bound 1.000e+02 to 1.500e+02
 	//REGION 43 Mll bounds 1.050e+02 to 9.999e+03 MT bound 1.600e+02 to 9.999e+03 MET bound 1.500e+02 to 2.000e+02
 	//REGION 44 Mll bounds 1.050e+02 to 9.999e+03 MT bound 1.600e+02 to 9.999e+03 MET bound 2.000e+02 to 9.999e+03
-	
+
 	int regions_highmt [12] = {11,12,13,14,26,27,28,29,41,42,43,44};
 	float observed_highmt [12] = {12,3,2,0,13,8,3,2,1,3,0,0};
 	float background_highmt [12] = {5.8, 4.5, 1.5, 0.81, 7.5, 4.0, 1.5, 1.1, 2.6, 1.8, 0.7, 0.4};
 	float err_highmt [12] = {1.1, 1.1, 0.4, 0.21, 1.4, 1.0, 0.5, 0.4, 1.2, 0.9, 0.4, 0.24};
-	
+
 	for(int region=0; region<12;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_highmt[region]);
@@ -420,7 +420,7 @@ namespace Gambit {
 	//REGION 37 Mll bounds 1.050e+02 to 9.999e+03 MT bound 1.200e+02 to 1.600e+02 MET bound 1.000e+02 to 1.500e+02
 	//REGION 38 Mll bounds 1.050e+02 to 9.999e+03 MT bound 1.200e+02 to 1.600e+02 MET bound 1.500e+02 to 2.000e+02
 	//REGION 39 Mll bounds 1.050e+02 to 9.999e+03 MT bound 1.200e+02 to 1.600e+02 MET bound 2.000e+02 to 9.999e+03
-	
+
 	int regions_medmt [12] = {6,7,8,9,21,22,23,24,36,37,38,39};
 	float observed_medmt [12] = {8,2,0,0,29,4,1,1,4,2,0,0};
 	float background_medmt [12] = {9.6, 3.3, 0.26, 0.29, 23, 3.4, 0.72, 0.36, 2.7, 0.71, 0.38, 0.24};
@@ -435,7 +435,7 @@ namespace Gambit {
 	  results_tmp.set_signal(SR[regions_medmt[region]]);
 	  add_result(results_tmp);
 	}
-	
+
 	//MT < 120
 	//REGION 1 Mll bounds 0.000e+00 to 7.500e+01 MT bound 0.000e+00 to 1.200e+02 MET bound 5.000e+01 to 1.000e+02
 	//REGION 2 Mll bounds 0.000e+00 to 7.500e+01 MT bound 0.000e+00 to 1.200e+02 MET bound 1.000e+02 to 1.500e+02
@@ -454,7 +454,7 @@ namespace Gambit {
 	float observed_lowmt [12] = {138,16,5,2,821,123,34,14,49,10,4,4};
 	float background_lowmt [12] = {132, 20, 4.0, 1.9, 776, 131, 34, 21, 45, 10.0, 2.5, 1.2};
 	float err_lowmt [12] = {19, 4, 0.8, 0.4, 125, 30, 8, 7, 7, 1.9, 0.5, 0.3};
-	
+
 	for(int region=0; region<12;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_lowmt[region]);
@@ -464,8 +464,8 @@ namespace Gambit {
 	  results_tmp.set_signal(SR[regions_lowmt[region]]);
 	  add_result(results_tmp);
 	}
-	
-	
+
+
 	//Now do OSOF (no tau) results
 	//OSOF (no tau) MT > 160
 	//REGION 56 Mll bounds 0.000e+00 to 1.000e+02 MT bound 1.600e+02 to 9.999e+03 MET bound 5.000e+01 to 1.000e+02
@@ -476,12 +476,12 @@ namespace Gambit {
 	//REGION 87 Mll bounds 1.000e+02 to 9.999e+03 MT bound 1.600e+02 to 9.999e+03 MET bound 1.000e+02 to 1.500e+02
 	//REGION 88 Mll bounds 1.000e+02 to 9.999e+03 MT bound 1.600e+02 to 9.999e+03 MET bound 1.500e+02 to 2.000e+02
 	//REGION 89 Mll bounds 1.000e+02 to 9.999e+03 MT bound 1.600e+02 to 9.999e+03 MET bound 2.000e+02 to 9.999e+03
-	
+
 	int regions_highmt_osof [8] = {56,57,58,59,86,87,88,89};
 	float observed_highmt_osof [8] = {2,3,0,1,0,0,0,0};
 	float background_highmt_osof [8] = {3.2, 2.1, 0.59, 0.37, 0.44, 0.42, 0.10, 0.16};
 	float err_highmt_osof [8] = {0.8, 0.7, 0.18, 0.13, 0.33, 0.19, 0.06, 0.14};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_highmt_osof[region]);
@@ -491,7 +491,7 @@ namespace Gambit {
 	  results_tmp.set_signal(SR[regions_highmt_osof[region]]);
 	  add_result(results_tmp);
 	}
-	
+
 	//OSOF (no tau) MT 120 - 160
 	//REGION 51 Mll bounds 0.000e+00 to 1.000e+02 MT bound 1.200e+02 to 1.600e+02 MET bound 5.000e+01 to 1.000e+02
 	//REGION 52 Mll bounds 0.000e+00 to 1.000e+02 MT bound 1.200e+02 to 1.600e+02 MET bound 1.000e+02 to 1.500e+02
@@ -501,12 +501,12 @@ namespace Gambit {
 	//REGION 82 Mll bounds 1.000e+02 to 9.999e+03 MT bound 1.200e+02 to 1.600e+02 MET bound 1.000e+02 to 1.500e+02
 	//REGION 83 Mll bounds 1.000e+02 to 9.999e+03 MT bound 1.200e+02 to 1.600e+02 MET bound 1.500e+02 to 2.000e+02
 	//REGION 84 Mll bounds 1.000e+02 to 9.999e+03 MT bound 1.200e+02 to 1.600e+02 MET bound 2.000e+02 to 9.999e+03
-	
+
 	int regions_medmt_osof [8] = {51,52,53,54,81,82,83,84};
 	float observed_medmt_osof [8] = {3,1,1,0,1,0,0,0};
 	float background_medmt_osof [8] = {5.5, 1.9, 0.46, 0.10, 0.25, 0.19, 0.03, 0.008};
 	float err_medmt_osof [8] = {1.2, 0.5, 0.18, 0.05, 0.07, 0.10, 0.03, 0.01};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_medmt_osof[region]);
@@ -516,7 +516,7 @@ namespace Gambit {
 	  results_tmp.set_signal(SR[regions_medmt_osof[region]]);
 	  add_result(results_tmp);
 	}
-	
+
 	//OSOF (no tau) MT < 120
 	//REGION 46 Mll bounds 0.000e+00 to 1.000e+02 MT bound 0.000e+00 to 1.200e+02 MET bound 5.000e+01 to 1.000e+02
 	//REGION 47 Mll bounds 0.000e+00 to 1.000e+02 MT bound 0.000e+00 to 1.200e+02 MET bound 1.000e+02 to 1.500e+02
@@ -526,12 +526,12 @@ namespace Gambit {
 	//REGION 77 Mll bounds 1.000e+02 to 9.999e+03 MT bound 0.000e+00 to 1.200e+02 MET bound 1.000e+02 to 1.500e+02
 	//REGION 78 Mll bounds 1.000e+02 to 9.999e+03 MT bound 0.000e+00 to 1.200e+02 MET bound 1.500e+02 to 2.000e+02
 	//REGION 79 Mll bounds 1.000e+02 to 9.999e+03 MT bound 0.000e+00 to 1.200e+02 MET bound 2.000e+02 to 9.999e+03
-	
+
 	int regions_lowmt_osof [8] = {46,47,48,49,76,77,78,79};
 	float observed_lowmt_osof [8] = {29, 5, 1, 0, 1, 0, 0, 0};
 	float background_lowmt_osof [8] = {32, 7.3, 1.0, 0.53, 1.7, 0.30, 0.14, 0.03};
 	float err_lowmt_osof [8] = {7, 1.7, 0.3, 0.24, 0.4, 0.11, 0.09, 0.03};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_lowmt_osof[region]);
@@ -541,7 +541,7 @@ namespace Gambit {
 	  results_tmp.set_signal(SR[regions_lowmt_osof[region]]);
 	  add_result(results_tmp);
 	}
-	
+
 	//Now do the SS + 1 tau results
 	// SS 1 tau MT > 160
 	//REGION 101 Mll bounds 0.000e+00 to 1.000e+02 MT bound 1.600e+02 to 9.999e+03 MET bound 5.000e+01 to 1.000e+02
@@ -557,7 +557,7 @@ namespace Gambit {
 	float observed_highmt_ss1tau [8] = {2,1,0,2,1,1,0,0};
 	float background_highmt_ss1tau [8] = {3.1, 2.3, 0.5, 0.4, 0.5, 0.4, 0.2, 0.06};
 	float err_highmt_ss1tau [8] = {0.6, 0.5, 0.2, 0.1, 0.2, 0.2, 0.1, 0.05};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_highmt_ss1tau[region]);
@@ -582,7 +582,7 @@ namespace Gambit {
 	float observed_medmt_ss1tau [8] = {6,2,0,0,1,0,0,0};
 	float background_medmt_ss1tau [8] = {6, 0.9, 0.3, 0.06, 0.4, 0.06, 0.0, 0.01};
 	float err_medmt_ss1tau [8] = {1, 0.3, 0.1, 0.08, 0.1, 0.05, 0.01, 0.01};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_medmt_ss1tau[region]);
@@ -603,12 +603,12 @@ namespace Gambit {
 	//REGION 122 Mll bounds 1.000e+02 to 9.999e+03 MT bound 0.000e+00 to 1.200e+02 MET bound 1.000e+02 to 1.500e+02
 	//REGION 123 Mll bounds 1.000e+02 to 9.999e+03 MT bound 0.000e+00 to 1.200e+02 MET bound 1.500e+02 to 2.000e+02
 	//REGION 124 Mll bounds 1.000e+02 to 9.999e+03 MT bound 0.000e+00 to 1.200e+02 MET bound 2.000e+02 to 9.999e+03
-	
+
 	int regions_lowmt_ss1tau [8] = {91,92,93,94,121,122,123,124};
 	float observed_lowmt_ss1tau [8] = {46,1,0,0,3,0,0,0};
 	float background_lowmt_ss1tau [8] = {51, 6, 2.0, 0.9, 2.8, 0.5, 0.11, 0.04};
 	float err_lowmt_ss1tau [8] = {8, 1, 0.4, 0.2, 0.6, 0.1, 0.07, 0.02};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_lowmt_ss1tau[region]);
@@ -618,7 +618,7 @@ namespace Gambit {
 	  results_tmp.set_signal(SR[regions_lowmt_ss1tau[region]]);
 	  add_result(results_tmp);
 	}
-      
+
 
 	//Now do 1 tau, OSOF pair
 	//1 tau OSOF pair, MT > 160
@@ -635,7 +635,7 @@ namespace Gambit {
 	float observed_highmt_osof1tau [8] = {19,14,1,2,2,3,3,1};
 	float background_highmt_osof1tau [8] = {15, 14, 3.7, 1.5, 5.7, 4.0, 1.3, 0.7};
 	float err_highmt_osof1tau [8] = {8, 9, 2.1, 1.0, 2.3, 2.2, 1.0, 0.4};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_highmt_osof1tau[region]);
@@ -660,7 +660,7 @@ namespace Gambit {
 	float observed_medmt_osof1tau [8] = {41,18,2,1,7,4,0,0};
 	float background_medmt_osof1tau [8] = {42, 17, 2.0, 0.8, 8.3, 2.3, 0.27, 0.5};
 	float err_medmt_osof1tau [8] = {16, 9, 1.2, 0.5, 2.9, 1.3, 0.32, 0.4};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_medmt_osof1tau[region]);
@@ -686,7 +686,7 @@ namespace Gambit {
 	float observed_lowmt_osof1tau [8] = {290,62,10,2,27,8,0,0};
 	float background_lowmt_osof1tau [8] = {259,60,11,2.9, 30, 5.9, 2.3, 1.1};
 	float err_lowmt_osof1tau [8] = {93, 25, 5, 1.4, 13, 2.6, 1.4, 0.6};
-	
+
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
 	  results_tmp.set_observation(observed_lowmt_osof1tau[region]);
@@ -699,8 +699,7 @@ namespace Gambit {
 
       }
     };
- 
+
     DEFINE_ANALYSIS_FACTORY(CMS_3LEPEW_20invfb)
  }
 }
-
