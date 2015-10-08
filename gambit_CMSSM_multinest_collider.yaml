@@ -33,9 +33,9 @@ Parameters:
 ##############################
 
 Printer:
-  printer: hdf5
+  printer: ascii
   options:
-    output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.hdf5"
+    output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
     group: "/"
     delete_file_if_exists: true
 
@@ -53,7 +53,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 20
+        nlive: 200
         tol: 0.1
         root: "runs/CMSSM_multinest_collider/samples/native-"
         aux_printer_txt_options:
@@ -208,7 +208,7 @@ Rules:
   - capability:  ColliderOperator
     function: operatePythia
     options:
-      nEvents: 10000
+      nEvents: 20000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
@@ -301,3 +301,5 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
+
+  default_output_path: "runs/multinest_CMSSM_collider/"
