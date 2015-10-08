@@ -229,7 +229,9 @@ namespace Gambit
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Deal with points where spectrum generator encountered a problem
-      std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
+      #ifdef SPECBIT_DEBUG
+        std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
+      #endif
       if( problems.have_problem() ) 
       {
          if( runOptions.getValue<bool>("invalid_point_fatal") )
