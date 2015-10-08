@@ -51,8 +51,6 @@ Scanner:
       #path: "diver_native"
       verbosity: 1
       aux_printer_txt_options:
-        #output_file: "gambit_output.txt"
-        #info_file: "gambit_output.txt_info"
                     
 #======== Observables of interest ========
 ObsLikes:
