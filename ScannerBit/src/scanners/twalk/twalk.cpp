@@ -53,7 +53,7 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
                         get_inifile_value<double>("tolerance", 1.001),
                         get_inifile_value<int>("chain_number", 5 + numtasks),
                         get_inifile_value<bool>("hyper_grid", true),
-                        get_inifile_value<int>("cut", 1000)
+                        get_inifile_value<int>("cut", 1000) //FIXME cut is not used! 
                 );
         
         return 0;
@@ -69,8 +69,8 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
     std::vector<int> mult(NThreads, 1);
     std::vector<int> totN(NThreads, 0);
     std::vector<int> count(NThreads, 1);
+    int t, tt;
     int total = 1, ttotal = 0, Nlength = 1;
-    int i, j, t, tt;
     //std::vector<RandomPlane *>gDev(NThreads);
     
     std::vector<std::vector<double>> covT(NThreads, std::vector<double>(ma, 0.0));
@@ -134,7 +134,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
             if (rank == 0)
             {
 #endif
-                for (j = 0; j < ma; j++)
+                for (int j = 0; j < ma; j++)
                     a0[t][j] = (gDev.Doub());
                 chisq[t] = -LogLike(a0[t]);
                 ids[t] = LogLike->getPtID();
@@ -300,27 +300,27 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
 #endif
             cont = 0;
             int cnt = 0;
-            for (auto it = count.begin(), end = count.end(); it != end; ++it)
+            for (auto it = count.begin(); it != count.end(); ++it)
             {
                 cnt += *it;
             }
             
             if (total%NThreads == 0) //cnt >= cut*NThreads && 
             {
-                for (int t = 0; t < NThreads; t++) for (i = 0; i < ma; i++)
+                for (int ttt = 0; ttt < NThreads; ttt++) for (int i = 0; i < ma; i++)
                 {
-                    double davg = (a0[t][i]-avgT[t][i])/(ttotal+1.0);
-                    double dcov = ttotal*davg*davg - covT[t][i]/(ttotal+1.0);
+                    double davg = (a0[ttt][i]-avgT[ttt][i])/(ttotal+1.0);
+                    double dcov = ttotal*davg*davg - covT[ttt][i]/(ttotal+1.0);
                     avgTot[i] += davg/NThreads;
-                    covT[t][i] += dcov;
-                    avgT[t][i] += davg;
+                    covT[ttt][i] += dcov;
+                    avgT[ttt][i] += davg;
                     W[i] += dcov/NThreads;
                 }
                 
                 ttotal++;
                 
                 Ravg = 0.0;
-                for (i = 0; i < ma; i++)
+                for (int i = 0; i < ma; i++)
                 {
                     double Bn = 0;
                     for (int ts = 0; ts < NThreads; ts++)
