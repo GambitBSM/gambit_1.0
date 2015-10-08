@@ -54,6 +54,7 @@ namespace Gambit
         YAML::Node getPriorsNode() const;
         YAML::Node getPrinterNode() const;
         YAML::Node getScannerNode() const;
+        YAML::Node getLoggerNode() const;
         YAML::Node getKeyValuePairNode() const;
         
         template <typename... args>
@@ -111,7 +112,7 @@ namespace Gambit
         YAML::Node priorsNode;
         YAML::Node printerNode;
         YAML::Node scannerNode;
-
+        YAML::Node logNode;
     };
 
 
