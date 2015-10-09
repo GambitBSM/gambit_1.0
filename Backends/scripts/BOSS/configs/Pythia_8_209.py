@@ -20,6 +20,7 @@ gambit_base_namespace  = ''
 # ~~~~~ Information about the external code ~~~~~
 
 # Use either absolute paths or paths relative to the main BOSS directory.
+input_files   = ['../../../Backends/installed/Pythia/8.209/include/Pythia8/Pythia.h']
 include_paths = ['../../../Backends/installed/Pythia/8.209/include', '../../../contrib/slhaea/include']
 source_path   = '../../../Backends/installed/Pythia/8.209/src'
 

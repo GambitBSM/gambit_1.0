@@ -257,3 +257,16 @@ function(find_python_module module)
   endif()
 endfunction()
 
+
+
+# Macro for BOSSing a backend
+set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
+macro(BOSS_backend cmake_project backend_name backend_version)
+  # TODO: Add a check for the config file 
+  ExternalProject_Add_Step(${cmake_project} BOSSing
+    COMMAND cd ${BOSS_dir} && python boss.py ${backend_name}_${backend_version}
+    DEPENDEES patch
+    DEPENDERS configure
+  )
+endmacro()
+

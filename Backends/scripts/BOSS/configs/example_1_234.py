@@ -19,6 +19,8 @@ gambit_base_namespace  = ''
 
 # ~~~~~ Information about the external code ~~~~~
 
+# Use either absolute paths or paths relative to the main BOSS directory.
+input_files   = ['example_path/include/classes.hpp']
 include_paths = ['example_path/include']
 source_path   = 'example_path/src'
 

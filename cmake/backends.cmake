@@ -37,11 +37,8 @@
 #************************************************
 
 
-# Set BOSS directory
-set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
-
 # Check that gccxml is installed
-find_program(GCCXML_PATH gccxmldummy)
+find_program(GCCXML_PATH gccxml)
 if(NOT GCCXML_PATH)
   message("${BoldRed}-- GCCXML not found. Backends requiring BOSS will not be built. Please install GCCXML and setup your environment to find the 'gccxml' executable. ${ColourReset}" )
 endif()
@@ -222,11 +219,12 @@ ExternalProject_Add_Step(pythia apply_hacks
   DEPENDERS patch
 )
 
-ExternalProject_Add_Step(pythia BOSSing
-  COMMAND cd ${BOSS_dir} && python boss.py configs/Pythia_8_209_cfg.py ${pythia_dir}/include/Pythia8/Pythia.h
-  DEPENDEES apply_hacks
-  DEPENDERS patch
-)
+BOSS_backend(pythia Pythia 8_209)
+#ExternalProject_Add_Step(pythia BOSSing
+#  COMMAND cd ${BOSS_dir} && python boss.py configs/Pythia_8_209_cfg.py ${pythia_dir}/include/Pythia8/Pythia.h
+#  DEPENDEES patch
+#  DEPENDERS configure
+#)
 
 
 

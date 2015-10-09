@@ -54,7 +54,7 @@ def main():
 
 
     # Parse command line arguments and options
-    parser = OptionParser(usage="usage: %prog [options] <config file> <input files>",
+    parser = OptionParser(usage="usage: %prog [options] <config file>",
                           version="%prog 0.1")
     parser.add_option("-c", "--gccxml-compiler",
                       dest="gccxml_compiler_in",
@@ -100,7 +100,7 @@ def main():
 
 
     # Check that arguments list is not empty
-    if (len(args) < 2) and not (options.types_header_flag or options.reset_info_file_name):
+    if (len(args) < 1) and not (options.types_header_flag or options.reset_info_file_name):
 
         print 
         print 'Missing input arguments. For instructions, run: boss.py --help'
@@ -110,18 +110,14 @@ def main():
 
 
 
-    # Get the config and input file names from command line. Import the correct config module.
-    # If reset option is used, then skip this part and simply import configs.example_cfg.
+    # Get the config file name from command line. Import the correct config module.
+    # If reset option is used, then skip this part and simply import configs.example_1_234.
     
     import modules.active_cfg as active_cfg
     if options.reset_info_file_name == '':
 
-        # Get the config and input file names from command line input, unless reset option is used
+        # Get the config file name from command line input, unless reset option is used
         input_cfg_path = args[0]
-        input_files = args[1:]
-
-        # Sort them to make sure screen output is identical regardless of ordering of input files.
-        input_files.sort()
 
         # Import the given config file as a module named 'cfg'.
         input_cfg_dir, input_cfg_filename = os.path.split(input_cfg_path)
@@ -222,6 +218,10 @@ def main():
 
     # Create the temp output dir if it does not exist
     filehandling.createOutputDirectories(selected_dirs=['temp'])
+
+    # Sort list of input files
+    input_files = cfg.input_files
+    input_files.sort()
 
     xml_files = []
     for input_file_path in input_files:
