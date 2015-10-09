@@ -150,8 +150,9 @@ scanner_plugin(MultiNest, version(3, 9))
          //get_printer().new_stream("stats",stats_options); //FIXME       
          get_printer().new_stream("live",live_options);
       }
-      //ensure mpi processes have same id for parameters;
-      Gambit::Scanner::assign_aux_numbers("Posterior", "LogLike", "pointID", "MPIrank", "Parameters");
+
+      // Ensure that MPI processes have the same IDs for auxiliary print streams;
+      Gambit::Scanner::assign_aux_numbers("Posterior","LastLive");
       
       // Create the object that interfaces to the MultiNest LogLike callback function
       Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, get_printer(), ndims);
@@ -296,8 +297,13 @@ namespace Gambit {
           int thisrank = boundPrinter.get_stream()->getRank(); // MPI rank of this process
           if(thisrank!=0)
           {
-             std::cout<<"Error! ScannerBit MultiNest plugin attempted to run 'dumper' function on a worker process (thisrank=="<<thisrank<<")! MultiNest should only try to run this function on the master process. Most likely this means that your multinest installation is not running in MPI mode correctly, and is actually running independent scans on each process. Alternatively, the version of MultiNest you are using may be too far ahead of what this plugin can handle, if e.g. the described behaviour has changed since this plugin was written."<<std::endl;
-             exit(1);
+             scan_err <<"Error! ScannerBit MultiNest plugin attempted to run 'dumper' function on a worker process "
+                      <<"(thisrank=="<<thisrank<<")! MultiNest should only try to run this function on the master "
+                      <<"process. Most likely this means that your multinest installation is not running in MPI mode "
+                      <<"correctly, and is actually running independent scans on each process. Alternatively, the "
+                      <<"version of MultiNest you are using may be too far ahead of what this plugin can handle, "
+                      <<"if e.g. the described behaviour has changed since this plugin was written."
+                      << scan_end;
           } 
 
           // Get printers for each auxiliary stream
@@ -346,7 +352,6 @@ namespace Gambit {
              {
                  parameters.push_back( posterior[j*nSamples + i] );
              }
-             txt_stream->print(parameters, "Parameters", myrank, pointID);
           }
 
           // The last set of live points
