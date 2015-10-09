@@ -50,7 +50,6 @@ Scanner:
       NP: 1000
       #path: "diver_native"
       verbosity: 1
-      aux_printer_txt_options:
                     
 #======== Observables of interest ========
 ObsLikes:

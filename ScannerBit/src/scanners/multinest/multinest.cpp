@@ -150,7 +150,7 @@ scanner_plugin(MultiNest, version(3, 9))
          //get_printer().new_stream("stats",stats_options); //FIXME       
          get_printer().new_stream("live",live_options);
       }
-      //ensure mpi processes has same id for parameters;
+      //ensure mpi processes have same id for parameters;
       Gambit::Scanner::assign_aux_numbers("Posterior", "LogLike", "pointID", "MPIrank", "Parameters");
       
       // Create the object that interfaces to the MultiNest LogLike callback function
