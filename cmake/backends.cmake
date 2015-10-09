@@ -40,6 +40,12 @@
 # Set BOSS directory
 set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
 
+# Check that gccxml is installed
+find_program(GCCXML_PATH gccxmldummy)
+if(NOT GCCXML_PATH)
+  message("${BoldRed}-- GCCXML not found. Backends requiring BOSS will not be built. Please install GCCXML and setup your environment to find the 'gccxml' executable. ${ColourReset}" )
+endif()
+
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
 set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
