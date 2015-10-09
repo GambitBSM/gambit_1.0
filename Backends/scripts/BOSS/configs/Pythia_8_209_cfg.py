@@ -21,15 +21,10 @@ gambit_base_namespace  = ''
 # ~~~~~ Information about the external code ~~~~~
 
 # Use either absolute paths or paths relative to the main BOSS directory.
-#include_paths = ['../../../Backends/installed/Pythia/8.209/include', '../../../contrib/slhaea/include']
-#source_path   = '../../../Backends/installed/Pythia/8.209/src'
+include_paths = ['../../../Backends/installed/Pythia/8.209/include', '../../../contrib/slhaea/include']
+source_path   = '../../../Backends/installed/Pythia/8.209/src'
 
-#accepted_paths = ['../../../Backends/installed/Pythia/8.209/']
-include_paths = ['pythia8209/include']
-source_path   = 'pythia8209/src'
-
-accepted_paths = ['pythia8209']
-
+accepted_paths = ['../../../Backends/installed/Pythia/8.209/']
 
 loaded_classes = [
                     'Pythia8::AlphaEM',
