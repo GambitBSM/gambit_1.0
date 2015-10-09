@@ -243,6 +243,11 @@ namespace Gambit {
        const str snubar    =   "~nubar";
        const str chiminus  =   "~chi-";
 
+       /// @{ "Metadata" vectors
+       // TODO: replace with a more integrated system
+ 
+       /// @{ Pole_Mass tagged entries
+
        // pole mass strings with no index
        const std::vector<str> pole_mass_strs = initVector( gluino, A0, Hplus,
 						     Hminus, Goldstone0,
@@ -275,7 +280,58 @@ namespace Gambit {
 
        ///  pole mass strings with 1 index and two entries
        const std::vector<str> pole_mass_strs_1_2  = initVector( chiplus, chiminus, h0 );
-       
+
+       /// @}
+
+       /// @{ Pole_Mixing tagged entries
+
+       ///  2 index, 6x6 entries
+       const std::vector<str> pole_mixing_strs_2_6x6  = initVector( sd, su, se );
+
+       ///  2 index, 4x4 entries
+       const std::vector<str> pole_mixing_strs_2_4x4  = initVector( chi0 );
+
+       ///  2 index, 3x3 entries
+       const std::vector<str> pole_mixing_strs_2_3x3  = initVector( snu );
+
+       ///  2 index, 2x2 entries
+       const std::vector<str> pole_mixing_strs_2_2x2  = initVector( h0, A0, Hplus, chiminus, chiplus );
+
+       /// @}
+
+       /// @{ mass2 tagged entries
+
+       // no index 
+       const std::vector<str> mass2_strs = initVector( BMu, mHd2, mHu2, mA2 );
+
+       // two-index, 3x3 entries
+       const std::vector<str> mass2_strs_2_3x3= initVector( mq2, ml2, md2, mu2, me2 );
+
+       /// @}
+
+       /// @{ mass1 tagged entries
+   
+       // no index
+       const std::vector<str> mass1_strs = initVector( M1, M2, M3, Mu, vu, vd );
+      
+       // two-index, 3x3 entries
+       const std::vector<str> mass1_strs_2_3x3 = initVector( TYd, TYe, TYu, ad, ae, au );
+
+       /// @}
+ 
+       /// @{ dimensionless tagged entries
+   
+       // no index
+       const std::vector<str> dimensionless_strs = initVector( g1, g2, g3, tanbeta, sinW2 );
+
+       // two-index, 3x3 entries
+       const std::vector<str> dimensionless_strs_2_3x3 = initVector( Yd, Yu, Ye );
+
+       /// @}
+      
+       /// TODO: left out mass_eigenstate entries for now
+  
+       /// @}
      };
 
      

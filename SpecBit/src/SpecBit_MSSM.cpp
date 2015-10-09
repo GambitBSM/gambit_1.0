@@ -766,32 +766,58 @@ namespace Gambit
       result = Couplings;
     }
 
-    /// Convert MSSM type Spectrum object into a map, so it can be printed
+    /// @{ Convert MSSM type Spectrum object into a map, so it can be printed
+    void fill_map_from_MSSMspectrum(std::map<std::string,double>&, const Spectrum*);
     void get_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
     {
       namespace myPipe = Pipes::get_MSSM_spectrum_as_map;
       const Spectrum* mssmspec(*myPipe::Dep::MSSM_spectrum);
+      fill_map_from_MSSMspectrum(specmap, mssmspec);
+    }
+    void get_unimproved_MSSM_spectrum_as_map (std::map<std::string,double>& specmap)
+    {
+      namespace myPipe = Pipes::get_unimproved_MSSM_spectrum_as_map;
+      const Spectrum* mssmspec(*myPipe::Dep::unimproved_MSSM_spectrum);
+      fill_map_from_MSSMspectrum(specmap, mssmspec);
+    }
+    /// @}
 
+    /// Common function to fill the spectrum map from a Spectrum object
+    void fill_map_from_MSSMspectrum(std::map<std::string,double>& specmap, const Spectrum* mssmspec)
+    {
       /// Add everything... use metadata to loop when available.
-      #define ADD_ALL(strings)\
+      #define ADD_ALL(PR,tag,strings)\
          for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
          {\
             std::ostringstream label;\
-            label << *it << "_Pole_Mass";\
-            specmap[label.str()] = mssmspec->get_HE()->phys().get(Par::Pole_Mass,*it);\
+            label << *it <<" "<<STRINGIFY(tag);\
+            specmap[label.str()] = mssmspec->get_HE()->PR.get(Par::tag,*it);\
          }
 
-      #define ADD_ALL1(strings,indices)\
+      #define ADD_ALL1(PR,tag,strings,indices)\
          for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
          {\
-            for(std::vector<int>::const_iterator it2=indices.begin(); it2!=indices.end(); ++it2)\
+            for(std::vector<int>::const_iterator it1=indices.begin(); it1!=indices.end(); ++it1)\
             {\
                std::ostringstream label;\
-               label << Models::ParticleDB().long_name(*it,*it2) << "_Pole_Mass";\
-               specmap[label.str()] = mssmspec->get_HE()->phys().get(Par::Pole_Mass,*it,*it2);\
+               label << *it <<"_"<<*it1<<" "<<STRINGIFY(tag);\
+               specmap[label.str()] = mssmspec->get_HE()->PR.get(Par::tag,*it,*it1);\
             }\
          }
 
+      #define ADD_ALL2(PR,tag,strings,indices1,indices2)\
+         for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
+         {\
+            for(std::vector<int>::const_iterator it1=indices1.begin(); it1!=indices1.end(); ++it1)\
+            {\
+            for(std::vector<int>::const_iterator it2=indices2.begin(); it2!=indices2.end(); ++it2)\
+            {\
+               std::ostringstream label;\
+               label << *it2 <<"_("<<*it1<<","<<*it2<<") "<<STRINGIFY(tag);\
+               specmap[label.str()] = mssmspec->get_HE()->PR.get(Par::tag,*it,*it1,*it2);\
+            }\
+            }\
+         }
       static const MSSM_strs ms;
 
       static const std::vector<int> i12     = initVector(1,2);
@@ -799,11 +825,23 @@ namespace Gambit
       static const std::vector<int> i1234   = initVector(1,2,3,4);
       static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
-      ADD_ALL(ms.pole_mass_strs)         // no-index strings
-      ADD_ALL1(ms.pole_mass_strs_1_2,i12)     // 1-index with two allowed values
-      ADD_ALL1(ms.pole_mass_strs_1_3,i123)    // 1-index with three allowed values
-      ADD_ALL1(ms.pole_mass_strs_1_4,i1234)   // 1-index with four allowed values
-      ADD_ALL1(ms.pole_mass_strs_1_6,i123456) // 1-index with six allowed values
+      ADD_ALL (phys(),Pole_Mass,ms.pole_mass_strs)             // no-index strings
+      ADD_ALL1(phys(),Pole_Mass,ms.pole_mass_strs_1_2,i12)     // 1-index with two allowed values
+      ADD_ALL1(phys(),Pole_Mass,ms.pole_mass_strs_1_3,i123)    // 1-index with three allowed values
+      ADD_ALL1(phys(),Pole_Mass,ms.pole_mass_strs_1_4,i1234)   // 1-index with four allowed values
+      ADD_ALL1(phys(),Pole_Mass,ms.pole_mass_strs_1_6,i123456) // 1-index with six allowed values
+
+      ADD_ALL2(phys(),Pole_Mixing,ms.pole_mixing_strs_2_6x6,i123456,i123456)
+      ADD_ALL2(phys(),Pole_Mixing,ms.pole_mixing_strs_2_4x4,i1234,i1234)
+      ADD_ALL2(phys(),Pole_Mixing,ms.pole_mixing_strs_2_3x3,i123,i123)
+      ADD_ALL2(phys(),Pole_Mixing,ms.pole_mixing_strs_2_2x2,i12,i12)
+
+      ADD_ALL (runningpars(),mass2,ms.mass2_strs)
+      ADD_ALL2(runningpars(),mass2,ms.mass2_strs_2_3x3,i123,i123)
+      ADD_ALL (runningpars(),mass1,ms.mass1_strs)
+      ADD_ALL2(runningpars(),mass1,ms.mass1_strs_2_3x3,i123,i123)
+      ADD_ALL (runningpars(),dimensionless,ms.dimensionless_strs)
+      ADD_ALL2(runningpars(),dimensionless,ms.dimensionless_strs_2_3x3,i123,i123)
     }
    
 

@@ -426,8 +426,15 @@ namespace Gambit
           it = local_buffers.find(key);
 
           // Add a pointer to the new buffer to the full list as well
-          // TODO: is this the correct behaviour?
           if(not silence) printer->insert_buffer( key, it->second );
+
+          // Force increment the buffer to "catch it up" to the current sync
+          // position, in case it has been created "late".
+          // We subtract one because another increment will happen after
+          // the print statement (that triggered the creation of the new
+          // buffer) completes.
+          //if(synchronised) std::cout<<"Fast-forwarding new buffer "<<label<<" to position "<<printer->get_sync_pos()-1<<std::endl;
+          if(synchronised) it->second.fast_forward(printer->get_sync_pos()-1);
        }
 
        if( it == local_buffers.end() ) 
@@ -1246,6 +1253,15 @@ namespace Gambit
       {
          std::ostringstream errmsg;
          errmsg << "Error! Tried to empty all synchronised buffers, but some of them were not full! (N_were_full ("<<N_were_full<<") != N_sync_buffers ("<<N_sync_buffers<<"). This indicates that a loss of synchronisation has occurred, which is a bug in the hdf5printer system. Please report it. (Note: rank="<<myRank<<", printer_name="<<printer_name<<")"; 
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+
+      // Tell the HDF5 library to flush everything to disk
+      herr_t err = H5Fflush(file_id, H5F_SCOPE_GLOBAL);
+      if(err<0)
+      {
+         std::ostringstream errmsg;
+         errmsg << "Error in HDF5Printer while trying to empty all synchronised buffers. Buffers were emptied to the HDF5 backend (seemingly) successfully, however H5Fflush returned an error value ("<<err<<"). That is, an error occurred while the HDF5 system attempted to flush its internally buffered data to disk. (Note: rank="<<myRank<<", printer_name="<<printer_name<<")"; 
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
     }

@@ -556,6 +556,14 @@ namespace Gambit
             map_collection[Par::mass2].map0 = tmp_map;
          }
  
+         // Functions utilising the "extraM" function signature
+         // (Zero index, model object as argument)
+         {
+            typename MTget::fmap0_extraM tmp_map;
+            tmp_map["mA2"] = &get_DRbar_mA2<Model>;
+            map_collection[Par::mass2].map0_extraM = tmp_map;
+         }
+
          // functions utilising the two-index "plain-vanilla" function signature
          // (two-index member functions of model object)
          {
@@ -622,14 +630,6 @@ namespace Gambit
             tmp_map["tanbeta"] = &get_tanbeta<Model>;
             tmp_map["sinW2"] = &get_sinthW2_DRbar<Model>;
             map_collection[Par::dimensionless].map0_extraM = tmp_map;
-         }
-
-         // Functions utilising the "extraM" function signature
-         // (Zero index, model object as argument)
-         {
-            typename MTget::fmap0_extraM tmp_map;
-            tmp_map["mA2"] = &get_DRbar_mA2<Model>;
-            map_collection[Par::mass2].map0_extraM = tmp_map;
          }
    
          // Functions utilising the two-index "plain-vanilla" function signature

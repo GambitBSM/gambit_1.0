@@ -103,9 +103,7 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/DecayBit_test/samples/gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "runs/DecayBit_test/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 #########################
 # Logging setup
@@ -118,7 +116,6 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/DecayBit_test/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"

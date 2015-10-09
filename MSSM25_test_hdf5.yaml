@@ -47,12 +47,12 @@ Priors:
 Printer:
   printer: hdf5
   options:
-    output_file: "runs/MSSM25_test/samples/gambit_output.hdf5"
+    output_file: "gambit_output.hdf5"
     group: "/"
     delete_file_if_exists: true
 
 Scanner:
-  use_scanner: toy_mcmc
+  use_scanner: multinest
   
   scanners:
     toy_mcmc:
@@ -61,14 +61,35 @@ Scanner:
         point_number: 25
         output_file:  output
         like:  Likelihood
+    de:
+      plugin: Diver
+      like: Likelihood
+      NP: 100
+      verbosity: 1
+      aux_printer_txt_options:
+        output_file:
+        info_file:
+    multinest:
+      plugin: MultiNest
+      options:
+        like:  Likelihood
+        nlive: 100
+        tol: 0.1
+        mmodal: 0
+        # write native MultiNest ascii output files?
+        outfile: 1 # yes, need them for resuming
+        # No options to set, but still need the nodes at the moment...
+        aux_printer_txt_options:
+        aux_printer_stats_options:
+        aux_printer_live_options:
 
 ObsLikes:
   - purpose:      Test
     capability:   run_MSSMspectrum_test
 
   - purpose:      Observable
-    capability:   MSSM_spectrum
-    type:         std::map<std::string,double>
+    capability:   unimproved_MSSM_spectrum
+    type:         map_str_dbl   #std::map<std::string,double> doesn't match!
 
 #  - purpose:      Test
 #    capability:   decay_rates
@@ -80,22 +101,21 @@ Rules:
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
-      precision_goal:        1.0e-3 #1.0e-4
-      max_iterations:        10
+      precision_goal:        1.0e-4
+      max_iterations:        5
       calculate_sm_masses:   false
-      pole_mass_loop_order:  1
-      ewsb_loop_order:       1
-      beta_loop_order:       2
-      threshold_corrections_loop_order: 1
-      use_higgs_2loop_at_as: true
-      use_higgs_2loop_ab_as: true
-      use_higgs_2loop_at_at: true
-      use_higgs_2loop_atau_atau: true
+      pole_mass_loop_order:  0
+      ewsb_loop_order:       0
+      beta_loop_order:       0
+      threshold_corrections_loop_order: 0
+      use_higgs_2loop_at_as: false
+      use_higgs_2loop_ab_as: false
+      use_higgs_2loop_at_at: false
+      use_higgs_2loop_atau_atau: false
       invalid_point_fatal: false
 
 Logger:
 
-  prefix : "runs/MSSM25_test/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -103,6 +123,8 @@ Logger:
     [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
+
+  default_output_path: "runs/MSSM25_test_hdf5/"
 
   dependency_resolution:
     prefer_model_specific_functions: true
