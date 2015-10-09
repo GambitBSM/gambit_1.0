@@ -37,11 +37,18 @@
 #************************************************
 
 
-# Check that gccxml is installed
+# Variables for auto-BOSS system
+set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
+set(needs_BOSSing)
+set(needs_BOSSing_failed)
+
+# Check that gccxml is installed (requred by BOSS)
 find_program(GCCXML_PATH gccxml)
 if(NOT GCCXML_PATH)
   message("${BoldRed}-- GCCXML not found. Backends requiring BOSS will not be built. Please install GCCXML and setup your environment to find the 'gccxml' executable. ${ColourReset}" )
 endif()
+
+
 
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
@@ -112,6 +119,8 @@ ExternalProject_Add(ddcalc
 )
 enable_auto_rebuild(ddcalc)
 add_external_clean(ddcalc ${ddcalc_dir} cleanest)
+
+BOSS_backend(ddcalc DDcalc 0.0)
 
 # Gamlike
 if(GSL_FOUND)
@@ -186,6 +195,14 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
     set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -mavx")  
   endif()
 endif()
+# - Add "-undefined dynamic_lookup flat_namespace" to linker flags when OSX linker is used
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(pythia_CXX_SHARED_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup flat_namespace")
+else()
+  set(pythia_CXX_SHARED_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}")
+endif()
+
+
 # - Set include directories
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 # - Set local paths
@@ -199,16 +216,15 @@ ExternalProject_Add(pythia
   SOURCE_DIR ${pythia_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so"
-  COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
-  COMMAND echo "OSX DEBUG: pythia_CXXFLAGS = ${pythia_CXXFLAGS}"
-  COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
+  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
+  # COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
+  # COMMAND echo "OSX DEBUG: pythia_CXXFLAGS = ${pythia_CXXFLAGS}"
+  # COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND ""
 )
 enable_auto_rebuild(pythia)
 add_external_clean(pythia ${pythia_dir} distclean)
-
 ExternalProject_Add_Step(pythia apply_hacks
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.cc ${pythia_dir}/src/Pythia.cc
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.cc ${pythia_dir}/src/SusyLesHouches.cc
@@ -218,50 +234,8 @@ ExternalProject_Add_Step(pythia apply_hacks
   DEPENDEES download
   DEPENDERS patch
 )
+BOSS_backend(pythia Pythia 8.209)
 
-BOSS_backend(pythia Pythia 8_209)
-#ExternalProject_Add_Step(pythia BOSSing
-#  COMMAND cd ${BOSS_dir} && python boss.py configs/Pythia_8_209_cfg.py ${pythia_dir}/include/Pythia8/Pythia.h
-#  DEPENDEES patch
-#  DEPENDERS configure
-#)
-
-
-
-## Pythia
-## - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
-#string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
-## - Add compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
-#if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
-#  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -xavx")
-#elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
-#  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -O3 -ffast-math")
-#  if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-#    set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -mavx")  
-#  endif()
-#endif()
-## - Set include directories
-#set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
-## - Set local paths
-#set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
-#set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.209")
-## - Actual configure and compile commands
-#ExternalProject_Add(pythia
-#  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-#           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-#           COMMAND ${CMAKE_COMMAND} -E copy_directory ${pythia_location} ${pythia_dir}
-#  SOURCE_DIR ${pythia_dir}
-#  BUILD_IN_SOURCE 1
-#  DOWNLOAD_ALWAYS 0
-#  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so"
-#  COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
-#  COMMAND echo "OSX DEBUG: pythia_CXXFLAGS = ${pythia_CXXFLAGS}"
-#  COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
-#  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}"
-#  INSTALL_COMMAND ""
-#)
-#enable_auto_rebuild(pythia)
-#add_external_clean(pythia ${pythia_dir} distclean)
 
 # Fastsim
 set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
@@ -445,3 +419,8 @@ add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike pythia) #fastsi
 add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso  
                       clean-higgssignals clean-higgsbounds clean-feynhiggs clean-susyhit clean-delphes clean-flexiblesusy
                       clean-ddcalc clean-gamlike clean-nulike clean-pythia)
+
+
+# Print the list of backends that require BOSSing
+message("${Yellow}-- BOSS step successfully generated for the following cmake targets: ${needs_BOSSing} ${ColourReset}")
+message("${Yellow}-- Failed to generate BOSS step for the following cmake targets: ${needs_BOSSing_failed} ${ColourReset}")
