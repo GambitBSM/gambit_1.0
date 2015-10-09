@@ -38,9 +38,6 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
                                 $<TARGET_OBJECTS:Core>
                                 $<TARGET_OBJECTS:Printers>
   )
-#  foreach (plugin ${SCANNERBIT_PLUGINS})
-#    add_dependencies(gambit ${plugin})
-#  endforeach()
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(gambit flexiblesusy)
   endif()

@@ -7,8 +7,6 @@
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/mt2_bisect.h"
 
-#include <TLorentzVector.h>
-
 /* The ATLAS 2 lepton EW analysis (20fb^-1)
 
    based on: arXiv: 1403.5294

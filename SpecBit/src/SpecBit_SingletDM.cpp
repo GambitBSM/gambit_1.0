@@ -106,7 +106,7 @@ namespace Gambit
       // later. INSTEAD, we should just pass the objects themselves, and
       // then they will be CLONED and the Spectrum object will take
       // possession of them:
-      full_spectrum = Spectrum(qedqcdspec,singletspec,sminputs);
+      full_spectrum = Spectrum(qedqcdspec,singletspec,sminputs,&myPipe::Param);
 
       result = &full_spectrum;
     }

@@ -1,7 +1,9 @@
 #pragma once
 
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/ColliderBit/detectors/BaseDetector.hpp"
 
+#ifndef EXCLUDE_DELPHES
 #include "TROOT.h"
 #include "TTask.h"
 #include "TApplication.h"
@@ -80,3 +82,4 @@ namespace Gambit {
 
   }
 }
+#endif // not defined EXCLUDE_DELPHES
