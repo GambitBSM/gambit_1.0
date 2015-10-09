@@ -13,7 +13,10 @@ import shutil
 import glob
 import pickle
 
-import modules.cfg as cfg
+# import modules.cfg as cfg
+import modules.active_cfg as active_cfg
+exec("import configs." + active_cfg.module_name + " as cfg")
+
 import modules.gb as gb
 import modules.utils as utils
 import modules.funcutils as funcutils

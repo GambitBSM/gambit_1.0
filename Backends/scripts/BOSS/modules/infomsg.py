@@ -150,6 +150,18 @@ class NoFactoryFunctions(InfoMessage):
         InfoMessage.__init__(self)
 
 
+class NoPointerCopyAndAssignmentFunctions(InfoMessage):
+
+    msg = "No pointer-based copy constructor or assignment functions generated for class '%s'."
+    tags_done = set()
+
+    def __init__(self, tag, reason=''):
+        self.tag = tag
+        self.msg = self.__class__.msg % (tag)
+        if bool(reason): self.msg += " (%s)" % reason
+        InfoMessage.__init__(self)
+
+
 class NoLoadedTypesEntry(InfoMessage):
 
     msg = "No entry in loaded_types.hpp generated for class '%s'."

@@ -9,7 +9,9 @@ from collections import OrderedDict
 import os
 import warnings
 
-import modules.cfg as cfg
+# import modules.cfg as cfg
+import modules.active_cfg as active_cfg
+exec("import configs." + active_cfg.module_name + " as cfg")
 import modules.gb as gb
 import modules.utils as utils
 import modules.classutils as classutils
@@ -266,12 +268,12 @@ def constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namesp
     if (is_template == True) and (class_name['long'] in templ_spec_done):
         pass
     elif (is_template == True) and (class_name['long'] not in templ_spec_done):
-        class_decl += classutils.constrAbstractClassDecl(class_el, class_name['short'], abstr_class_name['short'], namespaces, 
+        class_decl += classutils.constrAbstractClassDecl(class_el, class_name, abstr_class_name['short'], namespaces, 
                                                          indent=cfg.indent, template_types=spec_template_types, 
                                                          has_copy_constructor=has_copy_constructor, construct_assignment_operator=construct_assignment_operator)
         class_decl += '\n'
     else:
-        class_decl += classutils.constrAbstractClassDecl(class_el, class_name['short'], abstr_class_name['short'], namespaces, indent=cfg.indent, 
+        class_decl += classutils.constrAbstractClassDecl(class_el, class_name, abstr_class_name['short'], namespaces, indent=cfg.indent, 
                                                          has_copy_constructor=has_copy_constructor, construct_assignment_operator=construct_assignment_operator)
         class_decl += '\n'
 
@@ -573,44 +575,51 @@ def generateClassMemberInterface(class_el, class_name, abstr_class_name, namespa
 
 
     # Generate pointer-based copy and assignment functions
-    n_indents = len(namespaces)
-    ptr_declaration_code = '\n'
-    ptr_implementation_code = '\n'
 
-    ptr_declaration_code += ' '*cfg.indent*(n_indents+1) + 'public:\n'
-    ptr_declaration_code += classutils.constrPtrCopyFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=n_indents+2, only_declaration=True)
-    ptr_declaration_code += '\n'
-    ptr_declaration_code += classutils.constrPtrAssignFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=n_indents+2, only_declaration=True)
-    
-    ptr_implementation_code += '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full,'identification.hpp') + '"\n'
-    ptr_implementation_code += '\n'
-    ptr_implementation_code += classutils.constrPtrCopyFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=0, include_full_namespace=True)
-    ptr_implementation_code += '\n'
-    ptr_implementation_code += classutils.constrPtrAssignFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=0, include_full_namespace=True)
-    ptr_implementation_code += '\n'
-    ptr_implementation_code += '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'backend_undefs.hpp') + '"\n'
+    # If class contains pure virtual members, do not generate any factory functions
+    if class_name['long_templ'] in gb.contains_pure_virtual_members:
+        reason = "Contains pure virtual member functions."
+        infomsg.NoPointerCopyAndAssignmentFunctions(class_name['long_templ'], reason).printMessage()
+    else:
 
-    # - Generate include statements for the new source file
-    include_statements = []
-    # include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='abstract', input_element='class', use_full_path=True, forward_declared='include')
-    # include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='abstract', input_element='class', use_full_path=True, forward_declared='exclude')
-    include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='none', input_element='class', use_full_path=True, forward_declared='only')
-    include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='wrapper', input_element='class', use_full_path=True, forward_declared='exclude')
-    include_statements.append('#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"')
-    include_statements.append('#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"')
+        n_indents = len(namespaces)
+        ptr_declaration_code = '\n'
+        ptr_implementation_code = '\n'
 
-    if utils.isHeader(original_class_file_el):
-        use_path = utils.shortenHeaderPath(original_file_name)
-        include_statements.append( '#include "' + use_path + '"')
+        ptr_declaration_code += ' '*cfg.indent*(n_indents+1) + 'public:\n'
+        ptr_declaration_code += classutils.constrPtrCopyFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=n_indents+2, only_declaration=True)
+        ptr_declaration_code += '\n'
+        ptr_declaration_code += classutils.constrPtrAssignFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=n_indents+2, only_declaration=True)
+        
+        ptr_implementation_code += '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full,'identification.hpp') + '"\n'
+        ptr_implementation_code += '\n'
+        ptr_implementation_code += classutils.constrPtrCopyFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=0, include_full_namespace=True)
+        ptr_implementation_code += '\n'
+        ptr_implementation_code += classutils.constrPtrAssignFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=0, include_full_namespace=True)
+        ptr_implementation_code += '\n'
+        ptr_implementation_code += '#include "' + os.path.join(gb.gambit_backend_incl_dir, 'backend_undefs.hpp') + '"\n'
 
-    include_statements = list( OrderedDict.fromkeys(include_statements) )
-    include_statements_code = '\n'.join(include_statements) + '\n'
+        # - Generate include statements for the new source file
+        include_statements = []
+        # include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='abstract', input_element='class', use_full_path=True, forward_declared='include')
+        # include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='abstract', input_element='class', use_full_path=True, forward_declared='exclude')
+        include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='none', input_element='class', use_full_path=True, forward_declared='only')
+        include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='wrapper', input_element='class', use_full_path=True, forward_declared='exclude')
+        include_statements.append('#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"')
+        include_statements.append('#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"')
 
-    # - Register the code
-    gb.new_code[original_file_name]['code_tuples'].append( (insert_pos, ptr_declaration_code) )
+        if utils.isHeader(original_class_file_el):
+            use_path = utils.shortenHeaderPath(original_file_name)
+            include_statements.append( '#include "' + use_path + '"')
 
-    gb.new_code[extras_src_file_name]['code_tuples'].append( (0, include_statements_code) )            
-    gb.new_code[extras_src_file_name]['code_tuples'].append( (-1, ptr_implementation_code) )
+        include_statements = list( OrderedDict.fromkeys(include_statements) )
+        include_statements_code = '\n'.join(include_statements) + '\n'
+
+        # - Register the code
+        gb.new_code[original_file_name]['code_tuples'].append( (insert_pos, ptr_declaration_code) )
+
+        gb.new_code[extras_src_file_name]['code_tuples'].append( (0, include_statements_code) )            
+        gb.new_code[extras_src_file_name]['code_tuples'].append( (-1, ptr_implementation_code) )
 
 
 # ====== END: generateClassMemberInterface ========

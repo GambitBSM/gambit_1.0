@@ -10,7 +10,9 @@ from collections import OrderedDict
 import warnings
 import os
 
-import modules.cfg as cfg
+# import modules.cfg as cfg
+import modules.active_cfg as active_cfg
+exec("import configs." + active_cfg.module_name + " as cfg")
 import modules.gb as gb
 import modules.funcutils as funcutils
 import modules.utils as utils
@@ -82,15 +84,15 @@ def constrTemplForwDecl(class_name_short, namespaces, template_bracket, indent=4
 
 # ====== constrAbstractClassDecl ========
 
-def constrAbstractClassDecl(class_el, class_name_short, abstr_class_name_short, namespaces, indent=4, template_types=[], 
+def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namespaces, indent=4, template_types=[], 
                             has_copy_constructor=True,  construct_assignment_operator=True):
 
     n_indents = len(namespaces)
 
-    if len(namespaces) > 0:
-        class_name_long = '::'.join(namespaces) + '::' + class_name_short
-    else:
-        class_name_long = class_name_short
+    # if len(namespaces) > 0:
+    #     class_name_long = '::'.join(namespaces) + '::' + class_name_short
+    # else:
+    #     class_name_long = class_name_short
 
 
     # Check template_types argument:
@@ -323,16 +325,20 @@ def constrAbstractClassDecl(class_el, class_name_short, abstr_class_name_short, 
 
     
 
-    # - Construct 'pointerAssign' and 'pointerCopy' functions -
-    class_decl += '\n'
-    class_decl += ' '*(n_indents+1)*indent + 'public:\n'
-    class_decl += constrPtrAssignFunc(class_el, abstr_class_name_short, class_name_short, virtual=True, indent=indent, n_indents=n_indents+2)
-    class_decl += constrPtrCopyFunc(class_el, abstr_class_name_short, class_name_short, virtual=True, indent=indent, n_indents=n_indents+2)
+    # - Construct 'pointerAssign' and 'pointerCopy' functions
+    if class_name['long_templ'] in gb.contains_pure_virtual_members:
+        reason = "Contains pure virtual member functions."
+        infomsg.NoPointerCopyAndAssignmentFunctions(class_name['long_templ'], reason).printMessage()
+    else:
+        class_decl += '\n'
+        class_decl += ' '*(n_indents+1)*indent + 'public:\n'
+        class_decl += constrPtrAssignFunc(class_el, abstr_class_name_short, class_name['short'], virtual=True, indent=indent, n_indents=n_indents+2)
+        class_decl += constrPtrCopyFunc(class_el, abstr_class_name_short, class_name['short'], virtual=True, indent=indent, n_indents=n_indents+2)
 
     # - Construct code needed for 'destructor pattern' (abstract class and wrapper class must can delete each other)
     class_decl += '\n'
     class_decl += ' '*(n_indents+1)*indent + 'private:\n'
-    class_decl += ' '*(n_indents+2)*indent + 'mutable ' + class_name_short + '* wptr;\n'
+    class_decl += ' '*(n_indents+2)*indent + 'mutable ' + class_name['short'] + '* wptr;\n'
 
     class_decl += '\n'
     class_decl += ' '*(n_indents+1)*indent + 'public:\n'
@@ -342,14 +348,14 @@ def constrAbstractClassDecl(class_el, class_name_short, abstr_class_name_short, 
         class_decl += ' '*(n_indents+3)*indent + var_name + ' = NULL;\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
     class_decl += '\n'
-    class_decl += ' '*(n_indents+2)*indent + 'void wrapper' + gb.code_suffix + '(' + class_name_short + '* wptr_in)\n'
+    class_decl += ' '*(n_indents+2)*indent + 'void wrapper' + gb.code_suffix + '(' + class_name['short'] + '* wptr_in)\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
     class_decl += ' '*(n_indents+3)*indent + 'wptr = wptr_in;\n'
     class_decl += ' '*(n_indents+3)*indent + 'is_wrapped(true);\n'
     class_decl += ' '*(n_indents+3)*indent + 'can_delete_wrapper(true);\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
     class_decl += '\n'
-    class_decl += ' '*(n_indents+2)*indent + class_name_short + '* wrapper' + gb.code_suffix + '()\n'
+    class_decl += ' '*(n_indents+2)*indent + class_name['short'] + '* wrapper' + gb.code_suffix + '()\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
     class_decl += ' '*(n_indents+3)*indent + 'return wptr;\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
@@ -377,7 +383,7 @@ def constrAbstractClassDecl(class_el, class_name_short, abstr_class_name_short, 
     # - Add forward declaration of wrapper_deleter function (needed by the 'destructor pattern')
     frwd_decl_deleter  = '\n'
     frwd_decl_deleter += '// Forward declaration needed by the destructor pattern.\n'
-    frwd_decl_deleter += 'void wrapper_deleter(' + gb.gambit_backend_namespace + '::' + class_name_long + '*);\n'
+    frwd_decl_deleter += 'void wrapper_deleter(' + gb.gambit_backend_namespace + '::' + class_name['long'] + '*);\n'
     frwd_decl_deleter += '\n'
 
     class_decl = frwd_decl_deleter + class_decl
