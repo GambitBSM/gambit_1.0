@@ -7,7 +7,6 @@
 
 # ~~~~~ GCCXML options ~~~~~
 
-gccxml_path     = '/usr/bin'  # If the gccxml executable is globally available, set gccxml_path = ''
 gccxml_compiler = 'g++'       # g++, gcc, icpc, icc, ... (use name of executable)
 
 

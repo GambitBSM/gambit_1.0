@@ -2174,7 +2174,7 @@ def constrEnumDeclHeader(enum_el_list, file_output_path):
 def gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=30., poll_interval=0.5):
 
     # Construct gccxml command to run
-    gccxml_cmd = os.path.join(cfg.gccxml_path, 'gccxml ')
+    gccxml_cmd = 'gccxml '
 
     # - Add include paths
     for incl_path in include_paths_list:

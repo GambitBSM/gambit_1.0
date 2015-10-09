@@ -217,8 +217,7 @@ ExternalProject_Add_Step(pythia apply_hacks
 )
 
 ExternalProject_Add_Step(pythia BOSSing
-  COMMAND cd ${BOSS_dir} && cp modules/cfg_Pythia_8_209.py modules/cfg.py 
-  COMMAND cd ${BOSS_dir} && python boss.py ${pythia_dir}/include/Pythia8/Pythia.h
+  COMMAND cd ${BOSS_dir} && python boss.py configs/Pythia_8_209_cfg.py ${pythia_dir}/include/Pythia8/Pythia.h
   DEPENDEES apply_hacks
   DEPENDERS patch
 )
