@@ -183,7 +183,7 @@ namespace Gambit {
     }
 
 
-    /// \brief Likelihoods for spin independent nuclear parameters. Follow treatment
+    /// \brief Likelihoods for spin independent nuclear parameters. Follows treatment
     /// of Cline, et. al. Phys. Rev. D. 88, 055025 (2013)
     /// Default data:
     ///  sigma_s = 43 +/- 8 MeV arXiv:1112.2435v1

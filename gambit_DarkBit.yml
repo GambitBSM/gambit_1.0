@@ -289,6 +289,10 @@ ObsLikes:
     - capability: lnL_SI_nuclear_parameters
       purpose:  Likelihood
 
+# Charm quark and light quark mass ratio likelihoods
+    - capability: lnL_light_quark_masses
+      purpose:  Likelihood
+
 # Total annihilation cross-section
     - capability: sigmav
       purpose: Observable
@@ -435,7 +439,18 @@ Rules:
   - capability: decay_rates
     function: all_decays
 
-
+  # Precision Bit
+  - capability: lnL_light_quark_masses
+    options:
+      # m_u/m_d
+      mud_central: 0.48
+      mud_error: 0.10
+      # m_s / (m_u + m_d)
+      msud_central: 27.5
+      msud_error: 1.0
+      # m_s
+      ms_central: 95.
+      ms_error: 5.
 
 #########################
 # Logging setup
