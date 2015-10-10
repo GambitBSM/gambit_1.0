@@ -27,7 +27,7 @@
 # Require a minimum cmake version of 2.8.0
 cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 
-if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   SET(CMAKE_BUILD_TYPE Debug CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
@@ -85,8 +85,8 @@ include(cmake/MacOSX.cmake)
 
 # Add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC")
 endif()
 
@@ -177,6 +177,32 @@ endif()
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
 
+# Add compiler warning flags
+include(cmake/warnings.cmake)
+
+# Construct the full set of compiler flags to be used for external projects
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_DEBUG}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELEASE}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_MINSIZEREL}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_MINSIZEREL}")
+else()
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")
+endif()
+
 # Set the version number (later to come directly from git tag)
 set(GAMBIT_VERSION_MAJOR 1)
 set(GAMBIT_VERSION_MINOR 0)
@@ -263,7 +289,6 @@ check_result(${result} ${update_cmakelists})
 message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - done.${ColourReset}")
 
 # Include other cmake scripts
-include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/externals.cmake)
 

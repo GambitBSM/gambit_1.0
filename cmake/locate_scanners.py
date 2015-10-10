@@ -561,7 +561,7 @@ endif()                                          \n\
                                                  \n\
 set( reqd_lib_output )                           \n\
 set( exclude_lib_output )                        \n\n\
-set( PLUGIN_COMPILE_FLAGS \"${CMAKE_CXX_FLAGS}\")\n\n\
+set( PLUGIN_COMPILE_FLAGS \"${GAMBIT_CXX_FLAGS}\")\n\n\
 if(MPI_C_FOUND)                                  \n\
     set( PLUGIN_COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS} ${MPI_C_COMPILE_FLAGS}\" )\n\
     set( PLUGIN_COMPILE_DIRECTORIES              \n\

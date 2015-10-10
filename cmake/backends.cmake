@@ -65,7 +65,7 @@ ExternalProject_Add(darksusy
         COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif 
         #COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif 
         #COMMAND patch -b -p1 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif 
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
@@ -85,7 +85,7 @@ ExternalProject_Add(superiso
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile 
-        COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile
+        COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${GAMBIT_C_FLAGS}/g" <SOURCE_DIR>/Makefile
         COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND ar x <SOURCE_DIR>/src/libisospin.a
         COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh
@@ -107,7 +107,7 @@ ExternalProject_Add(ddcalc
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
 )
 enable_auto_rebuild(ddcalc)
@@ -124,7 +124,7 @@ if(GSL_FOUND)
     string( STRIP "${GAMLIKE_GSL_LIBS}" GAMLIKE_GSL_LIBS )
   endif()
 endif()
-set(gamlike_CXXFLAGS "${CMAKE_CXX_FLAGS}")
+set(gamlike_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 if (NOT GSL_INCLUDE_DIRS STREQUAL "")
   set(gamlike_CXXFLAGS "${gamlike_CXXFLAGS} -I${GSL_INCLUDE_DIRS}")
 endif()
@@ -177,7 +177,7 @@ add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
-string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
+string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${GAMBIT_CXX_FLAGS})
 # - Add compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -xavx")
@@ -221,7 +221,7 @@ ExternalProject_Add(fastsim
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
   INSTALL_COMMAND cp ""
 )
 enable_auto_rebuild(fastsim)
@@ -233,7 +233,7 @@ set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/1.0.0")
 set(nulike_short_dir "./Backends/installed/nulike/1.0.0")
-set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
+set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   #URL 
   #URL_MD5 
@@ -296,7 +296,7 @@ ExternalProject_Add(susyhit
             COMMAND ${CMAKE_COMMAND} -E remove makefile.tmp
             COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
             COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
   INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 enable_auto_rebuild(susyhit)
@@ -311,7 +311,7 @@ ExternalProject_Add(feynhiggs
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
@@ -344,7 +344,7 @@ ExternalProject_Add(higgsbounds
             COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${higgsbounds_tables_dir}\"|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
-            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggsbounds.so *.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
@@ -367,7 +367,7 @@ ExternalProject_Add(higgssignals
             COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
-            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND mkdir -p lib 
