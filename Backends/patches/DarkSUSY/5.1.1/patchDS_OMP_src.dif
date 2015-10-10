@@ -26,6 +26,17 @@ diff -rupN darksusy-5.1.1_unpatched/src/an/dsanclearaa.f darksusy-5.1.1/src/an/d
  
        do i=1,108
           aaaa(i)=0.0d0
+diff -rupN darksusy-5.1.1_unpatched/src/an/dsandwdcosd.f darksusy-5.1.1/src/an/dsandwdcosd.f
+--- darksusy-5.1.1_unpatched/src/an/dsandwdcosd.f	2011-11-05 00:48:05.000000000 +0100
++++ darksusy-5.1.1/src/an/dsandwdcosd.f	2015-10-11 00:18:18.609794539 +0200
+@@ -17,6 +17,7 @@ c=======================================
+ c-----------------------------------------------------------------------
+       real*8 pd
+       common /gadint/ pd
++*$OMP THREADPRIVATE (/gadint/)
+ c-----------------------------------------------------------------------
+ 
+       tmp1=dsandwdcos(pd,costheta)
 diff -rupN darksusy-5.1.1_unpatched/src/an/dsandwdcoss.f darksusy-5.1.1/src/an/dsandwdcoss.f
 --- darksusy-5.1.1_unpatched/src/an/dsandwdcoss.f	2011-11-05 00:48:05.000000000 +0100
 +++ darksusy-5.1.1/src/an/dsandwdcoss.f	2015-10-10 22:07:51.577612902 +0200
