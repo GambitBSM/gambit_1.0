@@ -244,12 +244,9 @@ namespace Gambit
                   doread=true; 
                   data->pointIDs.resize(dims[0]);
                   buffer=&(data->pointIDs[0]);
-                  //get_hdf5_data_type<unsigned long> h5t; //::type().getId();
-                  //memtype=h5t.type().getId();
-                  memtype=H5T_NATIVE_ULONG;
-                  ///TODO: Why do I have to manually set these datatypes? The .getId() calls don't seem to return the
-                  /// correct types. Is something weird happening in the C++ API which changes these before writing
-                  /// to file?
+                  get_hdf5_data_type<unsigned long> h5t;
+                  memtype=h5t.type();
+                  //memtype=H5T_NATIVE_ULONG; // Should return this
                   label="previous pointIDs";
                }
                else if( strcmp(name,"pointID_isvalid")==0 ) 
@@ -258,9 +255,9 @@ namespace Gambit
                   doread=true; 
                   data->pointIDs_isvalid.resize(dims[0]);
                   buffer=&(data->pointIDs_isvalid[0]);
-                  //get_hdf5_data_type<int> h5t; //::type().getId();
-                  //memtype=h5t.type().getId();
-                  memtype=H5T_NATIVE_INT;
+                  get_hdf5_data_type<int> h5t;
+                  memtype=h5t.type();
+                  //memtype=H5T_NATIVE_INT;
                   label="previous pointIDs_isvalid";
                }
                else if( strcmp(name,"MPIrank")==0 )
@@ -269,9 +266,9 @@ namespace Gambit
                   doread=true;
                   data->mpiranks.resize(dims[0]);
                   buffer=&(data->mpiranks[0]);
-                  //get_hdf5_data_type<unsigned int> h5t; //::type().getId();
-                  //memtype=h5t.type().getId();
-                  memtype=H5T_NATIVE_UINT;
+                  get_hdf5_data_type<unsigned int> h5t;
+                  memtype=h5t.type();
+                  //memtype=H5T_NATIVE_UINT;
                   label="previous MPI ranks";
                }
                else if( strcmp(name,"MPIrank_isvalid")==0 )
@@ -280,11 +277,9 @@ namespace Gambit
                   doread=true;
                   data->mpiranks_isvalid.resize(dims[0]);
                   buffer=&(data->mpiranks_isvalid[0]);
-                  //get_hdf5_data_type<int> h5t; //::type().getId();
-                  //memtype=h5t::type().getId();
-                  memtype=H5T_NATIVE_INT;
-                  //std::cout << "test: h5t.type().getId() = "<<h5t.type().getId() <<std::endl;
-                  //std::cout << "      H5T_NATIVE_INT    = "<<H5T_NATIVE_UINT<<std::endl;
+                  get_hdf5_data_type<int> h5t;
+                  memtype=h5t::type();
+                  //memtype=H5T_NATIVE_INT;
                   label="previous MPIranks_isvalid";
                }
 
