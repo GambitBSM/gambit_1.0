@@ -46,9 +46,7 @@ Printer:
     # size of write buffer
     buffer_length: 100
     # name of output file
-    output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 ##############################
 # Scanner setup
@@ -66,16 +64,9 @@ Scanner:
         like:  Likelihood
         nlive: 20
         tol: 0.1
-        root: "runs/CMSSM_multinest_collider/samples/native-"
         aux_printer_txt_options:
-          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt"
-          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.txt_info"
         aux_printer_stats_options:
-          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.stats"
-          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.stats_info"
         aux_printer_live_options:
-          output_file: "runs/CMSSM_multinest_collider/samples/gambit_output.live"
-          info_file: "runs/CMSSM_multinest_collider/samples/gambit_output.live_info"
 
 
     random:
@@ -284,7 +275,6 @@ Logger:
   # Redirectory of specific messages according to tags
   # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
 
-  prefix : "runs/CMSSM_multinest_collider/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -300,6 +290,8 @@ Logger:
 ##########################
 
 KeyValues:
+
+  default_output_path: "runs/CMSSM_multinest_collider"
 
   dependency_resolution:
     prefer_model_specific_functions: true

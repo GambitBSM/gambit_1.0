@@ -56,7 +56,7 @@ Printer:
     # name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
 
-    output_file: "runs/test_hdf5/samples/gambit_output.hdf5"
+    output_file: "gambit_output.hdf5"
     group: "/test/test2"
     delete_file_if_exists: true
 
@@ -92,8 +92,6 @@ Scanner:
       path: "runs"
       verbosity: 1
       aux_printer_txt_options:
-        output_file: "runs/spartan_diver/samples/gambit_output.txt"
-        info_file: "runs/spartan_diver/samples/gambit_output.txt_info"
       
     ransample:
       plugin: random_sampler
@@ -129,7 +127,6 @@ Scanner:
         like:  Likelihood
         nlive: 2000
         tol: 0.1
-        root: "runs/spartan_multinest_hdf5/samples/native-"
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
@@ -385,8 +382,7 @@ Scanner:
         Printer:
           printer: ascii
           #options:
-          output_file: "runs/spartan/samples/gambit_output2.txt"
-          info_file: "runs/spartan/samples/gambit_output2.info"
+          output_file: "gambit_output2.txt"
       parameters:
         param...2:
           range: [0, 1]
@@ -500,7 +496,6 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/spartan/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -520,6 +515,8 @@ Logger:
 ##########################
 
 KeyValues:
+
+  default_output_path: "runs/scan"
 
   # Some example keys and subkeys
   my_key: 123

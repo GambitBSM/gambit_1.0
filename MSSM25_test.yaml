@@ -47,8 +47,7 @@ Priors:
 Printer:
   printer: ascii
   options:
-    output_file: "runs/MSSM25_test/samples/gambit_output.txt"
-    info_file: "runs/MSSM25_test/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 Scanner:
   use_scanner: toy_mcmc
@@ -79,7 +78,7 @@ Rules:
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
-      precision_goal:        1.0e-4
+      precision_goal:        1.0e-3
       max_iterations:        0
       calculate_sm_masses:   false
       pole_mass_loop_order:  2
@@ -94,7 +93,6 @@ Rules:
 
 Logger:
 
-  prefix : "runs/MSSM25_test/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -102,6 +100,8 @@ Logger:
     [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
+
+  default_output_path: "run/MSSM25_test"
 
   dependency_resolution:
     prefer_model_specific_functions: true

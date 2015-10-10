@@ -55,6 +55,9 @@ namespace Gambit
   /// Pointer to a function that takes an integer by reference and returns a double.
   /// Just used for example purposes in ExampleBit_A and ExampleBit_B.
   typedef double(*fptr)(int&);
+
+  /// string-to-double map
+  typedef std::map<std::string,double> map_str_dbl; 
 }
 
 

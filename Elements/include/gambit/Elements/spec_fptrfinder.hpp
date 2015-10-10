@@ -26,6 +26,9 @@
 // Particle database access
 #define PDB Models::ParticleDB()        
 
+// Debugging
+//#define CHECK_WHERE_FOUND
+
 namespace Gambit {
 
    /// FptrFinder friend class for implementing named parameter idiom
@@ -36,6 +39,7 @@ namespace Gambit {
          SetMaps(const std::string& label, const This* const fakethis)
           : label_(label) 
           , fakethis_(fakethis)
+          , override_only_(false)
           , map0_(NULL)
           , map0M_(NULL)
           , map0I_(NULL)
@@ -63,11 +67,14 @@ namespace Gambit {
          SetMaps& omap0(const std::map<std::string,double>& om0)              { omap0_=&om0; return *this;}
          SetMaps& omap1(const std::map<std::string,std::map<int,double>>& om1){ omap1_=&om1; return *this;}
          SetMaps& omap2(const std::map<std::string,std::map<int,std::map<int,double>>>& om2){ omap2_=&om2; return *this;}
+         /// Flag to permit searching only override maps
+         SetMaps& override_only(const bool flag) { override_only_=flag; return *this;}
 
       private:
          friend class FptrFinder<DT,This,MTag>; 
          const std::string label_;
          const This* const fakethis_;
+         bool override_only_;
 
          /// Maps from derived class
          const typename MapTypes<DT,MTag>::fmap0*        map0_;
@@ -106,6 +113,9 @@ namespace Gambit {
 
          /// This class pretending to be an extra set of class functions, so need the "this" pointer
          const This* const fakethis;
+
+         /// Flag to permit searching only override maps
+         const bool override_only_;
 
          /// Pointers to const maps to use for search
          /// Maps from base class (override maps, should only be used in getter case)
@@ -186,6 +196,7 @@ namespace Gambit {
            : label(params.label_)
            , lastname("NONE")
            , fakethis(params.fakethis_)
+           , override_only_(params.override_only_)
            , omap0_(params.omap0_)   
            , omap1_(params.omap1_)   
            , omap2_(params.omap2_)   
@@ -236,6 +247,7 @@ namespace Gambit {
             std::string msg;
             switch(error_code)
             {
+                case -2: msg = "Search began but did not properly set the error code!"; break; 
                 case -1: msg = "Search not yet attempted"; break; 
                 case 0:  msg = "No problem, search succeeded"; break;
                 case 1:  msg = "String name lookup failed"; break;
@@ -282,7 +294,7 @@ namespace Gambit {
               utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
            }
            it = map->find(name);
-           if( it == map->end() ){ found = false; }
+           if( it == map->end() ){ found = false; lastname = name; }
            return found; 
          }
 
@@ -306,74 +318,126 @@ namespace Gambit {
          /// is good enough for the use here I think.
       
          /// Search function for 0-index maps
-         bool find(const std::string& name, bool doublecheck=true)
+         bool find(const std::string& name, bool doublecheck=true, bool check_antiparticle=true)
          {
-            bool override_found = false;
-            bool found = true;   
-            error_code = 0;
-
-            //  Search maps for function; if found then store it
-            //std::cout << "Searching 0-index maps for "<<name<<std::endl;
+            bool found = false;   
+            lastname = name;
+            error_code = -2;
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching all 0-index maps for "<<name<<std::endl;
+            #endif
 
             //  Search override maps first
             if(doublecheck)
             {
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Searching override maps for "<<name<<std::endl;
+               #endif
                if( omap0_!=NULL and search_map(name,omap0_,ito0) )
                { 
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout<<"   Searching 0-index override maps for "<<name<<std::endl;
+                  #endif
                   ito0_safe=true; 
-                  override_found=true; 
+                  found=true; 
                   whichiter=0; 
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout<<"   Found "<<name<<" in 0-index override map"<<std::endl;
+                  #endif
                }
                else if( omap1_!=NULL and PDB.has_short_name(name) )
                {
                   // Didn't find it in 0-index override map; translate using PDB entry and try
                   // 1-index override map
                   std::pair<str, int> p = PDB.short_name_pair(name);
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout<<"   Searching 1-index maps for ("<<p.first<<","<<p.second<<")"<<std::endl;
+                  #endif
                   if  ( search_map(p.first,omap1_,ito1) )
                   { 
                      ito1_safe=true; 
-                     override_found=true; 
+                     found=true; 
                      index1=p.second;
                      whichiter=1; 
+                     #ifdef CHECK_WHERE_FOUND
+                     std::cout<<"   Converted "<<name<<" to "<<" ("<<p.first<<","<<p.second<<")"<<" and found in 0-index override map"<<std::endl;
+                     #endif
                   }
                }
-               //std::cout << "No overrride found for "<<name<<std::endl;
             }        
  
             // If no override, search the wrapper class maps
-            if(not override_found)
+            if(not found and not override_only_)
             {
-               if( search_map(name,map0_,it0)   ){ it0_safe=true; whichiter=3; }
-               else if( search_map(name,map0M_,it0M) ){ it0M_safe=true; whichiter=4; }
-               else if( search_map(name,map0I_,it0I) ){ it0I_safe=true; whichiter=5; }
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Searching standard maps for "<<name<<std::endl;
+               #endif
+               if     ( search_map(name,map0_,it0)   ){ it0_safe=true;  found=true; whichiter=3; 
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout<<"   Found "<<name<<" in found in 0-index map (type O)"<<std::endl;
+                  #endif
+               }
+               else if( search_map(name,map0M_,it0M) ){ it0M_safe=true; found=true; whichiter=4;
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout<<"   Found "<<name<<" in found in 0-index map (type OM)"<<std::endl;
+                  #endif
+               }
+               else if( search_map(name,map0I_,it0I) ){ it0I_safe=true; found=true; whichiter=5;
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout<<"   Found "<<name<<" in found in 0-index map (type OI)"<<std::endl;
+                  #endif
+               }
                else if( doublecheck and PDB.has_short_name(name) )
                {
                   // Didn't find it in 0-index maps; translate using PDB entry and try 1-index maps
                   std::pair<str, int> p = PDB.short_name_pair(name);
-                  //std::cout << "running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
-                  found = find(p.first, p.second, false);
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout << "   running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
+                  #endif
+                  found = find(p.first, p.second, false, false);
                }
                else { 
-                 found = false;
-                 lastname = name;
-                 error_code = 1; 
+                  found = false;
+                  error_code = 1; 
                }
             }
+            
+            // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
+            if(not found and check_antiparticle) 
+            {
+               #ifdef CHECK_WHERE_FOUND
+               std::cout << "   Considering conversion of "<<name<<" to antiparticle" <<std::endl;
+               #endif
+               if(PDB.has_particle(name) and PDB.has_antiparticle(name)) 
+               {  
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout << "   Converting "<<name<<" to "<<PDB.get_antiparticle(name)<<std::endl;
+                  #endif
+                  found = find(PDB.get_antiparticle(name), true, false);
+               }
+            }
+            if(found) error_code = 0; // Should be no problem!
             return found;
          }
 
          /// Search function for 1-index maps
-         bool find(const std::string& name, int i, bool doublecheck=true)
+         bool find(const std::string& name, int i, bool doublecheck=true, bool check_antiparticle=true)
          {
-            bool override_found = false;
-            bool found = true;
-            error_code = 0;
+            bool found = false;
+            lastname = name;
+            error_code = -2;
 
+            #ifdef CHECK_WHERE_FOUND
+            std::cout<<"   Searching all 1-index maps for ("<<name<<","<<i<<")"<<std::endl;
+            #endif
             //  Search maps for function; if found then store it
 
             //  Search override maps first
             if(doublecheck)
             {
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Searching override maps for ("<<name<<","<<i<<")"<<std::endl;
+               #endif
                if( omap1_!=NULL and search_map(name,omap1_,ito1) )
                {  
                   // Check that index (key) exists in inner map
@@ -381,25 +445,40 @@ namespace Gambit {
                   if( it != ito1->second.end() )
                   { 
                      ito1_safe=true; 
-                     override_found=true; 
+                     found=true; 
                      index1=i;
                      whichiter=1; 
+                     #ifdef CHECK_WHERE_FOUND
+                     std::cout<<"   Found ("<<name<<","<<i<<") in 1-index override map"<<std::endl;
+                     #endif
                   }
                   else if( omap0_!=NULL and search_map(PDB.long_name(name,i),omap0_,ito0) )
                   {
                      // Didn't find it in 1-index override map; translate using PDB entry and try
                      // 0-index override map
                      ito0_safe=true; 
-                     override_found=true; 
+                     found=true; 
                      whichiter=0;
-                  }
+                     #ifdef CHECK_WHERE_FOUND
+                     std::cout<<"   Converted ("<<name<<","<<i<<") to "<<PDB.long_name(name,i)<<" and found in 0-index override map"<<std::endl;
+                     #endif
+                 }
                }
             }
 
             // If no override, search the wrapper class maps
-            if(not override_found)
+            if(not found and not override_only_)
             {
-               #define CHECK_INDICES_1(ITER,WHICHITER)   \
+               #ifdef CHECK_WHERE_FOUND
+               std::cout<<"   Searching standard 1-index maps for ("<<name<<","<<i<<")"<<std::endl;
+               #endif
+
+               bool debug=false;
+               #ifdef CHECK_WHERE_FOUND
+               debug=true;
+               #endif
+
+               #define CHECK_INDICES_1(ITER,WHICHITER,DEBUG)   \
                   CAT(ITER,_safe)=true;   \
                   /* Switch index convention */ \
                   int offset = fakethis->parent.get_index_offset(); \
@@ -409,38 +488,57 @@ namespace Gambit {
                   { \
                      /* index1 out of bounds */ \
                      found = false; \
-                     lastname = name; \
                      error_code = 2; \
                   } \
                   else { \
                      /* everything cool. */ \
+                     found = true;        \
+                     if(DEBUG) std::cout<<"   Found ("<<name<<","<<i<<") in 1-index map (type "<<STRINGIFY(ITER)<<")"<<std::endl;\
                      whichiter=WHICHITER; \
                   }  \
 
-               if( search_map(name,map1_,it1) )       { CHECK_INDICES_1(it1,6)  }
-               else if( search_map(name,map1M_,it1M) ){ CHECK_INDICES_1(it1M,7) }
-               else if( search_map(name,map1I_,it1I) ){ CHECK_INDICES_1(it1I,8) }
+               if( search_map(name,map1_,it1) )       { CHECK_INDICES_1(it1,6,debug)  }
+               else if( search_map(name,map1M_,it1M) ){ CHECK_INDICES_1(it1M,7,debug) }
+               else if( search_map(name,map1I_,it1I) ){ CHECK_INDICES_1(it1I,8,debug) }
                else if( doublecheck and PDB.has_particle(std::make_pair(name,i)) )
                {
                   // Didn't find it in 1-index maps; translate using PDB entry and try 0-index maps
-                  //std::cout << "running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
-                  found = find(PDB.long_name(name,i), false);
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout << "   running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
+                  #endif
+                  found = find(PDB.long_name(name,i), false, false);
                }
                else { 
-                 found = false;
-                 lastname = name;
-                 error_code = 1;
+                  found = false;
+                  error_code = 1;
                }
             }
+ 
+            // If there is still nothing found, try it all again using the anti-particle name (if this is a particle!)
+            if(not found and check_antiparticle) 
+            {
+               #ifdef CHECK_WHERE_FOUND
+               std::cout << "   Considering conversion of "<<name<<" to antiparticle" <<std::endl;
+               #endif
+               if(PDB.has_particle(name,i) and PDB.has_antiparticle(name,i)) 
+               {  
+                  std::pair<str,int> shortpr = PDB.get_antiparticle(name,i);
+                  #ifdef CHECK_WHERE_FOUND
+                  std::cout << "   Converting "<<name<<","<<i<<" to "<<shortpr.first<<","<<shortpr.second<<std::endl;
+                  #endif
+                  found = find(shortpr.first,shortpr.second,true, false); 
+               }
+            } 
+            if(found) error_code = 0; // Should be no problem!
             return found;
          }
 
          /// Search function for 2-index maps
          bool find(const std::string& name, int i, int j)
          {
-            bool override_found = false;
-            bool found = true;   
-            error_code = 0;
+            bool found = false;   
+            lastname = name;
+            error_code = -2;
 
             //  Search maps for function; if found then store it
 
@@ -456,7 +554,7 @@ namespace Gambit {
                   if( jt2 != jt->second.end() )
                   { 
                      ito2_safe=true; 
-                     override_found=true; 
+                     found=true; 
                      index1=i;
                      index2=j;
                      whichiter=2; 
@@ -465,7 +563,7 @@ namespace Gambit {
             }
  
             // If no override, search the wrapper class maps
-            if(not override_found)
+            if(not found and not override_only_)
             {
 
                #define CHECK_INDICES_2(ITER,WHICHITER)   \
@@ -479,18 +577,17 @@ namespace Gambit {
                   { \
                      /* index1 out of bounds */ \
                      found = false; \
-                     lastname = name; \
                      error_code = 2; \
                   } \
                   else if( not within_bounds(index2, ITER->second.iset2) ) \
                   { \
                      /* index2 out of bounds */ \
                      found = false; \
-                     lastname = name; \
                      error_code = 3; \
                   } \
                   else { \
                      /* everything cool. */ \
+                     found = true;        \
                      whichiter=WHICHITER; \
                   } \
 
@@ -499,10 +596,11 @@ namespace Gambit {
                else if( search_map(name,map2I_,it2I) ){ CHECK_INDICES_2(it2I,11) }
                else { 
                  found = false;
-                 lastname = name;
                  error_code = 1;
                }
             }
+ 
+            if(found) error_code = 0; // Should be no problem!
             return found;
          }
 
@@ -726,8 +824,8 @@ namespace Gambit {
       }
    };
 
-#undef PDB
-
 }
+#undef PDB
+#undef CHECK_WHERE_FOUND
 
 #endif

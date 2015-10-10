@@ -291,7 +291,7 @@ namespace Gambit {
 #define getSMmass(Name, spinX2)                                               \
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
-        Name , TH_ParticleProperty(SM->phys().get_Pole_Mass(Name), spinX2)));   
+        Name , TH_ParticleProperty(SM->phys().get(Par::Pole_Mass,Name), spinX2)));   
       getSMmass("e-",     1)
       getSMmass("e+",     1)
       getSMmass("mu-",    1)
@@ -352,7 +352,7 @@ namespace Gambit {
 #define getMSSMmass(Name, spinX2)                                                   \
         catalog.particleProperties.insert(                                          \
         std::pair<std::string, TH_ParticleProperty> (                               \
-        Name , TH_ParticleProperty(abs(spec->phys().get_Pole_Mass(Name)), spinX2)));  
+        Name , TH_ParticleProperty(abs(spec->phys().get(Par::Pole_Mass,Name)), spinX2)));  
       getMSSMmass("H+"     , 0)
       getMSSMmass("H-"     , 0)
       getMSSMmass("h0_1"   , 0)
