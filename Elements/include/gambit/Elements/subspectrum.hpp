@@ -385,7 +385,6 @@ namespace Gambit {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTget MTget;
       const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-      double result;
 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
@@ -400,9 +399,9 @@ namespace Gambit {
                               .map1(  mapcoll.map1 )
                               .map1M( mapcoll.map1_extraM )
                               .map1I( mapcoll.map1_extraI );
-     if( finder.find(name,i) ){ result = finder.callfcn(); }
-      else { finder.raise_error(LOCAL_INFO); }
-      return result;
+     if( finder.find(name,i) ){ return finder.callfcn(); }
+     finder.raise_error(LOCAL_INFO);
+     return 0;
    }                                                                        
  
    template <class PhysOrRun, class PT>
@@ -454,7 +453,6 @@ namespace Gambit {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTget MTget;
       const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-      double result;
 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
@@ -465,9 +463,9 @@ namespace Gambit {
                               .map2( mapcoll.map2 )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
-      if( finder.find(name,i,j) ){ result = finder.callfcn(); }
-      else { finder.raise_error(LOCAL_INFO); }
-      return result;
+      if( finder.find(name,i,j) ){ return finder.callfcn(); }
+      finder.raise_error(LOCAL_INFO);
+      return 0;
    }                                                                        
  
    template <class PhysOrRun, class PT>
