@@ -1,6 +1,6 @@
-diff -rupN src/an/dsanclearaa.f src2/an/dsanclearaa.f
---- src/an/dsanclearaa.f	2006-06-19 08:36:02.000000000 -0600
-+++ src2/an/dsanclearaa.f	2015-09-01 22:10:12.566543820 -0600
+diff -rupN darksusy-5.1.1_unpatched/src/an/dsanclearaa.f darksusy-5.1.1/src/an/dsanclearaa.f
+--- darksusy-5.1.1_unpatched/src/an/dsanclearaa.f	2006-06-19 16:36:02.000000000 +0200
++++ darksusy-5.1.1/src/an/dsanclearaa.f	2015-10-10 22:07:51.409612898 +0200
 @@ -6,11 +6,21 @@ c          paolo gondolo 99-1-15 factor
  c  called by: dwdcos
  c=======================================================================
@@ -26,9 +26,33 @@ diff -rupN src/an/dsanclearaa.f src2/an/dsanclearaa.f
  
        do i=1,108
           aaaa(i)=0.0d0
-diff -rupN src/an/dsankinvar.f src2/an/dsankinvar.f
---- src/an/dsankinvar.f	2011-11-04 17:48:05.000000000 -0600
-+++ src2/an/dsankinvar.f	2015-09-01 22:10:12.982543830 -0600
+diff -rupN darksusy-5.1.1_unpatched/src/an/dsandwdcoss.f darksusy-5.1.1/src/an/dsandwdcoss.f
+--- darksusy-5.1.1_unpatched/src/an/dsandwdcoss.f	2011-11-05 00:48:05.000000000 +0100
++++ darksusy-5.1.1/src/an/dsandwdcoss.f	2015-10-10 22:07:51.577612902 +0200
+@@ -17,6 +17,7 @@ c=======================================
+ c-----------------------------------------------------------------------
+       real*8 pd
+       common /gadint/ pd
++*$OMP THREADPRIVATE (/gadint/)
+ c-----------------------------------------------------------------------
+ 
+       tmp=dsandwdcos(pd,dble(costheta))
+diff -rupN darksusy-5.1.1_unpatched/src/an/dsandwdcosy.f darksusy-5.1.1/src/an/dsandwdcosy.f
+--- darksusy-5.1.1_unpatched/src/an/dsandwdcosy.f	2011-11-05 00:48:05.000000000 +0100
++++ darksusy-5.1.1/src/an/dsandwdcosy.f	2015-10-10 22:07:51.725612905 +0200
+@@ -27,6 +27,9 @@ c---------------------------------------
+       real*8 alph,bet
+       common /yint/ alph,bet
+       save /yint/
++
++*$OMP THREADPRIVATE (/gadint/,/yint/)
++
+ c-----------------------------------------------------------------------
+ 
+       mx=mco(1)
+diff -rupN darksusy-5.1.1_unpatched/src/an/dsankinvar.f darksusy-5.1.1/src/an/dsankinvar.f
+--- darksusy-5.1.1_unpatched/src/an/dsankinvar.f	2011-11-05 00:48:05.000000000 +0100
++++ darksusy-5.1.1/src/an/dsankinvar.f	2015-10-10 22:07:51.917612909 +0200
 @@ -17,6 +17,7 @@ c=======================================
        data kp1old,kp2old,kp3old,kp4old/4*-1/
        data pold,cthold / -1.0d0,-5.0d0/
@@ -37,9 +61,9 @@ diff -rupN src/an/dsankinvar.f src2/an/dsankinvar.f
  
  c----------------------------------------- check changes since last call
  
-diff -rupN src/an/dsansumaa.f src2/an/dsansumaa.f
---- src/an/dsansumaa.f	2006-06-19 08:36:02.000000000 -0600
-+++ src2/an/dsansumaa.f	2015-09-01 22:10:13.422543840 -0600
+diff -rupN darksusy-5.1.1_unpatched/src/an/dsansumaa.f darksusy-5.1.1/src/an/dsansumaa.f
+--- darksusy-5.1.1_unpatched/src/an/dsansumaa.f	2006-06-19 16:36:02.000000000 +0200
++++ darksusy-5.1.1/src/an/dsansumaa.f	2015-10-10 22:07:52.385612920 +0200
 @@ -6,15 +6,29 @@ c          paolo gondolo 99-1-15 factor
  c  called by: dwdcos
  c=======================================================================
@@ -74,10 +98,18 @@ diff -rupN src/an/dsansumaa.f src2/an/dsansumaa.f
        dsansumaa = sumf
  
        end
-diff -rupN src/an/dsanwx.f src2/an/dsanwx.f
---- src/an/dsanwx.f	2010-08-06 02:27:44.000000000 -0600
-+++ src2/an/dsanwx.f	2015-09-01 22:10:22.366544053 -0600
-@@ -98,10 +98,12 @@ c        call dsanalbe2(p,alph,be)
+diff -rupN darksusy-5.1.1_unpatched/src/an/dsanwx.f darksusy-5.1.1/src/an/dsanwx.f
+--- darksusy-5.1.1_unpatched/src/an/dsanwx.f	2010-08-06 10:27:44.000000000 +0200
++++ darksusy-5.1.1/src/an/dsanwx.f	2015-10-10 22:07:53.161612938 +0200
+@@ -43,6 +43,7 @@ c---------------------------------------
+       real*8 alph,bet
+       common /yint/ alph,bet
+       save /yint/
++*$OMP THREADPRIVATE (/gadint/,/yint/)
+ c-----------------------------------------------------------------------
+ 
+       if (newmodelanwx) then
+@@ -98,10 +99,12 @@ c        call dsanalbe2(p,alph,be)
  c        bet=be
          y1=(mco(1)**2+bet*pd**2)**(alph)
          y2=(mco(1)**2)**(alph)
@@ -92,10 +124,10 @@ diff -rupN src/an/dsanwx.f src2/an/dsanwx.f
          dsanwx=sum/1.0d15
        endif
  c      write(*,*) rdtag,nr,p,dsanwx
-diff -rupN src/xcern/dgadap.f src2/xcern/dgadap.f
---- src/xcern/dgadap.f	2006-06-19 08:36:02.000000000 -0600
-+++ src2/xcern/dgadap.f	2015-09-01 22:10:40.634544489 -0600
-@@ -97,6 +97,143 @@ c  made real*8 by j. edsjo 97-01-17
+diff -rupN darksusy-5.1.1_unpatched/src/xcern/dgadap.f darksusy-5.1.1/src/xcern/dgadap.f
+--- darksusy-5.1.1_unpatched/src/xcern/dgadap.f	2006-06-19 16:36:02.000000000 +0200
++++ darksusy-5.1.1/src/xcern/dgadap.f	2015-10-10 22:08:07.129613262 +0200
+@@ -97,6 +97,149 @@ c  made real*8 by j. edsjo 97-01-17
        end
  
  
@@ -127,6 +159,12 @@ diff -rupN src/xcern/dgadap.f src2/xcern/dgadap.f
 +      real*8 omparg 
 +*$    integer nthreads, usedthreads
 +*$    integer OMP_get_num_threads, OMP_get_max_threads, OMP_get_num_procs
++*$    real*8 pd
++*$    common /gadint/ pd
++*$    real*8 alph,bet
++*$    common /yint/ alph,bet
++*$    save /yint/
++*$OMP THREADPRIVATE (/gadint/,/yint/)
 +      external f
 +      dimension a(300),b(300),f1(300),f2(300),f3(300),s(300),n(300)
 +    1 format(16h gadap:i too big)
@@ -149,7 +187,7 @@ diff -rupN src/xcern/dgadap.f src2/xcern/dgadap.f
 +*$     endif
 +
 +
-+*$OMP PARALLEL NUM_THREADS(usedthreads)
++*$OMP PARALLEL NUM_THREADS(usedthreads) COPYIN(/gadint/,/yint/)
 +*$OMP SECTIONS
 +
 +*$OMP SECTION
@@ -179,7 +217,7 @@ diff -rupN src/xcern/dgadap.f src2/xcern/dgadap.f
 +      w1=a(i)+(b(i)-a(i))/5.
 +      u2=2.*w1-(a(i)+a(i+2))/2.
 +
-+*$OMP PARALLEL NUM_THREADS(usedthreads)
++*$OMP PARALLEL NUM_THREADS(usedthreads) COPYIN(/gadint/,/yint/)
 +*$OMP SECTIONS
 +
 +*$OMP SECTION 
