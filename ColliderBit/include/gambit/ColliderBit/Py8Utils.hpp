@@ -21,7 +21,7 @@ namespace Gambit {
 
     inline HEPUtils::P4 mk_p4(const Pythia8::Vec4& p) {
       const double m = p.mCalc();
-      assert(m > -1e-3 && "Negative mass vector from Pythia8");
+      assert(m > -5e-2 && "Negative mass vector from Pythia8");
       return HEPUtils::P4::mkXYZM(p.px(), p.py(), p.pz(), (m >= 0) ? m : 0);
     }
 
