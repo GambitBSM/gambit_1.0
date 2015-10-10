@@ -1552,6 +1552,15 @@ namespace Gambit
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
   
+    // Bools can't quite use the template print function directly, since there
+    // are some issues with bools and MPI/HDF5 types. Easier to just convert
+    // the bool to an int first.
+    void HDF5Printer::print(bool const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    {
+      unsigned int val_as_uint = value;
+      template_print(val_as_uint,label,vID,mpirank,pointID);
+    }                                                          
+
     void HDF5Printer::print(const std::vector<double>& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
        // We will write to several 'double' buffers, rather than a single vector buffer.

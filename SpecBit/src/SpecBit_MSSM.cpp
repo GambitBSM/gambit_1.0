@@ -813,7 +813,7 @@ namespace Gambit
             for(std::vector<int>::const_iterator it2=indices2.begin(); it2!=indices2.end(); ++it2)\
             {\
                std::ostringstream label;\
-               label << *it2 <<"_("<<*it1<<","<<*it2<<") "<<STRINGIFY(tag);\
+               label << *it <<"_("<<*it1<<","<<*it2<<") "<<STRINGIFY(tag);\
                specmap[label.str()] = mssmspec->get_HE()->PR.get(Par::tag,*it,*it1,*it2);\
             }\
             }\

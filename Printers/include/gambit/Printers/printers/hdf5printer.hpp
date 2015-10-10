@@ -284,10 +284,7 @@ namespace Gambit
         // Types compatible with the template print function
         #define TEMPLATE_TYPES      \
          (int)(unsigned int)(long)(unsigned long)   \
-         (float)(double)        
-         // Add more as needed
-         // TODO needs to be converted to int to work with MPI
-         // (bool)
+         (float)(double)
 
         // Types for which custom print functions are defined
         typedef std::map<std::string,double> map_str_dbl; // can't have commas in macro input
@@ -296,6 +293,7 @@ namespace Gambit
           (ModelParameters)        \
           (triplet<double>)        \
           (map_str_dbl)\
+          (bool)
           /*(std::vector<bool>)        \
              (std::vector<int>)        */
 

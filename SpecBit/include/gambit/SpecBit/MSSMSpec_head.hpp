@@ -230,15 +230,13 @@ namespace Gambit {
        /// dimension 1, 1 index , special for setters
        const str su        =   "~u";
        const str sd	   =   "~d";
-       const str se	   =   "~e";
-       const str seminus   =   "~e-";
+       const str se	   =   "~e-";
        const str snu	   =   "~nu";
        const str chiplus   =   "~chi+";
        const str chi0      =   "~chi0";
        const str h0	   =   "h0";
        const str subar     =   "~ubar";
        const str sdbar     =   "~dbar";
-       const str sebar     =   "~ebar";
        const str seplus    =   "~e+";
        const str snubar    =   "~nubar";
        const str chiminus  =   "~chi-";
@@ -263,13 +261,13 @@ namespace Gambit {
 						     Wplus, Wminus );
 
        /// pole mass strings with 1 index
-       const std::vector<str> pole_mass_strs_1 = initVector( su, sd, seminus, 
+       const std::vector<str> pole_mass_strs_1 = initVector( su, sd, se, 
                                                        subar, sdbar, seplus,
 						       chiplus, chiminus, chi0, h0, 
 						       snu, snubar );
 
        ///  pole mass strings with 1 index and six entries
-       const std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, seminus,
+       const std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, se,
 							  subar, sdbar, seplus );
 
        ///  pole mass strings with 1 index and four entries

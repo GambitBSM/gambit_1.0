@@ -182,7 +182,7 @@ namespace Gambit
         for(int j = 1; j <=6; j++)
         {
           std::cout << "     " << i << j << " = "  
-                    << mssm->phys().get(Par::Pole_Mixing,"~e", i, j);
+                    << mssm->phys().get(Par::Pole_Mixing,"~e-", i, j);
         }
         std::cout << std::endl;
       }
@@ -302,7 +302,7 @@ namespace Gambit
       std::cout << "******** Special family_state_mix_matrix tests ********" 
                 << std::endl;
       str mass_es1, mass_es2, type;
-      str types[] = {"~u","~d", "~e"};
+      str types[] = {"~u","~d", "~e-"};
       std::set<str> set_type = {types, types+3};
       std::set<str>::iterator it;
       for (it = set_type.begin(); it != set_type.end(); ++it)

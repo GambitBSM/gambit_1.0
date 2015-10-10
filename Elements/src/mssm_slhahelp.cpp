@@ -529,7 +529,7 @@ namespace Gambit
       }
 
       /// Get the family mixing matrix and corresponding mass eigenstates, then check for interfamily mixing.
-      std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e"*/, int generation,
+      std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e-"*/, int generation,
                                                   str & mass_es1, str & mass_es2, const SubSpectrum* mssm,
                                                   double tol, str context, bool pterror)
       {

@@ -173,7 +173,7 @@ namespace Gambit
           }
         }
 
-        sspair S[3] = {sspair("USQMIX","~u"), sspair("DSQMIX","~d"), sspair("SELMIX","~e")};
+        sspair S[3] = {sspair("USQMIX","~u"), sspair("DSQMIX","~d"), sspair("SELMIX","~e-")};
         for (int k=0;k<3;k++)
         {
           SLHAea_add_block(slha, S[k].first,this->runningpars().GetScale());
@@ -881,7 +881,7 @@ namespace Gambit
           tmp_map["~d"] =   FInfo2M( &set_ZD_pole_slha, i012345, i012345);
           tmp_map["~nu"] =   FInfo2M( &set_ZV_pole_slha, i012, i012);
           tmp_map["~u"] =   FInfo2M( &set_ZU_pole_slha, i012345, i012345);
-          tmp_map["~e"] =   FInfo2M( &set_ZE_pole_slha, i012345, i012345);
+          tmp_map["~e-"] =   FInfo2M( &set_ZE_pole_slha, i012345, i012345);
           tmp_map["h0"] =   FInfo2M( &set_ZH_pole_slha, i01, i01);
           tmp_map["A0"] =   FInfo2M( &set_ZA_pole_slha, i01, i01);
           tmp_map["H+"] = FInfo2M( &set_ZP_pole_slha, i01, i01);
@@ -1014,7 +1014,7 @@ namespace Gambit
             tmp_map["~d"] =   FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
             tmp_map["~nu"] =   FInfo2( &Model::get_ZV_pole_slha, i012, i012);
             tmp_map["~u"] =   FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
-            tmp_map["~e"] =   FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
+            tmp_map["~e-"] =   FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
             tmp_map["h0"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
             tmp_map["A0"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
             tmp_map["H+"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);

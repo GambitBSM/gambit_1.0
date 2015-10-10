@@ -419,7 +419,7 @@ namespace Gambit
          GET_MIX_MATRIX("~chi+","VMIX",(1,2),(1,2)) cout<<endl;
          GET_MIX_MATRIX("A0","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
          GET_MIX_MATRIX("~d","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("~e","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("~e-","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
          GET_MIX_MATRIX("h0","SCALARMIX",(1,2),(1,2)) cout<<endl;
          GET_MIX_MATRIX("~chi0","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
          GET_MIX_MATRIX("H+","CHARGEMIX",(1,2),(1,2)) cout<<endl;

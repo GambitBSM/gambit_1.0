@@ -89,7 +89,7 @@ namespace Gambit
       {
         // Requested final states are family mass eigenstates.  Pass 2x2 family mass mixing matrix to low-level routine.
         str m_light, m_heavy;
-        std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e", generation, m_light, m_heavy, mssm, tol, LOCAL_INFO, pt_error);
+        std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e-", generation, m_light, m_heavy, mssm, tol, LOCAL_INFO, pt_error);
         mass_es1 = (l_chirality    == 1) ? m_light : m_heavy;
         mass_es2 = (lbar_chirality == 1) ? m_light : m_heavy;
         sleptonmix[0][0] = slepton4vec[0]; 
