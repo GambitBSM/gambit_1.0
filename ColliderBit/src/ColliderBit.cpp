@@ -822,7 +822,7 @@ namespace Gambit
             llb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
             llsb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
+          //cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
           // Calculate the expected dll and set the bestexp values for exp and obs dll if this one is the best so far
           const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention -> more exclusion here
@@ -3389,7 +3389,7 @@ namespace Gambit
       BEreq::HB_calc_stats(theor_unc,chisq_withouttheory,chisq_withtheory,chan2);
 
       result = -0.5*chisq_withouttheory;
-      std::cout << "Calculating LEP chisq: " << chisq_withouttheory << " (no theor), " << chisq_withtheory << " (with theor)" << endl;
+      //std::cout << "Calculating LEP chisq: " << chisq_withouttheory << " (no theor), " << chisq_withtheory << " (with theor)" << endl;
 
     }
 
@@ -3446,8 +3446,8 @@ namespace Gambit
 
 
       result = -0.5*csqtot;
-      std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";
-      std::cout << csqtot << " (both), Nobs: " << nobs << ", Pvalue: " << Pvalue << endl;
+      //std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";
+      //std::cout << csqtot << " (both), Nobs: " << nobs << ", Pvalue: " << Pvalue << endl;
 
     }
 

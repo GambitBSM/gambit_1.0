@@ -362,11 +362,11 @@ namespace Gambit {
 
 
       void finalize() {
-        std::cout << "CMS 3LEPEW results" << std::endl;
-        for(int i=0;i<180;i++){
-          std::cout << SR[i] << " ";
-        }
-        std::cout << std::endl;
+        //std::cout << "CMS 3LEPEW results" << std::endl;
+        //for(int i=0;i<180;i++){
+         //std::cout << SR[i] << " ";
+        //}
+        //std::cout << std::endl;
       }
 
 
