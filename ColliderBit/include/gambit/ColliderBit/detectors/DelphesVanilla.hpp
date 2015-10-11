@@ -4,60 +4,33 @@
 #include "gambit/ColliderBit/detectors/BaseDetector.hpp"
 
 #ifndef EXCLUDE_DELPHES
-#include "TROOT.h"
-#include "TTask.h"
-#include "TApplication.h"
-#include "TObjArray.h"
-#include "TDatabasePDG.h"
-#include "TParticlePDG.h"
-#include "TLorentzVector.h"
-#include "modules/Delphes.h"
-#include "classes/DelphesClasses.h"
-#include "classes/DelphesFactory.h"
-#include "ExRootAnalysis/ExRootConfReader.h"
 
 namespace Gambit {
   namespace ColliderBit {
 
+
+    /// Forward declaration of a struct to hide Delphes-type member variables
+    class DelphesVanillaImpl;
+
+
     /// @note Abstract base class Delphes_ToHEPUtilsBase
     class DelphesVanilla : public BaseDetector<Pythia8::Event, HEPUtils::Event> {
-      /// @name Member variables
-      //@{
-      protected:
-        // Modularity of Delphes is set by Config File.
-        /// @note: init of _modularDelphes left to subclasses.
-        Delphes* _modularDelphes;
-        // To read Delphes Config File
-        ExRootConfReader *confReader;
-        // Factory production of particle "candidates"
-        DelphesFactory *factory;
-        // Delphes particle arrays: Pre-Detector-Sim
-        TObjArray *allParticleOutputArray;
-        TObjArray *stableParticleOutputArray;
-        TObjArray *partonOutputArray;
-        // Database of PDG codes and particle info
-        TDatabasePDG *pdg;
-      //@}
+    protected:
 
-      /// @name Construction, Destruction, and Recycling
+      /// @name Member variable abstraction via a forward-declared type
+      /// @note Abstraction means that external types are hidden cf. the PIMPL idiom
+      DelphesVanillaImpl* _impl;
+
+    public:
+
+      /// @name Construction, destruction, and recycling
       //@{
-      public:
-        DelphesVanilla() : _modularDelphes(nullptr), confReader(nullptr),
-                factory(nullptr), allParticleOutputArray(nullptr),
-                stableParticleOutputArray(nullptr), partonOutputArray(nullptr),
-                pdg(nullptr) { }
-        ~DelphesVanilla() { clear(); }
-        /// @brief Reset this instance for reuse, avoiding the need for "new" or "delete".
-        void clear() {
-          delete confReader; confReader=nullptr;
-          // hmm... I wonder whether or not Delphes cleans up its own memory?
-          delete factory; factory=nullptr;
-          delete allParticleOutputArray; allParticleOutputArray=nullptr;
-          delete stableParticleOutputArray; stableParticleOutputArray=nullptr;
-          delete partonOutputArray; partonOutputArray=nullptr;
-          delete pdg; pdg=nullptr;
-          delete _modularDelphes; _modularDelphes = nullptr;
-        }
+      DelphesVanilla() : _impl(nullptr) { }
+
+      ~DelphesVanilla() { clear(); }
+
+      /// Reset this instance
+      void clear();
       //@}
 
       /// @name Initialization functions

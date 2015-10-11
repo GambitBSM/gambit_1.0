@@ -184,7 +184,7 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
   if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -mavx")  
+    set(pythia_CXXFLAGS "${pythia_CXXFLAGS}")  
   endif()
 endif()
 # - Set include directories

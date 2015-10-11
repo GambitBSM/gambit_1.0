@@ -10,7 +10,7 @@
 
 using namespace std;
 
-// The CMS 2 lepton DM + top pair analysis (20fb^-1) 
+// The CMS 2 lepton DM + top pair analysis (20fb^-1)
 
 // based on: https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsB2G13004
 
@@ -54,19 +54,19 @@ namespace Gambit {
 	if (jets.size()<2) return(999);
 	double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
 	double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
-	double dphi3 = 999;
+	// double dphi3 = 999;
 	//if (jets.size() > 2 && jets[2]->pT() > 40.)
 	//  dphi3 = std::acos(std::cos(jets[2]->phi() - phi_met));
 	double min1 = std::min(dphi1, dphi2);
-	
-	return min1; 
-	
+
+	return min1;
+
       }
-      
+
       void analyze(const HEPUtils::Event* event) {
 
         // Missing energy
-        HEPUtils::P4 ptot = event->missingmom();
+        // HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
         // Now define vectors of baseline objects
@@ -91,7 +91,7 @@ namespace Gambit {
 	vector<HEPUtils::P4> jets;
         vector<HEPUtils::Jet*> bJets;
 	vector<bool> btag;
-	
+
 	const std::vector<double>  a = {0,10.};
         const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.60};
@@ -100,7 +100,7 @@ namespace Gambit {
         for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 5.0) {
 	    baselineJets.push_back(jet);
-	    //LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ; 
+	    //LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ;
 	    jets.push_back(jet->mom());
 	    bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
 	    bool isB=false;
@@ -112,15 +112,15 @@ namespace Gambit {
 	    btag.push_back(isB);
 	  }
         }
-	
+
         // Calculate common variables and cuts first
         //applyTightIDElectronSelection(signalElectrons);
-	
+
         //int nElectrons = signalElectrons.size();
         //int nMuons = signalMuons.size();
         int nJets = baselineJets.size();
         int nLeptons = baselineLeptons.size();
-	int nBJets = bJets.size();
+	// int nBJets = bJets.size();
 
 	//Preselection cuts
 
@@ -138,7 +138,7 @@ namespace Gambit {
 	}
 
 	bool passPresel=false;
-	if(nLeptons==2 && 
+	if(nLeptons==2 &&
 	   nJets>=2 &&
 	   passMll)passPresel=true;
 
@@ -170,17 +170,17 @@ namespace Gambit {
 
              (j==1 && passPresel) ||
 
-             (j==2 && passPresel && met > 320.) || 
+             (j==2 && passPresel && met > 320.) ||
 
-             (j==3 && passPresel && met > 320. && jetPtSum < 400.) || 
+             (j==3 && passPresel && met > 320. && jetPtSum < 400.) ||
 
-             (j==4 && passPresel && met > 320. && jetPtSum < 400. && lepPtSum > 120.) || 
+             (j==4 && passPresel && met > 320. && jetPtSum < 400. && lepPtSum > 120.) ||
 
              (j==5 && passPresel && met > 320. && jetPtSum < 400. && lepPtSum > 120. && dPhiLL < 2.))
 
             cutFlowVector[j]++;
         }
-	
+
         //We're now ready to apply the cuts for each signal region
         //_numSR1, _numSR2, _numSR3;
 
@@ -191,7 +191,7 @@ namespace Gambit {
 
 
       void add(BaseAnalysis* other) {
-        // The base class add function handles the signal region vector and total # events. 
+        // The base class add function handles the signal region vector and total # events.
         HEPUtilsAnalysis::add(other);
 
         Analysis_CMS_2LEPDMTOP_20invfb* specificOther
@@ -211,9 +211,9 @@ namespace Gambit {
 
         using namespace std;
 
-        double scale_to = 1339.6;
+        // double scale_to = 1339.6;
 
-        double trigger_cleaning_eff = 1;//0.53;
+        // double trigger_cleaning_eff = 1;//0.53;
 
         //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
         //cout << "CUT FLOW" <<std::endl;
@@ -249,7 +249,7 @@ namespace Gambit {
       }
 
     };
-    
+
     DEFINE_ANALYSIS_FACTORY(CMS_2LEPDMTOP_20invfb)
 
 

@@ -345,7 +345,7 @@ namespace Gambit {
 
 
       void add(BaseAnalysis* other) {
-        // The base class add function handles the signal region vector and total # events. 
+        // The base class add function handles the signal region vector and total # events.
         HEPUtilsAnalysis::add(other);
 
         Analysis_ATLAS_2LEPStop_20invfb* specificOther
@@ -371,9 +371,8 @@ namespace Gambit {
       void finalize() {
         using namespace std;
 
-        double scale_to = 1339.6;
-
-        double trigger_cleaning_eff = 1;//0.53;
+        // double scale_to = 1339.6;
+        // double trigger_cleaning_eff = 1;//0.53;
 
         /*cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
         cout << "CUT FLOW: ATLAS-CONF-2013-48 - Appendix, Table 8 - stop -> b chargino, stop 400, chargino 250, LSP 1 "<<std::endl;
