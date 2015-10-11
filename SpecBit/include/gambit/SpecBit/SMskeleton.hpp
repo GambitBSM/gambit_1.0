@@ -80,7 +80,6 @@ namespace Gambit {
 
             virtual double GetScale() const;
             
-         protected:
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
  

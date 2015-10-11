@@ -13,8 +13,7 @@
 
 #include "HEPUtils/Utils.h"
 #include "HEPUtils/Vectors.h"
-#include "fastjet/PseudoJet.hh"
-#include "fastjet/ClusterSequence.hh"
+#include "fastjet/fjcore.hh"
 
 namespace HEPUtils {
 

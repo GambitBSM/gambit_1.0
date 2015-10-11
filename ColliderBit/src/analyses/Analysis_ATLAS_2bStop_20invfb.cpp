@@ -146,7 +146,7 @@ namespace Gambit {
         double mbb=0;
         double mCT=0;
 
-	cout << "TEST njets " << nJets << " nbjets " << bJets.size() << endl;
+	//cout << "TEST njets " << nJets << " nbjets " << bJets.size() << endl;
 
         if(nJets>=2){
           if(signalJets[0]->pT() > 130.
@@ -155,19 +155,12 @@ namespace Gambit {
               passSRAJetCut=true;
               if(bJets.size()==2) {
                 passSRAbJetCut=true;
-                //TLorentzVector bjet1;
-                //TLorentzVector bjet2;
-                //bjet1.SetPtEtaPhiE(bJets[0]->pT(),bJets[0]->eta(),bJets[0]->phi(),bJets[0]->E());
-                //bjet2.SetPtEtaPhiE(bJets[1]->pT(),bJets[1]->eta(),bJets[1]->phi(),bJets[1]->E());
+               
                 mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
 
                 double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
                 double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
-                //TVector2 bjet1_pT;
-                //TVector2 bjet2_pT;
-                //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
-                //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-
+               
                 double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
                   +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
 
@@ -181,18 +174,11 @@ namespace Gambit {
                 //Check that the two leading jets are the b jets
                 if(bJets.size()==2 && (signalJets[0]->pT()==bJets[0]->pT()) && (signalJets[1]->pT()==bJets[1]->pT())){
                   passSRAbJetCut=true;
-                  //TLorentzVector bjet1;
-                  //TLorentzVector bjet2;
-                  //bjet1.SetPtEtaPhiE(signalJets[0]->pT(),signalJets[0]->eta(),signalJets[0]->phi(),signalJets[0]->E());
-                  //bjet2.SetPtEtaPhiE(signalJets[1]->pT(),signalJets[1]->eta(),signalJets[1]->phi(),signalJets[1]->E());
+                 
                   mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
                   double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
                   double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
-                  //TVector2 bjet1_pT;
-                  //TVector2 bjet2_pT;
-                  //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
-                  //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-
+                 
                   double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
                     +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
 
@@ -221,19 +207,11 @@ namespace Gambit {
             //Check that the 2nd and 3rd leading jets are the b jets
             if(bJets.size()==2 && (bJets[0]->pT()==signalJets[1]->pT()) && (bJets[1]->pT()==signalJets[2]->pT())) {
               passSRBbJetCut=true;
-              //TLorentzVector bjet1;
-              //TLorentzVector bjet2;
-              //bjet1.SetPtEtaPhiE(signalJets[1]->pT(),signalJets[1]->eta(),signalJets[1]->phi(),signalJets[1]->E());
-              //bjet2.SetPtEtaPhiE(signalJets[2]->pT(),signalJets[2]->eta(),signalJets[2]->phi(),signalJets[2]->E());
-
+             
               mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
               double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
               double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
-              //TVector2 bjet1_pT;
-              //TVector2 bjet2_pT;
-              //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
-              //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-
+             
               double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
                 +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
 
@@ -415,17 +393,17 @@ namespace Gambit {
         double scale_to = 507.3;
         double trigger_cleaning_eff = 0.90;
 
-        cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        cout << "NOT CHECKED - cut-flow not yet available via HEPData? "<<std::endl;
-        cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
+        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+        //cout << "NOT CHECKED - cut-flow not yet available via HEPData? "<<std::endl;
+        //cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
 
-        std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
-        for(int j=0; j<NCUTS; j++) {
-          std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
-        }
-        cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+        //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
+        //for(int j=0; j<NCUTS; j++) {
+	//std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
+        //}
+        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
 
-        cout << "RESULTS 2B " << _numSRA << " "  << _numSRB << " " << _numSRA15 << " " <<  _numSRA20 << " " <<  _numSRA25 << " " << _numSRA30 << " " <<  _numSRA35 << endl;
+        //cout << "RESULTS 2B " << _numSRA << " "  << _numSRB << " " << _numSRA15 << " " <<  _numSRA20 << " " <<  _numSRA25 << " " << _numSRA30 << " " <<  _numSRA35 << endl;
       }
 
 

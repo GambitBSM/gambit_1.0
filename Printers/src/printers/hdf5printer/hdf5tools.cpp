@@ -260,22 +260,30 @@ namespace Gambit {
       H5E_auto2_t old_func;
       void *old_client_data;
 
+      // FIXME: This caused compile problems on LISA cluster (CW)
       /// Silence error report (e.g. while probing for file existence)
       /// Just silences default error stack, since we aren't using anything else
+      /// TESTING! I changed from using 
+      ///   H5Eget_auto 
+      /// to
+      ///   H5Eget_auto2
+      /// If that still causes errors, try switching to
+      ///   H5Eget_auto1
+      /// and let me know if it works :)
       void errorsOff()
       {
          /* Save old error handler */
-         H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+         H5Eget_auto2(H5E_DEFAULT, &old_func, &old_client_data);
 
          /* Turn off error handling */
-         H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+         H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
       }
 
       /// Restore error report
       void errorsOn()
       {
          /* Restore previous error handler */
-         H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+         H5Eset_auto2(H5E_DEFAULT, old_func, old_client_data);
       }
 
     }

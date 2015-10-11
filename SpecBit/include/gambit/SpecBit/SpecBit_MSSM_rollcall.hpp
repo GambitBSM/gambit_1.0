@@ -73,13 +73,30 @@
     #undef FUNCTION
     
     // ==============================
-
     // Get unimproved MSSM spectrum as an SLHAea object
     #define FUNCTION get_MSSM_spectrum_as_SLHAea
     START_FUNCTION(SLHAstruct)                  
     DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*) // Takes a (pointer to a) Spectrum object and returns an SLHAstruct
     #undef FUNCTION
 
+  #undef CAPABILITY
+  
+ 
+  #define CAPABILITY MSSM_spectrum
+    // ============================== 
+    // Convert an MSSM_spectrum into a standard map so that it can be printed
+    #define FUNCTION get_MSSM_spectrum_as_map 
+    START_FUNCTION(map_str_dbl) // Just a string to double map. Can't have commas in macro input
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    #undef FUNCTION    
+  #undef CAPABILITY
+
+  #define CAPABILITY unimproved_MSSM_spectrum
+   // Same as above, but works with unimproved version of spectrum
+    #define FUNCTION get_unimproved_MSSM_spectrum_as_map 
+    START_FUNCTION(map_str_dbl) // Just a string to double map. Can't have commas in macro input
+    DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
+    #undef FUNCTION    
   #undef CAPABILITY
 
 

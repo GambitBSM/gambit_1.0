@@ -340,4 +340,18 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 #define CONVERT_VARIADIC_ARG(T) BOOST_PP_IIF(LAST_ARG_VARIADIC(T), (POP_LAST(T), ...), T)
 /// @}
 
+/// Macro for defining a static const vector easily. With C++11 could use initialiser lists, but
+/// this is not available in all the compilers we want to support. Use this as a replacement.
+/// e.g.
+/// static const std::vector<int> myvector = {1,2,3,4}; // Not possible in all compilers we support.
+/// becomes
+/// MAKE_STATIC_VECTOR(int,myvector,(1,2,3,4))
+#define BRACED_INIT_LIST(...) { __VA_ARGS__ }
+#define MAKE_STATIC_VECTOR(TYPE,NAME,TUPLE) \
+   static const TYPE NAME##_array[] = BRACED_INIT_LIST TUPLE; \
+   static const std::vector<TYPE> NAME(NAME##_array, Utils::endA( NAME##_array ));
+#define MAKE_STATIC_SET(TYPE,NAME,TUPLE) \
+   static const TYPE NAME##_array[] = BRACED_INIT_LIST(TUPLE); \
+   static const std::set<TYPE> NAME(NAME##_array, Utils::endA( NAME##_array ));
+
 #endif //defined __util_macros_hpp__

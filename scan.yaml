@@ -56,7 +56,7 @@ Printer:
     # name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
 
-    output_file: "runs/test_hdf5/samples/gambit_output.hdf5"
+    output_file: "gambit_output.hdf5"
     group: "/test/test2"
     delete_file_if_exists: true
 
@@ -66,9 +66,9 @@ Printer:
 
 Scanner:
 
-  use_objectives: EggBox
+  use_objectives: EggBox, gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: twalk
+  use_scanner:  multinest
   #find_shift
   #find_kernel
   #object_detection
@@ -89,11 +89,9 @@ Scanner:
       plugin: Diver
       like: Likelihood
       NP: 1000
-      path: "runs/spartan_diver/diver_native"
+      path: "runs"
       verbosity: 1
       aux_printer_txt_options:
-        output_file: "runs/spartan_diver/samples/gambit_output.txt"
-        info_file: "runs/spartan_diver/samples/gambit_output.txt_info"
       
     ransample:
       plugin: random_sampler
@@ -127,17 +125,11 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 500
+        nlive: 2000
         tol: 0.1
         aux_printer_txt_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.txt"
-          info_file: "runs/spartan_multinest/samples/gambit_output.txt_info"
         aux_printer_stats_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.stats"
-          info_file: "runs/spartan_multinest/samples/gambit_output.stats_info"
         aux_printer_live_options:
-          output_file: "runs/spartan_multinest/samples/gambit_output.live"
-          info_file: "runs/spartan_multinest/samples/gambit_output.live_info"
           
     gnest:
       plugin: gnest
@@ -390,8 +382,7 @@ Scanner:
         Printer:
           printer: ascii
           #options:
-          output_file: "runs/spartan/samples/gambit_output2.txt"
-          info_file: "runs/spartan/samples/gambit_output2.info"
+          output_file: "gambit_output2.txt"
       parameters:
         param...2:
           range: [0, 1]
@@ -403,7 +394,11 @@ Scanner:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
       parameters:
-        param...100:
+        same:
+          same_as: "gaussian::param_0"
+          scale: -2
+          shift: -1
+        param...1:
           range: [-5, 5]
       
     test:
@@ -501,7 +496,6 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/spartan/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -521,6 +515,8 @@ Logger:
 ##########################
 
 KeyValues:
+
+  default_output_path: "runs/scan"
 
   # Some example keys and subkeys
   my_key: 123

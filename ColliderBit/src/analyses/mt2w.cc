@@ -1,8 +1,6 @@
 #include "gambit/ColliderBit/mt2w.h"
 
-// 
-//--------------------------------------------------------------------
-double calculateMT2w(vector<LorentzVector>& jets, vector<bool>& btag, LorentzVector& lep, float met, float metphi){
+double calculateMT2wHepUtils(vector<HEPUtils::P4>& jets, vector<bool>& btag, HEPUtils::P4& lep, float met, float metphi){
 
     // I am asumming that jets is sorted by Pt
     assert ( jets.size() == btag.size() );
@@ -38,7 +36,7 @@ double calculateMT2w(vector<LorentzVector>& jets, vector<bool>& btag, LorentzVec
         for (int i=0; i<nMax; i++)
             for (int j=0; j<nMax; j++){
                 if (i == j) continue;
-                float c_mt2w = mt2wWrapper(lep, 
+                float c_mt2w = mt2wWrapperHepUtils(lep, 
                         jets[non_bjets[i]],
                         jets[non_bjets[j]], met, metphi);
                 if (c_mt2w < min_mt2w)
@@ -51,12 +49,12 @@ double calculateMT2w(vector<LorentzVector>& jets, vector<bool>& btag, LorentzVec
         float min_mt2w = 9999;
 
         for (int i=0; i<nMax; i++){
-            float c_mt2w = mt2wWrapper(lep, jets[bjets[0]], jets[non_bjets[i]], met, metphi);
+            float c_mt2w = mt2wWrapperHepUtils(lep, jets[bjets[0]], jets[non_bjets[i]], met, metphi);
             if (c_mt2w < min_mt2w)
                 min_mt2w = c_mt2w;
         }
         for (int i=0; i<nMax; i++){
-            float c_mt2w = mt2wWrapper(lep, jets[non_bjets[i]], jets[bjets[0]], met, metphi);
+            float c_mt2w = mt2wWrapperHepUtils(lep, jets[non_bjets[i]], jets[bjets[0]], met, metphi);
             if (c_mt2w < min_mt2w)
                 min_mt2w = c_mt2w;
         }
@@ -69,7 +67,7 @@ double calculateMT2w(vector<LorentzVector>& jets, vector<bool>& btag, LorentzVec
         for (int i=0; i<n_btag; i++)
             for (int j=0; j<n_btag; j++){
                 if (i == j) continue;
-                float c_mt2w = mt2wWrapper(lep, 
+                float c_mt2w = mt2wWrapperHepUtils(lep, 
                         jets[bjets[i]],
                         jets[bjets[j]], met, metphi);
                 if (c_mt2w < min_mt2w)
@@ -81,8 +79,9 @@ double calculateMT2w(vector<LorentzVector>& jets, vector<bool>& btag, LorentzVec
     return -1.;
 }
 
-// This funcion is a wrapper for mt2w_bisect etc that takes LorentzVectors instead of doubles
-double mt2wWrapper(LorentzVector& lep, LorentzVector& jet_o, LorentzVector& jet_b, float met, float metphi){
+// This funcion is a wrapper for mt2w_bisect etc that takes HEPUtils::P4 vectors instead of doubles
+// Written by Martin White (martin.white@adelaide.edu.au), October 2015
+double mt2wWrapperHepUtils(HEPUtils::P4& lep, HEPUtils::P4& jet_o, HEPUtils::P4& jet_b, float met, float metphi){
 
     // same for all MT2x variables
     float metx = met * cos( metphi );
@@ -93,9 +92,9 @@ double mt2wWrapper(LorentzVector& lep, LorentzVector& jet_o, LorentzVector& jet_
     double pb2[4];    // other bottom, paired with the invisible W
     double pmiss[3];  // <unused>, pmx, pmy   missing pT
 
-    pl[0]= lep.E(); pl[1]= lep.Px(); pl[2]= lep.Py(); pl[3]= lep.Pz();
-    pb1[1] = jet_o.Px();  pb1[2] = jet_o.Py();   pb1[3] = jet_o.Pz();
-    pb2[1] = jet_b.Px();  pb2[2] = jet_b.Py();   pb2[3] = jet_b.Pz();
+    pl[0]= lep.E(); pl[1]= lep.px(); pl[2]= lep.py(); pl[3]= lep.pz();
+    pb1[1] = jet_o.px();  pb1[2] = jet_o.py();   pb1[3] = jet_o.pz();
+    pb2[1] = jet_b.px();  pb2[2] = jet_b.py();   pb2[3] = jet_b.pz();
     pmiss[0] = 0.; pmiss[1] = metx; pmiss[2] = mety;
 
     pb1[0] = jet_o.E();

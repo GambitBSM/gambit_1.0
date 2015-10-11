@@ -19,6 +19,7 @@
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/FeynHiggs.hpp"
 
+//#define FEYNHIGGS_DEBUG
 
 BE_INI_FUNCTION
 {
@@ -32,14 +33,16 @@ BE_INI_FUNCTION
     int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
     int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
     int tanbren = 0;   // one-loop one-loop tanBeta counter-term (0 -> DRbar, strongly recommended))
-    int higgsmix = 3;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector) -> HB says 2
+    int higgsmix = 2;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector) -> HB says 2
     int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended) -> HB says 0
     int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
     int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)
     int botResum = 1;  // O(tan^n Beta) corr. ressummed? (1 -> yes, recommended)
     int tlCplxApprox = 0; // determines how 2-loop corr. are treated with complex param (0 for rMSSM, > 0 for cMSSM)
     
-    cout << "****** calling FHSetFlags ******" << endl;
+    #ifdef FEYNHIGGS_DEBUG
+      cout << "****** calling FHSetFlags ******" << endl;
+    #endif
 
     FHSetFlags(error, mssmpart, fieldren, tanbren, higgsmix,
          p2approx, looplevel, runningMT, botResum, tlCplxApprox);
@@ -78,7 +81,7 @@ BE_INI_FUNCTION
   fh_real ML = sminputs.mTau;    // tau mass
   fh_real MB = sminputs.mBmB;    // bottom mass at m_b
     
-  fh_real MW = fullspectrum->get_Pole_Mass("W+");  // W boson mass
+  fh_real MW = fullspectrum->get(Par::Pole_Mass,"W+");  // W boson mass
   fh_real MZ = sminputs.mZ;                        // Z boson mass
 
   // CKM input parameters in Wolfenstein parameterization
@@ -87,7 +90,9 @@ BE_INI_FUNCTION
   fh_real CKMrhobar = sminputs.CKM.rhobar;
   fh_real CKMetabar = sminputs.CKM.etabar;
 
-  cout << "****** calling FHSetSMPara ******" << endl;
+  #ifdef FEYNHIGGS_DEBUG
+    cout << "****** calling FHSetSMPara ******" << endl;
+  #endif
 
   error = 1;
   FHSetSMPara(error, invAlfa, AlfasMZ, GF,
@@ -95,13 +100,13 @@ BE_INI_FUNCTION
         MW, MZ,
         CKMlambda, CKMA, CKMrhobar, CKMetabar);
 
-  fh_real MT = fullspectrum->get_Pole_Mass("t");                      // top quark mass
+  fh_real MT = fullspectrum->get(Par::Pole_Mass,"t");                      // top quark mass
   fh_real TB = SLHAea::to<double>( slhaea.at("MINPAR").at(3).at(1) ); // tan Beta
-  fh_real MA0 = fullspectrum->get_Pole_Mass("A0");   // masses of CP-odd and 
+  fh_real MA0 = fullspectrum->get(Par::Pole_Mass,"A0");   // masses of CP-odd and 
   fh_real MHp = -1.;                                                  // charged Higgs (only one should be given)
   if(MA0 <= 0.){
     MA0 = -1.;
-    MHp = fullspectrum->get_Pole_Mass("H+");
+    MHp = fullspectrum->get(Par::Pole_Mass,"H+");
   }
 
   // cout << "** Top Mass: " << MT << endl;
@@ -176,18 +181,18 @@ BE_INI_FUNCTION
   // cout << Ae.re << " " << Amu.re << " " << Atau.re << endl;
 
   fh_complex MUE;  // Higgs mixing parameter mu
-  MUE.re = spec->runningpars().get_mass_parameter("Mu"); 
+  MUE.re = spec->runningpars().get(Par::mass1,"Mu"); 
   MUE.im = 0;
 
   // cout << "** MU = " << MUE.re << endl;
 
   // gaugino mass parameters. M_1 == 0 => GUT relation is used
   fh_complex M_1, M_2, M_3; 
-  M_1.re = spec->runningpars().get_mass_parameter("M1");   
+  M_1.re = spec->runningpars().get(Par::mass1,"M1");   
   M_1.im = 0;
-  M_2.re = spec->runningpars().get_mass_parameter("M2"); 
+  M_2.re = spec->runningpars().get(Par::mass1,"M2"); 
   M_2.im = 0;
-  M_3.re = spec->runningpars().get_mass_parameter("M3"); 
+  M_3.re = spec->runningpars().get(Par::mass1,"M3"); 
   M_3.im = 0;
 
   // cout << "** M1 = " << M_1.re << endl;
@@ -207,7 +212,9 @@ BE_INI_FUNCTION
   // the renormalization scale is Mtop times the 'scalefactor'
   fh_real scalefactor = 1.;
 
-  cout << "****** calling FHSetPara ******" << endl;
+  #ifdef FEYNHIGGS_DEBUG
+    cout << "****** calling FHSetPara ******" << endl;
+  #endif
 
   error = 1;
   FHSetPara(error, scalefactor, MT, TB, MA0, MHp,

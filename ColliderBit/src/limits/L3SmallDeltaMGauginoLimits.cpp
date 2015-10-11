@@ -5,14 +5,19 @@ namespace Gambit {
 
 
     /// @name L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV methods
-    //@{
-    P2 L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV::convertPt(double x, double y) {
+    /// @{
+
+    P2 L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV::convertPt(double x, double y)
+    {
       return P2(45. + (x - 138.00) / (1014.00 - 138.00) * (95. - 45.),
                 4. + (y - 56.00) / (239.00 - 56.00) * (0. - 4.));
     }
-    bool L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y) {
+
+    bool L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double)
+    {
       return (y <= x and x <= 188.6 / 2.);
     }
+
     L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV::L3ChargedGauginoSmallDeltaMWithHeavySneutrinoLimitAt188pt6GeV() {
       ///// Limit values /////
       _limitValuesSorted.push_back(1.0);
@@ -106,18 +111,24 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    //@}
+    /// @}
 
     /// @name L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV methods
-    //@{
-    P2 L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV::convertPt(double x, double y) {
+    /// @{
+    
+    P2 L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV::convertPt(double x, double y)
+    {
       return P2(45. + (x - 140.00) / (1017.00 - 140.00) * (95. - 45.),
                 4. + (y - 415.00) / (598.00 - 415.00) * (0. - 4.));
     }
-    bool L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y) {
+
+    bool L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double)
+    {
       return (y <= x and x <= 188.6 / 2.);
     }
-    L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV::L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV() {
+
+    L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV::L3ChargedGauginoSmallDeltaMAnySneutrinoLimitAt188pt6GeV()
+    {
       ///// Limit values /////
       _limitValuesSorted.push_back(1.0);
       _limitValuesSorted.push_back(2.0);
@@ -209,18 +220,24 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    //@}
+    /// @}
 
     /// @name L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV methods
-    //@{
-    P2 L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV::convertPt(double x, double y) {
+    /// @{
+
+    P2 L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV::convertPt(double x, double y)
+    {
       return P2(45. + (x - 141.00) / (1018.00 - 141.00) * (95. - 45.),
                 4. + (y - 772.00) / (956.00 - 772.00) * (0. - 4.));
     }
-    bool L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y) {
+
+    bool L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double)
+    {
       return (y <= x and x <= 188.6 / 2.);
     }
-    L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV::L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV() {
+
+    L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV::L3ChargedHiggsinoSmallDeltaMLimitAt188pt6GeV()
+    {
       ///// Limit values /////
       _limitValuesSorted.push_back(1.0);
       _limitValuesSorted.push_back(2.0);
@@ -307,7 +324,7 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(3, contoursPointer));
 
     }
-    //@}
+    /// @}
 
   }
 }

@@ -43,14 +43,26 @@ set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
 include_directories("${yaml_INCLUDE_DIR}")
 add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
 
-#contrib/Delphes-3.1.2; include only if ColliderBit is in use
+#contrib/Delphes-3.1.2; include only if ColliderBit is in use and Delphes is not intentionally ditched.
 set (DELPHES_DIR "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
-if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+set (DELPHES_DICTS "${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes/BTaggingWithTruthModule_dict.cc"
+                   "${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes/AbsoluteIsolationModule_dict.cc"
+                   "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes/BTaggingWithTruthModule_dict.h"
+                   "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes/AbsoluteIsolationModule_dict.h")                   
+string(REGEX MATCH ";D;|;De;|;Del;|;Delp;|;Delph;|;Delphe;|;Delphes" DITCH_DELPHES ";${itch};")
+include_directories("${DELPHES_DIR}" "${DELPHES_DIR}/external" "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
+if(DITCH_DELPHES OR NOT ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  set (EXCLUDE_DELPHES TRUE)
+  add_custom_target(clean-delphes COMMAND "")
+  message("${BoldCyan} X Excluding Delphes from GAMBIT configuration.${ColourReset}")
+  foreach(DICT ${DELPHES_DICTS})
+    execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${DICT})
+  endforeach()
+else()
   set (EXCLUDE_DELPHES FALSE)
   set (DELPHES_LDFLAGS "-L${DELPHES_DIR} -lDelphes")
   set (DELPHES_BAD_LINE "\\(..CC)\ ..patsubst\ -std=%,,..CXXFLAGS))\\)\ \\(..CXXFLAGS.\\)")
   set (CMAKE_INSTALL_RPATH "${DELPHES_DIR}")
-  include_directories("${DELPHES_DIR}" "${DELPHES_DIR}/external" "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
   ExternalProject_Add(delphes
     SOURCE_DIR ${DELPHES_DIR}
     BUILD_IN_SOURCE 1
@@ -71,13 +83,20 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   endif()
   message("${Yellow}-- Generating Delphes ROOT dictionaries - done.${ColourReset}")
   # Add clean info
+  foreach(DICT ${DELPHES_DICTS})
+    set(clean_files ${clean_files} ${DICT})
+  endforeach()
   add_external_clean(delphes ${DELPHES_DIR} distclean)
   add_dependencies(distclean clean-delphes)
-else()
-  set (EXCLUDE_DELPHES TRUE)
-  add_custom_target(clean-delphes COMMAND "")
 endif()
 
+#contrib/fjcore-3.1.3; compile only if Delphes is ditched and ColliderBit is not.
+set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
+include_directories("${fjcore_INCLUDE_DIR}")
+add_gambit_library(fjcore OPTION OBJECT 
+                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc 
+                          HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fastjet/fjcore.hh)
+set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
 
 #contrib/MassSpectra; include only if SpecBit is in use
 set (FS_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy")
@@ -107,10 +126,10 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   set(FS_OPTIONS ${FS_OPTIONS} 
        --with-cxx=${CMAKE_CXX_COMPILER}
        --with-cxx-dep-gen=${CMAKE_CXX_COMPILER}
-       --with-cxxflags=${CMAKE_CXX_FLAGS}
+       --with-cxxflags=${GAMBIT_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
        --with-fortran-dep-gen=${CMAKE_Fortran_COMPILER}
-       --with-fflags=${CMAKE_Fortran_FLAGS}
+       --with-fflags=${GAMBIT_Fortran_FLAGS}
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}

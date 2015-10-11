@@ -98,6 +98,7 @@ scanner_plugin(MultiNest, version(3, 9))
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
       int resume ( resume_mode );                               // resume from a previous job?
       int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
+
       double logZero (get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
@@ -105,15 +106,29 @@ scanner_plugin(MultiNest, version(3, 9))
       // Which parameters to have periodic boundary conditions?
       int pWrap[ndims];
       for(int i = 0; i < ndims; i++) pWrap[i] = 0; // (need to do more work if we actually want to allow periodic BCs)        
+
       // Root for output files
-      std::string root_str ( get_inifile_value<std::string>("root", "chains/") );
-      char root[100];
-      Gambit::Utils::strcpy2f(root, 100, root_str);// (copy std::string into char array for transport to Fortran)
+      std::string root_str;
+      std::string defpath = Gambit::Utils::ensure_path_exists(
+           get_inifile_value<std::string>("default_output_path")+"MultiNest/native-"
+           ); // from gambit global default
+      root_str = get_inifile_value<std::string>("root", defpath);
+      char root[1000];  // I think MultiNest will truncate this to 100. But lets use a larger array just in case.
+      Gambit::Utils::strcpy2f(root, 1000, root_str);// (copy std::string into char array for transport to Fortran)
 
       // Print some basic startup diagnostics.      
       std::cout << "MultiNest ndims:" << ndims << std::endl;
       std::cout << "MultiNest nPar: " << nPar  << std::endl;
-  
+ 
+      if(resume==1 and outfile==0)
+      {
+        // It is stupid to be in resume mode while not writing output files. 
+        // Means subsequent resumes will be impossible. Throw an error.
+        scan_error().raise(LOCAL_INFO,"Error from MultiNest ScannerBit plugin! Resume mode is activated, however "
+                                      "MultiNest native output files are set to not be written. These are needed "
+                                      "for resuming; please change this setting in your yaml file (set option \"outfile: 1\")");
+      }
+ 
       // Setup auxilliary streams. These are only needed by the master process,
       // so let's create them only for that process
       int myrank = get_printer().get_stream()->getRank(); // MPI rank of this process
@@ -135,8 +150,9 @@ scanner_plugin(MultiNest, version(3, 9))
          //get_printer().new_stream("stats",stats_options); //FIXME       
          get_printer().new_stream("live",live_options);
       }
-      //ensure mpi processes has same id for parameters;
-      Gambit::Scanner::assign_aux_numbers("Posterior", "LogLike", "pointID", "MPIrank", "Parameters");
+
+      // Ensure that MPI processes have the same IDs for auxiliary print streams;
+      Gambit::Scanner::assign_aux_numbers("Posterior","LastLive");
       
       // Create the object that interfaces to the MultiNest LogLike callback function
       Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, get_printer(), ndims);
@@ -281,8 +297,13 @@ namespace Gambit {
           int thisrank = boundPrinter.get_stream()->getRank(); // MPI rank of this process
           if(thisrank!=0)
           {
-             std::cout<<"Error! ScannerBit MultiNest plugin attempted to run 'dumper' function on a worker process (thisrank=="<<thisrank<<")! MultiNest should only try to run this function on the master process. Most likely this means that your multinest installation is not running in MPI mode correctly, and is actually running independent scans on each process. Alternatively, the version of MultiNest you are using may be too far ahead of what this plugin can handle, if e.g. the described behaviour has changed since this plugin was written."<<std::endl;
-             exit(1);
+             scan_err <<"Error! ScannerBit MultiNest plugin attempted to run 'dumper' function on a worker process "
+                      <<"(thisrank=="<<thisrank<<")! MultiNest should only try to run this function on the master "
+                      <<"process. Most likely this means that your multinest installation is not running in MPI mode "
+                      <<"correctly, and is actually running independent scans on each process. Alternatively, the "
+                      <<"version of MultiNest you are using may be too far ahead of what this plugin can handle, "
+                      <<"if e.g. the described behaviour has changed since this plugin was written."
+                      << scan_end;
           } 
 
           // Get printers for each auxiliary stream
@@ -331,7 +352,6 @@ namespace Gambit {
              {
                  parameters.push_back( posterior[j*nSamples + i] );
              }
-             txt_stream->print(parameters, "Parameters", myrank, pointID);
           }
 
           // The last set of live points

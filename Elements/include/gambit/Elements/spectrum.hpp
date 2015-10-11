@@ -52,6 +52,7 @@ namespace Gambit
          SubSpectrum* LE;
          SubSpectrum* HE;
          SMInputs SMINPUTS;
+         const std::map<str, safe_ptr<double> >* input_Param;
          bool initialised;
          void check_init() const;
          
@@ -70,10 +71,10 @@ namespace Gambit
          /// Default constructor
          Spectrum();
          /// Construct new object, cloning the SubSpectrum objects supplied and taking possession of them.
-         Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi);
+         Spectrum(const SubSpectrum& le, const SubSpectrum& he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
          /// Construct new object, wrapping existing SubSpectrum objects
          ///  Make sure the original objects don't get deleted before this wrapper does!
-         Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi);
+         Spectrum(SubSpectrum* const le, SubSpectrum* const he, const SMInputs& smi, const std::map<str, safe_ptr<double> >* input_Param);
          /// Copy constructor, clones SubSpectrum objects.
          /// Make a non-const copy in order to use e.g. RunBothToScale function.
          Spectrum(const Spectrum& other);
@@ -111,11 +112,20 @@ namespace Gambit
          /// "Shortcut" getters to access pole masses in hosted SubSpectrum objects.
          /// HE object given higher priority; if no match found, LE object will be 
          /// checked. If still no match, error is thrown.
-         bool   has_Pole_Mass(const std::string& mass) const; 
-         double get_Pole_Mass(const std::string& mass) const; 
-         bool   has_Pole_Mass(const std::string& mass, const int index) const; 
-         double get_Pole_Mass(const std::string& mass, const int index) const; 
-         DECLARE_PDG_GETTERS(Pole_Mass) // Overloads for PDG types
+         bool   has(const Par::Phys partype, const std::string& mass) const; 
+         double get(const Par::Phys partype, const std::string& mass) const; 
+         bool   has(const Par::Phys partype, const std::string& mass, const int index) const; 
+         double get(const Par::Phys partype, const std::string& mass, const int index) const; 
+
+         /// @{ PDB getter/checker overloads
+         bool   has(const Par::Phys partype, const int pdg_code, const int context) const;
+         double get(const Par::Phys partype, const int pdg_code, const int context) const;
+         bool   has(const Par::Phys partype, const std::pair<int,int> pdgpr) const;
+         double get(const Par::Phys partype, const std::pair<int,int> pdgpr) const;
+         bool   has(const Par::Phys partype, const std::pair<str,int> shortpr) const;
+         double get(const Par::Phys partype, const std::pair<str,int> shortpr) const;
+         /// @}
+
          /// @}
    
          /// SLHAea object getter

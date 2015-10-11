@@ -47,7 +47,7 @@ void *get_purpose(const std::string &purpose)                                   
     return ptr;                                                                             \
 }                                                                                           \
                                                                                             \
-inline unsigned int get_dimension() {return get_input_value<unsigned int>(0);}              \
+inline unsigned int &get_dimension() {return get_input_value<unsigned int>(0);}             \
 
 #define SCANNER_PLUGIN(plug_name, ...)                                                      \
     GAMBIT_PLUGIN_INITIALIZE(__SCANNER_SETUP__, plug_name, scanner, __VA_ARGS__)            \

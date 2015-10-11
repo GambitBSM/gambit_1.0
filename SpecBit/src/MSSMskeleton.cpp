@@ -285,7 +285,6 @@ namespace Gambit {
             tmp_map["~d"] =    FInfo1( &Model::get_MSd_pole_slha, i123456 );
             tmp_map["~u"] =    FInfo1( &Model::get_MSu_pole_slha, i123456 );
             tmp_map["~e-"] =   FInfo1( &Model::get_MSe_pole_slha, i123456 );
-            tmp_map["~e"] =    FInfo1( &Model::get_MSe_pole_slha, i123456 );  // Just an extra name for charged sleptons; not in PDB
             tmp_map["~nu"] =   FInfo1( &Model::get_MSv_pole_slha, i123 );
             tmp_map["h0"] =    FInfo1( &Model::get_Mhh_pole_slha, i12 );
             tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i12 );
@@ -294,7 +293,7 @@ namespace Gambit {
             // Antiparticles (same getters, just different string name)
             tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i123456 );
             tmp_map["~ubar"] = FInfo1( &Model::get_MSu_pole_slha, i123456 );
-            tmp_map["~ebar"] = FInfo1( &Model::get_MSe_pole_slha, i123456 );
+            tmp_map["~e+"]   = FInfo1( &Model::get_MSe_pole_slha, i123456 );
             tmp_map["~nubar"]= FInfo1( &Model::get_MSv_pole_slha, i123 );
             tmp_map["~chi-"] = FInfo1( &Model::get_MCha_pole_slha, i12 );
             map_collection[Par::Pole_Mass].map1 = tmp_map;
@@ -304,7 +303,7 @@ namespace Gambit {
             tmp_map["~d"] =    FInfo2( &Model::get_ZD_pole_slha, i123456, i123456);
             tmp_map["~nu"] =   FInfo2( &Model::get_ZV_pole_slha, i123, i123);
             tmp_map["~u"] =    FInfo2( &Model::get_ZU_pole_slha, i123456, i123456);
-            tmp_map["~e"] =    FInfo2( &Model::get_ZE_pole_slha, i123456, i123456);
+            tmp_map["~e-"]=    FInfo2( &Model::get_ZE_pole_slha, i123456, i123456);
             tmp_map["h0"] =    FInfo2( &Model::get_ZH_pole_slha, i12, i12);
             tmp_map["A0"] =    FInfo2( &Model::get_ZA_pole_slha, i12, i12);
             tmp_map["H+"] =    FInfo2( &Model::get_ZP_pole_slha, i12, i12);

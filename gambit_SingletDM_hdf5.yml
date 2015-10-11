@@ -8,32 +8,61 @@ Parameters:
     StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
     StandardModel_Higgs:
-      mH: 125.9
-      vev: 246
+      mH:
+            #fixed_value: 125.7
 
     SingletDM:
         mS:
-            range: [50., 1000.]
+            range: [10., 10000.]
             prior_type: log
         lambda_hS:
             range: [0.001, 1.00]
             #fixed_value: 0.0366524 
             prior_type: log
-    nuclear_params_fnq:
-      # proton hadronic matrix elements
-      fpd:
-        fixed_value: 0.0191
-      fpu:
-        fixed_value: 0.0153
-      fps:
-        fixed_value: 0.0447
-      # neutron hadronic matrix elements
-      fnd:
-        fixed_value: 0.0273
-      fnu:
-        fixed_value: 0.011
-      fns:
-        fixed_value: 0.0447
+  
+#    nuclear_params_fnq:
+#      # proton hadronic matrix elements
+#      fpd:
+#        fixed_value: 0.0191
+#      fpu:
+#        fixed_value: 0.0153
+#      fps:
+#        fixed_value: 0.0447
+#      # neutron hadronic matrix elements
+#      fnd:
+#        fixed_value: 0.0273
+#      fnu:
+#        fixed_value: 0.011
+#      fns:
+#        fixed_value: 0.0447
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
+#    nuclear_params_sigma0_sigmal:
+#      sigma0:
+#        fixed_value: 30.76
+#      sigmal:
+#        fixed_value: 34.0
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
+    nuclear_params_sigmas_sigmal:
+      sigmas:
+        #fixed_value: 42.0 // From MicrOmegas?
+        range: [27.0, 59.0] // 2 sigma range from Cline et. al.
+      sigmal:
+        #fixed_value: 34.0 // From MicrOmegas?
+        range: [40.0, 76.0] // 2 sigma range from Cline et. al.
       # proton spin content
       deltad:
         fixed_value: -0.427
@@ -45,11 +74,18 @@ Parameters:
 #   Uncomment the below to use DarkSUSY nuclear parameters.
 #    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
 
+
 ##############################
 # Prior setup
 ##############################
 
 Priors:
+    mH_prior: # PDG 2014
+      parameters: [StandardModel_Higgs::mH]
+      prior_type: gaussian
+      options:
+        sigs: [.4]
+        mean: [125.7]
 
 ##############################
 # Printer setup
@@ -67,7 +103,7 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/singletDM_multinest_hdf5/samples/gambit_output.hdf5"
+    output_file: "gambit_output.hdf5"
     group: "/sing/let"
     delete_file_if_exists: true
 
@@ -93,10 +129,6 @@ Scanner:
         like:  Likelihood
         nlive: 1000
         tol: 0.1
-        outfile: 0
-        root: "runs/singletDM_multinest_hdf5/samples/native-"
-        # resuming doesn't work yet
-        resume: 0
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
@@ -115,11 +147,14 @@ ObsLikes:
 #      options:
 #        GA_AnnYield:
 #          nbins: 20
+    - capability: IC79_loglike
+      purpose: Likelihood
 
 # Fermi LAT dwarf limits
     - capability: lnL_FermiLATdwarfs
       function: lnL_FermiLATdwarfs_gamLike
       purpose:  Observable
+    - capability: lnL_Higgs_invWidth
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
@@ -140,6 +175,15 @@ ObsLikes:
 # NOTE: treated as observable!
 #    - capability: lnL_DARWIN_Xe_2015
 #      purpose:  Observable
+
+# SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:  Likelihood
+
+# Charm quark and light quark mass ratio likelihoods
+    - capability: lnL_light_quark_masses
+      purpose:  Likelihood
+    
       
 Rules:
   # Gamma-rays -------------------------
@@ -152,6 +196,8 @@ Rules:
         # Supply (optional) path to likelihood data.  Otherwise relative path
         # is used.
         # datapath: /home/weniger/Work/Projects/GAMBIT/gambit/extras/gamLike/data/
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
   - capability: lnL_FermiLATdwarfs
     #dependencies: 
     #    - capability: GA_AnnYield
@@ -174,6 +220,7 @@ Rules:
           function: GA_AnnYield_DarkSUSY
     options:
         filename: dNdE.dat
+      
   # Relic density ----------------------
   - capability: RD_oh2
     options:
@@ -207,10 +254,31 @@ Rules:
     function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
+  # Nuclear Parameter Likelihoods (All values in MeV)
+  - capability: lnL_SI_nuclear_parameters
+    function: lnL_sigmas_sigmal
+    options:
+      #sigmas_central: 43.
+      #sigmas_error: 8.
+      #sigmal_central: 58.
+      #sigmal_error: 9.
+
   # Decays
   - capability: decay_rates
     function: all_decays
 
+  # Precision Bit
+  - capability: lnL_light_quark_masses
+    options:
+      # m_u/m_d
+      mud_central: 0.48
+      mud_error: 0.10
+      # m_s / (m_u + m_d)
+      msud_central: 27.5
+      msud_error: 1.0
+      # m_s
+      ms_central: 95.
+      ms_error: 5.
 
 #########################
 # Logging setup
@@ -223,7 +291,6 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/singletDM_multinest_hdf5/logs/"
   redirection:
     [Debug] : stdout #"debug.log"
     [Default] : stdout #"default.log"
@@ -260,5 +327,9 @@ KeyValues:
     core_warning: fatal
     ExampleBit_A_error: non-fatal
 
+  default_output_path: "runs/singletDM_multinest_hdf5/"
+
   enable_testing: false
+
+  default_output_path: "runs/singletDM_multinest_hdf5/"
 

@@ -99,7 +99,7 @@ namespace Gambit
                         std::ostringstream out;
                         
                         out << "The options are:  \n";
-                        for (auto it = this->begin(), end = this->end(); it != end; it++)
+                        for (auto it = this->begin(); it != this->end(); it++)
                         {
                                 out << "\t" << it->first << "\n";
                         }

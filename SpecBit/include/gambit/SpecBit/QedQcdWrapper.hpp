@@ -84,15 +84,16 @@ namespace Gambit
    
             /// Limits for running
             /// @{
-            double softup;
             double hardup; // Be careful of order in constructor!
+            double softup;
+            double softlow;
+            double hardlow;
             virtual double hard_upper() const {return hardup;} /*O*/
             virtual double soft_upper() const {return softup;} /*O*/
-            virtual double soft_lower() const {return 0.;}     /*O*/
-            virtual double hard_lower() const {return 0.;}     /*O*/
+            virtual double soft_lower() const {return softlow;}/*O*/
+            virtual double hard_lower() const {return hardlow;}/*O*/
             /// @}
    
-         protected:
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)

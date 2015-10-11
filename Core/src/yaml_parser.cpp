@@ -52,6 +52,13 @@ namespace Gambit
         rules.push_back((*it).as<Types::Observable>());
       }
 
+      // Read KeyValue section, find the default path entry, and pass this on
+      // to the Scanner, Logger, and Printer nodes
+      YAML::Node keyvalue    = getKeyValuePairNode();
+      YAML::Node scanNode    = getScannerNode();
+      YAML::Node printerNode = getPrinterNode();
+      YAML::Node logNode     = getLoggerNode();
+
     }
 
     /// Getters for private observable and rules entries

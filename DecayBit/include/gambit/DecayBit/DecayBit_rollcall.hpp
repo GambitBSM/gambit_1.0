@@ -35,7 +35,7 @@
 
 #define MODULE DecayBit
 START_MODULE
-
+  
   #define CAPABILITY t_decay_rates
   START_CAPABILITY
 
@@ -640,16 +640,29 @@ START_MODULE
   #undef CAPABILITY
 
 
+  #define CAPABILITY SLHA1_violation
+  START_CAPABILITY
+  
+    #define FUNCTION check_first_sec_gen_mixing
+    START_FUNCTION(int)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    #undef FUNCTION
+    
+  #undef CAPABILITY
+
+
   #define CAPABILITY SLHA_pseudonyms
   START_CAPABILITY
     #define FUNCTION get_mass_es_pseudonyms
     START_FUNCTION(DecayBit::mass_es_pseudonyms)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(SLHA1_violation, int)
     #undef FUNCTION
   #undef CAPABILITY
 
 
 #undef MODULE
+
 
 // SM decay rate functions
 QUICK_FUNCTION(DecayBit, W_plus_decay_rates,    NEW_CAPABILITY, W_plus_decays,    DecayTable::Entry)
@@ -694,6 +707,9 @@ QUICK_FUNCTION(DecayBit, snubar_muonl_decay_rates,     NEW_CAPABILITY, snubar_mu
 QUICK_FUNCTION(DecayBit, snubar_taul_decay_rates,      NEW_CAPABILITY, snubar_taul_decays,      DecayTable::Entry, (MSSM78atQ, MSSM78atMGUT), (snu_taul_decay_rates,       DecayTable::Entry)) 
 QUICK_FUNCTION(DecayBit, charginominus_1_decay_rates,  NEW_CAPABILITY, charginominus_1_decays,  DecayTable::Entry, (MSSM78atQ, MSSM78atMGUT), (charginoplus_1_decay_rates, DecayTable::Entry)) 
 QUICK_FUNCTION(DecayBit, charginominus_2_decay_rates,  NEW_CAPABILITY, charginominus_2_decays,  DecayTable::Entry, (MSSM78atQ, MSSM78atMGUT), (charginoplus_2_decay_rates, DecayTable::Entry)) 
+
+// Likelihoods
+QUICK_FUNCTION(DecayBit, lnL_Higgs_invWidth, NEW_CAPABILITY, lnL_Higgs_invWidth_SMonly, double, (SingletDM), (Higgs_decay_rates, DecayTable::Entry)) 
  
 #endif /* defined(__DecayBit_rollcall_hpp__) */
 

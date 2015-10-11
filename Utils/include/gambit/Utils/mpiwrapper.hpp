@@ -325,6 +325,12 @@ namespace Gambit
               MPI_Abort(boundcomm, 1);
             }
 
+            /// Tells master to wait until all other processes pass this function, with the specified MPI tag
+            void masterWaitForAll(int tag);
+
+            /// Inverse of the above. Everyone waits for master to pass this (but not for anyone else)
+            void allWaitForMaster(int tag);
+
          private:
 
             // The MPI communicator to which the current object "talks".

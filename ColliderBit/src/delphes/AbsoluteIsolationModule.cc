@@ -14,6 +14,9 @@
  *
  */
 
+#include "gambit/cmake/cmake_variables.hpp"
+#ifndef EXCLUDE_DELPHES
+
 #include "AbsoluteIsolationModule.h"
 ClassImp(AbsoluteIsolation)
 
@@ -184,3 +187,4 @@ void AbsoluteIsolation::Process()
 }
 
 //------------------------------------------------------------------------------
+#endif //EXCLUDE_DELPHES

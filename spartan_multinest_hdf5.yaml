@@ -12,9 +12,9 @@ Parameters:
   # In this test file we will simply be fitting the mean and standard deviation of a normal distribution.
   NormalDist:
     mu: 
-      range: [-100, 100]      
+      range: [15, 30]      
     sigma:
-      range: [0, 100]
+      range: [0, 5]
 
 #======== Prior setup ========
 Priors:
@@ -24,8 +24,8 @@ Priors:
 Printer:
   printer: hdf5
   options:
-    output_file: "runs/spartan_multinest_hdf5/samples/gambit_output.hdf5"
-    group: "/test/test2"
+    output_file: "results.hdf5"
+    group: "/gambit_data"
     delete_file_if_exists: true
 
 #======== Scanner setup ========
@@ -36,32 +36,26 @@ Scanner:
     multinest:
       plugin: MultiNest
       options:
-        like:  Likelihood
-        nlive: 500
-        tol: 0.1
+        like:  LogLike
+        nlive: 1000
+        tol: 0.01
         mmodal: 0
         # write native MultiNest ascii output files?
-        outfile: 0
-        root: "runs/spartan_multinest_hdf5/samples/native-"
-        # resuming doesn't work yet
-        resume: 0
+        outfile: 1 # yes, need them for resuming
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
     de:
       plugin: Diver
-      like: Likelihood
-      NP: 100
-      path: "runs/spartan_diver/diver_native"
+      like: LogLike
+      NP: 1000
+      #path: "diver_native"
       verbosity: 1
-      aux_printer_txt_options:
-        output_file: "runs/spartan_diver/samples/gambit_output.txt"
-        info_file: "runs/spartan_diver/samples/gambit_output.txt_info"
-
+                    
 #======== Observables of interest ========
 ObsLikes:
-  - purpose:      Likelihood
+  - purpose:      LogLike
     capability:   normaldist_loglike
     module:       ExampleBit_A
     type:         double
@@ -72,7 +66,6 @@ Rules:
 
 #======== Logging setup ========
 Logger:
-  prefix : "runs/spartan_multinest_hdf5/logs/"
   redirection:
     [Default]      : "default.log"
     [Utilities]    : "utils.log"
@@ -83,6 +76,8 @@ Logger:
 
 #======== Generic Name/Value Section ========
 KeyValues:
+
+  default_output_path: "runs/spartan_multinest_hdf5/"
 
   rng: ranlux48
 

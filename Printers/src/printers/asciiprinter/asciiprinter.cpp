@@ -93,7 +93,7 @@ namespace Gambit
          // Get primary printer (need to cast from BasePrinter type to asciiPrinter)
          asciiPrinter* primary = dynamic_cast<asciiPrinter*>(this->get_primary_printer());
 
-         // Name files based on the primary printer filenames, or use a user-supplied option
+         // Name files based on the primary printer filenames
          std::ostringstream f;
          f << primary->get_output_filename() << "_" << printer_name;
          output_file = Utils::ensure_path_exists(options.getValueOrDef<std::string>(f.str(),"output_file"));
@@ -104,7 +104,19 @@ namespace Gambit
       else
       {
          printer_name = "Primary";     
-         output_file = Utils::ensure_path_exists(options.getValue<std::string>("output_file"));
+
+         std::ostringstream f;
+         if(options.hasKey("output_path"))
+         {
+           f << options.getValue<std::string>("output_path") << "/";
+         }
+         else
+         {
+           f << options.getValue<std::string>("default_output_path") << "/";
+         }
+         f << options.getValue<std::string>("output_file");
+         output_file = Utils::ensure_path_exists(f.str());
+
          bufferlength = options.getValueOrDef<uint>(100,"buffer_length");
       }
 

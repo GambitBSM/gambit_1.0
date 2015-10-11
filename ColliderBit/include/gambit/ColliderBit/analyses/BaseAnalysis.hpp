@@ -6,6 +6,7 @@
 #include "gambit/ColliderBit/Utils.hpp"
 #include "HEPUtils/MathUtils.h"
 #include "HEPUtils/Event.h"
+#include "omp.h"
 
 using std::vector;
 
@@ -47,7 +48,7 @@ namespace Gambit {
         BaseAnalysis() : _ntot(0), _xsec(-1), _xsecerr(-1) {  }
         virtual ~BaseAnalysis() { }
         /// @brief Reset this instance for reuse, avoiding the need for "new" or "delete".
-        virtual void clear() { }
+        virtual void clear() { _ntot = 0; _xsec = -1; _xsecerr = -1; _results.clear(); }
       //@}
 
       /// @name Event analysis, event number, and cross section functions
@@ -88,12 +89,20 @@ namespace Gambit {
       //@{
       public:
         /// @brief General init for any analysis of this type.
-        virtual void init(const std::vector<std::string>& externalSettings) { }
+        virtual void init(const std::vector<std::string>&) {}
         /// @brief General init for any collider of this type - no settings version.
         virtual void init() { }
-        /// @brief Finalize: scale by number of input events, etc.
+        /// @brief Finalize: Does... nothing?
         /// @todo Necessary?
         virtual void finalize() { }
+        /// @brief Scale by number of input events and xsec
+        virtual void scale(double factor) {
+          auto myIter = _results.begin();
+          while (myIter != _results.end()) {
+            (*myIter).n_signal *= factor;
+            myIter++;
+          }
+        }
       //@}
 
       /// @name BaseAnalysis combination operations
@@ -113,8 +122,6 @@ namespace Gambit {
         }
         /// @brief Add cross-sections and errors for two different process types
         void add_xsec(double xs, double xserr) {
-          std::stringstream msg;
-          //msg << "Adding xsecs: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
           if (xs > 0) {
             if (xsec() <= 0) {
               set_xsec(xs, xserr);
@@ -123,13 +130,9 @@ namespace Gambit {
               _xsecerr = HEPUtils::add_quad(xsec_err(), xserr);
             }
           }
-          msg << " => " << xsec() << " +- " << xsec_err();
-          std::cout << msg.str() << std::endl;
         }
         /// @brief Combine the provided cross-section with the existing one of the same type, assuming uncorrelated errors
         void improve_xsec(double xs, double xserr) {
-          std::stringstream msg;
-          msg << "Improving xsec: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
           if (xs > 0) {
             if (xsec() <= 0) {
               set_xsec(xs, xserr);
@@ -138,8 +141,6 @@ namespace Gambit {
               _xsecerr = HEPUtils::add_quad(xsec_err(), xserr) / 2.0;
             }
           }
-          msg << " => " << xsec() << " +- " << xsec_err();
-          std::cout << msg.str() << std::endl;
         }
       //@}
     };

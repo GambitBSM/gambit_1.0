@@ -11,11 +11,11 @@ import sys
 chunksize = 1000
 
 def usage():
-   print ("\nusage: python combine_hdf5.py <path-to-hdf5-file-root-name> <root group in hdf5 files> <Number of files> <resume> [--runchecks]"
+   print ("\nusage: python combine_hdf5.py <path-to-target-hdf5-file> <path-to-root-temporary-hdf5-file-name> <root group in hdf5 files> <Number of files> <resume> [--runchecks]"
           "\n"
           "Attempts to combine the data in a group of hdf5 files produced by HDF5Printer but by separate processes during a GAMBIT run.\n"
           "Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)")
-   quit()  
+   exit(1)  
  
 def get_dset_lengths(d,group,dsets):
    for itemname in group: 
@@ -55,28 +55,29 @@ def copy_dset(indset,outdset,nextempty):
 
 # Combine two integers into one integer with unique mapping
 def cantor_pairing(x,y):
-   return (x+y)*(x+y+1)/2 + y
+   return (x+y)*(x+y+1)//2 + y
 
 #====Begin "main"=================================
 
-if len(sys.argv)!=5 and len(sys.argv)!=6: usage()
+if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
 
 runchecks=False
-if len(sys.argv)==6:
-   if sys.argv[5]=="--runchecks": 
+if len(sys.argv)==7:
+   if sys.argv[6]=="--runchecks": 
       runchecks=True
    else:
       usage()
 
-rootfname = sys.argv[1]
-outfname = rootfname
-group = sys.argv[2]
+outfname = sys.argv[1]
+rootfname = sys.argv[2]
+group = sys.argv[3]
 RA_group = group + "/RA"
-N = int(sys.argv[3])
-resume = bool(int(sys.argv[4]))
+N = int(sys.argv[4])
+resume = bool(int(sys.argv[5]))
 
 print(os.getcwd())
-print "Root filename:", rootfname
+print "Target combined filename:", outfname
+print "Temporary file root name:", rootfname
 print "Root group: ", group
 print "Number of files to combine: ", N
 print "Resume:", resume
@@ -85,13 +86,14 @@ print "Analysing input files..."
 
 files = {}
 
-sync_dsets = set([])
-RA_dsets = set([])
+sync_dsets = [set([]) for i in range(N)]
+RA_dsets = [set([]) for i in range(N)]
 RA_dsets_exclude = set(["RA_pointID","RA_pointID_isvalid","RA_MPIrank","RA_MPIrank_isvalid"])
-total_sync_length = 0
+sync_lengths = [0 for i in range(N)]
+RA_lengths = [0 for i in range(N)]
+fnames = ["{0}_temp_{1}".format(rootfname,i) for i in range(N)]
 
-for i in range(N):
-   fname = "{0}_temp_{1}".format(rootfname,i)
+for i,fname in enumerate(fnames):
    print "   Opening {0}...".format(fname)
    f = h5py.File(fname,'r')
    files[fname] = f
@@ -102,27 +104,43 @@ for i in range(N):
    tmp_RA_dset_metadata = {}
    # First get total lengths of the sync datasets
    if group in f:
-      get_dset_lengths(tmp_dset_metadata,f[group],sync_dsets)
-      total_sync_length += check_lengths(tmp_dset_metadata)
+      get_dset_lengths(tmp_dset_metadata,f[group],sync_dsets[i])
+      sync_lengths[i] = check_lengths(tmp_dset_metadata)
    else:
       raise ValueError("File '{0}' does not contain the group '{1}!'".format(fname,group))
    # Next get total lengths of the RA datasets
    if RA_group in f:
-      get_dset_lengths(tmp_RA_dset_metadata,f[RA_group],RA_dsets)
-      check_lengths(tmp_RA_dset_metadata)
+      get_dset_lengths(tmp_RA_dset_metadata,f[RA_group],RA_dsets[i])
+      RA_lengths[i] = check_lengths(tmp_RA_dset_metadata)
    else:
       raise ValueError("File '{0}' does not contain the group '{1}!'".format(fname,RA_group))
    print "      ...done"
 
+total_sync_length = sum(sync_lengths)
+
 # Make sure all sync dsets have the same length
  
 print "Sync dsets:"
-for item in sorted(sync_dsets):
-   print "  ",item
+for i,fname in enumerate(fnames):
+   print " In {0}".format(fname)
+   if len(sync_dsets[i])==0:
+      print "   - None"
+   else:
+      for item in sorted(sync_dsets[i]):
+         print "   - ", item
+      print "   sync_length = {0}".format(sync_lengths[i]) 
+
 print "RA dsets:"
-for item in sorted(RA_dsets):
-   print "  ",item
-print "total sync length =",total_sync_length
+for i,fname in enumerate(fnames):
+   print " In {0}".format(fname)
+   if len(RA_dsets[i])==0:
+      print "   - None"
+   else:
+      for item in sorted(RA_dsets[i]):
+         print "   - ", item
+      print "   RA_length = {0}".format(RA_lengths[i]) 
+
+print "Combined sync length = ", total_sync_length
 
 if resume:
    print "Accessing existing output file for adding new data following resume..."
@@ -160,19 +178,21 @@ for dsetname,dset in existing_dsets.items():
 
 # Create dataset to match every sync and RA dataset
 target_dsets = {}
-for dsetname,dt in sorted(sync_dsets):   
+all_sync_dsets = set([]).union(*sync_dsets)
+all_RA_dsets   = set([]).union(*RA_dsets)
+for dsetname,dt in sorted(all_sync_dsets):   
    if not dsetname in gout:
       print "   Creating empty dset:", dsetname
       target_dsets[dsetname] = gout.create_dataset(dsetname, (init_output_length+total_sync_length,), chunks=(chunksize,), dtype=dt, maxshape=(None,))
    else:
-      target_dsets[dsetname] = existing_dsets[dsetname]
-for dsetname,dt in sorted(RA_dsets):
+      target_dsets[dsetname] = gout[dsetname]
+for dsetname,dt in sorted(all_RA_dsets):
    if not dsetname in RA_dsets_exclude:
       if not dsetname in gout:
          print "   Creating empty dset:", dsetname
          target_dsets[dsetname] = gout.create_dataset(dsetname, (init_output_length+total_sync_length,), chunks=(chunksize,), dtype=dt, maxshape=(None,))
       else:
-         target_dsets[dsetname] = existing_dsets[dsetname]
+         target_dsets[dsetname] = gout[dsetname]
 
 # Copy data from separate sync datasets into combined datasets
 nextempty=init_output_length
@@ -215,18 +235,20 @@ for i in range(N):
       # convert entries to single values to facilitate fast comparison
       IDs_in = cantor_pairing(pointIDs_in[mask_in],mpiranks_in[mask_in])
 
-      if runchecks:
-         print "   checking input selection for duplicate keys..."
-         seen = []
-         allid = []       
-         for ID,p,r in zip(IDs_in,pointIDs_in[mask_in],mpiranks_in[mask_in]):
-            if ID in seen:
-               print "   Warning!", ID, "is duplicated!"
-               x=(ID,p,r)
-               if x in allid:
-                 print "   ...and so are the pointID and MPIrank:", x
-            seen+=[ID]
-            allid+=[(ID,p,r)]
+      #if runchecks:
+      #   print "   checking input selection for duplicate keys..."
+      #   ids  = IDs_in
+      #   pid  = pointIDs_in[mask_in]
+      #   rank = mpiranks_in[mask_in]
+      #   for ID,p,r in zip(ids,pid,rank):
+      #      Nmatches = np.sum(ID==ids)
+      #      if Nmatches>1:
+      #         print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
+      #         pMatch = np.sum(p==pid)
+      #         rMatch = np.sum(r==rank)
+      #         if pMatch>1 or rMatch>1:
+      #           print "   ...pointID duplicate count: ", pMatch
+      #           print "   ...MPIrank duplicate count: ", rMatch
 
       # Find them in the target output file
       pointIDs_out         = fout[group]["pointID"]
@@ -235,23 +257,31 @@ for i in range(N):
       mpiranks_isvalid_out = np.array(fout[group]["MPIrank_isvalid"][:],dtype=np.bool)
  
       mask_out = (pointIDs_isvalid_out & mpiranks_isvalid_out) 
-      print "...{0} RA targets found.".format(np.sum(mask_out))
+      print "...{0} possible RA targets found.".format(np.sum(mask_out))
 
       # convert entries to single values to facilitate fast comparison
-      IDs_out = cantor_pairing(pointIDs_out[mask_out],mpiranks_out[mask_out])
+      IDs_out = cantor_pairing( 
+                  np.array(pointIDs_out[mask_out],dtype=np.longlong),
+                  np.array(mpiranks_out[mask_out],dtype=np.longlong)
+                  )
+      # check that the pairing has not overflowed
+      if np.any(IDs_out<0):
+         raise ValueError("Error while computing cantor pairing for RA to SYNC matching! Integer overflow detected, so matching will fail! Please increase the size of the integer type used!")
 
       if runchecks:
          print "   checking output selection for duplicate keys..."
-         seen = []
-         allid = []       
-         for ID,p,r in zip(IDs_out,pointIDs_out[mask_out],mpiranks_out[mask_out]):
-            if ID in seen:
-               print "   Warning!", ID, "is duplicated!"
-               x=(ID,p,r)
-               if x in allid:
-                 print "   ...and so are the pointID ({0}) and MPIrank ({0})".format(p,r)
-            seen+=[ID]
-            allid+=[(ID,p,r)]
+         ids  = IDs_out
+         pid  = pointIDs_out[mask_out]
+         rank = mpiranks_out[mask_out]
+         for ID,p,r in zip(ids,pid,rank):
+            Nmatches = np.sum(ID==ids)
+            if Nmatches>1:
+               print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
+               pMatch = np.sum(p==pid)
+               rMatch = np.sum(r==rank)
+               if pMatch>1 or rMatch>1:
+                 print "   ...pointID duplicate count: ", pMatch
+                 print "   ...MPIrank duplicate count: ", rMatch
 
       # Find which IDs in the output dataset are write targets
       target_mask_small = np.in1d(IDs_out,IDs_in)
@@ -265,19 +295,31 @@ for i in range(N):
       target_mask = np.zeros(target_length, dtype=bool)
       target_mask[maskindices] = True
 
-      # TODO: I think this is screwing up; after masking, I think there are still output dset IDs left that are not targets (i.e. not in the IDs_in list) check:
       if runchecks:
          print "   Double-checking that all selected input dset entries have matching targets in the output dsets..." 
-         for ID in IDs_in:
-            if ID not in IDs_out[target_mask_small]:
-               print "   Warning! No target for ID {0} found in output selection!".format(ID)
+         for ID,pid,rank in zip(IDs_in,pointIDs_in[mask_in],mpiranks_in[mask_in]):
+            if ID not in IDs_out: #[target_mask_small]:
+               print "   Warning! No target for ID {0} found in output selection! ({1},{2})".format(ID,pid,rank)
+               indexid = np.where( (np.array(IDs_out)==ID) )
+               index   = np.where( (np.array(pointIDs_out[mask_out])==pid) &
+                                   (np.array(mpiranks_out[mask_out])==rank) )[0][0]
+               print "index of match by ID       = ", indexid
+               print "index of match by pid,rank = ", index
+               print "pid,rank =",pid,rank
+               print "pointID? ", pointIDs_out[mask_out][index]
+               print "valid? ",   pointIDs_isvalid_out[mask_out][index]
+               print "rank? ",  mpiranks_out[mask_out][index]
+               print "valid? ", mpiranks_isvalid_out[mask_out][index]
+               print "cantor =", cantor_pairing(pid,rank)
+               print "cantor==ID? ", cantor_pairing(pid,rank)==ID
+             
 
       # Number of "true" elements in target mask should match number of elements in 'in' arrays (after masking)
       # Check this
       ntargets = np.sum(target_mask)
       nsources = np.sum(mask_in)
       if ntargets!=nsources:
-         raise ValueError("Error while computing targets for RA writes! Number of targets for writes in the output dataset ({0}) does not match the number of elements scheduled for copying {1}!".format(ntargets,nsources))
+         raise ValueError("Error while computing targets for RA writes! Number of target matches for writes in the output dataset ({0}) does not match the number of elements scheduled for copying {1}!".format(ntargets,nsources))
 
       ## Just some test code which I decided to keep around since it is helpful
       ## for understand how the rearrangment of the input data to match the output

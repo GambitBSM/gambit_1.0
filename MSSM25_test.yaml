@@ -1,15 +1,53 @@
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
+  #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml # for fixed point
+  MSSM25atQ:
+    Qin: 1.9422e+16
+    SignMu: 1
+    TanBeta: 10
+    mHu2: 15625
+    mHd2: 15625    
+
+    M1:
+      range: [0, 1000]      
+    M2:
+      range: [0, 1000]      
+    M3:
+      range: [0, 1000]      
+
+    mq2_1: 15625.0
+    mq2_2: 15625.0
+    mq2_3: 15625.0
+
+    ml2_1: 15625.0
+    ml2_2: 15625.0
+    ml2_3: 15625.0
+    
+    md2_1: 15625.0
+    md2_2: 15625.0
+    md2_3: 15625.0
+    
+    mu2_1: 15625.0
+    mu2_2: 15625.0
+    mu2_3: 15625.0
+    
+    me2_1: 15625.0
+    me2_2: 15625.0
+    me2_3: 15625.0
+    
+    Ae_12:
+      range: [-1000, 1000]      
+    Ae_3: 0
+    Ad_3: 0
+    Au_3: 0
 
 Priors:
-    # none: all parameters fixed.
+    # none: all parameters fixed or have simple priors
     
 Printer:
   printer: ascii
   options:
-    output_file: "runs/MSSM25_test/samples/gambit_output.txt"
-    info_file: "runs/MSSM25_test/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 Scanner:
   use_scanner: toy_mcmc
@@ -24,13 +62,11 @@ Scanner:
 
 ObsLikes:
   - purpose:      Test
-    capability:   SpecBit_examples
-    type:         bool
-    function:     exampleRead
+    capability:   run_MSSMspectrum_test
 
-  #- purpose:      Test
-  #  capability:   decay_rates
-  #  type:         DecayTable
+#  - purpose:      Test
+#    capability:   decay_rates
+#    type:         DecayTable
 
 Rules:
   - capability: SpecBit_examples
@@ -42,7 +78,7 @@ Rules:
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
-      precision_goal:        1.0e-4
+      precision_goal:        1.0e-3
       max_iterations:        0
       calculate_sm_masses:   false
       pole_mass_loop_order:  2
@@ -57,7 +93,6 @@ Rules:
 
 Logger:
 
-  prefix : "runs/MSSM25_test/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -65,6 +100,8 @@ Logger:
     [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
+
+  default_output_path: "run/MSSM25_test"
 
   dependency_resolution:
     prefer_model_specific_functions: true

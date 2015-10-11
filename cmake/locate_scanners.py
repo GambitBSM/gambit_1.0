@@ -561,7 +561,7 @@ endif()                                          \n\
                                                  \n\
 set( reqd_lib_output )                           \n\
 set( exclude_lib_output )                        \n\n\
-set( PLUGIN_COMPILE_FLAGS \"${CMAKE_CXX_FLAGS}\")\n\n\
+set( PLUGIN_COMPILE_FLAGS \"${GAMBIT_CXX_FLAGS}\")\n\n\
 if(MPI_C_FOUND)                                  \n\
     set( PLUGIN_COMPILE_FLAGS \"${PLUGIN_COMPILE_FLAGS} ${MPI_C_COMPILE_FLAGS}\" )\n\
     set( PLUGIN_COMPILE_DIRECTORIES              \n\
@@ -785,6 +785,11 @@ endif()                                          \n\n"
     towrite += "set(SCANNERBIT_PLUGINS ${SCANNERBIT_PLUGINS} PARENT_SCOPE)\n"
     towrite += "file( WRITE ${PROJECT_SOURCE_DIR}/scratch/scanbit_excluded_libs.yaml \"${exclude_lib_output}\" )\n"
     towrite += "file( WRITE ${PROJECT_SOURCE_DIR}/scratch/scanbit_linked_libs.yaml \"${reqd_lib_output}\" )\n\n"
+    
+    towrite += "#################################################################################\n\n"
+    towrite += "foreach (plugin ${SCANNERBIT_PLUGINS})\n"
+    towrite += " "*4 + "add_dependencies(ScannerBit ${plugin})\n"
+    towrite += "endforeach()\n"
     
     cmake = "./ScannerBit/CMakeLists.txt"
     candidate = build_dir+"/ScannerBit_CMakeLists.txt.candidate"
