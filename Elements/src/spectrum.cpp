@@ -113,7 +113,7 @@ namespace Gambit
    
    /// Overloads for PDG types
    /// These just convert the types and then call the properly defined functions
-   DEFINE_PDG_GETTERS(Spectrum,Pole_Mass)
+   //DEFINE_PDG_GETTERS(Spectrum,Pole_Mass) //TODO: redo
 
    /// Linked running
    /// Only possible with non-const object
@@ -143,18 +143,21 @@ namespace Gambit
    /// "Shortcut" getters/checkers to access pole masses in hosted SubSpectrum objects.
    /// HE object given higher priority; if no match found, LE object will be 
    /// checked. If still no match, error is thrown.
-   bool Spectrum::has_Pole_Mass(const std::string& mass) const 
+   /// TODO: These currently work for anything! Need to restrict them to only allow
+   /// access to pole masses and their estimated uncertainties
+   /// Also need to change error messages etc, plus the PDG overloads
+   bool Spectrum::has(const Par::Phys partype, const std::string& mass) const 
    {
-     return (HE->phys().has_Pole_Mass(mass) or LE->phys().has_Pole_Mass(mass)); 
+     return (HE->phys().has(partype,mass) or LE->phys().has(partype,mass)); 
    }
    
-   double Spectrum::get_Pole_Mass(const std::string& mass) const 
+   double Spectrum::get(const Par::Phys partype, const std::string& mass) const 
    {
      double result(-1);
-     if( HE->phys().has_Pole_Mass(mass) )
-     { result = HE->phys().get_Pole_Mass(mass); }
-     else if( LE->phys().has_Pole_Mass(mass) ) 
-     { result = LE->phys().get_Pole_Mass(mass); }
+     if( HE->phys().has(partype,mass) )
+     { result = HE->phys().get(partype,mass); }
+     else if( LE->phys().has(partype,mass) ) 
+     { result = LE->phys().get(partype,mass); }
      else
      {
         std::ostringstream errmsg;
@@ -169,18 +172,18 @@ namespace Gambit
      return result;
    }
    
-   bool Spectrum::has_Pole_Mass(const std::string& mass, const int index) const 
+   bool Spectrum::has(const Par::Phys partype, const std::string& mass, const int index) const 
    {
-     return (HE->phys().has_Pole_Mass(mass,index) or LE->phys().has_Pole_Mass(mass,index)); 
+     return (HE->phys().has(partype,mass,index) or LE->phys().has(partype,mass,index)); 
    }
    
-   double Spectrum::get_Pole_Mass(const std::string& mass, const int index) const 
+   double Spectrum::get(const Par::Phys partype, const std::string& mass, const int index) const 
    {
      double result(-1);
-     if( HE->phys().has_Pole_Mass(mass,index) )
-     { result = HE->phys().get_Pole_Mass(mass,index); }
-     else if( LE->phys().has_Pole_Mass(mass,index) ) 
-     { result = LE->phys().get_Pole_Mass(mass,index); }
+     if( HE->phys().has(partype,mass,index) )
+     { result = HE->phys().get(partype,mass,index); }
+     else if( LE->phys().has(partype,mass,index) ) 
+     { result = LE->phys().get(partype,mass,index); }
      else
      {
         std::ostringstream errmsg;
@@ -191,7 +194,70 @@ namespace Gambit
      // [[noreturn]]
      return result;
    }
-   
+  
+   /// @{ PDB getter/checker overloads
+
+   /* Input PDG code plus context integer as separate arguments */
+   bool Spectrum::has(const Par::Phys partype, 
+                        const int pdg_code, const int context) const
+   {
+      return has( partype, std::make_pair(pdg_code,context) );
+   }
+
+   /* Input PDG code plus context integer as separate arguments */
+   double Spectrum::get(const Par::Phys partype, 
+                        const int pdg_code, const int context) const
+   {
+      return get( partype, std::make_pair(pdg_code,context) );
+   }
+
+   /* Input PDG code plus context integer as pair */
+   bool Spectrum::has(const Par::Phys partype, 
+                        const std::pair<int,int> pdgpr) const
+   {
+      /* If there is a short name, then retrieve that plus the index */      
+      if( Models::ParticleDB().has_short_name(pdgpr) )                       
+      {                                                                      
+        return has( partype, Models::ParticleDB().short_name_pair(pdgpr) );
+      }                                                                      
+      else /* Use the long name with no index instead */                     
+      {                                                                      
+        return has( partype, Models::ParticleDB().long_name(pdgpr) );      
+      }                                                                      
+   }
+
+   /* Input PDG code plus context integer as pair */
+   double Spectrum::get(const Par::Phys partype, 
+                        const std::pair<int,int> pdgpr) const
+   {
+      /* If there is a short name, then retrieve that plus the index */      
+      if( Models::ParticleDB().has_short_name(pdgpr) )                       
+      {                                                                      
+        return get( partype, Models::ParticleDB().short_name_pair(pdgpr) );
+      }                                                                      
+      else /* Use the long name with no index instead */                     
+      {                                                                      
+        return get( partype, Models::ParticleDB().long_name(pdgpr) );      
+      }                                                                      
+   }
+
+   /* Input short name plus index as pair */
+   bool Spectrum::has(const Par::Phys partype, 
+                        const std::pair<str,int> shortpr) const
+   {
+      return has( partype, shortpr.first, shortpr.second);
+   }
+
+   /* Input short name plus index as pair */
+   double Spectrum::get(const Par::Phys partype, 
+                        const std::pair<str,int> shortpr) const
+   {
+      return get( partype, shortpr.first, shortpr.second);
+   }
+
+   /// @}
+
+ 
    /// SLHAea object getter
    /// First constructs an SLHAea object from the SMINPUTS object, then adds the info from
    /// the LE subspectrum (if possible), followed by the HE subspectrum (if possible). Any duplicate

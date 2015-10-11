@@ -10,8 +10,8 @@
 #else
   #define BACKENDNAME HiggsBounds
 #endif
-#define VERSION 4.2
-#define SAFE_VERSION 4_2
+#define VERSION 4.2.1
+#define SAFE_VERSION 4_2_1
 
 /* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */
@@ -48,13 +48,13 @@ BE_FUNCTION(finish_HiggsBounds_chisqtables, void, (), "finish_higgsbounds_chisqt
 // Input sub-routines
 BE_FUNCTION(HiggsBounds_input_SLHA, void, (const char&), "higgsbounds_input_slha_", "HiggsBounds_input_SLHA")
 BE_FUNCTION(HiggsBounds_neutral_input_part, void, (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
-						   double*, double*, double*, double*, double*, double*, double*,
-						   double*, double*, double*, double*, double*, double*, double*,
-						   double*, double*, double*, double*, double*, double*, double*,
-						   double*, double*, double*, double*, double*, double*, double*,
-						   double*, double*, Farray<double, 1,3, 1,3>&), "higgsbounds_neutral_input_part_", "HiggsBounds_neutral_input_part")
+               double*, double*, double*, double*, double*, double*, double*,
+               double*, double*, double*, double*, double*, double*, double*,
+               double*, double*, double*, double*, double*, double*, double*,
+               double*, double*, double*, double*, double*, double*, double*,
+               double*, double*, Farray<double, 1,3, 1,3>&), "higgsbounds_neutral_input_part_", "HiggsBounds_neutral_input_part")
 BE_FUNCTION(HiggsBounds_charged_input, void, (double*, double*, double*, double*,
-					      double*, double*, double*, double*), "higgsbounds_charged_input_", "HiggsBounds_charged_input")
+                double*, double*, double*, double*), "higgsbounds_charged_input_", "HiggsBounds_charged_input")
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

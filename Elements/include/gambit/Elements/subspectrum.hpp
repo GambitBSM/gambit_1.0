@@ -24,6 +24,7 @@
 #ifndef __SubSpectrum_hpp__
 #define __SubSpectrum_hpp__
 
+#include "gambit/Utils/safebool.hpp"
 #include "gambit/Elements/subspectrum_head.hpp"
 #include "gambit/Elements/spec_fptrfinder.hpp"
 
@@ -36,65 +37,65 @@ namespace Gambit {
    /* Input PDG code plus context integer as separate arguments */
    template <class PT>
    bool CommonFuncs<PT>::has(const PT partype, 
-                        const int pdg_code, const int context) const
+                        const int pdg_code, const int context, SafeBool check_antiparticle) const
    {
-      return has( partype, std::make_pair(pdg_code,context) );
+      return has( partype, std::make_pair(pdg_code,context), check_antiparticle );
    }
 
    /* Input PDG code plus context integer as separate arguments */
    template <class PT>
    double CommonFuncs<PT>::get(const PT partype, 
-                        const int pdg_code, const int context) const
+                        const int pdg_code, const int context, SafeBool check_antiparticle) const
    {
-      return get( partype, std::make_pair(pdg_code,context) );
+      return get( partype, std::make_pair(pdg_code,context), check_antiparticle );
    }
 
    /* Input PDG code plus context integer as pair */
    template <class PT>
    bool CommonFuncs<PT>::has(const PT partype, 
-                        const std::pair<int,int> pdgpr) const
+                        const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
    {
       /* If there is a short name, then retrieve that plus the index */      
       if( Models::ParticleDB().has_short_name(pdgpr) )                       
       {                                                                      
-        return has( partype, Models::ParticleDB().short_name_pair(pdgpr) );
+        return has( partype, Models::ParticleDB().short_name_pair(pdgpr), check_antiparticle );
       }                                                                      
       else /* Use the long name with no index instead */                     
       {                                                                      
-        return has( partype, Models::ParticleDB().long_name(pdgpr) );      
+        return has( partype, Models::ParticleDB().long_name(pdgpr), check_antiparticle );      
       }                                                                      
    }
 
    /* Input PDG code plus context integer as pair */
    template <class PT>
    double CommonFuncs<PT>::get(const PT partype, 
-                        const std::pair<int,int> pdgpr) const
+                        const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
    {
       /* If there is a short name, then retrieve that plus the index */      
       if( Models::ParticleDB().has_short_name(pdgpr) )                       
       {                                                                      
-        return get( partype, Models::ParticleDB().short_name_pair(pdgpr) );
+        return get( partype, Models::ParticleDB().short_name_pair(pdgpr), check_antiparticle );
       }                                                                      
       else /* Use the long name with no index instead */                     
       {                                                                      
-        return get( partype, Models::ParticleDB().long_name(pdgpr) );      
+        return get( partype, Models::ParticleDB().long_name(pdgpr), check_antiparticle );      
       }                                                                      
    }
 
    /* Input short name plus index as pair */
    template <class PT>
    bool CommonFuncs<PT>::has(const PT partype, 
-                        const std::pair<str,int> shortpr) const
+                        const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
    {
-      return has( partype, shortpr.first, shortpr.second);
+      return has( partype, shortpr.first, shortpr.second, check_antiparticle);
    }
 
    /* Input short name plus index as pair */
    template <class PT>
    double CommonFuncs<PT>::get(const PT partype, 
-                        const std::pair<str,int> shortpr) const
+                        const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
    {
-      return get( partype, shortpr.first, shortpr.second);
+      return get( partype, shortpr.first, shortpr.second, check_antiparticle);
    }
 
    /// @}
@@ -110,7 +111,7 @@ namespace Gambit {
       // If not, try to use particle database to convert to short
       // name plus index and try that. 
       // Otherwise, add new entry only if safety=false
-      if( has(partype,name) )
+      if( has(partype,name,SafeBool(false)) ) // Don't match on antiparticle; want to override particle if no antiparticle match is found
       {
          get_override_maps.at(partype).m0[name] = value;
          done = true;
@@ -118,14 +119,40 @@ namespace Gambit {
       else if( Models::ParticleDB().has_short_name(name) )
       {
          std::pair<str, int> p = Models::ParticleDB().short_name_pair(name);
-         if( has(partype,name,p.second) )
+         if( has(partype,p.first,p.second,SafeBool(false)) )
          {
-            get_override_maps.at(partype).m1[name][p.second] = value;
+            get_override_maps.at(partype).m1[p.first][p.second] = value;
             done = true;
          }
       }
 
-      // If neither of those worked, either throw an error or add the new key
+      // If no match, try antiparticle
+      // Note, if safety is off, missing "name" will be added instead of checking for antiparticle match
+      if(safety and not done)
+      {
+        if(Models::ParticleDB().has_particle(name) and 
+           Models::ParticleDB().has_antiparticle(name)) 
+        {  
+           std::string antiname = Models::ParticleDB().get_antiparticle(name);
+           // Repeat the logic above
+           if( has(partype,antiname,SafeBool(false)) )
+           {
+              get_override_maps.at(partype).m0[antiname] = value;
+              done = true;
+           }
+           else if( Models::ParticleDB().has_short_name(antiname) )
+           {
+              std::pair<str, int> p = Models::ParticleDB().short_name_pair(antiname);
+              if( has(partype,p.first,p.second,SafeBool(false)) )
+              {
+                 get_override_maps.at(partype).m1[p.first][p.second] = value;
+                 done = true;
+              }
+           }
+        }
+      }
+
+      // If none of that worked, either throw an error or add the new key
       if(safety and not done)
       {                                      
         std::ostringstream errmsg;           
@@ -149,7 +176,7 @@ namespace Gambit {
       // If not, try to use particle database to convert to long name
       // and try that. 
       // Otherwise, add new entry only if safety=false
-      if( has(partype,name,i) )
+      if( has(partype,name,i,SafeBool(false)) ) // Don't match anti-particle; will check that if other matching fails
       {
          get_override_maps.at(partype).m1[name][i] = value;
          done = true;
@@ -157,14 +184,40 @@ namespace Gambit {
       else if( Models::ParticleDB().has_particle(std::make_pair(name, i)) )
       {
          str longname = Models::ParticleDB().long_name(name,i);
-         if( has(partype,longname) )
+         if( has(partype,longname,SafeBool(false)) )
          {
             get_override_maps.at(partype).m0[longname] = value;
             done = true;
          }
       }
 
-      // If neither of those worked, either throw an error or add the new key
+      // If no match, try antiparticle
+      // Note, if safety is off, missing "name" will be added instead of checking for antiparticle match
+      if(safety and not done)
+      {
+        if(Models::ParticleDB().has_particle(name) and 
+           Models::ParticleDB().has_antiparticle(name)) 
+        {  
+           std::string antiname = Models::ParticleDB().get_antiparticle(name);
+           // Repeat the logic above
+           if( has(partype,antiname,i,false) ) // Don't match anti-particle; will check that if other matching fails
+           {
+              get_override_maps.at(partype).m1[antiname][i] = value;
+              done = true;
+           }
+           else if( Models::ParticleDB().has_particle(std::make_pair(antiname, i)) )
+           {
+              str longname = Models::ParticleDB().long_name(antiname,i);
+              if( has(partype,longname,SafeBool(false)) )
+              {
+                 get_override_maps.at(partype).m0[longname] = value;
+                 done = true;
+              }
+           }
+         }
+      }
+
+      // If none of that worked, either throw an error or add the new key
       if( safety and not done )
       {                                      
         std::ostringstream errmsg;           
@@ -233,10 +286,10 @@ namespace Gambit {
    void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const std::vector<str>& params, bool safety)
    {
       for(std::vector<str>::const_iterator it = params.begin();
-	  it != params.end(); ++it)
-	{
+    it != params.end(); ++it)
+  {
           this->set_override(tag, value, *it, safety);
-	}
+  }
    }
 
    template <class PT>
@@ -280,7 +333,7 @@ namespace Gambit {
 
    /// @{ No indices
    template <class PhysOrRun, class PT>
-   bool CommonDer<PhysOrRun,PT>::has(const PT partype, const str& name) const
+   bool CommonDer<PhysOrRun,PT>::has(const PT partype, const str& name, SafeBool check_antiparticle) const
    {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTget MTget;
@@ -306,16 +359,15 @@ namespace Gambit {
                               .map1( mapcoll.map1 )
                               .map1M( mapcoll.map1_extraM )
                               .map1I( mapcoll.map1_extraI );
-      return finder.find(name);                                             
+      return finder.find(name,true,check_antiparticle);                                             
    }                                                                        
 
    template <class PhysOrRun, class PT>
-   double CommonDer<PhysOrRun,PT>::get(const PT partype, const str& name) const
+   double CommonDer<PhysOrRun,PT>::get(const PT partype, const str& name, SafeBool check_antiparticle) const
    {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTget MTget;
       const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-      double result;
 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
@@ -330,17 +382,35 @@ namespace Gambit {
                               .map1( mapcoll.map1 )
                               .map1M( mapcoll.map1_extraM )
                               .map1I( mapcoll.map1_extraI );
-      if( finder.find(name) ){ result = finder.callfcn(); }
-      else { finder.raise_error(LOCAL_INFO); }
-      return result;
+      if( finder.find(name,true,check_antiparticle) ){ return finder.callfcn(); }
+      finder.raise_error(LOCAL_INFO);
+      return 0;
    }                                                                        
  
    template <class PhysOrRun, class PT>
-   void CommonDer<PhysOrRun,PT>::set(const PT partype, const double set_value, const str& name)
+   void CommonDer<PhysOrRun,PT>::set(const PT partype, const double set_value, const str& name, SafeBool check_antiparticle)
    {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTset MTset;
       PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+
+      /* Before trying to set parameter, check if there is an override defined
+         for it, so that we can warn people that the value they are trying to
+         set will be masked by the override */
+      const OverrideMaps overridecoll = derivedthis->get_override_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Set> override_finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
+                              .omap0( overridecoll.m0 ) 
+                              .omap1( overridecoll.m1 )
+                              .override_only(true); // switch to permit search of only override maps
+      if( override_finder.find(name,true,check_antiparticle) )
+      { 
+        std::ostringstream errmsg;           
+        errmsg << "Warning from SubSpectrum object while trying to manually set a parameter!" << std::endl;
+        errmsg << "An override entry was detected for "<<Par::toString.at(partype)<<" with string reference '"<<name<<"'. The override value will hide the value I have been instructed to set." <<std::endl;
+        utils_warning().raise(LOCAL_INFO,errmsg.str());
+      }
+      // else no problem
 
       /* Create finder object, tell it what maps to search, and do the search */
       const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
@@ -352,13 +422,13 @@ namespace Gambit {
                               .map1( mapcoll.map1 )
                               .map1M( mapcoll.map1_extraM )
                               .map1I( mapcoll.map1_extraI );
-     if( finder.find(name) ){ finder.callfcn(set_value); }
+      if( finder.find(name,true,check_antiparticle) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
    }                                                                        
    /// @}
    /// @{ One index
    template <class PhysOrRun, class PT>
-   bool CommonDer<PhysOrRun,PT>::has(const PT partype, const str& name, int i) const
+   bool CommonDer<PhysOrRun,PT>::has(const PT partype, const str& name, int i, SafeBool check_antiparticle) const
    {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTget MTget;
@@ -377,16 +447,15 @@ namespace Gambit {
                               .map1( mapcoll.map1 )
                               .map1M( mapcoll.map1_extraM )
                               .map1I( mapcoll.map1_extraI );
-      return finder.find(name,i);                                             
+      return finder.find(name,i,true,check_antiparticle);                                             
    }                                                                        
 
    template <class PhysOrRun, class PT>
-   double CommonDer<PhysOrRun,PT>::get(const PT partype, const str& name, int i) const
+   double CommonDer<PhysOrRun,PT>::get(const PT partype, const str& name, int i, SafeBool check_antiparticle) const
    {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTget MTget;
       const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-      double result;
 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
@@ -401,17 +470,35 @@ namespace Gambit {
                               .map1(  mapcoll.map1 )
                               .map1M( mapcoll.map1_extraM )
                               .map1I( mapcoll.map1_extraI );
-     if( finder.find(name,i) ){ result = finder.callfcn(); }
-      else { finder.raise_error(LOCAL_INFO); }
-      return result;
+     if( finder.find(name,i,true,check_antiparticle) ){ return finder.callfcn(); }
+     finder.raise_error(LOCAL_INFO);
+     return 0;
    }                                                                        
  
    template <class PhysOrRun, class PT>
-   void CommonDer<PhysOrRun,PT>::set(const PT partype, const double set_value, const str& name, int i)
+   void CommonDer<PhysOrRun,PT>::set(const PT partype, const double set_value, const str& name, int i, SafeBool check_antiparticle)
    {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTset MTset;
       PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+
+      /* Before trying to set parameter, check if there is an override defined
+         for it, so that we can warn people that the value they are trying to
+         set will be masked by the override */
+      const OverrideMaps overridecoll = derivedthis->get_override_maps.at(partype);
+      FptrFinder<DT,PhysOrRun,MapTag::Set> override_finder =                                
+                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
+                              .omap0( overridecoll.m0 ) 
+                              .omap1( overridecoll.m1 )
+                              .override_only(true); // switch to permit search of only override maps
+      if( override_finder.find(name,i,true,check_antiparticle) )
+      { 
+        std::ostringstream errmsg;           
+        errmsg << "Warning from SubSpectrum object while trying to manually set a parameter!" << std::endl;
+        errmsg << "An override entry was detected for "<<Par::toString.at(partype)<<" with string reference '"<<name<<"', index '"<<i<<"'. The override value will hide the value I have been instructed to set." <<std::endl;
+        utils_warning().raise(LOCAL_INFO,errmsg.str());
+      }
+      // else no problem
 
       /* Create finder object, tell it what maps to search, and do the search */
       const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
@@ -423,7 +510,7 @@ namespace Gambit {
                               .map1( mapcoll.map1 ) 
                               .map1M( mapcoll.map1_extraM )
                               .map1I( mapcoll.map1_extraI );
-     if( finder.find(name,i) ){ finder.callfcn(set_value); }
+     if( finder.find(name,i,true,check_antiparticle) ){ finder.callfcn(set_value); }
       else { finder.raise_error(LOCAL_INFO); }
    }                                                                        
 
@@ -455,7 +542,6 @@ namespace Gambit {
       typedef typename PhysOrRun::DT DT;
       typedef typename PhysOrRun::MTget MTget;
       const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-      double result;
 
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
@@ -466,9 +552,9 @@ namespace Gambit {
                               .map2( mapcoll.map2 )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
-      if( finder.find(name,i,j) ){ result = finder.callfcn(); }
-      else { finder.raise_error(LOCAL_INFO); }
-      return result;
+      if( finder.find(name,i,j) ){ return finder.callfcn(); }
+      finder.raise_error(LOCAL_INFO);
+      return 0;
    }                                                                        
  
    template <class PhysOrRun, class PT>

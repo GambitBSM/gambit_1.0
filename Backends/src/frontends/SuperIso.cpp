@@ -46,14 +46,10 @@ BE_NAMESPACE
     double mu_W=2.*param->mass_W;
     double mu_b=param->mass_b_pole;
 
-    cout<<"Got the mass"<<endl;
-
     CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),param);
     C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),param);
     CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),param);
     Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),param);
-    //double BR = BRBKstarmumu(byVal(q2_min), byVal(q2_max), byVal(obs),byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),param,byVal(mu_b));
-
 
     // filling results
     Flav_KstarMuMu_obs results;
@@ -70,10 +66,6 @@ BE_NAMESPACE
     results.S7=(-1.)*obs[19]*sqrt(Fl*(1.-Fl));                                                
     results.S8=obs[21]*sqrt(Fl*(1.-Fl))/(2.);                                                
     results.S9=(-1.)*obs[15]*(1.-Fl); // this is ok                                                  
-
-    
-    
-
 
     return results;
   }
