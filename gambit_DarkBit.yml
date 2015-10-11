@@ -449,8 +449,8 @@ Rules:
       msud_central: 27.5
       msud_error: 1.0
       # m_s
-      ms_central: 95.
-      ms_error: 5.
+      ms_central: 95.E-03
+      ms_error: 5.E-03
 
 #########################
 # Logging setup

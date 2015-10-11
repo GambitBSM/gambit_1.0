@@ -491,8 +491,8 @@ namespace Gambit
         double mud_error = runOptions->getValueOrDef<double>(0.10, "mud_error");
         double msud_central = runOptions->getValueOrDef<double>(27.5, "msud_central");
         double msud_error = runOptions->getValueOrDef<double>(1.0, "msud_error");
-        double ms_central = runOptions->getValueOrDef<double>(95., "ms_central");
-        double ms_error = runOptions->getValueOrDef<double>(5., "ms_error");
+        double ms_central = runOptions->getValueOrDef<double>(95.E-03, "ms_central");
+        double ms_error = runOptions->getValueOrDef<double>(5.E-03, "ms_error");
 
         result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_central, 0., mud_error)
             + Stats::gaussian_loglikelihood(SM.mS/(SM.mU + SM.mD), msud_central, 0., msud_error)
