@@ -32,7 +32,7 @@ Parameters:
       prior_type: log
     TanBeta:
       range: [3.0, 100.0]
-      prior_type: log
+      prior_type: linear
     mHd2:
       range: [1e4, 1e8]
       prior_type: log
