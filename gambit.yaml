@@ -278,9 +278,9 @@ ObsLikes:
     
   # Uncomment to test HiggsBit
   #- purpose:  Likelihood
-  #  capability:  HB_LEPchisq
+  #  capability:  HB_LEP_lnL
   #- purpose:  Likelihood
-  #  capability:  HS_LHCchisq
+  #  capability:  HS_LHC_lnL
 
   # Uncomment to test ColliderBit
   #- purpose:      Observable

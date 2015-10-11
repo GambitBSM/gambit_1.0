@@ -321,7 +321,8 @@ set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 add_external_clean(feynhiggs ${feynhiggs_dir} clean)
 
 # HiggsBounds
-set(higgsbounds_tables_dir "${PROJECT_SOURCE_DIR}/Backends/installed/csboutput_trans_binary")
+set(higgsbounds_tables_loc "${PROJECT_SOURCE_DIR}/Backends/installed/")
+set(higgsbounds_tables_dir "{higgsbounds_tables_loc}/csboutput_trans_binary")
 ExternalProject_Add(higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
   URL_MD5 004decca30335ddad95654a04dd034a6
@@ -343,7 +344,7 @@ ExternalProject_Add(higgsbounds
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
-            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${higgsbounds_tables_dir}\"|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${higgsbounds_tables_loc}\"|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
