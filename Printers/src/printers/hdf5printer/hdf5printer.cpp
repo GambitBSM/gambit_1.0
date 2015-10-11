@@ -484,8 +484,25 @@ namespace Gambit
         printer_name = ss.str();
 
         // Name of file where results should ultimately end up
-        finalfile = options.getValue<std::string>("output_file");
- 
+        std::ostringstream ff;
+        if(options.hasKey("output_path"))
+        {
+          ff << options.getValue<std::string>("output_path") << "/";
+        }
+        else
+        {
+          ff << options.getValue<std::string>("default_output_path") << "/";
+        }
+        if(options.hasKey("output_file"))
+        {
+          ff << options.getValue<std::string>("output_file");
+        }
+        else
+        {
+          printer_error().raise(LOCAL_INFO, "No 'output_file' entry specified in the options section of the Printer category of the input YAML file. Please add a name there for the output hdf5 file of the scan.");
+        }
+        finalfile = ff.str();
+
         // Name of file where combined results from previous (unfinished) runs end up
         std::ostringstream rename;
         rename << finalfile << "_temp_combined";

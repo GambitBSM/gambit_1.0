@@ -179,6 +179,14 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
+  # Choose to take the spectrum generator prediction for the Higgs mass (rather then FeynHiggs')
+  # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along 
+  # with the FH error estimate, to estimate the theoretical error on the prediction.
+  - capability: MSSM_spectrum
+    options:
+      Higgs_predictions_source: 2
+      Higgs_predictions_error_method: 4
+
   # Choose to use functions that get Higgs and top decays from FeynHiggs (rather than SUSY-HIT)
   - capability: A0_decay_rates
     function: FH_A0_decays

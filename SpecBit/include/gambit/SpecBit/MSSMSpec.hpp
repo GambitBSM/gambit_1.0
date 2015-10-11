@@ -31,9 +31,9 @@
 
 #include <memory>
 
-#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
+#include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/SpecBit/MSSMSpec_head.hpp"   // "Header" declarations for MSSMSpec class
 
@@ -94,7 +94,7 @@ namespace Gambit
 
         SLHAea_add_block(slha, "SPINFO");
         SLHAea_add(slha, "SPINFO", 1, "GAMBIT, using "+backend_name);
-        SLHAea_add(slha, "SPINFO", 2, GAMBIT_VERSION " (GAMBIT); "+backend_version+" ("+backend_name+")"); 
+        SLHAea_add(slha, "SPINFO", 2, gambit_version+" (GAMBIT); "+backend_version+" ("+backend_name+")"); 
 
         SLHAea_add_block(slha, "MINPAR");
         SLHAea_add_block(slha, "HMIX",this->runningpars().GetScale());
@@ -110,7 +110,11 @@ namespace Gambit
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
         // FIXME this is wrong, should be at scale mZ, not be at scale Q like this
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
+        //SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
+        if (this->runningpars().has(Par::dimensionless,"TanBeta_input"))
+        {
+          SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"TanBeta_input","MINPAR",3,"# tanbeta(mZ)^DRbar");
+        }
         slha["MINPAR"][""] << 4 << sgn(this->runningpars().get(Par::mass1,"Mu")) << "# sign(mu)";
 
         SLHAea_add_block(slha, "GAUGE",this->runningpars().GetScale());

@@ -88,15 +88,16 @@ namespace Gambit
 
     // Create new printer object (of the same type as the primary printer)
     // and attach it to the provided name.
-    void PrinterManager::new_stream(const std::string& streamname, const Options& options)
+    void PrinterManager::new_stream(const std::string& streamname, const Options& new_options)
     {
        //TODO need some way for the scanners to change the options
        //for the auxiliary printers, e.g. so we can print to a different file
        DBUG( std::cout << "PrinterManager: Creating Auxilliary printer \"" << tag << "\" with name \"" << streamname << "\"" << std::endl; )
-       Options mod_options = options;
+       Options mod_options = new_options;
        mod_options.setValue("resume",this->resume_mode());
        mod_options.setValue("auxilliary",true);
        mod_options.setValue("name",streamname);
+       mod_options.setValue("default_output_path",options.getValue<str>("default_output_path"));
        // To construct printer as an auxilliary printer, a pointer to the primary printer is supplied as well as the options.
        auxprinters[streamname] = printer_creators.at(tag)(mod_options,printerptr);
        // Some printers may requires two-step initiations so this virtual function is provided to allow that.

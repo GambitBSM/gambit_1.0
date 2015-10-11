@@ -108,12 +108,12 @@ namespace Gambit
       void read_yaml_mesurement(string name, string measurement_name) ;
       void construct_theory_b2sll();
       void print(Measurement);
-      void debug_mode() {debug= true;};
+      void debug_mode(bool k) {debug= k;};
       void create_global_corr();
       void print_corr_matrix();
       void print_cov_matrix(); 
       void print_cov_inv_matrix();
-      double calc_Chi2(vector<double> theory, vector<double> theory_error);
+      //double calc_Chi2(vector<double> theory, vector<double> theory_error);
       boost::numeric::ublas::matrix<double> get_cov_uu(){return M_glob_cov_uu;};
       boost::numeric::ublas::matrix<double> get_cov_ud(){return M_glob_cov_ud;};  
       boost::numeric::ublas::matrix<double> get_cov_du(){return M_glob_cov_du;};  
@@ -16667,9 +16667,9 @@ covariance[127][127]=9.9732e-02;
 	 boost::numeric::ublas::matrix<double> get_cov_theory(vector<string> observables)
 	 {
 	     boost::numeric::ublas::matrix<double> cov_th(observables.size(), observables.size());
-	     for(int i=0;i<observables.size();++i)
+	     for(unsigned i=0;i<observables.size();++i)
 	       {
-		 for(int j=0;j<observables.size();++j)
+		 for(unsigned j=0;j<observables.size();++j)
 		   {                                  
 		     cov_th(i,j)=covariance[map_kstarmumu[observables[i]]][ map_kstarmumu[observables[j]]];
 		     

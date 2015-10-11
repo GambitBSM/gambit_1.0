@@ -6,7 +6,6 @@ namespace Gambit {
 
     // Fwd declarations
     DECLARE_ANALYSIS_FACTORY(Perf);
-    DECLARE_ANALYSIS_FACTORY(ATLAS_0LEP);
     DECLARE_ANALYSIS_FACTORY(ATLAS_0LEP_20invfb);
     DECLARE_ANALYSIS_FACTORY(ATLAS_0LEPStop_20invfb);
     DECLARE_ANALYSIS_FACTORY(ATLAS_1LEPStop_20invfb);
@@ -14,7 +13,6 @@ namespace Gambit {
     DECLARE_ANALYSIS_FACTORY(ATLAS_2LEPEW_20invfb);
     DECLARE_ANALYSIS_FACTORY(ATLAS_2LEPStop_20invfb);
     DECLARE_ANALYSIS_FACTORY(ATLAS_3LEPEW_20invfb);
-    DECLARE_ANALYSIS_FACTORY(ATLAS_3LEPEW_CONF_20invfb);
     DECLARE_ANALYSIS_FACTORY(CMS_1LEPDMTOP_20invfb);
     DECLARE_ANALYSIS_FACTORY(CMS_2LEPDMTOP_20invfb);
     DECLARE_ANALYSIS_FACTORY(CMS_3LEPEW_20invfb);
@@ -23,7 +21,6 @@ namespace Gambit {
     // Factory definition
     HEPUtilsAnalysis* mkAnalysis(const std::string& name) {
       #define IF_X_RTN_CREATEX(A) if (name == #A) return create_Analysis_ ## A()
-      IF_X_RTN_CREATEX(ATLAS_0LEP);
       IF_X_RTN_CREATEX(ATLAS_0LEP_20invfb);
       IF_X_RTN_CREATEX(ATLAS_0LEPStop_20invfb);
       IF_X_RTN_CREATEX(ATLAS_1LEPStop_20invfb);
@@ -31,7 +28,6 @@ namespace Gambit {
       IF_X_RTN_CREATEX(ATLAS_2LEPEW_20invfb);
       IF_X_RTN_CREATEX(ATLAS_2LEPStop_20invfb);
       IF_X_RTN_CREATEX(ATLAS_3LEPEW_20invfb);
-      IF_X_RTN_CREATEX(ATLAS_3LEPEW_CONF_20invfb);
       IF_X_RTN_CREATEX(CMS_1LEPDMTOP_20invfb);
       IF_X_RTN_CREATEX(CMS_2LEPDMTOP_20invfb);
       IF_X_RTN_CREATEX(CMS_3LEPEW_20invfb);
@@ -98,6 +94,16 @@ namespace Gambit {
         // analyses is a vector of HEPUtilsAnalysis pointers...
         // Thus, dereferencing the iterator gets me a HEPUtilsAnalysis pointer.
         (*myIter++)->add(*otherIter++);
+      }
+    }
+
+
+    void HEPUtilsAnalysisContainer::scale(double factor) {
+      assert(!analyses.empty());
+      assert(ready);
+      auto myIter = analyses.begin();
+      while (myIter != analyses.end()) {
+        (*myIter++)->scale(factor);
       }
     }
     //@}

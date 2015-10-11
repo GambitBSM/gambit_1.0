@@ -33,8 +33,6 @@ namespace Gambit {
           specializeMe->addToSettings("Beams:eCM = 8000");
           specializeMe->addToSettings("Main:numberOfEvents = 1000");
           specializeMe->addToSettings("Main:timesAllowErrors = 1000");
-          specializeMe->addToSettings("Print:quiet = on");
-          specializeMe->addToSettings("Init:showProcesses = on");
           // Default to SUSY with all subprocesses
           specializeMe->addToSettings("SUSY:all = on");
 
@@ -56,8 +54,11 @@ namespace Gambit {
     //@}
 
 
-    void SpecializablePythia::init_external(const std::vector<std::string>& externalSettings,
+    void SpecializablePythia::init_external(const std::string pythiaDocPath,
+                                     const std::vector<std::string>& externalSettings,
                                      const SLHAea::Coll* slhaea, std::ostream& os) {
+
+        _pythiaInstance = new Pythia8::Pythia(pythiaDocPath, false);
 
       // Special version of the init function for user defined models
       // Needs to directly construct the new matrix elements (rather than use flags)
@@ -72,10 +73,7 @@ namespace Gambit {
 
         // Use all settings to instantiate and initialize Pythia
         for(const auto command : _pythiaSettings)
-          if(command.find(":") == (size_t) -1)
-            _pythiaInstance = new Pythia8::Pythia(command, false);
-          else
-            _pythiaInstance->readString(command);
+          _pythiaInstance->readString(command);
 
         if(!_pythiaInstance) throw InitializationError();
 
@@ -99,8 +97,11 @@ namespace Gambit {
     
     /// @name SpecializablePythia definitions
     //@{
-      void SpecializablePythia::init(const std::vector<std::string>& externalSettings,
+      void SpecializablePythia::init(const std::string pythiaDocPath,
+                                     const std::vector<std::string>& externalSettings,
                                      const SLHAea::Coll* slhaea, std::ostream& os) {
+        _pythiaInstance = new Pythia8::Pythia(pythiaDocPath, false);
+
         // Settings acquired externally (ex from a gambit yaml file)
         for(const auto command : externalSettings) {
           _pythiaSettings.push_back(command);
@@ -111,10 +112,7 @@ namespace Gambit {
 
         // Use all settings to instantiate and initialize Pythia
         for(const auto command : _pythiaSettings)
-          if(command.find(":") == (size_t) -1)
-            _pythiaInstance = new Pythia8::Pythia(command, false);
-          else
-            _pythiaInstance->readString(command);
+          _pythiaInstance->readString(command);
 
         if(!_pythiaInstance) throw InitializationError();
 
