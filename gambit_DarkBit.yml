@@ -285,13 +285,23 @@ ObsLikes:
 # NOTE: treated as observable!
     - capability: lnL_DARWIN_Xe_2015
       purpose:  Observable
+      
+# SM Nuisance Parameter Likelihoods:
 # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
-    - capability: lnL_SI_nuclear_parameters
-      purpose:  Likelihood
-
+#    - capability: lnL_SI_nuclear_parameters
+#      purpose:  Likelihood
 # Charm quark and light quark mass ratio likelihoods
-    - capability: lnL_light_quark_masses
-      purpose:  Likelihood
+#    - capability: lnL_light_quark_masses
+#      purpose:  Likelihood
+# G_Fermi likelihood
+#    - capability: lnL_GF
+#      purpose:  Likelihood
+# alpha_s likelihood
+#    - capability: lnL_alpha_s
+#      purpose:  Likelihood
+# HiggsSignals LHC likelihood
+#    - capability: HS_LHC_lnL
+#      purpose:  Likelihood
 
 # Total annihilation cross-section
     - capability: sigmav
