@@ -32,7 +32,7 @@ Parameters:
       prior_type: log
     TanBeta:
       range: [3.0, 100.0]
-      prior_type: linear
+      prior_type: flat
     mHd2:
       range: [1e4, 1e8]
       prior_type: log
@@ -86,57 +86,55 @@ ObsLikes:
       purpose: Observable
 
     - capability: lnL_FermiLATdwarfs
-      purpose:  Likelihood
+      purpose:    Likelihood
 
     - capability: lnL_XENON100_2012
-      purpose:  Likelihood
+      purpose:    Likelihood
 
     - capability: lnL_LUX_2013
-      purpose:  Likelihood
+      purpose:    Likelihood
       
     - capability: IC79_loglike
-      purpose:  Likelihood
+      purpose:    Likelihood
 
     - capability: lnL_t_mass
-      purpose:  Likelihood
+      purpose:    Likelihood
 
     - capability: lnL_mbmb
-      purpose:  Likelihood
+      purpose:    Likelihood
 
     - capability: lnL_alpha_em
-      purpose:  Likelihood
+      purpose:    Likelihood
 
     - capability: lnL_alpha_s
-      purpose:  Likelihood
+      purpose:    Likelihood
 
     - capability: lnL_W_mass
-      purpose:  Likelihood
+      purpose:    Likelihood
     
     - capability: lnL_sinW2_eff
-      purpose:  Likelihood
+      purpose:    Likelihood
 
     - capability: lnL_deltarho  
-      purpose:  Likelihood
+      purpose:    Likelihood
 
-# Charm quark and light quark mass ratio likelihoods
+    # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
-      purpose:  Likelihood
+      purpose:    Likelihood
 
-    - purpose:      Likelihood
-      capability:   b2ll_LL
+    - purpose:    Likelihood
+      capability: b2ll_LL
 
-    - purpose:      Likelihood
-      capability:   SL_LL
+    - purpose:    Likelihood
+      capability: SL_LL
 
-    - purpose:      Likelihood
-      capability:   b2sll_LL
+    - purpose:    Likelihood
+      capability: b2sll_LL
 
-<<<<<<< HEAD
-# SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
     - capability: lnL_SI_nuclear_parameters
-      purpose:  Likelihood
+      purpose:    Likelihood
         
-=======
     - purpose:    Likelihood
       capability: LHC_Combined_LogLike
 
@@ -189,7 +187,12 @@ ObsLikes:
     - purpose:    Likelihood
       capability: OPAL_Neutralino_Hadronic_LLike
 
->>>>>>> ColliderBit_development
+    - purpose:    Likelihood
+      capability: HB_LEP_lnL
+
+    - purpose:    Likelihood
+      capability: HS_LHC_lnL
+
     # Missing:
     # Higgs bounds and signals likelihoods
     # CMB likelihood
@@ -350,15 +353,15 @@ Rules:
 Logger:
 
   redirection:
-    [Debug] : stdout # "debug.log"
-    [Default] : stdout # "default.log"
-    [DecayBit] : stdout # "DecayBit.log"
-    [DarkBit] : stdout # "DarkBit.log"
-    [PrecisionBit] : stdout # "PrecisionBit.log"
-    [FlavBit] : stdout # "FlavBit.log"
-    #[ColliderBit] : stdout # "ColliderrBit.log"
-    [SpecBit] : stdout # "SpecBit.log"
-    [Dependency Resolver] : stdout # "dep_resolver.log"
+    [Debug] : "debug.log"
+    [Default] : stdout #"default.log"
+    [DecayBit] : "DecayBit.log"
+    [DarkBit] : "DarkBit.log"
+    [PrecisionBit] : "PrecisionBit.log"
+    [FlavBit] : "FlavBit.log"
+    [ColliderBit] : "ColliderrBit.log"
+    [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
 
