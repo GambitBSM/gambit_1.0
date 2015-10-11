@@ -158,11 +158,9 @@ find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    # FIXME: (CW) This does not return true for me, despite
-    # OpenMP_Fortran_FLAGS not being set.
-    #    if (OpenMP_Fortran_FLAGS STREQUAL "")
+    if (NOT DEFINED OpenMP_Fortran_FLAGS)
       set(OpenMP_Fortran_FLAGS "-fopenmp")
-    #    endif()
+    endif()
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 endif()
 
