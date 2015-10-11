@@ -84,6 +84,9 @@ namespace Gambit {
      */
     bool TH_Channel::isChannel(std::vector<str> particles) const
     {
+      for (auto it = particles.begin(); it !=particles.end(); ++it) cout << *it << endl;
+      cout << endl;
+      for (auto it = finalStateIDs.begin(); it !=finalStateIDs.end(); ++it) cout << *it << endl;
       return std::is_permutation(
           finalStateIDs.begin(), finalStateIDs.end(), particles.begin());
     }
@@ -161,14 +164,13 @@ namespace Gambit {
     TH_ParticleProperty TH_ProcessCatalog::getParticleProperty(str id) const
     {
       auto it = particleProperties.find(id);
-      if ( it != particleProperties.end() )
-        return it->second;
-      else
+      if ( it == particleProperties.end() )
       {
         DarkBit_error().raise(LOCAL_INFO,
             "Cannot find entry for " + id +
             " in particleProperties of TH_ProcessCatalog.");
       }
+      return it->second;
     }
   } // namespace DarkBit
 } // namespace Gambit
