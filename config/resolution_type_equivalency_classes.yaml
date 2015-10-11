@@ -35,6 +35,7 @@
 
 # String-to-double map
 ["std::map<std::string,double>", map_str_dbl]
+[map_str_dbl, "std::map<std::string,double>"]
 
 # Fortran data types
 [bool, Flogical, Flogical1]
