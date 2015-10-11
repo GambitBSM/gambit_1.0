@@ -84,9 +84,7 @@ namespace Gambit {
      */
     bool TH_Channel::isChannel(std::vector<str> particles) const
     {
-      for (auto it = particles.begin(); it !=particles.end(); ++it) cout << *it << endl;
-      cout << endl;
-      for (auto it = finalStateIDs.begin(); it !=finalStateIDs.end(); ++it) cout << *it << endl;
+      if (particles.size() != finalStateIDs.size()) return false;
       return std::is_permutation(
           finalStateIDs.begin(), finalStateIDs.end(), particles.begin());
     }
