@@ -3189,7 +3189,7 @@ namespace Gambit
 
       result.HpGammaTot = Hplus_decays->width_in_GeV;
       result.BR_tWpb    = top_decays->BF("W+", "b");
-      result.BR_tHpjb   = top_decays->BF("H+", "b");
+      result.BR_tHpjb   = top_decays->has_channel("H+", "b") ? top_decays->BF("H+", "b") : 0.0;
       result.BR_Hpjcs   = Hplus_decays->BF("c", "sbar");
       result.BR_Hpjcb   = Hplus_decays->BF("c", "bbar");
       result.BR_Hptaunu = Hplus_decays->BF("tau+", "nu_tau");

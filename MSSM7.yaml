@@ -65,7 +65,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 2000
+        nlive: 5000
         tol: 0.1
         mmodal: 1
         # write native MultiNest ascii output files?
@@ -194,7 +194,6 @@ ObsLikes:
       capability: HS_LHC_lnL
 
     # Missing:
-    # Higgs bounds and signals likelihoods
     # CMB likelihood
 
 
@@ -266,7 +265,7 @@ Rules:
   - capability: h0_2_decay_rates
     function: FH_h0_2_decays
   - capability: t_decay_rates
-    function: t_decays
+    function: FH_t_decays
     
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
@@ -291,8 +290,8 @@ Rules:
       msud_central: 27.5
       msud_error: 1.0
       # m_s
-      ms_central: 95.
-      ms_error: 5.
+      ms_central: 95.E-03
+      ms_error: 5.E-03
 
   - capability: AnalysisContainer
     function: getAnalysisContainer
