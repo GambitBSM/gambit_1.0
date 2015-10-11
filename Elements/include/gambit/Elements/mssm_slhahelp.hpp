@@ -161,7 +161,7 @@ namespace Gambit
       ///   @{
       /// Version that tests internally agains a user-requested tolerance for family mixing, either
       /// raising a GAMBIT error (if pterror_only = false) or invalidating a point.
-      std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e"*/, int generation,
+      std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e-"*/, int generation,
                                                   str & mass_es1, str & mass_es2, const SubSpectrum* mssm,
                                                   double tol, str context, bool pterror_only);       
       /// Version that leaves the test up to the user.
@@ -169,7 +169,7 @@ namespace Gambit
       /// family mixing matrix, the sum of squares of elements is sufficently close to 1.  That is,
       /// check Mix_{11}^2 + Mix_{12}^2 > 1-tolerance && Mix_{21}^2 + Mix_{22}^2 > 1-tolerance.
       /// where vec is the std::vector returned by this method
-      std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e"*/, int generation,
+      std::vector<double> family_state_mix_matrix(str type /*"~u", "~d" or "~e-"*/, int generation,
                                                   str & mass_es1, str & mass_es2, const SubSpectrum* mssm);  
       ///   @}
 

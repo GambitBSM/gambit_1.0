@@ -32,26 +32,24 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/FlavBit/FlavBit_rollcall.hpp"
-#include "gambit/FlavBit/FlavBit_types.hpp"
-//#include "gambit/Backends/backend_types/SuperIso.hpp"
-
-#include "SLHAea/slhaea.h"
-#include "gambit/Elements/spectrum.hpp"
-#include "gambit/FlavBit/flav_obs.hpp"
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "gambit/cmake/cmake_variables.hpp"
 #include <map>
+
+#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/FlavBit/FlavBit_rollcall.hpp"
+#include "gambit/FlavBit/FlavBit_types.hpp"
+#include "gambit/Elements/spectrum.hpp"
+#include "gambit/FlavBit/flav_obs.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/triangular.hpp>
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
-
+//#define FLAVBIT_DEBUG
 
 #define Nobs_BKsll 21
 
@@ -1209,7 +1207,11 @@ namespace Gambit
 
     void Debug(bool &deb)
     {
-      deb=true;
+      #ifdef FLAVBIT_DEBUG
+        deb=true;
+      #else
+        deb=false;
+      #endif
     }
 
     // *************************************************

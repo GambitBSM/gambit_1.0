@@ -15,8 +15,6 @@ Parameters:
   StandardModel_Higgs:
     mH:
       fixed_value: 125.9
-    vev:
-      fixed_value: 246.0
 
   SingletDM:
     mS:
@@ -70,9 +68,7 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/DecayBit_test/samples/gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "runs/DecayBit_test/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 #########################
 # Logging setup
@@ -85,7 +81,6 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/DecayBit_test/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -104,6 +99,8 @@ Logger:
 ##########################
 
 KeyValues:
+
+  default_output_path: "runs/gambit_DecayBit_SS"
 
   dependency_resolution:
     prefer_model_specific_functions: true

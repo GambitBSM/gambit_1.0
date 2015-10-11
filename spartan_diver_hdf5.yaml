@@ -1,10 +1,8 @@
-## MultiNest version of ultra-minimal GAMBIT Initialization file (in YAML)
-# Only needs example modules ExampleBit_A, plus MultiNest
-# Currently you have to tell GAMBIT where the MultiNest shared library you
-# want to use is located (write this in config/scanner_locations.yaml)
+# Diver version of ultra-minimal GAMBIT Initialization file (in YAML)
+# Only needs ExampleBit_A and Diver.
 #
-# Ben Farmer <benjamin.farmer@fysik.su.se>
-# Feb 2015
+# Pat Scot <p.scott@imperial.ac.uk>
+# Jun 2015
 #
  
 #======== Input parameter declarations =======
@@ -12,9 +10,9 @@ Parameters:
   # In this test file we will simply be fitting the mean and standard deviation of a normal distribution.
   NormalDist:
     mu: 
-      range: [-100, 100]      
+      range: [15, 30]      
     sigma:
-      range: [0, 100]
+      range: [0, 5]
 
 #======== Prior setup ========
 Priors:
@@ -22,29 +20,40 @@ Priors:
 
 #======== Output setup ========
 Printer:
-  printer: ascii
+  printer: hdf5
   options:
-    output_file: "gambit_output.data"
-    buffer_length: 10
+    output_file: "results.hdf5"
+    group: "/gambit_data"
+    delete_file_if_exists: true
 
 #======== Scanner setup ========
 Scanner:
-  use_scanner: multinest
+  use_scanner: de
 
   scanners:
     multinest:
       plugin: MultiNest
       options:
-        like:  Likelihood
-        nlive: 500
-        tol: 0.1
+        like:  LogLike
+        nlive: 1000
+        tol: 0.01
+        mmodal: 0
+        # write native MultiNest ascii output files?
+        outfile: 1 # yes, need them for resuming
+        # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
-            
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 1000
+      #path: "diver_native"
+      verbosity: 1
+                    
 #======== Observables of interest ========
 ObsLikes:
-  - purpose:      Likelihood
+  - purpose:      LogLike
     capability:   normaldist_loglike
     module:       ExampleBit_A
     type:         double
@@ -57,13 +66,16 @@ Rules:
 Logger:
   redirection:
     [Default]      : "default.log"
+    [Utilities]    : "utils.log"
+    [Utilities,Info] : "utils_info.log"
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
+    [Printers]     : "Printers.log"
 
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/spartan_multinest"
+  default_output_path: "runs/spartan_diver_hdf5/"
 
   rng: ranlux48
 

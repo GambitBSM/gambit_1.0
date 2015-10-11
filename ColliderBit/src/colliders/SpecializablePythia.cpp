@@ -17,13 +17,12 @@ namespace Gambit {
     //@{
       /// @brief No specialization - pure external settings only.
 
-    namespace Pythia_UserModel{
-      void init(SpecializablePythia* specializeMe) {}
-	
-    }
-    
+      namespace Pythia_UserModel {
+        void init(SpecializablePythia*) { }
+      }
+
       namespace Pythia_external {
-        void init(SpecializablePythia* specializeMe) { }
+        void init(SpecializablePythia*) { }
       }
 
       /// @brief Specializes for SUSY @ 8TeV LHC
@@ -62,7 +61,7 @@ namespace Gambit {
 
       // Special version of the init function for user defined models
       // Needs to directly construct the new matrix elements (rather than use flags)
-      
+
         // Settings acquired externally (ex from a gambit yaml file)
         for(const auto command : externalSettings) {
           _pythiaSettings.push_back(command);
@@ -79,22 +78,22 @@ namespace Gambit {
 
 	//User makes the matrix elements here
 	// MJW: need to reintroduce once Anders fixes bossed Pythia
-	/*_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_gg_uvuvx()); 
-	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_uvuvx()); 
-	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_evevx()); 
-	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p2()); 
-	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p2p2()); 
+	/*_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_gg_uvuvx());
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_uvuvx());
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_evevx());
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p2());
+	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p2p2());
 	_pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
-	
+
         // Send along the SLHAea::Coll pointer, if it exists
         if(slhaea)
           _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
 
-	
-	
+
+
         _pythiaInstance->init(os);
       }
-    
+
     /// @name SpecializablePythia definitions
     //@{
       void SpecializablePythia::init(const std::string pythiaDocPath,

@@ -32,9 +32,7 @@ Printer:
   # printer.
   options:
     # name of output file
-    output_file: "runs/example_minimal_test/samples/gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "runs/example_minimal_test/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 ##############################
 # Scanner setup
@@ -145,7 +143,7 @@ Rules:
   - capability: AnalysisContainer
     function: getAnalysisContainer
     options:  
-      analysisNames: ["ATLAS_0LEPStop_20invfb", "ATLAS_1LEPStop_20invfb"]
+      analysisNames: ["ATLAS_0LEP_20invfb", "ATLAS_1LEPStop_20invfb"]
 
   - capability: DetectorSim
     function: getDelphes
@@ -171,7 +169,7 @@ Rules:
   - capability:  ColliderOperator
     function: operatePythia
     options:
-      nEvents: 1000
+      nEvents: 5000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
@@ -226,7 +224,6 @@ Logger:
   # Redirectory of specific messages according to tags
   # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
 
-  prefix : "runs/example_minimal_test/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -243,6 +240,8 @@ Logger:
 
 KeyValues:
 
+  default_output_path: "runs/gambit_Collider"
+
   dependency_resolution:
     prefer_model_specific_functions: true
 
@@ -254,3 +253,5 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
+
+  default_output_path: "runs/ColliderBit_test/"

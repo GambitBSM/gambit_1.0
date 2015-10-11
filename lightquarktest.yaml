@@ -1,17 +1,9 @@
-# Inifile for testing SpecBit features
-
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  StandardModel_Higgs:
-    mH: 125
-
-  SingletDM:
-    lambda: 0.1
-    mass: 100
- 
 Priors:
-
+    # none: all parameters fixed or have simple priors
+    
 Printer:
   printer: ascii
   options:
@@ -28,25 +20,31 @@ Scanner:
         output_file:  output
         like:  Likelihood
 
-
 ObsLikes:
-  - purpose:      Likelihood
-    capability:   test_Singlet_spectrum
-    function:     test_Singlet_spectrum
+  - purpose:      Test
+    capability:   run_light_quark_test
+
+#  - purpose:      Test
+#    capability:   decay_rates
+#    type:         DecayTable
 
 Rules:
+  # None
 
 Logger:
+
   redirection:
-    [Default] : "default.log"
+    [Debug] : "debug.log"
+    [SpecBit] : "SpecBit.log"
 
 KeyValues:
-
-  default_output_path: "runs/SingletDM_test"
+ 
+  default_output_path: "runs/lightquarktest"
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
+    use_old_routines: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
- 
+

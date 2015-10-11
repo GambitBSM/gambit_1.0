@@ -414,7 +414,7 @@ BE_INI_FUNCTION
     str stop1 = "~t_1", stop2 = "~t_2", sbottom1 = "~b_1", sbottom2 = "~b_2", stau1 = "~tau_1", stau2 = "~tau_2";
     attempt_to_add("STOPMIX", slha, "~u", mssm, tol, stop1, stop2, pterror);
     attempt_to_add("SBOTMIX", slha, "~d", mssm, tol, sbottom1, sbottom2, pterror);
-    attempt_to_add("STAUMIX", slha, "~e", mssm, tol, stau1, stau2, pterror);
+    attempt_to_add("STAUMIX", slha, "~e-", mssm, tol, stau1, stau2, pterror);
                          
     // Set out the PDG codes of the mass eigenstates best corresponding to the
     // gauge eigenstates for which SUSY-HIT wants masses from the SLHA MASS block.

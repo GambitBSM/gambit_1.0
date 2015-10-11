@@ -75,7 +75,7 @@ BE_INI_FUNCTION
     mySLHA["SBOTMIX"][""] << 2 << 1 << mix_matrix_sbottom[2];
     mySLHA["SBOTMIX"][""] << 2 << 2 << mix_matrix_sbottom[3];
 
-    mix_matrix_stau = Gambit::slhahelp::family_state_mix_matrix("~e", 3, mass_es1, mass_es2, mySpec->get_HE());
+    mix_matrix_stau = Gambit::slhahelp::family_state_mix_matrix("~e-", 3, mass_es1, mass_es2, mySpec->get_HE());
 
     mySLHA["STAUMIX"][""] << "Block"<< "STAUMIX";
     mySLHA["STAUXMIX"][""] << 1 << 1 << mix_matrix_stau[0];

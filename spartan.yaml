@@ -70,10 +70,7 @@ Printer:
   # therefore vary according to the selected
   # printer. 
   options:
-    # name of output file
-    output_file: "runs/spartan/samples/gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "runs/spartan/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 ##############################
 # Scanner setup
@@ -195,7 +192,6 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/spartan/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -220,6 +216,8 @@ Logger:
 ##########################
 
 KeyValues:
+
+  default_output_path: "runs/spartan"
 
   # Some example keys and subkeys
   my_key: 123

@@ -76,7 +76,7 @@ namespace Gambit
                 for(auto f_it=pIDs.begin(); f_it!=pIDs.end();++f_it)
                 {
                   if (std::find(excludeDecays.begin(), excludeDecays.end(), *f_it) == excludeDecays.end())
-                    ImportDecays(*f_it, catalog, importedDecays, tbl, minBranching);
+                    ImportDecays(*f_it, catalog, importedDecays, tbl, minBranching, excludeDecays);
                 }
               }
               //else
