@@ -194,7 +194,6 @@ ObsLikes:
       capability: HS_LHC_lnL
 
     # Missing:
-    # Higgs bounds and signals likelihoods
     # CMB likelihood
 
 
@@ -266,7 +265,7 @@ Rules:
   - capability: h0_2_decay_rates
     function: FH_h0_2_decays
   - capability: t_decay_rates
-    function: t_decays
+    function: FH_t_decays
     
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
