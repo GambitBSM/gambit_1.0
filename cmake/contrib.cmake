@@ -104,6 +104,14 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   
   set (EXCLUDE_FLEXIBLESUSY FALSE)
   
+  # Always use -O2 for flexiblesusy because it's so damn slow otherwise.
+  set(FS_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+  set(FS_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(FS_CXX_FLAGS "${FS_CXX_FLAGS} -O2")
+    set(FS_Fortran_FLAGS "${FS_Fortran_FLAGS} -O2")
+  endif()
+  
   # Determine compiler libraries needed by flexiblesusy.
   if(CMAKE_Fortran_COMPILER MATCHES "gfortran*")
     set(flexiblesusy_extralibs "${flexiblesusy_extralibs} -lgfortran -lm")
@@ -126,10 +134,10 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   set(FS_OPTIONS ${FS_OPTIONS} 
        --with-cxx=${CMAKE_CXX_COMPILER}
        --with-cxx-dep-gen=${CMAKE_CXX_COMPILER}
-       --with-cxxflags=${GAMBIT_CXX_FLAGS}
+       --with-cxxflags=${FS_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
        --with-fortran-dep-gen=${CMAKE_Fortran_COMPILER}
-       --with-fflags=${GAMBIT_Fortran_FLAGS}
+       --with-fflags=${FS_Fortran_FLAGS}
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}
