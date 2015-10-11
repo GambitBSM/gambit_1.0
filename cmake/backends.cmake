@@ -322,7 +322,7 @@ add_external_clean(feynhiggs ${feynhiggs_dir} clean)
 
 # HiggsBounds
 set(higgsbounds_tables_loc "${PROJECT_SOURCE_DIR}/Backends/installed/")
-set(higgsbounds_tables_dir "{higgsbounds_tables_loc}/csboutput_trans_binary")
+set(higgsbounds_tables_dir "${higgsbounds_tables_loc}/csboutput_trans_binary")
 ExternalProject_Add(higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
   URL_MD5 004decca30335ddad95654a04dd034a6
