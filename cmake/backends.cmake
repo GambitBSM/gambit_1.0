@@ -177,9 +177,7 @@ add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
-# - Pythia will also screw up if trying to use -O3 with CMAKE_BUILD_TYPE=Release, so replace this with -O2
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
-string(REGEX REPLACE "(-O3)" "-O2" pythia_CXXFLAGS "${pythia_CXXFLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -xavx")
@@ -313,7 +311,9 @@ ExternalProject_Add(feynhiggs
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
+  #FIXME this causes seg faults due to the inclusion of -O2.
+  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
@@ -322,7 +322,7 @@ add_external_clean(feynhiggs ${feynhiggs_dir} clean)
 
 # HiggsBounds
 set(higgsbounds_tables_loc "${PROJECT_SOURCE_DIR}/Backends/installed/")
-set(higgsbounds_tables_dir "{higgsbounds_tables_loc}/csboutput_trans_binary")
+set(higgsbounds_tables_dir "${higgsbounds_tables_loc}/csboutput_trans_binary")
 ExternalProject_Add(higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
   URL_MD5 004decca30335ddad95654a04dd034a6
