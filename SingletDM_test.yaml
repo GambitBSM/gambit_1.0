@@ -5,7 +5,6 @@ Parameters:
 
   StandardModel_Higgs:
     mH: 125
-    vev: 238
 
   SingletDM:
     lambda: 0.1

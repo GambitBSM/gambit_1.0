@@ -89,7 +89,7 @@ ObsLikes:
 
   - purpose:      Observable
     capability:   unimproved_MSSM_spectrum
-    type:         map_str_dbl   #std::map<std::string,double> doesn't match!
+    type:         "std::map<std::string, double>"
 
 #  - purpose:      Test
 #    capability:   decay_rates

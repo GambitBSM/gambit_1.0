@@ -84,19 +84,18 @@ namespace Gambit
                                str args, str symbol_name, bool present,
                                T factory, T missing_backend, T missing_factory)
     {
-      T result;
       try
       {
         int status = get_ctor_status(be, ver, name, barename, args, symbol_name, present);
         switch(status)
         {
-          case  0: result = factory;         break;
-          case -1: result = missing_backend; break;
-          case -2: result = missing_factory; break;
+          case  0: return factory;         
+          case -1: return missing_backend;
+          case -2: return missing_factory;
         }
       }
       catch (std::exception& e) { ini_catch(e); }
-      return result;      
+      return missing_factory;      
     }
 
   }

@@ -45,7 +45,7 @@ START_MODULE
     DEPENDENCY(Higgs_Couplings, fh_Couplings)
     BACKEND_REQ(FHConstraints, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
                 fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs, 2.11), (libfeynhiggs) )
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
@@ -82,6 +82,9 @@ START_MODULE
   QUICK_FUNCTION(PrecisionBit, lnL_mcmc,     NEW_CAPABILITY, lnL_mcmc_chi2,     double, (), (SMINPUTS, SMInputs))
   QUICK_FUNCTION(PrecisionBit, lnL_alpha_em, NEW_CAPABILITY, lnL_alpha_em_chi2, double, (), (SMINPUTS, SMInputs))
   QUICK_FUNCTION(PrecisionBit, lnL_alpha_s,  NEW_CAPABILITY, lnL_alpha_s_chi2,  double, (), (SMINPUTS, SMInputs))
+
+  QUICK_FUNCTION(PrecisionBit, lnL_light_quark_masses, NEW_CAPABILITY, lnL_light_quark_masses_chi2, double, (),
+          (SMINPUTS, SMInputs))
 
   // Electroweak precision likelihoods: W mass
   #define CAPABILITY lnL_W_mass

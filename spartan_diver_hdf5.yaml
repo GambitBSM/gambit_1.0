@@ -1,10 +1,8 @@
-## MultiNest version of ultra-minimal GAMBIT Initialization file (in YAML)
-# Only needs example modules ExampleBit_A, plus MultiNest
-# Currently you have to tell GAMBIT where the MultiNest shared library you
-# want to use is located (write this in config/scanner_locations.yaml)
+# Diver version of ultra-minimal GAMBIT Initialization file (in YAML)
+# Only needs ExampleBit_A and Diver.
 #
-# Ben Farmer <benjamin.farmer@fysik.su.se>
-# Feb 2015
+# Pat Scot <p.scott@imperial.ac.uk>
+# Jun 2015
 #
  
 #======== Input parameter declarations =======
@@ -30,7 +28,7 @@ Printer:
 
 #======== Scanner setup ========
 Scanner:
-  use_scanner: multinest
+  use_scanner: de
 
   scanners:
     multinest:
@@ -77,7 +75,7 @@ Logger:
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/spartan_multinest_hdf5///"
+  default_output_path: "runs/spartan_diver_hdf5/"
 
   rng: ranlux48
 

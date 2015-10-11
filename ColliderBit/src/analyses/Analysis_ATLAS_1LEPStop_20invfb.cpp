@@ -118,13 +118,13 @@ namespace Gambit {
 
 
         HEPUtils::P4 leptontmp;
-        double leptonmass = 0;
+        // double leptonmass = 0;
         if(passel){
-          leptonmass = 0.510998910; //MeV
+          // leptonmass = 0.510998910; //MeV
           leptontmp = electrons[0]->mom();
         }
         else if(passmu){
-          leptonmass =  105.658367; // MeV
+          // leptonmass =  105.658367; // MeV
           leptontmp = muons[0]->mom();
         }
 
@@ -135,7 +135,7 @@ namespace Gambit {
 
 	HEPUtils::P4 lepton_plus_jet1B;
 	HEPUtils::P4 lepton_plus_jet2B;
-	
+
         lepton_plus_jet1B = lepton+jet1B;
         lepton_plus_jet2B = lepton+jet2B;
 
@@ -155,7 +155,7 @@ namespace Gambit {
         double pb_b[3] = { 80, jet1B.px(), jet1B.py() };
         double pmiss_b[3] = { 0, metVec.px(), metVec.py() };
         double mn_b = 0.;
-	
+
         mt2_bisect::mt2 mt2_event_b;
 
         mt2_event_b.set_momenta(pa_b,pb_b,pmiss_b);
@@ -164,7 +164,7 @@ namespace Gambit {
 
         double aMT2_BM = min(mt2a,mt2b);
         results.aMT2_BM=aMT2_BM;
-	
+
         if (nJet > 3){
           HEPUtils::Jet* jet3=0;
           for(HEPUtils::Jet* current: jets){
@@ -196,7 +196,7 @@ namespace Gambit {
         return results;
       }
 
-      
+
 
       void analyze(const HEPUtils::Event* event) {
         // Missing energy
@@ -383,14 +383,14 @@ namespace Gambit {
         for(int iJet=0;iJet<nJets;iJet++){
           for(int jJet=0;jJet<nJets;jJet++){
             if(iJet != jJet){
-             
+
 	      HEPUtils::P4 iJetVec;
 	      iJetVec.setXYZE(signalJets[iJet]->mom().px(),signalJets[iJet]->mom().py(),signalJets[iJet]->mom().pz(),signalJets[iJet]->E());
-	      
-             
+
+
 	      HEPUtils::P4 jJetVec;
 	      jJetVec.setXYZE(signalJets[jJet]->mom().px(),signalJets[jJet]->mom().py(),signalJets[jJet]->mom().pz(),signalJets[jJet]->E());
-	      
+
               if(iJetVec.deltaR_eta(jJetVec) < mindR1 && (iJetVec+jJetVec).m() > 60.){
                 mindR1 =iJetVec.deltaR_eta(jJetVec);
                 index1 = iJet;
@@ -403,20 +403,20 @@ namespace Gambit {
         if(whad){
           for(int kJet=0;kJet<nJets;kJet++){
             if(kJet !=index1 && kJet !=index2){
-             
+
 
 	      HEPUtils::P4 kJetVec;
 	      kJetVec.setXYZE(signalJets[kJet]->mom().px(),signalJets[kJet]->mom().py(),signalJets[kJet]->mom().pz(),signalJets[kJet]->E());
-	      
-             
+
+
 	      HEPUtils::P4 JetVec1;
 	      JetVec1.setXYZE(signalJets[index1]->mom().px(),signalJets[index1]->mom().py(),signalJets[index1]->mom().pz(),signalJets[index1]->E());
-	      
-             
+
+
 	      HEPUtils::P4 JetVec2;
 	      JetVec2.setXYZE(signalJets[index2]->mom().px(),signalJets[index2]->mom().py(),signalJets[index2]->mom().pz(),signalJets[index2]->E());
-	      
-	      
+
+
               if(kJetVec.deltaR_eta(JetVec1+JetVec2)<mindR2 && (JetVec1+JetVec2+kJetVec).m() > 130.){
                 mindR2=kJetVec.deltaR_eta(JetVec1+JetVec2);
                 index3=kJet;
@@ -426,17 +426,17 @@ namespace Gambit {
           }
         }
         if(Thad){
-         
+
 	  HEPUtils::P4 JetVec1;
 	  JetVec1.setXYZE(signalJets[index1]->mom().px(),signalJets[index1]->mom().py(),signalJets[index1]->mom().pz(),signalJets[index1]->E());
-	          
+
 	  HEPUtils::P4 JetVec2;
 	  JetVec2.setXYZE(signalJets[index2]->mom().px(),signalJets[index2]->mom().py(),signalJets[index2]->mom().pz(),signalJets[index2]->E());
 
 	  HEPUtils::P4 JetVec3;
 	  JetVec3.setXYZE(signalJets[index3]->mom().px(),signalJets[index3]->mom().py(),signalJets[index3]->mom().pz(),signalJets[index3]->E());
 
-	  
+
           mHadTop = (JetVec1+JetVec2+JetVec3).m();
         }
 
@@ -727,7 +727,7 @@ namespace Gambit {
 
 
       void add(BaseAnalysis* other) {
-        // The base class add function handles the signal region vector and total # events. 
+        // The base class add function handles the signal region vector and total # events.
         HEPUtilsAnalysis::add(other);
 
         Analysis_ATLAS_1LEPStop_20invfb* specificOther
@@ -755,16 +755,16 @@ namespace Gambit {
 
         using namespace std;
 
-        double scale_to = 100000.0;
-        double trigger_cleaning_eff = 0.85;
+        // double scale_to = 100000.0;
+        // double trigger_cleaning_eff = 0.85;
 
-        
+
 	//cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
 	// cout << "CUT FLOW: ATLAS-CONF-2013-037 - Appendix, Table 10 - stop -> top + LSP, stop 500, LSP 200 "<<std::endl;
 	//cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
 	//cout << "(NB: In Cut-flows in Appendices mjjj/mHadTop cut doesn't appear - is apparantly applied for all SRtN regions)"<<std::endl;
 	//cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        
+
 
         //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
         //for(int j=0; j<NCUTS; j++) {
