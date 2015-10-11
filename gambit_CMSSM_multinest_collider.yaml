@@ -231,7 +231,7 @@ Rules:
         pythiaOptions_1: ["Print:quiet = on",
                           "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
-                          "PartonLevel:FSR = off",
+                          "PartonLevel:FSR = on",
                           "HadronLevel:all = on",
         "SUSY:all = on",
         "TauDecays:mode = 0"]
