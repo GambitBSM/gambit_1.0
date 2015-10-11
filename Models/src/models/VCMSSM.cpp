@@ -36,7 +36,7 @@
      double A0 = myP["A0"];
      double M0 = myP["M0"];
      double B0 = A0 - M0;
-     double mu = 1;
+     double mu = B0;
      targetP.setValue("SignMu", sgn(mu));
      targetP.setValue("TanBeta", 50.0); //fixme set from:
                                        // sin2beta = -B0 mu / (M0^2 + mu^2).
