@@ -20,13 +20,9 @@ Priors:
 
 #======== Output setup ========
 Printer:
-  #printer: ascii
-  #options:
-  #  output_file: "runs/spartan_diver/samples/gambit_output.data"
-  #  info_file: "runs/spartan_diver/samples/gambit_output.data_info"
   printer: hdf5
   options:
-     output_file: "runs/spartan_diver/samples/gambit_output.hdf5"
+     output_file: "gambit_output.hdf5"
      group: "/test/test2"
      delete_file_if_exists: true
 
@@ -42,8 +38,6 @@ Scanner:
       path: "runs/spartan_diver/diver_native"
       verbosity: 1
       aux_printer_txt_options:
-        output_file: "runs/spartan_diver/samples/gambit_output.txt"
-        info_file: "runs/spartan_diver/samples/gambit_output.txt_info"
                     
 #======== Observables of interest ========
 ObsLikes:
@@ -58,7 +52,6 @@ Rules:
 
 #======== Logging setup ========
 Logger:
-  prefix : "runs/spartan_diver/logs/"
   redirection:
     [Default]      : "default.log"
     [ExampleBit_A] : "ExampleBit_A.log"
@@ -66,6 +59,8 @@ Logger:
 
 #======== Generic Name/Value Section ========
 KeyValues:
+
+  default_output_path: "runs/spartan_diver"
 
   rng: ranlux48
 

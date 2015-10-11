@@ -100,7 +100,7 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/singletDM_multinest_hdf5/samples/gambit_output.hdf5"
+    output_file: "gambit_output.hdf5"
     group: "/sing/let"
     delete_file_if_exists: true
 
@@ -126,7 +126,6 @@ Scanner:
         like:  Likelihood
         nlive: 1000
         tol: 0.1
-        root: "runs/singletDM_multinest_hdf5/samples/native-"
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
@@ -295,7 +294,6 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/singletDM_multinest_hdf5/logs/"
   redirection:
     [Debug] : stdout #"debug.log"
     [Default] : stdout #"default.log"
@@ -331,6 +329,8 @@ KeyValues:
     dependency_resolver_warning: non-fatal
     core_warning: fatal
     ExampleBit_A_error: non-fatal
+
+  default_output_path: "runs/singletDM_multinest_hdf5/"
 
   enable_testing: false
 

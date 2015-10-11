@@ -230,52 +230,106 @@ namespace Gambit {
        /// dimension 1, 1 index , special for setters
        const str su        =   "~u";
        const str sd	   =   "~d";
-       const str se	   =   "~e";
-       const str seminus   =   "~e-";
+       const str se	   =   "~e-";
        const str snu	   =   "~nu";
        const str chiplus   =   "~chi+";
        const str chi0      =   "~chi0";
        const str h0	   =   "h0";
        const str subar     =   "~ubar";
        const str sdbar     =   "~dbar";
-       const str sebar     =   "~ebar";
        const str seplus    =   "~e+";
        const str snubar    =   "~nubar";
        const str chiminus  =   "~chi-";
 
-      // pole mass strings with no index
-       std::vector<str> pole_mass_strs = initVector( gluino, A0, Hplus,
+       /// @{ "Metadata" vectors
+       // TODO: replace with a more integrated system
+ 
+       /// @{ Pole_Mass tagged entries
+
+       // pole mass strings with no index
+       const std::vector<str> pole_mass_strs = initVector( gluino, A0, Hplus,
 						     Hminus, Goldstone0,
 						     Goldstoneplus,
 						     Goldstoneminus,
 						     Wplus, Wminus, Z0 );
 
-       // as above but with Z0 since we do not predict that mass
-       std::vector<str> pole_mass_pred = initVector( gluino, A0, Hplus,
+       // as above but without Z0 since we do not predict that mass
+       const std::vector<str> pole_mass_pred = initVector( gluino, A0, Hplus,
 						     Hminus, Goldstone0,
 						     Goldstoneplus,
 						     Goldstoneminus,
 						     Wplus, Wminus );
 
        /// pole mass strings with 1 index
-       std::vector<str> pole_mass_strs_1 = initVector( su, sd, seminus, 
+       const std::vector<str> pole_mass_strs_1 = initVector( su, sd, se, 
                                                        subar, sdbar, seplus,
 						       chiplus, chiminus, chi0, h0, 
 						       snu, snubar );
 
        ///  pole mass strings with 1 index and six entries
-       std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, seminus,
+       const std::vector<str> pole_mass_strs_1_6  = initVector( su, sd, se,
 							  subar, sdbar, seplus );
 
        ///  pole mass strings with 1 index and four entries
-       std::vector<str> pole_mass_strs_1_4  = initVector( chi0 );
+       const std::vector<str> pole_mass_strs_1_4  = initVector( chi0 );
        
        ///  pole mass strings with 1 index and three entries
-       std::vector<str> pole_mass_strs_1_3  = initVector( snu, snubar );
+       const std::vector<str> pole_mass_strs_1_3  = initVector( snu, snubar );
 
        ///  pole mass strings with 1 index and two entries
-       std::vector<str> pole_mass_strs_1_2  = initVector( chiplus, chiminus, h0 );
-       
+       const std::vector<str> pole_mass_strs_1_2  = initVector( chiplus, chiminus, h0 );
+
+       /// @}
+
+       /// @{ Pole_Mixing tagged entries
+
+       ///  2 index, 6x6 entries
+       const std::vector<str> pole_mixing_strs_2_6x6  = initVector( sd, su, se );
+
+       ///  2 index, 4x4 entries
+       const std::vector<str> pole_mixing_strs_2_4x4  = initVector( chi0 );
+
+       ///  2 index, 3x3 entries
+       const std::vector<str> pole_mixing_strs_2_3x3  = initVector( snu );
+
+       ///  2 index, 2x2 entries
+       const std::vector<str> pole_mixing_strs_2_2x2  = initVector( h0, A0, Hplus, chiminus, chiplus );
+
+       /// @}
+
+       /// @{ mass2 tagged entries
+
+       // no index 
+       const std::vector<str> mass2_strs = initVector( BMu, mHd2, mHu2, mA2 );
+
+       // two-index, 3x3 entries
+       const std::vector<str> mass2_strs_2_3x3= initVector( mq2, ml2, md2, mu2, me2 );
+
+       /// @}
+
+       /// @{ mass1 tagged entries
+   
+       // no index
+       const std::vector<str> mass1_strs = initVector( M1, M2, M3, Mu, vu, vd );
+      
+       // two-index, 3x3 entries
+       const std::vector<str> mass1_strs_2_3x3 = initVector( TYd, TYe, TYu, ad, ae, au );
+
+       /// @}
+ 
+       /// @{ dimensionless tagged entries
+   
+       // no index
+       const std::vector<str> dimensionless_strs = initVector( g1, g2, g3, tanbeta, sinW2 );
+
+       // two-index, 3x3 entries
+       const std::vector<str> dimensionless_strs_2_3x3 = initVector( Yd, Yu, Ye );
+
+       /// @}
+      
+       /// TODO: left out mass_eigenstate entries for now
+  
+       /// @}
      };
 
      

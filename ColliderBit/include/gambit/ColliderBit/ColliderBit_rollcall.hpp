@@ -425,8 +425,7 @@ START_MODULE
        BACKEND_REQ(HiggsBounds_set_mass_uncertainties, (libhiggsbounds), void, (double*, double*))
        BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (double&, int&, double&, int&))            
        BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
-       
-       BACKEND_OPTION( (HiggsBounds, 4.1), (libhiggsbounds) )
+       BACKEND_OPTION( (HiggsBounds, 4.2.1), (libhiggsbounds) )
     #undef FUNCTION
   #undef CAPABILITY
 

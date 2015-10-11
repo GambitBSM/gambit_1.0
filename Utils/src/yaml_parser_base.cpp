@@ -141,9 +141,9 @@ namespace Gambit
       {
          inifile_error().raise(LOCAL_INFO,"No inifile entry found for 'default_output_path' in the KeyValue section. Please add this entry to your yaml file.");
       }
-      scannerNode["default_output_path"] = Utils::ensure_path_exists(defpath+"scanner_plugins/");
-      logNode    ["default_output_path"] = Utils::ensure_path_exists(defpath+"logs/");
-      printerNode["options"]["default_output_path"] = Utils::ensure_path_exists(defpath+"samples/");
+      scannerNode["default_output_path"] = Utils::ensure_path_exists(defpath+"/scanner_plugins/");
+      logNode    ["default_output_path"] = Utils::ensure_path_exists(defpath+"/logs/");
+      printerNode["options"]["default_output_path"] = Utils::ensure_path_exists(defpath+"/samples/");
 
       // Set fatality of exceptions
       if (hasKey("exceptions"))

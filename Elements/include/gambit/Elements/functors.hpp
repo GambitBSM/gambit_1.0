@@ -484,8 +484,11 @@ namespace Gambit
       /// Beginning and end timing points
       std::chrono::time_point<std::chrono::system_clock> *start, *end;
 
+      /// A flag indicating whether or not this functor has invalidated the current point
+      bool point_exception_raised;
+
       /// An exception raised because this functor has invalidated the current point
-      invalid_point_exception* raised_point_exception;
+      invalid_point_exception raised_point_exception;
 
       /// Averaged runtime in ns
       double runtime_average;

@@ -223,7 +223,6 @@ namespace Gambit
             {
                 out << "\x1b[01m";
             }
-            int temp = 0;
             for (int i = 0; i < col_num; i++)
             {
                 out << std::setiosflags(ff[i]);

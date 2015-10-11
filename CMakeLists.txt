@@ -24,10 +24,10 @@
 #
 #************************************************
 
-# Require a minimum cmake version of 2.8.0
-cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
+# Require a minimum cmake version of 2.8.5
+cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
 
-if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   SET(CMAKE_BUILD_TYPE Debug CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
@@ -85,8 +85,8 @@ include(cmake/MacOSX.cmake)
 
 # Add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC")
 endif()
 
@@ -158,7 +158,7 @@ find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    if (OpenMP_Fortran_FLAGS STREQUAL "")
+    if (NOT DEFINED OpenMP_Fortran_FLAGS)
       set(OpenMP_Fortran_FLAGS "-fopenmp")
     endif()
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
@@ -176,6 +176,36 @@ endif()
 
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
+
+# Add compiler warning flags
+include(cmake/warnings.cmake)
+
+# Construct the full set of compiler flags to be used for external projects
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_DEBUG}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELEASE}")
+  # Don't send the -O3 from cmake's release build config to backends, as some are touchy.
+  string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_C_FLAGS "${GAMBIT_C_FLAGS}")
+  string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+  string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_MINSIZEREL}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_MINSIZEREL}")
+else()
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")
+endif()
 
 # Set the version number (later to come directly from git tag)
 set(GAMBIT_VERSION_MAJOR 1)
@@ -263,7 +293,6 @@ check_result(${result} ${update_cmakelists})
 message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - done.${ColourReset}")
 
 # Include other cmake scripts
-include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/externals.cmake)
 
