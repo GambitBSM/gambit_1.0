@@ -52,8 +52,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "runs/MSSM9/samples/MSSM9.hdf5"
-    group: "/MSSM9"
+    output_file: "samples/MSSM7.hdf5"
+    group: "/MSSM7"
     delete_file_if_exists: true
 
 Scanner:
@@ -70,8 +70,6 @@ Scanner:
         mmodal: 1
         # write native MultiNest ascii output files?
         outfile: 0
-        # this needs to default to the prinnter output location
-        root: "runs/MSSM9/samples/native-"
         # resuming doesn't work yet
         resume: 0
         # No options to set, but still need the nodes at the moment...
@@ -120,14 +118,22 @@ ObsLikes:
     - capability: lnL_deltarho  
       purpose:  Likelihood
 
+# Charm quark and light quark mass ratio likelihoods
+    - capability: lnL_light_quark_masses
+      purpose:  Likelihood
+
     - purpose:      Likelihood
       capability:   b2ll_LL
 
     - purpose:      Likelihood
       capability:   SL_LL
 
-    - purpose:      Likelihood                                                                                       
+    - purpose:      Likelihood
       capability:   b2sll_LL
+
+# SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:  Likelihood
         
     # Missing:
     # LHC combined likelihood
@@ -143,8 +149,15 @@ Rules:
     function: lnL_oh2_upperlimit
 
   # Use the DarkBit native relic density calculator
+  #- capability: RD_oh2
+  #  function: RD_oh2_general
+  
+  # Use DarkSUSY for the relic density
   - capability: RD_oh2
-    function: RD_oh2_general
+    function: RD_oh2_DarkSUSY
+    options:
+      fast: 1
+      omtype: 1
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
   - capability: lnL_FermiLATdwarfs
@@ -198,20 +211,45 @@ Rules:
     function: FH_h0_2_decays
   - capability: t_decay_rates
     function: t_decays
+    
+  # Choose to rescale signals in direct and indirect detection by the relic density fraction
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
+
+  # Nuclear Parameter Likelihoods (All values in MeV)
+  - capability: lnL_SI_nuclear_parameters
+    function: lnL_sigmas_sigmal
+    options:
+      sigmas_central: 43.
+      sigmas_error: 8.
+      sigmal_central: 58.
+      sigmal_error: 9.
+
+  # Precision Bit
+  - capability: lnL_light_quark_masses
+    options:
+      # m_u/m_d
+      mud_central: 0.48
+      mud_error: 0.10
+      # m_s / (m_u + m_d)
+      msud_central: 27.5
+      msud_error: 1.0
+      # m_s
+      ms_central: 95.
+      ms_error: 5.
 
 Logger:
 
-  prefix : "runs/MSSM9/logs/"
   redirection:
-    [Debug] : "debug.log"
-    [Default] : "default.log"
-    [DecayBit] : "DecayBit.log"
-    [DarkBit] : "DarkBit.log"
-    [PrecisionBit] : "PrecisionBit.log"
-    [FlavBit] : "FlavBit.log"
-    #[ColliderBit] : "ColliderrBit.log"
-    [SpecBit] : "SpecBit.log"
-    [Dependency Resolver] : "dep_resolver.log"
+    [Debug] : stdout # "debug.log"
+    [Default] : stdout # "default.log"
+    [DecayBit] : stdout # "DecayBit.log"
+    [DarkBit] : stdout # "DarkBit.log"
+    [PrecisionBit] : stdout # "PrecisionBit.log"
+    [FlavBit] : stdout # "FlavBit.log"
+    #[ColliderBit] : stdout # "ColliderrBit.log"
+    [SpecBit] : stdout # "SpecBit.log"
+    [Dependency Resolver] : stdout # "dep_resolver.log"
 
 KeyValues:
 
@@ -220,4 +258,6 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
- 
+
+  default_output_path: "runs/MSSM7/"
+  

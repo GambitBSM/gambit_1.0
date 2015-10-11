@@ -186,9 +186,12 @@ START_MODULE
 
   #define CAPABILITY RD_fraction
   START_CAPABILITY 
-    #define FUNCTION RD_fraction
+    #define FUNCTION RD_fraction_from_oh2
       START_FUNCTION(double)
       DEPENDENCY(RD_oh2, double)
+    #undef FUNCTION
+    #define FUNCTION RD_fraction_fixed
+      START_FUNCTION(double)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -427,7 +430,6 @@ START_MODULE
       DEPENDENCY(RD_oh2, double)
     #undef FUNCTION
   #undef CAPABILITY
-
 
   // Simple WIMP property extractors =======================================
 
@@ -956,6 +958,14 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Likelihoods for nuclear parameters:
+  #define CAPABILITY lnL_SI_nuclear_parameters
+  START_CAPABILITY
+    #define FUNCTION lnL_sigmas_sigmal
+      START_FUNCTION(double)
+      ALLOW_MODELS(nuclear_params_sigmas_sigmal)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // INDIRECT DETECTION: NEUTRINOS =====================================
  

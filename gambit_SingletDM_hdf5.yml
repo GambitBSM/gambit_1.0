@@ -10,7 +10,6 @@ Parameters:
     StandardModel_Higgs:
       mH:
             #fixed_value: 125.7
-      vev: 246
 
     SingletDM:
         mS:
@@ -21,21 +20,49 @@ Parameters:
             #fixed_value: 0.0366524 
             prior_type: log
   
-    nuclear_params_fnq:
-      # proton hadronic matrix elements
-      fpd:
-        fixed_value: 0.0191
-      fpu:
-        fixed_value: 0.0153
-      fps:
-        fixed_value: 0.0447
-      # neutron hadronic matrix elements
-      fnd:
-        fixed_value: 0.0273
-      fnu:
-        fixed_value: 0.011
-      fns:
-        fixed_value: 0.0447
+#    nuclear_params_fnq:
+#      # proton hadronic matrix elements
+#      fpd:
+#        fixed_value: 0.0191
+#      fpu:
+#        fixed_value: 0.0153
+#      fps:
+#        fixed_value: 0.0447
+#      # neutron hadronic matrix elements
+#      fnd:
+#        fixed_value: 0.0273
+#      fnu:
+#        fixed_value: 0.011
+#      fns:
+#        fixed_value: 0.0447
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
+#    nuclear_params_sigma0_sigmal:
+#      sigma0:
+#        fixed_value: 30.76
+#      sigmal:
+#        fixed_value: 34.0
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
+    nuclear_params_sigmas_sigmal:
+      sigmas:
+        #fixed_value: 42.0 // From MicrOmegas?
+        range: [27.0, 59.0] // 2 sigma range from Cline et. al.
+      sigmal:
+        #fixed_value: 34.0 // From MicrOmegas?
+        range: [40.0, 76.0] // 2 sigma range from Cline et. al.
       # proton spin content
       deltad:
         fixed_value: -0.427
@@ -46,6 +73,7 @@ Parameters:
 
 #   Uncomment the below to use DarkSUSY nuclear parameters.
 #    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
+
 
 ##############################
 # Prior setup
@@ -120,8 +148,8 @@ ObsLikes:
 #      options:
 #        GA_AnnYield:
 #          nbins: 20
-#    - capability: IceCube_likelihood
-#      purpose: Likelihood
+    - capability: IC79_loglike
+      purpose: Likelihood
 
 # Fermi LAT dwarf limits
     - capability: lnL_FermiLATdwarfs
@@ -148,6 +176,15 @@ ObsLikes:
 # NOTE: treated as observable!
 #    - capability: lnL_DARWIN_Xe_2015
 #      purpose:  Observable
+
+# SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:  Likelihood
+
+# Charm quark and light quark mass ratio likelihoods
+    - capability: lnL_light_quark_masses
+      purpose:  Likelihood
+    
       
 Rules:
   # Gamma-rays -------------------------
@@ -160,6 +197,8 @@ Rules:
         # Supply (optional) path to likelihood data.  Otherwise relative path
         # is used.
         # datapath: /home/weniger/Work/Projects/GAMBIT/gambit/extras/gamLike/data/
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
   - capability: lnL_FermiLATdwarfs
     #dependencies: 
     #    - capability: GA_AnnYield
@@ -182,6 +221,7 @@ Rules:
           function: GA_AnnYield_DarkSUSY
     options:
         filename: dNdE.dat
+      
   # Relic density ----------------------
   - capability: RD_oh2
     options:
@@ -215,10 +255,31 @@ Rules:
     function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
+  # Nuclear Parameter Likelihoods (All values in MeV)
+  - capability: lnL_SI_nuclear_parameters
+    function: lnL_sigmas_sigmal
+    options:
+      #sigmas_central: 43.
+      #sigmas_error: 8.
+      #sigmal_central: 58.
+      #sigmal_error: 9.
+
   # Decays
   - capability: decay_rates
     function: all_decays
 
+  # Precision Bit
+  - capability: lnL_light_quark_masses
+    options:
+      # m_u/m_d
+      mud_central: 0.48
+      mud_error: 0.10
+      # m_s / (m_u + m_d)
+      msud_central: 27.5
+      msud_error: 1.0
+      # m_s
+      ms_central: 95.
+      ms_error: 5.
 
 #########################
 # Logging setup
@@ -269,4 +330,6 @@ KeyValues:
     ExampleBit_A_error: non-fatal
 
   enable_testing: false
+
+  default_output_path: "runs/singletDM_multinest_hdf5/"
 

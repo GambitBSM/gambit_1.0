@@ -548,9 +548,11 @@ namespace Gambit
           parents.clear();
           getParentVertices(*it, masterGraph, parents);
           parents.insert(*it);
-          // FIXME: Causes segfault for whatever reason
           // Remove vertices that were already calculated from the ist
-          //parents.erase(colleages.begin(), colleages.end());
+          for ( auto cit = colleages.begin(); cit != colleages.end(); cit++)
+          {
+            parents.erase(*cit);
+          }
           t2p_now = (double) getTimeEstimate(parents, masterGraph);
           t2p_now /= masterGraph[*it]->getInvalidationRate();
           if (t2p_min < 0 or t2p_now < t2p_min)

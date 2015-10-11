@@ -77,6 +77,12 @@ namespace Gambit
 //      character*8 pname(0:numpartspecies)
   };
 
+    struct DS_MSSMIUSEFUL
+    {
+        Finteger lsp;
+        Finteger kln;
+    };
+    
     struct DS_VRTXS
     {
         Farray< Fdouble_complex,1,50,1,50,1,50 > gl;
