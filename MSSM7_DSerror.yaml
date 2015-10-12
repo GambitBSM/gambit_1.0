@@ -22,27 +22,20 @@ Parameters:
     SignMu:
       fixed_value: 1
     Ad_3:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 210.643
     Au_3:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 152.637
     M2:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 537.601
     TanBeta:
-      range: [3.0, 70.0]
-      prior_type: flat
+      fixed_value: 10.1243
     mHd2:
-      range: [1e4, 1e10]
-      prior_type: log
+      fixed_value: 8.78152e+07
     mHu2:
-      range: [1e4, 1e10]
-      prior_type: log
+      fixed_value: 89845.5
     mf2:
-      range: [1e4, 1e10]
-      prior_type: log
-
+      fixed_value: 1.35811e+06
+      
 Priors:
 
   # All priors simple, so specified in Parameters section
@@ -65,7 +58,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 10
+        nlive: 5000
         tol: 0.1
         mmodal: 1
         # write native MultiNest ascii output files?
@@ -353,7 +346,7 @@ Logger:
 
   redirection:
     [Debug] : "debug.log"
-    [Default] : "default.log"
+    [Default] : stdout #"default.log"
     [DecayBit] : "DecayBit.log"
     [DarkBit] : "DarkBit.log"
     [PrecisionBit] : "PrecisionBit.log"
@@ -368,6 +361,6 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e90
+    model_invalid_for_lnlike_below: -1e6
 
   default_output_path: "runs/MSSM7/"

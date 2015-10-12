@@ -202,7 +202,7 @@ namespace Gambit
   }
 
   /// Check if a given final state exists in this DecayTable::Entry; vector of PDG-context integer pair version.
-  bool DecayTable::Entry::has_channel(std::vector<std::pair<int,int> >& daughters)
+  bool DecayTable::Entry::has_channel(std::vector<std::pair<int,int> >& daughters) const
   {
     std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
     check_particles_exist(key);

@@ -17,31 +17,24 @@ Parameters:
       fixed_value: -0.085
 
   MSSM7atQ:
-    Qin: 
-      fixed_value: 1000.0
-    SignMu:
-      fixed_value: 1
     Ad_3:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 944.66153451518
     Au_3:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 679.17196637297
     M2:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 489.37956075958
+    Qin:
+      fixed_value: 1000.00000000000
+    SignMu:
+      fixed_value: 1.00000000000
     TanBeta:
-      range: [3.0, 70.0]
-      prior_type: flat
+      fixed_value: 6.75666803122
     mHd2:
-      range: [1e4, 1e10]
-      prior_type: log
+      fixed_value: 2008193434.80311298370
     mHu2:
-      range: [1e4, 1e10]
-      prior_type: log
+      fixed_value: 1186103.39256442618
     mf2:
-      range: [1e4, 1e10]
-      prior_type: log
+      fixed_value: 16345639.39602590911
 
 Priors:
 
@@ -65,7 +58,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 10
+        nlive: 5000
         tol: 0.1
         mmodal: 1
         # write native MultiNest ascii output files?
@@ -368,6 +361,6 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e90
+    model_invalid_for_lnlike_below: -1e10
 
   default_output_path: "runs/MSSM7/"
