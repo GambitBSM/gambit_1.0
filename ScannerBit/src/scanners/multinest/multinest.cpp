@@ -121,8 +121,6 @@ scanner_plugin(MultiNest, version(3, 9))
       // Print some basic startup diagnostics.      
       std::cout << "MultiNest ndims:" << ndims << std::endl;
       std::cout << "MultiNest nPar: " << nPar  << std::endl;
-
-      std::cout << "logZero: " << ln0 << std::endl;
  
       if(resume==1 and outfile==0)
       {
