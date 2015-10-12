@@ -215,8 +215,8 @@ namespace Gambit {
                }
                for(long i=0; i<needed_steps; i++)
                {
-                  if(sync_buffer_is_full()) flush(); 
                   skip_append();
+                  if(sync_buffer_is_full()) flush(); 
                }
             }
 
