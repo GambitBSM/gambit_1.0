@@ -80,10 +80,10 @@ Scanner:
 ObsLikes:
 
     - capability: lnL_oh2
-      purpose: Likelihood 
+      purpose:    Likelihood 
 
     - capability: RD_oh2
-      purpose: Observable
+      purpose:    Observable
 
     - capability: lnL_FermiLATdwarfs
       purpose:    Likelihood
@@ -194,7 +194,7 @@ ObsLikes:
       capability: HS_LHC_lnL
 
     # Missing:
-    # CMB likelihood
+    # CMB+HESS likelihoods
 
 
 Rules:
@@ -368,6 +368,6 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e90
+    model_invalid_for_lnlike_below: -1e10
 
   default_output_path: "runs/MSSM7/"
