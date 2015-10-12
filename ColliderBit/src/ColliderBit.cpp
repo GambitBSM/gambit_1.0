@@ -73,19 +73,17 @@ namespace Gambit
 
     /// Event labels
     enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
-    /// Analysis stuff
-    HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
-    std::vector<std::string> analysisNames;
-    /// Delphes stuff
-    /// @TODO BOSS delphes? Euthanize delphes?
-    std::string delphesConfigFilename;
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
     bool allProcessesVetoed;
-    int pythiaConfigurations, pythiaNumber;
+    double xsecGen;
+    int pythiaConfigurations, pythiaNumber, nEvents, counter;
+    /// Analysis stuff
+    std::vector<std::string> analysisNames;
+    HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses,allProcessesVetoed
+    #define SHARED_OVER_OMP iter,allProcessesVetoed,xsecGen,counter,analysisNames,globalAnalyses
 
 
     /// *************************************************
@@ -93,56 +91,54 @@ namespace Gambit
     /// *************************************************
     /// *** Loop Managers ***
 
+    /// @note: Much of the loop below designed for splitting up the subprocesses to be generated.
+    /// @note: For our first run, we will just run all SUSY subprocesses.
+
     void operatePythia()
     {
       using namespace Pipes::operatePythia;
-      int nEvents = 0;
+      nEvents = 0;
+      // Set allProcessesVetoed to false once some events are generated.
       allProcessesVetoed = true;
-      globalAnalyses->clear();
 
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
 
-      #pragma omp critical (runOptions)
-      {
-        /// Retrieve runOptions from the YAML file safely...
-        GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
-        /// @todo Subprocess specific nEvents
-        GET_COLLIDER_RUNOPTION(nEvents, int);
-      }
-
-      /// @note: Much of the loop below designed for splitting up the subprocesses to be generated.
-      /// @note: For our first run, we will just run all SUSY subprocesses.
+      // Retrieve runOptions from the YAML file safely...
+      GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
+      // @todo Subprocess specific nEvents
+      GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
       {
+        piped_invalid_point.check();
         pythiaNumber = 0;
-        #pragma omp critical (runOptions)
-        {
-          // Defaults to 1 if option unspecified
-          pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
-        }
+        // Defaults to 1 if option unspecified
+        pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
 
         while (pythiaNumber < pythiaConfigurations)
         {
+          piped_invalid_point.check();
+          xsecGen = 0.;
+          counter = 0;
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             Loop::executeIteration(START_SUBPROCESS);
-            if(*Loop::done) {
-              std::cout << "\n\n THIS SUBPROCESS WAS VETOED " << std::endl;
-              Loop::executeIteration(END_SUBPROCESS);
-            } else {
+            // post init / xsec veto synchronization
+            #pragma omp barrier
+            // main event loop
+      while(not *Loop::done and counter < nEvents) {
               allProcessesVetoed = false;
-              #pragma omp for
-              for (int i = 1; i <= nEvents; ++i) {
-                Loop::executeIteration(i);
-              }
-              Loop::executeIteration(END_SUBPROCESS);
+              // race conditions may push counter past nEvents. But that is OK.
+              #pragma omp atomic
+              counter++;
+        Loop::executeIteration(counter);
             }
+            Loop::executeIteration(END_SUBPROCESS);
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
                     << " number " << std::to_string(pythiaNumber) << " has finished." << std::endl;
@@ -165,7 +161,9 @@ namespace Gambit
 
       static bool SLHA_debug_mode = false;
       static std::vector<std::string> filenames;
-      static unsigned int counter = -1;               
+      static std::string pythia_doc_path;
+      static bool print_pythia_banner = true;
+      static unsigned int counter = -1;
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, line;
@@ -175,6 +173,17 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {
+        // Get Pythia to print its banner.
+        if (print_pythia_banner)
+        {
+          #pragma omp_critical (runOptions)
+          {
+            pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
+          }
+          result.banner(pythia_doc_path);
+          result.clear();
+          print_pythia_banner = false;
+        }
         // If there are no debug filenames set, look for them.
         if (filenames.empty())
         {
@@ -210,7 +219,9 @@ namespace Gambit
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
-        if (omp_get_thread_num() == 0) 
+        pythiaOptions.push_back("Print:quiet = on");
+        pythiaOptions.push_back("SLHA:verbose = 0");
+        if (omp_get_thread_num() == 0)
           pythiaOptions.push_back("Init:showProcesses = on");
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
@@ -219,12 +230,19 @@ namespace Gambit
         if (SLHA_debug_mode)
         {
           // Run Pythia reading an SLHA file.
-          logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
-          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));         
           if (omp_get_thread_num() == 0)
-            result.init(pythiaOptions, processLevelOutput);
-          else
-            result.init(pythiaOptions);
+            logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
+          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));
+          try {
+            if (omp_get_thread_num() == 0)
+              result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+            else
+              result.init(pythia_doc_path, pythiaOptions);
+          } catch (SpecializablePythia::InitializationError &e) {
+            piped_invalid_point.request("Bad point: Pythia can't initialize");
+            Loop::wrapup();
+            return;
+          }
         }
         else
         {
@@ -247,40 +265,53 @@ namespace Gambit
             slha.push_front(block);
           }
           else
-            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
-          cout << slha << endl;
+          {
+            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
+          }
           pythiaOptions.push_back("SLHA:file = slhaea");
 
-          if (omp_get_thread_num() == 0)
-            result.init(pythiaOptions, &slha, processLevelOutput);
-          else
-            result.init(pythiaOptions, &slha);
+          try
+          {
+            if (omp_get_thread_num() == 0)
+              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+            else
+              result.init(pythia_doc_path, pythiaOptions, &slha);
+          }
+          catch (SpecializablePythia::InitializationError &e)
+          {
+            piped_invalid_point.request("Bad point: Pythia can't initialize");
+            Loop::wrapup();
+            return;
+          }
         }
 
-        /// xsec veto
+        // xsec veto
         if (omp_get_thread_num() == 0) {
           code = -1;
           totalxsec = 0.;
-          while(code < 2026) {
+          while(true) {
             std::getline(processLevelOutput, line);
             issPtr = new std::istringstream(line);
             issPtr->seekg(47, issPtr->beg);
-            if ((*issPtr) >> code >> _junk >> xsec) totalxsec += xsec;
+            (*issPtr) >> code;
+            if (!issPtr->good() && totalxsec > 0.) break;
+            (*issPtr) >> _junk >> xsec;
+            if (issPtr->good()) totalxsec += xsec;
             delete issPtr;
           }
-          //std::cout << "$$$$ Total xsec (fb) = " << totalxsec * 1e12 << "\n";
-          
-          /// TODO: All our analyses seem to be 20 inverse femtobarns... generalize?
-          if (totalxsec * 1e12 * 20. < 1.) Loop::wrapup();
-        }
-      }
 
+          /// @todo Remove the hard-coded 20.3 inverse femtobarns! This needs to be analysis-specific
+          if (totalxsec * 1e12 * 20.3 < 1.) Loop::wrapup();
+        }
+
+      }
     }
 
 
 
     /// *** Detector Simulators ***
 
+#ifndef EXCLUDE_DELPHES
     void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
@@ -295,6 +326,7 @@ namespace Gambit
         }
       }
     }
+#endif // not defined EXCLUDE_DELPHES
 
 
     void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result)
@@ -314,24 +346,32 @@ namespace Gambit
     }
 
 
+    void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
+    {
+      using namespace Pipes::getBuckFastIdentity;
+      std::string buckFastOption;
+      if (*Loop::iteration == INIT)
+      {
+        result.clear();
+        #pragma omp critical (BuckFast)
+        {
+          /// Setup new BuckFast
+          /// @note There's really nothing to do. BuckFast doesn't even have class variables.
+          result.init();
+        }
+      }
+    }
+
+
 
     /// *** Initialization for analyses ***
 
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
-      if (*Loop::iteration == INIT)
-      {
-        #pragma omp critical (runOptions)
-        {
-          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-        }
-        #pragma omp critical (access_globalAnalyses)
-        {
-          if(!globalAnalyses->ready) {
-            /// A global Analyses container exists to hold combined results from all threads.
-            globalAnalyses->init(analysisNames);
-          }
-        }
+      if (*Loop::iteration == BASE_INIT) {
+        GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
+        globalAnalyses->clear();
+        globalAnalyses->init(analysisNames);
         return;
       }
 
@@ -339,7 +379,7 @@ namespace Gambit
       {
         /// Each thread gets its own Analysis container.
         /// Thus, their initialization is *after* INIT, within omp parallel.
-        /// @TODO Can we test for xsec veto here? Might be analysis dependent...
+        result.clear();
         result.init(analysisNames);
         return;
       }
@@ -348,6 +388,8 @@ namespace Gambit
       {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
+        #pragma omp atomic
+        xsecGen += xs;
         result.add_xsec(xs, xserr);
         #pragma omp critical (access_globalAnalyses)
         {
@@ -368,7 +410,13 @@ namespace Gambit
       result.clear();
 
       /// Get the next event from Pythia8
-      (*Dep::HardScatteringSim).nextEvent(result);
+      try {
+        (*Dep::HardScatteringSim).nextEvent(result);
+      } catch (SpecializablePythia::EventFailureError &e) {
+        piped_invalid_point.request("Bad point: Pythia can't generate events");
+        Loop::wrapup();
+        return;
+      }
     }
 
 
@@ -650,6 +698,7 @@ namespace Gambit
 
     /// *** Standard Event Format Functions ***
 
+#ifndef EXCLUDE_DELPHES
     void reconstructDelphesEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructDelphesEvent;
       if (*Loop::iteration <= BASE_INIT) return;
@@ -660,9 +709,19 @@ namespace Gambit
         (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
       }
     }
+#endif // not defined EXCLUDE_DELPHES
 
     void reconstructBuckFastEvent(HEPUtils::Event& result) {
       using namespace Pipes::reconstructBuckFastEvent;
+      if (*Loop::iteration <= BASE_INIT) return;
+      result.clear();
+
+      (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
+    }
+
+
+    void reconstructBuckFastIdentityEvent(HEPUtils::Event& result) {
+      using namespace Pipes::reconstructBuckFastIdentityEvent;
       if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
@@ -679,6 +738,11 @@ namespace Gambit
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
+        // Use counter instead of nEvents in case race conditions in the loop
+        // caused counter to be slightly larger than nEvents.
+        /// @todo The 20.3 hard-coded integrated lumi needs to be removed... this is an analysis-specific number
+        const double scale = xsecGen * 20.3*1000 / counter;
+        globalAnalyses->scale(scale);
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
@@ -703,6 +767,7 @@ namespace Gambit
       using namespace Pipes::calc_LHC_LogLike;
       // xsec veto
       if (allProcessesVetoed) {
+        logger() << "This point was xsec vetoed." << EOM;
         result = 0.;
         return;
       }
@@ -734,13 +799,10 @@ namespace Gambit
 
           // A fractional uncertainty on n_predicted_uncertain e.g. 0.2 from 20% uncertainty on efficencty wrt signal events
           const double bkg_ratio = srData.background_sys/srData.n_background;
-          //const double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0; ///< @todo Is this the best treatment?
           const double uncertainty_b = bkg_ratio;
-          //const double uncertainty_sb = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio); ///< @todo AB: I don't like this... should be something like sqrt(DeltaB**2 + DeltaS**2)/(B+S) ?
           const double uncertainty_sb = sqrt(srData.background_sys*srData.background_sys + srData.signal_sys*srData.signal_sys) / n_predicted_uncertain_sb;
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
-          //int n_predicted_total_sb_int = (int) round(n_predicted_exact + n_predicted_uncertain_sb); //< we don't use this: predictions all use exp[b] as the "observed"
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
           // cout << "OBS " << n_obs << " EXACT " << n_predicted_exact
@@ -780,53 +842,59 @@ namespace Gambit
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
       result = -total_dll_obs;
     }
-    
-    
+
+
     // *** Limits from e+e- colliders ***
-    
+
     /// ee --> selectron pair production cross-sections at 208 GeV
     /// @{
-    void LEP208_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_selselbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_selselbar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_selserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_selserbar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_serserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_serserbar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_serselbar(triplet<double>& result)
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_serselbar::Dep::LEP208_xsec_selserbar;
     }
-    void LEP208_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_se1se1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_se1se2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_se2se2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+      get_sigma_ee_ll(result, 208.0, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_se2se1bar::Dep::LEP208_xsec_se1se2bar;
     }
@@ -834,47 +902,59 @@ namespace Gambit
 
     /// ee --> smuon pair production cross-sections at 208 GeV
     /// @{
-    void LEP208_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_smursmulbar::Dep::LEP208_xsec_smulsmurbar;
     }
-    void LEP208_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smu1smu1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smu1smu2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_smu2smu2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_smu2smu1bar::Dep::LEP208_xsec_smu1smu2bar;
     }
@@ -882,47 +962,59 @@ namespace Gambit
 
     /// ee --> stau pair production cross-sections at 208 GeV
     /// @{
-    void LEP208_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP208_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_staurstaulbar::Dep::LEP208_xsec_staulstaurbar;
     }
-    void LEP208_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_stau1stau1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_stau1stau2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_stau2stau2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 208.0, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP208_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_stau2stau1bar::Dep::LEP208_xsec_stau1stau2bar;
     }
@@ -931,568 +1023,718 @@ namespace Gambit
 
     /// ee --> neutralino pair production cross-sections at 208 GeV
     /// @{
-    void LEP208_SLHA1_convention_xsec_chi00_11(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_11(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_12(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_12(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_13(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_13(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_13;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 1, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 1, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_14(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_14(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_14;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 1, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 1, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_22(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_22(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_23(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_23(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_23;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 2, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 2, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_24(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_24(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_24;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 2, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 2, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_33(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_33(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_33;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 3, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 3, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_34(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_34(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_34;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 3, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 3, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chi00_44(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chi00_44(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chi00_44;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 208.0, 4, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 208.0, 4, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
     /// @}
 
 
-    /// ee --> chargino pair production cross-sections at 208 GeV   
+    /// ee --> chargino pair production cross-sections at 208 GeV
     /// @{
-    void LEP208_SLHA1_convention_xsec_chipm_11(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chipm_11(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 208.0, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 208.0, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chipm_12(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chipm_12(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 208.0, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 208.0, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chipm_22(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chipm_22(triplet<double>& result)
     {
       using namespace Pipes::LEP208_SLHA1_convention_xsec_chipm_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 208.0, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 208.0, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP208_SLHA1_convention_xsec_chipm_21(triplet<double>& result)    
+    void LEP208_SLHA1_convention_xsec_chipm_21(triplet<double>& result)
     {
       result = *Pipes::LEP208_SLHA1_convention_xsec_chipm_21::Dep::LEP208_xsec_chipm_12;
     }
     /// @}
 
 
-    /// ee --> selectron pair production cross-sections at 205 GeV   
+    /// ee --> selectron pair production cross-sections at 205 GeV
     /// @{
-    void LEP205_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_selselbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_selselbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_selserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_selserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_serserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_serserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_serselbar(triplet<double>& result)
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_serselbar::Dep::LEP205_xsec_selserbar;
     }
-    void LEP205_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_se1se1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_se1se2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_se2se2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_se2se1bar::Dep::LEP205_xsec_se1se2bar;
     }
     /// @}
 
-    /// ee --> smuon pair production cross-sections at 205 GeV   
+    /// ee --> smuon pair production cross-sections at 205 GeV
     /// @{
-    void LEP205_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_smursmulbar::Dep::LEP205_xsec_smulsmurbar;
     }
-    void LEP205_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smu1smu1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smu1smu2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_smu2smu2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_smu2smu1bar::Dep::LEP205_xsec_smu1smu2bar;
     }
     /// @}
 
-    /// ee --> stau pair production cross-sections at 205 GeV   
+    /// ee --> stau pair production cross-sections at 205 GeV
     /// @{
-    void LEP205_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP205_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_staurstaulbar::Dep::LEP205_xsec_staulstaurbar;
     }
-    void LEP205_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_stau1stau1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_stau1stau2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_stau2stau2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 205.0, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP205_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_stau2stau1bar::Dep::LEP205_xsec_stau1stau2bar;
     }
     /// @}
 
 
-    /// ee --> neutralino pair production cross-sections at 205 GeV   
+    /// ee --> neutralino pair production cross-sections at 205 GeV
     /// @{
-    void LEP205_SLHA1_convention_xsec_chi00_11(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_11(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_12(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_12(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_13(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_13(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_13;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 1, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 1, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_14(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_14(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_14;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 1, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 1, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_22(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_22(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_23(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_23(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_23;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 2, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 2, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_24(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_24(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_24;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 2, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 2, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_33(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_33(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_33;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 3, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 3, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_34(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_34(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_34;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 3, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 3, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chi00_44(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chi00_44(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chi00_44;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 205.0, 4, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 205.0, 4, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
     /// @}
 
 
-    /// ee --> chargino pair production cross-sections at 205 GeV   
+    /// ee --> chargino pair production cross-sections at 205 GeV
     /// @{
-    void LEP205_SLHA1_convention_xsec_chipm_11(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chipm_11(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 205.0, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 205.0, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chipm_12(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chipm_12(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 205.0, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 205.0, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chipm_22(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chipm_22(triplet<double>& result)
     {
       using namespace Pipes::LEP205_SLHA1_convention_xsec_chipm_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 205.0, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 205.0, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP205_SLHA1_convention_xsec_chipm_21(triplet<double>& result)    
+    void LEP205_SLHA1_convention_xsec_chipm_21(triplet<double>& result)
     {
       result = *Pipes::LEP205_SLHA1_convention_xsec_chipm_21::Dep::LEP205_xsec_chipm_12;
     }
-    
-    /// ee --> selectron pair production cross-sections at 188.6 GeV   
+
+    /// ee --> selectron pair production cross-sections at 188.6 GeV
     /// @{
-    void LEP188_SLHA1_convention_xsec_selselbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_selselbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_selselbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_selserbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_selserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_selserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_serserbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_serserbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_serserbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_serselbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_serselbar(triplet<double>& result)
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_serselbar::Dep::LEP188_xsec_selserbar;
     }
-    void LEP188_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_se1se1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_se1se1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 1, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_se1se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_se1se2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 1, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_se2se2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_se2se2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 1, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_se2se1bar(triplet<double>& result)
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_se2se1bar::Dep::LEP188_xsec_se1se2bar;
     }
     /// @}
 
-    /// ee --> smuon pair production cross-sections at 188.6 GeV   
+    /// ee --> smuon pair production cross-sections at 188.6 GeV
     /// @{
-    void LEP188_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_smulsmulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smulsmulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_smulsmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smulsmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_smursmurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smursmurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_smursmulbar(triplet<double>& result)
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_smursmulbar::Dep::LEP188_xsec_smulsmurbar;
     }
-    void LEP188_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_smu1smu1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smu1smu1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 2, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_smu1smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smu1smu2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 2, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_smu2smu2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_smu2smu2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 2, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_smu2smu1bar(triplet<double>& result)
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_smu2smu1bar::Dep::LEP188_xsec_smu1smu2bar;
     }
     /// @}
 
-    /// ee --> stau pair production cross-sections at 188.6 GeV   
+    /// ee --> stau pair production cross-sections at 188.6 GeV
     /// @{
-    void LEP188_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_staulstaulbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staulstaulbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_staulstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staulstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_staurstaurbar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_staurstaurbar;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "gauge_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "gauge_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, true);
     }
-    void LEP188_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_staurstaulbar(triplet<double>& result)
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_staurstaulbar::Dep::LEP188_xsec_staulstaurbar;
     }
-    void LEP188_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_stau1stau1bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_stau1stau1bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 3, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_stau1stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_stau1stau2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 3, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_stau2stau2bar(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_stau2stau2bar;
       const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
-      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);      
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "family_mixing_tolerance_invalidates_point_only");
+
+      get_sigma_ee_ll(result, 188.6, 3, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV, false);
     }
-    void LEP188_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_stau2stau1bar(triplet<double>& result)
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_stau2stau1bar::Dep::LEP188_xsec_stau1stau2bar;
     }
     /// @}
 
 
-    /// ee --> neutralino pair production cross-sections at 188.6 GeV   
+    /// ee --> neutralino pair production cross-sections at 188.6 GeV
     /// @{
-    void LEP188_SLHA1_convention_xsec_chi00_11(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_11(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_12(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_12(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_13(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_13(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_13;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 1, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 1, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_14(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_14(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_14;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 1, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 1, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_22(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_22(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_23(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_23(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_23;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 2, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 2, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_24(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_24(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_24;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 2, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 2, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_33(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_33(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_33;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 3, 3, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 3, 3, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_34(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_34(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_34;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 3, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 3, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chi00_44(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chi00_44(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chi00_44;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chi00(result, 188.6, 4, 4, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chi00(result, 188.6, 4, 4, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
     /// @}
 
 
-    /// ee --> chargino pair production cross-sections at 188.6 GeV   
+    /// ee --> chargino pair production cross-sections at 188.6 GeV
     /// @{
-    void LEP188_SLHA1_convention_xsec_chipm_11(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chipm_11(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_11;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 188.6, 1, 1, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 188.6, 1, 1, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chipm_12(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chipm_12(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_12;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 188.6, 1, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 188.6, 1, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chipm_22(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chipm_22(triplet<double>& result)
     {
       using namespace Pipes::LEP188_SLHA1_convention_xsec_chipm_22;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
-      get_sigma_ee_chipm(result, 188.6, 2, 2, tol, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);      
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
+      get_sigma_ee_chipm(result, 188.6, 2, 2, tol, pt_error, *Dep::MSSM_spectrum, Dep::Z_decay_rates->width_in_GeV);
     }
-    void LEP188_SLHA1_convention_xsec_chipm_21(triplet<double>& result)    
+    void LEP188_SLHA1_convention_xsec_chipm_21(triplet<double>& result)
     {
       result = *Pipes::LEP188_SLHA1_convention_xsec_chipm_21::Dep::LEP188_xsec_chipm_12;
     }
     /// @}
 
-    
+
     /// LEP Slepton Log-Likelihoods
     /// @{
     void ALEPH_Selectron_Conservative_LLike(double& result)
@@ -1511,9 +1753,10 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_seL = spec->get_Pole_Mass(1000011, 0); 
-      const double mass_seR = spec->get_Pole_Mass(2000011, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0); 
+      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1522,7 +1765,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // se_L, se_L
-      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1536,7 +1779,7 @@ namespace Gambit
       }
 
       // se_R, se_R
-      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_serserbar;
       xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1567,9 +1810,10 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_smuL = spec->get_Pole_Mass(1000013, 0); 
-      const double mass_smuR = spec->get_Pole_Mass(2000013, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0); 
+      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1578,7 +1822,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // smu_L, smu_L
-      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1592,7 +1836,7 @@ namespace Gambit
       }
 
       // smu_R, smu_R
-      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_smursmurbar;
       xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1623,9 +1867,10 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_stau1 = spec->get_Pole_Mass(1000015, 0); 
-      const double mass_stau2 = spec->get_Pole_Mass(2000015, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0); 
+      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1634,7 +1879,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // stau_1, stau_1
-      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_stau1stau1bar;
       xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -1648,7 +1893,7 @@ namespace Gambit
       }
 
       // stau_2, stau_2
-      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_stau2stau2bar;
       xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -1679,9 +1924,10 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_seL = spec->get_Pole_Mass(1000011, 0); 
-      const double mass_seR = spec->get_Pole_Mass(2000011, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0); 
+      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1690,7 +1936,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // se_L, se_L
-      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1704,7 +1950,7 @@ namespace Gambit
       }
 
       // se_R, se_R
-      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_serserbar;
       xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1735,9 +1981,10 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_smuL = spec->get_Pole_Mass(1000013, 0); 
-      const double mass_smuR = spec->get_Pole_Mass(2000013, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0); 
+      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1746,7 +1993,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // smu_L, smu_L
-      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1760,7 +2007,7 @@ namespace Gambit
       }
 
       // smu_R, smu_R
-      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_smursmurbar;
       xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1791,9 +2038,10 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_stau1 = spec->get_Pole_Mass(1000015, 0); 
-      const double mass_stau2 = spec->get_Pole_Mass(2000015, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0); 
+      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
 
@@ -1802,7 +2050,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // stau_1, stau_1
-      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_stau1stau1bar;
       xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -1816,7 +2064,7 @@ namespace Gambit
       }
 
       // stau_2, stau_2
-      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_stau2stau2bar;
       xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -1851,10 +2099,11 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
-      const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
-      const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -1863,7 +2112,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like Z* decays
@@ -1891,7 +2140,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like Z* decays
@@ -1919,7 +2168,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like Z* decays
@@ -1965,10 +2214,11 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
-      const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
-      const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -1977,7 +2227,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like leptonic Z* decays
@@ -2002,7 +2252,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like leptonic Z* decays
@@ -2027,7 +2277,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like leptonic Z* decays
@@ -2070,9 +2320,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
-      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2081,7 +2332,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like W* decays
@@ -2103,7 +2354,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like W* decays
@@ -2143,9 +2394,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
-      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2154,7 +2406,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2179,7 +2431,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2222,9 +2474,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
-      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2233,7 +2486,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like hadronic W* decays
@@ -2254,7 +2507,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like hadronic W* decays
@@ -2288,19 +2541,22 @@ namespace Gambit
       }
 #endif
       using namespace Pipes::OPAL_Chargino_SemiLeptonic_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
       using std::pow;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const SubSpectrum *mssm = spec->get_HE();
       const DecayTable *decays = &(*Dep::decay_rates);
-      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO);
-      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO);
-      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
-      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
+      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
+      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2309,7 +2565,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2351,7 +2607,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2406,19 +2662,22 @@ namespace Gambit
       }
 #endif
       using namespace Pipes::OPAL_Chargino_Leptonic_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
       using std::pow;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const SubSpectrum *mssm = spec->get_HE();
       const DecayTable *decays = &(*Dep::decay_rates);
-      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO);
-      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO);
-      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
-      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
+      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
+      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2427,7 +2686,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2458,7 +2717,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2502,19 +2761,22 @@ namespace Gambit
       }
 #endif
       using namespace Pipes::OPAL_Chargino_All_Channels_Conservative_LLike;
-      const static double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      const static double tol = runOptions->getValueOrDef<double>(1e-2, "family_mixing_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+
       using std::pow;
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const SubSpectrum *mssm = spec->get_HE();
       const DecayTable *decays = &(*Dep::decay_rates);
-      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO);
-      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO);
-      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_char1 = spec->get_Pole_Mass(1000024, 0);
-      const double mass_char2 = spec->get_Pole_Mass(1000037, 0);
+      const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
+      const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
+      const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
+      const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2523,7 +2785,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like W* decays
@@ -2551,7 +2813,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like W* decays
@@ -2597,10 +2859,11 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get_Pole_Mass(1000022, 0); 
-      const double mass_neut2 = spec->get_Pole_Mass(1000023, 0); 
-      const double mass_neut3 = spec->get_Pole_Mass(1000025, 0); 
-      const double mass_neut4 = spec->get_Pole_Mass(1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
 
@@ -2609,7 +2872,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_12;
       // Total up all channels which look like Z* decays
@@ -2631,7 +2894,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_13;
       // Total up all channels which look like Z* decays
@@ -2653,7 +2916,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1);
+      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_14;
       // Total up all channels which look like Z* decays
@@ -2773,7 +3036,7 @@ namespace Gambit
       const SubSpectrum* spec = fullspectrum->get_HE();
       const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
 
-      result.Mh[0] = spec->phys().get_Pole_Mass(25,0);
+      result.Mh[0] = spec->phys().get(Par::Pole_Mass,25,0);
 
       result.deltaMh[0] = 0.; // Need to get theoretical error on mass
       result.hGammaTot[0] = decays->width_in_GeV;
@@ -2834,40 +3097,40 @@ namespace Gambit
       for(int i = 0; i < 3; i++)
       {
         // Higgs masses and errors
-        result.Mh[i] = spec->phys().get_Pole_Mass(sHneut[i]);
+        result.Mh[i] = spec->phys().get(Par::Pole_Mass,sHneut[i]);
         result.deltaMh[i] = 0.;
       }
 
       // invisible LSP?
-      double lsp_mass = spec->phys().get_Pole_Mass("~chi0_1");
+      double lsp_mass = spec->phys().get(Par::Pole_Mass,"~chi0_1");
       int i_snu = 0;
       for(int i = 1; i <= 3; i++)
       {
-        if(spec->phys().get_Pole_Mass("~nu",i)  < lsp_mass)
+        if(spec->phys().get(Par::Pole_Mass,"~nu",i)  < lsp_mass)
         {
           i_snu = i;
-          lsp_mass = spec->phys().get_Pole_Mass("~nu",i);
+          lsp_mass = spec->phys().get(Par::Pole_Mass,"~nu",i);
         }
       }
 
       bool inv_lsp = true;
-      if(spec->phys().get_Pole_Mass("~chi+",1) < lsp_mass) inv_lsp = false;
-      if(spec->phys().get_Pole_Mass("~g") < lsp_mass) inv_lsp = false;
+      if(spec->phys().get(Par::Pole_Mass,"~chi+",1) < lsp_mass) inv_lsp = false;
+      if(spec->phys().get(Par::Pole_Mass,"~g") < lsp_mass) inv_lsp = false;
       if(inv_lsp)
       {
         for(int i = 1; i <= 6; i++)
         {
-          if(spec->phys().get_Pole_Mass("~d",i) < lsp_mass)
+          if(spec->phys().get(Par::Pole_Mass,"~d",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys().get_Pole_Mass("~u",i) < lsp_mass)
+          if(spec->phys().get(Par::Pole_Mass,"~u",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys().get_Pole_Mass("~e-",i) < lsp_mass)
+          if(spec->phys().get(Par::Pole_Mass,"~e-",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
@@ -2918,7 +3181,7 @@ namespace Gambit
         }
       }
 
-      result.MHplus = spec->phys().get_Pole_Mass("H+");
+      result.MHplus = spec->phys().get(Par::Pole_Mass,"H+");
       result.deltaMHplus = 0.;
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));
@@ -3126,7 +3389,7 @@ namespace Gambit
       BEreq::HB_calc_stats(theor_unc,chisq_withouttheory,chisq_withtheory,chan2);
 
       result = -0.5*chisq_withouttheory;
-      std::cout << "Calculating LEP chisq: " << chisq_withouttheory << " (no theor), " << chisq_withtheory << " (with theor)" << endl;
+      //std::cout << "Calculating LEP chisq: " << chisq_withouttheory << " (no theor), " << chisq_withtheory << " (with theor)" << endl;
 
     }
 
@@ -3183,8 +3446,8 @@ namespace Gambit
 
 
       result = -0.5*csqtot;
-      std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";
-      std::cout << csqtot << " (both), Nobs: " << nobs << ", Pvalue: " << Pvalue << endl;
+      //std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";
+      //std::cout << csqtot << " (both), Nobs: " << nobs << ", Pvalue: " << Pvalue << endl;
 
     }
 

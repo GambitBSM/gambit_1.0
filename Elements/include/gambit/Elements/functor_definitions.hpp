@@ -519,7 +519,7 @@ namespace Gambit
     : functor                  (func_name, func_capability, result_type, origin_name, claw),
       start                    (NULL),
       end                      (NULL),
-      raised_point_exception   (NULL),
+      point_exception_raised   (false),
       runtime_average          (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
       fadeRate                 (FUNCTORS_FADE_RATE),              // can be set individually for each functor
       pInvalidation            (FUNCTORS_BASE_INVALIDATION_RATE),
@@ -577,7 +577,7 @@ namespace Gambit
       std::fill(needs_recalculating, needs_recalculating+n, true);
       std::fill(already_printed, already_printed+n, false);
       if (iCanManageLoops) resetLoop();
-      raised_point_exception = NULL;
+      point_exception_raised = false;
     }
 
     /// Reset functor for one thread only
@@ -593,7 +593,7 @@ namespace Gambit
     void module_functor_common::notifyOfInvalidation(const str& msg)
     {
       acknowledgeInvalidation(invalid_point());
-      invalid_point().raise(msg);
+      retrieve_invalid_point_exception()->raise(msg);
     }
 
     /// Acknowledge that this functor invalidated the current point in model space.
@@ -602,10 +602,11 @@ namespace Gambit
       #pragma omp atomic
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
       if (f==NULL) f = this; 
-      e.set_thrower(f);
       #pragma omp critical (raised_point_exception)
       {
-        raised_point_exception = &e;
+        e.set_thrower(f);
+        raised_point_exception = e;
+        point_exception_raised = true;
       }
       if (omp_get_level()!=0) breakLoop();
     }
@@ -613,7 +614,7 @@ namespace Gambit
     /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
     invalid_point_exception* module_functor_common::retrieve_invalid_point_exception()
     {
-      if (raised_point_exception != NULL) return raised_point_exception;
+      if (point_exception_raised) return &raised_point_exception;
       for (auto f = myNestedFunctorList.begin(); f != myNestedFunctorList.end(); ++f)
       {
         invalid_point_exception* e = (*f)->retrieve_invalid_point_exception();
@@ -621,7 +622,6 @@ namespace Gambit
       }
       return NULL;
     }
-
 
     /// Getter for invalidation rate
     double module_functor_common::getInvalidationRate()
@@ -1482,7 +1482,7 @@ namespace Gambit
         }
         catch (invalid_point_exception& e)
         {
-          if (raised_point_exception == NULL) acknowledgeInvalidation(e);
+          if (not point_exception_raised) acknowledgeInvalidation(e);
           if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
           {
             this->finishTiming(thread_num);        //Stop timing function evaluation
@@ -1579,7 +1579,7 @@ namespace Gambit
         }
         catch (invalid_point_exception& e)
         {
-          if (raised_point_exception == NULL) acknowledgeInvalidation(e);
+          if (not point_exception_raised) acknowledgeInvalidation(e);
           if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
           {
             this->finishTiming(thread_num);

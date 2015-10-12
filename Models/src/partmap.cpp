@@ -200,6 +200,10 @@ namespace Gambit
     }
 
     /// Check if a particle is in the database, using the short name and index 
+    bool partmap::has_particle(str short_name, int i)
+    {
+      return has_particle(std::make_pair(short_name,i));
+    }
     bool partmap::has_particle(std::pair<str, int> shortpr)
     {
       return (short_name_pair_to_pdg_pair.find(shortpr) != short_name_pair_to_pdg_pair.end());
@@ -261,6 +265,7 @@ namespace Gambit
     /// @}
 
     /// Check if a particle has a matching anti-particle in the database, using the long name 
+    /// Note: will throw an error if the particle itself is not in the database!
     bool partmap::has_antiparticle(str long_name)
     {
       return has_antiparticle(pdg_pair(long_name)); 

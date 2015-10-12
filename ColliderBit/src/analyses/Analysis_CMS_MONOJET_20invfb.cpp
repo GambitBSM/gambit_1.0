@@ -5,13 +5,13 @@
 
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
-#include "gambit/ColliderBit/mt2w.h"
+//#include "gambit/ColliderBit/mt2w.h"
 
 /// @todo Remove the ROOT classes...
 
 using namespace std;
 
-// The CMS monojet analysis (20fb^-1) 
+// The CMS monojet analysis (20fb^-1)
 
 // based on: http://lanl.arxiv.org/pdf/1408.3583v1.pdf
 
@@ -53,19 +53,19 @@ namespace Gambit {
         if (jets.size()<2) return(999);
         double dphi1 = std::acos(std::cos(jets.at(0)->phi()-phi_met));
         double dphi2 = std::acos(std::cos(jets.at(1)->phi()-phi_met));
-        double dphi3 = 999;
+        //double dphi3 = 999;
         //if (jets.size() > 2 && jets[2]->pT() > 40.)
         //  dphi3 = std::acos(std::cos(jets[2]->phi() - phi_met));
         double min1 = std::min(dphi1, dphi2);
-        
-        return min1; 
-        
+
+        return min1;
+
       }
-      
+
       void analyze(const HEPUtils::Event* event) {
 
         // Missing energy
-        HEPUtils::P4 ptot = event->missingmom();
+        //HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
         // Now define vectors of baseline objects
@@ -91,22 +91,22 @@ namespace Gambit {
         }
 
         vector<HEPUtils::Jet*> baselineJets;
-        vector<LorentzVector> jets;
+        vector<HEPUtils::P4> jets;
 
         for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 4.5) {
             baselineJets.push_back(jet);
           }
         }
-          
+
         // Calculate common variables and cuts first
         //applyTightIDElectronSelection(signalElectrons);
-        
+
         //int nElectrons = signalElectrons.size();
         //int nMuons = signalMuons.size();
         int nJets = baselineJets.size();
         int nLeptons = baselineElectrons.size()+baselineMuons.size()+baselineTaus.size();
-        
+
         // CUTS
         // pT(j1) > 110 GeV & eta < 2.4
         // njets <=2
@@ -135,7 +135,7 @@ namespace Gambit {
 
         double dPhiJ1J2 = 5.;
         if(nJets>=2)dPhiJ1J2=acos(cos((baselineJets[0]->phi() - baselineJets[1]->phi())));
-        
+
 
         for(int j=0;j<NCUTS;j++){
           if(
@@ -145,30 +145,30 @@ namespace Gambit {
 
              (j==2 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2) ||
 
-             (j==3 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5) || 
+             (j==3 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5) ||
 
-             (j==4 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0) || 
+             (j==4 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0) ||
 
-             (j==5 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 250.) || 
+             (j==5 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 250.) ||
 
-             (j==6 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 300.) || 
+             (j==6 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 300.) ||
 
-             (j==7 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 350.) || 
+             (j==7 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 350.) ||
 
-             (j==8 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 400.) || 
+             (j==8 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 400.) ||
 
-             (j==9 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 450.) || 
+             (j==9 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 450.) ||
 
-             (j==10 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 500.) || 
+             (j==10 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 500.) ||
 
              (j==11 && nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 550.))
-            
+
             cutFlowVector[j]++;
         }
-        
+
         //We're now ready to apply the cuts for each signal region
         //_numSR1, _numSR2, _numSR3;
-        
+
         if(nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 250.)_num250++;
         if(nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 350.)_num350++;
         if(nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 400.)_num400++;
@@ -182,7 +182,7 @@ namespace Gambit {
 
 
       void add(BaseAnalysis* other) {
-        // The base class add function handles the signal region vector and total # events. 
+        // The base class add function handles the signal region vector and total # events.
         HEPUtilsAnalysis::add(other);
 
         Analysis_CMS_MONOJET_20invfb* specificOther
@@ -241,14 +241,14 @@ namespace Gambit {
         results_300.set_backgroundsys(830.);
         results_300.set_signalsys(0.);
         results_300.set_signal(_num300);
-        
+
         SignalRegionData results_350;
         results_350.set_observation(8320.);
         results_350.set_background(8190.);
         results_350.set_backgroundsys(400.);
         results_350.set_signalsys(0.);
         results_350.set_signal(_num350);
-        
+
         SignalRegionData results_400;
         results_400.set_observation(3830.);
         results_400.set_background(3930.);
@@ -284,12 +284,12 @@ namespace Gambit {
         add_result(results_450);
         add_result(results_500);
         add_result(results_550);
-        
+
         return;
       }
 
     };
-    
+
     DEFINE_ANALYSIS_FACTORY(CMS_MONOJET_20invfb)
 
 

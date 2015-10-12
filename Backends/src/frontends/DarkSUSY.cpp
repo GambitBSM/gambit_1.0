@@ -369,6 +369,40 @@ BE_NAMESPACE
     mspctm->mass(DSparticle_code("W+"))  = to<double>(mySLHA.at("MASS").at(24).at(1));  // W boson mass
     mspctm->mass(DSparticle_code("Z0"))  = to<double>(mySLHA.at("SMINPUTS").at(4).at(1)); // Z boson mass
 
+    // Block MINPAR we skip, it is not needed
+
+    // Block MSOFT
+    mssmpar->m1 = to<double>(mySLHA.at("MSOFT").at(1).at(1));
+    mssmpar->m2 = to<double>(mySLHA.at("MSOFT").at(2).at(1));
+    mssmpar->m3 = to<double>(mySLHA.at("MSOFT").at(3).at(1));
+    mssmpar->mass2l(1) = square(to<double>(mySLHA.at("MSOFT").at(31).at(1)));
+    mssmpar->mass2l(2) = square(to<double>(mySLHA.at("MSOFT").at(32).at(1)));
+    mssmpar->mass2l(3) = square(to<double>(mySLHA.at("MSOFT").at(33).at(1)));
+    mssmpar->mass2e(1) = square(to<double>(mySLHA.at("MSOFT").at(34).at(1)));
+    mssmpar->mass2e(2) = square(to<double>(mySLHA.at("MSOFT").at(35).at(1)));
+    mssmpar->mass2e(3) = square(to<double>(mySLHA.at("MSOFT").at(36).at(1)));
+    mssmpar->mass2q(1) = square(to<double>(mySLHA.at("MSOFT").at(41).at(1)));
+    mssmpar->mass2q(2) = square(to<double>(mySLHA.at("MSOFT").at(42).at(1)));
+    mssmpar->mass2q(3) = square(to<double>(mySLHA.at("MSOFT").at(43).at(1)));
+    mssmpar->mass2u(1) = square(to<double>(mySLHA.at("MSOFT").at(44).at(1)));
+    mssmpar->mass2u(2) = square(to<double>(mySLHA.at("MSOFT").at(45).at(1)));
+    mssmpar->mass2u(3) = square(to<double>(mySLHA.at("MSOFT").at(46).at(1)));
+    mssmpar->mass2d(1) = square(to<double>(mySLHA.at("MSOFT").at(47).at(1)));
+    mssmpar->mass2d(2) = square(to<double>(mySLHA.at("MSOFT").at(48).at(1)));
+    mssmpar->mass2d(3) = square(to<double>(mySLHA.at("MSOFT").at(49).at(1)));
+
+    // Block HMIX
+    mssmpar->mu = to<double>(mySLHA.at("HMIX").at(1).at(1));
+    mssmpar->tanbe = to<double>(mySLHA.at("HMIX").at(2).at(1));
+
+    // Block ALPHA 
+    // FIXME: CW: Please double-check that this gives the right result
+    mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").back().at(0));  // Higgs mixing angle
+    // mssmmixing->alpha = to<double>(alpha.back().at(0));  // SUSY-HIT way of doing it. Mixing angle in the neutral Higgs boson sector.
+
+    // Now set up some defaults (part of it will be overwritten later)
+    dssuconst();
+      
     // CKM. We here read Wolfenstein. In principle, we might want to change
     // to VCKM is that block is present
     // sckm->ckms12 = to<double>(mySLHA.at("CKM").at(1).at(1));
@@ -402,36 +436,6 @@ BE_NAMESPACE
        } 
     */
 
-    // Block MINPAR we skip, it is not needed
-
-    // Block MSOFT
-    mssmpar->m1 = to<double>(mySLHA.at("MSOFT").at(1).at(1));
-    mssmpar->m2 = to<double>(mySLHA.at("MSOFT").at(2).at(1));
-    mssmpar->m3 = to<double>(mySLHA.at("MSOFT").at(3).at(1));
-    mssmpar->mass2l(1) = square(to<double>(mySLHA.at("MSOFT").at(31).at(1)));
-    mssmpar->mass2l(2) = square(to<double>(mySLHA.at("MSOFT").at(32).at(1)));
-    mssmpar->mass2l(3) = square(to<double>(mySLHA.at("MSOFT").at(33).at(1)));
-    mssmpar->mass2e(1) = square(to<double>(mySLHA.at("MSOFT").at(34).at(1)));
-    mssmpar->mass2e(2) = square(to<double>(mySLHA.at("MSOFT").at(35).at(1)));
-    mssmpar->mass2e(3) = square(to<double>(mySLHA.at("MSOFT").at(36).at(1)));
-    mssmpar->mass2q(1) = square(to<double>(mySLHA.at("MSOFT").at(41).at(1)));
-    mssmpar->mass2q(2) = square(to<double>(mySLHA.at("MSOFT").at(42).at(1)));
-    mssmpar->mass2q(3) = square(to<double>(mySLHA.at("MSOFT").at(43).at(1)));
-    mssmpar->mass2u(1) = square(to<double>(mySLHA.at("MSOFT").at(44).at(1)));
-    mssmpar->mass2u(2) = square(to<double>(mySLHA.at("MSOFT").at(45).at(1)));
-    mssmpar->mass2u(3) = square(to<double>(mySLHA.at("MSOFT").at(46).at(1)));
-    mssmpar->mass2d(1) = square(to<double>(mySLHA.at("MSOFT").at(47).at(1)));
-    mssmpar->mass2d(2) = square(to<double>(mySLHA.at("MSOFT").at(48).at(1)));
-    mssmpar->mass2d(3) = square(to<double>(mySLHA.at("MSOFT").at(49).at(1)));
-
-    // Block HMIX
-    mssmpar->mu = to<double>(mySLHA.at("HMIX").at(1).at(1));
-    mssmpar->tanbe = to<double>(mySLHA.at("HMIX").at(2).at(1));
-
-    // Block ALPHA 
-    // FIXME: CW: Please double-check that this gives the right result
-    mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").back().at(0));  // Higgs mixing angle
-    // mssmmixing->alpha = to<double>(alpha.back().at(0));  // SUSY-HIT way of doing it. Mixing angle in the neutral Higgs boson sector.
 
     // Block MASS
     // SM particles
@@ -615,11 +619,14 @@ BE_NAMESPACE
 
     mssmswitch->higwid = 1;  // FIXME: Update to latest Higgs width treatment in DS file
     mssmtype->modeltype = 0;
+    mssmiuseful->lsp = DSpart->kn(1);
+    mssmiuseful->kln = DSpart->kn(1);
     dsvertx();
     dshigwid();
     dsspwid();
     int u = 6;
     dswspectrum(u);
+    dswwidth(u);
     return 0;  // everything OK
   }
 

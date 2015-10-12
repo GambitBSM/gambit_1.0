@@ -42,7 +42,7 @@ fig = plt.figure(figsize=(8,6))
 ax = fig.add_subplot(111)
 
 # scatter plot colored by chi2
-plottools.chi2scatplot(ax,np.vstack([x,y,logL]).T,s=2)
+plottools.chi2scatplot(ax,np.vstack([x,y,-2*logL]).T,s=2)
 
 ax.set_xlabel("p0")
 ax.set_ylabel("p1")

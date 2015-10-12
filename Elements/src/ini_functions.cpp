@@ -22,13 +22,15 @@
 ///  *********************************************
 
 #include <dlfcn.h>
-#ifdef HAVE_LINK_H
-  #include <link.h>
-#endif
 
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
+
+#ifdef HAVE_LINK_H
+  #include <link.h>
+#endif
 
 namespace Gambit
 {
@@ -205,7 +207,7 @@ namespace Gambit
             attempt_backend_path_override(be, ver, map->l_name);
           }
         #else
-          Backends::backendInfo().override_path(be, ver, "system lacks dlinfo(); path unverifiable");
+          Backends::backendInfo().override_path(be, ver, ".so loaded but path unverified (system lacks dlinfo)");
         #endif
         logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) << std::endl 
                  << LogTags::backends << LogTags::info << EOM;
@@ -394,12 +396,12 @@ namespace Gambit
     {
        std::map<str, p_int_string> gauge_label_to_index_type;
        
-       gauge_label_to_index_type["~e_L"]      = std::make_pair(1,"~e");
-       gauge_label_to_index_type["~mu_L"]     = std::make_pair(2,"~e");
-       gauge_label_to_index_type["~tau_L"]    = std::make_pair(3,"~e");
-       gauge_label_to_index_type["~e_R"]      = std::make_pair(4,"~e");
-       gauge_label_to_index_type["~mu_R"]     = std::make_pair(5,"~e");
-       gauge_label_to_index_type["~tau_R"]    = std::make_pair(6,"~e");
+       gauge_label_to_index_type["~e_L"]      = std::make_pair(1,"~e-");
+       gauge_label_to_index_type["~mu_L"]     = std::make_pair(2,"~e-");
+       gauge_label_to_index_type["~tau_L"]    = std::make_pair(3,"~e-");
+       gauge_label_to_index_type["~e_R"]      = std::make_pair(4,"~e-");
+       gauge_label_to_index_type["~mu_R"]     = std::make_pair(5,"~e-");
+       gauge_label_to_index_type["~tau_R"]    = std::make_pair(6,"~e-");
   
        gauge_label_to_index_type["~d_L"]      = std::make_pair(1,"~d");
        gauge_label_to_index_type["~s_L"]      = std::make_pair(2,"~d");
@@ -426,12 +428,12 @@ namespace Gambit
     std::map<str, p_int_string> init_mass_label_to_index_type()
     {
        std::map<str, p_int_string> mass_label_to_index_type;
-       mass_label_to_index_type["~e-_1"] = std::make_pair(1,"~e");
-       mass_label_to_index_type["~e-_2"] = std::make_pair(2,"~e");
-       mass_label_to_index_type["~e-_3"] = std::make_pair(3,"~e");
-       mass_label_to_index_type["~e-_4"] = std::make_pair(4,"~e");
-       mass_label_to_index_type["~e-_5"] = std::make_pair(5,"~e");
-       mass_label_to_index_type["~e-_6"] = std::make_pair(6,"~e");
+       mass_label_to_index_type["~e-_1"] = std::make_pair(1,"~e-");
+       mass_label_to_index_type["~e-_2"] = std::make_pair(2,"~e-");
+       mass_label_to_index_type["~e-_3"] = std::make_pair(3,"~e-");
+       mass_label_to_index_type["~e-_4"] = std::make_pair(4,"~e-");
+       mass_label_to_index_type["~e-_5"] = std::make_pair(5,"~e-");
+       mass_label_to_index_type["~e-_6"] = std::make_pair(6,"~e-");
   
        mass_label_to_index_type["~d_1"]  = std::make_pair(1,"~d");
        mass_label_to_index_type["~d_2"]  = std::make_pair(2,"~d");
@@ -472,20 +474,20 @@ namespace Gambit
        pair_string_ints const stop2("~u",three_two);
        pair_string_ints const sbot1("~d",three_one);
        pair_string_ints const sbot2("~d",three_two);
-       pair_string_ints const stau1("~e",three_one);
-       pair_string_ints const stau2("~e",three_two);
+       pair_string_ints const stau1("~e-",three_one);
+       pair_string_ints const stau2("~e-",three_two);
        pair_string_ints const scharm1("~u",two_one);
        pair_string_ints const scharm2("~u",two_two);
        pair_string_ints const sstrange1("~d",two_one);
        pair_string_ints const sstrange2("~d",two_two);
-       pair_string_ints const smuon1("~e",two_one);
-       pair_string_ints const smuon2("~e",two_two);
+       pair_string_ints const smuon1("~e-",two_one);
+       pair_string_ints const smuon2("~e-",two_two);
        pair_string_ints const sup1("~u",one_one);
        pair_string_ints const sup2("~u",one_two);
        pair_string_ints const sdown1("~d",one_one);
        pair_string_ints const sdown2("~d",one_two);
-       pair_string_ints const selectron1("~e",one_one);
-       pair_string_ints const selectron2("~e",one_two);
+       pair_string_ints const selectron1("~e-",one_one);
+       pair_string_ints const selectron2("~e-",one_two);
 
        // only have left handed sneutrinos in MSSM
        pair_string_ints const snue1("~nu",three_one);
@@ -531,13 +533,13 @@ namespace Gambit
       
        type_family_to_gauge_states[std::make_pair(3,"~u")] = initVector<str>("~t_L","~t_R");
        type_family_to_gauge_states[std::make_pair(3,"~d")] = initVector<str>("~b_L","~b_R");
-       type_family_to_gauge_states[std::make_pair(3,"~e")] = initVector<str>("~tau_L","~tau_R");
+       type_family_to_gauge_states[std::make_pair(3,"~e-")]= initVector<str>("~tau_L","~tau_R");
        type_family_to_gauge_states[std::make_pair(2,"~u")] = initVector<str>("~c_L","~c_R");
        type_family_to_gauge_states[std::make_pair(2,"~d")] = initVector<str>("~s_L","~s_R");
-       type_family_to_gauge_states[std::make_pair(2,"~e")] = initVector<str>("~mu_L","~mu_R");
+       type_family_to_gauge_states[std::make_pair(2,"~e-")]= initVector<str>("~mu_L","~mu_R");
        type_family_to_gauge_states[std::make_pair(1,"~u")] = initVector<str>("~u_L","~u_R");
        type_family_to_gauge_states[std::make_pair(1,"~d")] = initVector<str>("~d_L","~d_R");
-       type_family_to_gauge_states[std::make_pair(1,"~e")] = initVector<str>("~e_L","~e_R"); 
+       type_family_to_gauge_states[std::make_pair(1,"~e-")]= initVector<str>("~e_L","~e_R"); 
        //no sneutrino gauges pairs as no right sneutrino
  
        return type_family_to_gauge_states;
@@ -610,7 +612,7 @@ namespace Gambit
        
        type_to_vec_of_mass_es["~u"]  = initVector<str>("~u_1", "~u_2", "~u_3", "~u_4", "~u_5", "~u_6");
        type_to_vec_of_mass_es["~d"]  = initVector<str>("~d_1", "~d_2", "~d_3", "~d_4", "~d_5", "~d_6"); 
-       type_to_vec_of_mass_es["~e"]  = initVector<str>("~e-_1", "~e-_2", "~e-_3", "~e-_4", "~e-_5", "~e-_6");
+       type_to_vec_of_mass_es["~e-"] = initVector<str>("~e-_1", "~e-_2", "~e-_3", "~e-_4", "~e-_5", "~e-_6");
        type_to_vec_of_mass_es["~nu"] = initVector<str>("~nu_1", "~nu_2", "~nu_3");      
 
        return type_to_vec_of_mass_es;
@@ -624,7 +626,7 @@ namespace Gambit
 
        type_to_vec_of_gauge_es["~u"]  = initVector<str>("~u_L", "~c_L", "~t_L", "~u_R", "~c_R", "~t_R");
        type_to_vec_of_gauge_es["~d"]  = initVector<str>("~d_L", "~s_L", "~b_L", "~d_R", "~s_R", "~b_R"); 
-       type_to_vec_of_gauge_es["~e"]  = initVector<str>("~e_L", "~mu_L", "~tau_L", "~e_R", "~mu_R", "~tau_R");
+       type_to_vec_of_gauge_es["~e-"] = initVector<str>("~e_L", "~mu_L", "~tau_L", "~e_R", "~mu_R", "~tau_R");
        type_to_vec_of_gauge_es["~nu"] = initVector<str>("~nu_e_L", "~nu_mu_L", "~nu_tau_L");      
 
        return type_to_vec_of_gauge_es;
