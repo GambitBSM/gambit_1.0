@@ -59,8 +59,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "runs/MSSM9/samples/MSSM9.hdf5"
-    group: "/MSSM9"
+    output_file: "runs/MSSM7/samples/MSSM7.hdf5"
+    group: "/MSSM7"
     delete_file_if_exists: true
 
 Scanner:
@@ -78,7 +78,7 @@ Scanner:
         # write native MultiNest ascii output files?
         outfile: 0
         # this needs to default to the prinnter output location
-        root: "runs/MSSM9/samples/native-"
+        root: "runs/MSSM7/samples/native-"
         # resuming doesn't work yet
         resume: 0
         # No options to set, but still need the nodes at the moment...
@@ -170,8 +170,9 @@ Rules:
   - capability: RD_oh2
     function: RD_oh2_general
     options:
-       fast: 2  
+       fast: 1
        omtype: 1
+       CoannMaxMass: 1.6
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
   - capability: lnL_FermiLATdwarfs
@@ -220,7 +221,7 @@ Rules:
 
 Logger:
 
-  prefix : "runs/MSSM9/logs/"
+  prefix : "runs/MSSM7/logs/"
   redirection:
     [Debug] : stdout # "debug.log"
     [Default] : stdout # "default.log"
@@ -240,3 +241,4 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e6
  
+  default_output_path: "runs/MSSM7/"
