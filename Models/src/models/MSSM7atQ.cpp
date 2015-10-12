@@ -45,10 +45,10 @@
      targetP.setValue("M3", myP["M2"] * Dep::SMINPUTS->alphaS * am1 * sin2thetaW_tree);
 
      // Done
-     //#ifdef MSSM7atQ_DBUG
+     #ifdef MSSM7atQ_DBUG
        std::cout << STRINGIFY(MODEL) " parameters:" << myP << std::endl;
-       //std::cout << "MSSM9atQ parameters:" << targetP << std::endl;
-     //#endif
+       std::cout << "MSSM9atQ parameters:" << targetP << std::endl;
+     #endif
   }
   
 #undef MODEL

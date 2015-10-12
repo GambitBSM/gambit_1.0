@@ -182,9 +182,9 @@ include(cmake/warnings.cmake)
 
 # Construct the full set of compiler flags to be used for external projects
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
-  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
-  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_DEBUG}")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")# ${CMAKE_C_FLAGS_DEBUG}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")# ${CMAKE_CXX_FLAGS_DEBUG}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")# ${CMAKE_Fortran_FLAGS_DEBUG}")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
   set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
   set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")

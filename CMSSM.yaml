@@ -16,32 +16,21 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  MSSM7atQ:
-    Qin: 
-      fixed_value: 1000.0
+  CMSSM:
     SignMu:
       fixed_value: 1
-    Ad_3:
+    A0:
       range: [1e2, 1e5]
       prior_type: log
-    Au_3:
+    M0:
       range: [1e2, 1e5]
       prior_type: log
-    M2:
+    M12:
       range: [1e2, 1e5]
       prior_type: log
     TanBeta:
       range: [3.0, 70.0]
       prior_type: flat
-    mHd2:
-      range: [1e4, 1e10]
-      prior_type: log
-    mHu2:
-      range: [1e4, 1e10]
-      prior_type: log
-    mf2:
-      range: [1e4, 1e10]
-      prior_type: log
 
 Priors:
 
@@ -52,8 +41,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "samples/MSSM7.hdf5"
-    group: "/MSSM7"
+    output_file: "samples/CMSSM.hdf5"
+    group: "/CMSSM"
     delete_file_if_exists: true
 
 Scanner:
@@ -65,7 +54,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 10
+        nlive: 5000
         tol: 0.1
         mmodal: 1
         # write native MultiNest ascii output files?
@@ -141,7 +130,6 @@ ObsLikes:
     - purpose:    Observable
       capability: SLHA1_violation
 
-
     - purpose:    Likelihood
       capability: ALEPH_Selectron_LLike
 
@@ -194,7 +182,7 @@ ObsLikes:
       capability: HS_LHC_lnL
 
     # Missing:
-    # CMB+HESS likelihoods
+    # CMB likelihood
 
 
 Rules:
@@ -232,7 +220,7 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum 
-    function: get_MSSMatQ_spectrum
+    function: get_CMSSM_spectrum
     options:
       precision_goal:        1.0e-4
       max_iterations:        0
@@ -370,4 +358,4 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e10
 
-  default_output_path: "runs/MSSM7/"
+  default_output_path: "runs/CMSSM/"
