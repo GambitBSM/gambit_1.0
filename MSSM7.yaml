@@ -65,7 +65,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 5000
+        nlive: 10
         tol: 0.1
         mmodal: 1
         # write native MultiNest ascii output files?
@@ -368,6 +368,6 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e10
+    model_invalid_for_lnlike_below: -1e90
 
   default_output_path: "runs/MSSM7/"

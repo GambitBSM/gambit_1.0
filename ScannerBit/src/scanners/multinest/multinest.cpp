@@ -99,7 +99,7 @@ scanner_plugin(MultiNest, version(3, 9))
       int resume ( resume_mode );                               // resume from a previous job?
       int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
 
-      double logZero (get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
+      double logZero (0.9*get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
       void *context = 0;                                        // any additional information user wants to pass (not required by MN)
@@ -119,6 +119,8 @@ scanner_plugin(MultiNest, version(3, 9))
       // Print some basic startup diagnostics.      
       std::cout << "MultiNest ndims:" << ndims << std::endl;
       std::cout << "MultiNest nPar: " << nPar  << std::endl;
+
+      std::cout << "logZero: " << logZero << std::endl;
  
       if(resume==1 and outfile==0)
       {
