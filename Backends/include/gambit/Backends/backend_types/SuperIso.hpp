@@ -88,6 +88,24 @@ namespace Gambit
 	/* Decay widths */
 	double width_Z,width_W;
  };
+  // now the class that is needed for the hack for superiso
+
+  struct Flav_KstarMuMu_obs
+  {                        
+      double BR;             
+      double AFB;            
+      double FL;             
+      double S3;             
+      double S4;             
+      double S5;             
+      double S7;             
+      double S8;             
+      double S9;             
+      double q2_min;         
+      double q2_max;         
+                         
+    };    
+  
 }
 
 #endif /* defined __SuperIso_types_hpp__ */

@@ -119,6 +119,12 @@ namespace Gambit
     if (SLHAea_check_block(slha, block, index, overwrite)) return;
     slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
   }
+  void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index,
+   const int value, const str& comment, const bool overwrite)
+  {
+    if (SLHAea_check_block(slha, block, index, overwrite)) return;
+    slha[block][""] << index << value << (comment == "" ? "" : "# " + comment);
+  }
   /// @}
 
 }

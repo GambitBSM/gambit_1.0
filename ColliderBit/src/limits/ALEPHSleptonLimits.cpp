@@ -4,16 +4,21 @@ namespace Gambit {
   namespace ColliderBit {
 
     /// @name ALEPHSelectronLimitAt208GeV methods
-    //@{
-    P2 ALEPHSelectronLimitAt208GeV::convertPt(double x, double y) {
+    /// @{
+
+    P2 ALEPHSelectronLimitAt208GeV::convertPt(double x, double y)
+    {
       return P2(50. + (x - 243.00) / (886.00 - 243.00) * (100. - 50.),
                 100. + (y - 67.00) / (806.00 - 67.00) * (0. - 100.));
     }
-    bool ALEPHSelectronLimitAt208GeV::isWithinExclusionRegion(double x, double y) {
-      /// @TODO Use actual Z mass from spectrum
-      return (y <= x and x <= 208. / 2. and x > 91.19 / 2.);
+
+    bool ALEPHSelectronLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    {
+      return (y <= x and x <= 208. / 2. and x > mZ / 2.);
     }
-    ALEPHSelectronLimitAt208GeV::ALEPHSelectronLimitAt208GeV() {
+
+    ALEPHSelectronLimitAt208GeV::ALEPHSelectronLimitAt208GeV()
+    {
       ///// Limit values /////
       _limitValuesSorted.push_back(0.02);
       _limitValuesSorted.push_back(0.04);
@@ -3012,18 +3017,20 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(9, contoursPointer));
 
     }
-    //@}
+    /// @}
 
 
     /// @name ALEPHSmuonLimitAt208GeV methods
-    //@{
-    P2 ALEPHSmuonLimitAt208GeV::convertPt(double x, double y) {
+    /// @{
+    
+    P2 ALEPHSmuonLimitAt208GeV::convertPt(double x, double y)
+    {
       return P2(50. + (x - 240.00) / (883.00 - 240.00) * (100. - 50.),
                 100. + (y - 63.00) / (803.00 - 63.00) * (0. - 100.));
     }
-    bool ALEPHSmuonLimitAt208GeV::isWithinExclusionRegion(double x, double y) {
-      /// @TODO Use actual Z mass from spectrum
-      return (y <= x and x <= 208. / 2. and x > 91.19 / 2.);
+    bool ALEPHSmuonLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    {
+      return (y <= x and x <= 208. / 2. and x > mZ / 2.);
     }
     ALEPHSmuonLimitAt208GeV::ALEPHSmuonLimitAt208GeV() {
       ///// Limit values /////
@@ -6173,20 +6180,25 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(9, contoursPointer));
 
     }
-    //@}
+    /// @}
 
 
     /// @name ALEPHStauLimitAt208GeV methods
-    //@{
-    P2 ALEPHStauLimitAt208GeV::convertPt(double x, double y) {
+    /// @{
+
+    P2 ALEPHStauLimitAt208GeV::convertPt(double x, double y)
+    {
       return P2(50. + (x - 232.00) / (875.00 - 232.00) * (100. - 50.),
                 100. + (y - 66.00) / (805.00 - 66.00) * (0. - 100.));
     }
-    bool ALEPHStauLimitAt208GeV::isWithinExclusionRegion(double x, double y) {
-      /// @TODO Use actual Z mass from spectrum
-      return (y <= x and x <= 208. / 2. and x > 91.19 / 2.);
+    
+    bool ALEPHStauLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    {
+      return (y <= x and x <= 208. / 2. and x > mZ / 2.);
     }
-    ALEPHStauLimitAt208GeV::ALEPHStauLimitAt208GeV() {
+    
+    ALEPHStauLimitAt208GeV::ALEPHStauLimitAt208GeV()
+    {
       ///// Limit values /////
       _limitValuesSorted.push_back(0.14);
       _limitValuesSorted.push_back(0.21);
@@ -7990,7 +8002,7 @@ namespace Gambit {
       _limitContours.insert(LimitContourEntry(8, contoursPointer));
 
     }
-    //@}
+    /// @}
 
   }
 }

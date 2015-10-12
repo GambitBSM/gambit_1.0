@@ -34,13 +34,14 @@ def plot():
     else:
       plt.contour(x, y, z_grid, levels = levels, linewidths=2, zorder=10,
           **kwargs)
-  plotcontours(42, levels=[0.1], color='b')  # WMAP likelihood
-  plotcontours(43, levels=[2], colors='k')  # XENON100
-  plotcontours(44, levels=[2], colors='r')  # LUX
+  plotcontours(42, levels=[2], colors='y')  # Fermi likelihood
+  plotcontours(43, levels=[0.1], colors='b')  # WMAP likelihood
+  plotcontours(44, levels=[2], colors='k')  # XENON100
+  plotcontours(45, levels=[2], colors='r')  # LUX
   plt.plot(mS, lam, 'k.', alpha=0.1)
   plt.xlabel("mS [GeV]")
   plt.ylabel("log10(lambda)")
-  plt.savefig('results/singletDM_test_run_150722.pdf')
+  plt.savefig('output.pdf')
 
 if __name__ == '__main__':
   plot()

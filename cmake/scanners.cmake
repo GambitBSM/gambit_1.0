@@ -34,7 +34,7 @@ set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
 if(MPI_Fortran_FOUND)
   set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
 else()
-  set(diverFFLAGS "${CMAKE_Fortran_FLAGS}")
+  set(diverFFLAGS "${GAMBIT_Fortran_FLAGS}")
 endif()
 ExternalProject_Add(diver
   #URL 
@@ -59,11 +59,11 @@ set(mn_ver "3\\.9")
 set(mn_lib "libnest3")
 set(mn_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/MultiNest/3.9")
 set(mnLAPACK "${LAPACK_LINKLIBS}")
-set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
+set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${OpenMP_Fortran_FLAGS} ${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
 if(MPI_Fortran_FOUND)
   set(mnFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
 else()
-  set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
+  set(mnFFLAGS "${GAMBIT_Fortran_FLAGS}")
 endif()
 ExternalProject_Add(multinest 
   #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask CCPForge for a solution.

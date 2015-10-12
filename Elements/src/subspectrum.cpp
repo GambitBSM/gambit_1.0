@@ -20,6 +20,7 @@
 ///  *********************************************
 
 #include <fstream>
+#include <string>
 
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/spec_fptrfinder.hpp"
@@ -28,15 +29,15 @@ namespace Gambit
 {
 
   /// @{ Remnants of old interface (PDG overloads for getter functions)
-  DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
-  DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
-  DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
-  DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
-  DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
-  DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
+  // DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
+  // DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
+  // DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
+  // DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
+  // DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
+  // DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
 
-  DEFINE_PDG_GETTERS(Phys,Pole_Mass)
-  DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
+  // DEFINE_PDG_GETTERS(Phys,Pole_Mass)
+  // DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
   /// @}
 
   /// Dump out spectrum information to an SLHA file (if possible)

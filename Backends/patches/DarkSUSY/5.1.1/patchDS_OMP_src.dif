@@ -1,0 +1,241 @@
+diff -rupN src/an/dsanclearaa.f src2/an/dsanclearaa.f
+--- src/an/dsanclearaa.f	2006-06-19 08:36:02.000000000 -0600
++++ src2/an/dsanclearaa.f	2015-09-01 22:10:12.566543820 -0600
+@@ -6,11 +6,21 @@ c          paolo gondolo 99-1-15 factor
+ c  called by: dwdcos
+ c=======================================================================
+       implicit none
+-      include 'dsandiacom.h'
++c      include 'dsandiacom.h'
+ 
+-      integer i
+       real*8 aaaa(108)
+-      equivalence (aa,aaaa)
++      real*8 mp1,mp2,mk,mp3,mp4,ppl,pmi,epl,emi,mw,mz,pp,kpl,
++     &  kmi,efpl,efmi,kk,e1,e2,e3,e4,s,t,u,wd(2,-2:2,-2:2)
++      common /diacom/ aaaa,
++     &  mp1,mp2,mk,mp3,mp4,ppl,pmi,epl,emi,mw,mz,pp,kpl,kmi,
++     &  Efpl,efmi,kk,e1,e2,e3,e4,s,t,u,wd
++      save /diacom/
++
++*$OMP THREADPRIVATE (/diacom/)
++
++
++      integer i,j,k,l
++c      equivalence (aa,aaaa) ! TB: not compatible with $OMP !
+ 
+       do i=1,108
+          aaaa(i)=0.0d0
+diff -rupN src/an/dsankinvar.f src2/an/dsankinvar.f
+--- src/an/dsankinvar.f	2011-11-04 17:48:05.000000000 -0600
++++ src2/an/dsankinvar.f	2015-09-01 22:10:12.982543830 -0600
+@@ -17,6 +17,7 @@ c=======================================
+       data kp1old,kp2old,kp3old,kp4old/4*-1/
+       data pold,cthold / -1.0d0,-5.0d0/
+       save pold,cthold,kp1old,kp2old,kp3old,kp4old
++*$OMP THREADPRIVATE (pold,cthold,kp1old,kp2old,kp3old,kp4old)
+ 
+ c----------------------------------------- check changes since last call
+ 
+diff -rupN src/an/dsansumaa.f src2/an/dsansumaa.f
+--- src/an/dsansumaa.f	2006-06-19 08:36:02.000000000 -0600
++++ src2/an/dsansumaa.f	2015-09-01 22:10:13.422543840 -0600
+@@ -6,15 +6,29 @@ c          paolo gondolo 99-1-15 factor
+ c  called by: dwdcos
+ c=======================================================================
+       implicit none
+-      include 'dsandiacom.h'
+-      real*8 sumf,aaaa(108)
+-      integer i
+-      equivalence (aa,aaaa)
++c     include 'dsandiacom.h'
++
++      real*8 aaaa(108)
++      real*8 mp1,mp2,mk,mp3,mp4,ppl,pmi,epl,emi,mw,mz,pp,kpl,
++     &  kmi,efpl,efmi,kk,e1,e2,e3,e4,s,t,u,wd(2,-2:2,-2:2)
++      common /diacom/ aaaa,
++     &  mp1,mp2,mk,mp3,mp4,ppl,pmi,epl,emi,mw,mz,pp,kpl,kmi,
++     &  Efpl,efmi,kk,e1,e2,e3,e4,s,t,u,wd
++      save /diacom/
++
++*$OMP THREADPRIVATE (/diacom/)
++
++
++      real*8 sumf
++      integer i ,j,k,l
++c      equivalence (aa,aaaa) ! TB: not compatible with !OMP !
+ 
+       sumf=0.0d0
++
+       do i=1,108
+          sumf = sumf + aaaa(i)**2
+       enddo
++      
+       dsansumaa = sumf
+ 
+       end
+diff -rupN src/an/dsanwx.f src2/an/dsanwx.f
+--- src/an/dsanwx.f	2010-08-06 02:27:44.000000000 -0600
++++ src2/an/dsanwx.f	2015-09-01 22:10:22.366544053 -0600
+@@ -98,10 +98,12 @@ c        call dsanalbe2(p,alph,be)
+ c        bet=be
+         y1=(mco(1)**2+bet*pd**2)**(alph)
+         y2=(mco(1)**2)**(alph)
+-        call dgadap(y1,y2,dsandwdcosy,eps,sum)
++c...changed to $OMP by TB
++        call dgadapOMP(y1,y2,dsandwdcosy,eps,sum)
+         dsanwx=sum/1.0d15
+       else
+-        call dgadap(-1.0d0,1.0d0,dsandwdcoss,eps,sum)
++c...changed to $OMP by TB
++        call dgadapOMP(-1.0d0,1.0d0,dsandwdcoss,eps,sum)
+         dsanwx=sum/1.0d15
+       endif
+ c      write(*,*) rdtag,nr,p,dsanwx
+diff -rupN src/xcern/dgadap.f src2/xcern/dgadap.f
+--- src/xcern/dgadap.f	2006-06-19 08:36:02.000000000 -0600
++++ src2/xcern/dgadap.f	2015-09-01 22:10:40.634544489 -0600
+@@ -97,6 +97,143 @@ c  made real*8 by j. edsjo 97-01-17
+       end
+ 
+ 
++      subroutine dgadapOMP(a0,b0,f,eps0,sum)
++c...adapted by Torsten Bringmann for OpenMP, 30/06/2015
++c...WARNING: use with care, it's the user's responsability that the function f
++c...is thread-safe! 
++c
++c   purpose           - integrate a function f(x)
++c   method            - adaptive gaussian
++c   usage             - call gadap(a0,b0,f,eps,sum)
++c   parameters  a0    - lower limit (input,real)
++c               b0    - upper limit (input,real)
++c               f     - function f(x) to be integrated. must be
++c                       supplied by the user. (input,real function)
++c               eps0  - desired relative accuracy. if sum is small eps
++c                       will be absolute accuracy instead. (input,real)
++c               sum   - calculated value for the integral (output,real)
++c   precision         - single (see below)
++c   req'd prog's      - f
++c   author            - t. johansson, lund univ. computer center, 1973
++c   reference(s)      - the australian computer journal,3 p.126 aug. -71
++c
++c  made real*8 by j. edsjo 97-01-17
++      implicit real*8 (a-h,o-z)
++      implicit integer (i-n)
++      include 'dsidtag.h'
++      common/gadap1omp/ num,ifu
++      real*8 omparg 
++*$    integer nthreads, usedthreads
++*$    integer OMP_get_num_threads, OMP_get_max_threads, OMP_get_num_procs
++      external f
++      dimension a(300),b(300),f1(300),f2(300),f3(300),s(300),n(300)
++    1 format(16h gadap:i too big)
++      dsum(f1f,f2f,f3f,aa,bb)=5./18.*(bb-aa)*(f1f+1.6*f2f+f3f)
++      eps=eps0
++      if(eps.lt.1.0d-8) eps=1.0d-8
++      red=1.3
++      l=1
++      i=1
++      sum=0.
++      c=sqrt(15.)/5.
++      a(1)=a0
++      b(1)=b0
++
++*$      usedthreads=OMP_get_max_threads()
++*$      if (usedthreads.gt.8) then
++*$         usedthreads=6
++*$      else
++*$        usedthreads=min(3, usedthreads)
++*$     endif
++
++
++*$OMP PARALLEL NUM_THREADS(usedthreads)
++*$OMP SECTIONS
++
++*$OMP SECTION
++      f1(1)=f(0.5*(1+c)*a0+0.5*(1-c)*b0)
++      
++*$OMP SECTION
++      f2(1)=f(0.5*(a0+b0))
++      
++*$OMP SECTION
++      f3(1)=f(0.5*(1-c)*a0+0.5*(1+c)*b0)
++      
++*$OMP END SECTIONS
++*$OMP END PARALLEL
++
++      ifu=3
++      s(1)=  dsum(f1(1),f2(1),f3(1),a0,b0)
++  100 continue
++      l=l+1
++      n(l)=3
++      eps=eps*red
++      a(i+1)=a(i)+c*(b(i)-a(i))
++      b(i+1)=b(i)
++      a(i+2)=a(i)+b(i)-a(i+1)
++      b(i+2)=a(i+1)
++      a(i+3)=a(i)
++      b(i+3)=a(i+2)
++      w1=a(i)+(b(i)-a(i))/5.
++      u2=2.*w1-(a(i)+a(i+2))/2.
++
++*$OMP PARALLEL NUM_THREADS(usedthreads)
++*$OMP SECTIONS
++
++*$OMP SECTION 
++      f1(i+1)=f(a(i)+b(i)-w1)
++      
++*$OMP SECTION
++      f3(i+1)=f(b(i)-a(i+2)+w1)
++      
++*$OMP SECTION
++      f1(i+2)=f(u2)
++      
++*$OMP SECTION
++      f3(i+2)=f(b(i+2)+a(i+2)-u2)
++      
++*$OMP SECTION
++      f1(i+3)=f(a(i)+a(i+2)-w1)
++      
++*$OMP SECTION
++      f3(i+3)=f(w1)
++      
++*$OMP END SECTIONS
++*$OMP END PARALLEL
++
++      f2(i+1)=f3(i)
++      f2(i+2)=f2(i)
++      f2(i+3)=f1(i)
++
++      ifu=ifu+6
++      if(ifu.gt.5000) goto 125
++      s(i+1)=  dsum(f1(i+1),f2(i+1),f3(i+1),a(i+1),b(i+1))
++      s(i+2)=  dsum(f1(i+2),f2(i+2),f3(i+2),a(i+2),b(i+2))
++      s(i+3)=  dsum(f1(i+3),f2(i+3),f3(i+3),a(i+3),b(i+3))
++      ss=s(i+1)+s(i+2)+s(i+3)
++      i=i+3
++      if(i.gt.300)goto 120
++      sold=s(i-3)
++      if(abs(sold-ss).gt.eps*(1.+abs(ss))/2.) goto 100
++      sum=sum+ss
++      i=i-4
++      n(l)=0
++      l=l-1
++  110 continue
++      if(l.eq.1) goto 130
++      n(l)=n(l)-1
++      eps=eps/red
++      if(n(l).ne.0) goto 100
++      i=i-1
++      l=l-1
++      goto 110
++  120 write(*,*) 'warning in dgadapOMP: too high i (>300)'
++      write(*,*) '  for model ',idtag
++      goto 130
++  125 write(*,*) 'warning in dgadapOMP: too many function calls (>5000)'
++      write(*,*) '  for model ',idtag
++  130 return
++      end
+ 
+ 
+ 

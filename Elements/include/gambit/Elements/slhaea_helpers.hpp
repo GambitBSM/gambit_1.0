@@ -55,6 +55,8 @@ namespace Gambit
    const str& comment="", const bool overwrite=false);
   void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index, const str& value, 
    const str& comment="", const bool overwrite=false);
+  void SLHAea_add(SLHAstruct& slha /*modify*/, const str& block, const int index, const int value, 
+   const str& comment="", const bool overwrite=false);
   /// @}
 
   /// Add a whole matrix to an SLHAea object if it doesn't already exist

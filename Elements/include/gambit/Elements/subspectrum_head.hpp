@@ -28,6 +28,7 @@
 #include <sstream>
 
 #include "gambit/Utils/cats.hpp"
+#include "gambit/Utils/safebool.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/spectrum_helpers.hpp"
@@ -222,9 +223,10 @@ namespace Gambit
          /// Functions to be overridden in classes derived from Spec<Derived> 
          /// (i.e. the final wrappers)
          /// Not actually called via SubSpectrum object directly; call via 
-         /// SubSpectrum.runningpars
+         /// SubSpectrum.runningpars()
          /// These virtual functions are here just to simplify the wrapper definitions.
-   
+         /// TODO: Can we hide these from the user? Currently won't compile unless these are public, but can perhaps add more friend declarations and make protected.
+
          /// Run object to a particular scale
          virtual void RunToScale(double) { vfcn_error(LOCAL_INFO); }
          /// Returns the renormalisation scale of parameters
@@ -257,10 +259,11 @@ namespace Gambit
          virtual ~CommonAbstract() {}      
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         virtual bool   has(const ParamType, const str&) const = 0;
-         virtual double get(const ParamType, const str&) const = 0;
-         virtual bool   has(const ParamType, const str&, int) const = 0;
-         virtual double get(const ParamType, const str&, int) const = 0;
+         /* note: set check_antiparticle = SafeBool(false) to disable matching on antiparticle entries */
+         virtual bool   has(const ParamType, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual double get(const ParamType, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual bool   has(const ParamType, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual double get(const ParamType, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
          virtual bool   has(const ParamType, const str&, int, int) const = 0;
          virtual double get(const ParamType, const str&, int, int) const = 0;
 
@@ -269,8 +272,8 @@ namespace Gambit
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         virtual void set(const ParamType, const double, const str&) = 0;
-         virtual void set(const ParamType, const double, const str&, int) = 0;
+         virtual void set(const ParamType, const double, const str&, SafeBool check_antiparticle = SafeBool(true)) = 0;
+         virtual void set(const ParamType, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true)) = 0;
          virtual void set(const ParamType, const double, const str&, int, int) = 0;
    };
  
@@ -298,19 +301,38 @@ namespace Gambit
  
          /* The parameter overrides are handled entirely by this base class, so
             they are not virtual.  */
-         void set_override(const ParamType, const double, const str&, bool safety = true);
-         void set_override(const ParamType, const double, const str&, int, bool safety = true);
-         void set_override(const ParamType, const double, const str&, int, int, bool safety = true);
+         void set_override(const ParamType, const double, const str&, const bool safety = true);
+         void set_override(const ParamType, const double, const str&, const int, const bool safety = true);
+         void set_override(const ParamType, const double, const str&, const int, const int, const bool safety = true);
+
+         /* Helpers for override functions which take parameter names and indices as vectors, and
+            loop over them, to make it easy to set many parameters to the same value.
+            No two-index versions at the moment, but could be added if needed. */
+         void set_override_vector(const ParamType, const double, const std::vector<str>&, bool safety = true);
+         void set_override_vector(const ParamType, const double, const std::vector<str>&, const std::vector<int>, bool safety = true);
+         void set_override_vector(const ParamType, const double, const std::vector<str>&, const int, bool safety = true);
+         void set_override_vector(const ParamType, const double, const str&, const std::vector<int>, bool safety = true);
 
          /* Overloads of getter/checker functions to allow access using PDG codes */
          /* as defined in Models/src/particle_database.cpp */
          /* These don't have to be virtual; they just call the virtual functions in the end. */
-         bool   has(const ParamType, const int, const int) const;     /* Input PDG code plus context integer */
-         double get(const ParamType, const int, const int) const;     /* Input PDG code plus context integer */
-         bool   has(const ParamType, const std::pair<int,int>) const; /* Input PDG code plus context integer */
-         double get(const ParamType, const std::pair<int,int>) const; /* Input PDG code plus context integer */
-         bool   has(const ParamType, const std::pair<str,int>) const; /* Input short name plus index */
-         double get(const ParamType, const std::pair<str,int>) const; /* Input short name plus index */
+         bool   has(const ParamType, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         double get(const ParamType, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         bool   has(const ParamType, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         double get(const ParamType, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         bool   has(const ParamType, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+         double get(const ParamType, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+
+         /// @{ PDB overloads for setters
+
+         /* Input PDG code plus context integer */
+         void set_override(const ParamType, const double, const int, const int,     const bool safety = true);  
+         void set_override(const ParamType, const double, const std::pair<int,int>, const bool safety = true);
+
+         /* Input short name plus index */
+         void set_override(const ParamType, const double, const std::pair<str,int>, const bool safety = true);
+
+         /// @}
 
          /// TODO: extra PDB overloads to handle all the one and two index cases (well all the ones that are feasible...)
    };
@@ -400,32 +422,31 @@ namespace Gambit
          static std::map<ParamType,OverrideMaps> create_override_maps()
          {
             std::map<ParamType,OverrideMaps> tmp;
-            tmp[Par::mass4];
-            tmp[Par::mass3];
-            tmp[Par::mass2];
-            tmp[Par::mass1];
-            tmp[Par::dimensionless];
-            tmp[Par::mass_eigenstate];
+            std::vector<Par::Running> Running_all = Par::get_Running_all();
+            for(std::vector<Par::Running>::iterator it = Running_all.begin(); it!=Running_all.end(); ++it)
+            { 
+              tmp[*it];
+            }
             return tmp;
          }
 
          /// @{ Old interface; remove eventually
 
          /// getters using map (and "checkers")
-   DECLARE_GETTERS(mass4_parameter,Par::mass4)
-   DECLARE_GETTERS(mass3_parameter,Par::mass3)
-   DECLARE_GETTERS(mass2_parameter,Par::mass2)
-   DECLARE_GETTERS(mass_parameter,Par::mass1)
-   DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
-   DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
+   //DECLARE_GETTERS(mass4_parameter,Par::mass4)
+   //DECLARE_GETTERS(mass3_parameter,Par::mass3)
+   //DECLARE_GETTERS(mass2_parameter,Par::mass2)
+   //DECLARE_GETTERS(mass_parameter,Par::mass1)
+   //DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
+   //DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
   
-   /// setters (and parameter overrides)
-   DECLARE_SETTERS(mass4_parameter,Par::mass4)
-   DECLARE_SETTERS(mass3_parameter,Par::mass3)
-   DECLARE_SETTERS(mass2_parameter,Par::mass2)
-   DECLARE_SETTERS(mass_parameter,Par::mass1)
-   DECLARE_SETTERS(dimensionless_parameter,Par::dimensionless)
-   DECLARE_SETTERS(mass_eigenstate,Par::mass_eigenstate)
+   ///// setters (and parameter overrides)
+   //DECLARE_SETTERS(mass4_parameter,Par::mass4)
+   //DECLARE_SETTERS(mass3_parameter,Par::mass3)
+   //DECLARE_SETTERS(mass2_parameter,Par::mass2)
+   //DECLARE_SETTERS(mass_parameter,Par::mass1)
+   //DECLARE_SETTERS(dimensionless_parameter,Par::dimensionless)
+   //DECLARE_SETTERS(mass_eigenstate,Par::mass_eigenstate)
          /// @}
    };
 
@@ -444,20 +465,23 @@ namespace Gambit
          static std::map<ParamType,OverrideMaps> create_override_maps()
          {
             std::map<ParamType,OverrideMaps> tmp;
-            tmp[Par::Pole_Mass];
-            tmp[Par::Pole_Mixing];
+            std::vector<Par::Phys> Phys_all = Par::get_Phys_all();
+            for(std::vector<Par::Phys>::iterator it = Phys_all.begin(); it!=Phys_all.end(); ++it)
+            {
+              tmp[*it];
+            }
             return tmp;
          }
 
          /// @{ Old interface; remove eventually
 
          /// getters using map (and "checkers")
-   DECLARE_GETTERS(Pole_Mass,Par::Pole_Mass)
-   DECLARE_GETTERS(Pole_Mixing,Par::Pole_Mixing)
+   //DECLARE_GETTERS(Pole_Mass,Par::Pole_Mass)
+   //DECLARE_GETTERS(Pole_Mixing,Par::Pole_Mixing)
   
-   /// setters (and parameter overrides)
-   DECLARE_SETTERS(Pole_Mass,Par::Pole_Mass)
-   DECLARE_SETTERS(Pole_Mixing,Par::Pole_Mixing)
+   ///// setters (and parameter overrides)
+   //DECLARE_SETTERS(Pole_Mass,Par::Pole_Mass)
+   //DECLARE_SETTERS(Pole_Mixing,Par::Pole_Mixing)
          /// @}
    };
    
@@ -614,10 +638,10 @@ namespace Gambit
       public:
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-         bool   has(const ParamType, const str&) const;
-         double get(const ParamType, const str&) const;
-         bool   has(const ParamType, const str&, int) const;
-         double get(const ParamType, const str&, int) const;
+         bool   has(const ParamType, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         double get(const ParamType, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         bool   has(const ParamType, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
+         double get(const ParamType, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
          bool   has(const ParamType, const str&, int, int) const;
          double get(const ParamType, const str&, int, int) const;
 
@@ -626,8 +650,8 @@ namespace Gambit
             the model object (for when values cannot be inserted back into the
             model object)
             Note; these are NON-CONST */
-         void set(const ParamType, const double, const str&);
-         void set(const ParamType, const double, const str&, int);
+         void set(const ParamType, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
+         void set(const ParamType, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
          void set(const ParamType, const double, const str&, int, int);
    };
 
@@ -659,11 +683,6 @@ namespace Gambit
          /// containing the map collections for the permitted parameter types
          static const std::map<ParamType,MapCollection<MTget>> getter_maps;
          static const std::map<ParamType,MapCollection<MTset>> setter_maps;
-
-         // Note the function calls D::fill_maps<MTget>(). The D:: causes the *derived* class
-         // version of this filler function to be called. So in order to fill the maps with
-         // information, these specialisations of the filler functions are what must over
-         // overriden in the derived ("wrapper") classes.
  
       public:
          // During construction, link the object to its "parent"
@@ -679,20 +698,15 @@ namespace Gambit
          {}
 
    };
-   /// Initialise maps (using filler overrides from DerivedSpec if defined)
+   /// Initialise maps (uses filler overrides from DerivedSpec if defined)
    template <class D, class DT>
    const std::map<Par::Phys,MapCollection<typename PhysDer<D,DT>::MTget>> 
-             PhysDer<D,DT>::getter_maps(D::phys_fill_getter_maps());
+             PhysDer<D,DT>::getter_maps(Spec<D,DT>::pp_final_fill_getter_maps());
 
    template <class D, class DT>
    const std::map<Par::Phys,MapCollection<typename PhysDer<D,DT>::MTset>> 
-             PhysDer<D,DT>::setter_maps(D::phys_fill_setter_maps());
+             PhysDer<D,DT>::setter_maps(Spec<D,DT>::pp_final_fill_setter_maps());
 
-   // Note the function calls D::fill_getter_maps(). The D:: causes the DerivedSpec 
-   // version of this filler function to be called. So in order to fill the maps with
-   // information, these filler functions are what must over overriden in the derived 
-   // ("wrapper") classes.
- 
  
    template <class DerivedSpec, class DerivedSpecTraits>
    class RunparDer : public RunningPars,
@@ -722,11 +736,6 @@ namespace Gambit
          static const std::map<ParamType,MapCollection<MTget>> getter_maps;
          static const std::map<ParamType,MapCollection<MTset>> setter_maps;
 
-         // Note the function calls D::fill_maps<MTget>(). The D:: causes the *derived* class
-         // version of this filler function to be called. So in order to fill the maps with
-         // information, these specialisations of the filler functions are what must over
-         // overriden in the derived ("wrapper") classes.
-
       public:
          // During construction, link the object to its "parent"
          RunparDer(Spec<D,DT>& p) : parent(p) {}
@@ -751,18 +760,14 @@ namespace Gambit
          virtual double hard_lower() const { return parent.hard_lower(); }
     
    };
-   /// Initialise maps (using filler overrides from DerivedSpec if defined)
+   /// Initialise maps (uses filler overrides from DerivedSpec if defined)
    template <class D, class DT>
    const std::map<Par::Running,MapCollection<typename RunparDer<D,DT>::MTget>> 
-             RunparDer<D,DT>::getter_maps(D::runningpars_fill_getter_maps());
+             RunparDer<D,DT>::getter_maps(Spec<D,DT>::rp_final_fill_getter_maps());
 
    template <class D, class DT>
    const std::map<Par::Running,MapCollection<typename RunparDer<D,DT>::MTset>> 
-             RunparDer<D,DT>::setter_maps(D::runningpars_fill_setter_maps());
-
-   // Note the function calls D::fill_getter_maps(). The D:: causes the DerivedSpec 
-   // version of this filler function to be called. So in order to fill the maps with
-   // information, these filler functions are what must over overriden in the derived 
+             RunparDer<D,DT>::setter_maps(Spec<D,DT>::rp_final_fill_setter_maps());
 
    
    // CRTP used to allow access to some special data members of the derived class.
@@ -774,13 +779,7 @@ namespace Gambit
          typedef DerivedSpecTraits DT;
          friend class RunparDer<D,DT>;
          friend class PhysDer<D,DT>;
-    
-      public:
-         typedef MapTypes<DT,MapTag::Get> MTget; 
-         typedef MapTypes<DT,MapTag::Set> MTset; 
-
-      private:   
-  
+ 
          /// Note: DerivedSpecTraits will need to typedef Model and Input
          /// Also make sure to initialise the members "model" and "input" in the 
          /// derived class via this class's full constructor.
@@ -791,32 +790,23 @@ namespace Gambit
          /// Internal instances of specialised running and physical parameter classes   
          RunparDer<D,DT> rp;
          PhysDer<D,DT> pp;
+   
+      public:
+         typedef MapTypes<DT,MapTag::Get> MTget; 
+         typedef MapTypes<DT,MapTag::Set> MTset; 
 
-      protected:
-         /// @{ Map filler functions
+         /// @{ Default (empty) map filler functions
          /// Override as needed in derived classes
 
-         /// Filler for RunparDer
+         /// Fillers for RunparDer
          static const std::map<Par::Running,MapCollection<MTget>> runningpars_fill_getter_maps()
          {     
             std::map<Par::Running,MapCollection<MTget>> tmp;
-            tmp[Par::mass4];             // mass dimension 4 quantities           
-            tmp[Par::mass3];             //   "     "      3     "
-            tmp[Par::mass2];             //   "     "      2     "
-            tmp[Par::mass1];             //   "     "      3     "
-            tmp[Par::dimensionless];     // dimensionless quantities
-            tmp[Par::mass_eigenstate];   // tree level mass parameters
             return tmp;
          }
          static const std::map<Par::Running,MapCollection<MTset>> runningpars_fill_setter_maps()
          {     
             std::map<Par::Running,MapCollection<MTset>> tmp;
-            tmp[Par::mass4];             // mass dimension 4 quantities           
-            tmp[Par::mass3];             //   "     "      3     "
-            tmp[Par::mass2];             //   "     "      2     "
-            tmp[Par::mass1];             //   "     "      3     "
-            tmp[Par::dimensionless];     // dimensionless quantities
-            tmp[Par::mass_eigenstate];   // tree level mass parameters
             return tmp;
          }
 
@@ -824,17 +814,97 @@ namespace Gambit
          static const std::map<Par::Phys,MapCollection<MTget>> phys_fill_getter_maps()
          {     
             std::map<Par::Phys,MapCollection<MTget>> tmp;
-            tmp[Par::Pole_Mass];          // Pole masses
-            tmp[Par::Pole_Mixing];        // Pole mass mixing parameters
             return tmp;
          }
          static const std::map<Par::Phys,MapCollection<MTset>> phys_fill_setter_maps()
          {     
             std::map<Par::Phys,MapCollection<MTset>> tmp;
-            tmp[Par::Pole_Mass];          // Pole masses
-            tmp[Par::Pole_Mixing];        // Pole mass mixing parameters
             return tmp;
          }
+         /// @}
+
+      private:
+         /// @{ Functions to ensure that all the possible tags exist in the final map, 
+         ///    even if no getters/setters are stored under those tags.
+       
+         /// Tag fillers for RunparDer
+         static void runningpars_getter_maps_fill_tags(std::map<Par::Running,MapCollection<MTget>>& in)
+         {     
+            std::vector<Par::Running> Running_all = Par::get_Running_all();
+            for(std::vector<Par::Running>::iterator it = Running_all.begin(); it!=Running_all.end(); ++it)
+            {
+              in[*it]; // insert tag key if missing
+            }
+         }
+         static void runningpars_setter_maps_fill_tags(std::map<Par::Running,MapCollection<MTset>>& in)
+         {     
+            std::vector<Par::Running> Running_all = Par::get_Running_all();
+            for(std::vector<Par::Running>::iterator it = Running_all.begin(); it!=Running_all.end(); ++it)
+            {
+              in[*it]; // insert tag key if missing
+            }
+         }
+
+         /// Tag fillers for PhysDer
+         static void phys_getter_maps_fill_tags(std::map<Par::Phys,MapCollection<MTget>>& in)
+         {     
+            std::vector<Par::Phys> Phys_all = Par::get_Phys_all();
+            for(std::vector<Par::Phys>::iterator it = Phys_all.begin(); it!=Phys_all.end(); ++it)
+            {
+              in[*it]; // insert tag key if missing
+            }
+         }
+         static void phys_setter_maps_fill_tags(std::map<Par::Phys,MapCollection<MTset>>& in)
+         {     
+            std::vector<Par::Phys> Phys_all = Par::get_Phys_all();
+            for(std::vector<Par::Phys>::iterator it = Phys_all.begin(); it!=Phys_all.end(); ++it)
+            {
+              in[*it]; // insert tag key if missing
+            }
+         }
+         /// @}
+
+         /// @{ Filler functions that are *actually* directly used to fill the maps
+         ///    Combines the (possibly overriden) map filler, plus the fill_tags
+         ///    functions to fill in any unused tag keys.
+         ///    DO NOT override these!
+         ///
+         /// Fillers for RunparDer
+         static const std::map<Par::Running,MapCollection<MTget>> rp_final_fill_getter_maps()
+         {  
+            // Fill from (possibly overriden) derived class filler function
+            std::map<Par::Running,MapCollection<MTget>> tmp = D::runningpars_fill_getter_maps();
+            // Add in any missing tags
+            runningpars_getter_maps_fill_tags(tmp);    
+            return tmp;
+         }
+         static const std::map<Par::Running,MapCollection<MTset>> rp_final_fill_setter_maps()
+         {     
+            // Fill from (possibly overriden) derived class filler function
+            std::map<Par::Running,MapCollection<MTset>> tmp = D::runningpars_fill_setter_maps();
+            // Add in any missing tags
+            runningpars_setter_maps_fill_tags(tmp);    
+            return tmp;
+         }
+
+         /// Fillers for PhysDer
+         static const std::map<Par::Phys,MapCollection<MTget>> pp_final_fill_getter_maps()
+         {     
+            // Fill from (possibly overriden) derived class filler function
+            std::map<Par::Phys,MapCollection<MTget>> tmp = D::phys_fill_getter_maps();
+            // Add in any missing tags
+            phys_getter_maps_fill_tags(tmp);    
+            return tmp;
+         }
+         static const std::map<Par::Phys,MapCollection<MTset>> pp_final_fill_setter_maps()
+         {     
+            // Fill from (possibly overriden) derived class filler function
+            std::map<Par::Phys,MapCollection<MTset>> tmp = D::phys_fill_setter_maps();
+            // Add in any missing tags
+            phys_setter_maps_fill_tags(tmp);    
+            return tmp;
+         }
+
          /// @}
          
       public: 

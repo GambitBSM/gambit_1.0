@@ -93,7 +93,7 @@ bool ResonanceDecays::next( Event& process, int iDecNow) {
         }
 
 
-        // GAMBIT fix of Pythia bug. Will be fixed in Pythia versions > 8.212.
+        // GAMBIT fix for Pythia bug. (To be fixed in Pythia versions > 8.212)
         mProd.resize(1);
 
         // Pick masses. Pick new channel if fail.

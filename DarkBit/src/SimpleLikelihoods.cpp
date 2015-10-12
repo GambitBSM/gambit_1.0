@@ -90,6 +90,8 @@ namespace Gambit {
       // Construct interpolated function, using GAMBIT base functions.
       auto dwarf_likelihood = Funk::interp("phi", xgrid, ygrid);
 
+      double fraction = *Dep::RD_fraction;
+
       // Integate spectrum 
       // (the zero velocity limit of the differential annihilation
       // cross-section as function of individual final state photons)
@@ -103,7 +105,7 @@ namespace Gambit {
       logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
       // Calculate phi-value
-      double phi = AnnYieldint / 8. / M_PI * 1e26;
+      double phi = AnnYieldint / 8. / M_PI * 1e26 * fraction * fraction;
 
       // And return final likelihood
       result = 0.5*dwarf_likelihood->bind("phi")->eval(phi);
@@ -117,17 +119,15 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_FermiLATdwarfs_gamLike;
 
+      double fraction = *Dep::RD_fraction;
       result = 0;
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
-      std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI)->
+      std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
-      if ( runOptions->getValueOrDef<bool>(true, "use_dwarfs") )
-        result += BEreq::lnL_dwarfs(x, y);
-      if ( runOptions->getValueOrDef<bool>(false, "use_GC") )
-        result += BEreq::lnL_GC(x, y);
+      result += BEreq::lnL(1, x, y);
 
       logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
@@ -138,16 +138,15 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_FermiGC_gamLike;
 
-      std::string DMid = *Dep::DarkMatter_ID;
-
-      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
+      double fraction = *Dep::RD_fraction;
+      result = 0;
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
-      std::vector<double> y = (*Dep::GA_AnnYield/(mass*mass*8*M_PI))->
-        set("v",0.)->bind("E")->vect(x);
+      std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
+        set("v", 0)->bind("E")->vect(x);
 
-      result = BEreq::lnL_GC(x, y);
+      result += BEreq::lnL(2, x, y);
 
       logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
@@ -183,6 +182,28 @@ namespace Gambit {
       logger() << "lnL_oh2_upperlimit yields " << result << std::endl;
     }
 
+
+    /// \brief Likelihoods for spin independent nuclear parameters. Follows treatment
+    /// of Cline, et. al. Phys. Rev. D. 88, 055025 (2013)
+    /// Default data:
+    ///  sigma_s = 43 +/- 8 MeV arXiv:1112.2435v1
+    ///  sigma_s < 70 MeV arXiv:1301.1765 -- Top-hat function not yet implemented
+    ///  sigma_l = 58 +/- 9 MeV
+
+    void lnL_sigmas_sigmal(double &result)
+    {
+        using namespace Pipes::lnL_sigmas_sigmal;
+        double sigmas = *Param["sigmas"];
+        double sigmal = *Param["sigmal"];
+        double sigmas_central = runOptions->getValueOrDef<double>(43., "sigmas_central");
+        double sigmas_error = runOptions->getValueOrDef<double>(8., "sigmas_error");
+        double sigmal_central = runOptions->getValueOrDef<double>(58., "sigmal_central");
+        double sigmal_error = runOptions->getValueOrDef<double>(9., "sigmal_error");
+
+        result = Stats::gaussian_loglikelihood(sigmas, sigmas_central, 0, sigmas_error)
+            + Stats::gaussian_loglikelihood(sigmal, sigmal_central, 0, sigmal_error);
+        logger() << "lnL for SI nuclear parameters is " << result << EOM;
+    }
 
     /*! \brief Helper function to dump gamma-ray spectra.
      *

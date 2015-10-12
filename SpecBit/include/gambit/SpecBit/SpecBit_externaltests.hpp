@@ -632,7 +632,7 @@ namespace Gambit
               std::set<std::pair<std::string,double>> name_value;
               name_value.insert(std::make_pair( "~d", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
               name_value.insert(std::make_pair( "~u", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
-              name_value.insert(std::make_pair( "~e", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~e-", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
               std::set<std::pair<std::string, double>>::iterator iter;
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
@@ -697,7 +697,7 @@ namespace Gambit
               std::set<std::pair<std::string,double>> name_value;
               name_value.insert(std::make_pair( "~d", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
               name_value.insert(std::make_pair( "~u", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
-              name_value.insert(std::make_pair( "~e", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~e-", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
               std::set<std::pair<std::string, double>>::iterator iter;
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)

@@ -205,7 +205,7 @@ namespace Gambit
         }
         
         if (overflow && cols_screen > 0)
-            out << "\x1b[33;01m" << std::setw(cols_screen) << "=== more here ==>" << "\x1b[0m" << std::endl;
+            out << "\x1b[33;01m" << std::setw(cols_screen) << ">>> more here >>>" << "\x1b[0m" << std::endl;
         
         if(top)
         {
@@ -223,7 +223,6 @@ namespace Gambit
             {
                 out << "\x1b[01m";
             }
-            int temp = 0;
             for (int i = 0; i < col_num; i++)
             {
                 out << std::setiosflags(ff[i]);

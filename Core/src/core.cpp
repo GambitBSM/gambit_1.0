@@ -140,7 +140,7 @@ namespace Gambit
           {
             // Display version number and shutdown.
             int mpirank = launch_diagnostic_MPI();
-            if (mpirank == 0) cout << "\nThis is GAMBIT v" + version << endl;
+            if (mpirank == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
             logger().disable();
             quit_diagnostic_MPI();
             core_error().silent_forced_throw();
@@ -590,6 +590,7 @@ namespace Gambit
         std::vector<std::string> objective_names = Scanner::Plugins::plugin_info().print_plugin_names("objective");
         valid_commands.insert(valid_commands.end(), scanner_names.begin(), scanner_names.end());
         valid_commands.insert(valid_commands.end(), objective_names.begin(), objective_names.end());
+        valid_commands.push_back("priors");
 
         // If the user hasn't asked for a diagnostic at all, process the command line options for the standard run mode and get out.
         if (std::find(valid_commands.begin(), valid_commands.end(), command) == valid_commands.end())
@@ -657,6 +658,7 @@ namespace Gambit
         if (command == "capabilities") capability_diagnostic();
         if (command == "scanners") scanner_diagnostic();
         if (command == "test-functions") test_function_diagnostic();
+        if (command == "priors") prior_diagnostic();
         ff_module_diagnostic(command);
         ff_backend_diagnostic(command);
         ff_model_diagnostic(command);

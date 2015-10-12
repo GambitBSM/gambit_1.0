@@ -21,6 +21,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 namespace Gambit {
   namespace DarkBit {
@@ -106,12 +107,12 @@ namespace Gambit {
 
 
       // determine resonances for LSP annihilation
-      int reslist[] = {DarkBit_utils::DSparticle_code("Z0"),
-                       DarkBit_utils::DSparticle_code("h0_2"),
-                       DarkBit_utils::DSparticle_code("h0_1"),
-                       DarkBit_utils::DSparticle_code("A0"),
-                       DarkBit_utils::DSparticle_code("W+"),
-                       DarkBit_utils::DSparticle_code("H+")};
+      int reslist[] = {BEreq::particle_code("Z0"),
+                       BEreq::particle_code("h0_2"),
+                       BEreq::particle_code("h0_1"),
+                       BEreq::particle_code("A0"),
+                       BEreq::particle_code("W+"),
+                       BEreq::particle_code("H+")};
       int resmax=sizeof(reslist) / sizeof(reslist[0]);
       // the last 2 resonances in the list can only appear for coannihilations
       if (result.coannihilatingParticles.size() == 1)
@@ -124,7 +125,7 @@ namespace Gambit {
         {
         
           // FIXME: This is no longer needed here!
-          if (reslist[i]==DarkBit_utils::DSparticle_code("h0_2") && mywidths->width(DarkBit_utils::DSparticle_code("h0_2")) < 0.1)
+          if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
             // wide res treatment adopted in DS
             result.resonances.push_back(
                 TH_Resonance(mymspctm->mass(reslist[i]), 0.1)); 
@@ -139,9 +140,9 @@ namespace Gambit {
       // convention!)
       result.threshold_energy.push_back(
           2*result.coannihilatingParticles[0].mass);
-      int thrlist[] = {DarkBit_utils::DSparticle_code("W+"),
-                       DarkBit_utils::DSparticle_code("Z0"),
-                       DarkBit_utils::DSparticle_code("t")};
+      int thrlist[] = {BEreq::particle_code("W+"),
+                       BEreq::particle_code("Z0"),
+                       BEreq::particle_code("t")};
       int thrmax=sizeof(thrlist) / sizeof(thrlist[0]);
       for (int i=0; i<thrmax; i++)
         if (mymspctm->mass(thrlist[i])>result.coannihilatingParticles[0].mass)
@@ -179,8 +180,8 @@ namespace Gambit {
       
 //      std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
 
-//      std::cout << "Test : " << DarkBit_utils::DSparticle_code("d_3")
-//      << " " << DarkBit_utils::DSparticle_code("u_3") << std::endl;
+//      std::cout << "Test : " << BEreq::particle_code("d_3")
+//      << " " << BEreq::particle_code("u_3") << std::endl;
       
 
     } // function RD_spectrum_from_ProcessCatalog
@@ -298,6 +299,13 @@ namespace Gambit {
       }
       // similar for other BEs...
 
+      double peff = 0.1;
+      if ( Utils::isnan((*result)(peff)) )
+      {
+        DarkBit_warning().raise(LOCAL_INFO, "Weff is nan.");
+        invalid_point().raise("Weff is nan in RD_eff_annrate_SUSY.");
+      }
+
     } // function RD_eff_annrate_SUSY
 
 
@@ -352,13 +360,29 @@ namespace Gambit {
       // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
       if (1==1) {
         // What follows below is the standard accurate calculation of oh2 in DS
-        // (fast=0 in dsrdomega).
-        // fast=1 to be added...!? Further TODO: keep track of error flags
+        // either in fast = 0 (<1%)  or fast = 1 (default) mode
+
+        int fast = runOptions->getValueOrDef<int>(1, "fast");
+
+        // Further TODO: keep track of error flags
 
         // the following replaces dsrdcom -- which cannot be linked properly!?
         DS_RDPARS myrdpars;
-        myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
-        myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
+
+        switch (fast)
+        {
+          case 0:
+            myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
+            myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
+            break;
+          case 1:
+            myrdpars.cosmin=0.996195;myrdpars.waccd=0.05;myrdpars.dpminr=5.0e-4;
+            myrdpars.dpthr=2.5e-3;myrdpars.wdiffr=0.5;myrdpars.wdifft=0.1;
+            // TODO: still "mcofr" is not switched correctly?
+            break;
+          default:
+            DarkBit_error().raise(LOCAL_INFO, "Invalid fast flag (should be 0 or 1)");
+        }
         myrdpars.hstep=0.01;myrdpars.hmin=1.0e-9;myrdpars.compeps=0.01;
         myrdpars.xinit=2.0;myrdpars.xfinal=200.0;myrdpars.umax=10.0;
         myrdpars.cfr=0.5;
@@ -429,9 +453,9 @@ namespace Gambit {
 
         // follow wide res treatment for heavy Higgs adopted in DS
         double widthheavyHiggs=
-               (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"));
+               (*BEreq::widths).width(BEreq::particle_code("h0_2"));
         if (widthheavyHiggs<0.1) 
-          (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))=0.1;
+          (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
         for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
@@ -456,7 +480,7 @@ namespace Gambit {
         // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
 
         // change heavy Higgs width in DS back to standard value
-        (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))
+        (*BEreq::widths).width(BEreq::particle_code("h0_2"))
            =widthheavyHiggs;
 
         //capture NAN result and map it to zero RD
@@ -505,6 +529,37 @@ namespace Gambit {
       double Xf;
       oh2 = BEreq::oh2(&Xf, byVal(fast), byVal(Beps));
       logger() << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////
+    //
+    //   Infer fraction of Dark matter that is made up by scanned DM particles
+    //
+    //////////////////////////////////////////////////////////////////////////
+
+    void RD_fraction_from_oh2(double &result)
+    {
+      using namespace Pipes::RD_fraction_from_oh2;
+      result = -1;
+      double oh2_theory = *Dep::RD_oh2;
+      double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
+      std::string mode = runOptions->getValueOrDef<std::string>("one", "mode");
+      if (mode ==  "one")
+        result = 1;
+      if (mode == "leq_one")
+        result = std::min(1., oh2_theory/oh2_obs);
+      if (mode == "any")
+        result = oh2_theory/oh2_obs;
+      if (result == -1)
+        DarkBit_error().raise(LOCAL_INFO, "ERROR in RD_fraction: Unknown mode (options: one, leq_one, any)");
+      logger() << "Fraction of dark matter that the scanned model accounts for: " << result << std::endl;
+    }
+
+    void RD_fraction_fixed(double &result)
+    {
+      using namespace Pipes::RD_fraction_fixed;
+      result = 1;
     }
   }
 }

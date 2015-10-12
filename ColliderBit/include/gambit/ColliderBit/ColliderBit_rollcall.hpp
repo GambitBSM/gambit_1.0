@@ -28,6 +28,7 @@
 
 #include <string>
 
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/shared_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
@@ -63,6 +64,7 @@ START_MODULE
 
 
   /// Detector sim capabilities
+#ifndef EXCLUDE_DELPHES
   #define CAPABILITY DetectorSim
   START_CAPABILITY
     #define FUNCTION getDelphes
@@ -71,11 +73,17 @@ START_MODULE
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
+#endif // not defined EXCLUDE_DELPHES
 
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
     #define FUNCTION getBuckFast
     START_FUNCTION(Gambit::ColliderBit::BuckFastSmear)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    #undef FUNCTION
+
+    #define FUNCTION getBuckFastIdentity
+    START_FUNCTION(Gambit::ColliderBit::BuckFastIdentity)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   #undef CAPABILITY
@@ -140,6 +148,7 @@ START_MODULE
   /// Detector simulators which directly produce the standard event format
   #define CAPABILITY ReconstructedEvent
   START_CAPABILITY
+#ifndef EXCLUDE_DELPHES
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
@@ -147,12 +156,20 @@ START_MODULE
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
     #undef FUNCTION
+#endif // not defined EXCLUDE_DELPHES
 
     #define FUNCTION reconstructBuckFastEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmear)
+    #undef FUNCTION
+
+    #define FUNCTION reconstructBuckFastIdentityEvent
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastIdentity)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -383,16 +400,16 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(decay_rates, DecayTable)
     DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency 
-    DEPENDENCY(FH_HiggsProd, fh_HiggsProd) // temporary dependency 
+    DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency 
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
   #undef CAPABILITY 
 
   // Get a LEP chisq from HiggsBounds
-  #define CAPABILITY HB_LEPchisq
+  #define CAPABILITY HB_LEP_lnL
   START_CAPABILITY
-    #define FUNCTION HB_LEPchisq
+    #define FUNCTION HB_LEP_lnL
     START_FUNCTION(double)
     DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
        BACKEND_REQ(HiggsBounds_neutral_input_part, (libhiggsbounds), void, 
@@ -408,15 +425,14 @@ START_MODULE
        BACKEND_REQ(HiggsBounds_set_mass_uncertainties, (libhiggsbounds), void, (double*, double*))
        BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (double&, int&, double&, int&))            
        BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
-       
-       BACKEND_OPTION( (HiggsBounds, 4.1), (libhiggsbounds) )
+       BACKEND_OPTION( (HiggsBounds, 4.2.1), (libhiggsbounds) )
     #undef FUNCTION
   #undef CAPABILITY
 
   // Get an LHC chisq from HiggsSignals
-  #define CAPABILITY HS_LHCchisq
+  #define CAPABILITY HS_LHC_lnL
     START_CAPABILITY
-      #define FUNCTION HS_LHCchisq
+      #define FUNCTION HS_LHC_lnL
       START_FUNCTION(double)
       DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
          BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
@@ -432,7 +448,7 @@ START_MODULE
         BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))  
         BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
         BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
-        BACKEND_OPTION( (HiggsSignals, 1.2), (libhiggssignals) )
+        BACKEND_OPTION( (HiggsSignals, 1.4), (libhiggssignals) )
      #undef FUNCTION
   #undef CAPABILITY
 

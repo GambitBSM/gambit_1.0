@@ -19,5 +19,19 @@ namespace Gambit {
       //@}
     };
 
+    /// @brief Simple smearing functions as a detector pseudo-simulation.
+    struct BuckFastIdentity : BaseDetector<HEPUtils::Event, HEPUtils::Event> {
+      /// @name Event detection simulation.
+      //@{
+        void processEvent(const HEPUtils::Event&, HEPUtils::Event&) const;
+      //@}
+
+      /// @name Construction, Destruction, and Recycling
+      //@{
+        BuckFastIdentity() { }
+        ~BuckFastIdentity() { }
+      //@}
+    };
+
   }
 }
