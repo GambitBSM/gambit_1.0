@@ -54,7 +54,14 @@ def main():
 
 
     # Parse command line arguments and options
-    parser = OptionParser(usage="usage: %prog [options] <config file>",
+    usage_string = "Usage: %prog [options] <config module>"
+    usage_string += "\n\n"
+    usage_string += "<config module> refers to a config file configs/<config module>.py."
+    usage_string += "\n\n"
+    usage_string += "Example: '%prog example_1_234' will use the config file configs/example_1_234.py."
+    
+
+    parser = OptionParser(usage=usage_string,
                           version="%prog 0.1")
     parser.add_option("-c", "--gccxml-compiler",
                       dest="gccxml_compiler_in",
@@ -125,8 +132,13 @@ def main():
 
         active_cfg.module_name = input_cfg_modulename
 
-    #import modules.cfg as cfg
-    exec("import configs." + active_cfg.module_name + " as cfg")
+    try:
+        exec("import configs." + active_cfg.module_name + " as cfg")
+    except ImportError as e:
+        print "Failed to import config module '%s'. Are you sure the file %s exists?" % (input_cfg_modulename, os.path.join('configs', input_cfg_modulename + '.py'))
+        print
+        sys.exit()
+
     import modules.gb as gb
     import modules.classutils as classutils
     import modules.classparse as classparse
@@ -224,13 +236,13 @@ def main():
     input_files.sort()
 
     xml_files = []
-    for input_file_path in input_files:
+    for i,input_file_path in enumerate(input_files):
 
         # Get path and filename for the input file
         input_file_dir, input_file_short_name = os.path.split(input_file_path)
 
         # Construct file name for xml file produced by gccxml
-        xml_output_path = os.path.join(gb.boss_temp_dir, input_file_path.replace('/','_').replace('.','_') + '.xml' )
+        xml_output_path = os.path.join(gb.boss_temp_dir, 'tempfile_' + str(i) + '_' + input_file_short_name.replace('.','_') + '.xml' )
 
         # List all include paths
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
