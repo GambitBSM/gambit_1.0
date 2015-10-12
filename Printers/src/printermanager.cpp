@@ -98,6 +98,7 @@ namespace Gambit
        mod_options.setValue("auxilliary",true);
        mod_options.setValue("name",streamname);
        mod_options.setValue("default_output_path",options.getValue<str>("default_output_path"));
+       mod_options.setValue("likelihood: model_invalid_for_lnlike_below",options.getValue<str>("likelihood", "model_invalid_for_lnlike_below"));
        // To construct printer as an auxilliary printer, a pointer to the primary printer is supplied as well as the options.
        auxprinters[streamname] = printer_creators.at(tag)(mod_options,printerptr);
        // Some printers may requires two-step initiations so this virtual function is provided to allow that.
