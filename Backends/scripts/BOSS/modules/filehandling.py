@@ -438,7 +438,7 @@ def parseFactoryFunctionFiles():
 
     factory_xml_files = OrderedDict()
 
-    for class_name in gb.classes_done:
+    for i, class_name in enumerate(gb.classes_done):
 
         # Check that this class has a factory file and get the path
         if class_name['long_templ'] not in gb.class_factory_file_dict.keys():
@@ -447,7 +447,7 @@ def parseFactoryFunctionFiles():
         factory_source_path = os.path.join(cfg.source_path, factory_source_fname)
 
         # Construct file name for xml file produced by gccxml
-        xml_output_path = os.path.join(gb.boss_temp_dir, factory_source_path.replace('/','_').replace('.','_') + '.xml' )
+        xml_output_path = os.path.join(gb.boss_temp_dir, 'tempfile_' + str(i) + '_' + factory_source_fname.replace('.','_') + '.xml' )
 
         # List all include paths
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
