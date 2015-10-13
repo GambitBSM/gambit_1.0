@@ -30,6 +30,7 @@ For first release:
 Messaging:
 * Separate output/log for points with "BadPoint" errors (Ben)
 * Write printer functions for all common functor types and print streams (Ben)
+* Make loggers threadsafe! (Ben)
 
 General:
 * Make ditchlist (Pat + Ben)

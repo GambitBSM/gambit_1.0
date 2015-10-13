@@ -19,6 +19,8 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Utils/ascii_table_reader.hpp"
 
+//#define DARKBIT_DEBUG
+
 namespace Gambit {
   namespace DarkBit {
 
@@ -97,7 +99,10 @@ namespace Gambit {
         {
           if ( not runOptions->getValueOrDef(false, "ignore_two_body") )
           {
-            std::cout << "Checking for missing two-body final states: " << it->finalStateIDs[0] << " " << it->finalStateIDs[1]  << std::endl;
+            #ifdef DARKBIT_DEBUG
+              std::cout << "Checking for missing two-body final states: " 
+                        << it->finalStateIDs[0] << " " << it->finalStateIDs[1]  << std::endl;
+            #endif
             if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
             {
                 if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
@@ -111,7 +116,11 @@ namespace Gambit {
         {
           if ( not runOptions->getValueOrDef(false, "ignore_three_body") )
           {
-            std::cout << "Checking for missing three-body final states: " << it->finalStateIDs[0] << " " << it->finalStateIDs[1]  << " " << it->finalStateIDs[2] << std::endl;
+            #ifdef DARKBIT_DEBUG
+              std::cout << "Checking for missing three-body final states: " 
+                        << it->finalStateIDs[0] << " " << it->finalStateIDs[1]  
+                        << " " << it->finalStateIDs[2] << std::endl;
+            #endif
             if (not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
               missingFinalStates.insert(it->finalStateIDs[0]);
             if (not Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
@@ -134,14 +143,13 @@ namespace Gambit {
           }
       }
 
-      std::cout 
-        << "Number of missing final states: " << missingFinalStates.size() 
-        << std::endl;
-      for (auto it = missingFinalStates.begin(); it != missingFinalStates.end();
-          it++)
-      {
-        std::cout << *it << std::endl;
-      }
+      #ifdef DARKBIT_DEBUG
+        std::cout << "Number of missing final states: " << missingFinalStates.size() << std::endl;
+        for (auto it = missingFinalStates.begin(); it != missingFinalStates.end(); it++)
+        {
+          std::cout << *it << std::endl;
+        }
+      #endif
 
       result.assign(missingFinalStates.begin(), missingFinalStates.end());
     }
@@ -720,10 +728,11 @@ namespace Gambit {
         }
         PPPC_interpolation() {}  // Dummy initializer
 
-        double operator()(std::string channel, double m, double e)
+        double operator()(std::string channel, double /*m*/, double /*e*/)
         {
           // FIXME: Write interpolation routine
           std::vector<double> y(table[channel].begin(), table[channel].end());
+          return 0;
         }
 
       private:
@@ -732,7 +741,7 @@ namespace Gambit {
     };
 
     /// SimYieldTable based on PPPC4DMID Cirelli et al. 2010
-    void SimYieldTable_PPPC(SimYieldTable& result)
+    void SimYieldTable_PPPC(SimYieldTable& /*result*/)
     {
       using namespace Pipes::SimYieldTable_PPPC;
       static bool initialized = false;
