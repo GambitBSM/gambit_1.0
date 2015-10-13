@@ -26,6 +26,7 @@
 
 #include "gambit/Core/likelihood_container.hpp"
 
+#define CORE_DEBUG
 
 namespace Gambit
 {
@@ -145,6 +146,9 @@ namespace Gambit
         logger().leaving_module();
         lnlike = min_valid_lnlike;
         compute_aux = false;
+        #ifdef CORE_DEBUG
+          cout << "Point invalid." << endl;
+        #endif        
         break;
       }
     }
@@ -168,6 +172,10 @@ namespace Gambit
         }
       }
     }
+      
+    #ifdef CORE_DEBUG
+      cout << "log-likelihood: " << lnlike << endl;
+    #endif
       
     dependencyResolver.resetAll();
     return lnlike;
