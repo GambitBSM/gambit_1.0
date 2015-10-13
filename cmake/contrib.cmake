@@ -104,6 +104,14 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   
   set (EXCLUDE_FLEXIBLESUSY FALSE)
   
+  # Always use -O2 for flexiblesusy because it's so damn slow otherwise.
+  set(FS_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+  set(FS_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(FS_CXX_FLAGS "${FS_CXX_FLAGS} -O2")
+    set(FS_Fortran_FLAGS "${FS_Fortran_FLAGS} -O2")
+  endif()
+  
   # Determine compiler libraries needed by flexiblesusy.
   if(CMAKE_Fortran_COMPILER MATCHES "gfortran*")
     set(flexiblesusy_extralibs "${flexiblesusy_extralibs} -lgfortran -lm")
@@ -126,10 +134,10 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   set(FS_OPTIONS ${FS_OPTIONS} 
        --with-cxx=${CMAKE_CXX_COMPILER}
        --with-cxx-dep-gen=${CMAKE_CXX_COMPILER}
-       --with-cxxflags=${GAMBIT_CXX_FLAGS}
+       --with-cxxflags=${FS_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
-       --with-fortran-dep-gen=${CMAKE_Fortran_COMPILER}
-       --with-fflags=${GAMBIT_Fortran_FLAGS}
+       --with-fortran-dep-gen=${CMAKE_CXX_COMPILER} #just because newer iforts don't do depgen how FS expects. 
+       --with-fflags=${FS_Fortran_FLAGS}
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}
@@ -142,6 +150,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   # Explain how to build each of the flexiblesusy spectrum generators we need.  Configure now, serially, to prevent parallel build issues.
   string (REPLACE ";" "," BUILT_FS_MODELS_COMMAS "${BUILT_FS_MODELS}")
   set(config_command ./configure ${FS_OPTIONS} --with-models=${BUILT_FS_MODELS_COMMAS})
+  add_custom_target(configure-flexiblesusy COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold "Old lady GAMBIT say: no cry about missing LAPACK and BLAS little flexisusy, I take care of it."
+                                           COMMAND cd ${FS_DIR} && ${config_command})
   message("${Yellow}-- Configuring FlexibleSUSY for models: ${BoldYellow}${BUILT_FS_MODELS_COMMAS}${ColourReset}")
   execute_process(COMMAND ${config_command}
                   WORKING_DIRECTORY ${FS_DIR}
@@ -190,8 +200,8 @@ else()
 
 endif()
 # Add clean info
-add_external_clean(flexiblesusy-makeclean ${FS_DIR} clean)
-add_external_clean(flexiblesusy-makedistclean ${FS_DIR} distclean)
-add_dependencies(clean-flexiblesusy-makedistclean clean-flexiblesusy-makeclean)
-add_custom_target(clean-flexiblesusy DEPENDS clean-flexiblesusy-makedistclean)
-add_dependencies(distclean clean-flexiblesusy)
+add_external_clean(flexiblesusy ${FS_DIR} clean)
+add_custom_target(distclean-flexiblesusy COMMAND cd ${FS_DIR} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} distclean &&
+                                                 ${CMAKE_COMMAND} -E cmake_echo_color --red --bold "To get flexiblesusy to rebuild now, you must call make configure-flexiblesusy or rerun cmake.") || true)
+add_dependencies(distclean-flexiblesusy clean-flexiblesusy)
+add_dependencies(distclean distclean-flexiblesusy)

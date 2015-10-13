@@ -81,6 +81,9 @@ scanner_plugin(MultiNest, version(3, 9))
       // Retrieve the dimensionality of the scan.
       int ma = get_dimension();
 
+      // Retrieve the global option specifying the minimum interesting likelihood.
+      double gl0 = get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
+
       // MultiNest algorithm options.
       int IS (get_inifile_value<int>("IS", 1) );                // do Nested Importance Sampling?
       int mmodal (get_inifile_value<int>("mmodal", 1) );        // do mode separation?
@@ -98,8 +101,7 @@ scanner_plugin(MultiNest, version(3, 9))
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
       int resume ( resume_mode );                               // resume from a previous job?
       int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
-
-      double logZero (get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
+      double ln0 (0.9*get_inifile_value<double>("logZero",gl0));// points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
       void *context = 0;                                        // any additional information user wants to pass (not required by MN)
@@ -161,7 +163,7 @@ scanner_plugin(MultiNest, version(3, 9))
       //Run MultiNest, passing callback functions for the loglike and dumper.
       std::cout << "Starting MultiNest run..." << std::endl;
       run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, 
-          root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, 
+          root, seed, pWrap, fb, resume, outfile, initMPI, ln0, maxiter, 
           Gambit::MultiNest::callback_loglike, Gambit::MultiNest::callback_dumper, context);
       std::cout << "Multinest run finished!" << std::endl;
       return 0;

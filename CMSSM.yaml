@@ -16,32 +16,21 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  MSSM7atQ:
-    Qin: 
-      fixed_value: 1000.0
-    SignMu:
-      fixed_value: 1
-    Ad_3:
-      range: [1e2, 1e5]
-      prior_type: log
-    Au_3:
-      range: [1e2, 1e5]
-      prior_type: log
-    M2:
-      range: [1e2, 1e5]
-      prior_type: log
-    TanBeta:
-      range: [3.0, 70.0]
+  CMSSM:
+    M0:
+      range: [550, 6000]
       prior_type: flat
-    mHd2:
-      range: [1e4, 1e10]
-      prior_type: log
-    mHu2:
-      range: [1e4, 1e10]
-      prior_type: log
-    mf2:
-      range: [1e4, 1e10]
-      prior_type: log
+    M12:
+      range: [300, 1000]
+      prior_type: flat
+    A0:
+      range: [-4000, 4000]
+      prior_type: flat
+    TanBeta:
+      range: [2, 100]
+      prior_type: flat
+    SignMu: 1
+ 
 
 Priors:
 
@@ -52,8 +41,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "samples/MSSM7.hdf5"
-    group: "/MSSM7"
+    output_file: "samples/CMSSM.hdf5"
+    group: "/CMSSM"
     delete_file_if_exists: true
 
 Scanner:
@@ -65,7 +54,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 10
+        nlive: 100
         tol: 0.1
         mmodal: 1
         # write native MultiNest ascii output files?
@@ -232,8 +221,10 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum 
-    function: get_MSSMatQ_spectrum
+    function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -246,6 +237,7 @@ Rules:
       use_higgs_2loop_at_at: true
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
+
 
   # Choose to take the spectrum generator prediction for the Higgs mass (rather then FeynHiggs')
   # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along 
@@ -370,4 +362,4 @@ KeyValues:
   likelihood:
     model_invalid_for_lnlike_below: -1e10
 
-  default_output_path: "runs/MSSM7/"
+  default_output_path: "runs/CMSSM/"

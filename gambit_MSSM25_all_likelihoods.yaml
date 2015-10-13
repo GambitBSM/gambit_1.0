@@ -154,7 +154,7 @@ Rules:
     #function: lnL_FermiLATdwarfsSimple
 
   - capability: SimYieldTable
-    function: SimYieldTable_DarkSusy
+    function: SimYieldTable_DarkSUSY
     #function: SimYieldTable_MicrOmegas
     #function: SimYieldTable_PPPC
 
@@ -255,3 +255,4 @@ KeyValues:
 
   enable_testing: false
 
+  default_output_path: "runs/DarkBit_SingletDM/"
