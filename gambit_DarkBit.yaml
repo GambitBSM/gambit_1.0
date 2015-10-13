@@ -455,7 +455,7 @@ Rules:
       # m_u/m_d
       mud_central: 0.48
       mud_error: 0.10
-      # m_s / (m_u + m_d)
+      # m_s / ((m_u + m_d)/2)
       msud_central: 27.5
       msud_error: 1.0
       # m_s
