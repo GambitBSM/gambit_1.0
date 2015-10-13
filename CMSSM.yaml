@@ -17,20 +17,19 @@ Parameters:
       fixed_value: -0.085
 
   CMSSM:
-    SignMu:
-      fixed_value: 1
-    A0:
-      range: [1e2, 1e5]
-      prior_type: log
-    M0:
-      range: [1e2, 1e5]
-      prior_type: log
-    M12:
-      range: [1e2, 1e5]
-      prior_type: log
-    TanBeta:
-      range: [3.0, 70.0]
-      prior_type: flat
+      M0:
+        range: [550, 6000]
+        prior_type: flat
+      M12:
+        range: [300, 1000]
+        prior_type: flat
+      A0:
+        range: [-4000, 4000]
+        prior_type: flat
+      TanBeta:
+        range: [2,100]
+	prior_type: flat
+      SignMu: 1
 
 Priors:
 
@@ -54,7 +53,7 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 5000
+        nlive: 10
         tol: 0.1
         mmodal: 1
         # write native MultiNest ascii output files?
@@ -130,6 +129,7 @@ ObsLikes:
     - purpose:    Observable
       capability: SLHA1_violation
 
+
     - purpose:    Likelihood
       capability: ALEPH_Selectron_LLike
 
@@ -182,7 +182,7 @@ ObsLikes:
       capability: HS_LHC_lnL
 
     # Missing:
-    # CMB likelihood
+    # CMB+HESS likelihoods
 
 
 Rules:
@@ -220,7 +220,7 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum 
-    function: get_CMSSM_spectrum
+    function: get_MSSMatQ_spectrum
     options:
       precision_goal:        1.0e-4
       max_iterations:        0
