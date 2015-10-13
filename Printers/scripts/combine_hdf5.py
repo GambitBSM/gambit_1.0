@@ -10,7 +10,7 @@ import sys
 
 chunksize = 1000
 
-bufferlength = 5                # Must match setting in hdf5printer.hpp
+bufferlength = 100                # Must match setting in hdf5printer.hpp
 max_ppidpairs = 10*bufferlength #   "  "
 
 def usage():
