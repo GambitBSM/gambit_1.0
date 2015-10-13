@@ -257,3 +257,5 @@ KeyValues:
 
   enable_testing: false
 
+  default_output_path: "runs/CMSSM_multinest_hdf5/"
+

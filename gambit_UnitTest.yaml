@@ -186,3 +186,4 @@ KeyValues:
 
   enable_testing: false
 
+  default_output_path: "runs/DarkBit_minimalTest/"
