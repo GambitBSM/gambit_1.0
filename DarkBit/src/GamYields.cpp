@@ -574,9 +574,9 @@ namespace Gambit {
     */
 
     /// SimYieldTable based on DarkSUSY tabulated results.
-    void SimYieldTable_DarkSusy(SimYieldTable& result)
+    void SimYieldTable_DarkSUSY(SimYieldTable& result)
     {
-      using namespace Pipes::SimYieldTable_DarkSusy;
+      using namespace Pipes::SimYieldTable_DarkSUSY;
 
       static bool initialized = false;
       if ( not initialized )
@@ -743,6 +743,8 @@ namespace Gambit {
         std::string filename = "DarkBit/data/AtProductionNoEW_gammas.dat";
         PPPC_gam_object = PPPC_interpolation(filename);
         initialized = true;
+        DarkBit_error().raise(LOCAL_INFO,
+            "SimYieldTable_PPPC is not implemented yet.  Use e.g. SimYieldTable_DarkSUSY instead.");
       }
     }
   }

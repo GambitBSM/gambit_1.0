@@ -150,9 +150,9 @@ Rules:
   - capability: lnL_FermiLATdwarfs
     function:  lnL_FermiLATdwarfs_gamLike
 
-  # Choose to use PPPC4DMID yield tables for indirect detection rather than DarkSUSY or MicrOmegas
+  # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
-    function: SimYieldTable_PPPC
+    function: SimYieldTable_DarkSUSY
 
   # Choose to only include IC79 in neutrino telescope likelihoods
   - capability: IceCube_likelihood

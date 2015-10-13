@@ -133,7 +133,7 @@ Rules:
     #function: lnL_FermiLATdwarfsSimple
 
   - capability: SimYieldTable
-    function: SimYieldTable_DarkSusy
+    function: SimYieldTable_DarkSUSY
     #function: SimYieldTable_MicrOmegas
     #function: SimYieldTable_PPPC
 
