@@ -720,10 +720,11 @@ namespace Gambit {
         }
         PPPC_interpolation() {}  // Dummy initializer
 
-        double operator()(std::string channel, double m, double e)
+        double operator()(std::string channel, double /*m*/, double /*e*/)
         {
           // FIXME: Write interpolation routine
           std::vector<double> y(table[channel].begin(), table[channel].end());
+          return 0;
         }
 
       private:
@@ -732,7 +733,7 @@ namespace Gambit {
     };
 
     /// SimYieldTable based on PPPC4DMID Cirelli et al. 2010
-    void SimYieldTable_PPPC(SimYieldTable& result)
+    void SimYieldTable_PPPC(SimYieldTable& /*result*/)
     {
       using namespace Pipes::SimYieldTable_PPPC;
       static bool initialized = false;
