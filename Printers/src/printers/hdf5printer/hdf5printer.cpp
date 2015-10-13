@@ -278,7 +278,7 @@ namespace Gambit
                   data->mpiranks_isvalid.resize(dims[0]);
                   buffer=&(data->mpiranks_isvalid[0]);
                   get_hdf5_data_type<int> h5t;
-                  memtype=h5t::type();
+                  memtype=h5t.type();
                   //memtype=H5T_NATIVE_INT;
                   label="previous MPIranks_isvalid";
                }
@@ -838,16 +838,17 @@ namespace Gambit
     /// Ask the printer for the highest ID number known for a given rank
     /// process (needed for resuming, so the scanner can resume assigning
     /// point IDs from this value. 
-    unsigned long HDF5Printer::getHighestPointID(const int rank)
-    {
-       long highest = 0;
-       std::vector<PPIDpair>& all_ppids = primary_printer->reverse_global_index_lookup;
-       for(std::vector<PPIDpair>::iterator it = all_ppids.begin(); it != all_ppids.end(); it++)
-       {
-          if(it->rank==rank and it->pointID > highest) highest = it->pointID;
-       }
-       return highest;
-    }
+    // TODO: DEPRECATED
+    //unsigned long HDF5Printer::getHighestPointID(const int rank)
+    //{
+    //   long highest = 0;
+    //   std::vector<PPIDpair>& all_ppids = primary_printer->reverse_global_index_lookup;
+    //   for(std::vector<PPIDpair>::iterator it = all_ppids.begin(); it != all_ppids.end(); it++)
+    //   {
+    //      if(it->rank==rank and it->pointID > highest) highest = it->pointID;
+    //   }
+    //   return highest;
+    //}
 
     /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
@@ -1112,6 +1113,12 @@ namespace Gambit
     /// Add PPIDpair to global index list
     /// In this version of the HDF5Printer, this list applies only to RA points.
     /// Synchronised writes are not tracked.
+    /// UPDATE! Due to memory issues with tracking many RA points, we now only track
+    /// the last 10*BUFFERLENGTH points. When the PPID list gets "full" we do a flush,
+    /// and then start tracking again, with the new list getting assigned only indices
+    /// above the highest in the previous list. This means that the output will
+    /// potentially have duplicate RA write commands, so the post-processing should be
+    /// sure to preferrentially take the latest commands over earlier ones.
     void HDF5Printer::add_PPID_to_list(const PPIDpair& ppid)
     {
       // Check if it is in the lookup map already
@@ -1124,8 +1131,26 @@ namespace Gambit
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
       
-      // Ok, now safe to add it 
-      lookup[ppid] = reverse_lookup.size();
+      // If the list has reached its max allowed length, flush any queued RA
+      // writes, clear the list, and increment RA_dset_offset.
+      if(reverse_lookup.size()==MAX_PPIDPAIRS)
+      {
+         for (BaseBufferMap::iterator it = primary_printer->all_buffers.begin(); it != primary_printer->all_buffers.end(); it++)
+         {
+           if(it->second->is_synchronised())
+           { /*do nothing, these are the sync buffers*/ }
+           else
+           {
+             it->second->RA_flush(primary_printer->global_index_lookup);
+           }
+         }
+         lookup.clear();
+         reverse_lookup.clear();    
+         primary_printer->RA_dset_offset += MAX_PPIDPAIRS;
+      }
+
+      // Ok, now safe to add new stuff
+      lookup[ppid] = reverse_lookup.size() + primary_printer->RA_dset_offset;
       reverse_lookup.push_back(ppid);
 
       // Need to make sure the pointID and MPIrank are stashed at this location in the RA output

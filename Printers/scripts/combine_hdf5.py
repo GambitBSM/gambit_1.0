@@ -10,6 +10,9 @@ import sys
 
 chunksize = 1000
 
+bufferlength = 5                # Must match setting in hdf5printer.hpp
+max_ppidpairs = 10*bufferlength #   "  "
+
 def usage():
    print ("\nusage: python combine_hdf5.py <path-to-target-hdf5-file> <path-to-root-temporary-hdf5-file-name> <root group in hdf5 files> <Number of files> <resume> [--runchecks]"
           "\n"
@@ -221,185 +224,193 @@ for i in range(N):
    fin = files[fname]
    if "RA_MPIrank" in fin[RA_group]:
       print "RA data detected in file {0}; copying it to file {1}...".format(fname,outfname)
-
+      
       # Get write targets
       dset_length=fin[RA_group]["RA_MPIrank"].shape[0]        
-      pointIDs_in         = fin[RA_group]["RA_pointID"]
-      mpiranks_in         = fin[RA_group]["RA_MPIrank"]
-      pointIDs_isvalid_in = np.array(fin[RA_group]["RA_pointID_isvalid"][:],dtype=np.bool)
-      mpiranks_isvalid_in = np.array(fin[RA_group]["RA_MPIrank_isvalid"][:],dtype=np.bool)
 
-      mask_in = (pointIDs_isvalid_in & mpiranks_isvalid_in) 
-      print "...{0} scheduled RA writes found.".format(np.sum(mask_in))
+      # Do this in chunks matching the max_ppidpairs value in hdf5printer.hpp     
+      nchunks = np.ceil(dset_length / (1.*max_ppidpairs)) 
+      for i in range(int(nchunks)):
+         imin = i*max_ppidpairs
+         imax = np.min([(i+1)*max_ppidpairs, dset_length])
 
-      # convert entries to single values to facilitate fast comparison
-      IDs_in = cantor_pairing(pointIDs_in[mask_in],mpiranks_in[mask_in])
+         pointIDs_in         = fin[RA_group]["RA_pointID"][imin:imax]
+         mpiranks_in         = fin[RA_group]["RA_MPIrank"][imin:imax]
+         pointIDs_isvalid_in = np.array(fin[RA_group]["RA_pointID_isvalid"][imin:imax],dtype=np.bool)
+         mpiranks_isvalid_in = np.array(fin[RA_group]["RA_MPIrank_isvalid"][imin:imax],dtype=np.bool)
 
-      #if runchecks:
-      #   print "   checking input selection for duplicate keys..."
-      #   ids  = IDs_in
-      #   pid  = pointIDs_in[mask_in]
-      #   rank = mpiranks_in[mask_in]
-      #   for ID,p,r in zip(ids,pid,rank):
-      #      Nmatches = np.sum(ID==ids)
-      #      if Nmatches>1:
-      #         print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
-      #         pMatch = np.sum(p==pid)
-      #         rMatch = np.sum(r==rank)
-      #         if pMatch>1 or rMatch>1:
-      #           print "   ...pointID duplicate count: ", pMatch
-      #           print "   ...MPIrank duplicate count: ", rMatch
+         mask_in = (pointIDs_isvalid_in & mpiranks_isvalid_in) 
+         print "...{0} scheduled RA writes found.".format(np.sum(mask_in))
 
-      # Find them in the target output file
-      pointIDs_out         = fout[group]["pointID"]
-      mpiranks_out         = fout[group]["MPIrank"]
-      pointIDs_isvalid_out = np.array(fout[group]["pointID_isvalid"][:],dtype=np.bool)
-      mpiranks_isvalid_out = np.array(fout[group]["MPIrank_isvalid"][:],dtype=np.bool)
+         # convert entries to single values to facilitate fast comparison
+         IDs_in = cantor_pairing(pointIDs_in[mask_in],mpiranks_in[mask_in])
+
+         #if runchecks:
+         #   print "   checking input selection for duplicate keys..."
+         #   ids  = IDs_in
+         #   pid  = pointIDs_in[mask_in]
+         #   rank = mpiranks_in[mask_in]
+         #   for ID,p,r in zip(ids,pid,rank):
+         #      Nmatches = np.sum(ID==ids)
+         #      if Nmatches>1:
+         #         print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
+         #         pMatch = np.sum(p==pid)
+         #         rMatch = np.sum(r==rank)
+         #         if pMatch>1 or rMatch>1:
+         #           print "   ...pointID duplicate count: ", pMatch
+         #           print "   ...MPIrank duplicate count: ", rMatch
+
+         # Find them in the target output file
+         # TODO: this part could still cause memory issues if the output datasets are too big
+         pointIDs_out         = fout[group]["pointID"]
+         mpiranks_out         = fout[group]["MPIrank"]
+         pointIDs_isvalid_out = np.array(fout[group]["pointID_isvalid"][:],dtype=np.bool)
+         mpiranks_isvalid_out = np.array(fout[group]["MPIrank_isvalid"][:],dtype=np.bool)
  
-      mask_out = (pointIDs_isvalid_out & mpiranks_isvalid_out) 
-      print "...{0} possible RA targets found.".format(np.sum(mask_out))
+         mask_out = (pointIDs_isvalid_out & mpiranks_isvalid_out) 
+         print "...{0} possible RA targets found.".format(np.sum(mask_out))
 
-      # convert entries to single values to facilitate fast comparison
-      IDs_out = cantor_pairing( 
-                  np.array(pointIDs_out[mask_out],dtype=np.longlong),
-                  np.array(mpiranks_out[mask_out],dtype=np.longlong)
-                  )
-      # check that the pairing has not overflowed
-      if np.any(IDs_out<0):
-         raise ValueError("Error while computing cantor pairing for RA to SYNC matching! Integer overflow detected, so matching will fail! Please increase the size of the integer type used!")
+         # convert entries to single values to facilitate fast comparison
+         IDs_out = cantor_pairing( 
+                     np.array(pointIDs_out[mask_out],dtype=np.longlong),
+                     np.array(mpiranks_out[mask_out],dtype=np.longlong)
+                     )
+         # check that the pairing has not overflowed
+         if np.any(IDs_out<0):
+            raise ValueError("Error while computing cantor pairing for RA to SYNC matching! Integer overflow detected, so matching will fail! Please increase the size of the integer type used!")
 
-      if runchecks:
-         print "   checking output selection for duplicate keys..."
-         ids  = IDs_out
-         pid  = pointIDs_out[mask_out]
-         rank = mpiranks_out[mask_out]
-         for ID,p,r in zip(ids,pid,rank):
-            Nmatches = np.sum(ID==ids)
-            if Nmatches>1:
-               print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
-               pMatch = np.sum(p==pid)
-               rMatch = np.sum(r==rank)
-               if pMatch>1 or rMatch>1:
-                 print "   ...pointID duplicate count: ", pMatch
-                 print "   ...MPIrank duplicate count: ", rMatch
+         if runchecks:
+            print "   checking output selection for duplicate keys..."
+            ids  = IDs_out
+            pid  = pointIDs_out[mask_out]
+            rank = mpiranks_out[mask_out]
+            for ID,p,r in zip(ids,pid,rank):
+               Nmatches = np.sum(ID==ids)
+               if Nmatches>1:
+                  print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
+                  pMatch = np.sum(p==pid)
+                  rMatch = np.sum(r==rank)
+                  if pMatch>1 or rMatch>1:
+                    print "   ...pointID duplicate count: ", pMatch
+                    print "   ...MPIrank duplicate count: ", rMatch
 
-      # Find which IDs in the output dataset are write targets
-      target_mask_small = np.in1d(IDs_out,IDs_in)
+         # Find which IDs in the output dataset are write targets
+         target_mask_small = np.in1d(IDs_out,IDs_in)
 
-      # Cast the mask back so that it works on the original dataset
-      # (TODO: is there a more efficient way to do this? "target_mask[mask_out][target_mask_small] = True" does not work.)
-      target_length = fout[group]["pointID"].shape[0]
-      alltargetindices = np.arange(target_length)
-      maskindices = alltargetindices[mask_out][target_mask_small]
+         # Cast the mask back so that it works on the original dataset
+         # (TODO: is there a more efficient way to do this? "target_mask[mask_out][target_mask_small] = True" does not work.)
+         target_length = fout[group]["pointID"].shape[0]
+         alltargetindices = np.arange(target_length)
+         maskindices = alltargetindices[mask_out][target_mask_small]
 
-      target_mask = np.zeros(target_length, dtype=bool)
-      target_mask[maskindices] = True
+         target_mask = np.zeros(target_length, dtype=bool)
+         target_mask[maskindices] = True
 
-      if runchecks:
-         print "   Double-checking that all selected input dset entries have matching targets in the output dsets..." 
-         for ID,pid,rank in zip(IDs_in,pointIDs_in[mask_in],mpiranks_in[mask_in]):
-            if ID not in IDs_out: #[target_mask_small]:
-               print "   Warning! No target for ID {0} found in output selection! ({1},{2})".format(ID,pid,rank)
-               indexid = np.where( (np.array(IDs_out)==ID) )
-               index   = np.where( (np.array(pointIDs_out[mask_out])==pid) &
-                                   (np.array(mpiranks_out[mask_out])==rank) )[0][0]
-               print "index of match by ID       = ", indexid
-               print "index of match by pid,rank = ", index
-               print "pid,rank =",pid,rank
-               print "pointID? ", pointIDs_out[mask_out][index]
-               print "valid? ",   pointIDs_isvalid_out[mask_out][index]
-               print "rank? ",  mpiranks_out[mask_out][index]
-               print "valid? ", mpiranks_isvalid_out[mask_out][index]
-               print "cantor =", cantor_pairing(pid,rank)
-               print "cantor==ID? ", cantor_pairing(pid,rank)==ID
-             
+         if runchecks:
+            print "   Double-checking that all selected input dset entries have matching targets in the output dsets..." 
+            for ID,pid,rank in zip(IDs_in,pointIDs_in[mask_in],mpiranks_in[mask_in]):
+               if ID not in IDs_out: #[target_mask_small]:
+                  print "   Warning! No target for ID {0} found in output selection! ({1},{2})".format(ID,pid,rank)
+                  indexid = np.where( (np.array(IDs_out)==ID) )
+                  index   = np.where( (np.array(pointIDs_out[mask_out])==pid) &
+                                      (np.array(mpiranks_out[mask_out])==rank) )[0][0]
+                  print "index of match by ID       = ", indexid
+                  print "index of match by pid,rank = ", index
+                  print "pid,rank =",pid,rank
+                  print "pointID? ", pointIDs_out[mask_out][index]
+                  print "valid? ",   pointIDs_isvalid_out[mask_out][index]
+                  print "rank? ",  mpiranks_out[mask_out][index]
+                  print "valid? ", mpiranks_isvalid_out[mask_out][index]
+                  print "cantor =", cantor_pairing(pid,rank)
+                  print "cantor==ID? ", cantor_pairing(pid,rank)==ID
+                
 
-      # Number of "true" elements in target mask should match number of elements in 'in' arrays (after masking)
-      # Check this
-      ntargets = np.sum(target_mask)
-      nsources = np.sum(mask_in)
-      if ntargets!=nsources:
-         raise ValueError("Error while computing targets for RA writes! Number of target matches for writes in the output dataset ({0}) does not match the number of elements scheduled for copying {1}!".format(ntargets,nsources))
+         # Number of "true" elements in target mask should match number of elements in 'in' arrays (after masking)
+         # Check this
+         ntargets = np.sum(target_mask)
+         nsources = np.sum(mask_in)
+         if ntargets!=nsources:
+            raise ValueError("Error while computing targets for RA writes! Number of target matches for writes in the output dataset ({0}) does not match the number of elements scheduled for copying {1}!".format(ntargets,nsources))
 
-      ## Just some test code which I decided to keep around since it is helpful
-      ## for understand how the rearrangment of the input data to match the output
-      ## selection works.
-      ##
-      ## # Compute sorting index array for rearranging the source entries to match the target locations
-      ## # The way this works is a bit trippy, but it is fast.
-      ## #y = target (IDs_out)
-      ## #x = sources (IDs_in)
-      ## #result = array of length(y), containing positions of 
+         ## Just some test code which I decided to keep around since it is helpful
+         ## for understand how the rearrangment of the input data to match the output
+         ## selection works.
+         ##
+         ## # Compute sorting index array for rearranging the source entries to match the target locations
+         ## # The way this works is a bit trippy, but it is fast.
+         ## #y = target (IDs_out)
+         ## #x = sources (IDs_in)
+         ## #result = array of length(y), containing positions of 
 
-      ## #e.g. 
-      ## #x = np.array([3,5,7,1 ,9  ,8,6,6])
-      ## #y = np.array([2,1,5,10,100,6])
-      ## # out = [ - 3 1 - - 6 ] 
-      ## # i.e. "1" in y, is in position index 3 of x.
-      ## x1 = np.array([0,1,2,3,4,5,6,7,8])
-      ## y1 = np.array([4,3,5,0,1,2,6,8,7])
-      ## # where in x is each element of y?
-      ## # should give back y, since e.g. 4 is at index 4 in x  
-      ## # then using ypos as indices on x[sort1], should again return y.
-      ## xsort1 = np.argsort(x1)
-      ## ypos1 = np.searchsorted(x1[xsort1], y1)
-      ## print "verifying..."
-      ## print y1
-      ## print ypos1
-      ## print xsort1[ypos1]
+         ## #e.g. 
+         ## #x = np.array([3,5,7,1 ,9  ,8,6,6])
+         ## #y = np.array([2,1,5,10,100,6])
+         ## # out = [ - 3 1 - - 6 ] 
+         ## # i.e. "1" in y, is in position index 3 of x.
+         ## x1 = np.array([0,1,2,3,4,5,6,7,8])
+         ## y1 = np.array([4,3,5,0,1,2,6,8,7])
+         ## # where in x is each element of y?
+         ## # should give back y, since e.g. 4 is at index 4 in x  
+         ## # then using ypos as indices on x[sort1], should again return y.
+         ## xsort1 = np.argsort(x1)
+         ## ypos1 = np.searchsorted(x1[xsort1], y1)
+         ## print "verifying..."
+         ## print y1
+         ## print ypos1
+         ## print xsort1[ypos1]
 
-      ## # less trivial test:
-      ## x2 = np.array([0,1,7,2,7,8,6,4])
-      ## y2 = np.array([4,0,1,2,6,8,7])
-      ## # indices array should be:
-      ## #            [8,1,2,3,7,5,2]   
-      ## # (but in our case we don't want duplicates in either the target or input arrays!)
-      ## xsort2 = np.argsort(x2)
-      ## ypos2 = np.searchsorted(x2[xsort2], y2)
-      ## indices = xsort2[ypos2]
-      ## print "verifying..."
-      ## print x2
-      ## print xsort2
-      ## print x2[xsort2]
-      ## print "y2"
-      ## print y2
-      ## print ypos2
-      ## print indices 
-      ## print x2[indices]
+         ## # less trivial test:
+         ## x2 = np.array([0,1,7,2,7,8,6,4])
+         ## y2 = np.array([4,0,1,2,6,8,7])
+         ## # indices array should be:
+         ## #            [8,1,2,3,7,5,2]   
+         ## # (but in our case we don't want duplicates in either the target or input arrays!)
+         ## xsort2 = np.argsort(x2)
+         ## ypos2 = np.searchsorted(x2[xsort2], y2)
+         ## indices = xsort2[ypos2]
+         ## print "verifying..."
+         ## print x2
+         ## print xsort2
+         ## print x2[xsort2]
+         ## print "y2"
+         ## print y2
+         ## print ypos2
+         ## print indices 
+         ## print x2[indices]
 
-      print "   Sorting input data to match order in output selection..."
-      xsort = np.argsort(IDs_in)
-      yindex = np.searchsorted(IDs_in[xsort], IDs_out[target_mask_small])
-      fancyindices = xsort[yindex]
+         print "   Sorting input data to match order in output selection..."
+         xsort = np.argsort(IDs_in)
+         yindex = np.searchsorted(IDs_in[xsort], IDs_out[target_mask_small])
+         fancyindices = xsort[yindex]
 
-      if runchecks:
-         print "   Checking that matching of input data to output selection has succeeded..."
-         print yindex[:10]
-         for k,(i,j) in enumerate(zip(IDs_out[target_mask_small][:100],IDs_in[fancyindices[:100]])):
-           if i!=j:
-             print "   Warning! Mismatch found. At position {0}, input ID ({1}) != output ID ({2})".format(k,i,j)
-             #print i,j
-             #print IDs_out[k-1:k+2]
-             #print IDs_in[fancyindices[k-1:k+2]]
-             #print "pids and ranks:"
-             #print pointIDs_in[mask_in][fancyindices[k-1:k+2]]
-             #print mpiranks_in[mask_in][fancyindices[k-1:k+2]]
+         if runchecks:
+            print "   Checking that matching of input data to output selection has succeeded..."
+            print yindex[:10]
+            for k,(i,j) in enumerate(zip(IDs_out[target_mask_small][:100],IDs_in[fancyindices[:100]])):
+              if i!=j:
+                print "   Warning! Mismatch found. At position {0}, input ID ({1}) != output ID ({2})".format(k,i,j)
+                #print i,j
+                #print IDs_out[k-1:k+2]
+                #print IDs_in[fancyindices[k-1:k+2]]
+                #print "pids and ranks:"
+                #print pointIDs_in[mask_in][fancyindices[k-1:k+2]]
+                #print mpiranks_in[mask_in][fancyindices[k-1:k+2]]
 
-      # Copy the data from the source to the target, after first
-      # rearraging the source according to the index array we just created
-      for itemname in fin[RA_group]: 
-         item = fin[RA_group][itemname]
-         if isinstance(item,h5py.Dataset) and not itemname in RA_dsets_exclude:
-            #Do the copy
-            #(TODO: figure out how to chunk this...)
-            indset = item
-            outdset = fout[group][itemname]
-            #Check that types match
-            if indset.dtype!=outdset.dtype:
-               ValueError("Type mismatch detected between dataset {0} in file {1} (dtype={2}), and matching dataset in output file {3} (dtype={3})".format(itemname,fname,indset.dtype,outfname,outdset.dtype)) 
-            #can't do the fancy list-indexing directly on the hdf5 dataset (the boolean assignment should be ok though) 
-            print "   Copying RA data for dataset", itemname
-            outdset[target_mask] = indset[mask_in][fancyindices]  
+         # Copy the data from the source to the target, after first
+         # rearraging the source according to the index array we just created
+         for itemname in fin[RA_group]: 
+            item = fin[RA_group][itemname]
+            if isinstance(item,h5py.Dataset) and not itemname in RA_dsets_exclude:
+               #Do the copy
+               indset = item[imin:imax]
+               #(TODO: figure out how to chunk this...)
+               outdset = fout[group][itemname]
+               #Check that types match
+               if indset.dtype!=outdset.dtype:
+                  ValueError("Type mismatch detected between dataset {0} in file {1} (dtype={2}), and matching dataset in output file {3} (dtype={3})".format(itemname,fname,indset.dtype,outfname,outdset.dtype)) 
+               #can't do the fancy list-indexing directly on the hdf5 dataset (the boolean assignment should be ok though) 
+               print "   Copying RA data for dataset", itemname
+               outdset[target_mask] = indset[mask_in][fancyindices]  
 
 
 # If everything has been successful, delete the temporary files
