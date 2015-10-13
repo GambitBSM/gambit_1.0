@@ -324,7 +324,8 @@ add_external_clean(feynhiggs ${feynhiggs_dir} clean)
 set(higgsbounds_tables_loc "${PROJECT_SOURCE_DIR}/Backends/installed/")
 set(higgsbounds_tables_dir "${higgsbounds_tables_loc}csboutput_trans_binary")
 ExternalProject_Add(higgsbounds_tables
-  URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
+  #URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
+  DOWNLOAD_COMMAND wget https://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
   URL_MD5 004decca30335ddad95654a04dd034a6
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgsbounds_tables_dir}
@@ -337,7 +338,8 @@ ExternalProject_Add(higgsbounds_tables
 set(higgsbounds_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsBounds/4.2.1")
 ExternalProject_Add(higgsbounds
   DEPENDS higgsbounds_tables
-  URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.1.tar.gz
+  #URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.1.tar.gz
+  DOWNLOAD_COMMAND wget http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.1.tar.gz
   URL_MD5 47b93330d4e0fddcc23b381548db355b
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgsbounds_dir}
@@ -359,7 +361,8 @@ add_external_clean(higgsbounds ${higgsbounds_dir} hyperclean)
 set(higgssignals_dir "${PROJECT_SOURCE_DIR}/Backends/installed/HiggsSignals/1.4.0")
 ExternalProject_Add(higgssignals
   DEPENDS higgsbounds
-  URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.4.0.tar.gz
+  #URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.4.0.tar.gz
+  DOWNLOAD_COMMAND wget http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.4.0.tar.gz
   URL_MD5 00b8ac655e357c7cba9ca786f8f2ddee
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${higgssignals_dir}
