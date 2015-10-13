@@ -24,7 +24,7 @@ Priors:
 Printer:
   printer: ascii
   options:
-    output_file: "runs/spartan_multinest/samples/gambit_output.data"
+    output_file: "gambit_output.data"
     buffer_length: 10
 
 #======== Scanner setup ========
@@ -38,7 +38,6 @@ Scanner:
         like:  Likelihood
         nlive: 500
         tol: 0.1
-        root: "runs/spartan_multinest_hdf5/samples/native-"
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
@@ -56,7 +55,6 @@ Rules:
 
 #======== Logging setup ========
 Logger:
-  prefix : "runs/spartan_multinest/logs/"
   redirection:
     [Default]      : "default.log"
     [ExampleBit_A] : "ExampleBit_A.log"
@@ -64,6 +62,8 @@ Logger:
 
 #======== Generic Name/Value Section ========
 KeyValues:
+
+  default_output_path: "runs/spartan_multinest"
 
   rng: ranlux48
 

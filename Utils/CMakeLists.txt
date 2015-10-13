@@ -46,6 +46,7 @@ set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/new_mpi_datatypes.hpp
                  include/gambit/Utils/factory_registry.hpp
                  include/gambit/Utils/model_parameters.hpp
+                 include/gambit/Utils/safebool.hpp
                  include/gambit/Utils/screen_print_utils.hpp
                  include/gambit/Utils/standalone_error_handlers.hpp
                  include/gambit/Utils/static_members.hpp

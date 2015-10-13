@@ -225,7 +225,7 @@ namespace Gambit
     /// SM decays: Higgs
     void SM_Higgs_decays (DecayTable::Entry& result)
     {
-      double mh = (*Pipes::SM_Higgs_decays::Dep::SM_spectrum)->get_Pole_Mass("h0_1");
+      double mh = (*Pipes::SM_Higgs_decays::Dep::SM_spectrum)->get(Par::Pole_Mass,"h0_1");
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
       result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);   
@@ -2347,10 +2347,10 @@ namespace Gambit
       // Get the spectrum information
       const Spectrum* spec = *Dep::SingletDM_spectrum;
       const RunningPars& extrapar = spec->get_HE()->runningpars();
-      double mass = spec->get_Pole_Mass("S");
-      double lambda = extrapar.get_mass_parameter("lambda_hS");
-      double v0 = extrapar.get_mass_parameter("vev");
-      double mhpole = spec->get_Pole_Mass("h0_1");
+      double mass = spec->get(Par::Pole_Mass,"S");
+      double lambda = extrapar.get(Par::mass1,"lambda_hS");
+      double v0 = extrapar.get(Par::mass1,"vev");
+      double mhpole = spec->get(Par::Pole_Mass,"h0_1");
 
       // Add the h->SS width to the total
       double massratio2 = pow(mass/mhpole,2);

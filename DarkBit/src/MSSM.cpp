@@ -93,10 +93,10 @@ namespace Gambit {
       if (runOptions->hasKey("debug_SLHA_filenames"))
       {
         static unsigned int counter = 0;
-        logger() << 
+        logger() <<
           "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
 
-        std::vector<str> filenames = 
+        std::vector<str> filenames =
           runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
         const char * filename = filenames[counter].c_str();
         int len = filenames[counter].length();
@@ -111,7 +111,7 @@ namespace Gambit {
 
       // CMSSM with DS-internal ISASUGRA (should be avoided, only for
       // debugging)
-      else if (ModelInUse("CMSSM") and 
+      else if (ModelInUse("CMSSM") and
           runOptions->getValueOrDef<bool>(false, "use_DS_isasugra")
           )
       {
@@ -291,7 +291,7 @@ namespace Gambit {
 #define getSMmass(Name, spinX2)                                               \
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
-        Name , TH_ParticleProperty(SM->phys().get_Pole_Mass(Name), spinX2)));   
+        Name , TH_ParticleProperty(SM->phys().get(Par::Pole_Mass,Name), spinX2)));   
       getSMmass("e-",     1)
       getSMmass("e+",     1)
       getSMmass("mu-",    1)
@@ -352,13 +352,58 @@ namespace Gambit {
 #define getMSSMmass(Name, spinX2)                                                   \
         catalog.particleProperties.insert(                                          \
         std::pair<std::string, TH_ParticleProperty> (                               \
-        Name , TH_ParticleProperty(abs(spec->phys().get_Pole_Mass(Name)), spinX2)));  
+        Name , TH_ParticleProperty(abs(spec->phys().get(Par::Pole_Mass,Name)), spinX2)));  
       getMSSMmass("H+"     , 0)
       getMSSMmass("H-"     , 0)
       getMSSMmass("h0_1"   , 0)
       getMSSMmass("h0_2"   , 0)
       getMSSMmass("A0"     , 0)      
       getMSSMmass("~chi0_1", 1) 
+      getMSSMmass("~d_1", 0) 
+      getMSSMmass("~dbar_1", 0) 
+      getMSSMmass("~u_1", 0) 
+      getMSSMmass("~ubar_1", 0) 
+      getMSSMmass("~d_2", 0) 
+      getMSSMmass("~dbar_2", 0) 
+      getMSSMmass("~u_2", 0) 
+      getMSSMmass("~ubar_2", 0) 
+      getMSSMmass("~d_3", 0) 
+      getMSSMmass("~dbar_3", 0) 
+      getMSSMmass("~u_3", 0) 
+      getMSSMmass("~ubar_3", 0) 
+      getMSSMmass("~d_4", 0) 
+      getMSSMmass("~dbar_4", 0) 
+      getMSSMmass("~u_4", 0) 
+      getMSSMmass("~ubar_4", 0) 
+      getMSSMmass("~d_5", 0) 
+      getMSSMmass("~dbar_5", 0) 
+      getMSSMmass("~u_5", 0) 
+      getMSSMmass("~ubar_5", 0) 
+      getMSSMmass("~d_6", 0) 
+      getMSSMmass("~dbar_6", 0) 
+      getMSSMmass("~u_6", 0) 
+      getMSSMmass("~ubar_6", 0) 
+//      getMSSMmass("~e_1", 0) 
+//      getMSSMmass("~ebar_1", 0) 
+//      getMSSMmass("~e-_1", 0) 
+      getMSSMmass("~e+_1", 0) 
+      getMSSMmass("~e-_1", 0) 
+      getMSSMmass("~e+_2", 0) 
+      getMSSMmass("~e-_2", 0) 
+      getMSSMmass("~e+_3", 0) 
+      getMSSMmass("~e-_3", 0) 
+      getMSSMmass("~e+_4", 0) 
+      getMSSMmass("~e-_4", 0) 
+      getMSSMmass("~e+_5", 0) 
+      getMSSMmass("~e-_5", 0) 
+      getMSSMmass("~e+_6", 0) 
+      getMSSMmass("~e-_6", 0) 
+      getMSSMmass("~nu_1", 0) 
+      getMSSMmass("~nubar_1", 0) 
+      getMSSMmass("~nu_2", 0) 
+      getMSSMmass("~nubar_2", 0) 
+      getMSSMmass("~nu_3", 0) 
+      getMSSMmass("~nubar_3", 0) 
       
 #undef getMSSMmass
 
@@ -377,7 +422,7 @@ namespace Gambit {
       int index; 
       double m_1, m_2, sv;
 
-      // Macro for setting up 2-body decays from results in DS
+      // Macro for setting up 2-body annihilations (chi chi -> X X) from results in DS
 #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                      \
       /* Check if process is kinematically allowed */                          \
       m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
@@ -513,25 +558,27 @@ namespace Gambit {
       // Import based on decay table from DecayBit
       const DecayTable* tbl = &(*Dep::decay_rates);
 
-      // Set of imported decays
+      // Set of imported decays - avoids double imports
       std::set<string> importedDecays;
 
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 
+      auto excludeDecays = Funk::vec<std::string>("Z0", "W+", "W-");
+
       //std::cout << "Importing decays..." << std::endl;
       // Import relevant decays
       using DarkBit_utils::ImportDecays;
       if(annFinalStates.count("H+") == 1) 
-        ImportDecays("H+", catalog, importedDecays, tbl, minBranching);
+        ImportDecays("H+", catalog, importedDecays, tbl, minBranching, excludeDecays);
       if(annFinalStates.count("H-") == 1) 
-        ImportDecays("H-", catalog, importedDecays, tbl, minBranching);
+        ImportDecays("H-", catalog, importedDecays, tbl, minBranching, excludeDecays);
       if(annFinalStates.count("h0_1") == 1) 
-        ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching);
+        ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching, excludeDecays);
       if(annFinalStates.count("h0_2") == 1) 
-        ImportDecays("h0_2", catalog, importedDecays, tbl, minBranching);
+        ImportDecays("h0_2", catalog, importedDecays, tbl, minBranching, excludeDecays);
       if(annFinalStates.count("A0") == 1) 
-        ImportDecays("A0", catalog, importedDecays, tbl, minBranching);
+        ImportDecays("A0", catalog, importedDecays, tbl, minBranching, excludeDecays);
 
       // Add process to provess list
       catalog.processList.push_back(process);                
