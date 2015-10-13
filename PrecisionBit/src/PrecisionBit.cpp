@@ -479,7 +479,7 @@ namespace Gambit
     /// \brief Likelihoods for charm quark mass and light quark mass ratios. At the moment, all are just gaussians.
     /// Default data from PDG http://PDG.LBL.GOV 10/6/2015
     /// m_u/m_d = 0.38-0.58
-    /// m_s / (m_u + m_d) = 27.5 +/- 1.0
+    /// m_s / ((m_u + m_d)/2) = 27.5 +/- 1.0
     /// m_s = 95 +/- 5 GeV
 
     void lnL_light_quark_masses_chi2 (double &result)
@@ -495,7 +495,7 @@ namespace Gambit
         double ms_error = runOptions->getValueOrDef<double>(5.E-03, "ms_error");
 
         result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_central, 0., mud_error)
-            + Stats::gaussian_loglikelihood(SM.mS/(SM.mU + SM.mD), msud_central, 0., msud_error)
+            + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_central, 0., msud_error)
             + Stats::gaussian_loglikelihood(SM.mS, ms_central, 0., ms_error);
         logger() << "Combined lnL for light quark mass ratios and s-quark mass is " << result << EOM;
     }

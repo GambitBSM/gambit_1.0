@@ -62,9 +62,11 @@ Parameters:
       sigmas:
         #fixed_value: 42.0 # From MicrOmegas?
         range: [27.0, 59.0] # 2 sigma range from Cline et. al.
+        prior_type: flat
       sigmal:
         #fixed_value: 34.0 # From MicrOmegas?
         range: [40.0, 76.0] # 2 sigma range from Cline et. al.
+        prior_type: flat
       # proton spin content
       deltad:
         fixed_value: -0.427
@@ -279,7 +281,7 @@ Rules:
       # m_u/m_d
       mud_central: 0.48
       mud_error: 0.10
-      # m_s / (m_u + m_d)
+      # m_s / ((m_u + m_d)/2)
       msud_central: 27.5
       msud_error: 1.0
       # m_s
