@@ -75,15 +75,15 @@ namespace Gambit
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       std::vector<str> neutral_channels[29];
-      neutral_channels[0]  = initVector<str>("h0_1", "h0_1");
+      neutral_channels[0]  = initVector<str>("h0_2", "h0_2");
       neutral_channels[1]  = initVector<str>("h0_1", "h0_2");
-      neutral_channels[2]  = initVector<str>("h0_2", "h0_2");
+      neutral_channels[2]  = initVector<str>("h0_1", "h0_1");
       neutral_channels[3]  = initVector<str>("A0", "A0");
-      neutral_channels[4]  = initVector<str>("h0_1", "A0");
-      neutral_channels[5]  = initVector<str>("h0_2", "A0");
+      neutral_channels[4]  = initVector<str>("h0_2", "A0");
+      neutral_channels[5]  = initVector<str>("h0_1", "A0");
       neutral_channels[6]  = initVector<str>("H+", "H-");
-      neutral_channels[7]  = initVector<str>("Z0", "h0_1");
-      neutral_channels[8]  = initVector<str>("Z0", "h0_2");
+      neutral_channels[7]  = initVector<str>("Z0", "h0_2");
+      neutral_channels[8]  = initVector<str>("Z0", "h0_1");
       neutral_channels[9]  = initVector<str>("Z0", "A0");
       // actually W+H- and W-H+
       neutral_channels[10] = initVector<str>("W+", "H-");
@@ -135,8 +135,8 @@ namespace Gambit
 
       // Set Higgs masses
       std::map<str, TH_ParticleProperty>::const_iterator its[4];
-      its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
-      its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
+      its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
+      its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
       its[2] = Dep::TH_ProcessCatalog->particleProperties.find("A0");
       its[3] = Dep::TH_ProcessCatalog->particleProperties.find("H+");
       Higgs_masses_neutral[0] = (its[0] != Dep::TH_ProcessCatalog->
@@ -151,8 +151,8 @@ namespace Gambit
       // Find out which Higgs exist and have decay data in the process
       // catalogue.
       const TH_Process* h0_decays[3];
-      h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_1");
-      h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_2");
+      h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_2");
+      h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_1");
       h0_decays[2] = Dep::TH_ProcessCatalog->find("A0");
       const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
       const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
@@ -239,8 +239,8 @@ namespace Gambit
         charged_channels[9]  = initVector<str>("e", "nu_e");
         charged_channels[10] = initVector<str>("mu", "nu_mu");
         charged_channels[11] = initVector<str>("tau", "nu_tau");
-        charged_channels[12] = initVector<str>("W+", "h0_1");
-        charged_channels[13] = initVector<str>("W+", "h0_2");
+        charged_channels[12] = initVector<str>("W+", "h0_2");
+        charged_channels[13] = initVector<str>("W+", "h0_1");
         charged_channels[14] = initVector<str>("W+", "A0");
 
         // Get the total decay width, for normalising partial widths to BFs.

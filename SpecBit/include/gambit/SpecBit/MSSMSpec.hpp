@@ -208,8 +208,6 @@ namespace Gambit
           SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys(), Par::Pole_Mixing, N.second, i, j, N.first, i, j, comment.str());
         }
 
-        cout << slha;
-
       }
       
       //inspired by softsusy's lsp method.  
