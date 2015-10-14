@@ -65,7 +65,9 @@ ExternalProject_Add(darksusy
         COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif 
         COMMAND patch -b -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif 
         COMMAND patch -b -p2 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif 
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
+        # FIXME FeynHiggs segfaults with -O2 setting
+ #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
