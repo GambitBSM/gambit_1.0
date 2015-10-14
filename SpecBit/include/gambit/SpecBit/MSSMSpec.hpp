@@ -83,10 +83,6 @@ namespace Gambit
       void MSSMSpec<MI>::add_to_SLHAea(SLHAstruct& slha) const
       {
 
-        // PS: FIXME remaining issues
-        //  MINPAR
-        //     3     can't currently get tanbeta DRbar at mZ (input) scale
-        
         // Here we assume that all SM input info comes from the SMINPUT object, 
         // and all low-E stuff (quark pole masses and the like) come from the LE subspectrum.
 
@@ -109,8 +105,6 @@ namespace Gambit
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass2,"BMu","HMIX",101,"# Bmu DRbar");
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
-        // FIXME this is wrong, should be at scale mZ, not be at scale Q like this
-        //SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"tanbeta","MINPAR",3,"# tanbeta(mZ)^DRbar");
         if (this->runningpars().has(Par::dimensionless,"TanBeta_input"))
         {
           SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"TanBeta_input","MINPAR",3,"# tanbeta(mZ)^DRbar");
@@ -196,7 +190,7 @@ namespace Gambit
         }
 
         SLHAea_add_block(slha, "ALPHA", this->runningpars().GetScale());
-        slha["ALPHA"][""] << 1 << asin(this->phys().get(Par::Pole_Mixing, "h0", 2, 2)) << "# sin^-1(SCALARMIX(2,2))";
+        slha["ALPHA"][""] << asin(this->phys().get(Par::Pole_Mixing, "h0", 2, 2)) << "# sin^-1(SCALARMIX(2,2))";
   
         sspair V("SNUMIX","~nu");
         SLHAea_add_block(slha, V.first,this->runningpars().GetScale());
@@ -213,6 +207,8 @@ namespace Gambit
           comment.str(""); comment << "# " << N.second << " mixing matrix (" << i << "," << j << ")";
           SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys(), Par::Pole_Mixing, N.second, i, j, N.first, i, j, comment.str());
         }
+
+        cout << slha;
 
       }
       
