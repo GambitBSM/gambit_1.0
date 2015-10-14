@@ -55,6 +55,12 @@ namespace Gambit
       BEreq::FHConstraints(error, gm2, Deltarho, 
          MWMSSM, MWSM, SW2MSSM, SW2SM,
          edmeTh, edmn, edmHg, ccb);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHConstraints raised error flag: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
 
       fh_PrecisionObs PrecisionObs;
       PrecisionObs.gmu2 = gm2;       
