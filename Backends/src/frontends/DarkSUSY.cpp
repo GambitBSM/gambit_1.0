@@ -226,10 +226,10 @@ BE_NAMESPACE
      kpart=15;
     }else if (particleID=="g"){
      kpart=16;
-    }else if (particleID=="h0_2"){ //FIXME: check w/ Joakim whether this is always true!
-     kpart=17;
-    }else if (particleID=="h0_1"){ //FIXME: check w/ Joakim whether this is always true!
+    }else if (particleID=="h0_1"){ // FIXME: when is this not true?
      kpart=18;
+    }else if (particleID=="h0_2"){ // FIXME: when is this not true?
+     kpart=17;
     }else if (particleID=="A0"){
      kpart=19;
     }else if (particleID=="H+" or particleID=="H-"){
@@ -404,7 +404,7 @@ BE_NAMESPACE
     dssuconst();
       
     // CKM. We here read Wolfenstein. In principle, we might want to change
-    // to VCKM is that block is present
+    // to VCKM if that block is present
     // sckm->ckms12 = to<double>(mySLHA.at("CKM").at(1).at(1));
     // sckm->ckms23 = to<double>(mySLHA.at("CKM").at(2).at(1))*sckm.ckms12**2;
     // sckm->ckmdelta = 0;
@@ -414,17 +414,17 @@ BE_NAMESPACE
     double A = to<double>(mySLHA.at("VCKMIN").at(2).at(1));        // Wolfenstein A 
     double rhobar = to<double>(mySLHA.at("VCKMIN").at(3).at(1));   // Wolfenstein rhobar 
     double etabar = to<double>(mySLHA.at("VCKMIN").at(4).at(1));   // Wolfenstein etabar
-    // Use Wolfenstein converter to get the VCKM matrix
-    mixing->ckm(1,1) = Spectrum::Wolf2V_ud(lambda,A,rhobar,etabar);
-    mixing->ckm(1,2) = Spectrum::Wolf2V_us(lambda,A,rhobar,etabar);
-    mixing->ckm(1,3) = Spectrum::Wolf2V_ub(lambda,A,rhobar,etabar);
-    mixing->ckm(2,1) = Spectrum::Wolf2V_cd(lambda,A,rhobar,etabar);
-    mixing->ckm(2,2) = Spectrum::Wolf2V_cs(lambda,A,rhobar,etabar);
-    mixing->ckm(2,3) = Spectrum::Wolf2V_cb(lambda,A,rhobar,etabar);
-    mixing->ckm(3,1) = Spectrum::Wolf2V_td(lambda,A,rhobar,etabar);
-    mixing->ckm(3,2) = Spectrum::Wolf2V_ts(lambda,A,rhobar,etabar);
-    mixing->ckm(3,3) = Spectrum::Wolf2V_tb(lambda,A,rhobar,etabar);
+    // Use Wolfenstein converter to get the VCKM matrix.  FIXME take the absolute value for now, to work with mssmswitch->higwid = 1;
 
+    mixing->ckm(1,1) = abs(Spectrum::Wolf2V_ud(lambda,A,rhobar,etabar));
+    mixing->ckm(1,2) = abs(Spectrum::Wolf2V_us(lambda,A,rhobar,etabar));
+    mixing->ckm(1,3) = abs(Spectrum::Wolf2V_ub(lambda,A,rhobar,etabar));
+    mixing->ckm(2,1) = abs(Spectrum::Wolf2V_cd(lambda,A,rhobar,etabar));
+    mixing->ckm(2,2) = abs(Spectrum::Wolf2V_cs(lambda,A,rhobar,etabar));
+    mixing->ckm(2,3) = abs(Spectrum::Wolf2V_cb(lambda,A,rhobar,etabar));
+    mixing->ckm(3,1) = abs(Spectrum::Wolf2V_td(lambda,A,rhobar,etabar));
+    mixing->ckm(3,2) = abs(Spectrum::Wolf2V_ts(lambda,A,rhobar,etabar));
+    mixing->ckm(3,3) = abs(Spectrum::Wolf2V_tb(lambda,A,rhobar,etabar));
 
     // If VCKM block is available, this would be the best way of doing this instead
     /* for (int i=1; i<=3; i++)
@@ -457,7 +457,7 @@ BE_NAMESPACE
     // We don't read Z0 mass here, have taken it from SMINPUTS earlier
     //mspctm->mass(DSparticle_code("Z0"))     =  to<double>(mySLHA.at("MASS").at(23).at(1));
 
-    // OK, we now have to enforce the tree-level condidtion for unitarity
+    // OK, we now have to enforce the tree-level condition for unitarity
     // We then have a choice of calculating both sin^2 theta_W and MW
     // from alpha,MZ and GF as we normally do in DarkSUSY. The line below
     // would enforce that.
@@ -469,11 +469,11 @@ BE_NAMESPACE
     smruseful->s2thw=1.0-square(mspctm->mass(DSparticle_code("W+")))/square(mspctm->mass(DSparticle_code("Z0")));
 
     // Higgs bosons. Note h1_0 is the lightest, and h2_0 the heavier CP even
-    mspctm->mass(DSparticle_code("h0_2"))   =  to<double>(mySLHA.at("MASS").at(35).at(1));
-    mspctm->mass(DSparticle_code("h0_1"))   =  to<double>(mySLHA.at("MASS").at(25).at(1));
+    mspctm->mass(DSparticle_code("h0_1")) =  to<double>(mySLHA.at("MASS").at(25).at(1));
+    mspctm->mass(DSparticle_code("h0_2")) =  to<double>(mySLHA.at("MASS").at(35).at(1));
     mspctm->mass(DSparticle_code("A0"))   =  to<double>(mySLHA.at("MASS").at(36).at(1));
     mspctm->mass(DSparticle_code("H+"))   =  to<double>(mySLHA.at("MASS").at(37).at(1));
-    
+
     // SUSY particles
     // JE CHECK: Do I get the six sfermion masses in the correct order?
     mspctm->mass(DSpart->ksnu(1)) =  to<double>(mySLHA.at("MASS").at(1000012).at(1));
@@ -617,7 +617,7 @@ BE_NAMESPACE
       mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
     } 
 
-    mssmswitch->higwid = 1;  // FIXME: Update to latest Higgs width treatment in DS file
+    mssmswitch->higwid = 1;
     mssmtype->modeltype = 0;
     mssmiuseful->lsp = DSpart->kn(1);
     mssmiuseful->kln = DSpart->kn(1);
@@ -627,7 +627,7 @@ BE_NAMESPACE
     int u = 6;
     dswspectrum(u);
     dswwidth(u);
-    return 0;  // everything OK
+    return 0;  // everything OK (hah. maybe.)
   }
 
   void registerMassesForIB(
