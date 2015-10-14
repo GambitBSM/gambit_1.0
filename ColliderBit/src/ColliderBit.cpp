@@ -131,12 +131,12 @@ namespace Gambit
             // post init / xsec veto synchronization
             #pragma omp barrier
             // main event loop
-      while(not *Loop::done and counter < nEvents) {
+            while(not *Loop::done and counter < nEvents) {
               allProcessesVetoed = false;
               // race conditions may push counter past nEvents. But that is OK.
               #pragma omp atomic
               counter++;
-        Loop::executeIteration(counter);
+              Loop::executeIteration(counter);
             }
             Loop::executeIteration(END_SUBPROCESS);
           }

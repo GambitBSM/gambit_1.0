@@ -388,22 +388,6 @@ namespace Gambit {
 
       void finalize() {
 
-        using namespace std;
-
-        double scale_to = 507.3;
-        double trigger_cleaning_eff = 0.90;
-
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        //cout << "NOT CHECKED - cut-flow not yet available via HEPData? "<<std::endl;
-        //cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-
-        //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
-        //for(int j=0; j<NCUTS; j++) {
-	//std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
-        //}
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-
-        //cout << "RESULTS 2B " << _numSRA << " "  << _numSRB << " " << _numSRA15 << " " <<  _numSRA20 << " " <<  _numSRA25 << " " << _numSRA30 << " " <<  _numSRA35 << endl;
       }
 
 
