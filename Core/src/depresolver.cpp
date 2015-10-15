@@ -611,8 +611,8 @@ namespace Gambit
         //      threads other than the main one need to be accessed with 
         //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        //if (masterGraph[*it]->type() != "void") 
-        masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
+        if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter,pointID);
+        //masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
       }
     }
 
@@ -804,6 +804,9 @@ namespace Gambit
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
         // (so that later on they can pass this to the printer object to identify themselves)  
         masterGraph[*vi]->setVertexID(index[*vi]);  
+        // Same for timing output ID, but get ID number from printer system
+        std::string timing_label = masterGraph[*vi]->timingLabel();
+        masterGraph[*vi]->setTimingVertexID(Printers::get_main_param_id(timing_label));  
 
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
         // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is

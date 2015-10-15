@@ -112,7 +112,8 @@ namespace Gambit
       void setPurpose(str);
       /// Setter for vertex ID (used in printer system)     
       void setVertexID(int);
- 
+      /// Set ID for timing 'vertex' (used in printer system)
+      void setTimingVertexID(int);
       /// Getter for the wrapped function's name
       str name() const;
       /// Getter for the wrapped function's reported capability
@@ -133,8 +134,12 @@ namespace Gambit
       str purpose() const;
       /// Getter for vertex ID
       int vertexID() const;
+      /// Getter for timing vertex ID
+      int timingVertexID() const;
       /// Getter for string label
       str label() const;
+      /// Getter for the printer timing label
+      str timingLabel() const;
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() const;
 
@@ -267,10 +272,14 @@ namespace Gambit
 
       /// String label, used to label functor results for printer system
       const str myLabel;
+      /// String label, used to label functor timing data for printer system
+      const str myTimingLabel;
       /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
+      /// ID assigned by printers to the timing data output stream
+      int myTimingVertexID;
       /// Debug flag
       bool verbose;
 

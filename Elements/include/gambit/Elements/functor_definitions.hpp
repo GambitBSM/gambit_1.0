@@ -40,6 +40,7 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Printers/printer_id_tools.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
@@ -62,8 +63,10 @@ namespace Gambit
      myOrigin        (origin_name),
      myClaw          (&claw),
      myLabel         ("#"+func_capability+" @"+origin_name+"::"+func_name),
+     myTimingLabel   ("Runtime(ns) for "+myLabel),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
+     myTimingVertexID(-1),       // Not actually a graph vertex; ID assigned by "get_main_param_id" function.
      verbose         (false)     // For debugging.
     {}
 
@@ -88,7 +91,10 @@ namespace Gambit
     void functor::setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
 
     /// Setter for vertex ID (used in printer system)
-    void functor::setVertexID(int vertexID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = vertexID; }
+    void functor::setVertexID(int ID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = ID; }
+
+    /// Acquire ID for timing 'vertex' (used in printer system)
+    void functor::setTimingVertexID(int ID) { if (this == NULL) failBigTime("setTimingVertexID"); myTimingVertexID = ID; }
 
     /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
     void functor::setStatus(int stat)
@@ -118,6 +124,8 @@ namespace Gambit
     str functor::purpose()     const { if (this == NULL) failBigTime("purpose"); return myPurpose; }
     /// Getter for vertex ID
     int functor::vertexID()    const { if (this == NULL) failBigTime("vertexID"); return myVertexID; }
+    /// Getter for timing vertex ID
+    int functor::timingVertexID() const { if (this == NULL) failBigTime("timingVertexID"); return myTimingVertexID; }
     /// Getter indicating if the wrapped function's result should to be printed
     bool functor::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return false; }
     /// Getter indicating if the timing data for this function's execution should be printed
@@ -125,6 +133,8 @@ namespace Gambit
     bool functor::requiresTimingPrinting() const { if (this == NULL) failBigTime("requiresTimingPrinting"); return false; }
     /// Getter for the printer label
     str functor::label()       const { if (this == NULL) failBigTime("label"); return myLabel; }
+    /// Getter for the printer timing label
+    str functor::timingLabel() const { if (this == NULL) failBigTime("timingLabel"); return myTimingLabel; }
 
     /// Setter for indicating if the wrapped function's result should to be printed
     void functor::setPrintRequirement(bool flag)
@@ -1585,11 +1595,9 @@ namespace Gambit
       if(myTimingPrintFlag and not already_printed_timing[thread_num])
       {
         if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
-        int rank = printer->getRank();      // This is "first pass" printing, so use the actual rank of this process.
-                                            // In the auxilliary printing system we may tell the printer to overwrite
-                                            // the output of other ranks.
+        int rank = printer->getRank();
         std::chrono::duration<double> runtime = end[thread_num] - start[thread_num]; 
-        printer->print(runtime.count(),"Runtime(ns) for "+myLabel,myVertexID,rank,pointID);
+        printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
         already_printed_timing[thread_num] = true;
       }
 

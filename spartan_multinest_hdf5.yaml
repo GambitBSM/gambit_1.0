@@ -79,6 +79,8 @@ KeyValues:
 
   default_output_path: "runs/spartan_multinest_hdf5/"
 
+  print_timing_data: true
+
   rng: ranlux48
 
   likelihood:
