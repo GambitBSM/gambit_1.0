@@ -26,6 +26,12 @@
 
 //#define PRECISIONBIT_DEBUG
 
+/// M_W (Breit-Wigner mass parameter ~ pole) = 80.385 +/- 0.015  GeV (1 sigma), Gaussian.
+/// Reference http://pdg.lbl.gov/2014/listings/rpp2014-list-w-boson.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
+const double mw_central_observed = 80.385;
+const double mw_err_observed = 0.015;
+const double mw_relerr_theory = 0.05; //FIXME need to add more serious theory uncertainty --> check FH papers
+
 namespace Gambit
 {
 
@@ -46,10 +52,10 @@ namespace Gambit
       fh_real MWSM;       // W pole mass in SM
       fh_real SW2MSSM;    // sin^2theta_W^leptonic_effective in MSSM
       fh_real SW2SM;      // sin^2theta_W^leptonic_effective in SM
-      fh_real edmeTh;     // electron EDM
-      fh_real edmn;       // neutron EDM
-      fh_real edmHg;      // mercury EDM
-      int ccb;            // ?
+      fh_real edmeTh;     // electron EDM (experimental)
+      fh_real edmn;       // neutron EDM (experimental)
+      fh_real edmHg;      // mercury EDM (experimental)
+      int ccb;            // model corresponds to charge or colour-breaking minimum (experimental)
 
       int error = 1;
       BEreq::FHConstraints(error, gm2, Deltarho, 
@@ -60,6 +66,16 @@ namespace Gambit
         std::ostringstream err;
         err << "BEreq::FHConstraints raised error flag: " << error << "."; 
         invalid_point().raise(err.str());
+      }
+
+      // Just scrub this point now if it's more than 10 sigma off in mW, 
+      // as extreme values of mW can cause instability in other routines.
+      const double obserrsq = mw_err_observed*mw_err_observed;
+      double theoryerrsq = MWMSSM*MWMSSM*mw_relerr_theory*mw_relerr_theory;
+      if (abs(mw_central_observed - MWMSSM) > 7.0*sqrt(obserrsq + theoryerrsq))
+      {
+        cout << 7.0*sqrt(obserrsq + theoryerrsq) << " " << abs(mw_central_observed - MWMSSM);
+        invalid_point().raise("W mass too extreme: more than 7 sigma off observed value. Invalidating immediately to prevent downstream instability.");
       }
 
       fh_PrecisionObs PrecisionObs;
@@ -92,7 +108,7 @@ namespace Gambit
     void FH_precision_mw(triplet<double> &result)
     {
       result.central = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;  
-      result.upper = 0.5; //FIXME need to add theory uncertainty --> check FH papers
+      result.upper = mw_relerr_theory * result.central;
       result.lower = result.upper;      
     }
     void FH_precision_sinW2   (triplet<double> &result)
@@ -534,13 +550,11 @@ namespace Gambit
     }
 
     /// W boson mass likelihood
-    /// M_W (Breit-Wigner mass parameter ~ pole) = 80.385 +/- 0.015  GeV (1 sigma), Gaussian.
-    /// Reference http://pdg.lbl.gov/2014/listings/rpp2014-list-w-boson.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
     void lnL_W_mass_chi2(double &result)
     {
       using namespace Pipes::lnL_W_mass_chi2;
       double theory_uncert = std::max(Dep::mw->upper, Dep::mw->lower);
-      result = Stats::gaussian_loglikelihood(Dep::mw->central, 80.385, theory_uncert, 0.015);
+      result = Stats::gaussian_loglikelihood(Dep::mw->central, mw_central_observed, theory_uncert, mw_err_observed);
     }
 
     /// Effective leptonic sin^2(theta_W) likelihood

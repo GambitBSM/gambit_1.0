@@ -65,11 +65,11 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 10
-        tol: 0.1
+        nlive: 4000
+        tol: 0.5
         mmodal: 1
         # write native MultiNest ascii output files?
-        outfile: 0
+        outfile: 1
         # resuming doesn't work yet
         resume: 0
         # No options to set, but still need the nodes at the moment...
@@ -140,7 +140,6 @@ ObsLikes:
 
     - purpose:    Observable
       capability: SLHA1_violation
-
 
     - purpose:    Likelihood
       capability: ALEPH_Selectron_LLike
