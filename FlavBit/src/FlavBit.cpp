@@ -1225,6 +1225,8 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2sll_measurements function"<<endl;
 
+
+
       Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
       red->debug_mode(*Dep::Debug_Cap);
       if(*Dep::Debug_Cap)  cout<<"init Flav Reader the B2sll "<<endl;
@@ -1373,7 +1375,9 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2sll_likelihood"<<endl;
 
+      cout<<"Likelihood before b2sll_likelihood  : "<< result<<endl;  
 
+      
       Flav_measurement_assym measurement_assym;//=*(Dep::b2sll_M);
       b2sll_measurements(measurement_assym);
       // got everything ;)
@@ -1426,7 +1430,9 @@ namespace Gambit
       result+=0.5*Chi2;
 
       if(*Dep::Debug_Cap)  cout<<"Finished b2sll_likelihood"<<endl;
+      cout<<"Likelihood result b2sll_likelihood : "<< result<<endl;
 
+      
     }
 
     // *************************************************
@@ -1530,7 +1536,8 @@ namespace Gambit
       using namespace Pipes::b2ll_likelihood;
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2ll_likelihood"<<endl;
-
+    
+      cout<<"Likelihood before b2ll_likelihood: "<< result<<endl;
 
 
       Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
@@ -1582,6 +1589,10 @@ namespace Gambit
       result+=0.5*Chi2;
 
       if(*Dep::Debug_Cap)  cout<<"Finished b2ll_likelihood"<<endl;
+      cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
+
+
+
     }
 
     // *************************************************
@@ -1721,8 +1732,9 @@ namespace Gambit
       using namespace Pipes::SL_likelihood;
 
       if(*Dep::Debug_Cap)  cout<<"Starting SL_likelihood"<<endl;
+      cout<<"Likelihood before SL_likelihood  : "<< result<<endl;  
 
-
+      
       Flav_measurement_assym measurement_assym = *Dep::SL_M;
       //SL_measurements(measurement_assym);
       // calculating the chi2:
@@ -1767,11 +1779,15 @@ namespace Gambit
 
           }
       }
+      
       Chi2=Chi2/measurement_assym.dim;
       result+=0.5*Chi2;
 
       if(*Dep::Debug_Cap)  cout<<"Finished SL_likelihood"<<endl;
 
+      cout<<"Likelihood result SL_likelihood  : "<< result<<endl; 
+
+      
     }
 
 
