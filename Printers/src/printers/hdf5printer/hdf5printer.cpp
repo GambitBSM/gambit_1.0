@@ -1163,6 +1163,14 @@ namespace Gambit
       print(mpirank, "RA_MPIrank", -2001, mpirank, pointID);
     }
 
+    /// Completely reset the PPIDlists
+    void HDF5Printer::reset_PPID_lists()
+    {
+       primary_printer->global_index_lookup.clear();
+       primary_printer->reverse_global_index_lookup.clear();    
+       primary_printer->RA_dset_offset = 0;
+    }
+
     /// Check if PPIDpair exists in global index list
     bool HDF5Printer::seen_PPID_before(const PPIDpair& ppid)
     {
@@ -1366,6 +1374,12 @@ namespace Gambit
              it->second->reset(force);
            }
          }
+         // Also need to reset the PPID lists
+         // TODO: The HDF5Printer currently assumes that ALL the auxilliary printers are
+         // reset together. This is not really what we want, but to deal with it I would
+         // need to make e.g. a separate "RA" group in the hdf5 output for every aux
+         // stream, and then get the combine script to combine them all.
+         reset_PPID_lists();
       }
     }
 

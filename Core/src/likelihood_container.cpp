@@ -26,7 +26,7 @@
 
 #include "gambit/Core/likelihood_container.hpp"
 
-#define CORE_DEBUG
+//#define CORE_DEBUG
 
 namespace Gambit
 {
