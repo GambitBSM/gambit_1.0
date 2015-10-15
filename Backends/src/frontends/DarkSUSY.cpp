@@ -396,9 +396,7 @@ BE_NAMESPACE
     mssmpar->tanbe = to<double>(mySLHA.at("HMIX").at(2).at(1));
 
     // Block ALPHA 
-    // FIXME: CW: Please double-check that this gives the right result
     mssmmixing->alpha = to<double>(mySLHA.at("ALPHA").back().at(0));  // Higgs mixing angle
-    // mssmmixing->alpha = to<double>(alpha.back().at(0));  // SUSY-HIT way of doing it. Mixing angle in the neutral Higgs boson sector.
 
     // Now set up some defaults (part of it will be overwritten later)
     dssuconst();
