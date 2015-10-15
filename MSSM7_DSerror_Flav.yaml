@@ -3,18 +3,6 @@ Parameters:
   #SM nuisance parameters fixed for now.
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  #Nuclear matrix parameters fixed for now.
-  nuclear_params_sigmas_sigmal:
-    sigmas:
-      fixed_value:  43.0 
-    sigmal:
-      fixed_value:  58.0
-    deltau:
-      fixed_value:  0.842
-    deltad:
-      fixed_value: -0.427
-    deltas:
-      fixed_value: -0.085
 
   MSSM7atQ:
     Qin: 
@@ -81,6 +69,8 @@ ObsLikes:
     - purpose:    Likelihood
       capability: b2sll_LL
 
+
+    # Missing:
     # CMB likelihood
 
 
@@ -233,7 +223,7 @@ Logger:
 
   redirection:
     [Debug] : "debug.log"
-    [Default] : stdout #"default.log"
+    [Default] : "default.log"
     [DecayBit] : "DecayBit.log"
     [DarkBit] : "DarkBit.log"
     [PrecisionBit] : "PrecisionBit.log"
