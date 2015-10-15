@@ -1,10 +1,3 @@
-// *****JE NOTE*****: Things that NEED to be fixed:
-// * I have added a dummy function DSparticle_code. This
-//   is just to make the code comple. The real routine DSparticle_code needs
-//   to be moved from git/modules/DarkBit/src/DarkBit_utils.cpp to here
-// * Typecast for double complex below is just to make it compile, need
-//   todo this properly.
-//
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
 ///  \file
@@ -52,6 +45,16 @@
 #include "gambit/Backends/frontends/DarkSUSY.hpp"
 
 #define square(x) ((x) * (x))  // square a number
+
+// Some ad-hoc DarkSUSY global state.
+BE_NAMESPACE
+{
+  const double min_chi01_width = 1.e-10;
+  const std::vector<str> IBfinalstate = initVector<str>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+"); 
+  std::vector<double> DSparticle_mass;
+  std::vector<double> GAMBITparticle_mass;     
+}
+END_BE_NAMESPACE
 
 // Initialisation function (definition)
 BE_INI_FUNCTION
@@ -113,8 +116,7 @@ END_BE_INI_FUNCTION
 BE_NAMESPACE
 {
 
-  // Copied and adapted from SUSY-HIT.cpp.
-  /// Some SUSY-HIT-specific shortcuts for dealing with SLHA blocks
+  /// Some DarkSUSY-specific shortcuts for dealing with SLHA blocks
   void required_block(const std::string& name, const SLHAea::Coll& slha)
   {
     if (slha.find(name) != slha.end()) return;
@@ -173,7 +175,6 @@ BE_NAMESPACE
 
   }
  
-
   /// Function nuyield returns neutrino yields at the top of the
   /// the atmosphere, in m^-2 GeV^-1 annihilation^-1.  Provided
   /// here for interfacing with nulike.
@@ -290,18 +291,19 @@ BE_NAMESPACE
      kpart=47;
     }else if (particleID=="~g"){
      kpart=48;
-    } else {  
-     std::cout << "ERROR: translation into DS particle code not implemented "
-               << "for string identifier " << particleID << std::endl;
+    } else{  
+     std::ostringstream err;
+     err << "ERROR: translation into DS particle code not implemented "
+         << "for string identifier " << particleID;
+     backend_error().raise(LOCAL_INFO, err.str());
      kpart=-100;
     }
     return kpart;
   }
 
-  /// Initialise an MSSM model in DarkSUSY from an SLHAea object.
-  int initFromSLHA(SLHAstruct mySLHA)
+  /// Initialise an MSSM model in DarkSUSY from an SLHAea object and a DecayTable
+  int init_diskless(const SLHAstruct &mySLHA, const DecayTable &myDecays)
   {
-    // JE's Initialization routine JEHERE
     using SLHAea::to;
     const std::complex<double> imagi(0.0, 1.0);
     // // retrive SMInputs dependency 
@@ -310,9 +312,6 @@ BE_NAMESPACE
     // DS_PACODES *DSpart = pacodes;
     DS_PACODES *DSpart = &(*pacodes);
     // Define required blocks and raise an error if a block is missing
-
-    // FIXME: CW: I removed the second argument from the previuos
-    // required_block version, since it was not required.
     required_block("SMINPUTS", mySLHA);
     required_block("VCKMIN",   mySLHA);
     required_block("MSOFT",    mySLHA);
@@ -400,70 +399,40 @@ BE_NAMESPACE
 
     // Now set up some defaults (part of it will be overwritten later)
     dssuconst();
-      
-    // CKM. We here read Wolfenstein. In principle, we might want to change
-    // to VCKM if that block is present
-    // sckm->ckms12 = to<double>(mySLHA.at("CKM").at(1).at(1));
-    // sckm->ckms23 = to<double>(mySLHA.at("CKM").at(2).at(1))*sckm.ckms12**2;
-    // sckm->ckmdelta = 0;
-    // CKM matrix. Read from VCKMIN - Wolfenstein paramters.
-    // It would be simpler to ready from VCKM, but we cannot count on that block being present
+        
+    // CKM matrix read from VCKMIN - Wolfenstein parameters.
     double lambda = to<double>(mySLHA.at("VCKMIN").at(1).at(1));   // Wolfenstein lambda 
     double A = to<double>(mySLHA.at("VCKMIN").at(2).at(1));        // Wolfenstein A 
     double rhobar = to<double>(mySLHA.at("VCKMIN").at(3).at(1));   // Wolfenstein rhobar 
     double etabar = to<double>(mySLHA.at("VCKMIN").at(4).at(1));   // Wolfenstein etabar
-    // Use Wolfenstein converter to get the VCKM matrix.  FIXME take the absolute value for now, to work with mssmswitch->higwid = 1;
-
-    mixing->ckm(1,1) = abs(Spectrum::Wolf2V_ud(lambda,A,rhobar,etabar));
-    mixing->ckm(1,2) = abs(Spectrum::Wolf2V_us(lambda,A,rhobar,etabar));
-    mixing->ckm(1,3) = abs(Spectrum::Wolf2V_ub(lambda,A,rhobar,etabar));
-    mixing->ckm(2,1) = abs(Spectrum::Wolf2V_cd(lambda,A,rhobar,etabar));
-    mixing->ckm(2,2) = abs(Spectrum::Wolf2V_cs(lambda,A,rhobar,etabar));
-    mixing->ckm(2,3) = abs(Spectrum::Wolf2V_cb(lambda,A,rhobar,etabar));
-    mixing->ckm(3,1) = abs(Spectrum::Wolf2V_td(lambda,A,rhobar,etabar));
-    mixing->ckm(3,2) = abs(Spectrum::Wolf2V_ts(lambda,A,rhobar,etabar));
-    mixing->ckm(3,3) = abs(Spectrum::Wolf2V_tb(lambda,A,rhobar,etabar));
-
-    // If VCKM block is available, this would be the best way of doing this instead
-    /* for (int i=1; i<=3; i++)
-      {
-      for (int j=1; j<=3; j++)
-    {     
-            mixing->ckm(i,j) = to<double_complex>(mySLHA.at("VCKM").at(i,j).at(2));
-    }
-       } 
-    */
-
-
-    // Block MASS
-    // SM particles
-
-    // In principle, we could take the massess from the MASS block, but we cannot count on
-    // these being present and to avoid getting them at the wrong scale, we don't use them
-    //mspctm->mass(DSpart->knu(1)) =  to<double>(mySLHA.at("MASS").at(12).at(1));
-    //mspctm->mass(DSpart->knu(2)) =  to<double>(mySLHA.at("MASS").at(14).at(1));
-    //mspctm->mass(DSpart->knu(3)) =  to<double>(mySLHA.at("MASS").at(16).at(1));
-    //mspctm->mass(DSpart->kl(1))  =  to<double>(mySLHA.at("MASS").at(11).at(1));
-    //mspctm->mass(DSpart->kl(2))  =  to<double>(mySLHA.at("MASS").at(13).at(1));
-    //mspctm->mass(DSpart->kl(3))  =  to<double>(mySLHA.at("MASS").at(15).at(1));
-    //mspctm->mass(DSpart->kqu(1)) =  to<double>(mySLHA.at("MASS").at(2).at(1));
-    //mspctm->mass(DSpart->kqu(2)) =  to<double>(mySLHA.at("MASS").at(4).at(1));
-    //mspctm->mass(DSpart->kqu(3)) =  to<double>(mySLHA.at("MASS").at(6).at(1));
-    //mspctm->mass(DSpart->kqd(1)) =  to<double>(mySLHA.at("MASS").at(1).at(1));
-    //mspctm->mass(DSpart->kqd(2)) =  to<double>(mySLHA.at("MASS").at(3).at(1));
-    //mspctm->mass(DSpart->kqd(3)) =  to<double>(mySLHA.at("MASS").at(5).at(1));
-    // We don't read Z0 mass here, have taken it from SMINPUTS earlier
-    //mspctm->mass(DSparticle_code("Z0"))     =  to<double>(mySLHA.at("MASS").at(23).at(1));
+    // Use Wolfenstein converter to get the VCKM matrix.
+    mixing->ckm(1,1) = Spectrum::Wolf2V_ud(lambda,A,rhobar,etabar);
+    mixing->ckm(1,2) = Spectrum::Wolf2V_us(lambda,A,rhobar,etabar);
+    mixing->ckm(1,3) = Spectrum::Wolf2V_ub(lambda,A,rhobar,etabar);
+    mixing->ckm(2,1) = Spectrum::Wolf2V_cd(lambda,A,rhobar,etabar);
+    mixing->ckm(2,2) = Spectrum::Wolf2V_cs(lambda,A,rhobar,etabar);
+    mixing->ckm(2,3) = Spectrum::Wolf2V_cb(lambda,A,rhobar,etabar);
+    mixing->ckm(3,1) = Spectrum::Wolf2V_td(lambda,A,rhobar,etabar);
+    mixing->ckm(3,2) = Spectrum::Wolf2V_ts(lambda,A,rhobar,etabar);
+    mixing->ckm(3,3) = Spectrum::Wolf2V_tb(lambda,A,rhobar,etabar);
+    // In principle, we might want to change to VCKM if that block is present. Like this:
+    // sckm->ckms12 = to<double>(mySLHA.at("VCKM").at(1).at(1));
+    // sckm->ckms23 = to<double>(mySLHA.at("VCKM").at(2).at(1))*sckm.ckms12**2;
+    // sckm->ckmdelta = 0;
+    // for (int i=1; i<=3; i++) for (int j=1; j<=3; j++)
+    // {     
+    //   mixing->ckm(i,j) = to<double_complex>(mySLHA.at("VCKM").at(i,j).at(2));
+    // }
 
     // OK, we now have to enforce the tree-level condition for unitarity
     // We then have a choice of calculating both sin^2 theta_W and MW
-    // from alpha,MZ and GF as we normally do in DarkSUSY. The line below
-    // would enforce that.
+    // from alpha, MZ and GF as we normally do in DarkSUSY. This line would
+    // enforce that:
     //   mspctm->mass(DSpart->kw)=mass(DSpart->kz)*sqrt(1.0-smruseful->s2thw)
-    // however, it is more prudent to take the value of MW from the SLHA file
+    // However, it is more prudent to take the value of MW from the SLHA file
     // if given, and instead enforce the tree-level condition by redefining
     // sin^2 theta_W. That we do here:
-    mspctm->mass(DSparticle_code("W+"))     =  to<double>(mySLHA.at("MASS").at(24).at(1));
+    mspctm->mass(DSparticle_code("W+"))   =  to<double>(mySLHA.at("MASS").at(24).at(1));
     smruseful->s2thw=1.0-square(mspctm->mass(DSparticle_code("W+")))/square(mspctm->mass(DSparticle_code("Z0")));
 
     // Higgs bosons. Note h1_0 is the lightest, and h2_0 the heavier CP even
@@ -502,13 +471,15 @@ BE_NAMESPACE
     mspctm->mass(DSpart->kn(3)) =  to<double>(mySLHA.at("MASS").at(1000025).at(1));
     mspctm->mass(DSpart->kn(4)) =  to<double>(mySLHA.at("MASS").at(1000035).at(1));
     
+    // Charginos
     mspctm->mass(DSpart->kcha(1)) =  to<double>(mySLHA.at("MASS").at(1000024).at(1));
     mspctm->mass(DSpart->kcha(2)) =  to<double>(mySLHA.at("MASS").at(1000037).at(1));
 
+    // Gluino
     mspctm->mass(DSparticle_code("~g")) =  to<double>(mySLHA.at("MASS").at(1000021).at(1));
-    // Gravitino not implemented in DS
-    // mspctm->mass(DSpart->k...) =  to<double>(mySLHA.at("MASS").at(1000039).at(1));
 
+    // Gravitino (not implemented in DS)
+    // mspctm->mass(DSpart->k...) =  to<double>(mySLHA.at("MASS").at(1000039).at(1));
 
     // Block NMIX
     for (int i=1; i<=4; i++)
@@ -615,74 +586,195 @@ BE_NAMESPACE
       mssmpar->asoftd(i)=to<double>(mySLHA.at("TD").at(i,i).at(2))/couplingconstants->yukawa(DSpart->kqd(i));
     } 
 
-    mssmswitch->higwid = 1;
+    // Set up SUSY vertices
     mssmtype->modeltype = 0;
     mssmiuseful->lsp = DSpart->kn(1);
     mssmiuseful->kln = DSpart->kn(1);
     dsvertx();
-    dshigwid();
-    dsspwid();
+        
+    // Set up Higgs widths.  h1_0 is the lightest CP even Higgs in GAMBIT (opposite to DS).
+    widths->width(DSparticle_code("h0_1")) = myDecays.at(std::pair<int,int>(25,0)).width_in_GeV;
+    widths->width(DSparticle_code("h0_2")) = myDecays.at(std::pair<int,int>(35,0)).width_in_GeV;
+    widths->width(DSparticle_code("A0"))   = myDecays.at(std::pair<int,int>(36,0)).width_in_GeV;
+    widths->width(DSparticle_code("H+"))   = myDecays.at(std::pair<int,int>(37,0)).width_in_GeV;
+
+    // Set up Higgs partial widths.
+    const static std::vector< std::vector<str> > charged_channels = DS_charged_h_decay_channels();
+    const static std::vector< std::vector<str> > neutral_channels = DS_neutral_h_decay_channels();
+    const static std::vector<str> sister_chan = initVector<str>("W+", "H-");
+    const static std::vector<str> missing_chan = initVector<str>("W-", "H+");
+    for (unsigned int i = 0; i < neutral_channels.size(); i++)
+    {
+      mssmwidths->hdwidth(i+1,2) = widths->width(DSparticle_code("h0_1")) 
+       * myDecays.at(std::pair<int,int>(25,0)).BF(neutral_channels[i]);
+      mssmwidths->hdwidth(i+1,1) = widths->width(DSparticle_code("h0_2")) 
+       * myDecays.at(std::pair<int,int>(35,0)).BF(neutral_channels[i]);
+      mssmwidths->hdwidth(i+1,3) = widths->width(DSparticle_code("A0")) 
+       * myDecays.at(std::pair<int,int>(36,0)).BF(neutral_channels[i]);
+      if (neutral_channels[i] == sister_chan) // Add the missing W-H+ contributions.
+      {
+        mssmwidths->hdwidth(i+1,2) += widths->width(DSparticle_code("h0_1")) 
+         * myDecays.at(std::pair<int,int>(25,0)).BF(missing_chan);
+        mssmwidths->hdwidth(i+1,1) = widths->width(DSparticle_code("h0_2")) 
+         * myDecays.at(std::pair<int,int>(35,0)).BF(missing_chan);
+        mssmwidths->hdwidth(i+1,3) = widths->width(DSparticle_code("A0")) 
+         * myDecays.at(std::pair<int,int>(36,0)).BF(missing_chan);
+      }
+    }
+    for (unsigned int i = 0; i < charged_channels.size(); i++)
+    {      
+      mssmwidths->hdwidth(i,4) = widths->width(DSparticle_code("H+")) 
+       * myDecays.at(std::pair<int,int>(37,0)).BF(charged_channels[i]);
+    }
+
+    // Set up sfermion widths
+    widths->width(DSpart->ksnu(1)) = myDecays.at(std::pair<int,int>(1000012,0)).width_in_GeV;
+    widths->width(DSpart->ksnu(2)) = myDecays.at(std::pair<int,int>(1000014,0)).width_in_GeV;
+    widths->width(DSpart->ksnu(3)) = myDecays.at(std::pair<int,int>(1000016,0)).width_in_GeV;
+    widths->width(DSpart->ksl(1))  = myDecays.at(std::pair<int,int>(1000011,0)).width_in_GeV;
+    widths->width(DSpart->ksl(2))  = myDecays.at(std::pair<int,int>(1000013,0)).width_in_GeV;
+    widths->width(DSpart->ksl(3))  = myDecays.at(std::pair<int,int>(1000015,0)).width_in_GeV;
+    widths->width(DSpart->ksl(4))  = myDecays.at(std::pair<int,int>(2000011,0)).width_in_GeV;
+    widths->width(DSpart->ksl(5))  = myDecays.at(std::pair<int,int>(2000013,0)).width_in_GeV;
+    widths->width(DSpart->ksl(6))  = myDecays.at(std::pair<int,int>(2000015,0)).width_in_GeV;
+    widths->width(DSpart->ksqu(1)) = myDecays.at(std::pair<int,int>(1000002,0)).width_in_GeV;
+    widths->width(DSpart->ksqu(2)) = myDecays.at(std::pair<int,int>(1000004,0)).width_in_GeV;
+    widths->width(DSpart->ksqu(3)) = myDecays.at(std::pair<int,int>(1000006,0)).width_in_GeV;
+    widths->width(DSpart->ksqu(4)) = myDecays.at(std::pair<int,int>(2000002,0)).width_in_GeV;
+    widths->width(DSpart->ksqu(5)) = myDecays.at(std::pair<int,int>(2000004,0)).width_in_GeV;
+    widths->width(DSpart->ksqu(6)) = myDecays.at(std::pair<int,int>(2000006,0)).width_in_GeV;
+    widths->width(DSpart->ksqd(1)) = myDecays.at(std::pair<int,int>(1000001,0)).width_in_GeV;
+    widths->width(DSpart->ksqd(2)) = myDecays.at(std::pair<int,int>(1000003,0)).width_in_GeV;
+    widths->width(DSpart->ksqd(3)) = myDecays.at(std::pair<int,int>(1000005,0)).width_in_GeV;
+    widths->width(DSpart->ksqd(4)) = myDecays.at(std::pair<int,int>(2000001,0)).width_in_GeV;
+    widths->width(DSpart->ksqd(5)) = myDecays.at(std::pair<int,int>(2000003,0)).width_in_GeV;
+    widths->width(DSpart->ksqd(6)) = myDecays.at(std::pair<int,int>(2000005,0)).width_in_GeV;
+
+    // Set up neutralino widths.  Give the lightest some small nonzero width to avoid internal numerical issues in DS.
+    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_width);
+    widths->width(DSpart->kn(2)) = myDecays.at(std::pair<int,int>(1000023,0)).width_in_GeV;
+    widths->width(DSpart->kn(3)) = myDecays.at(std::pair<int,int>(1000025,0)).width_in_GeV;
+    widths->width(DSpart->kn(4)) = myDecays.at(std::pair<int,int>(1000035,0)).width_in_GeV;
+    
+    // Set up chargino widths.
+    widths->width(DSpart->kcha(1)) = myDecays.at(std::pair<int,int>(1000024,0)).width_in_GeV;
+    widths->width(DSpart->kcha(2)) = myDecays.at(std::pair<int,int>(1000037,0)).width_in_GeV;
+
+    // Gluino width.
+    widths->width(DSparticle_code("~g")) = myDecays.at(std::pair<int,int>(1000021,0)).width_in_GeV;
+
+    // Gravitino width (not implemented in DS).
+    //widths->width(DSparticle_code("~G")) = ;
+
+    // Finish initialisation
     int u = 6;
     dswspectrum(u);
     dswwidth(u);
+
     return 0;  // everything OK (hah. maybe.)
   }
 
+  /// Returns the vector of neutral Higgs decay channels in DarkSUSY
+  std::vector< std::vector<str> > DS_neutral_h_decay_channels()
+  {
+    return initVector< std::vector<str> >
+     (initVector<str>("h0_2", "h0_2"),
+      initVector<str>("h0_1", "h0_2"),
+      initVector<str>("h0_1", "h0_1"),
+      initVector<str>("A0", "A0"),
+      initVector<str>("h0_2", "A0"),
+      initVector<str>("h0_1", "A0"),
+      initVector<str>("H+", "H-"),
+      initVector<str>("Z0", "h0_2"),
+      initVector<str>("Z0", "h0_1"),
+      initVector<str>("Z0", "A0"),
+      // actually supposed to be W+H- and W-H+
+      initVector<str>("W+", "H-"),
+      initVector<str>("Z0", "Z0"),
+      initVector<str>("W+", "W-"),
+      initVector<str>("nu_e", "nubar_e"),
+      initVector<str>("e+", "e-"),
+      initVector<str>("nu_mu", "nubar_mu"),
+      initVector<str>("mu+", "mu-"),
+      initVector<str>("nu_tau", "nubar_tau"),
+      initVector<str>("tau+", "tau-"),
+      initVector<str>("u", "ubar"),
+      initVector<str>("d", "dbar"),
+      initVector<str>("c", "cbar"),
+      initVector<str>("s", "sbar"),
+      initVector<str>("t", "tbar"),
+      initVector<str>("b", "bbar"),
+      initVector<str>("g", "g"),
+      // actually qqg (not implemented in DS though)
+      initVector<str>("b", "bbar", "g"),
+      initVector<str>("gamma", "gamma"),
+      initVector<str>("Z0", "gamma")
+     );
+  }
+
+  /// Returns the vector of charged Higgs decay channels in DarkSUSY
+  std::vector< std::vector<str> > DS_charged_h_decay_channels()
+  {
+    return initVector< std::vector<str> >
+     (initVector<str>("u", "dbar"),
+      initVector<str>("u", "sbar"),
+      initVector<str>("u", "bbar"),
+      initVector<str>("c", "dbar"),
+      initVector<str>("c", "sbar"),
+      initVector<str>("c", "bbar"),
+      initVector<str>("t", "dbar"),
+      initVector<str>("t", "sbar"),
+      initVector<str>("t", "bbar"),
+      initVector<str>("e", "nu_e"),
+      initVector<str>("mu", "nu_mu"),
+      initVector<str>("tau", "nu_tau"),
+      initVector<str>("W+", "h0_2"),
+      initVector<str>("W+", "h0_1"),
+      initVector<str>("W+", "A0")     
+     );
+  }
+
+/* PS: I have made the mods requested, but these functions cannot work as designed, 
+ * because DarkBit::TH_ParticleProperty is a module type, not a backend type.  
+ * Make it a backend type or move these functions back into DarkBit.
+ * 
   void registerMassesForIB(
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
-    // Save masses somewhere in global variables etc.
-    // Note: Actually, it is not trivial to define some global variables here
-    // in the header.
-
-
-    //For CW: Those three lists need to be promoted to global variables
-    std::vector<std::string> IBfinalstate = 
-        Funk::vec<std::string>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+"); 
-    std::vector<double> DSparticle_mass;
-    std::vector<double> GAMBITparticle_mass;    
     DSparticle_mass.clear();
     GAMBITparticle_mass.clear();
     for (unsigned int i = 0; i < IBfinalstate.size(); i++ )
     {
-//      DSparticle_mass.push_back(
-//         mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i])));
-
-//For CW/PS: The above line sets masses in the desired way, but does not compile. It seems 
-//        that I don't have access to the function DSparticle_code, and I have no clue why
-//        given that the error is reported as a linking problem, maybe something about
-//        in which order the makefile sets up things??
-
+      DSparticle_mass.push_back(mspctm->mass(DSparticle_code(IBfinalstate[i])));
       GAMBITparticle_mass.push_back(particleProperties.at(IBfinalstate[i]).mass);
     }
-
-    
   }
 
-  void setMassesForIB(bool set)
+  PS: this can't compile anyway, as particleProperties is not defined
+  void setMassesForIB(bool set) 
   {
-     //For CW: obviously, all this will only work once we have access to global variables
-     //        (and the linking problem is solved)
     if (set)
     {
       // Set masses in DS, using above global variables.
-//      for (int i = 0; i < IBfinalstate.size(); i++ )
-//      {
-//        mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i])))=
-//          particleProperties.at(IBfinalstate[i]).mass;
-//      }
+      for (unsigned int i = 0; i < IBfinalstate.size(); i++ )
+      {
+        mspctm->mass(DSparticle_code(IBfinalstate[i])) =
+          particleProperties.at(IBfinalstate[i]).mass;
+      }
 
     }
     else
     {
       // Reset masses.
-//      for (int i = 0; i < IBfinalstate.size(); i++ )
-//      {
-//        particleProperties.at(IBfinalstate[i]).mass=
-//            mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i])));
-//      }
+      for (int i = 0; i < IBfinalstate.size(); i++ )
+      {
+        particleProperties.at(IBfinalstate[i]).mass =
+            mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i]));
+      }
     }
   }
+*/
+
 }
 END_BE_NAMESPACE
 
