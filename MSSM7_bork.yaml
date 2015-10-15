@@ -17,31 +17,24 @@ Parameters:
       fixed_value: -0.085
 
   MSSM7atQ:
-    Qin: 
-      fixed_value: 1000.0
-    SignMu:
-      fixed_value: 1
     Ad_3:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 944.66153451518
     Au_3:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 679.17196637297
     M2:
-      range: [1e2, 1e5]
-      prior_type: log
+      fixed_value: 489.37956075958
+    Qin:
+      fixed_value: 1000.00000000000
+    SignMu:
+      fixed_value: 1.00000000000
     TanBeta:
-      range: [3.0, 70.0]
-      prior_type: flat
+      fixed_value: 6.75666803122
     mHd2:
-      range: [1e4, 1e10]
-      prior_type: log
+      fixed_value: 2008193434.80311298370
     mHu2:
-      range: [1e4, 1e10]
-      prior_type: log
+      fixed_value: 1186103.39256442618
     mf2:
-      range: [1e4, 1e10]
-      prior_type: log
+      fixed_value: 16345639.39602590911
 
 Priors:
 
@@ -65,11 +58,11 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 4000
-        tol: 0.5
+        nlive: 5000
+        tol: 0.1
         mmodal: 1
         # write native MultiNest ascii output files?
-        outfile: 1
+        outfile: 0
         # resuming doesn't work yet
         resume: 0
         # No options to set, but still need the nodes at the moment...
@@ -80,10 +73,10 @@ Scanner:
 ObsLikes:
 
     - capability: lnL_oh2
-      purpose:    Likelihood 
+      purpose: Likelihood 
 
     - capability: RD_oh2
-      purpose:    Observable
+      purpose: Observable
 
     - capability: lnL_FermiLATdwarfs
       purpose:    Likelihood
@@ -141,6 +134,7 @@ ObsLikes:
     - purpose:    Observable
       capability: SLHA1_violation
 
+
     - purpose:    Likelihood
       capability: ALEPH_Selectron_LLike
 
@@ -193,7 +187,7 @@ ObsLikes:
       capability: HS_LHC_lnL
 
     # Missing:
-    # CMB+HESS likelihoods
+    # CMB likelihood
 
 
 Rules:
@@ -217,7 +211,7 @@ Rules:
   - capability: lnL_FermiLATdwarfs
     function:  lnL_FermiLATdwarfs_gamLike
 
-  # Choose to use DarkSUSY yield tables for indirect detection
+  # Choose to use DarkSUSY yield tables
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
     
@@ -285,7 +279,7 @@ Rules:
       # m_u/m_d
       mud_central: 0.48
       mud_error: 0.10
-      # m_s / ((m_u + m_d)/2)
+      # m_s / (m_u + m_d)
       msud_central: 27.5
       msud_error: 1.0
       # m_s

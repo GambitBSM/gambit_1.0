@@ -26,6 +26,12 @@
 
 //#define PRECISIONBIT_DEBUG
 
+/// M_W (Breit-Wigner mass parameter ~ pole) = 80.385 +/- 0.015  GeV (1 sigma), Gaussian.
+/// Reference http://pdg.lbl.gov/2014/listings/rpp2014-list-w-boson.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
+const double mw_central_observed = 80.385;
+const double mw_err_observed = 0.015;
+const double mw_relerr_theory = 0.05; //FIXME need to add more serious theory uncertainty --> check FH papers
+
 namespace Gambit
 {
 
@@ -46,15 +52,31 @@ namespace Gambit
       fh_real MWSM;       // W pole mass in SM
       fh_real SW2MSSM;    // sin^2theta_W^leptonic_effective in MSSM
       fh_real SW2SM;      // sin^2theta_W^leptonic_effective in SM
-      fh_real edmeTh;     // electron EDM
-      fh_real edmn;       // neutron EDM
-      fh_real edmHg;      // mercury EDM
-      int ccb;            // ?
+      fh_real edmeTh;     // electron EDM (experimental)
+      fh_real edmn;       // neutron EDM (experimental)
+      fh_real edmHg;      // mercury EDM (experimental)
+      int ccb;            // model corresponds to charge or colour-breaking minimum (experimental)
 
       int error = 1;
       BEreq::FHConstraints(error, gm2, Deltarho, 
          MWMSSM, MWSM, SW2MSSM, SW2SM,
          edmeTh, edmn, edmHg, ccb);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHConstraints raised error flag: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
+
+      // Just scrub this point now if it's more than 10 sigma off in mW, 
+      // as extreme values of mW can cause instability in other routines.
+      const double obserrsq = mw_err_observed*mw_err_observed;
+      double theoryerrsq = MWMSSM*MWMSSM*mw_relerr_theory*mw_relerr_theory;
+      if (abs(mw_central_observed - MWMSSM) > 7.0*sqrt(obserrsq + theoryerrsq))
+      {
+        cout << 7.0*sqrt(obserrsq + theoryerrsq) << " " << abs(mw_central_observed - MWMSSM);
+        invalid_point().raise("W mass too extreme: more than 7 sigma off observed value. Invalidating immediately to prevent downstream instability.");
+      }
 
       fh_PrecisionObs PrecisionObs;
       PrecisionObs.gmu2 = gm2;       
@@ -86,7 +108,7 @@ namespace Gambit
     void FH_precision_mw(triplet<double> &result)
     {
       result.central = Pipes::FH_precision_mw::Dep::FH_Precision->MW_MSSM;  
-      result.upper = 0.5; //FIXME need to add theory uncertainty --> check FH papers
+      result.upper = mw_relerr_theory * result.central;
       result.lower = result.upper;      
     }
     void FH_precision_sinW2   (triplet<double> &result)
@@ -479,7 +501,7 @@ namespace Gambit
     /// \brief Likelihoods for charm quark mass and light quark mass ratios. At the moment, all are just gaussians.
     /// Default data from PDG http://PDG.LBL.GOV 10/6/2015
     /// m_u/m_d = 0.38-0.58
-    /// m_s / (m_u + m_d) = 27.5 +/- 1.0
+    /// m_s / ((m_u + m_d)/2) = 27.5 +/- 1.0
     /// m_s = 95 +/- 5 GeV
 
     void lnL_light_quark_masses_chi2 (double &result)
@@ -491,11 +513,11 @@ namespace Gambit
         double mud_error = runOptions->getValueOrDef<double>(0.10, "mud_error");
         double msud_central = runOptions->getValueOrDef<double>(27.5, "msud_central");
         double msud_error = runOptions->getValueOrDef<double>(1.0, "msud_error");
-        double ms_central = runOptions->getValueOrDef<double>(95., "ms_central");
-        double ms_error = runOptions->getValueOrDef<double>(5., "ms_error");
+        double ms_central = runOptions->getValueOrDef<double>(95.E-03, "ms_central");
+        double ms_error = runOptions->getValueOrDef<double>(5.E-03, "ms_error");
 
         result = Stats::gaussian_loglikelihood(SM.mU/SM.mD, mud_central, 0., mud_error)
-            + Stats::gaussian_loglikelihood(SM.mS/(SM.mU + SM.mD), msud_central, 0., msud_error)
+            + Stats::gaussian_loglikelihood((2*SM.mS)/(SM.mU + SM.mD), msud_central, 0., msud_error)
             + Stats::gaussian_loglikelihood(SM.mS, ms_central, 0., ms_error);
         logger() << "Combined lnL for light quark mass ratios and s-quark mass is " << result << EOM;
     }
@@ -518,14 +540,21 @@ namespace Gambit
       result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->alphaS, 0.1185, 0.0, 0.0006);
     }
         
+    /// G_Fermi likelihood
+    /// G_Fermi = (1.1663787 +/- 0.0000006) * 10^-5 GeV^-2 (1 sigma), Gaussian.
+    /// Reference: http://pdg.lbl.gov/2014/reviews/rpp2014-rev-qcd.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
+    void lnL_GF_chi2(double &result)
+    {
+      using namespace Pipes::lnL_GF_chi2;
+      result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->GF, 1.1663787E-05, 0.0, 0.0000006E-05);
+    }
+
     /// W boson mass likelihood
-    /// M_W (Breit-Wigner mass parameter ~ pole) = 80.385 +/- 0.015  GeV (1 sigma), Gaussian.
-    /// Reference http://pdg.lbl.gov/2014/listings/rpp2014-list-w-boson.pdf = K.A. Olive et al. (Particle Data Group), Chin. Phys. C38, 090001 (2014)
     void lnL_W_mass_chi2(double &result)
     {
       using namespace Pipes::lnL_W_mass_chi2;
       double theory_uncert = std::max(Dep::mw->upper, Dep::mw->lower);
-      result = Stats::gaussian_loglikelihood(Dep::mw->central, 80.385, theory_uncert, 0.015);
+      result = Stats::gaussian_loglikelihood(Dep::mw->central, mw_central_observed, theory_uncert, mw_err_observed);
     }
 
     /// Effective leptonic sin^2(theta_W) likelihood

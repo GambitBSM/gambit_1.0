@@ -1320,7 +1320,7 @@ START_MODULE
 
   #define CAPABILITY SimYieldTable
   START_CAPABILITY
-    #define FUNCTION SimYieldTable_DarkSusy
+    #define FUNCTION SimYieldTable_DarkSUSY
     START_FUNCTION(DarkBit::SimYieldTable)
     BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 

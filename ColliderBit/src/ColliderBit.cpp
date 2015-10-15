@@ -2959,16 +2959,34 @@ namespace Gambit
       sqrts = 2.;
       error = 1;
       BEreq::FHHiggsProd(error, sqrts, prodxs);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHHiggsProd raised error flag for Tevatron: " << error << ".";
+        invalid_point().raise(err.str());
+      }
       for(int i = 0; i < 52; i++) HiggsProd.prodxs_Tev[i] = prodxs(i+1);
       // LHC7
       sqrts = 7.;
       error = 1;
       BEreq::FHHiggsProd(error, sqrts, prodxs);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHHiggsProd raised error flag for LHC7: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
       for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC7[i] = prodxs(i+1);
       // LHC8
       sqrts = 8.;
       error = 1;
       BEreq::FHHiggsProd(error, sqrts, prodxs);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHHiggsProd raised error flag for LHC8: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
       for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC8[i] = prodxs(i+1);
 
       result = HiggsProd;
@@ -3189,7 +3207,7 @@ namespace Gambit
 
       result.HpGammaTot = Hplus_decays->width_in_GeV;
       result.BR_tWpb    = top_decays->BF("W+", "b");
-      result.BR_tHpjb   = top_decays->BF("H+", "b");
+      result.BR_tHpjb   = top_decays->has_channel("H+", "b") ? top_decays->BF("H+", "b") : 0.0;
       result.BR_Hpjcs   = Hplus_decays->BF("c", "sbar");
       result.BR_Hpjcb   = Hplus_decays->BF("c", "bbar");
       result.BR_Hptaunu = Hplus_decays->BF("tau+", "nu_tau");

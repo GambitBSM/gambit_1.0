@@ -604,6 +604,12 @@ namespace Gambit
       BEreq::FHGetPara(error, nmfv, MSf, USf, MASf, UASf,
            MCha, UCha, VCha, MNeu, ZNeu, 
            DeltaMB, MGl, MHtree, SAtree);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHGetPara raised error flag: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
 
       fh_MSSMMassObs MassObs; 
       for(int i = 0; i < 2; i++)
@@ -679,6 +685,12 @@ namespace Gambit
 
       int error = 1;
       BEreq::FHHiggsCorr(error, MHiggs, SAeff, UHiggs, ZHiggs);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHHiggsCorr raised error flag: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
 
       #ifdef SPECBIT_DEBUG
         cout << "****** calling FHUncertainties ******" << endl;
@@ -686,6 +698,12 @@ namespace Gambit
 
       error = 1;
       BEreq::FHUncertainties(error, DeltaMHiggs, DeltaSAeff, DeltaUHiggs, DeltaZHiggs);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHUncertainties raised error flag: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
 
       fh_HiggsMassObs HiggsMassObs;
       for(int i = 0; i < 4; i++)
@@ -740,6 +758,12 @@ namespace Gambit
 
       int error = 1;
       BEreq::FHSelectUZ(error, uzint, uzext, mfeff);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHSelectUZ raised error flag: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
 
       Farray<fh_complex, 1,681> couplings;     // MSSM Higgs couplings
       Farray<fh_complex, 1,231> couplings_sm;  // SM Higgs couplings
@@ -754,6 +778,12 @@ namespace Gambit
       error = 1;
       BEreq::FHCouplings(error, couplings, couplings_sm,
                          gammas, gammas_sm, fast);
+      if (error != 0)
+      {
+        std::ostringstream err;
+        err << "BEreq::FHCouplings raised error flag: " << error << "."; 
+        invalid_point().raise(err.str());
+      }
 
       fh_Couplings Couplings;
       for(int i = 0; i < 681; i++) Couplings.couplings[i] = couplings(i+1);
