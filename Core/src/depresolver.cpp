@@ -216,6 +216,9 @@ namespace Gambit
     /// Global flag for regex use
     bool use_regex;
 
+    /// Global flag for triggering printing of timing data
+    bool print_timing;
+
     // Return runtime estimate for a set of nodes
     double getTimeEstimate(const std::set<VertexID> & vertexList, const DRes::MasterGraphType &graph)
     {
@@ -608,7 +611,8 @@ namespace Gambit
         //      threads other than the main one need to be accessed with 
         //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter,pointID);
+        //if (masterGraph[*it]->type() != "void") 
+        masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
       }
     }
 
@@ -1330,10 +1334,11 @@ namespace Gambit
       logger() << "################################################" << endl;
       logger() << EOM;
 
-      // Read ini entry
-      use_regex = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
-      if ( use_regex )
-        logger() << "Using regex for string comparison." << endl;
+      // Read ini entries
+      use_regex    = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
+      print_timing = boundIniFile->getValueOrDef<bool>(false, "print_timing_data");
+      if ( use_regex )    logger() << "Using regex for string comparison." << endl;
+      if ( print_timing ) logger() << "Will output timing information for all functors (via printer system)" << endl;
 
       //
       // Main loop: repeat until dependency queue is empty
@@ -1379,7 +1384,9 @@ namespace Gambit
 
         // Check if we wanted to output this observable to the printer system.
         //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        if(printme) masterGraph[fromVertex]->setPrintRequirement(true);
+        if(printme)      masterGraph[fromVertex]->setPrintRequirement(true);
+        // Check if the flag to output timing data is set
+        if(print_timing) masterGraph[fromVertex]->setTimingPrintRequirement(true);
 
         // Apply resolved dependency to masterGraph and functors
         if ( toVertex != OBSLIKE_VERTEXID )

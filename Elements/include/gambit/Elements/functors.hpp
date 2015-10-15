@@ -138,8 +138,14 @@ namespace Gambit
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() const;
 
+      /// Getter indicating if the timing data for this function's execution should be printed
+      virtual bool requiresTimingPrinting() const;
+
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool);
+
+      /// Setter for indicating if the timing data for this function's execution should be printed
+      virtual void setTimingPrintRequirement(bool);
 
       /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
       virtual void setNestedList (std::vector<functor*>&);
@@ -202,7 +208,7 @@ namespace Gambit
       virtual void notifyOfBackends(std::map<str, std::set<str> >);
 
       /// Printer function
-      virtual void print(Printers::BasePrinter* printer, const int pointID, int index);
+      virtual void print(Printers::BasePrinter* printer, const int pointID, int thread_num);
 
       /// Printer function (no-thread-index short-circuit)
       virtual void print(Printers::BasePrinter* printer, const int pointID);
@@ -505,6 +511,9 @@ namespace Gambit
       /// Has result already been sent to the printer?
       bool* already_printed;
 
+      /// Has timing data already been sent to the printer?
+      bool* already_printed_timing;
+
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;
 
@@ -609,8 +618,14 @@ namespace Gambit
       /// Setter for indicating if the wrapped function's result should to be printed
       virtual void setPrintRequirement(bool flag);
 
+      /// Setter for indicating if the timing data for this function's execution should be printed
+      virtual void setTimingPrintRequirement(bool flag);
+
       /// Getter indicating if the wrapped function's result should to be printed
       virtual bool requiresPrinting() const;
+
+      /// Getter indicating if the timing data for this function's execution should be printed
+      virtual bool requiresTimingPrinting() const;
 
       /// Calculate method
       void calculate();
@@ -638,6 +653,9 @@ namespace Gambit
 
       /// Flag to select whether or not the results of this functor should be sent to the printer object.
       bool myPrintFlag;
+
+      /// Flag to select whether or not the timing data for this function's execution should be printed;
+      bool myTimingPrintFlag;
 
       /// Initialise the memory of this functor.
       virtual void init_memory();
