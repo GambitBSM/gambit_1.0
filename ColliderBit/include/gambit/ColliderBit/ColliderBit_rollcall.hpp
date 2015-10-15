@@ -41,9 +41,10 @@ START_MODULE
   /// Controls looping of Collider simulations
   #define CAPABILITY ColliderOperator
   START_CAPABILITY
-    #define FUNCTION operatePythia
+    #define FUNCTION operateLHCLoop
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
     NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(decay_rates, DecayTable)
     // FIXME this should not be needed once the dep resolver orders things correctly.
     MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, const Spectrum*, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION

@@ -94,9 +94,9 @@ namespace Gambit
     /// @note: Much of the loop below designed for splitting up the subprocesses to be generated.
     /// @note: For our first run, we will just run all SUSY subprocesses.
 
-    void operatePythia()
+    void operateLHCLoop()
     {
-      using namespace Pipes::operatePythia;
+      using namespace Pipes::operateLHCLoop;
       nEvents = 0;
       // Set allProcessesVetoed to false once some events are generated.
       allProcessesVetoed = true;
