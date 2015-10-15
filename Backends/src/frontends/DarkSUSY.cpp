@@ -362,9 +362,7 @@ BE_NAMESPACE
     mspctm->mass(DSpart->kqu(3))= to<double>(mySLHA.at("SMINPUTS").at(6).at(1));  // top mass
     
 
-    // Weinberg angle will be dealt with later (need to respect tree level relation)
-    // Which W mass do we want. JE CHECK
-    // mspctm->mass(DarkBit_utils::DSparticle_code("W+"))  = fullspectrum->get_Pole_Mass("W+");  // W boson mass
+    // Weinberg angle will be dealt with later usingg this W mass (need to respect tree level relation)
     mspctm->mass(DSparticle_code("W+"))  = to<double>(mySLHA.at("MASS").at(24).at(1));  // W boson mass
     mspctm->mass(DSparticle_code("Z0"))  = to<double>(mySLHA.at("SMINPUTS").at(4).at(1)); // Z boson mass
 

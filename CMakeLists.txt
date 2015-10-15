@@ -269,11 +269,15 @@ file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit
 file(GLOB PRINTER_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printers/*.hpp"
                                   "${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
-                                  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp"
-                                  "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp"
-                                  "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
+                                  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp")
+string (REPLACE "//" "/" MODEL_HARVESTER_FILES   "${MODEL_HARVESTER_FILES}")    # (GLOB creates erroneous double slashes)                                  
+string (REPLACE "//" "/" BACKEND_HARVESTER_FILES "${BACKEND_HARVESTER_FILES}")                                    
+string (REPLACE "//" "/" PRINTER_HARVESTER_FILES "${PRINTER_HARVESTER_FILES}")                                    
+string (REPLACE "//" "/" MODULE_HARVESTER_FILES  "${MODULE_HARVESTER_FILES}")                                     
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
+list(APPEND MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml")
+set(MODULE_HARVESTER_FILES ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES})
 foreach(bit ${GAMBIT_BITS})
   if(NOT ScannerBit STREQUAL ${bit})
     set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
@@ -283,11 +287,10 @@ foreach(bit ${GAMBIT_BITS})
   endif()
 endforeach()
 remove_build_files(models_harvested backends_harvested modules_harvested printers_harvested)
-add_gambit_custom(model_harvest   models_harvested   ${MODEL_HARVESTER}   ${MODEL_HARVESTER_FILES})
-add_gambit_custom(backend_harvest backends_harvested ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
-add_gambit_custom(module_harvest  modules_harvested  ${MODULE_HARVESTER}  ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES} 
-                                                     ${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml)
-add_gambit_custom(printer_harvest printers_harvested ${PRINTER_HARVESTER} ${PRINTER_HARVESTER_FILES})
+add_gambit_custom(model_harvest   models_harvested   MODEL_HARVESTER   MODEL_HARVESTER_FILES)
+add_gambit_custom(backend_harvest backends_harvested BACKEND_HARVESTER BACKEND_HARVESTER_FILES)
+add_gambit_custom(module_harvest  modules_harvested  MODULE_HARVESTER  MODULE_HARVESTER_FILES)
+add_gambit_custom(printer_harvest printers_harvested PRINTER_HARVESTER PRINTER_HARVESTER_FILES)
 add_dependencies(module_harvest backend_harvest)
 add_dependencies(printer_harvest module_harvest)
 

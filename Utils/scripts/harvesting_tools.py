@@ -195,6 +195,8 @@ def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_typ
                      "START_CONDITIONAL_DEPENDENCY":1,
                      "BE_INI_DEPENDENCY":2,
                      "BE_INI_CONDITIONAL_DEPENDENCY":2}
+
+    line = re.sub(";", "", line)                         
     splitline = neatsplit('\(|\)|,|\s',line)
 
     qualifier_list = ["const"]
@@ -269,7 +271,8 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                      "BE_FUNCTION":2, 
                      "BE_CONV_FUNCTION":2,
                      "BACKEND_REQ":0}
-                         
+
+    line = re.sub(";", "", line)                         
     splitline = neatsplit('\(|\)|,|\s',line)
 
     if len(splitline)>1 and splitline[0] in command_index.keys():
