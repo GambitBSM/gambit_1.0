@@ -60,6 +60,7 @@ namespace Gambit {
         _numTN1Shape_bin1 = 0; _numTN1Shape_bin2 = 0; _numTN1Shape_bin3 = 0;
         _numTN2 = 0; _numTN3 = 0; _numBC1 = 0;
         _numBC2 = 0; _numBC3 = 0; NCUTS = 41;
+        set_luminosity(20.7);
 
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
@@ -199,6 +200,7 @@ namespace Gambit {
 
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
@@ -748,42 +750,6 @@ namespace Gambit {
         _numBC1 += specificOther->_numBC1;
         _numBC2 += specificOther->_numBC2;
         _numBC3 += specificOther->_numBC3;
-      }
-
-
-      void finalize() {
-
-        using namespace std;
-
-        // double scale_to = 100000.0;
-        // double trigger_cleaning_eff = 0.85;
-
-
-	//cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-	// cout << "CUT FLOW: ATLAS-CONF-2013-037 - Appendix, Table 10 - stop -> top + LSP, stop 500, LSP 200 "<<std::endl;
-	//cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-	//cout << "(NB: In Cut-flows in Appendices mjjj/mHadTop cut doesn't appear - is apparantly applied for all SRtN regions)"<<std::endl;
-	//cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-
-
-        //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
-        //for(int j=0; j<NCUTS; j++) {
-	//std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
-        //}
-        /*
-          cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-          cout << "BONUS amt2/mt2tau check - needs stop 700, LSP 1 "<<std::endl;
-          cout << "up to and incl. b-tag (1413) " << cutFlowVector_alt[0] << " " << cutFlowVector_alt[0]*1413/cutFlowVector_alt[0] << endl;
-          cout << "top cut (839) " << cutFlowVector_alt[1]<<  " " << cutFlowVector_alt[1]*1413/cutFlowVector_alt[0] <<endl;
-          cout << "dPhi1 cut (734) " << cutFlowVector_alt[2] <<  " " << cutFlowVector_alt[2]*1413/cutFlowVector_alt[0] <<endl;
-          cout << "mT > 180 (527) " << cutFlowVector_alt[3] <<  " " << cutFlowVector_alt[3]*1413/cutFlowVector_alt[0] <<endl;
-          cout << "MET sig > 11 (438) " << cutFlowVector_alt[4] << " " << cutFlowVector_alt[4]*1413/cutFlowVector_alt[0] << endl;
-          cout << "amT2 > 200 (318) " << cutFlowVector_alt[5] <<  " " << cutFlowVector_alt[5]*1413/cutFlowVector_alt[0] <<endl;
-          cout << "mT2tau > 120 (298) " <<cutFlowVector_alt[6] <<  " " << cutFlowVector_alt[6]*1413/cutFlowVector_alt[0] <<endl;
-        */
-
-        //cout << "RESULTS 1LEP " << _numTN1Shape_bin1 << " " <<  _numTN1Shape_bin2 << " " << _numTN1Shape_bin3 << " " << _numTN2 << " " <<  _numTN3 << " " << _numBC1 << " " << _numBC2 << " " << _numBC3 << endl;
-
       }
 
 

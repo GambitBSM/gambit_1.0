@@ -44,6 +44,7 @@ namespace Gambit {
 
         _numSRA = 0 ; _numSRB = 0; _numSRA15 = 0; _numSRA20 = 0; _numSRA25 = 0; _numSRA30 = 0; _numSRA35 = 0;
         NCUTS=30;
+        set_luminosity(20.1);
 
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
@@ -53,6 +54,7 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
@@ -383,11 +385,6 @@ namespace Gambit {
         _numSRA25 += specificOther->_numSRA25;
         _numSRA30 += specificOther->_numSRA30;
         _numSRA35 += specificOther->_numSRA35;
-      }
-
-
-      void finalize() {
-
       }
 
 

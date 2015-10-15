@@ -36,6 +36,7 @@ namespace Gambit {
     public:
 
       Analysis_CMS_3LEPEW_20invfb() {
+        set_luminosity(19.5);
 
         for(int i=0;i<180;i++){
           SR[i]=0;
@@ -101,6 +102,7 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
@@ -358,15 +360,6 @@ namespace Gambit {
         for(int i=0;i<180;i++) {
           SR[i] += specificOther->SR[i];
         }
-      }
-
-
-      void finalize() {
-        //std::cout << "CMS 3LEPEW results" << std::endl;
-        //for(int i=0;i<180;i++){
-         //std::cout << SR[i] << " ";
-        //}
-        //std::cout << std::endl;
       }
 
 

@@ -71,6 +71,7 @@ namespace Gambit {
         _num_WWc_SF=0;
         _num_WWc_DF=0;
         _num_Zjets=0;
+        set_luminosity(20.3);
 
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
@@ -206,6 +207,7 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
@@ -844,11 +846,6 @@ namespace Gambit {
         _num_WWc_SF += specificOther->_num_WWc_SF;
         _num_WWc_DF += specificOther->_num_WWc_DF;
         _num_Zjets += specificOther->_num_Zjets;
-      }
-
-
-      void finalize() {
-
       }
 
 
