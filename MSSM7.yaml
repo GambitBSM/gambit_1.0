@@ -313,7 +313,7 @@ Rules:
     - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
   
   - capability:  ColliderOperator
-    function: operatePythia
+    function: operateLHCLoop
     options:
       nEvents: 20000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
