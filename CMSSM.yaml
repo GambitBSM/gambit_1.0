@@ -54,11 +54,11 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 100
-        tol: 0.1
+        nlive: 4000
+        tol: 0.5
         mmodal: 1
         # write native MultiNest ascii output files?
-        outfile: 0
+        outfile: 1
         # resuming doesn't work yet
         resume: 0
         # No options to set, but still need the nodes at the moment...
@@ -111,14 +111,17 @@ ObsLikes:
     - capability: lnL_light_quark_masses
       purpose:    Likelihood
 
-    - purpose:    Likelihood
-      capability: b2ll_LL
 
-    - purpose:    Likelihood
-      capability: SL_LL
+    # FlavBit likelihoods (comment out until fixed)
 
-    - purpose:    Likelihood
-      capability: b2sll_LL
+ #   - purpose:    Likelihood
+ #     capability: b2ll_LL
+
+ #   - purpose:    Likelihood
+ #     capability: SL_LL
+
+ #   - purpose:    Likelihood
+ #     capability: b2sll_LL
 
     # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
     - capability: lnL_SI_nuclear_parameters
@@ -199,9 +202,11 @@ Rules:
   # Use DarkSUSY for the relic density
   - capability: RD_oh2
     function: RD_oh2_DarkSUSY
+    #function: RD_oh2_MicrOmegas
     options:
       fast: 1
       omtype: 1
+      #Beps: 1e-5
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
   - capability: lnL_FermiLATdwarfs
@@ -210,11 +215,13 @@ Rules:
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
-    
+    #function: SimYieldTable_MicrOmegas
+
   # Choose to use function that calls DarkSUSY for calculating direct detection couplings
   - capability: DD_couplings
     function: DD_couplings_DarkSUSY
-  
+    #function: DD_couplings_MicrOmegas
+
   # Choose to get decays from DecayBit proper, not from an SLHA file.
   - capability: decay_rates
     function: all_decays
