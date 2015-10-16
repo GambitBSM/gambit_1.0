@@ -153,10 +153,10 @@ namespace Gambit {
         }
       }
 
-      // use SLHA for initialization initialization of MSSM30atQ or CMSSM
+      // use SLHA format for initialization of MSSM30atQ or CMSSM
       else if (ModelInUse("MSSM30atQ") or ModelInUse("CMSSM"))
       {
-        // Save SLHA file to disk
+        // Retrieve SLHAea object from spectrum object 
         const Spectrum* mySpec = *Dep::MSSM_spectrum;
         SLHAstruct mySLHA = mySpec->getSLHAea();
 
@@ -167,6 +167,7 @@ namespace Gambit {
         modsel_block.push_back("6 3 # FV");
         mySLHA.push_back(modsel_block);
 
+        // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
 #ifdef WITH_MPI
@@ -193,10 +194,10 @@ namespace Gambit {
           BEreq::dsprep();
           result = true;  // FIXME: Need some error checks
         }
+        // Do pure diskless SLHA initialisation, including (s)particle widths from GAMBIT.
         else
         {
-          // JE's BE initialization happens here
-          if ( BEreq::initFromSLHA(byVal(mySLHA)) == 0 )
+          if ( BEreq::initFromSLHAeaAndDecayTable(mySLHA, *Dep::decay_rates) == 0 )
           {
             logger() << "Using JE's DarkSUSY BE initialization." << std::endl;
             BEreq::dsprep();
@@ -486,7 +487,8 @@ namespace Gambit {
       // Import three-body annihilation process
       ///////////////////////////////////////////
 
-      BEreq::registerMassesForIB(catalog.particleProperties);
+      //PS: commented out for now, as this can't be a backend function in its current form.
+      //BEreq::registerMassesForIB(catalog.particleProperties);
 
       // Macro for setting up 3-body decays with gammas
 #define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \

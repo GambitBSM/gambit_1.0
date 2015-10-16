@@ -186,10 +186,16 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")# ${CMAKE_CXX_FLAGS_DEBUG}")
   set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")# ${CMAKE_Fortran_FLAGS_DEBUG}")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+  # Unless invoked with FORCE_O3, drop down to -O2 optimisation for more reasonable compile time.
+  if (NOT DEFINED FORCE_O3)
+    string(REGEX REPLACE "(-O3)" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+    string(REGEX REPLACE "(-O3)" "-O2" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    string(REGEX REPLACE "(-O3)" "-O2" CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE}")  
+  endif()
   set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
   set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
   set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELEASE}")
-  # Don't send the -O3 from cmake's release build config to backends, as some are touchy.
+  # Never send the -O3 from cmake's release build config onwards to backends, as some are touchy.
   string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_C_FLAGS "${GAMBIT_C_FLAGS}")
   string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
   string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
@@ -263,11 +269,15 @@ file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit
 file(GLOB PRINTER_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printers/*.hpp"
                                   "${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
-                                  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp"
-                                  "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp"
-                                  "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
+                                  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp")
+string (REPLACE "//" "/" MODEL_HARVESTER_FILES   "${MODEL_HARVESTER_FILES}")    # (GLOB creates erroneous double slashes)                                  
+string (REPLACE "//" "/" BACKEND_HARVESTER_FILES "${BACKEND_HARVESTER_FILES}")                                    
+string (REPLACE "//" "/" PRINTER_HARVESTER_FILES "${PRINTER_HARVESTER_FILES}")                                    
+string (REPLACE "//" "/" MODULE_HARVESTER_FILES  "${MODULE_HARVESTER_FILES}")                                     
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
+list(APPEND MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml")
+set(MODULE_HARVESTER_FILES ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES})
 foreach(bit ${GAMBIT_BITS})
   if(NOT ScannerBit STREQUAL ${bit})
     set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
@@ -277,11 +287,10 @@ foreach(bit ${GAMBIT_BITS})
   endif()
 endforeach()
 remove_build_files(models_harvested backends_harvested modules_harvested printers_harvested)
-add_gambit_custom(model_harvest   models_harvested   ${MODEL_HARVESTER}   ${MODEL_HARVESTER_FILES})
-add_gambit_custom(backend_harvest backends_harvested ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
-add_gambit_custom(module_harvest  modules_harvested  ${MODULE_HARVESTER}  ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES} 
-                                                     ${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml)
-add_gambit_custom(printer_harvest printers_harvested ${PRINTER_HARVESTER} ${PRINTER_HARVESTER_FILES})
+add_gambit_custom(model_harvest   models_harvested   MODEL_HARVESTER   MODEL_HARVESTER_FILES)
+add_gambit_custom(backend_harvest backends_harvested BACKEND_HARVESTER BACKEND_HARVESTER_FILES)
+add_gambit_custom(module_harvest  modules_harvested  MODULE_HARVESTER  MODULE_HARVESTER_FILES)
+add_gambit_custom(printer_harvest printers_harvested PRINTER_HARVESTER PRINTER_HARVESTER_FILES)
 add_dependencies(module_harvest backend_harvest)
 add_dependencies(printer_harvest module_harvest)
 

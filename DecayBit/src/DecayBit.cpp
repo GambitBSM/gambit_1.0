@@ -280,6 +280,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrga, 0.0, "gamma", "gamma");
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrzga, 0.0, "gamma", "Z0");
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrw, 0.0, "W+", "W-");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrhw/2.0, 0.0, "W+", "H-");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrhw/2.0, 0.0, "W-", "H+");
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrz, 0.0, "Z0", "Z0");
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsc(1,1), 0.0, "~chi+_1", "~chi-_1");
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsc(2,2), 0.0, "~chi+_2", "~chi-_2");
@@ -394,6 +396,8 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0HH(iH,1,2)+BRoffset], 0.0, "h0_1", "h0_2");
       result.set_BF(FH_input.gammas[H0HH(iH,1,3)+BRoffset], 0.0, "h0_1", "A0");
       result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
+
+      // FH does not compute h01 --> H+W- and H-W+
 
       // sfermion decays
       result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, psn.isnel, psn.isnelbar);
@@ -575,6 +579,8 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0HH(iH,1,2)+BRoffset], 0.0, "h0_1", "h0_2");
       result.set_BF(FH_input.gammas[H0HH(iH,1,3)+BRoffset], 0.0, "h0_1", "A0");
       result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
+
+      // FH does not compute h02 --> H+W- and H-W+
 
       // sfermion decays
       result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, psn.isnel, psn.isnelbar);
