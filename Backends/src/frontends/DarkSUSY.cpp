@@ -46,6 +46,8 @@
 
 #define square(x) ((x) * (x))  // square a number
 
+//#define DARKSUSY_DEBUG
+
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE
 {
@@ -661,10 +663,12 @@ BE_NAMESPACE
     // Gravitino width (not implemented in DS).
     //widths->width(DSparticle_code("~G")) = ;
 
-    // Finish initialisation
-    int u = 6;
-    dswspectrum(u);
-    dswwidth(u);
+    #ifdef DARKSUSY_DEBUG
+      // Spit out spectrum and width files for debug purposes
+      int u = 6;
+      dswspectrum(u);
+      dswwidth(u);
+    #endif
 
     return 0;  // everything OK (hah. maybe.)
   }
