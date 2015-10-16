@@ -42,12 +42,20 @@ namespace Gambit {
       public:
         /// @brief Analyze an event.
         void analyze(const HEPUtils::Event&) const;
-        /// @brief Set cross-sections and errors for each analysis.
-        void add_xsec(double xs, double xserr);
+        /// @brief Add cross-sections and errors for two different process types
+        void add_xsec(double, double);
+        void add_xsec(const HEPUtilsAnalysisContainer& e) { add_xsec(&e); }
+        void add_xsec(const HEPUtilsAnalysisContainer*);
+        /// @brief Combine cross-sections and errors for the same process type
+        void improve_xsec(double, double);
+        void improve_xsec(const HEPUtilsAnalysisContainer& e) { improve_xsec(&e); }
+        void improve_xsec(const HEPUtilsAnalysisContainer*);
         /// @brief Add the results of all analyses from this instance to the given one.
-        void add(const HEPUtilsAnalysisContainer&); 
+        void add(const HEPUtilsAnalysisContainer& e) { add(&e); }
+        void add(const HEPUtilsAnalysisContainer*); 
         /// @brief Set cross-sections and errors for each analysis.
-        void scale(double factor);
+        /// @note If factor is negative (the default), each analysis uses its own nEvents, xsec, and luminosity to scale
+        void scale(double factor=-1);
       //@}
     };
 

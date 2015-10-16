@@ -73,6 +73,7 @@ namespace Gambit {
         _num_SR1tau=0;
         _num_SR2tau_a=0;
         _num_SR2tau_b=0;
+        set_luminosity(20.3);
 
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
@@ -183,6 +184,7 @@ namespace Gambit {
 
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
@@ -813,29 +815,6 @@ namespace Gambit {
         _num_SR1tau += specificOther->_num_SR1tau;
         _num_SR2tau_a += specificOther->_num_SR2tau_a;
         _num_SR2tau_b += specificOther->_num_SR2tau_b;
-      }
-
-
-      void finalize() {
-
-        using namespace std;
-
-        // double scale_to = 20.7*0.24*1000./cutFlowVector[0];
-        // double trigger_cleaning_eff = 0.9;
-
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        //cout << "CUT FLOW: ATLAS-CONF-2013-035 - Appendix, Table A "<<std::endl;
-        //cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-        //cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-
-        //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
-        //for(int j=0; j<NCUTS; j++) {
-	//std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to*trigger_cleaning_eff << setw(20) << 100.*cutFlowVector[j] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]<< "%" << endl;
-        //}
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-
-        //cout << "RESULTS 2LEP " << _numSRM90SF << " " << _numSRM100SF << " " << _numSRM110SF << " " << _numSRM120SF << " " << _numSRM90DF << " " << _numSRM100DF << " " << _numSRM110DF << " " << _numSRM120DF << endl;
-
       }
 
 

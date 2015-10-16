@@ -42,6 +42,7 @@ namespace Gambit {
         : _num250(0),_num300(0),_num350(0),_num400(0),_num450(0),_num500(0),_num550(0),
           NCUTS(12)
       {
+        set_luminosity(19.7);
         for (int i=0; i<NCUTS; i++) {
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
@@ -63,6 +64,7 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
         //HEPUtils::P4 ptot = event->missingmom();
@@ -203,24 +205,6 @@ namespace Gambit {
         _num550 += specificOther->_num550;
       }
 
-
-      void finalize() {
-
-        using namespace std;
-
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        //cout << "CUT FLOW" <<std::endl;
-        //cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-
-        //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << endl;
-        //for(int j=0; j<NCUTS; j++) {
-	//std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << endl;
-        //}
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-
-        //cout << "RESULTS MONOJET " << _num250 << " " << _num300 << " " << _num350 << " " << _num400 << " " << _num450 << " " << _num500 << " " << _num550 << endl;
-
-      }
 
       double loglikelihood() {
         /// @todo Implement!

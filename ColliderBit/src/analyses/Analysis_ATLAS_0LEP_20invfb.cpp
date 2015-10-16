@@ -37,6 +37,7 @@ namespace Gambit {
         _num6jm=0;_num6jt=0;_num6jtp=0;
 
         NCUTS=60;
+        set_luminosity(20.3);
 
         for (size_t i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
@@ -338,27 +339,6 @@ namespace Gambit {
         _num6jm += specificOther->_num6jm;
         _num6jt += specificOther->_num6jt;
         _num6jtp += specificOther->_num6jtp;
-      }
-
-
-      void finalize() {
-
-        // // const double scale_by = xsec() * 20.3*1000 / num_events();
-        // const double scale_by = xsec() * 20.3*1000 / cutFlowVector[0];
-        //cout << "XXXXXX " << cutFlowVector[0] << " " << num_events() << " " << xsec() << " " << endl;
-        //0.0244*1000.*20.1; //sigma * L
-        //double trigger_cleaning_eff = 0.90;
-
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<endl;
-        //cout << "CUT FLOW: ATLAS 0 lepton paper "<<endl;
-        //cout << "------------------------------------------------------------------------------------------------------------------------------"<<endl;
-
-        //cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
-        //for (size_t j=0; j<NCUTS; j++) {
-	//cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_by << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << cutFlowVector[j]*scale_by << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
-        //}
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<endl;
-
       }
 
 

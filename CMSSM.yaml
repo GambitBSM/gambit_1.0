@@ -18,16 +18,16 @@ Parameters:
 
   CMSSM:
     M0:
-      range: [550, 6000]
-      prior_type: flat
+      range: [100, 5000]
+      prior_type: log
     M12:
-      range: [300, 1000]
-      prior_type: flat
+      range: [100, 5000]
+      prior_type: log
     A0:
-      range: [-4000, 4000]
+      range: [-7000, 7000]
       prior_type: flat
     TanBeta:
-      range: [2, 100]
+      range: [3.0, 70]
       prior_type: flat
     SignMu: 1
  
@@ -71,9 +71,6 @@ ObsLikes:
     - capability: lnL_oh2
       purpose:    Likelihood 
 
-    - capability: RD_oh2
-      purpose:    Observable
-
     - capability: lnL_FermiLATdwarfs
       purpose:    Likelihood
 
@@ -83,8 +80,8 @@ ObsLikes:
     - capability: lnL_LUX_2013
       purpose:    Likelihood
       
-    - capability: IC79_loglike
-      purpose:    Likelihood
+    #- capability: IC79_loglike
+    #  purpose:    Likelihood
 
     - capability: lnL_t_mass
       purpose:    Likelihood
@@ -111,28 +108,25 @@ ObsLikes:
     - capability: lnL_light_quark_masses
       purpose:    Likelihood
 
+    # FlavBit likelihoods
+    - purpose:    Likelihood
+      capability: b2ll_LL
 
-    # FlavBit likelihoods (comment out until fixed)
+    - purpose:    Likelihood
+      capability: SL_LL
 
- #   - purpose:    Likelihood
- #     capability: b2ll_LL
-
- #   - purpose:    Likelihood
- #     capability: SL_LL
-
- #   - purpose:    Likelihood
- #     capability: b2sll_LL
+    - purpose:    Likelihood
+      capability: b2sll_LL
 
     # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
     - capability: lnL_SI_nuclear_parameters
       purpose:    Likelihood
         
-    - purpose:    Likelihood
-      capability: LHC_Combined_LogLike
+    #- purpose:    Likelihood
+    #  capability: LHC_Combined_LogLike
 
     - purpose:    Observable
       capability: SLHA1_violation
-
 
     - purpose:    Likelihood
       capability: ALEPH_Selectron_LLike
@@ -185,6 +179,28 @@ ObsLikes:
     - purpose:    Likelihood
       capability: HS_LHC_lnL
 
+
+    - capability: RD_oh2
+      purpose:    Observable
+
+    - capability: mwimp
+      purpose:    Observable
+
+    - capability: sigmav
+      purpose:    Observable
+
+    - capability: sigma_SI_p
+      purpose:    Observable
+
+    - capability: sigma_SI_n
+      purpose:    Observable
+
+    - capability: sigma_SD_p
+      purpose:    Observable
+
+    - capability: sigma_SD_n
+      purpose:    Observable
+
     # Missing:
     # CMB+HESS likelihoods
 
@@ -193,20 +209,20 @@ Rules:
 
   # Choose to implement the relic density as an upper bound, not a detection
   - capability: lnL_oh2
-    function: lnL_oh2_upperlimit
-
+    function: lnL_oh2_Simple
+    
   # Use the DarkBit native relic density calculator
   #- capability: RD_oh2
   #  function: RD_oh2_general
   
-  # Use DarkSUSY for the relic density
+  # Use DarkSUSY or MicrOmegas for the relic density?
   - capability: RD_oh2
-    function: RD_oh2_DarkSUSY
-    #function: RD_oh2_MicrOmegas
+    #function: RD_oh2_DarkSUSY
+    function: RD_oh2_MicrOmegas
     options:
       fast: 1
       omtype: 1
-      #Beps: 1e-5
+      Beps: 1e-5
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
   - capability: lnL_FermiLATdwarfs
@@ -214,13 +230,13 @@ Rules:
 
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
-    function: SimYieldTable_DarkSUSY
-    #function: SimYieldTable_MicrOmegas
+    #function: SimYieldTable_DarkSUSY
+    function: SimYieldTable_MicrOmegas
 
   # Choose to use function that calls DarkSUSY for calculating direct detection couplings
   - capability: DD_couplings
-    function: DD_couplings_DarkSUSY
-    #function: DD_couplings_MicrOmegas
+    #function: DD_couplings_DarkSUSY
+    function: DD_couplings_MicrOmegas
 
   # Choose to get decays from DecayBit proper, not from an SLHA file.
   - capability: decay_rates
@@ -244,7 +260,6 @@ Rules:
       use_higgs_2loop_at_at: true
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
-
 
   # Choose to take the spectrum generator prediction for the Higgs mass (rather then FeynHiggs')
   # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along 
@@ -285,7 +300,7 @@ Rules:
       # m_u/m_d
       mud_central: 0.48
       mud_error: 0.10
-      # m_s / (m_u + m_d)
+      # m_s / ((m_u + m_d)/2)
       msud_central: 27.5
       msud_error: 1.0
       # m_s
