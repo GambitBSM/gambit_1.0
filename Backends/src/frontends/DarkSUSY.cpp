@@ -720,9 +720,9 @@ BE_NAMESPACE
       initVector<str>("t", "dbar"),
       initVector<str>("t", "sbar"),
       initVector<str>("t", "bbar"),
-      initVector<str>("e-", "nu_e"),
-      initVector<str>("mu-", "nu_mu"),
-      initVector<str>("tau-", "nu_tau"),
+      initVector<str>("e+", "nu_e"),
+      initVector<str>("mu+", "nu_mu"),
+      initVector<str>("tau+", "nu_tau"),
       initVector<str>("W+", "h0_2"),
       initVector<str>("W+", "h0_1"),
       initVector<str>("W+", "A0")     
