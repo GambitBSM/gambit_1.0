@@ -298,5 +298,3 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-
-  default_output_path: "runs/multinest_CMSSM_collider/"
