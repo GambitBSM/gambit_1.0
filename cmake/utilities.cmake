@@ -165,18 +165,17 @@ macro(strip_library KEY LIBRARIES)
 endmacro()
 
 # Function to add a GAMBIT custom command and target
-function(add_gambit_custom target filename HARVESTER HARVESTER_FILES OTHER_DEPS) 
+macro(add_gambit_custom target filename HARVESTER DEPS) 
   add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${filename}
-                     COMMAND python ${HARVESTER} -x __not_a_real_name__,${itch_with_commas}
+                     COMMAND python ${${HARVESTER}} -x __not_a_real_name__,${itch_with_commas}
                      COMMAND touch ${CMAKE_BINARY_DIR}/${filename}
                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                     DEPENDS ${HARVESTER}
+                     DEPENDS ${${HARVESTER}}
                              ${HARVEST_TOOLS}
-                             ${HARVESTER_FILES}
                              ${PROJECT_BINARY_DIR}/CMakeCache.txt
-                             ${OTHER_DEPS})
+                             ${${DEPS}})
   add_custom_target(${target} DEPENDS ${CMAKE_BINARY_DIR}/${filename})
-endfunction()
+endmacro()
 
 # Function to remove specific GAMBIT build files
 function(remove_build_files)

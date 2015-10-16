@@ -88,7 +88,6 @@ BE_FUNCTION(dshigwid, void, (), "dshigwid_", "dshigwid")
 BE_FUNCTION(dsspwid, void, (), "dsspwid_", "dsspwid")
 
 // Variables
-// Below are output (slightly modified) from cbgb.py, the ones already specified are commented out further below
 BE_VARIABLE(DS_PACODES, pacodes, "pacodes_", "pacodes")
 BE_VARIABLE(DS_MSSMIUSEFUL, mssmiuseful, "mssmiuseful_", "mssmiuseful")
 BE_VARIABLE(DS_MSPCTM, mspctm, "mspctm_", "mspctm")
@@ -106,31 +105,21 @@ BE_VARIABLE(DS_MSSMSWITCH, mssmswitch, "mssmswitch_", "mssmswitch")
 BE_VARIABLE(DS_SFERMIONMASS, sfermionmass, "sfermionmass_", "sfermionmass")
 BE_VARIABLE(DS_MSSMWIDTHS, mssmwidths, "mssmwidths_", "mssmwidths")
 BE_VARIABLE(DS_MSSMMIXING, mssmmixing, "mssmmixing_", "mssmmixing")
-
-// TODO: Replace darksusy types with appropriate commonblock representations and use FORT_COMMONB macros here
-//BE_VARIABLE(DS_MSSMPAR, mssmpar,   "mssmpar_",   "mssmpar")   // Required to set up e.g. MSSM7
-// Only read from
-//BE_VARIABLE(DS_MSPCTM, mspctm,     "mspctm_",    "mspctm")    // Mass spectrum
-//BE_VARIABLE(DS_INTDOF, intdof,     "intdof_",    "intdof")    // Particle degrees of freedom
-//BE_VARIABLE(DS_PACODES, pacodes,   "pacodes_",   "pacodes")   // Particles codes (mapped onto mssmpar etc)
 // Used in RD_eff_annrate_SUSY_DSprep_func, RD_oh2_general and RD_thresholds_resonances_SingletDM
-BE_VARIABLE(DS_RDMGEV, rdmgev,     "rdmgev_",    "rdmgev")    // more RD Contains information about coannihilation
-// Used in RD_oh2_general and RD_spectrum_SUSY
-// This is only written to for some narrow-width approximation to the SM higgs
-//BE_VARIABLE(DS_WIDTHS, widths,     "widths_",    "widths")    // Particle widths
+BE_VARIABLE(DS_RDMGEV, rdmgev,     "rdmgev_",    "rdmgev")    // Contains information about coannihilation
 // Appears only in RD_oh2_general
 BE_VARIABLE(DS_RDPTH, rdpth,       "rdpth_",     "rdpth")     // gRD thresholds
 BE_VARIABLE(DS_RDDOF, rddof,       "rddof_",     "rddof")     // gRD dofs
 BE_VARIABLE(DS_RDERRORS, rderrors, "rderrors_", "rderrors")   // gRD errors
 BE_VARIABLE(DS_RDPARS, rdpars,     "rdpars_",    "rdpars")    // gRD Parameters 
 BE_VARIABLE(DS_RDSWITCH, rdswitch, "rdswitch_",  "rdswitch")  // gRD Switches
-BE_VARIABLE(DS_RDLUN, rdlun,       "rdlun_",     "rdlun")     // gRD ???
-BE_VARIABLE(DS_RDPADD, rdpadd,     "rdpadd_",    "rdpadd")    // gRD ???
+BE_VARIABLE(DS_RDLUN, rdlun,       "rdlun_",     "rdlun")     // gRD I/O
+BE_VARIABLE(DS_RDPADD, rdpadd,     "rdpadd_",    "rdpadd")    // gRD I/O
 // IB stuff
 BE_VARIABLE(DS_IBINTVARS,IBintvars,"ibintvars_", "IBintvars")
-// Direct detection common block
+// Direct detection 
 BE_VARIABLE(DS_DDCOM, ddcom, "ddcom_",    "ddcom")
-// Neutrino detection common block
+// Neutrino detection
 BE_VARIABLE(DS_NUCOM, wabranch, "wabranch_", "nu_common_block")
 
 // Convenience functions (registration)
@@ -139,9 +128,11 @@ BE_CONV_FUNCTION(dsgenericwimp_nusetup, void, (const double(&)[29], const double
                                                const double(&)[3], const double&, const double&, const double&,
                                                const double&, const double&), "nuyield_setup")
 BE_CONV_FUNCTION(DSparticle_code, int, (const str&), "particle_code")
-BE_CONV_FUNCTION(initFromSLHA, int, (SLHAstruct), "initFromSLHA")
-BE_CONV_FUNCTION(registerMassesForIB, 
-    void, (std::map<std::string, DarkBit::TH_ParticleProperty>&), "registerMassesForIB")
+BE_CONV_FUNCTION(init_diskless, int, (const SLHAstruct&, const DecayTable&), "initFromSLHAeaAndDecayTable")
+BE_CONV_FUNCTION(DS_neutral_h_decay_channels, std::vector<std::vector<str>>, (), "get_DS_neutral_h_decay_channels")
+BE_CONV_FUNCTION(DS_charged_h_decay_channels, std::vector<std::vector<str>>, (), "get_DS_charged_h_decay_channels")
+// PS: these two need to be redesigned
+//BE_CONV_FUNCTION(registerMassesForIB, void, (std::map<std::string, DarkBit::TH_ParticleProperty>&), "registerMassesForIB")
 BE_CONV_FUNCTION(setMassesForIB, void, (bool), "setMassesForIB")
 
 // Undefine macros to avoid conflict with other backends
