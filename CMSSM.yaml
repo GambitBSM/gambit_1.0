@@ -122,8 +122,8 @@ ObsLikes:
     - capability: lnL_SI_nuclear_parameters
       purpose:    Likelihood
         
-    - purpose:    Likelihood
-      capability: LHC_Combined_LogLike
+    #- purpose:    Likelihood
+    #  capability: LHC_Combined_LogLike
 
     - purpose:    Observable
       capability: SLHA1_violation

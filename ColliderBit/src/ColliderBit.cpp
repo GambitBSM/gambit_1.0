@@ -97,10 +97,7 @@ namespace Gambit
     void operateLHCLoop()
     {
       using namespace Pipes::operateLHCLoop;
-<<<<<<< HEAD
       int currentEvent;
-=======
->>>>>>> master
       nEvents = 0;
       // Set allProcessesVetoed to false once some events are generated.
       allProcessesVetoed = true;
