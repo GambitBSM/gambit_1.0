@@ -97,10 +97,7 @@ namespace Gambit
     void operateLHCLoop()
     {
       using namespace Pipes::operateLHCLoop;
-<<<<<<< HEAD
       int currentEvent;
-=======
->>>>>>> master
       nEvents = 0;
       // Set allProcessesVetoed to false once some events are generated.
       allProcessesVetoed = true;
@@ -142,17 +139,8 @@ namespace Gambit
               currentEvent++;
               Loop::executeIteration(currentEvent);
             }
-            // @todo Remove testing couts
-            if (omp_get_thread_num() == 0) {
-              std::cout << "\n$$$ Loop manager claims to have generated "
-                        << currentEvent << " events.";
-            }
             Loop::executeIteration(END_SUBPROCESS);
           }
-          // @todo Remove testing couts
-          std::cout << "\n\n\n\n Operation of Pythia named " << *iter
-                    << " number " << std::to_string(pythiaNumber)
-                    << " has finished." << std::endl;
           #ifdef HESITATE
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
@@ -802,7 +790,7 @@ namespace Gambit
           SignalRegionData srData = analysisResults[analysis][SR];
 
           // Actual observed number of events
-          const int n_obs = (int) srData.n_observed;
+          const int n_obs = (int) round(srData.n_observed);
 
           // A contribution to the predicted number of events that is known exactly
           // (e.g. from data-driven background estimate)
@@ -812,17 +800,13 @@ namespace Gambit
           const double n_predicted_uncertain_b = srData.n_background;
           const double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
 
-          // A fractional uncertainty on n_predicted_uncertain e.g. 0.2 from 20% uncertainty on efficencty wrt signal events
-          const double bkg_ratio = srData.background_sys/srData.n_background;
-          const double uncertainty_b = bkg_ratio;
+          // Relative error for n_predicted_uncertain
+          const double uncertainty_b = srData.background_sys/srData.n_background;
           const double uncertainty_sb = sqrt(srData.background_sys*srData.background_sys + srData.signal_sys*srData.signal_sys) / n_predicted_uncertain_sb;
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
-          // cout << "OBS " << n_obs << " EXACT " << n_predicted_exact
-          //      << " UNCERTAIN_B "   << n_predicted_uncertain_b  << " UNCERTAINTY_B "   << uncertainty_b
-          //      << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             llb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
@@ -837,7 +821,6 @@ namespace Gambit
             llb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
             llsb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          //cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
           // Calculate the expected dll and set the bestexp values for exp and obs dll if this one is the best so far
           const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention -> more exclusion here
@@ -846,6 +829,13 @@ namespace Gambit
             bestexp_dll_obs = llb_obs - llsb_obs;
           }
 
+          /* if (bestexp_dll_obs < 0) {
+            cout << "OBS " << n_obs << " EXACT " << n_predicted_exact
+                 << " UNCERTAIN_B "   << n_predicted_uncertain_b  << " UNCERTAINTY_B "   << uncertainty_b
+                 << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
+            cout << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
+            cout << "Turns out that DELTA log likes are totally allowed to be positive.\n\n";
+          } */
         } // end SR loop
 
         // Update the total obs dll
