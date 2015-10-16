@@ -241,8 +241,7 @@ Rules:
 
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
-    #function: SimYieldTable_DarkSUSY
-    function: SimYieldTable_MicrOmegas
+    function: SimYieldTable_DarkSUSY
 
   # Choose to use function that calls DarkSUSY for calculating direct detection couplings
   - capability: DD_couplings
