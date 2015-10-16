@@ -1215,7 +1215,7 @@ namespace Gambit
     }
     void Debug_LL(bool &deb)
     {
-      #ifdef FLAVBIT_DEBUG
+      #ifdef FLAVBIT_DEBUG_LL
         deb=true;
       #else
         deb=false;
