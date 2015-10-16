@@ -449,6 +449,70 @@ namespace Gambit
 
     /// Global instance of piped invalid point class.
     Piped_invalid_point piped_invalid_point;
+        
+    /// Request a piped exception.
+    void Piped_exceptions::request(std::string origin, std::string message)
+    {
+      #pragma omp critical (GAMBIT_piped_exception)
+      {
+        if(exceptions.size() < maxExceptions)
+          this->exceptions.push_back(description(origin,message));
+        this->flag = true;
+      }
+    }
+
+    /// Request a piped exception.
+    void Piped_exceptions::request(description desc)
+    {
+      this->request(desc.first, desc.second);
+    }    
+
+    /// Check whether any exceptions were requested, and raise them.
+    void Piped_exceptions::check(exception &excep)
+    {
+      if (omp_get_level()==0) // If not in an OpenMP parallel block, throw onwards
+      {    
+        if (this->flag == true)
+        {
+          // Raise all exceptions (only the first if they are fatal)
+          for(size_t i= 0; i < std::min(exceptions.size(),maxExceptions); i++)
+          {
+            excep.raise(exceptions.at(i).first, exceptions.at(i).second);
+          }
+          // Reset
+          this->flag = false;          
+          exceptions.clear();
+        }
+      }
+      else
+      {
+        #pragma omp critical (GABMIT_exception)
+        {        
+          cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;          
+          cout << "GAMBIT has exited with fatal exception: Piped_exceptions::check() called inside an OpenMP block." << endl
+              << "Piped exceptions may be requested inside OpenMP blocks, but should only be checked outside the block." << endl
+              << "Exceptions stored: " << endl << endl;
+          for(size_t i= 0; i < std::min(exceptions.size(),maxExceptions); i++)
+          {
+            cout << exceptions.at(i).second << endl
+                 << "\nRaised at: " << exceptions.at(i).first << "." << endl << endl;
+          }
+          abort();
+        }     
+      }
+    }
+    
+    /// Check whether any exceptions were requested without handling them.
+    bool Piped_exceptions::inquire()
+    {
+      return this->flag;
+    }    
+
+    /// Global instance of Piped_exceptions class for errors.
+    Piped_exceptions piped_errors(1000);
+
+    /// Global instance of Piped_exceptions class for warnings.
+    Piped_exceptions piped_warnings(1000);
 }
 
 

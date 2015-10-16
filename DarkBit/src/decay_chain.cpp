@@ -330,9 +330,9 @@ namespace Gambit
       {
         if(!randInit) 
         {
-          DarkBit_warning().raise(LOCAL_INFO, 
-              "Generating rand table at runtime. This should have happened\n"
-              "during initialization, and might not be threadsafe here.");
+          piped_warnings.request(LOCAL_INFO, 
+            "Generating rand table at runtime. This should have happened\n"
+            "during initialization, and might not be threadsafe here.");
           generateRandTable();
         }            
         vector<double>::const_iterator pos = upper_bound(randLims.begin(),
@@ -404,9 +404,9 @@ namespace Gambit
       {   
         if(in->nFinalStates > 2) 
         {
-          DarkBit_warning().raise(LOCAL_INFO,
-              "Trying to add decay with >2 final states to DecayTableEntry.\n"
-              "Channel added as disabled.");
+          piped_warnings.request(LOCAL_INFO,
+            "Trying to add decay with >2 final states to DecayTableEntry.\n"
+            "Channel added as disabled.");
           addDisabled(in);
           return;
         }
@@ -424,9 +424,9 @@ namespace Gambit
         // N>2 body decays currently not possible.
         if(in->nFinalStates > 2) 
         {
-          DarkBit_warning().raise(LOCAL_INFO,
-              "Trying to enable decay with >2 final states in decay chain.\n"
-              "Request ignored.");
+          piped_warnings.request(LOCAL_INFO,
+            "Trying to enable decay with >2 final states in decay chain.\n"
+            "Request ignored.");
           return false;
         }
         bool found = false;
@@ -505,11 +505,18 @@ namespace Gambit
           //  << std::endl;
           // std::cout << "Final state of interest: " << pID << std::endl;
           double m = cat.getParticleProperty(pID).mass;
+          double width = it->genRateTotal->bind()->eval();
           bool stable = ((it->channelList).size()<1);
           if(disabledList.count(pID)==1) stable = true;
           // If tabulated spectra exist for decays of this particle, consider
           // it stable for the purpose of decay chain generation.
-          if(tab.hasAnyChannel(pID)) stable = true;             
+          if(tab.hasAnyChannel(pID)) stable = true;  
+          if(!stable and (width <=0.0))
+          {
+             piped_warnings.request(LOCAL_INFO,
+               "Unstable particle "+pID+" with zero width in decay table. Treating it as stable in cascade decays.");             
+             stable = true;
+          }           
           // Create DecayTableEntry and insert decay channels
           DecayTableEntry entry(pID,m,stable);
           for(vector<TH_Channel>::const_iterator it2 = (
@@ -534,7 +541,13 @@ namespace Gambit
           }
           // Use specified total width (instead of summing widths of registered
           // channels).
-          entry.forceTotalWidth(true,it->genRateTotal->bind()->eval());
+          entry.forceTotalWidth(true,width);
+          if(entry.enabledDecays.size() == 0)
+          {
+            piped_warnings.request(LOCAL_INFO,
+              "Unstable particle "+pID+" has no available decay channels. Treating it as stable in cascade decays.");             
+            entry.stable = true;
+          }          
           addEntry(pID,entry);
           // std::cout << "Add entry for: " << table.begin()->first << std::endl;
         }
@@ -604,8 +617,8 @@ namespace Gambit
         }
         catch (std::out_of_range& e)
         {
-          DarkBit_error().raise(LOCAL_INFO,
-              "No partcile "+pID+" in decay table.");
+          throw(Piped_exceptions::description(LOCAL_INFO,
+                "No partcile "+pID+" in decay table."));
         }
         return ans;
       }  
@@ -618,8 +631,8 @@ namespace Gambit
         }
         catch (std::out_of_range& e)
         {
-          DarkBit_error().raise(LOCAL_INFO,
-              "No partcile "+i+" in decay table.");
+          throw(Piped_exceptions::description(LOCAL_INFO,
+                "No partcile "+i+" in decay table."));
         }
         return *ent;
       }
@@ -694,8 +707,8 @@ namespace Gambit
       {
         if(nChildren!=0)
         {
-          DarkBit_warning().raise(LOCAL_INFO,
-              "Overwriting existing decay in decay chain.");
+          piped_warnings.request(LOCAL_INFO,
+            "Overwriting existing decay in decay chain.");
           cutChain();
         }
         // Stable particles flagged as endpoints
@@ -711,8 +724,8 @@ namespace Gambit
           bool canDecay = decayTable->randomDecay(pID, chn); 
           if(!canDecay)
           {
-            DarkBit_warning().raise(LOCAL_INFO,
-                "Unable to pick allowed decay for "+ pID+". Keeping particle stable.");
+            piped_warnings.request(LOCAL_INFO,
+              "Unable to pick allowed decay for "+ pID+". Keeping particle stable.");
             abortedDecay = true;
             return;
           }
@@ -722,7 +735,7 @@ namespace Gambit
             string err;
             err = "Invalid decay channel in decay table.\n";
             err+= "N!=2 body decays are currently not supported in cascade decays.\n";
-            DarkBit_error().raise(LOCAL_INFO, err);
+            throw(Piped_exceptions::description(LOCAL_INFO,err));
             return;
           }
           nChildren = 2; // chn->nFinalStates;
@@ -738,7 +751,7 @@ namespace Gambit
               ((chn->finalStateIDs)[0]) << ", " << ((chn->finalStateIDs)[1]) << "\n" <<
               "Please check your process catalog." << endl;
             err << "Relevant particle masses: " << m << " -> " << m1 << " + " << m2;
-            DarkBit_error().raise(LOCAL_INFO, err.str());
+            throw(Piped_exceptions::description(LOCAL_INFO, err.str()));
           }           
           const double &Etot = m;
           double E1 = 0.5*(Etot*Etot+m1*m1-m2*m2)/Etot;
@@ -845,8 +858,8 @@ namespace Gambit
           return children[i];
         else
         {
-          DarkBit_error().raise(LOCAL_INFO,
-              "Trying to access non-existing decay chain entry.");
+          throw(Piped_exceptions::description(LOCAL_INFO,
+                "Trying to access non-existing decay chain entry."));
           return this;
         }            
       }        
