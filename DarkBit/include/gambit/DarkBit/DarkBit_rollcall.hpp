@@ -74,7 +74,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*) 
-      DEPENDENCY(all_decays, DecayTable) 
+      DEPENDENCY(decay_rates, DecayTable) 
       ALLOW_MODELS(CMSSM,MSSM30atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
@@ -374,9 +374,9 @@ START_MODULE
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(IBintvars, (), DS_IBINTVARS)
-
-      BACKEND_REQ(registerMassesForIB, (), void, 
-          (std::map<std::string, DarkBit::TH_ParticleProperty>&))
+      //PS: commented out for now, as this can't be a backend function in its current form.
+      //BACKEND_REQ(registerMassesForIB, (), void, 
+      //    (std::map<std::string, DarkBit::TH_ParticleProperty>&))
       BACKEND_REQ(setMassesForIB, (), void, (bool))
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM

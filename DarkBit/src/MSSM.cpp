@@ -197,7 +197,7 @@ namespace Gambit {
         // Do pure diskless SLHA initialisation, including (s)particle widths from GAMBIT.
         else
         {
-          if ( BEreq::initFromSLHAeaAndDecayTable(mySLHA, *Dep::all_decays) == 0 )
+          if ( BEreq::initFromSLHAeaAndDecayTable(mySLHA, *Dep::decay_rates) == 0 )
           {
             logger() << "Using JE's DarkSUSY BE initialization." << std::endl;
             BEreq::dsprep();
@@ -487,7 +487,8 @@ namespace Gambit {
       // Import three-body annihilation process
       ///////////////////////////////////////////
 
-      BEreq::registerMassesForIB(catalog.particleProperties);
+      //PS: commented out for now, as this can't be a backend function in its current form.
+      //BEreq::registerMassesForIB(catalog.particleProperties);
 
       // Macro for setting up 3-body decays with gammas
 #define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \

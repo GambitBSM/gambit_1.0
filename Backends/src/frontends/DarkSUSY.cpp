@@ -227,9 +227,9 @@ BE_NAMESPACE
      kpart=15;
     }else if (particleID=="g"){
      kpart=16;
-    }else if (particleID=="h0_1"){ // FIXME: when is this not true?
+    }else if (particleID=="h0_1"){
      kpart=18;
-    }else if (particleID=="h0_2"){ // FIXME: when is this not true?
+    }else if (particleID=="h0_2"){
      kpart=17;
     }else if (particleID=="A0"){
      kpart=19;
@@ -440,7 +440,6 @@ BE_NAMESPACE
     mspctm->mass(DSparticle_code("H+"))   =  to<double>(mySLHA.at("MASS").at(37).at(1));
 
     // SUSY particles
-    // JE CHECK: Do I get the six sfermion masses in the correct order?
     mspctm->mass(DSpart->ksnu(1)) =  to<double>(mySLHA.at("MASS").at(1000012).at(1));
     mspctm->mass(DSpart->ksnu(2)) =  to<double>(mySLHA.at("MASS").at(1000014).at(1));
     mspctm->mass(DSpart->ksnu(3)) =  to<double>(mySLHA.at("MASS").at(1000016).at(1));
@@ -601,28 +600,26 @@ BE_NAMESPACE
     const static std::vector< std::vector<str> > neutral_channels = DS_neutral_h_decay_channels();
     const static std::vector<str> sister_chan = initVector<str>("W+", "H-");
     const static std::vector<str> missing_chan = initVector<str>("W-", "H+");
+    const DecayTable::Entry& h01 = myDecays.at(std::pair<int,int>(25,0));
+    const DecayTable::Entry& h02 = myDecays.at(std::pair<int,int>(35,0));
+    const DecayTable::Entry& A0  = myDecays.at(std::pair<int,int>(36,0));
+    const DecayTable::Entry& Hpm = myDecays.at(std::pair<int,int>(37,0));
     for (unsigned int i = 0; i < neutral_channels.size(); i++)
     {
-      mssmwidths->hdwidth(i+1,2) = widths->width(DSparticle_code("h0_1")) 
-       * myDecays.at(std::pair<int,int>(25,0)).BF(neutral_channels[i]);
-      mssmwidths->hdwidth(i+1,1) = widths->width(DSparticle_code("h0_2")) 
-       * myDecays.at(std::pair<int,int>(35,0)).BF(neutral_channels[i]);
-      mssmwidths->hdwidth(i+1,3) = widths->width(DSparticle_code("A0")) 
-       * myDecays.at(std::pair<int,int>(36,0)).BF(neutral_channels[i]);
-      if (neutral_channels[i] == sister_chan) // Add the missing W-H+ contributions.
-      {
-        mssmwidths->hdwidth(i+1,2) += widths->width(DSparticle_code("h0_1")) 
-         * myDecays.at(std::pair<int,int>(25,0)).BF(missing_chan);
-        mssmwidths->hdwidth(i+1,1) = widths->width(DSparticle_code("h0_2")) 
-         * myDecays.at(std::pair<int,int>(35,0)).BF(missing_chan);
-        mssmwidths->hdwidth(i+1,3) = widths->width(DSparticle_code("A0")) 
-         * myDecays.at(std::pair<int,int>(36,0)).BF(missing_chan);
+      const std::vector<str>& chan = neutral_channels[i];
+      mssmwidths->hdwidth(i+1,2) = (h01.has_channel(chan) ? widths->width(DSparticle_code("h0_1")) * h01.BF(chan) : 0.0);
+      mssmwidths->hdwidth(i+1,1) = (h02.has_channel(chan) ? widths->width(DSparticle_code("h0_2")) * h02.BF(chan) : 0.0);
+      mssmwidths->hdwidth(i+1,3) = (A0.has_channel(chan)  ? widths->width(DSparticle_code("A0"))   * A0.BF(chan)  : 0.0);
+      if (neutral_channels[i] == sister_chan)
+      { // Add the missing W-H+ contributions.
+        mssmwidths->hdwidth(i+1,2) = (h01.has_channel(missing_chan) ? widths->width(DSparticle_code("h0_1")) * h01.BF(missing_chan) : 0.0);
+        mssmwidths->hdwidth(i+1,1) = (h02.has_channel(missing_chan) ? widths->width(DSparticle_code("h0_2")) * h02.BF(missing_chan) : 0.0);
+        mssmwidths->hdwidth(i+1,3) = (A0.has_channel(missing_chan)  ? widths->width(DSparticle_code("A0"))   * A0.BF(missing_chan)  : 0.0);
       }
     }
     for (unsigned int i = 0; i < charged_channels.size(); i++)
     {      
-      mssmwidths->hdwidth(i,4) = widths->width(DSparticle_code("H+")) 
-       * myDecays.at(std::pair<int,int>(37,0)).BF(charged_channels[i]);
+      mssmwidths->hdwidth(i+1,4) = (Hpm.has_channel(charged_channels[i]) ? widths->width(DSparticle_code("H+")) * Hpm.BF(charged_channels[i]) : 0.0);
     }
 
     // Set up sfermion widths
@@ -723,9 +720,9 @@ BE_NAMESPACE
       initVector<str>("t", "dbar"),
       initVector<str>("t", "sbar"),
       initVector<str>("t", "bbar"),
-      initVector<str>("e", "nu_e"),
-      initVector<str>("mu", "nu_mu"),
-      initVector<str>("tau", "nu_tau"),
+      initVector<str>("e-", "nu_e"),
+      initVector<str>("mu-", "nu_mu"),
+      initVector<str>("tau-", "nu_tau"),
       initVector<str>("W+", "h0_2"),
       initVector<str>("W+", "h0_1"),
       initVector<str>("W+", "A0")     
@@ -747,31 +744,32 @@ BE_NAMESPACE
       GAMBITparticle_mass.push_back(particleProperties.at(IBfinalstate[i]).mass);
     }
   }
+*/
 
-  PS: this can't compile anyway, as particleProperties is not defined
+  //PS: this can't compile anyway, as particleProperties is not defined
   void setMassesForIB(bool set) 
   {
     if (set)
     {
-      // Set masses in DS, using above global variables.
+    /*  // Set masses in DS, using above global variables.
       for (unsigned int i = 0; i < IBfinalstate.size(); i++ )
       {
         mspctm->mass(DSparticle_code(IBfinalstate[i])) =
           particleProperties.at(IBfinalstate[i]).mass;
       }
-
+    */
     }
     else
     {
-      // Reset masses.
+    /*  // Reset masses.
       for (int i = 0; i < IBfinalstate.size(); i++ )
       {
         particleProperties.at(IBfinalstate[i]).mass =
             mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i]));
-      }
+      } */
     }
   }
-*/
+
 
 }
 END_BE_NAMESPACE
