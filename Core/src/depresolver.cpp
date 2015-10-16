@@ -216,9 +216,6 @@ namespace Gambit
     /// Global flag for regex use
     bool use_regex;
 
-    /// Global flag for triggering printing of timing data
-    bool print_timing;
-
     // Return runtime estimate for a set of nodes
     double getTimeEstimate(const std::set<VertexID> & vertexList, const DRes::MasterGraphType &graph)
     {
@@ -615,6 +612,9 @@ namespace Gambit
         //masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
       }
     }
+
+    /// Getter for print_timing flag (used by LikelihoodContainer)
+    bool DependencyResolver::printTiming() { return print_timing; }
 
     // Ensure that the type of a given vertex is equivalent to at least one of a provided list, and return the match.
     str DependencyResolver::checkTypeMatch(VertexID vertex, const str& purpose, const std::vector<str>& types)

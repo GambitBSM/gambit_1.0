@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
       Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   
       //Define the likelihood container object for the scanner
-      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, prior);
+      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, prior, *(printerManager.printerptr));
  
       //Create the master scan manager 
       Scanner::Scan_Manager scan(&factory, iniFile.getScannerNode(), &prior, &printerManager);

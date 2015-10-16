@@ -36,6 +36,7 @@
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/util_types.hpp"
+#include "gambit/Printers/basebaseprinter.hpp"
 #include "gambit/ScannerBit/priors_rollcall.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/scan.hpp"
@@ -48,7 +49,7 @@ namespace Gambit
   registry
   {
     typedef void* factory_type(const std::map<str, primary_model_functor *> &, 
-     DRes::DependencyResolver &b, IniParser::IniFile &c, Priors::CompositePrior &d, const str &purpose);
+     DRes::DependencyResolver &b, IniParser::IniFile &c, Priors::CompositePrior &d, const str &purpose, Printers::BaseBasePrinter& p);
     reg_elem <factory_type> __scanner_factories__;
   }
   
@@ -59,10 +60,11 @@ namespace Gambit
       Priors::CompositePrior &prior;
       IniParser::IniFile &iniFile;
       std::map<str, primary_model_functor *> functorMap;   
+      Printers::BaseBasePrinter &printer;
 
     public:
       Likelihood_Container_Factory(const gambit_core &core, DRes::DependencyResolver &dependencyResolver, 
-       IniParser::IniFile &iniFile, Priors::CompositePrior &prior);
+       IniParser::IniFile &iniFile, Priors::CompositePrior &prior, Printers::BaseBasePrinter& printer);
       ~Likelihood_Container_Factory(){}
       void * operator() (const str &purpose) const;
   };

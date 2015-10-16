@@ -30,10 +30,11 @@ namespace Gambit
 {
 
   Likelihood_Container_Factory::Likelihood_Container_Factory(const gambit_core &core, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior)
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, Printers::BaseBasePrinter& printer)
   : dependencyResolver(dependencyResolver), 
     prior(prior),
-    iniFile(iniFile)
+    iniFile(iniFile),
+    printer(printer)
   {
     functorMap = core.getActiveModelFunctors();
     
@@ -75,6 +76,6 @@ namespace Gambit
     
   void * Likelihood_Container_Factory::operator() (const std::string &purpose) const
   {
-    return __scanner_factories__["Scanner_Function"](functorMap, dependencyResolver, iniFile, prior, purpose);
+    return __scanner_factories__["Scanner_Function"](functorMap, dependencyResolver, iniFile, prior, purpose, printer);
   }
 }

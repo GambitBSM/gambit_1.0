@@ -40,7 +40,6 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Printers/baseprinter.hpp"
-#include "gambit/Printers/printer_id_tools.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
