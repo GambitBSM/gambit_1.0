@@ -76,15 +76,12 @@ namespace Gambit
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
-    bool allProcessesVetoed;
+    bool eventsGenerated;
     int pythiaConfigurations, pythiaNumber, nEvents;
     /// Analysis stuff
     std::vector<std::string> analysisNames;
     HEPUtilsAnalysisContainer* globalSubprocessAnalyses = new HEPUtilsAnalysisContainer();
     HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
-    /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,allProcessesVetoed,analysisNames,globalSubprocessAnalyses,globalAnalyses
-
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -97,10 +94,8 @@ namespace Gambit
     void operateLHCLoop()
     {
       using namespace Pipes::operateLHCLoop;
-      int currentEvent;
       nEvents = 0;
-      // Set allProcessesVetoed to false once some events are generated.
-      allProcessesVetoed = true;
+      eventsGenerated = false;
 
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
@@ -121,23 +116,16 @@ namespace Gambit
         while (pythiaNumber < pythiaConfigurations)
         {
           piped_invalid_point.check();
-          currentEvent = 0;
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
-          #pragma omp parallel shared(SHARED_OVER_OMP,currentEvent)
+          #pragma omp parallel
           {
             Loop::executeIteration(START_SUBPROCESS);
-            // post init / xsec veto synchronization
-            #pragma omp barrier
             // main event loop
-            while(not *Loop::done and currentEvent < nEvents) {
-              allProcessesVetoed = false;
-              // race conditions may push currentEvent past nEvents. But that
-              // is okay, since the Analyses will count their own events.
-              #pragma omp atomic
-              currentEvent++;
-              Loop::executeIteration(currentEvent);
+            #pragma omp for schedule(dynamic,1) nowait
+            for(int i=0; i<nEvents; i++) {
+              if(not *Loop::done) Loop::executeIteration(i);
             }
             Loop::executeIteration(END_SUBPROCESS);
           }
@@ -175,10 +163,7 @@ namespace Gambit
         // Get Pythia to print its banner.
         if (print_pythia_banner)
         {
-          #pragma omp_critical (runOptions)
-          {
-            pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
-          }
+          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
           result.clear();
           print_pythia_banner = false;
@@ -186,11 +171,8 @@ namespace Gambit
         // If there are no debug filenames set, look for them.
         if (filenames.empty())
         {
-          #pragma omp_critical (runOptions)
-          {
-            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");
-            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
-          }
+          SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");
+          if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
         }
         // Increment the counter if there are debug SLHA files and this is the first thread.
         if (SLHA_debug_mode)
@@ -301,6 +283,7 @@ namespace Gambit
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
           if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
+          else eventsGenerated = true;
         }
 
       }
@@ -317,12 +300,9 @@ namespace Gambit
       if (*Loop::iteration == INIT)
       {
         result.clear();
-        #pragma omp critical (Delphes)
-        {
-          /// Setup new Delphes
-          GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
-          result.init(delphesOptions);
-        }
+        // Setup new Delphes
+        GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
+        result.init(delphesOptions);
       }
     }
 #endif // not defined EXCLUDE_DELPHES
@@ -335,12 +315,9 @@ namespace Gambit
       if (*Loop::iteration == INIT)
       {
         result.clear();
-        #pragma omp critical (BuckFast)
-        {
-          /// Setup new BuckFast
-          /// @note There's really nothing to do. BuckFast doesn't even have class variables.
-          result.init();
-        }
+        // Setup new BuckFast
+        // @note There's really nothing to do. BuckFast doesn't even have class variables.
+        result.init();
       }
     }
 
@@ -352,12 +329,9 @@ namespace Gambit
       if (*Loop::iteration == INIT)
       {
         result.clear();
-        #pragma omp critical (BuckFast)
-        {
-          /// Setup new BuckFast
-          /// @note There's really nothing to do. BuckFast doesn't even have class variables.
-          result.init();
-        }
+        // Setup new BuckFast
+        // @note There's really nothing to do. BuckFast doesn't even have class variables.
+        result.init();
       }
     }
 
@@ -387,7 +361,7 @@ namespace Gambit
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
@@ -748,7 +722,7 @@ namespace Gambit
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-      if (*Loop::iteration == FINALIZE) {
+      if (*Loop::iteration == FINALIZE && eventsGenerated) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         globalAnalyses->scale();
@@ -769,7 +743,7 @@ namespace Gambit
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
       // xsec veto
-      if (allProcessesVetoed) {
+      if (not eventsGenerated) {
         logger() << "This point was xsec vetoed." << EOM;
         result = 0.;
         return;
