@@ -24,6 +24,7 @@
 #include "gambit/Backends/frontends/MicrOmegas.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
 #include <unistd.h>
 
 // Convenience functions (definitions)
@@ -58,9 +59,7 @@ BE_INI_FUNCTION
 #endif
 
     // Write out a SLHA file with a random file name;
-    // FIXME: Replace by gambit random number generator?
-    srand (time(NULL));
-    filename = "DarkBit" + std::to_string(rand()) + "_" + std::to_string(rank) + ".slha";
+    filename = "DarkBit" + std::to_string(Random::draw()) + std::to_string(Random::draw()) + "_" + std::to_string(rank) + ".slha";
     const Spectrum* mySpec = *Dep::MSSM_spectrum;
     SLHAstruct mySLHA = mySpec->getSLHAea();
 
