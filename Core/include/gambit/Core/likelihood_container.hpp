@@ -48,23 +48,23 @@ namespace Gambit
       /// Bound dependency resolver object
       DRes::DependencyResolver &dependencyResolver;
 
-      /// Actual values of the parameters
-      std::vector<double> realParameters;
-
       /// Bound prior object
       Priors::CompositePrior &prior;
-      
+
       /// Map of parameter names to values
       std::unordered_map<str, double> parameterMap;
 
       /// Map of scanned model names to primary model functors
       std::map<str, primary_model_functor *> functorMap;
-			
+
       /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
-      
+
       /// Map of return types of target functors
       std::map<DRes::VertexID,str> return_types;
+
+      /// Run in likelihood debug mode?
+      bool debug;
 
     public:
 
@@ -76,14 +76,11 @@ namespace Gambit
       /// Do the prior transformation and populate the parameter map  
       void setParameters (const std::vector<double> &vec); 
       
-      /// Print the results of the likelihood evaluation
-      void print(double, const str &) const;
-
       /// Evaluate total likelihood function
       double main (const std::vector<double> &in);
 
   };
-		  
+
   // Register the Likelihood Container as an available target function for ScannerBit.  The first argument
   // is a tag that gets used later by the Likelihood_Container_Factory to create a new Likelihood_Container 
   // and return a pointer to it. 

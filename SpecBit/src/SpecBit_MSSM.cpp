@@ -358,6 +358,25 @@ namespace Gambit
       #endif
     }
 
+    /// Check that the spectrum has a neutralino LSP.
+    bool has_neutralino_LSP(const Spectrum* &result)
+    {
+      double msqu  = result->get(Par::Pole_Mass, 1000001, 0);
+      double msqd  = result->get(Par::Pole_Mass, 1000002, 0);
+      double msl   = result->get(Par::Pole_Mass, 1000011, 0);
+      double msneu = result->get(Par::Pole_Mass, 1000012, 0);
+      double mglui = result->get(Par::Pole_Mass, 1000021, 0);
+      double mchi0 = result->get(Par::Pole_Mass, 1000022, 0);
+      double mchip = result->get(Par::Pole_Mass, 1000024, 0);
+
+      return mchi0 < mchip &&
+             mchi0 < mglui &&
+             mchi0 < msl   &&
+             mchi0 < msneu &&
+             mchi0 < msqu  &&
+             mchi0 < msqd;
+    }
+
     /// @} End module convenience functions
 
 
@@ -396,6 +415,9 @@ namespace Gambit
       // Run spectrum generator
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       
+      // Only allow neutralino LSPs.
+      if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
+
       #ifdef SPECBIT_DEBUG
         // Dump spectrum information to slha file (for testing...)
         result->get_HE()->getSLHA("SpecBit/CMSSM_fromSpectrumObject.slha");
@@ -413,6 +435,7 @@ namespace Gambit
       input.Qin = *myPipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
       fill_MSSM78_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+      if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }
 
     // Runs MSSM spectrum generator with GUT scale input
@@ -424,9 +447,10 @@ namespace Gambit
       MSSMatMGUT_input_parameters input;
       fill_MSSM78_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+      if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }
 
-    void get_GUTMSSMB_spectrum (const Spectrum* &result)
+    void get_GUTMSSMB_spectrum (const Spectrum* &/*result*/)
     {
       // Placeholder
     }
@@ -528,6 +552,9 @@ namespace Gambit
       // possession of them:
       matched_spectra = Spectrum(smskel,mssmskel,sminputs,NULL);
       result = &matched_spectra;
+
+      // No sneaking in charged LSPs via SLHA, jävlar.
+      if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     } 
     
     /// FeynHiggs SUSY masses and mixings
