@@ -44,7 +44,7 @@ namespace Gambit
     #ifdef CORE_DEBUG
       debug            (true)
     #else
-      debug            (iniFile.getValueOrDef<bool>(false, "likelihood", "model_invalid_for_lnlike_below"))
+      debug            (iniFile.getValueOrDef<bool>(false, "likelihood", "debug"))
     #endif
   {
     // Set the list of valid return types of functions that can be used for 'purpose' by this container class. 
@@ -166,9 +166,7 @@ namespace Gambit
         logger().leaving_module();
         lnlike = min_valid_lnlike;
         compute_aux = false;
-        #ifdef CORE_DEBUG
-          cout << "Point invalid." << endl;
-        #endif        
+        if (debug) cout << "Point invalid." << endl;
         break;
       }
     }

@@ -450,7 +450,7 @@ namespace Gambit
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }
 
-    void get_GUTMSSMB_spectrum (const Spectrum* &result)
+    void get_GUTMSSMB_spectrum (const Spectrum* &/*result*/)
     {
       // Placeholder
     }

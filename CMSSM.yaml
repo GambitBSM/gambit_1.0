@@ -382,6 +382,6 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -5e5
-    debug = true
+    debug: true
 
   default_output_path: "runs/CMSSM/"
