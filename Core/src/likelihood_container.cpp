@@ -75,19 +75,29 @@ namespace Gambit
     // Do the prior transformation, saving the real parameter values in the parameterMap
     prior.transform(vec, parameterMap);
     
+    // Set up a stream containing the parameter values, for diagnostic output
+    std::ostringstream parstream;
+
     // Iterate over the primary_model_parameters functors of all the models being scanned.
     for (auto act_it = functorMap.begin(), act_end = functorMap.end(); act_it != act_end; act_it++)
     {
+      parstream << "  " << act_it->first << ":" << endl;
       // Get the names of the parameters for this model.
       auto paramkeys = act_it->second->getcontentsPtr()->getKeys();
       // Iterate over the parameters, setting their values in the primary_model_parameters functors from the parameterMap.
       for (auto par_it = paramkeys.begin(), par_end = paramkeys.end(); par_it != par_end; par_it++)
       {
-        // Print out the value of this parameter for this point.
-        if (debug) std::cout << (act_it->first + "::" + *par_it) << "   " << parameterMap[act_it->first + "::" + *par_it] << std::endl;
-        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[act_it->first + "::" + *par_it]);
+        str key = act_it->first + "::" + *par_it;
+        parstream << "    " << *par_it << ": " << parameterMap[key] << endl;
+        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[key]);
       }
     }
+
+    // Notify all exceptions of the values of the parameters for this point.
+    exception::set_parameters("\n\nYAML-ready parameter values at failed point:\n"+parstream.str());
+
+    // Print out the values of the parameters for this point if in debug mode.
+    if (debug) cout << parstream.str();
   }
           
   /// Evaluate total likelihood function
