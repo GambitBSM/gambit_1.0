@@ -74,7 +74,7 @@ namespace Gambit
     /// Event labels
     enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
     /// Pythia stuff
-    std::vector<std::string> pythiaNames;
+    std::vector<std::string> pythiaNames, pythiaCommonOptions;
     std::vector<std::string>::const_iterator iter;
     bool eventsGenerated;
     int pythiaConfigurations, pythiaNumber, nEvents;
@@ -94,6 +94,8 @@ namespace Gambit
     void operateLHCLoop()
     {
       using namespace Pipes::operateLHCLoop;
+      // variables for running the loop quietly
+      //static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer
       nEvents = 0;
       eventsGenerated = false;
 
@@ -104,6 +106,9 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
       // @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, int);
+
+      // Nicely ask the entire loop to stfu
+      //std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -123,7 +128,7 @@ namespace Gambit
           {
             Loop::executeIteration(START_SUBPROCESS);
             // main event loop
-            #pragma omp for schedule(dynamic,1) nowait
+            #pragma omp for nowait
             for(int i=0; i<nEvents; i++) {
               if(not *Loop::done) Loop::executeIteration(i);
             }
@@ -135,6 +140,8 @@ namespace Gambit
           #endif
         }
       }
+      // Nicely thank the loop for stfu, and restore everyone's vocal cords
+      //std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
     }
 
@@ -182,24 +189,25 @@ namespace Gambit
         }
       }
 
+      if (*Loop::iteration == INIT)
+      {
+        std::string pythiaConfigName;
+        // Setup new Pythia
+        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+        // Get pythia options
+        // If the SpecializablePythia specialization is hard-coded, okay with no options.
+        pythiaCommonOptions.clear();
+        if (runOptions->hasKey(*iter, pythiaConfigName))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+      }
+
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
-        std::vector<std::string> pythiaOptions;
-        std::string pythiaConfigName;
-
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
-
-        // If the SpecializablePythia specialization is hard-coded, okay with no options.
-        #pragma omp critical (runOptions)
-        {
-          if (runOptions->hasKey(*iter, pythiaConfigName))
-            pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-        }
+        std::vector<std::string> pythiaOptions = pythiaCommonOptions;
         pythiaOptions.push_back("Print:quiet = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
         if (omp_get_thread_num() == 0)

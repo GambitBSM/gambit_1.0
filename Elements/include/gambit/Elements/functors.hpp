@@ -634,8 +634,6 @@ namespace Gambit
       void (*myFunction)(TYPE &);
 
       /// Internal pointer to storage location of function value
-      // TODO Try the __attribute__ to see if it can improve OMP parallelization.
-      //__attribute__((aligned (64))) TYPE* myValue;
       TYPE* myValue;
 
       /// Flag to select whether or not the results of this functor should be sent to the printer object.
