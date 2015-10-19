@@ -232,8 +232,6 @@ namespace Gambit
       const double sinW2 = mssm->runningpars().get(Par::dimensionless,"sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
 
-      cout << mZ << " " << g2 << " " << sinW2 << " " << alpha << endl;
-
       // MSSM parameters
       // Get the mass eigenstate best corresponding to ~nu_e_L.
       const str mass_snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
@@ -274,9 +272,6 @@ namespace Gambit
       result.central = xsec_chaichaj(id1, id2, sqrts, m1, m2, charginomixV, charginomixU, 
                                      msn, alpha, mZ, gammaZ, sinW2);
 
-      cout << id1<< " " << id2<< " " << sqrts<< " " << m1<< " " << m2<< " " <<  msn<< " " << alpha<< " " << mZ<< " " << gammaZ<< " " << sinW2 << endl;
-      cout << result.central;
-
       // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
       std::vector<double> xsecs;
       xsecs.push_back(result.central);
@@ -290,8 +285,6 @@ namespace Gambit
                                      msn, alpha, mZ, gammaZ, sinW2));
       result.upper = *std::max_element(xsecs.begin(), xsecs.end());
       result.lower = *std::min_element(xsecs.begin(), xsecs.end());
-
-      for(auto it = xsecs.begin(); it != xsecs.end(); ++it) cout << *it << " ";
 
     }
 
@@ -629,7 +622,6 @@ namespace Gambit
                          MixMatrix U, double ms, double alpha, double mZ, double gZ, double sin2thetaW)
     {                        
       // Just return zero if the final state isn't kinematically accessible
-      cout << "test: " << mi << std::abs(mi) << " " << std::abs(mj) << " " << (std::abs(mi)+std::abs(mj) > sqrts) << " " << sqrts << endl;
       if (std::abs(mi)+std::abs(mj) > sqrts) return 0.0;
 
       // Translate from PDG codes to chargino indices (silly paper convention that i=2 lighter than i=1!)
