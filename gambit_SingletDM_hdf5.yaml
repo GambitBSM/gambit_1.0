@@ -300,20 +300,14 @@ Logger:
   # files with these names.
 
   redirection:
-    [Debug] : stdout #"debug.log"
-    [Default] : stdout #"default.log"
-    [Error] : stdout #"errors.log"
-    [Warning] : stdout #"warnings.log"
-    [Core,Error] : stdout #"core_errors.log"
-    [Core,Error,Fatal] : stdout #"fatal_core_errors.log"
-    [Dependency Resolver] : stdout #"stdout"
-    [ExampleBit_A] : "ExampleBit_A.log"
-    [ExampleBit_B] : "ExampleBit_B.log"
-    [BackendIniBit]: "BackendIniBit.log"
-    [LibFirst] : "libfirst.log"
-  #  [Logger, Debug] : "stdout"
-  #  [Core] : "stdout"
-  #  [Dependency Resolver] : "stdout"
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [DecayBit] : "DecayBit.log"
+    [DarkBit] : "DarkBit.log"
+    [PrecisionBit] : "PrecisionBit.log"
+    [ColliderBit] : "ColliderrBit.log"
+    [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
 
 ##########################
 # Name/Value Section
