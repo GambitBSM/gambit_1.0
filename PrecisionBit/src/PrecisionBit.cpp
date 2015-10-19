@@ -68,14 +68,19 @@ namespace Gambit
         invalid_point().raise(err.str());
       }
 
-      // Just scrub this point now if it's more than 10 sigma off in mW, 
+      // Just scrub this point now if it's more than 7 sigma off in mW, 
       // as extreme values of mW can cause instability in other routines.
       const double obserrsq = mw_err_observed*mw_err_observed;
       double theoryerrsq = MWMSSM*MWMSSM*mw_relerr_theory*mw_relerr_theory;
-      if (abs(mw_central_observed - MWMSSM) > 7.0*sqrt(obserrsq + theoryerrsq))
+      if (std::abs(mw_central_observed - MWMSSM) > 7.0*sqrt(obserrsq + theoryerrsq))
       {
-        cout << 7.0*sqrt(obserrsq + theoryerrsq) << " " << abs(mw_central_observed - MWMSSM);
-        invalid_point().raise("W mass too extreme: more than 7 sigma off observed value. Invalidating immediately to prevent downstream instability.");
+        std::ostringstream err;
+        err << "W mass too extreme. More than 7 sigma off observed value. " << endl
+            << "Deviation from observed value: " << std::abs(mw_central_observed - MWMSSM) << "." << endl
+            << "1 sigma uncertainty on observed value: " << 7.0*sqrt(obserrsq + theoryerrsq) << "." << endl
+            << "Invalidating immediately to prevent downstream instability.";
+        //invalid_point().raise(err.str());
+        PrecisionBit_error().raise(LOCAL_INFO, err.str());
       }
 
       fh_PrecisionObs PrecisionObs;
