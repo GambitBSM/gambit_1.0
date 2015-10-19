@@ -136,7 +136,7 @@ BE_NAMESPACE
     double etabar = to<double>(vckm.at(4).at(1));                  // Wolfenstein etabar 
     susyhitin->vusin = Spectrum::Wolf2V_us(lambda, A, rhobar, etabar); // VUS: |CKM V_us|
     susyhitin->vcbin = Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar); // VCB: |CKM V_cb|
-    susyhitin->rvubin = abs(Spectrum::Wolf2V_ub(lambda, A, rhobar, etabar)) / susyhitin->vcbin; // VUB/VCB: Ratio of CKM |V_UB|/|V_CB|     
+    susyhitin->rvubin = std::abs(Spectrum::Wolf2V_ub(lambda, A, rhobar, etabar)) / susyhitin->vcbin; // VUB/VCB: Ratio of CKM |V_UB|/|V_CB|     
     
     // MODSEL
     sd_leshouches2->imod(1) = 1;    // 1, x = SUSY model info. 
@@ -228,15 +228,15 @@ BE_NAMESPACE
       }
     }
     // The following is only relevant if considering FV stop decays.  Code below is tested and ready to be used in future.
-    //flavviolation->vckm(1,1) =     Spectrum::Wolf2V_ud(lambda, A, rhobar, etabar);  
-    //flavviolation->vckm(1,2) =     Spectrum::Wolf2V_us(lambda, A, rhobar, etabar);  
-    //flavviolation->vckm(1,3) = abs(Spectrum::Wolf2V_ud(lambda, A, rhobar, etabar));  
-    //flavviolation->vckm(2,1) = abs(Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar));  
-    //flavviolation->vckm(2,2) = abs(Spectrum::Wolf2V_cs(lambda, A, rhobar, etabar));  
-    //flavviolation->vckm(2,3) =     Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar);  
-    //flavviolation->vckm(3,1) = abs(Spectrum::Wolf2V_td(lambda, A, rhobar, etabar));  
-    //flavviolation->vckm(3,2) = abs(Spectrum::Wolf2V_ts(lambda, A, rhobar, etabar));  
-    //flavviolation->vckm(3,3) =     Spectrum::Wolf2V_tb(lambda, A, rhobar, etabar);  
+    //flavviolation->vckm(1,1) =          Spectrum::Wolf2V_ud(lambda, A, rhobar, etabar);  
+    //flavviolation->vckm(1,2) =          Spectrum::Wolf2V_us(lambda, A, rhobar, etabar);  
+    //flavviolation->vckm(1,3) = std::abs(Spectrum::Wolf2V_ud(lambda, A, rhobar, etabar));  
+    //flavviolation->vckm(2,1) = std::abs(Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar));  
+    //flavviolation->vckm(2,2) = std::abs(Spectrum::Wolf2V_cs(lambda, A, rhobar, etabar));  
+    //flavviolation->vckm(2,3) =          Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar);  
+    //flavviolation->vckm(3,1) = std::abs(Spectrum::Wolf2V_td(lambda, A, rhobar, etabar));  
+    //flavviolation->vckm(3,2) = std::abs(Spectrum::Wolf2V_ts(lambda, A, rhobar, etabar));  
+    //flavviolation->vckm(3,3) =          Spectrum::Wolf2V_tb(lambda, A, rhobar, etabar);  
 
     // USQMIX, DSQMIX, SELMIX    
     if (usqmix.find_block_def()->size() >= 4) sd_leshouches2->qvalue(14) = to<double>(usqmix.find_block_def()->at(3)); // Q(GeV)

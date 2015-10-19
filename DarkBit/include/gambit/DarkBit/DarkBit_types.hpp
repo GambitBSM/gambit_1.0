@@ -796,7 +796,7 @@ namespace Gambit
 //          {
 //            sum += it->second;
 //          }
-//          return (abs(sum-1) < 1e-6);
+//          return (std::abs(sum-1) < 1e-6);
 //        }
 //
 //        // DM mass

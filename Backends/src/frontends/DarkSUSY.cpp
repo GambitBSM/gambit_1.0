@@ -499,7 +499,7 @@ BE_NAMESPACE
           mssmmixing->neunmx(i,j).re = 0.0;
         }  
       }
-      mspctm->mass(DSpart->kn(i)) = abs(mspctm->mass(DSpart->kn(i)));
+      mspctm->mass(DSpart->kn(i)) = std::abs(mspctm->mass(DSpart->kn(i)));
     }
 
     // Block UMIX
