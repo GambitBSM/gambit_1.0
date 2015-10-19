@@ -310,13 +310,6 @@ int mt2w::teco(  double mtop)
 	 4*a2*d1*d1*f2 - 4*a1*d1*d2*f2 - 2*a1*a2*f1*f2 + 
      a1*a1*f2*f2)/(Eb1sq*Eb1sq);
 	
-   long  double A0sq, A1sq, A2sq, A3sq, A4sq;
-   A0sq = A0*A0;
-   A1sq = A1*A1;
-   A2sq = A2*A2;
-   A3sq = A3*A3;
-   A4sq = A4*A4;
-   
    long double B3, B2, B1, B0;
    B3 = 4*A4;
    B2 = 3*A3;
@@ -324,7 +317,7 @@ int mt2w::teco(  double mtop)
    B0 = A1;
    
    long double C2, C1, C0;
-   C2 = -(A2/2 - 3*A3sq/(16*A4));
+   C2 = -(A2/2 - 3*A3*A3/(16*A4));
    C1 = -(3*A1/4. -A2*A3/(8*A4));
    C0 = -A0 + A1*A3/(16*A4);
    

@@ -50,7 +50,7 @@
 #include <boost/numeric/ublas/io.hpp>
 
 //#define FLAVBIT_DEBUG
-
+#define FLAVBIT_DEBUG_PRINT_LL
 #define Nobs_BKsll 21
 
 
@@ -1213,6 +1213,14 @@ namespace Gambit
         deb=false;
       #endif
     }
+    void Debug_LL(bool &deb)
+    {
+      #ifdef FLAVBIT_DEBUG_LL
+        deb=true;
+      #else
+        deb=false;
+      #endif
+    }
 
     // *************************************************
     /// reading measurements for b->sll
@@ -1224,6 +1232,8 @@ namespace Gambit
       using namespace Pipes::b2sll_measurements;
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2sll_measurements function"<<endl;
+
+
 
       Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
       red->debug_mode(*Dep::Debug_Cap);
@@ -1372,6 +1382,8 @@ namespace Gambit
       using namespace Pipes::b2sll_likelihood;
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2sll_likelihood"<<endl;
+      result=0.;
+      if(*Dep::Debug_Cap_LL) cout<<"Likelihood before b2sll_likelihood  : "<< result<<endl;
 
 
       Flav_measurement_assym measurement_assym;//=*(Dep::b2sll_M);
@@ -1423,9 +1435,11 @@ namespace Gambit
       }
 
       Chi2=Chi2/measurement_assym.dim;
-      result+=0.5*Chi2;
+      result=-0.5*Chi2;
 
       if(*Dep::Debug_Cap)  cout<<"Finished b2sll_likelihood"<<endl;
+      if(*Dep::Debug_Cap_LL) cout<<"Likelihood result b2sll_likelihood : "<< result<<endl;
+
 
     }
 
@@ -1530,7 +1544,8 @@ namespace Gambit
       using namespace Pipes::b2ll_likelihood;
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2ll_likelihood"<<endl;
-
+      result=0.;
+      if(*Dep::Debug_Cap_LL) cout<<"Likelihood before b2ll_likelihood: "<< result<<endl;
 
 
       Flav_measurement_assym measurement_assym = *Dep::b2ll_M;
@@ -1579,9 +1594,13 @@ namespace Gambit
       }
 
       Chi2=Chi2/measurement_assym.dim;
-      result+=0.5*Chi2;
+      result=-0.5*Chi2;
 
       if(*Dep::Debug_Cap)  cout<<"Finished b2ll_likelihood"<<endl;
+      if(*Dep::Debug_Cap_LL) cout<<"Likelihood result b2ll_likelihood : "<< result<<endl;
+
+
+
     }
 
     // *************************************************
@@ -1722,6 +1741,9 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting SL_likelihood"<<endl;
 
+      result=0.;
+      if(*Dep::Debug_Cap_LL) cout<<"Likelihood before SL_likelihood  : "<< result<<endl;
+
 
       Flav_measurement_assym measurement_assym = *Dep::SL_M;
       //SL_measurements(measurement_assym);
@@ -1767,10 +1789,14 @@ namespace Gambit
 
           }
       }
+
       Chi2=Chi2/measurement_assym.dim;
-      result+=0.5*Chi2;
+      result=-0.5*Chi2;
 
       if(*Dep::Debug_Cap)  cout<<"Finished SL_likelihood"<<endl;
+
+      if(*Dep::Debug_Cap_LL) cout<<"Likelihood result SL_likelihood  : "<< result<<endl;
+
 
     }
 

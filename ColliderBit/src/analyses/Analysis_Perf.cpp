@@ -149,6 +149,7 @@ namespace Gambit {
 
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
        
   // Now define vectors of baseline objects
@@ -384,7 +385,8 @@ namespace Gambit {
       }
 
 
-      void finalize() {
+      void scale(double) {
+        // NOTE: previously called finalize, but I got rid of that crap. --Abram
 
         // std::cout << "Writing histograms " << _hElectron1Pt->GetTitle() << std::endl;
 

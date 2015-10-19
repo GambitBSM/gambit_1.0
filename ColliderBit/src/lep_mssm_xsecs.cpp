@@ -232,6 +232,8 @@ namespace Gambit
       const double sinW2 = mssm->runningpars().get(Par::dimensionless,"sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
 
+      cout << mZ << " " << g2 << " " << sinW2 << " " << alpha << endl;
+
       // MSSM parameters
       // Get the mass eigenstates best corresponding to ~nu_e_L.
       const str mass_snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
@@ -271,6 +273,8 @@ namespace Gambit
       // Calculate the cross-section
       result.central = xsec_chaichaj(id1, id2, sqrts, m1, m2, charginomixV, charginomixU, 
                                      msn, alpha, mZ, gammaZ, sinW2);
+
+      cout << id1<< " " << id2<< " " << sqrts<< " " << m1<< " " << m2<< " " <<  msn<< " " << alpha<< " " << mZ<< " " << gammaZ<< " " << sinW2 << endl;
 
       // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
       std::vector<double> xsecs;
