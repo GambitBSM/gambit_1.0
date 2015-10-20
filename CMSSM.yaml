@@ -59,8 +59,6 @@ Scanner:
         mmodal: 1
         # write native MultiNest ascii output files?
         outfile: 1
-        # resuming doesn't work yet
-        resume: 0
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
