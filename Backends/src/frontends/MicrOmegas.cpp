@@ -34,7 +34,9 @@ BE_NAMESPACE
       //       7 - 9: e, m, l
       //       10 - 15: Z, ZT, ZL, W, WT, WL
       double tab[250];  // NZ = 250
-      readSpectra();
+      // readSpectra() moved to initialization function.
+      // Must be inside critical block if used here!
+      // readSpectra();
       mInterp(Ecm/2, inP, outN, tab);
       return zInterp(log(E/Ecm*2), tab);
     }
@@ -130,6 +132,9 @@ BE_INI_FUNCTION
 
     if (remove(filename_c) != 0)
         backend_warning().raise(LOCAL_INFO, "Unable to delete SLHA file "+filename);
+
+    // Initialize yield tables for use in cascade decays
+    readSpectra();
 
 }
 END_BE_INI_FUNCTION

@@ -542,7 +542,7 @@ namespace Gambit
           // Use specified total width (instead of summing widths of registered
           // channels).
           entry.forceTotalWidth(true,width);
-          if(entry.enabledDecays.size() == 0)
+          if(!stable and entry.enabledDecays.size() == 0)
           {
             piped_warnings.request(LOCAL_INFO,
               "Unstable particle "+pID+" has no available decay channels. Treating it as stable in cascade decays.");             
