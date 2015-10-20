@@ -28,6 +28,7 @@
 ///  *********************************************
 
 #include <cmath>
+#include <chrono>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -94,6 +95,12 @@ namespace Gambit
     void operateLHCLoop()
     {
       using namespace Pipes::operateLHCLoop;
+      // timing
+      using std::chrono::system_clock;
+      typedef std::chrono::milliseconds ms;
+      ms ms_base, ms_init, ms_start, ms_end, ms_final, ms_loop;
+      ms zero(0);
+      system_clock::time_point tp_outer = system_clock::now();
       // variables for running the loop quietly
       //static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer
       nEvents = 0;
@@ -101,6 +108,7 @@ namespace Gambit
 
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
+      ms_base = std::chrono::duration_cast<ms>(system_clock::now() - tp_outer);
 
       // Retrieve runOptions from the YAML file safely...
       GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
@@ -124,25 +132,45 @@ namespace Gambit
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
+          ms_init = std::chrono::duration_cast<ms>(system_clock::now() - tp_outer);
+          ms_start = zero;
+          ms_loop = zero;
+          ms_end = zero;
           #pragma omp parallel
           {
+            system_clock::time_point tp_inner = system_clock::now();
             Loop::executeIteration(START_SUBPROCESS);
+            #pragma omp critical
+            ms_start += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
             // main event loop
             #pragma omp for nowait
             for(int i=0; i<nEvents; i++) {
               if(not *Loop::done) Loop::executeIteration(i);
             }
+            #pragma omp critical
+            ms_loop += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
             Loop::executeIteration(END_SUBPROCESS);
+            #pragma omp critical
+            ms_end += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
           }
-          #ifdef HESITATE
-          std::cout<<"\n\n [Press Enter]";
-          std::getchar();
-          #endif
         }
       }
+      ms_start /= omp_get_max_threads();
+      ms_loop /= omp_get_max_threads();
+      ms_end /= omp_get_max_threads();
       // Nicely thank the loop for stfu, and restore everyone's vocal cords
       //std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
+      ms_final = std::chrono::duration_cast<ms>(system_clock::now() - tp_outer);
+
+      std::cout<<"\n$$$$ ColliderBit loop timing (in milliseconds):\n\n";
+      std::cout<<"     Completed BASE_INIT:        "<<ms_base.count()<<endl;
+      std::cout<<"     Completed INIT:             "<<ms_init.count()<<endl;
+      std::cout<<"     Completed FINALIZE:         "<<ms_final.count()<<endl;
+      std::cout<<"  Times per thread:"<<endl;
+      std::cout<<"     Completed START_SUBPROCESS: "<<ms_start.count()<<endl;
+      std::cout<<"     Completed Loop completion:  "<<ms_loop.count()<<endl;
+      std::cout<<"     Completed END_SUBPROCESS:   "<<ms_end.count()<<endl;
     }
 
 
@@ -153,11 +181,10 @@ namespace Gambit
     {
       using namespace Pipes::getPythia;
 
-      static bool SLHA_debug_mode = false;
-      static std::vector<std::string> filenames;
       static std::string pythia_doc_path;
       static bool print_pythia_banner = true;
-      static unsigned int counter = -1;
+      static SLHAstruct slha;
+      static SLHAstruct spectrum;
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, line;
@@ -175,17 +202,26 @@ namespace Gambit
           result.clear();
           print_pythia_banner = false;
         }
-        // If there are no debug filenames set, look for them.
-        if (filenames.empty())
+
+        // SLHAea object constructed from dependencies on the spectrum and decays.
+        slha.clear();
+        spectrum.clear();
+        slha = Dep::decay_rates->as_slhaea();
+        if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
         {
-          SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");
-          if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
+          // MSSM-specific
+          spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+          SLHAea::Block block("MODSEL");
+          block.push_back("BLOCK MODSEL              # Model selection");
+          SLHAea::Line line;
+          line << 1 << 0 << "# General MSSM";
+          block.push_back(line);
+          slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
+          slha.push_front(block);
         }
-        // Increment the counter if there are debug SLHA files and this is the first thread.
-        if (SLHA_debug_mode)
+        else
         {
-          if (omp_get_thread_num() == 0) counter++;
-          if (filenames.size() <= counter) invalid_point().raise("No more SLHA files. My work is done.");
+          ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
         }
       }
 
@@ -216,62 +252,118 @@ namespace Gambit
 
         result.resetSpecialization(*iter);
 
-        if (SLHA_debug_mode)
-        {
-          // Run Pythia reading an SLHA file.
-          if (omp_get_thread_num() == 0)
-            logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
-          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));
-          try {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions);
-          } catch (SpecializablePythia::InitializationError &e) {
-            piped_invalid_point.request("Bad point: Pythia can't initialize");
-            Loop::wrapup();
-            return;
-          }
-        }
-        else
-        {
-          // Run Pythia using an SLHAea object constructed from dependencies on the spectrum and decays.
-          SLHAstruct slha = Dep::decay_rates->as_slhaea();
-          if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
-          {
-            // MSSM-specific
-            SLHAstruct spectrum;
-            #pragma omp critical (spectrum_as_slhaea)
-            {
-              spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
-            }
-            SLHAea::Block block("MODSEL");
-            block.push_back("BLOCK MODSEL              # Model selection");
-            SLHAea::Line line;
-            line << 1 << 0 << "# General MSSM";
-            block.push_back(line);
-            slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
-            slha.push_front(block);
-          }
-          else
-          {
-            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
-          }
-          pythiaOptions.push_back("SLHA:file = slhaea");
+        pythiaOptions.push_back("SLHA:file = slhaea");
 
-          try
-          {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions, &slha);
+        try
+        {
+          if (omp_get_thread_num() == 0)
+            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+          else
+            result.init(pythia_doc_path, pythiaOptions, &slha);
+        }
+        catch (SpecializablePythia::InitializationError &e)
+        {
+          piped_invalid_point.request("Bad point: Pythia can't initialize");
+          Loop::wrapup();
+          return;
+        }
+
+        // xsec veto
+        if (omp_get_thread_num() == 0) {
+          code = -1;
+          totalxsec = 0.;
+          while(true) {
+            std::getline(processLevelOutput, line);
+            issPtr = new std::istringstream(line);
+            issPtr->seekg(47, issPtr->beg);
+            (*issPtr) >> code;
+            if (!issPtr->good() && totalxsec > 0.) break;
+            (*issPtr) >> _junk >> xsec;
+            if (issPtr->good()) totalxsec += xsec;
+            delete issPtr;
           }
-          catch (SpecializablePythia::InitializationError &e)
-          {
-            piped_invalid_point.request("Bad point: Pythia can't initialize");
-            Loop::wrapup();
-            return;
-          }
+
+          /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
+          if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
+          else eventsGenerated = true;
+        }
+
+      }
+    }
+
+
+    void getPythiaFileReader(Gambit::ColliderBit::SpecializablePythia &result)
+    {
+      using namespace Pipes::getPythiaFileReader;
+
+      static std::vector<std::string> filenames;
+      static std::string pythia_doc_path;
+      static bool print_pythia_banner = true;
+      static unsigned int fileCounter = -1;
+      // variables for xsec veto
+      std::stringstream processLevelOutput;
+      std::string _junk, line;
+      std::istringstream* issPtr;
+      int code;
+      double xsec, totalxsec;
+
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Get Pythia to print its banner.
+        if (print_pythia_banner)
+        {
+          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
+          result.banner(pythia_doc_path);
+          result.clear();
+          print_pythia_banner = false;
+        }
+        // If there are no debug filenames set, look for them.
+        if (filenames.empty())
+          filenames = runOptions->getValue<std::vector<str> >("SLHA_filenames");
+        fileCounter++;
+        if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
+      }
+
+      if (*Loop::iteration == INIT)
+      {
+        std::string pythiaConfigName;
+        // Setup new Pythia
+        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+        // Get pythia options
+        // If the SpecializablePythia specialization is hard-coded, okay with no options.
+        pythiaCommonOptions.clear();
+        if (runOptions->hasKey(*iter, pythiaConfigName))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+      }
+
+      else if (*Loop::iteration == START_SUBPROCESS)
+      {
+        result.clear();
+        // Each thread gets its own Pythia instance.
+        // Thus, the actual Pythia initialization is
+        // *after* INIT, within omp parallel.
+        std::vector<std::string> pythiaOptions = pythiaCommonOptions;
+        pythiaOptions.push_back("Print:quiet = on");
+        pythiaOptions.push_back("SLHA:verbose = 0");
+        if (omp_get_thread_num() == 0)
+          pythiaOptions.push_back("Init:showProcesses = on");
+        pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
+
+        result.resetSpecialization(*iter);
+
+        // Run Pythia reading an SLHA file.
+        if (omp_get_thread_num() == 0)
+          logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
+        pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
+        try {
+          if (omp_get_thread_num() == 0)
+            result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+          else
+            result.init(pythia_doc_path, pythiaOptions);
+        } catch (SpecializablePythia::InitializationError &e) {
+          piped_invalid_point.request("Bad point: Pythia can't initialize");
+          Loop::wrapup();
+          return;
         }
 
         // xsec veto
