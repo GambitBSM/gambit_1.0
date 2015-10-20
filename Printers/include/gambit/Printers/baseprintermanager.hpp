@@ -22,6 +22,7 @@
 #define __baseprintermanager_hpp__
 
 #include <string>
+#include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit
@@ -55,8 +56,10 @@ namespace Gambit
         virtual void finalise(bool abnormal=false) = 0;
 
         /// For debugging: check up on mpi
+        /// For debugging: check up on MPI
         #ifdef WITH_MPI
-        virtual bool Is_MPI_initialized() = 0;
+        bool Is_MPI_initialized()  { return GMPI::Is_initialized(); }
+        bool getRank()  { GMPI::Comm comm; return comm.Get_rank(); }
         #endif
     };
 

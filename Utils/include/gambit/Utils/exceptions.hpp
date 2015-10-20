@@ -269,6 +269,16 @@ namespace Gambit
   /// Global instance of piped invalid point class.
   extern Piped_invalid_point piped_invalid_point;
 
+  /// Special error class for errors "raised" via MPI
+  class MPIerror : public error
+  {
+    public:
+      /// @{ Constructors
+      MPIerror(const char*, const char*);
+      MPIerror(const char*, const char*, LogTag);
+      /// @}
+  };
+
 }
 
 

@@ -102,18 +102,32 @@ namespace Gambit
                     Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
                     unsigned long long int id = ++Gambit::Printers::get_point_id();
                     ret ret_val = main(params...);
-                    Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
+                    Gambit::Scanner::Plugins::plugin_info.set_calculating(false); //Ben: FIXME: was true, why? Seems like it should be false
                     if (sizeof...(params) == 1)
                             main_printer->print(params..., "unitCubeParameters", rank, id);
                     main_printer->print(ret_val, purpose, rank, id);
                     main_printer->print(int(id), "pointID", rank, id);
                     main_printer->print(rank, "MPIrank", rank, id);
                     
-//                     if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
-//                     {
-//                             Gambit::Scanner::Plugins::plugin_info.dump();
-//                             exit(0);
-//                     }
+                    //Ben: I think it is better to shutdown here after all;
+                    // this way I can trigger the keep_running flag at the end of
+                    // the likelihood evaluation if a stop signal is received via
+                    // MPI (see likelihood_container.cpp)
+                    // It is also more probable that a signal is received during the
+                    // likelihood evaluation, and so I think we want to avoid the
+                    // scanner getting one more chance to trigger a Barrier or
+                    // or something and fuck us up.
+                    // Although, is there any reason not to have both checks?
+                    // I think not, I will turn them both on.
+
+                    if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
+                    {
+                            Gambit::Scanner::Plugins::plugin_info.dump();
+#ifdef WITH_MPI
+                            MPI_Finalize();
+#endif
+                            exit(0);
+                    }
                     
                     return ret_val;
             }

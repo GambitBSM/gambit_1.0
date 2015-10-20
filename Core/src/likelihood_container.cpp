@@ -25,6 +25,7 @@
 ///  *********************************************
 
 #include "gambit/Core/likelihood_container.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
 
 //#define CORE_DEBUG
 
@@ -35,11 +36,18 @@ namespace Gambit
 
   /// Constructor
   Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer) 
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+  #ifdef WITH_MPI
+    , GMPI::Comm& comm
+  #endif
+  ) 
   : dependencyResolver (dependencyResolver), 
     prior              (prior),
     printer            (printer),
     functorMap         (functorMap),
+    #ifdef WITH_MPI
+    errorComm          (comm), 
+    #endif
     min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
     intralooptime_label("Runtime(ns) intraloop"),
     interlooptime_label("Runtime(ns) interloop"),
@@ -236,6 +244,25 @@ namespace Gambit
         }
       }
     }
+
+    // Check for messages from other processes indicating that run needs to stop
+    #ifdef WITH_MPI 
+    int ERROR_TAG = errorComm.mytag;
+    MPI_Status status;
+    if( errorComm.Iprobe(MPI_ANY_SOURCE, ERROR_TAG, &status) )
+    {
+       // Yes, another process has issued the global stop signal
+       // Recv the message and throw an error to shut down Gambit.
+       int nullbuf = 0;
+       errorComm.Recv(&nullbuf, 1, status.MPI_SOURCE, status.MPI_TAG);
+       std::ostringstream msg;
+       msg << "rank "<<errorComm.Get_rank()<<": Shutdown signal received from process "<<status.MPI_SOURCE;
+      
+       // Rather than raise an error, let us use the usual scanner method for triggering shutdown.
+       //MPI_error().raise(LOCAL_INFO, msg.str());           
+       Gambit::Scanner::Plugins::plugin_info.set_running(false);
+    }
+    #endif
       
     if (debug) cout << "log-likelihood: " << lnlike << endl << endl;     
     dependencyResolver.resetAll();

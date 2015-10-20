@@ -306,6 +306,9 @@ namespace Gambit
       myLogTags.insert(err);
     }
 
+  /// MPIerror constructors
+  MPIerror::MPIerror(const char* message, const char* inikey) : error(message, inikey) {}
+  MPIerror::MPIerror(const char* message, const char* inikey, LogTag t1) : error(message, inikey, t1) {}
 
   /// GAMBIT warning class constructors
 
