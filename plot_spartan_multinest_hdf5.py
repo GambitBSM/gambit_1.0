@@ -9,8 +9,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-f = h5py.File("runs/spartan_multinest_hdf5/samples/gambit_output.hdf5",'r')
-group = f["/test/test2"]
+f = h5py.File("runs/spartan_multinest_hdf5/samples/results.hdf5",'r')
+group = f["/gambit_data"]
 
 mu = group["#NormalDist_parameters @NormalDist::primary_parameters::mu"]
 mu_isvalid = np.array(group["#NormalDist_parameters @NormalDist::primary_parameters::mu_isvalid"],dtype=np.bool)
@@ -33,10 +33,10 @@ P = group["Posterior"]
 P_isvalid = np.array(group["Posterior_isvalid"],dtype=np.bool)
 
 # Compare to hypercube parameters to check dataset alignment
-hc0 = group["Parameters[0]"]
-hc0_isvalid = np.array(group["Parameters[0]_isvalid"],dtype=np.bool)
-hc1 = group["Parameters[1]"]
-hc1_isvalid = np.array(group["Parameters[1]_isvalid"],dtype=np.bool)
+#hc0 = group["Parameters[0]"]
+#hc0_isvalid = np.array(group["Parameters[0]_isvalid"],dtype=np.bool)
+#hc1 = group["Parameters[1]"]
+#hc1_isvalid = np.array(group["Parameters[1]_isvalid"],dtype=np.bool)
 
 # Uncomment to use hypercube parameters
 #mu         = hc0

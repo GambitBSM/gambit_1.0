@@ -77,7 +77,7 @@ Logger:
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/spartan_multinest_hdf5/"
+  default_output_path: "runs/spartan_multinest_hdf5///"
 
   print_timing_data: true
 
