@@ -111,7 +111,8 @@ namespace Gambit
             }
             cout << "Sqrt(s) vs total mass of final states: " << 2 * *Dep::mwimp << " vs. " << mtot << endl;
             cout << "Branching fraction in v=0 limit: " << annihilation_bf[i] << endl << endl;
-            if (0.9 * mtot > 2 * *Dep::mwimp) DarkBit_error().raise(LOCAL_INFO, "Channel is open in process catalog but should not be kinematically allowed.");
+            if (0.9 * mtot > 2 * *Dep::mwimp and annihilation_bf[i] > 0.0)
+             DarkBit_error().raise(LOCAL_INFO, "Channel is open in process catalog but should not be kinematically allowed.");
           #endif
 
         }
