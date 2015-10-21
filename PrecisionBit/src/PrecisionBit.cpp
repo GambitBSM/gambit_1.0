@@ -83,6 +83,21 @@ namespace Gambit
         //PrecisionBit_error().raise(LOCAL_INFO, err.str());
       }
 
+      #ifdef PRECISIONBIT_DEBUG
+        // Just die if any of the other observables look really suspicious.
+        str nans;
+        if (Utils::isnan(gm2)) nans += "g-2 | ";
+        if (Utils::isnan(Deltarho)) nans += "Delta rho | ";
+        if (Utils::isnan(MWMSSM)) nans += "MW in MSSM | ";
+        if (Utils::isnan(MWSM)) nans += "MW in SM | ";
+        if (Utils::isnan(SW2MSSM)) nans += "sin^2 thetaW_effective in MSSM | ";
+        if (Utils::isnan(SW2SM)) nans += "sin^2 thetaW_effective in SM | ";
+        if (Utils::isnan(edmeTh)) nans += "e EDM | ";
+        if (Utils::isnan(edmn)) nans += "n EDM | ";
+        if (Utils::isnan(edmHg)) nans += "Hg EDM | ";
+        if (not nans.empty()) PrecisionBit_error().raise(LOCAL_INFO, nans+"returned as NaN from FeynHiggs!");
+      #endif PRECISIONBIT_DEBUG
+
       fh_PrecisionObs PrecisionObs;
       PrecisionObs.gmu2 = gm2;
       PrecisionObs.deltaRho = Deltarho;
