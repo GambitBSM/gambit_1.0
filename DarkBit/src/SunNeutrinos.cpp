@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Pat Scott
 ///          (pscott@imperial.ac.uk)
 ///  \date 2015 Apr
@@ -17,9 +17,11 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
+#define DARKBIT_DEBUG
+
 namespace Gambit
 {
-  
+
   namespace DarkBit
   {
 
@@ -47,8 +49,8 @@ namespace Gambit
     void equilibration_time_Sun(double &result)
     {
       using namespace Pipes::equilibration_time_Sun;
-      double ca = *Dep::sigmav/6.6e28 * pow(*Dep::mwimp/20.0, 1.5); 
-      result = pow(*Dep::capture_rate_Sun * ca, -0.5);                
+      double ca = *Dep::sigmav/6.6e28 * pow(*Dep::mwimp/20.0, 1.5);
+      result = pow(*Dep::capture_rate_Sun * ca, -0.5);
     }
 
     /// Annihilation rate of dark matter in the Sun (s^-1)
@@ -66,7 +68,7 @@ namespace Gambit
       using namespace Pipes::nuyield_from_DS;
       double annihilation_bf[29];
       double Higgs_decay_BFs_neutral[29][3];
-      double Higgs_decay_BFs_charged[15]; 
+      double Higgs_decay_BFs_charged[15];
       double Higgs_masses_neutral[3];
       double Higgs_mass_charged;
 
@@ -74,13 +76,14 @@ namespace Gambit
       // FIXME needs to be fixed once BFs are available directly from TH_Process
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
-      std::vector< std::vector<str> > neutral_channels = BEreq::get_DS_neutral_h_decay_channels(); 
+      std::vector< std::vector<str> > neutral_channels = BEreq::get_DS_neutral_h_decay_channels();
       // the missing channel
       const std::vector<str> adhoc_chan = initVector<str>("W-", "H+");
 
       for (int i=0; i<29; i++)
       {
         const TH_Channel* channel = annProc.find(neutral_channels[i]);
+
         if (channel != NULL)
         {
           annihilation_bf[i] = channel->genRate->bind("v")->eval(0.);
@@ -89,17 +92,35 @@ namespace Gambit
             channel = annProc.find(adhoc_chan);
             if (channel == NULL) DarkBit_error().raise(LOCAL_INFO,
                 "W+H- exists in process catalogue but not W-H+."
-                " That's some suspiciously severe CP violation yo."); 
+                " That's some suspiciously severe CP violation yo.");
             annihilation_bf[i] += channel->genRate->bind("v")->eval(0.);
           }
-          // This channel has not been implemented in DarkSUSY. 
+          // This channel has not been implemented in DarkSUSY.
           if (i == 26) annihilation_bf[i] = 0.;
           annihilation_bf[i] /= *Dep::sigmav;
+
+          // Check that having this channel turned on makes sense at all.
+          #ifdef DARKBIT_DEBUG
+            double mtot = 0;
+            cout << "Particles and masses in DM annihilation final state: " << endl;
+            for (auto p = neutral_channels[i].begin(); p != neutral_channels[i].end(); ++p)
+            {
+              double m = Dep::TH_ProcessCatalog->getParticleProperty(*p).mass;
+              cout << "  " << *p << " " << m << endl;
+              mtot += m;
+            }
+            cout << "Sqrt(s) vs total mass of final states: " << 2 * *Dep::mwimp << " vs. " << mtot << endl;
+            cout << "Branching fraction in v=0 limit: " << annihilation_bf[i] << endl << endl;
+            if (0.9 * mtot > 2 * *Dep::mwimp) DarkBit_error().raise(LOCAL_INFO, "Channel is open in process catalog but should not be kinematically allowed.");
+          #endif
+
         }
+
         else
         {
           annihilation_bf[i] = 0.;
         }
+
       }
 
       // Set Higgs masses
@@ -136,19 +157,19 @@ namespace Gambit
       {
 
         // If this Higgs exists, set its decay properties.
-        if (h0_decays[i] != NULL)   
+        if (h0_decays[i] != NULL)
         {
 
           // Get the total decay width, for normalising partial widths to BFs.
           // FIXME: Replace when BFs become directly available.
           double totalwidth = 0.0;
-          for (std::vector<TH_Channel>::const_iterator 
+          for (std::vector<TH_Channel>::const_iterator
               it = h0_decays[i]->channelList.begin();
               it != h0_decays[i]->channelList.end(); ++it)
           {
             // decay width in GeV for two-body final state
-            if ( it->nFinalStates == 2 ) totalwidth += 
-              it->genRate->bind()->eval();  
+            if ( it->nFinalStates == 2 ) totalwidth +=
+              it->genRate->bind()->eval();
           }
 
           // Loop over the decay channels for neutral scalars
@@ -156,23 +177,23 @@ namespace Gambit
           {
             const TH_Channel* channel = h0_decays[i]->find(neutral_channels[j]);
             // If this Higgs can decay into this channel, set the BF.
-            if (channel != NULL)    
+            if (channel != NULL)
             {
               Higgs_decay_BFs_neutral[j][i] = channel->genRate->bind()->eval();
               if (i == 10)          // Add W- H+ for this channel
               {
                 channel = h0_decays[i]->find(adhoc_chan);
-                if (channel == NULL) DarkBit_error().raise(LOCAL_INFO, 
+                if (channel == NULL) DarkBit_error().raise(LOCAL_INFO,
                     "W+H- exists in process catalogue but not W-H+."
-                    " That's some suspiciously severe CP violation yo."); 
-                Higgs_decay_BFs_neutral[j][i] 
+                    " That's some suspiciously severe CP violation yo.");
+                Higgs_decay_BFs_neutral[j][i]
                   += channel->genRate->bind()->eval();
               }
-              // This channel has not been implemented in DarkSUSY. 
+              // This channel has not been implemented in DarkSUSY.
               if (i == 26) Higgs_decay_BFs_neutral[j][i] = 0.;
               Higgs_decay_BFs_neutral[j][i] /= totalwidth;
             }
-            else 
+            else
             {
               Higgs_decay_BFs_neutral[j][i] = 0.;
             }
@@ -180,7 +201,7 @@ namespace Gambit
 
         }
 
-        else 
+        else
         {
           // Loop over the decay channels for neutral scalars, setting all BFs
           // for this Higgs to zero.
@@ -190,17 +211,17 @@ namespace Gambit
       }
 
       // If they exist, set the charged Higgs decay branching fractions
-      // (DarkSUSY assumes that H+/H- decays are CP-invariant)    
-      if (Hplus_decays != NULL)       
+      // (DarkSUSY assumes that H+/H- decays are CP-invariant)
+      if (Hplus_decays != NULL)
       {
 
-        // Define the charged Higgs decay channels 
-        std::vector< std::vector<str> > charged_channels = BEreq::get_DS_charged_h_decay_channels() 
+        // Define the charged Higgs decay channels
+        std::vector< std::vector<str> > charged_channels = BEreq::get_DS_charged_h_decay_channels()
 ;
         // Get the total decay width, for normalising partial widths to BFs.
         // FIXME: Replace when BFs become directly available.
         double totalwidth = 0.0;
-        for (std::vector<TH_Channel>::const_iterator 
+        for (std::vector<TH_Channel>::const_iterator
             it = Hplus_decays->channelList.begin();
             it != Hplus_decays->channelList.end(); ++it)
         {
@@ -218,7 +239,7 @@ namespace Gambit
             Higgs_decay_BFs_charged[j] = channel->genRate->bind()->eval();
             Higgs_decay_BFs_charged[j] /= totalwidth;
           }
-          else 
+          else
           {
             Higgs_decay_BFs_charged[j] = 0.;
           }
@@ -226,17 +247,15 @@ namespace Gambit
 
       }
 
-      else 
+      else
       {
         // Loop over the decay channels for charged scalars, setting all BFs
         // for this Higgs to zero.
         for (int j=0; j<15; j++) Higgs_decay_BFs_charged[j] = 0.;
       }
 
-      // Debug FIXME needs testing once Higgs decay bfs and masses are entered
-      // into the processcatalog
-      if (false)
-      {
+      // Debug output
+      #ifdef DARKBIT_DEBUG
         for (int j=0; j<29; j++)
         {
           cout<< "annihilation bfs: " << j << " " << annihilation_bf[j] << endl;
@@ -246,20 +265,20 @@ namespace Gambit
         {
           for (int j=0; j<29; j++)
           {
-            cout<< "higgs neutral bfs: " << i << " " << j << " " 
+            cout<< "higgs neutral bfs: " << i << " " << j << " "
               << Higgs_decay_BFs_neutral[j][i] << endl;
           }
         }
         cout<< endl;
         for (int j=0; j<15; j++)
         {
-          cout<< "higgs charged bfs: " << j << " " 
+          cout<< "higgs charged bfs: " << j << " "
             << Higgs_decay_BFs_charged[j] << endl;
         }
         cout<< endl;
         for (int j=0; j<3; j++)
         {
-          cout<< "higgs masses neutral: " << j << " " 
+          cout<< "higgs masses neutral: " << j << " "
             << Higgs_masses_neutral[j] << endl;
         }
         cout<< endl;
@@ -273,32 +292,32 @@ namespace Gambit
         cout<< endl;
         cout<< "*Dep::sd: " << *Dep::sigma_SD_p << endl;
         cout<< endl;
-      }
+      #endif
 
       // Set up DarkSUSY to do neutrino yields for this particular WIMP
       BEreq::nuyield_setup(annihilation_bf, Higgs_decay_BFs_neutral,
           Higgs_decay_BFs_charged, Higgs_masses_neutral,
-          Higgs_mass_charged, *Dep::mwimp, *Dep::sigmav, 
+          Higgs_mass_charged, *Dep::mwimp, *Dep::sigmav,
           *Dep::sigma_SI_p, *Dep::sigma_SD_p);
 
       // Hand back the pointer to the DarkSUSY neutrino yield function
       result.pointer = BEreq::nuyield.pointer();
 
       //FIXME change below to >= when version numbers are available as ints
-      // Treat the yield function as threadsafe only if the loaded verison of DarkSUSY supports it.
+      // Treat the yield function as threadsafe only if the loaded version of DarkSUSY supports it.
       result.threadsafe = (BEreq::nuyield.version() == "5.1.3");
 
     }
-    
-    /// \brief Likelihood calculators for different IceCube event samples  
+
+    /// \brief Likelihood calculators for different IceCube event samples
     /// These functions all include the likelihood of the background-only model for the respective sameple.
     /// We define the final log-likelihood as delta = sum over analyses of (lnL_model - lnL_BG), conservatively
-    /// forbidding delta > 0 in order to always just use the neutrino likelihood as a limit.  This ignores small 
-    /// low-E excesses caused by impending breakdown of approximations used in IceCube response data and the nulike 
-    /// likelihood at very low E. This implies conditioning on all but one parameter (e.g. the cross-section), 
-    /// such that including any combination of IC data adds just *one* additional degree of freedom to the fit.  
+    /// forbidding delta > 0 in order to always just use the neutrino likelihood as a limit.  This ignores small
+    /// low-E excesses caused by impending breakdown of approximations used in IceCube response data and the nulike
+    /// likelihood at very low E. This implies conditioning on all but one parameter (e.g. the cross-section),
+    /// such that including any combination of IC data adds just *one* additional degree of freedom to the fit.
     /// @{
-    
+
     /// \brief 22-string IceCube sample: predicted signal and background
     /// counts, observed counts and likelihoods.
     void IC22_full(nudata &result)
@@ -344,7 +363,7 @@ namespace Gambit
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
-      result.loglike = lnLike;  
+      result.loglike = lnLike;
       result.pvalue = pval;
       if (first)
       {
@@ -359,7 +378,7 @@ namespace Gambit
     {
       static bool first = true;
       using namespace Pipes::IC79WL_full;
-      const double bgloglike = -1813.4503; 
+      const double bgloglike = -1813.4503;
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WL";
@@ -371,7 +390,7 @@ namespace Gambit
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
-      result.loglike = lnLike;  
+      result.loglike = lnLike;
       result.pvalue = pval;
       if (first)
       {
@@ -393,12 +412,12 @@ namespace Gambit
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
-          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4, 
+          byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
           theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
-      result.loglike = lnLike;  
+      result.loglike = lnLike;
       result.pvalue = pval;
       if (first)
       {
@@ -410,65 +429,65 @@ namespace Gambit
 
     /// 22-string extractor module functions
     /// @{
-    void IC22_signal (double &result)   { 
+    void IC22_signal (double &result)   {
       result = Pipes::IC22_signal ::Dep::IC22_data->signal;      }
-    void IC22_bg     (double &result)   { 
+    void IC22_bg     (double &result)   {
       result = Pipes::IC22_bg     ::Dep::IC22_data->bg;          }
-    void IC22_nobs   (int    &result)   { 
+    void IC22_nobs   (int    &result)   {
       result = Pipes::IC22_nobs   ::Dep::IC22_data->nobs;        }
-    void IC22_loglike(double &result)   { 
+    void IC22_loglike(double &result)   {
       result = Pipes::IC22_loglike::Dep::IC22_data->loglike;     }
-    void IC22_bgloglike(double &result) { 
+    void IC22_bgloglike(double &result) {
       result = Pipes::IC22_bgloglike::Dep::IC22_data->bgloglike; }
-    void IC22_pvalue (double &result)   { 
+    void IC22_pvalue (double &result)   {
       result = Pipes::IC22_pvalue ::Dep::IC22_data->pvalue;      }
     /// @}
 
     /// 79-string WH extractor module functions
     /// @{
-    void IC79WH_signal (double &result)   { 
+    void IC79WH_signal (double &result)   {
       result = Pipes::IC79WH_signal ::Dep::IC79WH_data->signal;      }
-    void IC79WH_bg     (double &result)   { 
+    void IC79WH_bg     (double &result)   {
       result = Pipes::IC79WH_bg     ::Dep::IC79WH_data->bg;          }
-    void IC79WH_nobs   (int    &result)   { 
+    void IC79WH_nobs   (int    &result)   {
       result = Pipes::IC79WH_nobs   ::Dep::IC79WH_data->nobs;        }
-    void IC79WH_loglike(double &result)   { 
+    void IC79WH_loglike(double &result)   {
       result = Pipes::IC79WH_loglike::Dep::IC79WH_data->loglike;     }
-    void IC79WH_bgloglike(double &result) { 
+    void IC79WH_bgloglike(double &result) {
       result = Pipes::IC79WH_bgloglike::Dep::IC79WH_data->bgloglike; }
-    void IC79WH_pvalue (double &result)   { 
+    void IC79WH_pvalue (double &result)   {
       result = Pipes::IC79WH_pvalue ::Dep::IC79WH_data->pvalue;      }
     /// @}
-    
+
     /// 79-string WL extractor module functions
     /// @{
-    void IC79WL_signal (double &result)   { 
+    void IC79WL_signal (double &result)   {
       result = Pipes::IC79WL_signal ::Dep::IC79WL_data->signal;      }
-    void IC79WL_bg     (double &result)   { 
+    void IC79WL_bg     (double &result)   {
       result = Pipes::IC79WL_bg     ::Dep::IC79WL_data->bg;          }
-    void IC79WL_nobs   (int    &result)   { 
+    void IC79WL_nobs   (int    &result)   {
       result = Pipes::IC79WL_nobs   ::Dep::IC79WL_data->nobs;        }
-    void IC79WL_loglike(double &result)   { 
+    void IC79WL_loglike(double &result)   {
       result = Pipes::IC79WL_loglike::Dep::IC79WL_data->loglike;     }
-    void IC79WL_bgloglike(double &result) { 
+    void IC79WL_bgloglike(double &result) {
       result = Pipes::IC79WL_bgloglike::Dep::IC79WL_data->bgloglike; }
-    void IC79WL_pvalue (double &result)   { 
+    void IC79WL_pvalue (double &result)   {
       result = Pipes::IC79WL_pvalue ::Dep::IC79WL_data->pvalue;      }
     /// @}
 
     /// 79-string SL extractor module functions
     /// @{
-    void IC79SL_signal (double &result)   { 
+    void IC79SL_signal (double &result)   {
       result = Pipes::IC79SL_signal ::Dep::IC79SL_data->signal;      }
-    void IC79SL_bg     (double &result)   { 
+    void IC79SL_bg     (double &result)   {
       result = Pipes::IC79SL_bg     ::Dep::IC79SL_data->bg;          }
-    void IC79SL_nobs   (int    &result)   { 
+    void IC79SL_nobs   (int    &result)   {
       result = Pipes::IC79SL_nobs   ::Dep::IC79SL_data->nobs;        }
-    void IC79SL_loglike(double &result)   { 
+    void IC79SL_loglike(double &result)   {
       result = Pipes::IC79SL_loglike::Dep::IC79SL_data->loglike;     }
-    void IC79SL_bgloglike(double &result) { 
+    void IC79SL_bgloglike(double &result) {
       result = Pipes::IC79SL_bgloglike::Dep::IC79SL_data->bgloglike; }
-    void IC79SL_pvalue (double &result)   { 
+    void IC79SL_pvalue (double &result)   {
       result = Pipes::IC79SL_pvalue ::Dep::IC79SL_data->pvalue;      }
     /// @}
 
