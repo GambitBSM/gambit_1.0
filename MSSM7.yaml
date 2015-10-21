@@ -16,6 +16,18 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
+    LocalHalo:
+      rho0: # Local dark matter density
+        fixed_value: .3 # GeV/cm^3
+        #range: [.2, .4]
+        #prior_type: flat
+      vrot: # Local disk rotation speed (unused in DarkSUSY)
+        fixed_value: 235 # km/s
+      v0: # Maxwellian most-probable speed (unused in DarkSUSY)
+        fixed_value: 235 # km/s
+      vesc: # Local galactic escape speed (unused in DarkSUSY)
+        fixed_value: 550 # km/s
+
   MSSM7atQ:
     Qin: 
       fixed_value: 1000.0

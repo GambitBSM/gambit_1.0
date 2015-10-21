@@ -53,6 +53,8 @@
 // Load the library
 LOAD_LIBRARY
 
+BE_ALLOW_MODELS(LocalHalo)
+
 // Functions
 BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
 BE_FUNCTION(dshainit, void, (const int&), "dshainit_", "dshainit")
@@ -136,6 +138,9 @@ BE_CONV_FUNCTION(DS_charged_h_decay_channels, std::vector<std::vector<str>>, (),
 // PS: these two need to be redesigned
 //BE_CONV_FUNCTION(registerMassesForIB, void, (std::map<std::string, DarkBit::TH_ParticleProperty>&), "registerMassesForIB")
 BE_CONV_FUNCTION(setMassesForIB, void, (bool), "setMassesForIB")
+
+// Fraction of DM that is accounted for by model
+BE_INI_DEPENDENCY(RD_fraction, double)
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
