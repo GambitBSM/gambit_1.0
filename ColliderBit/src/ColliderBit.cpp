@@ -101,8 +101,7 @@ namespace Gambit
       ms ms_base, ms_init, ms_start, ms_end, ms_final, ms_loop;
       ms zero(0);
       system_clock::time_point tp_outer = system_clock::now();
-      // variables for running the loop quietly
-      //static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer
+      static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
       nEvents = 0;
       eventsGenerated = false;
 
@@ -116,7 +115,7 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // Nicely ask the entire loop to stfu
-      //std::cout.rdbuf(0);
+      std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -140,17 +139,17 @@ namespace Gambit
           {
             system_clock::time_point tp_inner = system_clock::now();
             Loop::executeIteration(START_SUBPROCESS);
-            #pragma omp critical
+            #pragma omp critical (start_timer)
             ms_start += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
             // main event loop
             #pragma omp for nowait
             for(int i=0; i<nEvents; i++) {
               if(not *Loop::done) Loop::executeIteration(i);
             }
-            #pragma omp critical
+            #pragma omp critical (loop_timer)
             ms_loop += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
             Loop::executeIteration(END_SUBPROCESS);
-            #pragma omp critical
+            #pragma omp critical (end_timer)
             ms_end += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
           }
         }
@@ -159,7 +158,7 @@ namespace Gambit
       ms_loop /= omp_get_max_threads();
       ms_end /= omp_get_max_threads();
       // Nicely thank the loop for stfu, and restore everyone's vocal cords
-      //std::cout.rdbuf(coutbuf);
+      std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
       ms_final = std::chrono::duration_cast<ms>(system_clock::now() - tp_outer);
 
