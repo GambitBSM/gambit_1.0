@@ -112,15 +112,16 @@ BE_INI_FUNCTION
     }
 
     // Fraction of DM
-    double fraction = *Dep::RD_fraction;
+    // double fraction = *Dep::RD_fraction;
 
     if (ModelInUse("LocalHalo")) {
       double rho0 = *Param["rho0"];
-      double rho0_eff = fraction*rho0;
-      dshmcom->rho0 = rho0_eff;
+      // double rho0_eff = fraction*rho0;
+      // dshmcom->rho0 = rho0_eff;
+      dshmcom->rho0 = rho0;
       logger() << "Updating DarkSUSY halo parameters:" << EOM;
       logger() << "    rho0 [GeV/cm^3]     = " << rho0 << EOM;
-      logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+      //logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
     }
 
 }

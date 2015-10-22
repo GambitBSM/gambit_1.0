@@ -140,7 +140,7 @@ BE_CONV_FUNCTION(DS_charged_h_decay_channels, std::vector<std::vector<str>>, (),
 BE_CONV_FUNCTION(setMassesForIB, void, (bool), "setMassesForIB")
 
 // Fraction of DM that is accounted for by model
-BE_INI_DEPENDENCY(RD_fraction, double)
+// BE_INI_DEPENDENCY(RD_fraction, double)
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
