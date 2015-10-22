@@ -334,7 +334,7 @@ Rules:
     function: lnL_rho0_lognormal
     options:
       rho0_central: 0.4 # GeV/cm^3
-      rho0_perecentage_error: .3
+      rho0_percentage_error: .3
 
   # Precision Bit
   - capability: lnL_light_quark_masses
