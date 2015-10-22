@@ -15,7 +15,7 @@ Parameters:
 
     SingletDM:
         mS:
-            range: [10., 10000.]
+            range: [45., 10000.]
             prior_type: log
         lambda_hS:
             range: [0.001, 1.00]
@@ -77,8 +77,8 @@ Parameters:
 
     LocalHalo:
       rho0: # Local dark matter density
-        #fixed_value: .3 # GeV/cm^3
-        range: [.2, .4]
+        #fixed_value: .4 # GeV/cm^3
+        range: [.2, .8]
         prior_type: flat
       vrot: # Local disk rotation speed (unused in DarkSUSY)
         fixed_value: 235 # km/s
@@ -192,6 +192,11 @@ ObsLikes:
 # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
     - capability: lnL_SI_nuclear_parameters
       purpose:  Likelihood
+
+# DM Local Density likelihood
+    - capability: lnL_rho0
+      purpose: Likelihood
+      
 # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
       purpose:  Likelihood
@@ -283,6 +288,13 @@ Rules:
       sigmal_central: 58.
       sigmal_error: 9.
 
+  # DM Local Density Likelihood
+  - capability: lnL_rho0
+    function: lnL_rho0_lognormal
+    options:
+      rho0_central: 0.4 # GeV/cm^3
+      rho0_perecentage_error: .3
+
   # Decays
   - capability: decay_rates
     function: all_decays
@@ -299,7 +311,7 @@ Rules:
       # m_s
       ms_central: 95.E-03
       ms_error: 5.E-03
-
+       
 #########################
 # Logging setup
 #########################

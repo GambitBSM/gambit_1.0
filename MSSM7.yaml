@@ -55,6 +55,18 @@ Parameters:
       range: [1e4, 2.5e7]
       prior_type: log
 
+    LocalHalo:
+      rho0: # Local dark matter density
+        fixed_value: .4 # GeV/cm^3
+        #range: [.2, .8]
+        #prior_type: flat
+      vrot: # Local disk rotation speed (unused in DarkSUSY)
+        fixed_value: 235 # km/s
+      v0: # Maxwellian most-probable speed (unused in DarkSUSY)
+        fixed_value: 235 # km/s
+      vesc: # Local galactic escape speed (unused in DarkSUSY)
+        fixed_value: 550 # km/s
+
 Priors:
 
   # All priors simple, so specified in Parameters section
@@ -144,6 +156,10 @@ ObsLikes:
     # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
     - capability: lnL_SI_nuclear_parameters
       purpose:    Likelihood
+
+# DM Local Density likelihood
+    - capability: lnL_rho0
+      purpose: Likelihood
         
     #- purpose:    Likelihood
     #  capability: LHC_Combined_LogLike
@@ -201,7 +217,6 @@ ObsLikes:
 
     - purpose:    Likelihood
       capability: HS_LHC_lnL
-
 
     - capability: RD_oh2
       purpose:    Observable
@@ -313,6 +328,13 @@ Rules:
       sigmas_error: 8.
       sigmal_central: 58.
       sigmal_error: 9.
+
+  # DM Local Density Likelihood
+  - capability: lnL_rho0
+    function: lnL_rho0_lognormal
+    options:
+      rho0_central: 0.4 # GeV/cm^3
+      rho0_perecentage_error: .3
 
   # Precision Bit
   - capability: lnL_light_quark_masses
