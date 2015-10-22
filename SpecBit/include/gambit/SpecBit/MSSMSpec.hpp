@@ -9,16 +9,16 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
-///  \author Peter Athron  
+///
+///  \author Peter Athron
 ///          (peter.athron@coepp.org.au)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
@@ -40,7 +40,6 @@
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
 
-
 namespace Gambit
 {
 
@@ -49,12 +48,12 @@ namespace Gambit
 
       //
       // IMPLEMENTATION OF MSSMSpec MEMBER FUNCTIONS FOLLOWS
-      // 
+      //
       // MSSMSpec this is a template class, we need these definition in the header
       // file. It is nice to keep them seperate from the class declaration though.
       //
- 
-      // NOTE!! mi is COPIED into the object, so when we get the reference to the 
+
+      // NOTE!! mi is COPIED into the object, so when we get the reference to the
       // actual Model object to store in 'model', we need to use the copy inside
       // the object. So also need to make sure 'model_interface' is initialised first
       // (i.e. it should be declared first)
@@ -67,30 +66,30 @@ namespace Gambit
       {
          if (switch_index_convention) index_offset = 0;
       }
-      
+
       // Default constructor
       template <class MI>
       MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
          : index_offset(switch_index_convention ? 0 : -1)
       {}
-  
+
       template <class MI>
       MSSMSpec<MI>::~MSSMSpec()
       {}
-      
+
       // Fill an SLHAea object with spectrum information
       template <class MI>
       void MSSMSpec<MI>::add_to_SLHAea(SLHAstruct& slha) const
       {
 
-        // Here we assume that all SM input info comes from the SMINPUT object, 
+        // Here we assume that all SM input info comes from the SMINPUT object,
         // and all low-E stuff (quark pole masses and the like) come from the LE subspectrum.
 
         std::ostringstream comment;
 
         SLHAea_add_block(slha, "SPINFO");
         SLHAea_add(slha, "SPINFO", 1, "GAMBIT, using "+backend_name);
-        SLHAea_add(slha, "SPINFO", 2, gambit_version+" (GAMBIT); "+backend_version+" ("+backend_name+")"); 
+        SLHAea_add(slha, "SPINFO", 2, gambit_version+" (GAMBIT); "+backend_version+" ("+backend_name+")");
 
         SLHAea_add_block(slha, "MINPAR");
         SLHAea_add_block(slha, "HMIX",this->runningpars().GetScale());
@@ -99,9 +98,9 @@ namespace Gambit
         if (not this->runningpars().has(Par::mass1,"vu")) utils_error().raise(LOCAL_INFO, "MSSM subspectrum does not contain vu!");
         if (not this->runningpars().has(Par::mass1,"vd")) utils_error().raise(LOCAL_INFO, "MSSM subspectrum does not contain vd!");
         double vu = this->runningpars().get(Par::mass1,"vu");
-        double vd = this->runningpars().get(Par::mass1,"vd");        
+        double vd = this->runningpars().get(Par::mass1,"vd");
         slha["HMIX"][""] << 3 << sqrt(vu*vu + vd*vd) << "# v = sqrt(vd^2 + vu^2) DRbar";
-        slha["HMIX"][""] << 4 << this->runningpars().get(Par::mass2,"mA2") << "# m^2_A (tree)";        
+        slha["HMIX"][""] << 4 << this->runningpars().get(Par::mass2,"mA2") << "# m^2_A (tree)";
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass2,"BMu","HMIX",101,"# Bmu DRbar");
         slha["HMIX"][""] << 102 << vd << "# vd DRbar";
         slha["HMIX"][""] << 103 << vu << "# vu DRbar";
@@ -113,7 +112,7 @@ namespace Gambit
 
         SLHAea_add_block(slha, "GAUGE",this->runningpars().GetScale());
         // Scale gY is in SU(5)/GUT normalisation internally; convert it to SM normalisation for SLHA output by multiplying by sqrt(3/5).
-        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"g1","GAUGE",1,"# g'  = g1 = gY DRbar", true, 0.7745966692414834); 
+        SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"g1","GAUGE",1,"# g'  = g1 = gY DRbar", true, 0.7745966692414834);
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"g2","GAUGE",2,"# g   = g2      DRbar");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::dimensionless,"g3","GAUGE",3,"# g_s = g3      DRbar");
 
@@ -124,7 +123,7 @@ namespace Gambit
           str comment("# "+Models::ParticleDB().long_name(pdg_codes[i], 0));
           SLHAea_add_from_subspec(slha, LOCAL_INFO, this->phys(), Par::Pole_Mass, std::pair<int, int>(pdg_codes[i],0), "MASS", comment);
         }
-   
+
         SLHAea_add_block(slha, "MSOFT",this->runningpars().GetScale());
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass1,"M1","MSOFT",1,"# bino mass parameter M1");
         SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(),Par::mass1,"M2","MSOFT",2,"# wino mass parameter M2");
@@ -163,7 +162,17 @@ namespace Gambit
           {
             comment.str(""); comment << M[k].second << "(" << i << "," << j << ")";
             SLHAea_add_from_subspec(slha, LOCAL_INFO,this->runningpars(), Par::mass2, M[k].second, i, j, M[k].first, i, j, "# " + comment.str());
-            if (i == j) slha["MSOFT"][""] << 30+3*k+i+(k>1?4:0) << sqrt(this->runningpars().get(Par::mass2, M[k].second, i, j)) << "# sqrt("+comment.str()+")";
+            if (i== j)
+            {
+              double entry = this->runningpars().get(Par::mass2, M[k].second, i, j);
+              if (entry < 0)
+              {
+                std::ostringstream err;
+                err << comment.str() << " = " << entry << " in spectrum output...   --> OMG IT'S NEGATIVE! CALL THE FUMIGATORS! <--";
+                SpecBit_error().raise(LOCAL_INFO, err.str());
+              }
+              slha["MSOFT"][""] << 30+3*k+i+(k>1?4:0) << sqrt(entry) << "# sqrt("+comment.str()+")";
+            }
           }
         }
 
@@ -191,7 +200,7 @@ namespace Gambit
 
         SLHAea_add_block(slha, "ALPHA", this->runningpars().GetScale());
         slha["ALPHA"][""] << asin(this->phys().get(Par::Pole_Mixing, "h0", 2, 2)) << "# sin^-1(SCALARMIX(2,2))";
-  
+
         sspair V("SNUMIX","~nu");
         SLHAea_add_block(slha, V.first,this->runningpars().GetScale());
         for(int i=1;i<4;i++) for(int j=1;j<4;j++)
@@ -199,7 +208,7 @@ namespace Gambit
           comment.str(""); comment << "# " << V.second << " mixing matrix (" << i << "," << j << ")";
           SLHAea_add_from_subspec(slha, LOCAL_INFO,this->phys(), Par::Pole_Mixing, V.second, i, j, V.first, i, j, comment.str());
         }
-      
+
         sspair N("NMIX","~chi0");
         SLHAea_add_block(slha, N.first,this->runningpars().GetScale());
         for(int i=1;i<5;i++) for(int j=1;j<5;j++)
@@ -209,18 +218,18 @@ namespace Gambit
         }
 
       }
-      
-      //inspired by softsusy's lsp method.  
-      //This MSSM version assumes all states mass ordered. 
-      //returns lsp mass and gives 3 integers to specify the state 
-      // for most general case of a particle type with mass matrix 
-      // row and col set to -1 when not needed 
-      //(row only is used for vector) 
-      //particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
+
+      //inspired by softsusy's lsp method.
+      //This MSSM version assumes all states mass ordered.
+      //returns lsp mass and gives 3 integers to specify the state
+      // for most general case of a particle type with mass matrix
+      // row and col set to -1 when not needed
+      //(row only is used for vector)
+      //particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark),
       //3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
       //
       // TODO: Ben: I'm a little unclear why we access the flexiblesusy
-      // data directly like this. Can't we use the function pointer maps 
+      // data directly like this. Can't we use the function pointer maps
       // that we wrote? This will reduce how much the softsusy wrapper
       // has to clone the flexiblesusy model object structure.
       template <class MI>
@@ -230,61 +239,61 @@ namespace Gambit
          double mlsp = fabs(model_interface.model.get_physical().MChi(0)); //most common lsp
          particle_type = 0;
          row = 0;
-        
+
          /// sneutrinos 1
          double temp = model_interface.model.get_physical().MSv(0);
-         if (temp < mlsp) { 
-            mlsp = temp; 
-            particle_type = 1; 
+         if (temp < mlsp) {
+            mlsp = temp;
+            particle_type = 1;
             row=0;
          }
-         
+
          /// up squarks 2
          temp = model_interface.model.get_physical().MSu(0);
-         if (temp < mlsp) { 
-            mlsp = temp; 
+         if (temp < mlsp) {
+            mlsp = temp;
             particle_type = 2;
             row=0;
          }
-         
+
          /// down squarks 3
          temp = model_interface.model.get_physical().MSd(0);
-         if (temp < mlsp) { 
-            mlsp = temp; 
+         if (temp < mlsp) {
+            mlsp = temp;
             particle_type = 3;
-            row=0;      
+            row=0;
          }
-         
+
          /// sleptons 4
          temp = model_interface.model.get_physical().MSe(0);
-         if (temp < mlsp) { 
-            mlsp = temp; 
-            particle_type = 4; 
-            row=0;    
+         if (temp < mlsp) {
+            mlsp = temp;
+            particle_type = 4;
+            row=0;
          }
-         
+
          /// charginos 5
          temp = fabs(model_interface.model.get_physical().MCha(0));
-         if (temp < mlsp) { 
-            mlsp = temp; 
-            particle_type = 5; 
-            row=0;    
+         if (temp < mlsp) {
+            mlsp = temp;
+            particle_type = 5;
+            row=0;
          }
-         
+
          /// gluino 6
          temp = fabs(model_interface.model.get_physical().MGlu);
          if (temp < mlsp) {
-            mlsp = temp; 
-            particle_type = 6; 
-            row=0;    
+            mlsp = temp;
+            particle_type = 6;
+            row=0;
          }
-         
+
          //We have no gravitino mass right now.   this should be added.
-         // /// gravitino -1 
+         // /// gravitino -1
          // temp = displayGravitino();
          // if (temp < mlsp) {
-         //   mlsp = temp; posi = 0; posj = 0; particle_type = -1; }  
-         
+         //   mlsp = temp; posi = 0; posj = 0; particle_type = -1; }
+
          return mlsp;
       }
 
@@ -293,7 +302,7 @@ namespace Gambit
       int MSSMSpec<MI>::get_numbers_stable_particles() const {
          return 1;
       }
-      
+
       //these are just wrappers.  Need to test this carefully though
       //inheritance is complicated
       //TODO: Ben: If it helps, we can now put the run_to function
@@ -316,7 +325,7 @@ namespace Gambit
       {
         model_interface.model.set_scale(scale);
       }
-      
+
       template <class MI>
       std::string MSSMSpec<MI>::AccessError(std::string state) const
       {
@@ -324,147 +333,147 @@ namespace Gambit
         errormsg = "Error accessing "+ state + " element is out of bounds";
         return errormsg;
       }
-     
-      // "extra" function to compute TanBeta 
+
+      // "extra" function to compute TanBeta
       template <class Model>
-      double get_tanbeta(const Model& model) 
-      { 
-        return model.get_vu() / model.get_vd(); 
+      double get_tanbeta(const Model& model)
+      {
+        return model.get_vu() / model.get_vd();
       }
 
-      // "extra" function to compute mA2 
+      // "extra" function to compute mA2
       template <class Model>
-      double get_DRbar_mA2(const Model& model) 
+      double get_DRbar_mA2(const Model& model)
       {
         double tb = model.get_vu() / model.get_vd();
         double cb = cos(atan(tb));
         double sb = sin(atan(tb));
-        return model.get_BMu() / (sb * cb); 
+        return model.get_BMu() / (sb * cb);
       }
-    
+
       template <class Model>
       double get_sinthW2_DRbar(const Model& model)
       {
-       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
-                      (0.6 * Utils::sqr(model.get_g1()) + 
+       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 /
+                      (0.6 * Utils::sqr(model.get_g1()) +
                       Utils::sqr(model.get_g2()));
        return sthW2;
       }
-      
+
       template <class Model>
       void set_MSu_pole_slha(Model& model, double mass,int i)
       {
         model.get_physical_slha().MSu(i) = mass;
       }
-    
+
       template <class Model>
       void set_MSd_pole_slha(Model& model, double mass,int i)
       {
         model.get_physical_slha().MSd(i) = mass;
       }
-      
+
       template <class Model>
       void set_MSe_pole_slha(Model& model, double mass,int i)
       {
         model.get_physical_slha().MSe(i) = mass;
       }
-      
+
       template <class Model>
       void set_MSv_pole_slha(Model& model, double mass,int i)
       {
         model.get_physical_slha().MSv(i) = mass;
       }
-      
+
       template <class Model>
       void set_MCha_pole_slha(Model& model, double mass, int i)
       {
         model.get_physical_slha().MCha(i) = mass;
       }
-      
+
       template <class Model>
       void set_MChi_pole_slha(Model& model, double mass, int i)
       {
         model.get_physical_slha().MChi(i) = mass;
       }
-      
+
       template <class Model>
       void set_Mhh_pole_slha(Model& model, double mass, int i)
       {
         model.get_physical_slha().Mhh(i) = mass;
       }
-      
+
       template <class Model>
       void set_ZD_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().ZD(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_ZU_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().ZU(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_ZE_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().ZE(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_ZV_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().ZV(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_ZH_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().ZH(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_ZA_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().ZA(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_ZP_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().ZP(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_ZN_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().ZN(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_UM_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().UM(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_UP_pole_slha(Model& model, double mass, int i, int j)
       {
         model.get_physical_slha().UP(i,j) = mass;
       }
-      
+
       template <class Model>
       void set_MAh1_pole_slha(Model& model, double mass)
       {
         model.get_physical_slha().MAh(1) = mass;
       }
-      
+
       template <class Model>
       void set_MHpm1_pole_slha(Model& model, double mass)
       {
         model.get_physical_slha().MHpm(1) = mass;
       }
-      
+
       // goldstone setters.  maybe we need these for some consistent calculation
       // unlikely but I'll add them for now.
       template <class Model>
@@ -472,13 +481,13 @@ namespace Gambit
       {
         model.get_physical_slha().MAh(0) = mass;
       }
-      
+
       template <class Model>
       void set_charged_goldstone_pole_slha(Model& model, double mass)
       {
         model.get_physical_slha().MHpm(0) = mass;
       }
-         
+
 
      // PA: I'm using nicer names than the FlexibleSUSY ones here
      // but maybe I shouldn't as it breaks the symmetry with the
@@ -503,7 +512,7 @@ namespace Gambit
         model.get_physical_slha().MVWm = mass;
      }
 
-     
+
      // PA: do we really need to set the masses of states that must be
      // massless in the MSSM.  This is an MSSM specific file.
      template <class Model>
@@ -511,21 +520,21 @@ namespace Gambit
      {
         model.get_physical().MG = mass;
      }
-     
+
      template <class Model>
      void set_MPhoton(Model& model, double mass)
      {
         model.get_physical().MVP = mass;
      }
 
-       
+
       /// @{ Fillers for "Running" subclass
- 
+
       // Filler function for getter function pointer maps extractable from "runningpars" container
       template <class MI>
       typename MSSMSpec<MI>::RunningGetterMaps MSSMSpec<MI>::runningpars_fill_getter_maps()
       {
-         typename MSSMSpec<MI>::RunningGetterMaps map_collection; 
+         typename MSSMSpec<MI>::RunningGetterMaps map_collection;
          typedef typename MI::Model Model;
 
          typedef typename MTget::FInfo1 FInfo1;
@@ -535,7 +544,7 @@ namespace Gambit
          static const std::set<int> i012 = initSet(0,1,2);
          static const std::set<int> i0123 = initSet(0,1,2,3);
          static const std::set<int> i012345 = initSet(0,1,2,3,4,5);
-         
+
          /// @{ mass2 - mass dimension 2 parameters
          //
          // Functions utilising the "plain-vanilla" function signature
@@ -549,7 +558,7 @@ namespace Gambit
 
             map_collection[Par::mass2].map0 = tmp_map;
          }
- 
+
          // Functions utilising the "extraM" function signature
          // (Zero index, model object as argument)
          {
@@ -567,7 +576,7 @@ namespace Gambit
             tmp_map["md2"] = FInfo2( &Model::get_md2, i012, i012);
             tmp_map["mu2"] = FInfo2( &Model::get_mu2, i012, i012);
             tmp_map["me2"] = FInfo2( &Model::get_me2, i012, i012);
-        
+
             map_collection[Par::mass2].map2 = tmp_map;
          }
 
@@ -598,7 +607,7 @@ namespace Gambit
             tmp_map["ad"] = FInfo2( &Model::get_TYd, i012, i012);
             tmp_map["ae"] = FInfo2( &Model::get_TYe, i012, i012);
             tmp_map["au"] = FInfo2( &Model::get_TYu, i012, i012);
- 
+
             map_collection[Par::mass1].map2 = tmp_map;
          }
 
@@ -625,7 +634,7 @@ namespace Gambit
             tmp_map["sinW2"] = &get_sinthW2_DRbar<Model>;
             map_collection[Par::dimensionless].map0_extraM = tmp_map;
          }
-   
+
          // Functions utilising the two-index "plain-vanilla" function signature
          // (Two-index member functions of model object)
          {
@@ -637,14 +646,14 @@ namespace Gambit
 
             map_collection[Par::dimensionless].map2 = tmp_map;
          }
- 
+
          // Functions utilising the one-index "plain-vanilla" function signature
          // (One-index member functions of model object)
          {
             typename MTget::fmap1 tmp_map;
 
             // Note; only one entry required for particle/antiparticle pairs.
-            // In fact, it is preferred unless they are actually different, 
+            // In fact, it is preferred unless they are actually different,
             // since automatic conversion between them occurs.
 
             tmp_map["Sd"] = FInfo1( &Model::get_MSd, i012345 );
@@ -654,11 +663,11 @@ namespace Gambit
             tmp_map["h0"] = FInfo1( &Model::get_Mhh, i01 );
             //Here we may access the goldstone boson
             // and higgs. maybe too dangerous to keep?
-            tmp_map["A0"] = FInfo1( &Model::get_MAh, i01 );      
-            tmp_map["H+"] = FInfo1( &Model::get_MHpm, i01 );   
+            tmp_map["A0"] = FInfo1( &Model::get_MAh, i01 );
+            tmp_map["H+"] = FInfo1( &Model::get_MHpm, i01 );
             tmp_map["chi+"] = FInfo1( &Model::get_MCha, i01 );
             tmp_map["chi0"] = FInfo1( &Model::get_MChi, i0123 );
-            
+
             tmp_map["d"] =    FInfo1( &Model::get_MFd, i012 );
             tmp_map["u"] =    FInfo1( &Model::get_MFu, i012 );
             tmp_map["e-"] =   FInfo1( &Model::get_MFe, i012 );
@@ -668,13 +677,13 @@ namespace Gambit
          /// @}
 
          return map_collection;
-      } 
+      }
 
       // Filler function for setter function pointer maps extractable from "runningpars" container
       template <class MI>
       typename MSSMSpec<MI>::RunningSetterMaps MSSMSpec<MI>::runningpars_fill_setter_maps()
       {
-         typename MSSMSpec<MI>::RunningSetterMaps map_collection; 
+         typename MSSMSpec<MI>::RunningSetterMaps map_collection;
          typedef typename MI::Model Model;
 
          typedef typename MTset::FInfo1 FInfo1;
@@ -684,7 +693,7 @@ namespace Gambit
          static const std::set<int> i012 = initSet(0,1,2);
          static const std::set<int> i0123 = initSet(0,1,2,3);
          static const std::set<int> i012345 = initSet(0,1,2,3,4,5);
-  
+
          /// @{ mass2 - mass dimension 2 parameters
          //
          // Functions utilising the "plain-vanilla" function signature
@@ -698,7 +707,7 @@ namespace Gambit
 
             map_collection[Par::mass2].map0 = tmp_map;
          }
- 
+
          // Functions utilising the two-index "plain-vanilla" function signature
          // (Two-index member functions of model object)
          {
@@ -708,7 +717,7 @@ namespace Gambit
             tmp_map["md2"] = FInfo2( &Model::set_md2, i012, i012);
             tmp_map["mu2"] = FInfo2( &Model::set_mu2, i012, i012);
             tmp_map["me2"] = FInfo2( &Model::set_me2, i012, i012);
-        
+
             map_collection[Par::mass2].map2 = tmp_map;
          }
          /// @}
@@ -739,7 +748,7 @@ namespace Gambit
             tmp_map["ad"] = FInfo2( &Model::set_TYd, i012, i012);
             tmp_map["ae"] = FInfo2( &Model::set_TYe, i012, i012);
             tmp_map["au"] = FInfo2( &Model::set_TYu, i012, i012);
- 
+
             map_collection[Par::mass1].map2 = tmp_map;
          }
 
@@ -771,21 +780,21 @@ namespace Gambit
          }
 
          return map_collection;
-      } 
+      }
 
       /// @}
 
       /// @{ Fillers for Phys subclass
 
-      // Need wrapper functios for A0 and H+ getters, to retrieve only the 
-      // non-Goldstone entries. 
+      // Need wrapper functios for A0 and H+ getters, to retrieve only the
+      // non-Goldstone entries.
       // Need to pass in the model object, since we won't have the 'this' pointer
       template <class Model>
       double get_MAh1_pole_slha(const Model& model)
       {
         return model.get_MAh_pole_slha(1);
       }
-     
+
       template <class Model>\
       double get_MHpm1_pole_slha(const Model& model)
       {
@@ -805,12 +814,12 @@ namespace Gambit
       {
         return model.get_MHpm_pole_slha(0);
       }
-   
+
       // Filler function for getter function pointer maps extractable from "phys" container
       template <class MI>
       typename MSSMSpec<MI>::PhysSetterMaps MSSMSpec<MI>::phys_fill_setter_maps()
       {
-        typename MSSMSpec<MI>::PhysSetterMaps map_collection; 
+        typename MSSMSpec<MI>::PhysSetterMaps map_collection;
         typedef typename MI::Model Model;
 
         typedef typename MTset::FInfo1M FInfo1M;
@@ -821,9 +830,9 @@ namespace Gambit
         static const std::set<int> i0123 = initSet(0,1,2,3);
         static const std::set<int> i012345 = initSet(0,1,2,3,4,5);
 
-        {  
+        {
           typename MTset::fmap0_extraM tmp_map;
-          tmp_map["~g"] = &set_MGluino_pole_slha<Model>; 
+          tmp_map["~g"] = &set_MGluino_pole_slha<Model>;
           tmp_map["A0"] = &set_MAh1_pole_slha<Model>;
           tmp_map["H+"] = &set_MHpm1_pole_slha<Model>;
           /// Note; these aren't in the particle database, so no
@@ -831,47 +840,47 @@ namespace Gambit
           tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
           tmp_map["Goldstone+"] = &set_charged_goldstone_pole_slha<Model>;
           tmp_map["Goldstone-"] = &set_charged_goldstone_pole_slha<Model>;
-   
+
           /// the getters for these were removed but at last meeting
           /// we agreed to add setters here unless I misunderstood.
           /// need to discuss this
           tmp_map["W+"] = &set_MW_pole_slha<Model>;
           /// tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
-       
+
           map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
         }
 
-        {  
+        {
           typename MTset::fmap1_extraM tmp_map;
-      
+
           tmp_map["~u"] = FInfo1M( &set_MSu_pole_slha<Model>, i012345 );
           tmp_map["~d"] = FInfo1M( &set_MSd_pole_slha<Model>, i012345 );
           tmp_map["~e-"]= FInfo1M( &set_MSe_pole_slha<Model>, i012345 );
-          
+
           tmp_map["~nu"]=  FInfo1M( &set_MSv_pole_slha<Model>, i012 );
           tmp_map["~chi+"] = FInfo1M( &set_MCha_pole_slha<Model>, i01 );
           tmp_map["~chi0"] = FInfo1M( &set_MChi_pole_slha<Model>, i0123 );
           tmp_map["h0"] =  FInfo1M( &set_Mhh_pole_slha<Model>, i01 );
-          // NOTE: I have added the following two to the "no index" map as well, 
+          // NOTE: I have added the following two to the "no index" map as well,
           // where only the "safe" entries are retrieved
           //Here we may access the goldstone boson
           //and higgs. maybe too dangerous to keep?
-          //  tmp_map["A0"] = FInfo1(&set_MAh_pole_slha, i01 );      
+          //  tmp_map["A0"] = FInfo1(&set_MAh_pole_slha, i01 );
           //Here we may access the goldstone boson
           //and higgs. maybe too dangerous to keep?
           //tmp_map["H+"] = FInfo1( &set_MHpm_pole_slha, i01 );
-        
+
           map_collection[Par::Pole_Mass].map1_extraM = tmp_map;
         }
 
-   
+
         /// @{ Pole_Mixing - Pole mass parameters
         //
         // Functions utilising the two-index "plain-vanilla" function signature
         // (Two-index member functions of model object)
         {
           typename MTset::fmap2_extraM tmp_map;
-        
+
           tmp_map["~d"] =   FInfo2M( &set_ZD_pole_slha, i012345, i012345);
           tmp_map["~nu"] =   FInfo2M( &set_ZV_pole_slha, i012, i012);
           tmp_map["~u"] =   FInfo2M( &set_ZU_pole_slha, i012345, i012345);
@@ -879,17 +888,17 @@ namespace Gambit
           tmp_map["h0"] =   FInfo2M( &set_ZH_pole_slha, i01, i01);
           tmp_map["A0"] =   FInfo2M( &set_ZA_pole_slha, i01, i01);
           tmp_map["H+"] = FInfo2M( &set_ZP_pole_slha, i01, i01);
-          tmp_map["~chi0"] =   FInfo2M( &set_ZN_pole_slha, i0123, i0123); 
+          tmp_map["~chi0"] =   FInfo2M( &set_ZN_pole_slha, i0123, i0123);
           tmp_map["~chi-"] =   FInfo2M( &set_UM_pole_slha, i01, i01);
           tmp_map["~chi+"] =   FInfo2M( &set_UP_pole_slha, i01, i01);
-        
+
           /* Could add SM fermion mixing but these are only filled
              when we actually calculate the SM pole masses
              which is not necessary */
-        
+
           map_collection[Par::Pole_Mixing].map2_extraM = tmp_map;
         }
-                 
+
         return map_collection;
       }
 
@@ -897,7 +906,7 @@ namespace Gambit
       template <class MI>
       typename MSSMSpec<MI>::PhysGetterMaps MSSMSpec<MI>::phys_fill_getter_maps()
       {
-         typename MSSMSpec<MI>::PhysGetterMaps map_collection; 
+         typename MSSMSpec<MI>::PhysGetterMaps map_collection;
          typedef typename MI::Model Model;
 
          typedef typename MTget::FInfo1 FInfo1;
@@ -907,14 +916,14 @@ namespace Gambit
          static const std::set<int> i012 = initSet(0,1,2);
          static const std::set<int> i0123 = initSet(0,1,2,3);
          static const std::set<int> i012345 = initSet(0,1,2,3,4,5);
-         
+
          /// @{ Pole_Mass - Pole mass parameters
          //
          // Functions utilising the "plain-vanilla" function signature
          // (Zero index member functions of model object)
-         {  
+         {
             typename MTget::fmap0 tmp_map;
-                   
+
             // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
             // reinstating the Z and W getters as otherwise there is no
             // point in having the setters!
@@ -929,43 +938,43 @@ namespace Gambit
 
             // tmp_map["MGoldstone0"] = &Model::get_Pole_neut_goldstone;
             // tmp_map["MA0"] = &Model::get_Pole_neut_CPodd_higgs;
-            // tmp_map["MGoldstonePM"] = &Model::get_Pole_ch_goldstone; 
-            // tmp_map["MHpm"] = &Model::get_Pole_ch_higgs;    
+            // tmp_map["MGoldstonePM"] = &Model::get_Pole_ch_goldstone;
+            // tmp_map["MHpm"] = &Model::get_Pole_ch_higgs;
             // tmp_map["Mtop"] = &Model::get_Pole_mtop;
             // tmp_map["Mcharm"] = &Model::get_Pole_mcharm;
             // tmp_map["Mup"] = &Model::get_Pole_mup;
             // tmp_map["Mbottom"] = &Model::get_Pole_mbottom;
             // tmp_map["Mstrange"] = &Model::get_Pole_mstrange;
             // tmp_map["Mdown"] = &Model::get_Pole_mdown;
-            // tmp_map["Mtau"] = &Model::get_Pole_mtau; 
-            // tmp_map["Mmuon"] = &Model::get_Pole_mmuon; 
-            // tmp_map["Melectron"] = &Model::get_Pole_melectron; 
+            // tmp_map["Mtau"] = &Model::get_Pole_mtau;
+            // tmp_map["Mmuon"] = &Model::get_Pole_mmuon;
+            // tmp_map["Melectron"] = &Model::get_Pole_melectron;
 
             map_collection[Par::Pole_Mass].map0 = tmp_map;
-         } 
+         }
 
          // Functions utilising the "extraM" function signature
          // (Zero index, model object as argument)
          {
             typename MTget::fmap0_extraM tmp_map;
-        
+
             // Using wrapper functions defined above
-            tmp_map["A0"] = &get_MAh1_pole_slha<Model>;   
-            tmp_map["H+"] = &get_MHpm1_pole_slha<Model>;   
-      
+            tmp_map["A0"] = &get_MAh1_pole_slha<Model>;
+            tmp_map["H+"] = &get_MHpm1_pole_slha<Model>;
+
             // Goldstones
             // Using wrapper functions defined above
-            tmp_map["Goldstone0"] = &get_neutral_goldstone_pole_slha<Model>;   
-            tmp_map["Goldstone+"] = &get_charged_goldstone_pole_slha<Model>;   
+            tmp_map["Goldstone0"] = &get_neutral_goldstone_pole_slha<Model>;
+            tmp_map["Goldstone+"] = &get_charged_goldstone_pole_slha<Model>;
             // Antiparticle label (no automatic conversion for this)
-            tmp_map["Goldstone-"] = &get_charged_goldstone_pole_slha<Model>;   
-      
+            tmp_map["Goldstone-"] = &get_charged_goldstone_pole_slha<Model>;
+
             map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
          }
 
          // Functions utilising the one-index "plain-vanilla" function signature
          // (One-index member functions of model object)
-         {  
+         {
             typename MTget::fmap1 tmp_map;
 
             tmp_map["~d"] =  FInfo1( &Model::get_MSd_pole_slha, i012345 );
@@ -973,17 +982,17 @@ namespace Gambit
             tmp_map["~e-"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
             tmp_map["~nu"]=  FInfo1( &Model::get_MSv_pole_slha, i012 );
             tmp_map["h0"] =  FInfo1( &Model::get_Mhh_pole_slha, i01 );
-            // NOTE: I have added the following two to the "no index" map as well, 
+            // NOTE: I have added the following two to the "no index" map as well,
             // where only the "safe" entries are retrieved
             //Here we may access the goldstone boson
             //and higgs. maybe too dangerous to keep?
-            tmp_map["A0"] = FInfo1( &Model::get_MAh_pole_slha, i01 );      
+            tmp_map["A0"] = FInfo1( &Model::get_MAh_pole_slha, i01 );
             //Here we may access the goldstone boson
             //and higgs. maybe too dangerous to keep?
-            tmp_map["H+"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
+            tmp_map["H+"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );
             tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
             tmp_map["~chi0"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
-      
+
             // Standard Model pole masses now come from QedQcdWrapper (except Higgs)
             // tmp_map["d"] =  FInfo1( &Model::get_MFd_pole_slha, i012 );
             // tmp_map["u"] =  FInfo1( &Model::get_MFu_pole_slha, i012 );
@@ -995,7 +1004,7 @@ namespace Gambit
 
             map_collection[Par::Pole_Mass].map1 = tmp_map;
          }
- 
+
          /// @}
 
          /// @{ Pole_Mixing - Pole mass parameters
@@ -1012,14 +1021,14 @@ namespace Gambit
             tmp_map["h0"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
             tmp_map["A0"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
             tmp_map["H+"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
-            tmp_map["~chi0"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
+            tmp_map["~chi0"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123);
             tmp_map["~chi-"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
             tmp_map["~chi+"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
-      
+
             /* Could add SM fermion mixing but these are only filled
                when we actually calculate the SM pole masses
                which is not necessary */
- 
+
             map_collection[Par::Pole_Mixing].map2 = tmp_map;
          }
          /// @}
@@ -1037,33 +1046,33 @@ namespace Gambit
 
          //    tmp_map["MZ"]      = &Model::get_MVZ;
          //    tmp_map["MW"]      = &Model::get_MVWm;
-         //    tmp_map["MGluino"] = &Model::get_MGlu; 
-         //    tmp_map["MGluon"]  = &Model::get_MVG; 
+         //    tmp_map["MGluino"] = &Model::get_MGlu;
+         //    tmp_map["MGluon"]  = &Model::get_MVG;
          //    tmp_map["MPhoton"] = &Model::get_MVP;
- 
+
          //    // these are not present in the model object currently
          //    // But maybe we should add them
          //    // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
          //    // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
-         //    // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
-         //    // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
-            
+         //    // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone;
+         //    // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs;
+
          //    // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
          //    // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
          //    // tmp_map["Mup"] = &Model::get_DRbar_mup;
          //    // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
          //    // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
          //    // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
-         //    // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
-         //    // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
-         //    // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
- 
+         //    // tmp_map["Mtau"] = &Model::get_DRbar_mtau;
+         //    // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon;
+         //    // tmp_map["Melectron"] = &Model::get_DRbar_melectron;
+
          //    map_collection[Par::mass_eigenstate].map0 = tmp_map;
          // }
-     
+
       /// @}
-  
-   } // end SpecBit namespace 
+
+   } // end SpecBit namespace
 } // end Gambit namespace
 
 #endif

@@ -241,12 +241,12 @@ namespace Gambit
       result.set_BF(virtual_SMHiggs_widths("Zgamma",mh), 0.0, "Z0", "gamma");
       result.set_BF(virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
       result.set_BF(virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -267,12 +267,12 @@ namespace Gambit
       result.negative_error = 4.3e-01;
       result.set_BF(FH_input.gammas[tBF(1)-1], 0.0, "W+", "b");
       result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -342,12 +342,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhlslnl/3.0 : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhlslnl/3.0 : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -464,12 +464,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb1bar);
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb2bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -541,12 +541,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhhslnl/3.0 : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhhslnl/3.0 : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -663,12 +663,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb1bar);
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb2bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
 
@@ -720,12 +720,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisusy_hdec->habrsl/2.0 : 0.0), 0.0, psn.istau1, psn.istau2bar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisusy_hdec->habrsl/2.0 : 0.0), 0.0, psn.istau1bar, psn.istau2);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -840,12 +840,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb1bar);
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb2bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -887,12 +887,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisusy_hdec->hcbrstb(1,2) : 0.0), 0.0, psn.ist1, psn.isb2bar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisusy_hdec->hcbrstb(2,1) : 0.0), 0.0, psn.ist2, psn.isb1bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -986,12 +986,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[HpSfSf(2,1,2,3,3)+offset] : 0.0), 0.0, psn.ist2, psn.isb1bar);
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[HpSfSf(2,2,2,3,3)+offset] : 0.0), 0.0, psn.ist2, psn.isb2bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1080,12 +1080,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_glui3body->brhcst1b : 0.0), 0.0, psn.ist1, "bbar", "H-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_glui3body->brhcst1b : 0.0), 0.0, psn.ist1bar, "b", "H+");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1145,12 +1145,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stop3body->brstelsbnu(1,1) : 0.0), 0.0, psn.isb1, "mu+", "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stop3body->brstelsbnu(1,2) : 0.0), 0.0, psn.isb2, "mu+", "nu_mu");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
 
@@ -1230,12 +1230,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stop3body->brst2st1nunu : 0.0), 0.0, psn.ist1, "nu_mu", "nubar_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stop3body->brst2st1nunu : 0.0), 0.0, psn.ist1, "nu_tau", "nubar_tau");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1290,12 +1290,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sbot3body->brsbelstnu(1,1) : 0.0), 0.0, psn.ist1, "mu-", "nubar_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sbot3body->brsbelstnu(1,2) : 0.0), 0.0, psn.ist1, "mu-", "nubar_mu");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1367,12 +1367,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sbot3body->brsb2sb1nunu : 0.0), 0.0, psn.isb1, "nu_mu", "nubar_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sbot3body->brsb2sb1nunu : 0.0), 0.0, psn.isb1, "nu_tau", "nubar_tau");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1399,12 +1399,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplcdow(2) : 0.0), 0.0, "~chi+_2", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplglui : 0.0), 0.0, "~g", "u");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1428,12 +1428,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprcdow(1) : 0.0), 0.0, "~chi+_1", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprcdow(2) : 0.0), 0.0, "~chi+_2", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprglui : 0.0), 0.0, "~g", "u");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1457,12 +1457,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlchup(1) : 0.0), 0.0, "~chi-_1", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlchup(2) : 0.0), 0.0, "~chi-_2", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlglui : 0.0), 0.0, "~g", "d");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1486,12 +1486,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrchup(1) : 0.0), 0.0, "~chi-_1", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrchup(2) : 0.0), 0.0, "~chi-_2", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrglui : 0.0), 0.0, "~g", "d");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1515,12 +1515,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplcdow(1) : 0.0), 0.0, "~chi+_1", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplcdow(2) : 0.0), 0.0, "~chi+_2", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplglui : 0.0), 0.0, "~g", "c");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1544,12 +1544,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprcdow(1) : 0.0), 0.0, "~chi+_1", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprcdow(2) : 0.0), 0.0, "~chi+_2", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprglui : 0.0), 0.0, "~g", "c");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1573,12 +1573,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlchup(1) : 0.0), 0.0, "~chi-_1", "c");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlchup(2) : 0.0), 0.0, "~chi-_2", "c");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlglui : 0.0), 0.0, "~g", "s");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1602,12 +1602,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrchup(1) : 0.0), 0.0, "~chi-_1", "c");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrchup(2) : 0.0), 0.0, "~chi-_2", "c");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrglui : 0.0), 0.0, "~g", "s");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1630,12 +1630,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellneute(4) : 0.0), 0.0, "~chi0_4", "e-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellcharnue(1) : 0.0), 0.0, "~chi-_1", "nu_e");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellcharnue(2) : 0.0), 0.0, "~chi-_2", "nu_e");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1658,12 +1658,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrneute(4) : 0.0), 0.0, "~chi0_4", "e-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrcharnue(1) : 0.0), 0.0, "~chi-_1", "nu_e");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrcharnue(2) : 0.0), 0.0, "~chi-_2", "nu_e");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1686,12 +1686,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellneute(4) : 0.0), 0.0, "~chi0_4", "mu-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellcharnue(1) : 0.0), 0.0, "~chi-_1", "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellcharnue(2) : 0.0), 0.0, "~chi-_2", "nu_mu");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1714,12 +1714,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrneute(4) : 0.0), 0.0, "~chi0_4", "mu-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrcharnue(1) : 0.0), 0.0, "~chi-_1", "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrcharnue(2) : 0.0), 0.0, "~chi-_2", "nu_mu");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1749,12 +1749,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stau2body->brstau1wsn(1) : 0.0), 0.0, psn.isntaul, "W-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stau2bodygrav->brstautaugrav : 0.0), 0.0, "~G", "tau-");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1787,12 +1787,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stau2body->brstau2ha : 0.0), 0.0, psn.istau1, "A0");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stau2body->brstau2ztau : 0.0), 0.0, psn.istau1, "Z0");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
 
@@ -1815,12 +1815,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellneut(4) : 0.0), 0.0, "~chi0_4", "nu_e");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellchar(1) : 0.0), 0.0, "~chi+_1", "e-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellchar(2) : 0.0), 0.0, "~chi+_2", "e-");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1843,12 +1843,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellneut(4) : 0.0), 0.0, "~chi0_4", "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellchar(1) : 0.0), 0.0, "~chi+_1", "mu-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellchar(2) : 0.0), 0.0, "~chi+_2", "mu-");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1880,12 +1880,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sntau2body->brsntau1wstau(1) : 0.0), 0.0, psn.istau1bar, "W-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sntau2body->brsntau1wstau(2) : 0.0), 0.0, psn.istau2bar, "W-");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -1966,12 +1966,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brglchsb(1) : 0.0), 0.0, "~g", "c", "sbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brgltopbb(1) : 0.0), 0.0, "~g", "t", "bbar");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -2068,12 +2068,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brglchsb(2) : 0.0), 0.0, "~g", "c", "sbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brgltopbb(2) : 0.0), 0.0, "~g", "t", "bbar");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -2184,12 +2184,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(1) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(1) : 0.0), 0.0, "~g", "bbar", "b");
  
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -2312,12 +2312,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(2) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(2) : 0.0), 0.0, "~g", "bbar", "b");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -2457,12 +2457,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(3) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(3) : 0.0), 0.0, "~g", "bbar", "b");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
 
@@ -2619,12 +2619,12 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(4) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(4) : 0.0), 0.0, "~g", "bbar", "b");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
@@ -2664,12 +2664,12 @@ namespace Gambit
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
 
