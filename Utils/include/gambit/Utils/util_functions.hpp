@@ -63,6 +63,9 @@ namespace Gambit
   template <typename T> 
   int sgn(T val) { return (T(0) < val) - (val < T(0)); }
 
+  /// Make sure there are no nasty surprises from regular C abs()
+  using std::abs;
+
   namespace Utils
   {
 

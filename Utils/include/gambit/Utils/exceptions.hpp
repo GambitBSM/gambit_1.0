@@ -87,6 +87,9 @@ namespace Gambit
       /// Get a read-only map of pointers to all instances of this class.
       static const std::map<const char*,exception*>& all_exceptions();
 
+      /// Set the parameter point string to append if a fatal exception is thrown
+      static void set_parameters(std::string);
+
     protected:
 
       /// The set of tags to be passed to the logger
@@ -120,6 +123,9 @@ namespace Gambit
 
       /// Flag indicating if this exception should be considered fatal or not.
       bool isFatal;
+
+      /// Shared string indicating the current values of the paramters.
+      static std::string parameters;
 
   };
 

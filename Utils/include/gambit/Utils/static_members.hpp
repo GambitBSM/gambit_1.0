@@ -19,12 +19,16 @@
 #define __static_members_hpp__
 
 #include "gambit/Utils/threadsafe_rng.hpp"
+#include "gambit/Utils/exceptions.hpp"
 
 namespace Gambit
 {
 
   /// Pointer to chosen random number generation engine
   Utils::threadsafe_rng* Random::local_rng = NULL;
+
+  /// Shared string indicating the current values of the paramters.
+  str exception::parameters = "";
 
 }
 

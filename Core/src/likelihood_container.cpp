@@ -26,7 +26,7 @@
 
 #include "gambit/Core/likelihood_container.hpp"
 
-#define CORE_DEBUG
+//#define CORE_DEBUG
 
 namespace Gambit
 {
@@ -38,10 +38,14 @@ namespace Gambit
    DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
    Priors::CompositePrior &prior, const str &purpose) 
   : dependencyResolver (dependencyResolver), 
-    realParameters     (prior.getShownParameters().size()), 
     prior              (prior),
     functorMap         (functorMap),
-    min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
+    min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
+    #ifdef CORE_DEBUG
+      debug            (true)
+    #else
+      debug            (iniFile.getValueOrDef<bool>(false, "likelihood", "debug"))
+    #endif
   {
     // Set the list of valid return types of functions that can be used for 'purpose' by this container class. 
     const std::vector<str> allowed_types_for_purpose = initVector<str>("double", "std::vector<double>", "float", "std::vector<float>");
@@ -68,37 +72,35 @@ namespace Gambit
   /// Do the prior transformation and populate the parameter map  
   void Likelihood_Container::setParameters (const std::vector<double> &vec) 
   {
+    // Do the prior transformation, saving the real parameter values in the parameterMap
     prior.transform(vec, parameterMap);
     
-    auto real_it = realParameters.begin();
-    for (auto par_it = prior.getShownParameters().begin(), par_end = prior.getShownParameters().end(); par_it != par_end; par_it++, real_it++)
-    {
-      *real_it = parameterMap[*par_it];
-    }
-      
+    // Set up a stream containing the parameter values, for diagnostic output
+    std::ostringstream parstream;
+
+    // Iterate over the primary_model_parameters functors of all the models being scanned.
     for (auto act_it = functorMap.begin(), act_end = functorMap.end(); act_it != act_end; act_it++)
     {
+      parstream << "  " << act_it->first << ":" << endl;
+      // Get the names of the parameters for this model.
       auto paramkeys = act_it->second->getcontentsPtr()->getKeys();
+      // Iterate over the parameters, setting their values in the primary_model_parameters functors from the parameterMap.
       for (auto par_it = paramkeys.begin(), par_end = paramkeys.end(); par_it != par_end; par_it++)
       {
-        //std::cout << (act_it->first + "::" + *it) << "   " << parameterMap[act_it->first + "::" + *it] << std::endl;
-        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[act_it->first + "::" + *par_it]);
+        str key = act_it->first + "::" + *par_it;
+        parstream << "    " << *par_it << ": " << parameterMap[key] << endl;
+        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[key]);
       }
     }
-    //getchar();
+
+    // Notify all exceptions of the values of the parameters for this point.
+    exception::set_parameters("\n\nYAML-ready parameter values at failed point:\n"+parstream.str());
+
+    // Print out the values of the parameters for this point if in debug mode.
+    if (debug) cout << parstream.str();
   }
-    
-  /// Print the results of the likelihood evaluation
-  void Likelihood_Container::print(double in, const str &type) const
-  {
-    //real stuff here to replace what is below;
-    double tmp = in; tmp++; str tmp2 = type;
-  }
-      
+          
   /// Evaluate total likelihood function
-  // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points 
-  // (ie ones with valid likelihood calculations but invalid auxilary observables).  Invalid observables should be identified by
-  // functor::retrieve_invalid_point_exception() != NULL in printers.
   double Likelihood_Container::main (const std::vector<double> &in)
   {
     double lnlike = 0;
@@ -118,27 +120,55 @@ namespace Gambit
         str rtype = return_types[*it];
         if (rtype == "double")
         {
-          lnlike += dependencyResolver.getObsLike<double>(*it);
+          double result = dependencyResolver.getObsLike<double>(*it);
+          if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+                          << "::" << dependencyResolver.get_functor(*it)->name() << ": " << result << endl;
+          lnlike += result;
         }
         else if (rtype == "std::vector<double>")
         {
           std::vector<double> result = dependencyResolver.getObsLike<std::vector<double> >(*it);
-          for (auto jt = result.begin(); jt != result.end(); ++jt) lnlike += *jt;
+          for (auto jt = result.begin(); jt != result.end(); ++jt)
+          {
+            if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+                            << "::" << dependencyResolver.get_functor(*it)->name() << ": " << *jt << endl;
+            lnlike += *jt;
+          }
         }
         else if (rtype == "float")
         {
-          lnlike += dependencyResolver.getObsLike<float>(*it);
+          float result = dependencyResolver.getObsLike<float>(*it);
+          if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+                          << "::" << dependencyResolver.get_functor(*it)->name() << ": " << result << endl;
+          lnlike += result;
         }
         else if (rtype == "std::vector<float>")
         {
           std::vector<float> result = dependencyResolver.getObsLike<std::vector<float> >(*it);
-          for (auto jt = result.begin(); jt != result.end(); ++jt) lnlike += *jt;
+          for (auto jt = result.begin(); jt != result.end(); ++jt)
+          {
+            if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+                            << "::" << dependencyResolver.get_functor(*it)->name() << ": " << *jt << endl;
+            lnlike += *jt;
+          }
         }
         else core_error().raise(LOCAL_INFO, "Unexpected target functor type.");
-        bool isnan = Utils::isnan(lnlike);
-        if (isnan or lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, isnan);
+
+        // Don't just roll over if it's a NaN, kill the scan and force the developer to fix it.
+        if (Utils::isnan(lnlike))
+        {
+          std::ostringstream err;
+          err << "Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+                 << "::" << dependencyResolver.get_functor(*it)->name() << " is NaN!";
+          core_error().raise(LOCAL_INFO, err.str());
+        }
+        
+        // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
+        if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
+
         logger() << LogTags::core << "Computed likelihood vertex " << *it << "." << EOM;
       }
+
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
       catch(invalid_point_exception& e)
       {
@@ -146,9 +176,7 @@ namespace Gambit
         logger().leaving_module();
         lnlike = min_valid_lnlike;
         compute_aux = false;
-        #ifdef CORE_DEBUG
-          cout << "Point invalid." << endl;
-        #endif        
+        if (debug) cout << "Point invalid." << endl;
         break;
       }
     }
@@ -173,10 +201,7 @@ namespace Gambit
       }
     }
       
-    #ifdef CORE_DEBUG
-      cout << "log-likelihood: " << lnlike << endl;
-    #endif
-      
+    if (debug) cout << "log-likelihood: " << lnlike << endl << endl;     
     dependencyResolver.resetAll();
     return lnlike;
   }
