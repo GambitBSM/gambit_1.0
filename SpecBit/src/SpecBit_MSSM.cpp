@@ -361,8 +361,8 @@ namespace Gambit
     /// Check that the spectrum has a neutralino LSP.
     bool has_neutralino_LSP(const Spectrum* &result)
     {
-      double msqu  = result->get(Par::Pole_Mass, 1000001, 0);
-      double msqd  = result->get(Par::Pole_Mass, 1000002, 0);
+      double msqd  = result->get(Par::Pole_Mass, 1000001, 0);
+      double msqu  = result->get(Par::Pole_Mass, 1000002, 0);
       double msl   = result->get(Par::Pole_Mass, 1000011, 0);
       double msneu = result->get(Par::Pole_Mass, 1000012, 0);
       double mglui = result->get(Par::Pole_Mass, 1000021, 0);
