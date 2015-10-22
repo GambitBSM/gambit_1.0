@@ -432,6 +432,16 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Local DM density likelihood
+
+  #define CAPABILITY lnL_rho0
+  START_CAPABILITY
+    #define FUNCTION lnL_rho0_lognormal
+      START_FUNCTION(double)
+      ALLOW_MODELS(LocalHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   // Simple WIMP property extractors =======================================
 
   // Retrieve the DM mass in GeV for generic models
