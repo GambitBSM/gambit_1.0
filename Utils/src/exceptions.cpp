@@ -183,9 +183,10 @@ namespace Gambit
     /// This is the regular way to trigger a GAMBIT error or warning. 
     void exception::raise(const std::string& origin, const std::string& specific_message)
     {
+      str full_message = isFatal ? specific_message+parameters : specific_message;
       #pragma omp critical (GABMIT_exception)
       {
-        log_exception(origin, specific_message);
+        log_exception(origin, full_message);
       }
       if (isFatal) throw_iff_outside_parallel();
     }
@@ -195,7 +196,7 @@ namespace Gambit
     {
       #pragma omp critical (GABMIT_exception)
       {
-        log_exception(origin, specific_message);
+        log_exception(origin, specific_message+parameters);
       }
       throw(*this);
     }
@@ -210,6 +211,12 @@ namespace Gambit
     const std::map<const char*,exception*>& exception::all_exceptions()
     {
       return exception_map();
+    }
+
+    /// Set the parameter point string to append if a fatal exception is thrown
+    void exception::set_parameters(str params)
+    {
+      parameters = params;
     }
 
   // Private members of GAMBIT exception base class.

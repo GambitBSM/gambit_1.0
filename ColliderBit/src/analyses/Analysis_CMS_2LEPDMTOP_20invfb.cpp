@@ -43,6 +43,7 @@ namespace Gambit {
         : _numSR(0),
           NCUTS(6)
       {
+        set_luminosity(19.7);
         for (int i=0; i<NCUTS; i++) {
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
@@ -64,6 +65,7 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
         // HEPUtils::P4 ptot = event->missingmom();
@@ -204,29 +206,6 @@ namespace Gambit {
           cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
         }
         _numSR += specificOther->_numSR;
-      }
-
-
-      void finalize() {
-
-        using namespace std;
-
-        // double scale_to = 1339.6;
-
-        // double trigger_cleaning_eff = 1;//0.53;
-
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        //cout << "CUT FLOW" <<std::endl;
-        //cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-
-        //std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << endl;
-        //for(int j=0; j<NCUTS; j++) {
-	//std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << endl;
-        //}
-        //cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-
-        //cout << "RESULTS 2LEP " << _numSR << endl;
-
       }
 
 

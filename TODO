@@ -83,8 +83,8 @@ BOSS:
 
 Backends:
 * Resolve residual issues with passing strings to fortran backends (Lars / Pat)
-* Implement backending of Mathematica codes 
-* Implement backending of Python codes 
+* Implement backending of Mathematica codes
+* Implement backending of Python codes
 
 General:
 * Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (Antje & Pat)
@@ -116,7 +116,7 @@ Core done:
 * Add ability to import key-value pair *settings* from the .ini file for modules, backends and their individual functions.
 * Allow grouping of backend requirements into blocks
 * Implement point-level initialisation functions for backends, replacing PointInit functions.
-  - This involves the new module BackendInitBit, specifically for backend initialisation, containing only functions that initialise backends.  These functions have capabilities X_init, where X is the backend name.  They are able to have regular dependencies, conditional dependencies and allowed_models.  They have no backend requirements, but can access all functions and variables of the backend-version pair that the specific initialisation function is for.  They have result type void.  They act as point-level initialisation functions, but scan-level is easy to emulate using a static bool first = false that is set true at the end of the first call of the function.  Every module function (from any other module) that resolves a backend requirement using a given backend X is endowed with a dependency on X_init, which is provided only by functions in BackendInitBit.  
+  - This involves the new module BackendInitBit, specifically for backend initialisation, containing only functions that initialise backends.  These functions have capabilities X_init, where X is the backend name.  They are able to have regular dependencies, conditional dependencies and allowed_models.  They have no backend requirements, but can access all functions and variables of the backend-version pair that the specific initialisation function is for.  They have result type void.  They act as point-level initialisation functions, but scan-level is easy to emulate using a static bool first = false that is set true at the end of the first call of the function.  Every module function (from any other module) that resolves a backend requirement using a given backend X is endowed with a dependency on X_init, which is provided only by functions in BackendInitBit.
 * Add command line gambit diagnostics:
   gambit capabilities [-v/--verbose]
   gambit modules      [-v/--verbose]
@@ -137,7 +137,7 @@ Core done:
 * Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair.
 * Make it possible to resolve dependencies that match a functor's own capability-type pair
 * Run configure for pythia backend
-* Fix error in type equivalencies 
+* Fix error in type equivalencies
 * Split Utils dir into codes needed for ScannerBit standalone and those not needed
 * Make dependency resolver errors more informative
 * Implement isNaN
@@ -150,6 +150,10 @@ Core done:
 * Split repo into public (code) bit and private extras, Collab doc etc, using git filter-branch
 * Add check and check-ignore switch for graphviz
 * Implement proper scanner ditching
+* Make fatal errors print model parameters
+* Get run resume working
+* Fix rollcall modification not triggering harvester rerun
+* Fix clean-flexiblesusy not cleaning to the point where it actually triggers remake
 
 
 Models done:
@@ -158,8 +162,8 @@ Models done:
 * Create "little guys" (parameter mini-functors)
 * Create boost graph to display model hierarchy
 * Sort out 'warning redefined' warnings from BOOST about TUPLE_TO_SEQ.
-* Massage function in ModelBit that checks that all the user-requested models are actually used by the dependency resolver.  If not, throw an error to say that they are wasting their CPU time with the unused parameters. 
-* Make it possible to declare in module function rollcall macro calls that multiple models are required to be scanned, e.g. ALLOWED_MODELS(GROUP1, blah), ALLOWED_MODELS(GROUP2, blah), s.t. the function requires something from GROUP1 and GROUP2 to be scanned, in order to be used in a given scan. 
+* Massage function in ModelBit that checks that all the user-requested models are actually used by the dependency resolver.  If not, throw an error to say that they are wasting their CPU time with the unused parameters.
+* Make it possible to declare in module function rollcall macro calls that multiple models are required to be scanned, e.g. ALLOWED_MODELS(GROUP1, blah), ALLOWED_MODELS(GROUP2, blah), s.t. the function requires something from GROUP1 and GROUP2 to be scanned, in order to be used in a given scan.
 * Explicitly disallow multiple parents in all parts of Models (and other) code.
 * Add SM Higgs partial decay widths
 * Add scalar singlet Higgs partial decay widths (SM + invisible)
@@ -236,9 +240,9 @@ Done:
 * scanner info to core → scanner name, version, library file, library present, YAML options
 * switch to using gambit error system
 * create plugin registry
-* tidy up scanner section in yaml file 
+* tidy up scanner section in yaml file
 * remove output capture
-* update printer system interface 
+* update printer system interface
 * tidy up plugin interface
 * switch to using Random::draw()
 * interface external scanner lib depedencies properly with cmake

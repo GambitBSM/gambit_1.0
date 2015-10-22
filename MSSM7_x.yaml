@@ -3,18 +3,18 @@ Parameters:
   #SM nuisance parameters fixed for now.
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  #Nuclear matrix parameters fixed for now.
-  nuclear_params_sigmas_sigmal:
-    sigmas:
-      fixed_value:  43.0 
-    sigmal:
-      fixed_value:  58.0
-    deltau:
-      fixed_value:  0.842
-    deltad:
-      fixed_value: -0.427
-    deltas:
-      fixed_value: -0.085
+#  #Nuclear matrix parameters fixed for now.
+#  nuclear_params_sigmas_sigmal:
+#    sigmas:
+#      fixed_value:  43.0 
+#    sigmal:
+#      fixed_value:  58.0
+#    deltau:
+#      fixed_value:  0.842
+#    deltad:
+#      fixed_value: -0.427
+#    deltas:
+#      fixed_value: -0.085
 
   MSSM7atQ:
     Qin: 
@@ -22,20 +22,34 @@ Parameters:
     SignMu:
       fixed_value: 1
     Ad_3:
-      fixed_value: 210.643
+      fixed_value: 3400.48
+      #range: [1e2, 5e3]
+      #prior_type: log
     Au_3:
-      fixed_value: 152.637
+      fixed_value: 186.911
+      #range: [1e2, 5e3]
+      #prior_type: log
     M2:
-      fixed_value: 537.601
+      fixed_value: 213.582
+      #range: [1e2, 5e3]
+      #prior_type: log
     TanBeta:
-      fixed_value: 10.1243
+      fixed_value: 46.9028
+      #range: [3.0, 70.0]
+      #prior_type: flat
     mHd2:
-      fixed_value: 8.78152e+07
+      fixed_value: 964613.0
+      #range: [1e4, 2.5e7]
+      #prior_type: log
     mHu2:
-      fixed_value: 89845.5
+      fixed_value: 12358.8
+      #range: [1e4, 2.5e7]
+      #prior_type: log
     mf2:
-      fixed_value: 1.35811e+06
-      
+      fixed_value: 988089.0
+      #range: [1e4, 2.5e7]
+      #prior_type: log
+
 Priors:
 
   # All priors simple, so specified in Parameters section
@@ -58,11 +72,11 @@ Scanner:
       plugin: MultiNest
       options:
         like:  Likelihood
-        nlive: 5000
-        tol: 0.1
+        nlive: 4000
+        tol: 0.5
         mmodal: 1
         # write native MultiNest ascii output files?
-        outfile: 0
+        outfile: 1
         # resuming doesn't work yet
         resume: 0
         # No options to set, but still need the nodes at the moment...
@@ -73,139 +87,160 @@ Scanner:
 ObsLikes:
 
     - capability: lnL_oh2
-      purpose: Likelihood 
-
-    - capability: RD_oh2
-      purpose: Observable
+      purpose:    Likelihood 
 
     - capability: lnL_FermiLATdwarfs
       purpose:    Likelihood
-
-    - capability: lnL_XENON100_2012
-      purpose:    Likelihood
-
-    - capability: lnL_LUX_2013
-      purpose:    Likelihood
-      
-    - capability: IC79_loglike
-      purpose:    Likelihood
-
-    - capability: lnL_t_mass
-      purpose:    Likelihood
-
-    - capability: lnL_mbmb
-      purpose:    Likelihood
-
-    - capability: lnL_alpha_em
-      purpose:    Likelihood
-
-    - capability: lnL_alpha_s
-      purpose:    Likelihood
-
-    - capability: lnL_W_mass
-      purpose:    Likelihood
-    
-    - capability: lnL_sinW2_eff
-      purpose:    Likelihood
-
-    - capability: lnL_deltarho  
-      purpose:    Likelihood
-
-    # Charm quark and light quark mass ratio likelihoods
-    - capability: lnL_light_quark_masses
-      purpose:    Likelihood
-
-    - purpose:    Likelihood
-      capability: b2ll_LL
-
-    - purpose:    Likelihood
-      capability: SL_LL
-
-    - purpose:    Likelihood
-      capability: b2sll_LL
-
-    # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
-    - capability: lnL_SI_nuclear_parameters
-      purpose:    Likelihood
-        
-    - purpose:    Likelihood
-      capability: LHC_Combined_LogLike
-
-    - purpose:    Observable
-      capability: SLHA1_violation
-
-
-    - purpose:    Likelihood
-      capability: ALEPH_Selectron_LLike
-
-    - purpose:    Likelihood
-      capability: ALEPH_Smuon_LLike
-
-    - purpose:    Likelihood
-      capability: ALEPH_Stau_LLike
-
-    - purpose:    Likelihood
-      capability: L3_Selectron_LLike
-
-    - purpose:    Likelihood
-      capability: L3_Smuon_LLike
-
-    - purpose:    Likelihood
-      capability: L3_Stau_LLike
-
-    - purpose:    Likelihood
-      capability: L3_Neutralino_All_Channels_LLike
-
-    - purpose:    Likelihood
-      capability: L3_Neutralino_Leptonic_LLike
-
-    - purpose:    Likelihood
-      capability: L3_Chargino_All_Channels_LLike
-
-    - purpose:    Likelihood
-      capability: L3_Chargino_Leptonic_LLike
-
-    - purpose:    Likelihood
-      capability: OPAL_Chargino_Hadronic_LLike
-
-    - purpose:    Likelihood
-      capability: OPAL_Chargino_SemiLeptonic_LLike
-
-    - purpose:    Likelihood
-      capability: OPAL_Chargino_Leptonic_LLike
-
-    - purpose:    Likelihood
-      capability: OPAL_Chargino_All_Channels_LLike
-
-    - purpose:    Likelihood
-      capability: OPAL_Neutralino_Hadronic_LLike
-
-    - purpose:    Likelihood
-      capability: HB_LEP_lnL
-
-    - purpose:    Likelihood
-      capability: HS_LHC_lnL
-
-    # Missing:
-    # CMB likelihood
+#
+#    - capability: lnL_XENON100_2012
+#      purpose:    Likelihood
+#
+#    - capability: lnL_LUX_2013
+#      purpose:    Likelihood
+#      
+#    #- capability: IC79_loglike
+#    #  purpose:    Likelihood
+#
+#    - capability: lnL_t_mass
+#      purpose:    Likelihood
+#
+#    - capability: lnL_mbmb
+#      purpose:    Likelihood
+#
+#    - capability: lnL_alpha_em
+#      purpose:    Likelihood
+#
+#    - capability: lnL_alpha_s
+#      purpose:    Likelihood
+#
+#    - capability: lnL_W_mass
+#      purpose:    Likelihood
+#    
+#    - capability: lnL_sinW2_eff
+#      purpose:    Likelihood
+#
+#    - capability: lnL_deltarho  
+#      purpose:    Likelihood
+#
+#    # Charm quark and light quark mass ratio likelihoods
+#    - capability: lnL_light_quark_masses
+#      purpose:    Likelihood
+#
+#    # FlavBit likelihoods
+#    - purpose:    Likelihood
+#      capability: b2ll_LL
+#
+#    - purpose:    Likelihood
+#      capability: SL_LL
+#
+#    - purpose:    Likelihood
+#      capability: b2sll_LL
+#
+#    # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+#    - capability: lnL_SI_nuclear_parameters
+#      purpose:    Likelihood
+#        
+#    #- purpose:    Likelihood
+#    #  capability: LHC_Combined_LogLike
+#
+#    - purpose:    Observable
+#      capability: SLHA1_violation
+#
+#    - purpose:    Likelihood
+#      capability: ALEPH_Selectron_LLike
+#
+#    - purpose:    Likelihood
+#      capability: ALEPH_Smuon_LLike
+#
+#    - purpose:    Likelihood
+#      capability: ALEPH_Stau_LLike
+#
+#    - purpose:    Likelihood
+#      capability: L3_Selectron_LLike
+#
+#    - purpose:    Likelihood
+#      capability: L3_Smuon_LLike
+#
+#    - purpose:    Likelihood
+#      capability: L3_Stau_LLike
+#
+#    - purpose:    Likelihood
+#      capability: L3_Neutralino_All_Channels_LLike
+#
+#    - purpose:    Likelihood
+#      capability: L3_Neutralino_Leptonic_LLike
+#
+#    - purpose:    Likelihood
+#      capability: L3_Chargino_All_Channels_LLike
+#
+#    - purpose:    Likelihood
+#      capability: L3_Chargino_Leptonic_LLike
+#
+#    - purpose:    Likelihood
+#      capability: OPAL_Chargino_Hadronic_LLike
+#
+#    - purpose:    Likelihood
+#      capability: OPAL_Chargino_SemiLeptonic_LLike
+#
+#    - purpose:    Likelihood
+#      capability: OPAL_Chargino_Leptonic_LLike
+#
+#    - purpose:    Likelihood
+#      capability: OPAL_Chargino_All_Channels_LLike
+#
+#    - purpose:    Likelihood
+#      capability: OPAL_Neutralino_Hadronic_LLike
+#
+#    - purpose:    Likelihood
+#      capability: HB_LEP_lnL
+#
+#    - purpose:    Likelihood
+#      capability: HS_LHC_lnL
+#
+#
+#    - capability: RD_oh2
+#      purpose:    Observable
+#
+#    - capability: mwimp
+#      purpose:    Observable
+#
+#    - capability: sigmav
+#      purpose:    Observable
+#
+#    - capability: sigma_SI_p
+#      purpose:    Observable
+#
+#    - capability: sigma_SI_n
+#      purpose:    Observable
+#
+#    - capability: sigma_SD_p
+#      purpose:    Observable
+#
+#    - capability: sigma_SD_n
+#      purpose:    Observable
+#
+#    # Missing:
+#    # CMB+HESS likelihoods
 
 
 Rules:
 
   # Choose to implement the relic density as an upper bound, not a detection
   - capability: lnL_oh2
-    function: lnL_oh2_upperlimit
-
+    function: lnL_oh2_Simple
+    
   # Use the DarkBit native relic density calculator
   #- capability: RD_oh2
   #  function: RD_oh2_general
   
-  # Use DarkSUSY for the relic density
+  # Use DarkSUSY or MicrOmegas for the relic density?
   - capability: RD_oh2
-    function: RD_oh2_DarkSUSY
+    #function: RD_oh2_DarkSUSY
+    function: RD_oh2_MicrOmegas
     options:
       fast: 1
       omtype: 1
+      Beps: 1e-5
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
   - capability: lnL_FermiLATdwarfs
@@ -214,11 +249,12 @@ Rules:
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
-    
+
   # Choose to use function that calls DarkSUSY for calculating direct detection couplings
   - capability: DD_couplings
-    function: DD_couplings_DarkSUSY
-  
+    #function: DD_couplings_DarkSUSY
+    function: DD_couplings_MicrOmegas
+
   # Choose to get decays from DecayBit proper, not from an SLHA file.
   - capability: decay_rates
     function: all_decays
@@ -279,7 +315,7 @@ Rules:
       # m_u/m_d
       mud_central: 0.48
       mud_error: 0.10
-      # m_s / (m_u + m_d)
+      # m_s / ((m_u + m_d)/2)
       msud_central: 27.5
       msud_error: 1.0
       # m_s
@@ -307,7 +343,7 @@ Rules:
     - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
   
   - capability:  ColliderOperator
-    function: operatePythia
+    function: operateLHCLoop
     options:
       nEvents: 20000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
@@ -345,15 +381,15 @@ Rules:
 Logger:
 
   redirection:
-    [Debug] : "debug.log"
-    [Default] : stdout #"default.log"
-    [DecayBit] : "DecayBit.log"
-    [DarkBit] : "DarkBit.log"
-    [PrecisionBit] : "PrecisionBit.log"
-    [FlavBit] : "FlavBit.log"
-    [ColliderBit] : "ColliderrBit.log"
-    [SpecBit] : "SpecBit.log"
-    [Dependency Resolver] : "dep_resolver.log"
+    [Debug] : stdout # "debug.log"
+    [Default] : stdout # "default.log"
+    [DecayBit] : stdout # "DecayBit.log"
+    [DarkBit] : stdout # "DarkBit.log"
+    [PrecisionBit] : stdout # "PrecisionBit.log"
+    [FlavBit] : stdout # "FlavBit.log"
+    [ColliderBit] : stdout # "ColliderrBit.log"
+    [SpecBit] : stdout # "SpecBit.log"
+    [Dependency Resolver] : stdout # "dep_resolver.log"
 
 KeyValues:
 
@@ -361,6 +397,7 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e6
+    model_invalid_for_lnlike_below: -5e5
+    debug: true
 
-  default_output_path: "runs/MSSM7/"
+  default_output_path: "runs/MSSM7_x/"

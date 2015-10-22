@@ -57,7 +57,7 @@ namespace Gambit
       if (priorSet.find(*it) == priorSet.end())
       {
         std::stringstream err;
-        err << "Parameter " << *it << " is required by gambit but is not in the inifile." << std::endl;
+        err << "Parameter " << *it << " is required by GAMBIT but is not in the inifile." << std::endl;
         Scanner::scan_error().raise(LOCAL_INFO, err.str());
       }
     }
@@ -67,7 +67,7 @@ namespace Gambit
       if (gambitSet.find(*it) == gambitSet.end())
       {
         std::stringstream err;
-        err << "Parameter " << *it << " is in the inifile but is not required by gambit." << std::endl;
+        err << "Parameter " << *it << " is in the inifile but is not required by GAMBIT." << std::endl;
         Scanner::scan_error().raise(LOCAL_INFO, err.str());
       }
     }

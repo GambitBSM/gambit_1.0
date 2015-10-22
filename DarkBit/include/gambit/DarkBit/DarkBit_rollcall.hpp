@@ -74,6 +74,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*) 
+      DEPENDENCY(decay_rates, DecayTable) 
       ALLOW_MODELS(CMSSM,MSSM30atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
@@ -85,7 +86,7 @@ START_MODULE
       BACKEND_REQ(dsSLHAread, (), void, (const char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
       // Initialize DarkSUSY with SLHA object (convenience function)
-      BACKEND_REQ(initFromSLHA, (), int, (SLHAstruct))
+      BACKEND_REQ(initFromSLHAeaAndDecayTable, (), int, (const SLHAstruct&, const DecayTable&))
       // Print higgs widths
       BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION
@@ -373,9 +374,9 @@ START_MODULE
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(IBintvars, (), DS_IBINTVARS)
-
-      BACKEND_REQ(registerMassesForIB, (), void, 
-          (std::map<std::string, DarkBit::TH_ParticleProperty>&))
+      //PS: commented out for now, as this can't be a backend function in its current form.
+      //BACKEND_REQ(registerMassesForIB, (), void, 
+      //    (std::map<std::string, DarkBit::TH_ParticleProperty>&))
       BACKEND_REQ(setMassesForIB, (), void, (bool))
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
@@ -462,9 +463,9 @@ START_MODULE
       BACKEND_REQ(nucleonAmplitudes, (backends), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
       BACKEND_REQ(FeScLoop, (backends), double, (double, double, double, double))
       BACKEND_REQ(MOcommon, (backends), MicrOmegas::MOcommonSTR)
-      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, MSSM30atQ, SingletDM)
+      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, MSSM30atQ, MSSM30atMGUT, SingletDM)
       MODEL_GROUP(group1, (nuclear_params_fnq))
-      MODEL_GROUP(group2, (MSSM30atQ, SingletDM))
+      MODEL_GROUP(group2, (MSSM30atQ, MSSM30atMGUT, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
       BACKEND_OPTION((MicrOmegas),(backends))
       BACKEND_OPTION((MicrOmegasSingletDM),(backends))
@@ -1019,6 +1020,8 @@ START_MODULE
      const double(&)[29][3], const double(&)[15], const double(&)[3], const double&, 
      const double&, const double&, const double&, const double&))
     BACKEND_REQ(nuyield, (needs_DS), double, (const double&, const int&, void*&))
+    BACKEND_REQ(get_DS_neutral_h_decay_channels, (needs_DS), std::vector< std::vector<str> >, ())
+    BACKEND_REQ(get_DS_charged_h_decay_channels, (needs_DS), std::vector< std::vector<str> >, ())
     BACKEND_OPTION((DarkSUSY, 5.1.1, 5.1.2, 5.1.3), (needs_DS))
     #undef FUNCTION
   #undef CAPABILITY
