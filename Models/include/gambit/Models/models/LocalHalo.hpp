@@ -22,11 +22,10 @@
   START_MODEL
   // Parameters are:
   // Local dark matter density rho0 [GeV/cm^3]
-  // TO BE IMPLEMENTED:
   // Local disk rotation speed vrot [km/s]
   // Maxwellian most-probable speed v0 [km/s]
   // Local galactic escape speed vesc [km/s]
-  DEFINEPARS(rho0)
+  DEFINEPARS(rho0, vrot, v0, vesc)
 #undef MODEL
 
 #endif

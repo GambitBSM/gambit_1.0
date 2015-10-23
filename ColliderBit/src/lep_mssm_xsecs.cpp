@@ -181,7 +181,7 @@ namespace Gambit
  
       // Just return zero if the final state is kinematically inaccessible
       // *even* if both masses are 2simga lower than their central values 
-      if (abs(m1)*(1.0-2.0*m1_uncerts.second) + abs(m2)*(1.0-2.0*m2_uncerts.second) > sqrts)
+      if (std::abs(m1)*(1.0-2.0*m1_uncerts.second) + std::abs(m2)*(1.0-2.0*m2_uncerts.second) > sqrts)
       { 
         result.central = 0.0;
         result.upper = 0.0;
@@ -232,12 +232,10 @@ namespace Gambit
       const double sinW2 = mssm->runningpars().get(Par::dimensionless,"sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
 
-      cout << mZ << " " << g2 << " " << sinW2 << " " << alpha << endl;
-
       // MSSM parameters
-      // Get the mass eigenstates best corresponding to ~nu_e_L.
+      // Get the mass eigenstate best corresponding to ~nu_e_L.
       const str mass_snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
-      // Get the electron sneutrino masses
+      // Get the electron sneutrino mass
       const double msn = spec->get(Par::Pole_Mass,mass_snue);
       // Get the chargino masses
       const double m1 = spec->get(Par::Pole_Mass,id1,0); 
@@ -249,7 +247,7 @@ namespace Gambit
 
       // Just return zero if the final state is kinematically inaccessible
       // *even* if both masses are 2simga lower than their central values 
-      if (abs(m1)*(1.0-2.0*m1_uncerts.second) + abs(m2)*(1.0-2.0*m2_uncerts.second) > sqrts)
+      if (std::abs(m1)*(1.0-2.0*m1_uncerts.second) + std::abs(m2)*(1.0-2.0*m2_uncerts.second) > sqrts)
       { 
         result.central = 0.0;
         result.upper = 0.0;
@@ -273,8 +271,6 @@ namespace Gambit
       // Calculate the cross-section
       result.central = xsec_chaichaj(id1, id2, sqrts, m1, m2, charginomixV, charginomixU, 
                                      msn, alpha, mZ, gammaZ, sinW2);
-
-      cout << id1<< " " << id2<< " " << sqrts<< " " << m1<< " " << m2<< " " <<  msn<< " " << alpha<< " " << mZ<< " " << gammaZ<< " " << sinW2 << endl;
 
       // Calculate the uncertainty on the cross-section due to final state masses varying by +/- 1 sigma
       std::vector<double> xsecs;
@@ -530,7 +526,7 @@ namespace Gambit
     {
       
       // Just return zero if the final state isn't kinematically accessible
-      if (abs(mi)+abs(mj) > sqrts) return 0.0;
+      if (std::abs(mi)+std::abs(mj) > sqrts) return 0.0;
 
       // Translate from PDG codes to neutralino indices (starting at zero)
       int i, j;
@@ -624,10 +620,9 @@ namespace Gambit
     /// Masses mi and mj for the charginos are signed. msn is electron sneutrino mass.
     double xsec_chaichaj(int pid1, int pid2, double sqrts, double mi, double mj, MixMatrix V,
                          MixMatrix U, double ms, double alpha, double mZ, double gZ, double sin2thetaW)
-    {
-      
+    {                        
       // Just return zero if the final state isn't kinematically accessible
-      if (abs(mi)+abs(mj) > sqrts) return 0.0;
+      if (std::abs(mi)+std::abs(mj) > sqrts) return 0.0;
 
       // Translate from PDG codes to chargino indices (silly paper convention that i=2 lighter than i=1!)
       int i, j;

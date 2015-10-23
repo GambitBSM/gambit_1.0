@@ -349,11 +349,10 @@ namespace Gambit {
 #undef addParticle
 
       // Get MSSM masses
-      // FIXME: Remove absolute value once SpecBit guarantees positive masses
 #define getMSSMmass(Name, spinX2)                                                   \
         catalog.particleProperties.insert(                                          \
         std::pair<std::string, TH_ParticleProperty> (                               \
-        Name , TH_ParticleProperty(abs(spec->phys().get(Par::Pole_Mass,Name)), spinX2)));  
+        Name , TH_ParticleProperty(std::abs(spec->phys().get(Par::Pole_Mass,Name)), spinX2)));  
       getMSSMmass("H+"     , 0)
       getMSSMmass("H-"     , 0)
       getMSSMmass("h0_1"   , 0)

@@ -530,7 +530,7 @@ namespace Gambit
 
         // Add particle outside ATLAS/CMS acceptance to MET
         /// @todo Move out-of-acceptance MET contribution to BuckFast
-        if (abs(p.eta()) > 5.0) {
+        if (std::abs(p.eta()) > 5.0) {
           pout += mk_p4(p.p());
           continue;
         }
@@ -658,7 +658,7 @@ namespace Gambit
 
         // Only consider partons within ATLAS/CMS acceptance
         /// @todo We should leave this for the detector sim / analysis to deal with
-        if (abs(p.eta()) > 5.0) {
+        if (std::abs(p.eta()) > 5.0) {
           pout += mk_p4(p.p());
           continue;
         }
@@ -666,7 +666,7 @@ namespace Gambit
         // Find electrons/muons/taus/photons to be treated as prompt (+ invisibles)
         /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
         /// @todo Lepton dressing
-        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt)); // && abs(p.id()) != MCUtils::PID::TAU);
+        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt)); // && std::abs(p.id()) != MCUtils::PID::TAU);
         const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
@@ -679,7 +679,7 @@ namespace Gambit
         // if (visible && (isFinalParton(i, pevt) || isFinalTau(i, pevt))) {
         if (visible && p.idAbs() != MCUtils::PID::MUON) {
           fastjet::PseudoJet pj = mk_pseudojet(p.p());
-          pj.set_user_index(abs(p.id()));
+          pj.set_user_index(std::abs(p.id()));
           jetparticles.push_back(pj);
         }
 

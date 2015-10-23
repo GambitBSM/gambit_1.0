@@ -4,7 +4,7 @@
 ///
 ///  Functions of module SpecBit
 ///
-///  These functions link ModelParameters to 
+///  These functions link ModelParameters to
 ///  Spectrum objects in various ways (by running
 ///  spectrum generators, etc.)
 ///
@@ -15,7 +15,7 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///    \date 2014 Sep - Dec, 2015 Jan - Mar
-///  
+///
 ///  \author Christopher Rogan
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
@@ -44,7 +44,7 @@
 #include "flexiblesusy/src/two_loop_corrections.hpp"
 
 // Switch for debug mode
-//#define SPECBIT_DEBUG 
+//#define SPECBIT_DEBUG
 
 namespace Gambit
 {
@@ -60,7 +60,7 @@ namespace Gambit
     /// @{ Non-Gambit convenience functions
     //  =======================================================================
     //  These are not known to Gambit, but they do basically all the real work.
-    //  The Gambit module functions merely wrap the functions here and hook 
+    //  The Gambit module functions merely wrap the functions here and hook
     //  them up to their dependencies, and input parameters.
 
     /// Compute an MSSM spectrum using flexiblesusy
@@ -72,19 +72,19 @@ namespace Gambit
     // These each require slightly different setup, but once that is done the rest
     // of the code required to run them is the same; this is what is contained in
     // the below template function.
-    // MI for Model Interface, as defined in model_files_and_boxes.hpp 
-    template <class MI> 
+    // MI for Model Interface, as defined in model_files_and_boxes.hpp
+    template <class MI>
     const Spectrum* run_FS_spectrum_generator
         ( const typename MI::InputParameters& input
         , const SMInputs& sminputs
         , const Options& runOptions
-        , const std::map<str, safe_ptr<double> >& input_Param 
+        , const std::map<str, safe_ptr<double> >& input_Param
         )
     {
       // SoftSUSY object used to set quark and lepton masses and gauge
       // couplings in QEDxQCD effective theory
       // Will be initialised by default using values in lowe.h, which we will
-      // override next. 
+      // override next.
       QedQcd oneset;
 
       // Fill QedQcd object with SMInputs values
@@ -92,7 +92,7 @@ namespace Gambit
 
       // Run everything to Mz
       oneset.toMz();
- 
+
       // Create spectrum generator object
       typename MI::SpectrumGenerator spectrum_generator;
 
@@ -114,7 +114,7 @@ namespace Gambit
       // | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
       // | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
 
-     
+
       #define SPECGEN_SET(NAME,TYPE,DEFAULTVAL) \
          CAT_2(spectrum_generator.set_, NAME) BOOST_PP_LPAREN() runOptions.getValueOrDef<TYPE> \
                BOOST_PP_LPAREN() DEFAULTVAL BOOST_PP_COMMA() STRINGIFY(NAME) \
@@ -139,7 +139,7 @@ namespace Gambit
 
       #undef SPECGEN_SET
 
-      // Higgs loop corrections are a little different... sort them out now     
+      // Higgs loop corrections are a little different... sort them out now
       Two_loop_corrections two_loop_settings;
 
       // alpha_t alpha_s
@@ -159,10 +159,10 @@ namespace Gambit
 
       // Generate spectrum
       spectrum_generator.run(oneset, input);
-   
+
       // Extract report on problems...
       const typename MI::Problems& problems = spectrum_generator.get_problems();
-     
+
       // Create Model_interface to carry the input and results, and know
       // how to access the flexiblesusy routines.
       // Note: Output of spectrum_generator.get_model() returns type, e.g. CMSSM.
@@ -171,14 +171,14 @@ namespace Gambit
       MI model_interface(spectrum_generator,oneset,input);
 
       // Create SubSpectrum object to wrap flexiblesusy data
-      // THIS IS STATIC so that it lives on once we leave this module function. We 
-      // therefore cannot run the same spectrum generator twice in the same loop and 
-      // maintain the spectrum resulting from both. But we should never want to do 
+      // THIS IS STATIC so that it lives on once we leave this module function. We
+      // therefore cannot run the same spectrum generator twice in the same loop and
+      // maintain the spectrum resulting from both. But we should never want to do
       // this.
       // A pointer to this object is what gets turned into a SubSpectrum pointer and
       // passed around Gambit.
       //
-      // This object will COPY the interface data members into itself, so it is now the 
+      // This object will COPY the interface data members into itself, so it is now the
       // one-stop-shop for all spectrum information, including the model interface object.
       MSSMSpec<MI> mssmspec(model_interface, "FlexibleSUSY", "1.1.0");
 
@@ -188,7 +188,7 @@ namespace Gambit
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
       mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
-      
+
       /// add theory errors
       static const MSSM_strs ms;
 
@@ -197,8 +197,8 @@ namespace Gambit
       static const std::vector<int> i1234   = initVector(1,2,3,4);
       static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error" 
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error" 
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error"
+      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error"
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, false);
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, false);
       mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, false);
@@ -210,7 +210,7 @@ namespace Gambit
 
       /// do the Higgs mass seperately
       /// Default in most codes is 3 GeV,
-      /// seems like an underestimate if the stop masses are heavy enough.  
+      /// seems like an underestimate if the stop masses are heavy enough.
       /// (TODO: are we happy assigning the same for both higgses?)
       /// FIXME this does not work for the second higgs
       double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
@@ -221,8 +221,8 @@ namespace Gambit
       if (input_Param.find("TanBeta") != input_Param.end())
       {
         mssmspec.runningpars().set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", false);
-      } 
-     
+      }
+
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
@@ -232,7 +232,7 @@ namespace Gambit
       #ifdef SPECBIT_DEBUG
         std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
       #endif
-      if( problems.have_problem() ) 
+      if( problems.have_problem() )
       {
          if( runOptions.getValue<bool>("invalid_point_fatal") )
          {
@@ -241,9 +241,9 @@ namespace Gambit
             std::ostringstream errmsg;
             errmsg << "A serious problem was encountered during spectrum generation!; ";
             errmsg << "Message from FlexibleSUSY below:" << std::endl;
-            problems.print_problems(errmsg); 
-            problems.print_warnings(errmsg); 
-            SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
+            problems.print_problems(errmsg);
+            problems.print_warnings(errmsg);
+            SpecBit_error().raise(LOCAL_INFO,errmsg.str());
          }
          else
          {
@@ -286,7 +286,7 @@ namespace Gambit
          slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
       #endif
 
-      // Package pointer to QedQcd SubSpectrum object along with pointer to MSSM SubSpectrum object, 
+      // Package pointer to QedQcd SubSpectrum object along with pointer to MSSM SubSpectrum object,
       // and SMInputs struct.
       // Return pointer to this package.
       static Spectrum matched_spectra;
@@ -300,7 +300,7 @@ namespace Gambit
     Eigen::Matrix<double,3,3> fill_3x3_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
        Eigen::Matrix<double,3,3> output;
-       for(int i=0; i<3; ++i) { for(int j=0; j<3; ++j) { 
+       for(int i=0; i<3; ++i) { for(int j=0; j<3; ++j) {
          std::stringstream parname;
          parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
          /// TODO: Error checking...
@@ -361,8 +361,8 @@ namespace Gambit
     /// Check that the spectrum has a neutralino LSP.
     bool has_neutralino_LSP(const Spectrum* &result)
     {
-      double msqu  = result->get(Par::Pole_Mass, 1000001, 0);
-      double msqd  = result->get(Par::Pole_Mass, 1000002, 0);
+      double msqd  = result->get(Par::Pole_Mass, 1000001, 0);
+      double msqu  = result->get(Par::Pole_Mass, 1000002, 0);
       double msl   = result->get(Par::Pole_Mass, 1000011, 0);
       double msneu = result->get(Par::Pole_Mass, 1000012, 0);
       double mglui = result->get(Par::Pole_Mass, 1000021, 0);
@@ -380,12 +380,12 @@ namespace Gambit
     /// @} End module convenience functions
 
 
-    /// @{ Gambit module functions 
+    /// @{ Gambit module functions
     //  =======================================================================
     //  These are wrapped up in Gambit functor objects according to the
     //  instructions in the rollcall header
 
-    // Functions to changes the capability associated with a Spectrum object to 
+    // Functions to changes the capability associated with a Spectrum object to
     // "SM_spectrum"
     //TODO: "temporarily" removed
     //void convert_MSSM_to_SM   (const Spectrum* &result) {result = *Pipes::convert_MSSM_to_SM::Dep::unimproved_MSSM_spectrum;}
@@ -405,16 +405,16 @@ namespace Gambit
 
       // Get input parameters
       CMSSM_input_parameters input;
-   
+
       input.m0      = *myPipe::Param["M0"];
       input.m12     = *myPipe::Param["M12"];
       input.TanBeta = *myPipe::Param["TanBeta"];
       input.SignMu  = *myPipe::Param["SignMu"];
       input.Azero   = *myPipe::Param["A0"];
-  
+
       // Run spectrum generator
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
-      
+
       // Only allow neutralino LSPs.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
@@ -458,7 +458,7 @@ namespace Gambit
     /// @{
     /// Functions to decompose Spectrum object (of type MSSM_spectrum)
 
-    /// @} 
+    /// @}
     /// Retrieve SubSpectrum* to SM LE model from Spectrum object
     /// DEPENDENCY(MSSM_spectrum, Spectrum)
     void get_SM_SubSpectrum_from_MSSM_Spectrum (const SubSpectrum* &result)
@@ -497,19 +497,19 @@ namespace Gambit
       SLHAstruct input_slha;
 
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAfile;
-   
+
       // Read filename from yaml file
-      std::vector<std::string> filenames = 
+      std::vector<std::string> filenames =
         myPipe::runOptions->getValue<std::vector<std::string>>("filenames");
 
       // Check how many loop over the input files we are doing.
       long int cycles = myPipe::runOptions->getValueOrDef<int>(-1,"cycles");
 
-      // Check if we have completed the requested number of cycles 
+      // Check if we have completed the requested number of cycles
       if(cycles>0 and ncycle>cycles)
       {
          std::ostringstream msg;
-         msg << "Preset number of loops through input files reached! Stopping. (tried to start cycle "<<ncycle<<" of "<<cycles<<")"; 
+         msg << "Preset number of loops through input files reached! Stopping. (tried to start cycle "<<ncycle<<" of "<<cycles<<")";
          SpecBit_error().raise(LOCAL_INFO,msg.str());
       }
 
@@ -525,9 +525,9 @@ namespace Gambit
       {
         logger() << "Returning to start of input SLHA file list (finished "<<ncycle<<" cycles)" << EOM;
         counter = 0;
-        ncycle++; 
+        ncycle++;
       }
- 
+
       // Create MSSMskeleton SubSpectrum object from the SLHAea object
       // (interacts with MSSM blocks)
       MSSMskeleton mssmskel(input_slha);
@@ -555,19 +555,19 @@ namespace Gambit
 
       // No sneaking in charged LSPs via SLHA, jävlar.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
-    } 
-    
+    }
+
     /// FeynHiggs SUSY masses and mixings
-    void FH_MSSMMasses(fh_MSSMMassObs &result) 
+    void FH_MSSMMasses(fh_MSSMMassObs &result)
     {
       using namespace Pipes::FH_MSSMMasses;
 
       #ifdef SPECBIT_DEBUG
         cout << "****** calling FH_MSSMMasses ******" << endl;
       #endif
-   
+
       // zero if minimal, non-zero if non-minimal flavour violation
-      int nmfv; 
+      int nmfv;
 
       // MSf(s,t,g) MFV squark masses with indices
       // s = 1..2   sfermion index
@@ -591,7 +591,7 @@ namespace Gambit
       // a1 = 1..6  extended sfermion index (mass eigenstates)
       // a2 = 1..6  extended sfermion index (gauge eigenstates)
       //  t = 1..5  sftermion type nu,e,u,d,?
-      Farray<fh_complex, 1,36, 1,5> UASf; 
+      Farray<fh_complex, 1,36, 1,5> UASf;
 
       // chargino masses
       Farray<fh_real, 1,2> MCha;
@@ -604,7 +604,7 @@ namespace Gambit
       Farray<fh_real, 1,4> MNeu;
 
       // neutralino mixing matrices (mass,gauge) eigenstates (4 x 4)
-      Farray<fh_complex, 1,16> ZNeu; 
+      Farray<fh_complex, 1,16> ZNeu;
 
       // correction to bottom Yukawa coupling
       fh_complex DeltaMB;
@@ -621,19 +621,19 @@ namespace Gambit
       #ifdef SPECBIT_DEBUG
         cout << "****** calling FHGetPara ******" << endl;
       #endif
-      
+
       int error = 1;
       BEreq::FHGetPara(error, nmfv, MSf, USf, MASf, UASf,
-           MCha, UCha, VCha, MNeu, ZNeu, 
+           MCha, UCha, VCha, MNeu, ZNeu,
            DeltaMB, MGl, MHtree, SAtree);
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHGetPara raised error flag: " << error << "."; 
+        err << "BEreq::FHGetPara raised error flag: " << error << ".";
         invalid_point().raise(err.str());
       }
 
-      fh_MSSMMassObs MassObs; 
+      fh_MSSMMassObs MassObs;
       for(int i = 0; i < 2; i++)
         for(int j = 0; j < 5; j++)
           for(int k = 0; k < 3; k++)
@@ -666,12 +666,12 @@ namespace Gambit
         MassObs.MHtree[i] = MHtree(i+1);
       MassObs.SinAlphatree = SAtree;
 
-      result = MassObs; 
+      result = MassObs;
     }
 
 
     /// Higgs masses and mixings with theoretical uncertainties
-    void FH_HiggsMasses(fh_HiggsMassObs &result) 
+    void FH_HiggsMasses(fh_HiggsMassObs &result)
     {
       using namespace Pipes::FH_HiggsMasses;
 
@@ -688,15 +688,15 @@ namespace Gambit
       Farray<fh_real, 1,4> DeltaMHiggs;
 
       // sine of effective Higgs mixing angle, alpha_eff
-      fh_complex SAeff; 
-      fh_complex DeltaSAeff; 
+      fh_complex SAeff;
+      fh_complex DeltaSAeff;
 
-      // matrix needed to rotate Higgs 
+      // matrix needed to rotate Higgs
       // mass matrix to diagonal form
       Farray<fh_complex, 1,3, 1,3> UHiggs;
       Farray<fh_complex, 1,3, 1,3> DeltaUHiggs;
 
-      // matrix of Z-factors needed to combine 
+      // matrix of Z-factors needed to combine
       // amplitudes involving on-shell Higgs
       Farray<fh_complex, 1,3, 1,3> ZHiggs;
       Farray<fh_complex, 1,3, 1,3> DeltaZHiggs;
@@ -710,7 +710,7 @@ namespace Gambit
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHHiggsCorr raised error flag: " << error << "."; 
+        err << "BEreq::FHHiggsCorr raised error flag: " << error << ".";
         invalid_point().raise(err.str());
       }
 
@@ -723,7 +723,7 @@ namespace Gambit
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHUncertainties raised error flag: " << error << "."; 
+        err << "BEreq::FHUncertainties raised error flag: " << error << ".";
         invalid_point().raise(err.str());
       }
 
@@ -733,8 +733,8 @@ namespace Gambit
         HiggsMassObs.MH[i] = MHiggs(i+1);
         HiggsMassObs.deltaMH[i] = DeltaMHiggs(i+1);
       }
-      HiggsMassObs.SinAlphaEff = SAeff; 
-      HiggsMassObs.deltaSinAlphaEff = DeltaSAeff; 
+      HiggsMassObs.SinAlphaEff = SAeff;
+      HiggsMassObs.deltaSinAlphaEff = DeltaSAeff;
       for(int i = 0; i < 3; i++)
         for(int j = 0; j < 3; j++)
         {
@@ -749,10 +749,10 @@ namespace Gambit
 
 
     /// FeynHiggs Higgs couplings
-    void FH_Couplings(fh_Couplings &result) 
+    void FH_Couplings(fh_Couplings &result)
     {
       using namespace Pipes::FH_Couplings;
-      
+
       #ifdef SPECBIT_DEBUG
         cout << "****** calling FH_Couplings ******" << endl;
       #endif
@@ -770,7 +770,7 @@ namespace Gambit
       // 0 - no mixing
       // 1 - UHiggs
       // 2 - ZHiggs
-      int uzext = 2; 
+      int uzext = 2;
       // which effective bottom mass to use
       int mfeff = 1;
 
@@ -783,7 +783,7 @@ namespace Gambit
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHSelectUZ raised error flag: " << error << "."; 
+        err << "BEreq::FHSelectUZ raised error flag: " << error << ".";
         invalid_point().raise(err.str());
       }
 
@@ -803,7 +803,7 @@ namespace Gambit
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHCouplings raised error flag: " << error << "."; 
+        err << "BEreq::FHCouplings raised error flag: " << error << ".";
         invalid_point().raise(err.str());
       }
 
@@ -895,7 +895,7 @@ namespace Gambit
       ADD_ALL (runningpars(),dimensionless,ms.dimensionless_strs)
       ADD_ALL2(runningpars(),dimensionless,ms.dimensionless_strs_2_3x3,i123,i123)
     }
-   
+
 
     /// @} End Gambit module functions
 
