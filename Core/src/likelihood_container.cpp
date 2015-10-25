@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///    (c.weniger@uva.nl)
 ///  \date 2013 May, June, July
@@ -34,10 +34,10 @@ namespace Gambit
   // Methods for Likelihood_Container class.
 
   /// Constructor
-  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
-   Priors::CompositePrior &prior, const str &purpose) 
-  : dependencyResolver (dependencyResolver), 
+  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap,
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile,
+   Priors::CompositePrior &prior, const str &purpose)
+  : dependencyResolver (dependencyResolver),
     prior              (prior),
     functorMap         (functorMap),
     min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
@@ -47,7 +47,7 @@ namespace Gambit
       debug            (iniFile.getValueOrDef<bool>(false, "likelihood", "debug"))
     #endif
   {
-    // Set the list of valid return types of functions that can be used for 'purpose' by this container class. 
+    // Set the list of valid return types of functions that can be used for 'purpose' by this container class.
     const std::vector<str> allowed_types_for_purpose = initVector<str>("double", "std::vector<double>", "float", "std::vector<float>");
     // Find subset of vertices that match requested purpose
     target_vertices = dependencyResolver.getObsLikeOrder();
@@ -68,13 +68,13 @@ namespace Gambit
     }
     target_vertices.resize(size);
   }
-      
-  /// Do the prior transformation and populate the parameter map  
-  void Likelihood_Container::setParameters (const std::vector<double> &vec) 
+
+  /// Do the prior transformation and populate the parameter map
+  void Likelihood_Container::setParameters (const std::vector<double> &vec)
   {
     // Do the prior transformation, saving the real parameter values in the parameterMap
     prior.transform(vec, parameterMap);
-    
+
     // Set up a stream containing the parameter values, for diagnostic output
     std::ostringstream parstream;
 
@@ -99,16 +99,16 @@ namespace Gambit
     // Print out the values of the parameters for this point if in debug mode.
     if (debug) cout << parstream.str();
   }
-          
+
   /// Evaluate total likelihood function
   double Likelihood_Container::main (const std::vector<double> &in)
   {
     double lnlike = 0;
-    bool compute_aux = true;     
-    setParameters(in);      
+    bool compute_aux = true;
+    setParameters(in);
 
     logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
-      
+
     // First work through the target functors, i.e. the ones contributing to the likelihood.
     for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
     {
@@ -121,7 +121,7 @@ namespace Gambit
         if (rtype == "double")
         {
           double result = dependencyResolver.getObsLike<double>(*it);
-          if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+          if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
                           << "::" << dependencyResolver.get_functor(*it)->name() << ": " << result << endl;
           lnlike += result;
         }
@@ -130,7 +130,7 @@ namespace Gambit
           std::vector<double> result = dependencyResolver.getObsLike<std::vector<double> >(*it);
           for (auto jt = result.begin(); jt != result.end(); ++jt)
           {
-            if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+            if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
                             << "::" << dependencyResolver.get_functor(*it)->name() << ": " << *jt << endl;
             lnlike += *jt;
           }
@@ -138,7 +138,7 @@ namespace Gambit
         else if (rtype == "float")
         {
           float result = dependencyResolver.getObsLike<float>(*it);
-          if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+          if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
                           << "::" << dependencyResolver.get_functor(*it)->name() << ": " << result << endl;
           lnlike += result;
         }
@@ -147,7 +147,7 @@ namespace Gambit
           std::vector<float> result = dependencyResolver.getObsLike<std::vector<float> >(*it);
           for (auto jt = result.begin(); jt != result.end(); ++jt)
           {
-            if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+            if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
                             << "::" << dependencyResolver.get_functor(*it)->name() << ": " << *jt << endl;
             lnlike += *jt;
           }
@@ -158,11 +158,11 @@ namespace Gambit
         if (Utils::isnan(lnlike))
         {
           std::ostringstream err;
-          err << "Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin() 
+          err << "Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
                  << "::" << dependencyResolver.get_functor(*it)->name() << " is NaN!";
           core_error().raise(LOCAL_INFO, err.str());
         }
-        
+
         // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
         if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
 
@@ -200,12 +200,12 @@ namespace Gambit
         }
       }
     }
-      
-    if (debug) cout << "log-likelihood: " << lnlike << endl << endl;     
+
+    if (debug) cout << "log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
     return lnlike;
   }
 
-  
+
 }
 
