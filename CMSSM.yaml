@@ -6,7 +6,7 @@ Parameters:
   #Nuclear matrix parameters fixed for now.
   nuclear_params_sigmas_sigmal:
     sigmas:
-      fixed_value:  43.0 
+      fixed_value:  43.0
     sigmal:
       fixed_value:  58.0
     deltau:
@@ -30,12 +30,12 @@ Parameters:
       range: [3.0, 70]
       prior_type: flat
     SignMu: 1
- 
+
 
 Priors:
 
   # All priors simple, so specified in Parameters section
-    
+
 Printer:
 
   printer: hdf5
@@ -59,17 +59,15 @@ Scanner:
         mmodal: 1
         # write native MultiNest ascii output files?
         outfile: 1
-        # resuming doesn't work yet
-        resume: 0
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
-        aux_printer_live_options:  
+        aux_printer_live_options:
 
 ObsLikes:
 
     - capability: lnL_oh2
-      purpose:    Likelihood 
+      purpose:    Likelihood
 
     - capability: lnL_FermiLATdwarfs
       purpose:    Likelihood
@@ -79,7 +77,7 @@ ObsLikes:
 
     - capability: lnL_LUX_2013
       purpose:    Likelihood
-      
+
     #- capability: IC79_loglike
     #  purpose:    Likelihood
 
@@ -97,11 +95,11 @@ ObsLikes:
 
     - capability: lnL_W_mass
       purpose:    Likelihood
-    
+
     - capability: lnL_sinW2_eff
       purpose:    Likelihood
 
-    - capability: lnL_deltarho  
+    - capability: lnL_deltarho
       purpose:    Likelihood
 
     # Charm quark and light quark mass ratio likelihoods
@@ -121,9 +119,9 @@ ObsLikes:
     # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
     - capability: lnL_SI_nuclear_parameters
       purpose:    Likelihood
-        
-    - purpose:    Likelihood
-      capability: LHC_Combined_LogLike
+
+    #- purpose:    Likelihood
+    #  capability: LHC_Combined_LogLike
 
     - purpose:    Observable
       capability: SLHA1_violation
@@ -210,11 +208,11 @@ Rules:
   # Choose to implement the relic density as an upper bound, not a detection
   - capability: lnL_oh2
     function: lnL_oh2_Simple
-    
+
   # Use the DarkBit native relic density calculator
   #- capability: RD_oh2
   #  function: RD_oh2_general
-  
+
   # Use DarkSUSY or MicrOmegas for the relic density?
   - capability: RD_oh2
     #function: RD_oh2_DarkSUSY
@@ -230,8 +228,7 @@ Rules:
 
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
-    #function: SimYieldTable_DarkSUSY
-    function: SimYieldTable_MicrOmegas
+    function: SimYieldTable_DarkSUSY
 
   # Choose to use function that calls DarkSUSY for calculating direct detection couplings
   - capability: DD_couplings
@@ -243,7 +240,7 @@ Rules:
     function: all_decays
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
-  - capability: unimproved_MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum
     function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:
       # Set to match benchmark point specified in
@@ -262,7 +259,7 @@ Rules:
       invalid_point_fatal: false
 
   # Choose to take the spectrum generator prediction for the Higgs mass (rather then FeynHiggs')
-  # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along 
+  # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
   # with the FH error estimate, to estimate the theoretical error on the prediction.
   - capability: MSSM_spectrum
     options:
@@ -280,7 +277,7 @@ Rules:
     function: FH_h0_2_decays
   - capability: t_decay_rates
     function: FH_t_decays
-    
+
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
     function: RD_fraction_from_oh2
@@ -309,7 +306,7 @@ Rules:
 
   - capability: AnalysisContainer
     function: getAnalysisContainer
-    options:  
+    options:
       analysisNames: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
   - capability: DetectorSim
@@ -321,18 +318,18 @@ Rules:
     function: getBuckFast
     options:
       buckFastOption: "BuckFastSmear"
- 
+
   - capability: ReconstructedEvent
     function: reconstructBuckFastEvent
     dependencies:
     - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
-  
+
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
       nEvents: 20000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
-    
+
   - options:
       gauge_mixing_tolerance: 0.5
       family_mixing_tolerance: 0.5
@@ -382,6 +379,7 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -1e10
+    model_invalid_for_lnlike_below: -5e5
+    debug: true
 
   default_output_path: "runs/CMSSM/"
