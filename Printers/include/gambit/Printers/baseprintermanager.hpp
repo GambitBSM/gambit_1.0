@@ -59,7 +59,7 @@ namespace Gambit
         /// For debugging: check up on MPI
         #ifdef WITH_MPI
         bool Is_MPI_initialized()  { return GMPI::Is_initialized(); }
-        bool getRank()  { GMPI::Comm comm; return comm.Get_rank(); }
+        int getRank()  { GMPI::Comm comm; return comm.Get_rank(); }
         #endif
     };
 

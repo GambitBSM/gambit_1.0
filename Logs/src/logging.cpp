@@ -30,6 +30,7 @@
 
 // Gambit
 #include "gambit/Logs/logging.hpp"
+#include "gambit/Utils/signal_helpers.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
@@ -554,14 +555,19 @@ namespace Gambit
     /// Handle LogTag input 
     LogMaster& LogMaster::operator<< (const LogTag& tag)
     {
+       block_signals();
        #pragma omp critical
-       streamtags.insert(tag);
+       {
+          streamtags.insert(tag);
+       }
+       unblock_signals();
        return *this;
     }
    
     /// Handle end of message character
     LogMaster& LogMaster::operator<< (const endofmessage&)
     {
+       block_signals();
        #pragma omp critical (LogMaster_steram_EOM)
        {
          // Collect the stream and tags, then send the message
@@ -570,50 +576,68 @@ namespace Gambit
          stream.str(std::string()); //TODO: check that this works properly on all compilers...
          streamtags.clear();
        }
+       unblock_signals();
        return *this;
     }
 
     /// Handle various stream manipulators
     LogMaster& LogMaster::operator<< (const manip1 fp)
     {
+       block_signals();
        #pragma omp critical
-       stream << fp;
+       {
+         stream << fp;
+       }
+       unblock_signals();
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip2 fp)
     {
+       block_signals();
        #pragma omp critical
-       stream << fp;
+       {
+         stream << fp;
+       }
+       unblock_signals();
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip3 fp)
     {
+       block_signals();
        #pragma omp critical
-       stream << fp;
+       {
+         stream << fp;
+       }
+       unblock_signals();
        return *this;
     }
 
     void LogMaster::entering_module(int i)
     {
+       block_signals();
        #pragma omp critical (current_module)
        {
          current_module = i;
        }
+       unblock_signals();
     }
 
     void LogMaster::leaving_module()
     {
+       block_signals();
        #pragma omp critical (current_module)
        {
          current_module = -1;
        }
+       unblock_signals();
        leaving_backend();
     }
 
     void LogMaster::entering_backend(int i) 
     {
+       block_signals();
        #pragma omp critical (current_backend)
        {
          current_backend = i; 
@@ -624,9 +648,11 @@ namespace Gambit
           *this<<logs<<debug<<EOM;
        }
        // TODO: Activate std::out and std::err redirection, if requested in inifile
-    }
+       unblock_signals();
+   }
     void LogMaster::leaving_backend()
     { 
+       block_signals();
        int cb_test;
        #pragma omp critical (current_backend)
        {
@@ -643,6 +669,7 @@ namespace Gambit
           *this<<logs<<debug<<EOM;
        }
        // TODO: Restore std::out and std::err to normal
+       unblock_signals();
     }
  
     /// Constructor for SortedMessage struct

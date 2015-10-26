@@ -916,8 +916,11 @@ namespace Gambit
               }
               else if ( zlevels[jt->first.as<std::string>()].as<int>() == getEntryLevelForOptions(*it) )
               {
-                cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
-                exit(-1);
+                //cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
+                //exit(-1);
+                std::ostringstream errmsg;
+                errmsg << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>();
+                dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
               }
             }
           }

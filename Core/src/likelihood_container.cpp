@@ -244,25 +244,6 @@ namespace Gambit
         }
       }
     }
-
-    // Check for messages from other processes indicating that run needs to stop
-    #ifdef WITH_MPI 
-    int ERROR_TAG = errorComm.mytag;
-    MPI_Status status;
-    if( errorComm.Iprobe(MPI_ANY_SOURCE, ERROR_TAG, &status) )
-    {
-       // Yes, another process has issued the global stop signal
-       // Recv the message and throw an error to shut down Gambit.
-       int nullbuf = 0;
-       errorComm.Recv(&nullbuf, 1, status.MPI_SOURCE, status.MPI_TAG);
-       std::ostringstream msg;
-       msg << "rank "<<errorComm.Get_rank()<<": Shutdown signal received from process "<<status.MPI_SOURCE;
-      
-       // Rather than raise an error, let us use the usual scanner method for triggering shutdown.
-       //MPI_error().raise(LOCAL_INFO, msg.str());           
-       Gambit::Scanner::Plugins::plugin_info.set_running(false);
-    }
-    #endif
       
     if (debug) cout << "log-likelihood: " << lnlike << endl << endl;     
     dependencyResolver.resetAll();

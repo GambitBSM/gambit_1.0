@@ -35,13 +35,6 @@ namespace Gambit
     return local;
   }
 
-  /// Special MPI error
-  MPIerror& MPI_error()
-  {
-    static MPIerror local("An error signal has been received from another process.","MPI_error", core);
-    return local;
-  }
-
   namespace DRes
   {
 

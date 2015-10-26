@@ -30,99 +30,120 @@ using namespace LogTags;
 int rank;
 #endif
 
-// Global flag to warn if early shutdown is already in process
+/// Global flag to warn if early shutdown is already in process
 bool shutdown_begun = false;
 
-//void sighandler(int sig)
-//{
-//  Gambit::Scanner::Plugins::plugin_info.dump();
-//  #ifdef WITH_MPI
-//  std::cout << "rank "<<rank<<": ";
-//  #endif
-//  std::cout << "Gambit has performed an emergency shutdown!" << std::endl;
-//  exit(sig);
-//}
-//
-//void sighandler2(int sig)
-//{
-//  if(shutdown_begun)
-//  {
-//    #ifdef WITH_MPI
-//    std::cout << "rank "<<rank<<": ";
-//    #endif
-//    std::cout << "Warning, caught signal "<<sig<<" to trigger soft shutdown, but soft shutdown is already in progress! Initiating emergency shutdown." << std::endl;
-//    Gambit::Scanner::Plugins::plugin_info.dump();
-//    #ifdef WITH_MPI
-//      MPI_Finalize();
-//    #endif
-//    exit(sig);
-//r }
-//  else
-//  {
-//    Gambit::Scanner::Plugins::plugin_info.set_running(false);
-//    #ifdef WITH_MPI
-//    std::cout << "rank "<<rank<<": ";
-//    #endif
-//    std::cout << "Gambit is initiating soft shutdown! -- caught signal "<<sig<< std::endl;
-//    if (!Gambit::Scanner::Plugins::plugin_info.func_calculating())
-//    {
-//      // Soft shutdown is impossible to perform safely if signal happens to be
-//      // intercepted outside of a plugin (i.e. likelihood) evaluation, since we
-//      // could be returning control to e.g. scanner code which is about to 
-//      // initiate a Barrier, in which case a deadlock will occur. So we must 
-//      // initiate an emergency shutdown and try to save the resume data.
-//      #ifdef WITH_MPI
-//      std::cout << "rank "<<rank<<": ";
-//      #endif
-//      std::cout << "Soft shutdown is impossible, attempting emergency shutdown!"<<sig<< std::endl;
-//      Gambit::Scanner::Plugins::plugin_info.dump();
-//
-//      // FIXME:
-//      // Ben: but I think we should not do this part, since the scanner might be
-//      // in the middle of writing data needed for resuming. We should therefore
-//      // return control to increase the probability that resuming will be
-//      // possible. Ack but if we let control return then new print attempts might
-//      // occur, which will possibly crash the printers after finalise has
-//      // occurred. Might need to improve the "silencing" of printers to avoid
-//      // this problem.
-//      #ifdef WITH_MPI
-//        MPI_Finalize();
-//      #endif
-//      exit(sig);
-//    }
-//    shutdown_begun = true;
-//  }
-//}
+/// @{ Signal handling helper functions
+/// Note: Apparantly one is not supposed to touch streams, nor call exit, from
+/// inside a signal handler, as it is undefined behaviour. But it seems to work
+/// quite consistently, and this is for emergency shutdown only, so we will do 
+/// it anyway.
 
-void sighandler(int sig)
+str signal_name(int sig)
+{
+  str name;
+  switch(sig){
+      case SIGINT:  name="SIGINT";  break; 
+      case SIGTERM: name="SIGTERM"; break; 
+      case SIGUSR1: name="SIGUSR1"; break; 
+      case SIGUSR2: name="SIGUSR2"; break; 
+      default: name="<unlisted>";
+  }
+  return name;
+}
+
+void sighandler_emergency(int sig)
 {
   Gambit::Scanner::Plugins::plugin_info.dump();
-  std::cout << "Gambit has performed an emergency shutdown!" << std::endl;
-  exit(sig);
+  #ifdef WITH_MPI
+  std::cout << "rank "<<rank<<": ";
+  #endif
+  std::cout << "Gambit has performed an emergency shutdown! -- caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<std::endl;
+  exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
 }
 
-void sighandler2(int sig)
+void sighandler_soft(int sig)
 {
-  Gambit::Scanner::Plugins::plugin_info.set_running(false);
-  std::cout << "Gambit is performing soft shutdown! -- catch SIGUSR" << std::endl;
-  if (!Gambit::Scanner::Plugins::plugin_info.func_calculating())
+  if(shutdown_begun)
   {
-    Gambit::Scanner::Plugins::plugin_info.dump();
     #ifdef WITH_MPI
-      MPI_Finalize();
+    std::cout << "rank "<<rank<<": ";
     #endif
-    exit(sig);
+    std::cout << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger soft shutdown, but soft shutdown is already in progress! Initiating emergency shutdown." << std::endl;
+    sighandler_emergency(sig);
   }
+
+  Gambit::Scanner::Plugins::plugin_info.set_running(false);
+  // We will avoid touching streams in this "clean" shutdown mode since technically it is undefined behaviour.
+  //#ifdef WITH_MPI
+  //std::cout << "rank "<<rank<<": ";
+  //#endif
+  //std::cout << "Gambit is initiating soft shutdown! -- caught signal "<<signal_name(sig)<<" ("<<sig<<")"<< std::endl;
+  shutdown_begun=true;
 }
+
+void sighandler_hard(int sig)
+{
+  #ifdef WITH_MPI
+  std::cout << "rank "<<rank<<": ";
+  #endif
+  std::cout << "Gambit has performed a hard shutdown! Data loss is likely to have occurred. -- caught signal "<<signal_name(sig)<<" ("<<sig<<")"<< std::endl;
+  exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
+}
+
+void sighandler_null(int sig) {}
+
+/// Choose signal handler for a given signal via yaml file option
+void set_signal_handler(const IniParser::IniFile& iniFile, const int sig, const str& def_mode)
+{
+    str shutdown_mode;
+    YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
+    if(keyvalnode["signal_handling"]) {
+       YAML::Node signal_options = keyvalnode["signal_handling"];
+       if(signal_options[signal_name(sig)]) {
+          shutdown_mode = signal_options[signal_name(sig)].as<str>();
+       }else{
+          shutdown_mode = def_mode;
+       }
+    }else{
+       shutdown_mode = def_mode;
+    }
+
+    if      (shutdown_mode=="hard_shutdown"){      signal(sig, sighandler_hard);      }
+    else if (shutdown_mode=="emergency_shutdown"){ signal(sig, sighandler_emergency); }
+    else if (shutdown_mode=="soft_shutdown"){      signal(sig, sighandler_soft);      }
+    else if (shutdown_mode=="none"){               signal(sig, sighandler_null);      }
+    else {
+        std::ostringstream msg;
+        msg << "Invalid shutdown mode requested for signal "<<signal_name(sig)<<" ("<<sig<<")"<<" (via YAML file option '"<<signal_name(sig)<<"' in KeyValue section under 'signal_handling'). Valid shutdown modes are:" <<std::endl;
+        msg << "   'hard_shutdown'      -- Exit immediately." <<std::endl; 
+        msg << "   'emergency_shutdown' -- Attempt to save printer/resume data and then immediately exit." <<std::endl; 
+        msg << "   'soft_shutdown'      -- Safest: attempt to synchronise processes at safe location, then save printer/resume data and exit." <<std::endl; 
+        msg << "   'none'               -- Ignore signal. Use at own risk!" <<std::endl; 
+        msg << "The default shutdown mode on signal "<<signal_name(sig)<<" is '"<<def_mode<<"'." <<std::endl;
+        core_error().raise(LOCAL_INFO,msg.str());
+    }
+}
+/// @}
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
-  signal(SIGTERM, sighandler);
-  signal(SIGINT, sighandler);
-  signal(SIGUSR1, sighandler2);
-  signal(SIGUSR2, sighandler2);
+
+  // Set default signal handling for before initialisation occurs properly
+  signal(SIGTERM, sighandler_hard);
+  signal(SIGINT,  sighandler_hard);
+  signal(SIGUSR1, sighandler_soft);
+  signal(SIGUSR2, sighandler_soft);
+
+  // Add these signals to the list of signals to be blocked by global 
+  // block/unblock functions 
+  sigemptyset(signal_mask());
+  sigaddset(signal_mask(), SIGTERM);
+  sigaddset(signal_mask(), SIGINT);
+  sigaddset(signal_mask(), SIGUSR1);
+  sigaddset(signal_mask(), SIGUSR2);
 
   // FIXME this is to be shifted to ScannerBit
   #ifdef WITH_MPI
@@ -137,6 +158,8 @@ int main(int argc, char* argv[])
     const int ERROR_TAG=1;         // Tag for error messages
     errorComm.mytag = ERROR_TAG;
   #endif
+
+  bool use_mpi_abort = true; // Set later via inifile value
 
   try
   {
@@ -163,12 +186,14 @@ int main(int argc, char* argv[])
     IniParser::IniFile iniFile;
     iniFile.readFile(filename);
 
-    // Check if user wants SIGINT and/or SIGTERM to trigger soft shutdown (instead of default emergency shutdown)
-    if(iniFile.getValueOrDef<bool>(false, "always_attempt_soft_shutdown"))
-    {
-      signal(SIGINT, sighandler2);
-      signal(SIGTERM, sighandler2);
-    }
+    // Check for user requests for shutdown methods used during signal handling
+    set_signal_handler(iniFile, SIGINT,  "emergency_shutdown");
+    set_signal_handler(iniFile, SIGTERM, "emergency_shutdown");
+    set_signal_handler(iniFile, SIGUSR1, "soft_shutdown");
+    set_signal_handler(iniFile, SIGUSR2, "soft_shutdown");
+
+    // Check if user wants to disable use of MPI_Abort (since it does not work correctly in all MPI implementations)
+    use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");
 
     // Initialise the random number generator, letting the RNG class choose its own default.
     Random::create_rng_engine(iniFile.getValueOrDef<str>("default", "rng"));
@@ -226,14 +251,29 @@ int main(int argc, char* argv[])
   
   }
 
-  /// Special catch block for MPIerrors, so that we don't trigger further MPIerrors
-  catch (const MPIerror& e)
+  /// Special catch block for controlled shutdown
+  /// This exception should only be thrown if it is safe to call MPI_Finalise,
+  /// as this will occur once we leave the catch block.
+  catch (const SoftShutdownException& e)
   {
     if (not logger().disabled())
     {
-      cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
-      cout << "GAMBIT has exited due to receiving an error signal from another process: " << e.what() << endl;
-    } 
+      cout << "GAMBIT has performed a controlled early shutdown: " << e.what() << endl;
+    }
+  }
+
+  /// Special catch block for hard shutdown
+  /// No MPI_Finalise called, nor MPI_Abort. Should only be triggered when all
+  /// processes are supposed to be trying to shut themselves down quickly.
+  catch (const HardShutdownException& e)
+  {
+    if (not logger().disabled())
+    {
+      cout << "GAMBIT has performed a hard shutdown: " << e.what() << endl;
+    }
+    // Free the memory held by the RNG
+    Random::delete_rng_engine();
+    return EXIT_SUCCESS;
   }
 
   catch (const std::exception& e)
@@ -242,18 +282,15 @@ int main(int argc, char* argv[])
     {
       cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
       cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
-      #ifdef WITH_MPI
-        if (GMPI::Is_initialized())
-        {
-          //GMPI::Comm COMM_WORLD;
-          //COMM_WORLD.Abort(); // Not working reliably. New method:
-          int nullbuf = 0;
-          cout << "rank " << errorComm.Get_rank() << ": Broadcasting error signal to all other processes." << endl;
-          MPI_Request nullreq = MPI_REQUEST_NULL;
-          errorComm.IsendToAll(&nullbuf, 1, ERROR_TAG, &nullreq);
-        }
-      #endif     
-    } 
+    }
+    #ifdef WITH_MPI
+      if (GMPI::Is_initialized() and use_mpi_abort)
+      {
+        GMPI::Comm COMM_WORLD;
+        COMM_WORLD.Abort();
+      }
+    #endif     
+    return EXIT_FAILURE;  
   }
 
   catch (str& e)
@@ -266,16 +303,13 @@ int main(int argc, char* argv[])
     cout << "exceptions that inherit from std::exception.  Error string: " << endl;
     cout << e << endl;
     #ifdef WITH_MPI
-      if (GMPI::Is_initialized())
+      if (GMPI::Is_initialized() and use_mpi_abort)
       {
-        //GMPI::Comm COMM_WORLD;
-        //COMM_WORLD.Abort(); // Not working reliably. New method:
-        int nullbuf = 0;
-        cout << "rank " << errorComm.Get_rank() << ": Broadcasting error signal to all other processes." << endl;
-        MPI_Request nullreq = MPI_REQUEST_NULL;
-        errorComm.IsendToAll(&nullbuf, 1, ERROR_TAG, &nullreq);
+        GMPI::Comm COMM_WORLD;
+        COMM_WORLD.Abort();
       }
     #endif     
+    return EXIT_FAILURE;  
   }
 
   // FIXME to be done in ScannerBit
@@ -291,6 +325,6 @@ int main(int argc, char* argv[])
   // Free the memory held by the RNG
   Random::delete_rng_engine();
 
-  return 0;
+  return EXIT_SUCCESS;
 
 }

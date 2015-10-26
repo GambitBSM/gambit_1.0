@@ -26,8 +26,6 @@ namespace Gambit
   error& core_error();
   /// Core warnings
   warning& core_warning();
-  /// Special MPI error
-  MPIerror& MPI_error();
 
   namespace DRes
   {

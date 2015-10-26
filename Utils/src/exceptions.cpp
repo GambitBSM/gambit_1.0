@@ -306,10 +306,6 @@ namespace Gambit
       myLogTags.insert(err);
     }
 
-  /// MPIerror constructors
-  MPIerror::MPIerror(const char* message, const char* inikey) : error(message, inikey) {}
-  MPIerror::MPIerror(const char* message, const char* inikey, LogTag t1) : error(message, inikey, t1) {}
-
   /// GAMBIT warning class constructors
 
     /// Constructor without log tags
@@ -459,6 +455,16 @@ namespace Gambit
 
     /// Global instance of piped invalid point class.
     Piped_invalid_point piped_invalid_point;
+
+    /// @{ SoftShutdownException member functions 
+    SoftShutdownException::SoftShutdownException(const std::string& message) : myWhat(message) {}
+    const char* SoftShutdownException::what() const throw() { return myWhat.c_str(); }
+    /// @}
+
+    /// @{ HardShutdownException member functions 
+    HardShutdownException::HardShutdownException(const std::string& message) : myWhat(message) {}
+    const char* HardShutdownException::what() const throw() { return myWhat.c_str(); }
+    /// @}
 }
 
 

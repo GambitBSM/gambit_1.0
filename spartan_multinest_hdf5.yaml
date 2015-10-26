@@ -79,13 +79,19 @@ KeyValues:
 
   default_output_path: "runs/spartan_multinest_hdf5///"
 
-  print_timing_data: true
-
-  # Set shutdown behaviour on SIGINT and SIGTERM
-  # default is 'false', i.e. emergency shutdown unless SIGUSR1 or SIGUSR2 received
-  always_attempt_soft_shutdown: false
+  print_timing_data: true  #default: false
 
   rng: ranlux48
+
+  # Customise shutdown behaviour on receiving OS signals
+  signal_handling:
+    SIGINT : "emergency_shutdown"    # default: emergency_shutdown
+    SIGTERM: "emergency_shutdown"    # default: emergency_shutdown
+    SIGUSR1: "soft_shutdown"         # default: soft_shutdown
+    SIGUSR2: "soft_shutdown"         # default: soft_shutdown
+
+  # Select whether MPI_Abort should be called before exiting if an error occurs (default: true)
+  use_mpi_abort: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6

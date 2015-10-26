@@ -49,6 +49,7 @@
 #include <sstream>
 #include <iostream>
 #include <type_traits>
+#include <chrono>
 
 #include "gambit/Core/error_handlers.hpp"
 
@@ -344,6 +345,12 @@ namespace Gambit
 
             /// Inverse of the above. Everyone waits for master to pass this (but not for anyone else)
             void allWaitForMaster(int tag);
+
+            /// An implementation of Barrier that will fall through if synchronisation takes too long
+            /// Could modify to take a function pointer to run while waiting.
+            /// Supply MPI tag to identify each particular barrier.
+            /// Returns 'false' if barrier succeeds, 'true' if barrier times out (i.e. answers the question "did the barrier time out?")
+            bool BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag, std::ostream& errorlog = std::cout);
 
             /// A generic place to store a tag commonly used by this communicator
             int mytag = 1;
