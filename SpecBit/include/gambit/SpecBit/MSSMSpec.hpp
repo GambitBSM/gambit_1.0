@@ -736,7 +736,7 @@ namespace Gambit
 
       /// @{ Fillers for Phys subclass
 
-      // Need wrapper functios for A0 and H+ getters, to retrieve only the
+      // Need wrapper functions for A0 and H+ getters, to retrieve only the
       // non-Goldstone entries.
       // Need to pass in the model object, since we won't have the 'this' pointer
       template <class Model>
@@ -925,10 +925,6 @@ namespace Gambit
             tmp_map["~chi0"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123);
             tmp_map["~chi-"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
             tmp_map["~chi+"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
-
-            /* Could add SM fermion mixing but these are only filled
-               when we actually calculate the SM pole masses
-               which is not necessary */
 
             map_collection[Par::Pole_Mixing].map2 = tmp_map;
          }
