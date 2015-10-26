@@ -506,22 +506,6 @@ namespace Gambit
         model.get_physical_slha().MVWm = mass;
      }
 
-
-     // PA: do we really need to set the masses of states that must be
-     // massless in the MSSM.  This is an MSSM specific file.
-     template <class Model>
-     void set_MGluon(Model& model, double mass)
-     {
-        model.get_physical().MG = mass;
-     }
-
-     template <class Model>
-     void set_MPhoton(Model& model, double mass)
-     {
-        model.get_physical().MVP = mass;
-     }
-
-
       /// @{ Fillers for "Running" subclass
 
       // Filler function for getter function pointer maps extractable from "runningpars" container
@@ -879,7 +863,7 @@ namespace Gambit
 
 	    /// PA: W mass is a prediction in most spectrum generators
 	    /// so we need this.  One tricky question is how to interface
-	    /// spectrum generators which ahev different input / outputs
+	    /// spectrum generators which have different input / outputs
 	    /// *may* be ok to still mimic the FS way
             tmp_map["W+"] = &Model::get_MVWm_pole_slha;
             tmp_map["~g"] = &Model::get_MGlu_pole_slha;
