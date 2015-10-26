@@ -640,34 +640,6 @@ namespace Gambit
 
             map_collection[Par::dimensionless].map2 = tmp_map;
          }
-
-         // Functions utilising the one-index "plain-vanilla" function signature
-         // (One-index member functions of model object)
-         {
-            typename MTget::fmap1 tmp_map;
-
-            // Note; only one entry required for particle/antiparticle pairs.
-            // In fact, it is preferred unless they are actually different,
-            // since automatic conversion between them occurs.
-
-            tmp_map["Sd"] = FInfo1( &Model::get_MSd, i012345 );
-            tmp_map["Su"] = FInfo1( &Model::get_MSu, i012345 );
-            tmp_map["Se"] = FInfo1( &Model::get_MSe, i012345 );
-            tmp_map["Snu"]= FInfo1( &Model::get_MSv, i012 );
-            tmp_map["h0"] = FInfo1( &Model::get_Mhh, i01 );
-            //Here we may access the goldstone boson
-            // and higgs. maybe too dangerous to keep?
-            tmp_map["A0"] = FInfo1( &Model::get_MAh, i01 );
-            tmp_map["H+"] = FInfo1( &Model::get_MHpm, i01 );
-            tmp_map["chi+"] = FInfo1( &Model::get_MCha, i01 );
-            tmp_map["chi0"] = FInfo1( &Model::get_MChi, i0123 );
-
-            tmp_map["d"] =    FInfo1( &Model::get_MFd, i012 );
-            tmp_map["u"] =    FInfo1( &Model::get_MFu, i012 );
-            tmp_map["e-"] =   FInfo1( &Model::get_MFe, i012 );
-
-            map_collection[Par::mass_eigenstate].map1 = tmp_map;
-         }
          /// @}
 
          return map_collection;
@@ -835,11 +807,10 @@ namespace Gambit
           tmp_map["Goldstone+"] = &set_charged_goldstone_pole_slha<Model>;
           tmp_map["Goldstone-"] = &set_charged_goldstone_pole_slha<Model>;
 
-          /// the getters for these were removed but at last meeting
-          /// we agreed to add setters here unless I misunderstood.
-          /// need to discuss this
+          /// PA: MW is a prediction in FS and most spectrum generators
+	  /// so this belongs in the HE object.
+	  /// MZ is not and so belongs in LE object
           tmp_map["W+"] = &set_MW_pole_slha<Model>;
-          /// tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
 
           map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
         }
@@ -855,15 +826,7 @@ namespace Gambit
           tmp_map["~chi+"] = FInfo1M( &set_MCha_pole_slha<Model>, i01 );
           tmp_map["~chi0"] = FInfo1M( &set_MChi_pole_slha<Model>, i0123 );
           tmp_map["h0"] =  FInfo1M( &set_Mhh_pole_slha<Model>, i01 );
-          // NOTE: I have added the following two to the "no index" map as well,
-          // where only the "safe" entries are retrieved
-          //Here we may access the goldstone boson
-          //and higgs. maybe too dangerous to keep?
-          //  tmp_map["A0"] = FInfo1(&set_MAh_pole_slha, i01 );
-          //Here we may access the goldstone boson
-          //and higgs. maybe too dangerous to keep?
-          //tmp_map["H+"] = FInfo1( &set_MHpm_pole_slha, i01 );
-
+          
           map_collection[Par::Pole_Mass].map1_extraM = tmp_map;
         }
 
@@ -885,10 +848,6 @@ namespace Gambit
           tmp_map["~chi0"] =   FInfo2M( &set_ZN_pole_slha, i0123, i0123);
           tmp_map["~chi-"] =   FInfo2M( &set_UM_pole_slha, i01, i01);
           tmp_map["~chi+"] =   FInfo2M( &set_UP_pole_slha, i01, i01);
-
-          /* Could add SM fermion mixing but these are only filled
-             when we actually calculate the SM pole masses
-             which is not necessary */
 
           map_collection[Par::Pole_Mixing].map2_extraM = tmp_map;
         }
@@ -918,31 +877,12 @@ namespace Gambit
          {
             typename MTget::fmap0 tmp_map;
 
-            // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
-            // reinstating the Z and W getters as otherwise there is no
-            // point in having the setters!
-	    /// tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
+	    /// PA: W mass is a prediction in most spectrum generators
+	    /// so we need this.  One tricky question is how to interface
+	    /// spectrum generators which ahev different input / outputs
+	    /// *may* be ok to still mimic the FS way
             tmp_map["W+"] = &Model::get_MVWm_pole_slha;
-            //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
-            //// tmp_map["g"] = &Model::get_MVG_pole_slha;
-            ////    //tmp_map["gamma"] = &Model::get_pole_MPhoton;
-            //// tmp_map["gamma"] = &Model::get_MVP_pole_slha;
-
             tmp_map["~g"] = &Model::get_MGlu_pole_slha;
-
-            // tmp_map["MGoldstone0"] = &Model::get_Pole_neut_goldstone;
-            // tmp_map["MA0"] = &Model::get_Pole_neut_CPodd_higgs;
-            // tmp_map["MGoldstonePM"] = &Model::get_Pole_ch_goldstone;
-            // tmp_map["MHpm"] = &Model::get_Pole_ch_higgs;
-            // tmp_map["Mtop"] = &Model::get_Pole_mtop;
-            // tmp_map["Mcharm"] = &Model::get_Pole_mcharm;
-            // tmp_map["Mup"] = &Model::get_Pole_mup;
-            // tmp_map["Mbottom"] = &Model::get_Pole_mbottom;
-            // tmp_map["Mstrange"] = &Model::get_Pole_mstrange;
-            // tmp_map["Mdown"] = &Model::get_Pole_mdown;
-            // tmp_map["Mtau"] = &Model::get_Pole_mtau;
-            // tmp_map["Mmuon"] = &Model::get_Pole_mmuon;
-            // tmp_map["Melectron"] = &Model::get_Pole_melectron;
 
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
@@ -976,25 +916,8 @@ namespace Gambit
             tmp_map["~e-"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
             tmp_map["~nu"]=  FInfo1( &Model::get_MSv_pole_slha, i012 );
             tmp_map["h0"] =  FInfo1( &Model::get_Mhh_pole_slha, i01 );
-            // NOTE: I have added the following two to the "no index" map as well,
-            // where only the "safe" entries are retrieved
-            //Here we may access the goldstone boson
-            //and higgs. maybe too dangerous to keep?
-            tmp_map["A0"] = FInfo1( &Model::get_MAh_pole_slha, i01 );
-            //Here we may access the goldstone boson
-            //and higgs. maybe too dangerous to keep?
-            tmp_map["H+"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );
             tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
             tmp_map["~chi0"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
-
-            // Standard Model pole masses now come from QedQcdWrapper (except Higgs)
-            // tmp_map["d"] =  FInfo1( &Model::get_MFd_pole_slha, i012 );
-            // tmp_map["u"] =  FInfo1( &Model::get_MFu_pole_slha, i012 );
-            // tmp_map["e-"] = FInfo1( &Model::get_MFe_pole_slha, i012 ); // SHOULD BE e-
-            // tmp_map["e"] =  FInfo1( &Model::get_MFe_pole_slha, i012 );  // Another extra name; not in PDB
-            // tmp_map["dbar"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
-            // tmp_map["ubar"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
-            // tmp_map["e+"] =   FInfo1( &Model::get_MFe_pole_slha, i012 );
 
             map_collection[Par::Pole_Mass].map1 = tmp_map;
          }
@@ -1031,40 +954,6 @@ namespace Gambit
 
 /// @}
 
-         // @{ mass_eigenstate - tree level mass parameters
-
-         // Functions utilising the "plain-vanilla" function signature
-         // // (Zero index member functions of model object)
-         // {
-         //    typename MTget::fmap0 tmp_map;
-
-         //    tmp_map["MZ"]      = &Model::get_MVZ;
-         //    tmp_map["MW"]      = &Model::get_MVWm;
-         //    tmp_map["MGluino"] = &Model::get_MGlu;
-         //    tmp_map["MGluon"]  = &Model::get_MVG;
-         //    tmp_map["MPhoton"] = &Model::get_MVP;
-
-         //    // these are not present in the model object currently
-         //    // But maybe we should add them
-         //    // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
-         //    // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
-         //    // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone;
-         //    // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs;
-
-         //    // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
-         //    // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
-         //    // tmp_map["Mup"] = &Model::get_DRbar_mup;
-         //    // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
-         //    // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
-         //    // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
-         //    // tmp_map["Mtau"] = &Model::get_DRbar_mtau;
-         //    // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon;
-         //    // tmp_map["Melectron"] = &Model::get_DRbar_melectron;
-
-         //    map_collection[Par::mass_eigenstate].map0 = tmp_map;
-         // }
-
-      /// @}
 
    } // end SpecBit namespace
 } // end Gambit namespace
