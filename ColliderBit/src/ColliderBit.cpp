@@ -612,7 +612,7 @@ namespace Gambit
         /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
         bool isB = false;
 
-        HEPUtils::P4 jetMom=HEPUtils::mk_p4(pj);
+        HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
         for (auto& pb : bpartons) {
           if (jetMom.deltaR_eta(pb->mom()) < 0.4) {
             isB = true;
@@ -620,16 +620,16 @@ namespace Gambit
           }
         }
 
-        bool isTau=false;
-        for(auto& ptau : tauCandidates){
-          if(jetMom.deltaR_eta(ptau->mom()) < 0.5){
-            isTau=true;
+        bool isTau = false;
+        for (auto& ptau : tauCandidates){
+          if (jetMom.deltaR_eta(ptau->mom()) < 0.5){
+            isTau = true;
             break;
           }
         }
 
         // Add to the event (use jet momentum for tau)
-        if(isTau){
+        if (isTau) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
           gp->set_prompt();
           result.add_particle(gp);
@@ -1832,9 +1832,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0); 
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1889,9 +1889,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0); 
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1946,9 +1946,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0); 
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2003,9 +2003,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0); 
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2060,9 +2060,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0); 
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2117,9 +2117,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0); 
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2178,10 +2178,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
@@ -2293,10 +2293,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
@@ -2399,7 +2399,7 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2473,7 +2473,7 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2553,7 +2553,7 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2632,7 +2632,7 @@ namespace Gambit
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2753,7 +2753,7 @@ namespace Gambit
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2852,7 +2852,7 @@ namespace Gambit
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2938,10 +2938,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
@@ -3052,7 +3052,7 @@ namespace Gambit
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHHiggsProd raised error flag for LHC7: " << error << "."; 
+        err << "BEreq::FHHiggsProd raised error flag for LHC7: " << error << ".";
         invalid_point().raise(err.str());
       }
       for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC7[i] = prodxs(i+1);
@@ -3063,7 +3063,7 @@ namespace Gambit
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHHiggsProd raised error flag for LHC8: " << error << "."; 
+        err << "BEreq::FHHiggsProd raised error flag for LHC8: " << error << ".";
         invalid_point().raise(err.str());
       }
       for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC8[i] = prodxs(i+1);
