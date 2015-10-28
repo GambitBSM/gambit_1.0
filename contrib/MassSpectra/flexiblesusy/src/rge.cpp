@@ -10,6 +10,8 @@
 
 #include "rge.h"
 
+#include <cmath>
+
 namespace softsusy {
 
 static RGE * tempRge;
@@ -45,7 +47,7 @@ int RGE::run(double x1, double x2, double eps) {
 // variables y of an RGE, will calculate the derivitives dydx.
 DoubleVector allDerivs(double x, const DoubleVector & y)
 {
-  tempRge->setMu(exp(x));
+  tempRge->setMu(std::exp(x));
   tempRge->set(y);
   return tempRge->beta();
 }
@@ -56,6 +58,9 @@ DoubleVector allDerivs(double x, const DoubleVector & y)
 int RGE::callRK(double x1, double x2, DoubleVector & v,
 		DoubleVector (*derivs)(double, const DoubleVector &), 
 		double eps) {
+  using std::fabs;
+  using std::log;
+
   double tol;
   if (eps < 0.0) tol = TOLERANCE;
   else if (eps < EPSTOL) tol = EPSTOL;

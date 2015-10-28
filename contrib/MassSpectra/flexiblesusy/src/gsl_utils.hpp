@@ -20,11 +20,16 @@
 #define GSL_UTILS_H
 
 #include <gsl/gsl_vector.h>
+#include <Eigen/Core>
 
 namespace flexiblesusy {
 
 /// Returns true if GSL vector contains only finite elements, false otherwise
 bool is_finite(const gsl_vector*);
+
+Eigen::ArrayXd to_eigen_array(const gsl_vector*);
+gsl_vector* to_gsl_vector(const Eigen::ArrayXd&);
+void copy(const Eigen::ArrayXd&, gsl_vector*);
 
 }
 

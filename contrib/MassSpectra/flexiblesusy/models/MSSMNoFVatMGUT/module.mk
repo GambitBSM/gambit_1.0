@@ -65,6 +65,7 @@ LIBMSSMNoFVatMGUT_HDR += \
 		$(DIR)/MSSMNoFVatMGUT_model_slha.hpp \
 		$(DIR)/MSSMNoFVatMGUT_physical.hpp \
 		$(DIR)/MSSMNoFVatMGUT_slha_io.hpp \
+		$(DIR)/MSSMNoFVatMGUT_spectrum_generator_interface.hpp \
 		$(DIR)/MSSMNoFVatMGUT_spectrum_generator.hpp \
 		$(DIR)/MSSMNoFVatMGUT_susy_scale_constraint.hpp \
 		$(DIR)/MSSMNoFVatMGUT_utilities.hpp \
@@ -119,6 +120,10 @@ EXEMSSMNoFVatMGUT_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXEMSSMNoFVatMGUT_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(EXEMSSMNoFVatMGUT_SRC)))
 
+EXEMSSMNoFVatMGUT_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXEMSSMNoFVatMGUT_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXEMSSMNoFVatMGUT_SRC)))
+
 LIBMSSMNoFVatMGUT_DEP := \
 		$(LIBMSSMNoFVatMGUT_OBJ:.o=.d)
 
@@ -126,15 +131,6 @@ EXEMSSMNoFVatMGUT_DEP := \
 		$(EXEMSSMNoFVatMGUT_OBJ:.o=.d)
 
 LIBMSSMNoFVatMGUT     := $(DIR)/lib$(MODNAME)$(LIBEXT)
-
-RUN_MSSMNoFVatMGUT_OBJ := $(DIR)/run_MSSMNoFVatMGUT.o
-RUN_MSSMNoFVatMGUT_EXE := $(DIR)/run_MSSMNoFVatMGUT.x
-
-RUN_CMD_LINE_MSSMNoFVatMGUT_OBJ := $(DIR)/run_cmd_line_MSSMNoFVatMGUT.o
-RUN_CMD_LINE_MSSMNoFVatMGUT_EXE := $(DIR)/run_cmd_line_MSSMNoFVatMGUT.x
-
-SCAN_MSSMNoFVatMGUT_OBJ := $(DIR)/scan_MSSMNoFVatMGUT.o
-SCAN_MSSMNoFVatMGUT_EXE := $(DIR)/scan_MSSMNoFVatMGUT.x
 
 METACODE_STAMP_MSSMNoFVatMGUT := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
@@ -175,9 +171,7 @@ clean-$(MODNAME)-obj:
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBMSSMNoFVatMGUT)
-		-rm -f $(RUN_MSSMNoFVatMGUT_EXE)
-		-rm -f $(RUN_CMD_LINE_MSSMNoFVatMGUT_EXE)
-		-rm -f $(SCAN_MSSMNoFVatMGUT_EXE)
+		-rm -f $(EXEMSSMNoFVatMGUT_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
@@ -221,16 +215,10 @@ endif
 $(LIBMSSMNoFVatMGUT): $(LIBMSSMNoFVatMGUT_OBJ)
 		$(MAKELIB) $@ $^
 
-$(RUN_MSSMNoFVatMGUT_EXE): $(RUN_MSSMNoFVatMGUT_OBJ) $(LIBMSSMNoFVatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(RUN_CMD_LINE_MSSMNoFVatMGUT_EXE): $(RUN_CMD_LINE_MSSMNoFVatMGUT_OBJ) $(LIBMSSMNoFVatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(SCAN_MSSMNoFVatMGUT_EXE): $(SCAN_MSSMNoFVatMGUT_OBJ) $(LIBMSSMNoFVatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+$(DIR)/%.x: $(DIR)/%.o $(LIBMSSMNoFVatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBMSSMNoFVatMGUT_DEP) $(EXEMSSMNoFVatMGUT_DEP)
 ALLSRC += $(LIBMSSMNoFVatMGUT_SRC) $(EXEMSSMNoFVatMGUT_SRC)
 ALLLIB += $(LIBMSSMNoFVatMGUT)
-ALLEXE += $(RUN_MSSMNoFVatMGUT_EXE) $(RUN_CMD_LINE_MSSMNoFVatMGUT_EXE) $(SCAN_MSSMNoFVatMGUT_EXE)
+ALLEXE += $(EXEMSSMNoFVatMGUT_EXE)

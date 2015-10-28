@@ -65,6 +65,7 @@ LIBNSM_HDR += \
 		$(DIR)/NSM_model_slha.hpp \
 		$(DIR)/NSM_physical.hpp \
 		$(DIR)/NSM_slha_io.hpp \
+		$(DIR)/NSM_spectrum_generator_interface.hpp \
 		$(DIR)/NSM_spectrum_generator.hpp \
 		$(DIR)/NSM_susy_scale_constraint.hpp \
 		$(DIR)/NSM_utilities.hpp \
@@ -119,6 +120,10 @@ EXENSM_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXENSM_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(EXENSM_SRC)))
 
+EXENSM_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXENSM_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXENSM_SRC)))
+
 LIBNSM_DEP := \
 		$(LIBNSM_OBJ:.o=.d)
 
@@ -126,15 +131,6 @@ EXENSM_DEP := \
 		$(EXENSM_OBJ:.o=.d)
 
 LIBNSM     := $(DIR)/lib$(MODNAME)$(LIBEXT)
-
-RUN_NSM_OBJ := $(DIR)/run_NSM.o
-RUN_NSM_EXE := $(DIR)/run_NSM.x
-
-RUN_CMD_LINE_NSM_OBJ := $(DIR)/run_cmd_line_NSM.o
-RUN_CMD_LINE_NSM_EXE := $(DIR)/run_cmd_line_NSM.x
-
-SCAN_NSM_OBJ := $(DIR)/scan_NSM.o
-SCAN_NSM_EXE := $(DIR)/scan_NSM.x
 
 METACODE_STAMP_NSM := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
@@ -175,9 +171,7 @@ clean-$(MODNAME)-obj:
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBNSM)
-		-rm -f $(RUN_NSM_EXE)
-		-rm -f $(RUN_CMD_LINE_NSM_EXE)
-		-rm -f $(SCAN_NSM_EXE)
+		-rm -f $(EXENSM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
@@ -221,16 +215,10 @@ endif
 $(LIBNSM): $(LIBNSM_OBJ)
 		$(MAKELIB) $@ $^
 
-$(RUN_NSM_EXE): $(RUN_NSM_OBJ) $(LIBNSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(RUN_CMD_LINE_NSM_EXE): $(RUN_CMD_LINE_NSM_OBJ) $(LIBNSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(SCAN_NSM_EXE): $(SCAN_NSM_OBJ) $(LIBNSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+$(DIR)/%.x: $(DIR)/%.o $(LIBNSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBNSM_DEP) $(EXENSM_DEP)
 ALLSRC += $(LIBNSM_SRC) $(EXENSM_SRC)
 ALLLIB += $(LIBNSM)
-ALLEXE += $(RUN_NSM_EXE) $(RUN_CMD_LINE_NSM_EXE) $(SCAN_NSM_EXE)
+ALLEXE += $(EXENSM_EXE)

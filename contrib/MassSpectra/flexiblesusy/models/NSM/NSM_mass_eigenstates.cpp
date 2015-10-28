@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:43:06
+// File generated at Wed 28 Oct 2015 11:36:03
 
 /**
  * @file NSM_mass_eigenstates.cpp
@@ -26,8 +26,8 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Mon 1 Jun 2015 12:43:06 with FlexibleSUSY
- * 1.1.0 (git commit: v1.1.0) and SARAH 4.5.6 .
+ * This file was generated at Wed 28 Oct 2015 11:36:03 with FlexibleSUSY
+ * 1.2.4 (git commit: v1.2.1-468-ga1bedd8) and SARAH 4.5.8 .
  */
 
 #include "NSM_mass_eigenstates.hpp"
@@ -43,6 +43,7 @@
 #include "config.h"
 #include "pv.hpp"
 #include "functors.hpp"
+
 
 
 
@@ -72,6 +73,7 @@ using namespace NSM_info;
 #define HIGGS_2LOOP_CORRECTION_AT_AT     two_loop_corrections.higgs_at_at
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
 #define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
+#define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
 #ifdef ENABLE_THREADS
    std::mutex CLASSNAME::mtx_fortran;
@@ -98,10 +100,10 @@ CLASSNAME::NSM_mass_eigenstates(const NSM_input_parameters& input_)
 #ifdef ENABLE_THREADS
    , thread_exception()
 #endif
-   , MVG(0), MHp(0), MFv(Eigen::Array<double,3,1>::Zero()), MAh(0), MVP(0), MVZ
-      (0), MFd(Eigen::Array<double,3,1>::Zero()), MFu(Eigen::Array<double,3,1>
-      ::Zero()), MFe(Eigen::Array<double,3,1>::Zero()), Mhh(Eigen::Array<double,2,
-      1>::Zero()), MVWp(0)
+   , MHp(0), MFv(Eigen::Array<double,3,1>::Zero()), MAh(0), MVZ(0), MFd(
+      Eigen::Array<double,3,1>::Zero()), MFu(Eigen::Array<double,3,1>::Zero()),
+      MFe(Eigen::Array<double,3,1>::Zero()), Mhh(Eigen::Array<double,2,1>::Zero())
+      , MVG(0), MVP(0), MVWp(0)
 
    , Vd(Eigen::Matrix<std::complex<double>,3,3>::Zero()), Ud(Eigen::Matrix<
       std::complex<double>,3,3>::Zero()), Vu(Eigen::Matrix<std::complex<double>,3,
@@ -147,14 +149,29 @@ void CLASSNAME::set_two_loop_corrections(const Two_loop_corrections& two_loop_co
    two_loop_corrections = two_loop_corrections_;
 }
 
+const Two_loop_corrections& CLASSNAME::get_two_loop_corrections() const
+{
+   return two_loop_corrections;
+}
+
 void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
 {
    number_of_ewsb_iterations = iterations;
 }
 
+std::size_t CLASSNAME::get_number_of_ewsb_iterations() const
+{
+   return number_of_ewsb_iterations;
+}
+
 void CLASSNAME::set_number_of_mass_iterations(std::size_t iterations)
 {
    number_of_mass_iterations = iterations;
+}
+
+std::size_t CLASSNAME::get_number_of_mass_iterations() const
+{
+   return number_of_mass_iterations;
 }
 
 void CLASSNAME::set_precision(double precision_)
@@ -168,6 +185,11 @@ void CLASSNAME::set_pole_mass_loop_order(unsigned loop_order)
    pole_mass_loop_order = loop_order;
 }
 
+unsigned CLASSNAME::get_pole_mass_loop_order() const
+{
+   return pole_mass_loop_order;
+}
+
 void CLASSNAME::set_ewsb_iteration_precision(double precision)
 {
    ewsb_iteration_precision = precision;
@@ -176,6 +198,11 @@ void CLASSNAME::set_ewsb_iteration_precision(double precision)
 double CLASSNAME::get_ewsb_iteration_precision() const
 {
    return ewsb_iteration_precision;
+}
+
+double CLASSNAME::get_precision() const
+{
+   return precision;
 }
 
 double CLASSNAME::get_ewsb_loop_order() const
@@ -319,7 +346,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 #endif
    }
 
-   for_each(solvers, solvers + number_of_solvers, Delete_object());
+   std::for_each(solvers, solvers + number_of_solvers, Delete_object());
 
    return status;
 }
@@ -509,16 +536,16 @@ void CLASSNAME::print(std::ostream& ostr) const
    ostr << "----------------------------------------\n"
            "tree-level DRbar masses:\n"
            "----------------------------------------\n";
-   ostr << "MVG = " << MVG << '\n';
    ostr << "MHp = " << MHp << '\n';
    ostr << "MFv = " << MFv.transpose() << '\n';
    ostr << "MAh = " << MAh << '\n';
-   ostr << "MVP = " << MVP << '\n';
    ostr << "MVZ = " << MVZ << '\n';
    ostr << "MFd = " << MFd.transpose() << '\n';
    ostr << "MFu = " << MFu.transpose() << '\n';
    ostr << "MFe = " << MFe.transpose() << '\n';
    ostr << "Mhh = " << Mhh.transpose() << '\n';
+   ostr << "MVG = " << MVG << '\n';
+   ostr << "MVP = " << MVP << '\n';
    ostr << "MVWp = " << MVWp << '\n';
 
    ostr << "----------------------------------------\n"
@@ -589,9 +616,9 @@ void CLASSNAME::calculate_DRbar_masses()
 
    solve_ewsb_tree_level();
 
+   calculate_MVZ();
    calculate_MVG();
    calculate_MVP();
-   calculate_MVZ();
    calculate_MVWp();
    calculate_MHp();
    calculate_MFv();
@@ -626,21 +653,21 @@ void CLASSNAME::calculate_pole_masses()
    std::thread thread_Mhh(Thread(this, &CLASSNAME::calculate_Mhh_pole));
 
    if (calculate_sm_pole_masses) {
-      std::thread thread_MVG(Thread(this, &CLASSNAME::calculate_MVG_pole));
       std::thread thread_MFv(Thread(this, &CLASSNAME::calculate_MFv_pole));
-      std::thread thread_MVP(Thread(this, &CLASSNAME::calculate_MVP_pole));
       std::thread thread_MVZ(Thread(this, &CLASSNAME::calculate_MVZ_pole));
       std::thread thread_MFd(Thread(this, &CLASSNAME::calculate_MFd_pole));
       std::thread thread_MFu(Thread(this, &CLASSNAME::calculate_MFu_pole));
       std::thread thread_MFe(Thread(this, &CLASSNAME::calculate_MFe_pole));
+      std::thread thread_MVG(Thread(this, &CLASSNAME::calculate_MVG_pole));
+      std::thread thread_MVP(Thread(this, &CLASSNAME::calculate_MVP_pole));
       std::thread thread_MVWp(Thread(this, &CLASSNAME::calculate_MVWp_pole));
-      thread_MVG.join();
       thread_MFv.join();
-      thread_MVP.join();
       thread_MVZ.join();
       thread_MFd.join();
       thread_MFu.join();
       thread_MFe.join();
+      thread_MVG.join();
+      thread_MVP.join();
       thread_MVWp.join();
    }
 
@@ -653,13 +680,13 @@ void CLASSNAME::calculate_pole_masses()
    calculate_Mhh_pole();
 
    if (calculate_sm_pole_masses) {
-      calculate_MVG_pole();
       calculate_MFv_pole();
-      calculate_MVP_pole();
       calculate_MVZ_pole();
       calculate_MFd_pole();
       calculate_MFu_pole();
       calculate_MFe_pole();
+      calculate_MVG_pole();
+      calculate_MVP_pole();
       calculate_MVWp_pole();
    }
 
@@ -668,11 +695,9 @@ void CLASSNAME::calculate_pole_masses()
 
 void CLASSNAME::copy_DRbar_masses_to_pole_masses()
 {
-   PHYSICAL(MVG) = MVG;
    PHYSICAL(MHp) = MHp;
    PHYSICAL(MFv) = MFv;
    PHYSICAL(MAh) = MAh;
-   PHYSICAL(MVP) = MVP;
    PHYSICAL(MVZ) = MVZ;
    PHYSICAL(MFd) = MFd;
    PHYSICAL(Vd) = Vd;
@@ -685,13 +710,15 @@ void CLASSNAME::copy_DRbar_masses_to_pole_masses()
    PHYSICAL(Ue) = Ue;
    PHYSICAL(Mhh) = Mhh;
    PHYSICAL(ZH) = ZH;
+   PHYSICAL(MVG) = MVG;
+   PHYSICAL(MVP) = MVP;
    PHYSICAL(MVWp) = MVWp;
 
 }
 
 /**
  * reorders DRbar masses so that golstones are placed at the index
- * specified in the model files definition of the associuated
+ * specified in the model files definition of the associated
  * gauge boson (see Z-boson definition in default particles.m file
  * in the Models directory of your SARAH distribution for example)
  */
@@ -710,6 +737,16 @@ void CLASSNAME::reorder_pole_masses()
 {
 
 }
+
+/**
+ * Checks the pole masses for tachyons
+ */
+void CLASSNAME::check_pole_masses_for_tachyons()
+{
+   if (PHYSICAL(Mhh).tail<2>().minCoeff() < 0.) problems.flag_tachyon(hh);
+
+}
+
 /**
  * calculates spectrum for model once the DRbar parameters at
  * at low energies are known
@@ -727,6 +764,8 @@ void CLASSNAME::calculate_spectrum()
    else
       reorder_pole_masses();
 
+   check_pole_masses_for_tachyons();
+
    if (problems.have_problem() && !force_output) {
       clear_DRbar_parameters();
       physical.clear();
@@ -735,11 +774,9 @@ void CLASSNAME::calculate_spectrum()
 
 void CLASSNAME::clear_DRbar_parameters()
 {
-   MVG = 0.;
    MHp = 0.;
    MFv = Eigen::Matrix<double,3,1>::Zero();
    MAh = 0.;
-   MVP = 0.;
    MVZ = 0.;
    MFd = Eigen::Matrix<double,3,1>::Zero();
    Vd = Eigen::Matrix<std::complex<double>,3,3>::Zero();
@@ -752,6 +789,8 @@ void CLASSNAME::clear_DRbar_parameters()
    Ue = Eigen::Matrix<std::complex<double>,3,3>::Zero();
    Mhh = Eigen::Matrix<double,2,1>::Zero();
    ZH = Eigen::Matrix<double,2,2>::Zero();
+   MVG = 0.;
+   MVP = 0.;
    MVWp = 0.;
 
 
@@ -787,19 +826,6 @@ void CLASSNAME::run_to(double scale, double eps)
 
 
 
-
-double CLASSNAME::get_mass_matrix_VG() const
-{
-   const double mass_matrix_VG = Re(0);
-
-   return mass_matrix_VG;
-}
-
-void CLASSNAME::calculate_MVG()
-{
-   const auto mass_matrix_VG = get_mass_matrix_VG();
-   MVG = calculate_singlet_mass(mass_matrix_VG);
-}
 
 double CLASSNAME::get_mass_matrix_Hp() const
 {
@@ -858,19 +884,6 @@ void CLASSNAME::calculate_MAh()
       problems.flag_tachyon(NSM_info::Ah);
 
    MAh = AbsSqrt(MAh);
-}
-
-double CLASSNAME::get_mass_matrix_VP() const
-{
-   const double mass_matrix_VP = Re(0);
-
-   return mass_matrix_VP;
-}
-
-void CLASSNAME::calculate_MVP()
-{
-   const auto mass_matrix_VP = get_mass_matrix_VP();
-   MVP = calculate_singlet_mass(mass_matrix_VP);
 }
 
 double CLASSNAME::get_mass_matrix_VZ() const
@@ -1017,6 +1030,32 @@ void CLASSNAME::calculate_Mhh()
       problems.flag_tachyon(NSM_info::hh);
 
    Mhh = AbsSqrt(Mhh);
+}
+
+double CLASSNAME::get_mass_matrix_VG() const
+{
+   const double mass_matrix_VG = Re(0);
+
+   return mass_matrix_VG;
+}
+
+void CLASSNAME::calculate_MVG()
+{
+   const auto mass_matrix_VG = get_mass_matrix_VG();
+   MVG = calculate_singlet_mass(mass_matrix_VG);
+}
+
+double CLASSNAME::get_mass_matrix_VP() const
+{
+   const double mass_matrix_VP = Re(0);
+
+   return mass_matrix_VP;
+}
+
+void CLASSNAME::calculate_MVP()
+{
+   const auto mass_matrix_VP = get_mass_matrix_VP();
+   MVP = calculate_singlet_mass(mass_matrix_VP);
 }
 
 double CLASSNAME::get_mass_matrix_VWp() const
@@ -5067,22 +5106,12 @@ std::complex<double> CLASSNAME::tadpole_hh(unsigned gO1) const
 
 
 
-void CLASSNAME::calculate_MVG_pole()
-{
-   // diagonalization with medium precision
-   PHYSICAL(MVG) = 0.;
-}
+
 
 void CLASSNAME::calculate_MFv_pole()
 {
    // diagonalization with medium precision
    PHYSICAL(MFv).setConstant(0.);
-}
-
-void CLASSNAME::calculate_MVP_pole()
-{
-   // diagonalization with medium precision
-   PHYSICAL(MVP) = 0.;
 }
 
 void CLASSNAME::calculate_MVZ_pole()
@@ -5266,7 +5295,6 @@ void CLASSNAME::calculate_Mhh_pole()
       const Eigen::Matrix<double,2,2> M_tree(get_mass_matrix_hh());
 
       for (unsigned es = 0; es < 2; ++es) {
-
          const double p = Abs(old_Mhh(es));
          for (unsigned i1 = 0; i1 < 2; ++i1) {
             for (unsigned i2 = i1; i2 < 2; ++i2) {
@@ -5291,10 +5319,7 @@ void CLASSNAME::calculate_Mhh_pole()
                mix_ZH);
          #endif
 
-         if (eigen_values(es) < 0.)
-            problems.flag_tachyon(hh);
-
-         PHYSICAL(Mhh(es)) = AbsSqrt(eigen_values(es));
+         PHYSICAL(Mhh(es)) = SignedAbsSqrt(eigen_values(es));
          if (es == 0)
             PHYSICAL(ZH) = mix_ZH;
       }
@@ -5310,6 +5335,18 @@ void CLASSNAME::calculate_Mhh_pole()
       problems.flag_no_pole_mass_convergence(NSM_info::hh);
    else
       problems.unflag_no_pole_mass_convergence(NSM_info::hh);
+}
+
+void CLASSNAME::calculate_MVG_pole()
+{
+   // diagonalization with medium precision
+   PHYSICAL(MVG) = 0.;
+}
+
+void CLASSNAME::calculate_MVP_pole()
+{
+   // diagonalization with medium precision
+   PHYSICAL(MVP) = 0.;
 }
 
 void CLASSNAME::calculate_MVWp_pole()
@@ -5358,6 +5395,29 @@ double CLASSNAME::calculate_MVZ_pole(double p)
 }
 
 
+double CLASSNAME::calculate_MFv_DRbar(double, int) const
+{
+   return 0.0;
+}
+
+double CLASSNAME::calculate_MFe_DRbar(double m_sm_msbar, int idx) const
+{
+   const double p = m_sm_msbar;
+   const double self_energy_1  = Re(self_energy_Fe_1_heavy_rotated(p, idx
+      , idx));
+   const double self_energy_PL = Re(self_energy_Fe_PL_heavy_rotated(p,
+      idx, idx));
+   const double self_energy_PR = Re(self_energy_Fe_PR_heavy_rotated(p,
+      idx, idx));
+   const double drbar_conversion = 1;
+   const double m_sm_drbar = m_sm_msbar * drbar_conversion;
+
+   const double m_susy_drbar = m_sm_drbar + self_energy_1 + m_sm_drbar *
+      (self_energy_PL + self_energy_PR);
+
+   return m_susy_drbar;
+}
+
 double CLASSNAME::calculate_MFu_DRbar(double m_pole, int idx) const
 {
    const double p = m_pole;
@@ -5401,29 +5461,6 @@ double CLASSNAME::calculate_MFd_DRbar(double m_sm_msbar, int idx) const
       self_energy_PL - self_energy_PR);
 
    return m_susy_drbar;
-}
-
-double CLASSNAME::calculate_MFe_DRbar(double m_sm_msbar, int idx) const
-{
-   const double p = m_sm_msbar;
-   const double self_energy_1  = Re(self_energy_Fe_1_heavy_rotated(p, idx
-      , idx));
-   const double self_energy_PL = Re(self_energy_Fe_PL_heavy_rotated(p,
-      idx, idx));
-   const double self_energy_PR = Re(self_energy_Fe_PR_heavy_rotated(p,
-      idx, idx));
-   const double drbar_conversion = 1;
-   const double m_sm_drbar = m_sm_msbar * drbar_conversion;
-
-   const double m_susy_drbar = m_sm_drbar + self_energy_1 + m_sm_drbar *
-      (self_energy_PL + self_energy_PR);
-
-   return m_susy_drbar;
-}
-
-double CLASSNAME::calculate_MFv_DRbar(double, int) const
-{
-   return 0.0;
 }
 
 double CLASSNAME::calculate_MVP_DRbar(double)

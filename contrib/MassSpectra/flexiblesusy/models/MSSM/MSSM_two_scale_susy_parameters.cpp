@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:31:20
+// File generated at Wed 28 Oct 2015 11:34:23
 
 #include "MSSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -92,6 +92,9 @@ MSSM_susy_parameters MSSM_susy_parameters::calc_beta() const
       beta_vd += calc_beta_vd_two_loop(TRACE_STRUCT);
       beta_vu += calc_beta_vu_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
@@ -244,7 +247,7 @@ Eigen::Matrix<double,3,3> CLASSNAME::get_SeRSeR() const
 }
 
 
-const Eigen::ArrayXd MSSM_susy_parameters::get() const
+Eigen::ArrayXd MSSM_susy_parameters::get() const
 {
    Eigen::ArrayXd pars(numberOfParameters);
 
