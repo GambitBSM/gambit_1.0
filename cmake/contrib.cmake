@@ -133,10 +133,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   # FlexibleSUSY configure options
   set(FS_OPTIONS ${FS_OPTIONS} 
        --with-cxx=${CMAKE_CXX_COMPILER}
-       --with-cxx-dep-gen=${CMAKE_CXX_COMPILER}
        --with-cxxflags=${FS_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
-       --with-fortran-dep-gen=${CMAKE_CXX_COMPILER} #just because newer iforts don't do depgen how FS expects. 
        --with-fflags=${FS_Fortran_FLAGS}
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
