@@ -34,6 +34,7 @@
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
+#include "gambit/Utils/signal_handling.hpp"
 
 namespace Gambit
 {
@@ -132,16 +133,17 @@ namespace Gambit
 #ifdef WITH_MPI
                            msg << "rank "<<rank<<": ";
 #endif
-                           msg << "Soft shutdown failed (could not synchronise all processes after "<<max_attempts<<" attempts), emergency shutdown performed instead!" << std::endl;
+                           msg << "Soft shutdown failed (could not synchronise all processes after "<<max_attempts<<" attempts), emergency shutdown performed instead! Data handled by external scanner codes (in other processes) may have been left in an inconsistent state." << std::endl;
                            throw HardShutdownException(msg.str()); 
                    }
             }
             
             ret operator () (const args&... params) 
             {
+                    if(signaldata().shutdown_begun) Gambit::Scanner::Plugins::plugin_info.set_running(false);
                     if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
                             attempt_soft_shutdown();
-
+ 
                     Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
                     unsigned long long int id = ++Gambit::Printers::get_point_id();
                     ret ret_val = main(params...);
@@ -152,6 +154,7 @@ namespace Gambit
                     main_printer->print(int(id), "pointID", rank, id);
                     main_printer->print(rank, "MPIrank", rank, id);
 
+                    if(signaldata().shutdown_begun) Gambit::Scanner::Plugins::plugin_info.set_running(false);
                     if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
                             attempt_soft_shutdown();
                    

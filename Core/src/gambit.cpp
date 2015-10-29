@@ -25,120 +25,22 @@
 using namespace Gambit;
 using namespace LogTags;
 
-// Global variable storing MPI rank for use in signal handler messages
-#ifdef WITH_MPI
-int rank;
-#endif
-
-/// Global flag to warn if early shutdown is already in process
-bool shutdown_begun = false;
-
-/// @{ Signal handling helper functions
-/// Note: Apparantly one is not supposed to touch streams, nor call exit, from
-/// inside a signal handler, as it is undefined behaviour. But it seems to work
-/// quite consistently, and this is for emergency shutdown only, so we will do 
-/// it anyway.
-
-str signal_name(int sig)
-{
-  str name;
-  switch(sig){
-      case SIGINT:  name="SIGINT";  break; 
-      case SIGTERM: name="SIGTERM"; break; 
-      case SIGUSR1: name="SIGUSR1"; break; 
-      case SIGUSR2: name="SIGUSR2"; break; 
-      default: name="<unlisted>";
-  }
-  return name;
-}
-
-void sighandler_emergency(int sig)
-{
-  Gambit::Scanner::Plugins::plugin_info.dump();
-  #ifdef WITH_MPI
-  std::cout << "rank "<<rank<<": ";
-  #endif
-  std::cout << "Gambit has performed an emergency shutdown! -- caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<std::endl;
-  exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
-}
-
-void sighandler_soft(int sig)
-{
-  if(shutdown_begun)
-  {
-    #ifdef WITH_MPI
-    std::cout << "rank "<<rank<<": ";
-    #endif
-    std::cout << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger soft shutdown, but soft shutdown is already in progress! Initiating emergency shutdown." << std::endl;
-    sighandler_emergency(sig);
-  }
-
-  Gambit::Scanner::Plugins::plugin_info.set_running(false);
-  // We will avoid touching streams in this "clean" shutdown mode since technically it is undefined behaviour.
-  //#ifdef WITH_MPI
-  //std::cout << "rank "<<rank<<": ";
-  //#endif
-  //std::cout << "Gambit is initiating soft shutdown! -- caught signal "<<signal_name(sig)<<" ("<<sig<<")"<< std::endl;
-  shutdown_begun=true;
-}
-
-void sighandler_hard(int sig)
-{
-  #ifdef WITH_MPI
-  std::cout << "rank "<<rank<<": ";
-  #endif
-  std::cout << "Gambit has performed a hard shutdown! Data loss is likely to have occurred. -- caught signal "<<signal_name(sig)<<" ("<<sig<<")"<< std::endl;
-  exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
-}
-
-void sighandler_null(int sig) {}
-
-/// Choose signal handler for a given signal via yaml file option
-void set_signal_handler(const IniParser::IniFile& iniFile, const int sig, const str& def_mode)
-{
-    str shutdown_mode;
-    YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
-    if(keyvalnode["signal_handling"]) {
-       YAML::Node signal_options = keyvalnode["signal_handling"];
-       if(signal_options[signal_name(sig)]) {
-          shutdown_mode = signal_options[signal_name(sig)].as<str>();
-       }else{
-          shutdown_mode = def_mode;
-       }
-    }else{
-       shutdown_mode = def_mode;
-    }
-
-    if      (shutdown_mode=="hard_shutdown"){      signal(sig, sighandler_hard);      }
-    else if (shutdown_mode=="emergency_shutdown"){ signal(sig, sighandler_emergency); }
-    else if (shutdown_mode=="soft_shutdown"){      signal(sig, sighandler_soft);      }
-    else if (shutdown_mode=="none"){               signal(sig, sighandler_null);      }
-    else {
-        std::ostringstream msg;
-        msg << "Invalid shutdown mode requested for signal "<<signal_name(sig)<<" ("<<sig<<")"<<" (via YAML file option '"<<signal_name(sig)<<"' in KeyValue section under 'signal_handling'). Valid shutdown modes are:" <<std::endl;
-        msg << "   'hard_shutdown'      -- Exit immediately." <<std::endl; 
-        msg << "   'emergency_shutdown' -- Attempt to save printer/resume data and then immediately exit." <<std::endl; 
-        msg << "   'soft_shutdown'      -- Safest: attempt to synchronise processes at safe location, then save printer/resume data and exit." <<std::endl; 
-        msg << "   'none'               -- Ignore signal. Use at own risk!" <<std::endl; 
-        msg << "The default shutdown mode on signal "<<signal_name(sig)<<" is '"<<def_mode<<"'." <<std::endl;
-        core_error().raise(LOCAL_INFO,msg.str());
-    }
-}
-/// @}
+/// Cleanup function
+void do_cleanup() { Gambit::Scanner::Plugins::plugin_info.dump(); }
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
 
-  // Set default signal handling for before initialisation occurs properly
+  // Set default signal handling in case they are received before initialisation occurs properly
   signal(SIGTERM, sighandler_hard);
   signal(SIGINT,  sighandler_hard);
   signal(SIGUSR1, sighandler_soft);
   signal(SIGUSR2, sighandler_soft);
 
   // Add these signals to the list of signals to be blocked by global 
-  // block/unblock functions 
+  // block/unblock functions (see Utils/signal_helpers.hpp)
   sigemptyset(signal_mask());
   sigaddset(signal_mask(), SIGTERM);
   sigaddset(signal_mask(), SIGINT);
@@ -154,7 +56,8 @@ int main(int argc, char* argv[])
   #ifdef WITH_MPI
     GMPI::Comm errorComm;
     errorComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
-    rank = errorComm.Get_rank();     // set global rank variable for use in signal handlers
+    int rank = errorComm.Get_rank();
+    signaldata().rank = rank;      // set variable for use in signal handlers
     const int ERROR_TAG=1;         // Tag for error messages
     errorComm.mytag = ERROR_TAG;
   #endif
@@ -187,10 +90,24 @@ int main(int argc, char* argv[])
     iniFile.readFile(filename);
 
     // Check for user requests for shutdown methods used during signal handling
-    set_signal_handler(iniFile, SIGINT,  "emergency_shutdown");
-    set_signal_handler(iniFile, SIGTERM, "emergency_shutdown");
-    set_signal_handler(iniFile, SIGUSR1, "soft_shutdown");
-    set_signal_handler(iniFile, SIGUSR2, "soft_shutdown");
+    logger() << core << "Setting up signal handling" << std::endl;
+    YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
+    signaldata().set_cleanup(&do_cleanup); // Call this function during emergency shutdown
+    set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown");
+    set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown");
+    set_signal_handler(keyvalnode, SIGUSR1, "soft_shutdown");
+    set_signal_handler(keyvalnode, SIGUSR2, "soft_shutdown");
+
+    // Check if user wants to disable automatic triggering of emergency 
+    // shutdown on signals received while shutdown is already in progress
+    if(keyvalnode["signal_handling"]) {
+       YAML::Node signal_options = keyvalnode["signal_handling"];
+       if(signal_options["emergency_shutdown_on_second_signal"]) {
+          signaldata().emergency_shutdown_on_second_signal = signal_options["emergency_shutdown_on_second_signal"].as<bool>();
+          if(not signaldata().emergency_shutdown_on_second_signal) logger() << "Disabled emergency shutdown on second signal" << std::endl;
+       }
+    } // else use default value (true)
+    logger() << EOM;
 
     // Check if user wants to disable use of MPI_Abort (since it does not work correctly in all MPI implementations)
     use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");
@@ -242,11 +159,39 @@ int main(int argc, char* argv[])
       //Create the master scan manager 
       Scanner::Scan_Manager scan(&factory, iniFile.getScannerNode(), &prior, &printerManager);
 
+      // Signal handing can be set to trigger a longjmp back to here upon receiving some signal
+      signaldata().havejumped = setjmp(signaldata().env);
+      if(signaldata().havejumped)
+      {
+          std::ostringstream msg;
+          #ifdef WITH_MPI
+          msg << "rank "<<rank<<": ";
+          #endif
+          // Signals should be blocked if possible while scanners are doing anything
+          // sensitive, like writing resume data, otherwise we may have just left
+          // that data in an unreadable state. See Utils/signal_helpers.hpp. 
+          // We could try blocking all signals while we are outside of this function,
+          // but we may not be able to block them for long enough.
+          // We probably also should not touch MPI again after executing the jump,
+          // since only God knows what state it was left in.
+          msg << "Performed an emergency shutdown via longjmp! Data handled by external scanner" << endl;
+          #ifdef WITH_MPI
+          msg << "        ";
+          #endif
+          msg << "codes may have been left in an inconsistent state.";
+          do_cleanup();
+          throw HardShutdownException(msg.str()); 
+      }
+
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
       scan.Run(); 
 
+      //Scan is done; inform signal handlers 
+      signaldata().shutdown_begun = true;
+
       cout << "GAMBIT has finished successfully!" << endl;
+      cout << endl;
     }
   
   }
@@ -258,8 +203,15 @@ int main(int argc, char* argv[])
   {
     if (not logger().disabled())
     {
-      cout << "GAMBIT has performed a controlled early shutdown: " << e.what() << endl;
-    }
+      cout << e.what() << endl;
+      #ifdef WITH_MPI
+      cout << "rank "<<rank<<": ";
+      #endif
+      cout << "GAMBIT has performed a controlled early shutdown." << endl;
+      signaldata().display_received_signals();
+      cout << endl;
+   }
+    // Let program shutdown normally from here
   }
 
   /// Special catch block for hard shutdown
@@ -269,7 +221,13 @@ int main(int argc, char* argv[])
   {
     if (not logger().disabled())
     {
-      cout << "GAMBIT has performed a hard shutdown: " << e.what() << endl;
+      cout << e.what() << endl;
+      #ifdef WITH_MPI
+      cout << "rank "<<rank<<": ";
+      #endif
+      cout << "GAMBIT has performed a hard shutdown." << endl;
+      signaldata().display_received_signals();
+      cout << endl;
     }
     // Free the memory held by the RNG
     Random::delete_rng_engine();
@@ -315,11 +273,11 @@ int main(int argc, char* argv[])
   // FIXME to be done in ScannerBit
   // Finalise MPI
   #ifdef WITH_MPI
-  if (GMPI::Is_initialized())
-  {
-    cout << "rank " << rank << ": Shutting down MPI..." << endl;
-    MPI_Finalize();
-  }
+    if (GMPI::Is_initialized())
+    {
+      cout << "rank " << rank << ": Shutting down MPI..." << endl;
+      MPI_Finalize();
+    }
   #endif
 
   // Free the memory held by the RNG
