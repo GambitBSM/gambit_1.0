@@ -60,12 +60,12 @@ mask = intraloop_isvalid & interloop_isvalid & totalloop_isvalid
 # Compute basic stats for these quantites
 
 def getstats(data,name):
-   return u"{0:8.2g} ({1:8.2g}) {2} {3:8.2g} s ; [{4:8.2g}, {5:8.2g}] s -- {6}".format(conv*np.mean(data),conv*mode(data)[0][0],pm,conv*np.std(data),conv*np.min(data),conv*np.max(data),name)
+   return u"{0:8.2g} ({1:8.2g}) {2} {3:8.2g} s ; [{4:8.2g}, {5:8.2g}] s -- {6}".format(conv*np.mean(data),conv*np.median(data),pm,conv*np.std(data),conv*np.min(data),conv*np.max(data),name)
 
 # Mean and standard deviation
 pm = u"\u00B1"
 print
-print u"Mean (mode) {0} standard deviation [min,max] of timing variables:".format(pm)
+print u"Mean (median) {0} standard deviation [min,max] of timing variables:".format(pm)
 print "------------------------------------------------"
 print getstats(interloop[mask], "Inter-loop time")
 print getstats(intraloop[mask], "Likelihood evaluation time")
