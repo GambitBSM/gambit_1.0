@@ -25,6 +25,9 @@
 ///  *********************************************
 
 #include "gambit/Core/likelihood_container.hpp"
+#ifdef WITH_MPI
+  #include "gambit/Utils/mpiwrapper.hpp"
+#endif
 
 //#define CORE_DEBUG
 
@@ -96,8 +99,15 @@ namespace Gambit
     // Notify all exceptions of the values of the parameters for this point.
     exception::set_parameters("\n\nYAML-ready parameter values at failed point:\n"+parstream.str());
 
-    // Print out the values of the parameters for this point if in debug mode.
-    if (debug) cout << parstream.str();
+    // Print out the MPI rank and values of the parameters for this point if in debug mode.
+    if (debug)
+    {
+      #ifdef WITH_MPI
+        GMPI::Comm COMM_WORLD;
+        std::cout << "MPI process rank: "<< COMM_WORLD.Get_rank() << std::endl;
+      #endif
+      cout << parstream.str();
+    }
   }
 
   /// Evaluate total likelihood function
@@ -197,6 +207,7 @@ namespace Gambit
           logger() << LogTags::core << "Observable calculation was declared invalid by " << e.thrower()->origin()
                    << "::" << e.thrower()->name() << ".  Not declaring point invalid, as no likelihood depends on this."
                    << "Message: " << e.message() << EOM;
+          if (debug) cout << "Auxiliary invalid: " << e.thrower()->origin() << "::" << e.thrower()->name() << "." << endl;
         }
       }
     }
