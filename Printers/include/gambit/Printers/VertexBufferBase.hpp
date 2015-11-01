@@ -202,6 +202,24 @@ namespace Gambit {
                //std::cout<<"Advanced head of buffer "<<get_label()<<" to pos. "<<head_position<<std::endl;
             }
 
+            // Force move buffer write head to specified position
+            // (intended for initialising "late-comer" buffers)
+            void fast_forward(long target_pos)
+            {
+               long needed_steps = target_pos - dset_head_pos();
+               if(needed_steps<0)
+               {
+                  std::ostringstream errmsg;
+                  errmsg << "Error while attempted to fast_forward VertexBuffer '"<<get_label()<<"'! Number of iterations required to teach target position ("<<target_pos<<") from current position ("<<dset_head_pos()<<") is negative, i.e. we would need to move backwards. This function does not allow reverse movement of the buffer write head.";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
+               for(long i=0; i<needed_steps; i++)
+               {
+                  skip_append();
+                  if(sync_buffer_is_full()) flush(); 
+               }
+            }
+
             // Rewind buffer head to start of buffer
             void reset_head() { head_position = 0; }
 

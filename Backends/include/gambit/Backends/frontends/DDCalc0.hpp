@@ -211,33 +211,33 @@ BE_INI_FUNCTION
   if (scan_level)
   {
     // Initialize module
-    std::cout << "Initializing DDCalc0:" << std::endl;
+    logger() << "Initializing DDCalc0:" << EOM;
     DDCalc0_Init();
     
     // Initialize experiments (if to be used)
     bool flag = false;  // must pass by reference...
     if (*InUse::DDCalc0_XENON100_2012_CalcRates) {
-      std::cout << "  * XENON100 2012 result" << std::endl;
+      logger() << "  * XENON100 2012 result" << EOM;
       DDCalc0_XENON100_2012_Init(&flag);
     }
     if (*InUse::DDCalc0_LUX_2013_CalcRates) {
-      std::cout << "  * LUX 2013 result" << std::endl;
+      logger() << "  * LUX 2013 result" << EOM;
       DDCalc0_LUX_2013_Init(&flag);
     }
     if (*InUse::DDCalc0_SuperCDMS_2014_CalcRates) {
-      std::cout << "  * SuperCDMS 2014 result" << std::endl;
+      logger() << "  * SuperCDMS 2014 result" << EOM;
       DDCalc0_SuperCDMS_2014_Init(&flag);
     }
     if (*InUse::DDCalc0_SIMPLE_2014_CalcRates) {
-      std::cout << "  * SIMPLE 2014 result" << std::endl;
+      logger() << "  * SIMPLE 2014 result" << EOM;
       DDCalc0_SIMPLE_2014_Init(&flag);
     }
     if (*InUse::DDCalc0_DARWIN_Ar_2015_CalcRates) {
-      std::cout << "  * Argon-based DARWIN proposal (2015 estimate)" << std::endl;
+      logger() << "  * Argon-based DARWIN proposal (2015 estimate)" << EOM;
       DDCalc0_DARWIN_Ar_2015_Init(&flag);
     }
     if (*InUse::DDCalc0_DARWIN_Xe_2015_CalcRates) {
-      std::cout << "  * Xenon-based DARWIN proposal (2015 estimate)" << std::endl;
+      logger() << "  * Xenon-based DARWIN proposal (2015 estimate)" << EOM;
       DDCalc0_DARWIN_Xe_2015_Init(&flag);
     }
     
@@ -252,12 +252,12 @@ BE_INI_FUNCTION
     v0   = runOptions->getValueOrDef<double>(vrot,"LocalHalo","v0");
     // Local galactic escape speed [km/s]
     vesc = runOptions->getValueOrDef<double>(550.,"LocalHalo","vesc");
-    std::cout << "  * Halo parameters:" << std::endl;
-    std::cout << "    rho0 [GeV/cm^3]     = " << rho0 << std::endl;
-    std::cout << "    rho0_eff [GeV/cm^3] = " << rho0_eff << std::endl;
-    std::cout << "    vrot [km/s]         = " << vrot << std::endl;
-    std::cout << "    v0   [km/s]         = " << v0   << std::endl;
-    std::cout << "    vesc [km/s]         = " << vesc << std::endl;
+    logger() << "  * Halo parameters:" << EOM;
+    logger() << "    rho0 [GeV/cm^3]     = " << rho0 << EOM;
+    logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+    logger() << "    vrot [km/s]         = " << vrot << EOM;
+    logger() << "    v0   [km/s]         = " << v0   << EOM;
+    logger() << "    vesc [km/s]         = " << vesc << EOM;
     DDCalc0_SetSHM(&rho0,&vrot,&v0,&vesc);
   }
   scan_level = false;
@@ -275,12 +275,12 @@ BE_INI_FUNCTION
     if (Param.count("v0")   != 0) {v0   = *Param["v0"];   halo_changed = true;}
     if (Param.count("vesc") != 0) {vesc = *Param["vesc"]; halo_changed = true;}
     if (halo_changed) {
-      std::cout << "Updating DDCalc0 halo parameters:" << std::endl;
-      std::cout << "    rho0 [GeV/cm^3]     = " << rho0 << std::endl;
-      std::cout << "    rho0_eff [GeV/cm^3] = " << rho0_eff << std::endl;
-      std::cout << "    vrot [km/s]         = " << vrot << std::endl;
-      std::cout << "    v0   [km/s]         = " << v0   << std::endl;
-      std::cout << "    vesc [km/s]         = " << vesc << std::endl;
+      logger() << "Updating DDCalc0 halo parameters:" << EOM;
+      logger() << "    rho0 [GeV/cm^3]     = " << rho0 << EOM;
+      logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+      logger() << "    vrot [km/s]         = " << vrot << EOM;
+      logger() << "    v0   [km/s]         = " << v0   << EOM;
+      logger() << "    vesc [km/s]         = " << vesc << EOM;
       DDCalc0_SetSHM(&rho0,&vrot,&v0,&vesc);
     }
   //}

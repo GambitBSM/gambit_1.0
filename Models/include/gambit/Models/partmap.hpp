@@ -90,6 +90,7 @@ namespace Gambit
         bool has_particle(str);
 
         /// Check if a particle is in the database, using the short name and index 
+        bool has_particle(str, int);
         bool has_particle(std::pair<str, int>);
 
         /// Check if a particle is in the database, using the PDG code and context integer 

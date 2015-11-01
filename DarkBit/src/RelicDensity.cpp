@@ -21,6 +21,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 namespace Gambit {
   namespace DarkBit {
@@ -51,7 +52,7 @@ namespace Gambit {
           "CoannCharginosNeutralinos");
       bool CoannSfermions = runOptions->getValueOrDef<bool>(true,
           "CoannSfermions");
-      double CoannMaxMass = runOptions->getValueOrDef<double>(2.1,
+      double CoannMaxMass = runOptions->getValueOrDef<double>(1.6,
           "CoannMaxMass");
 
       // introduce pointers to DS mass spectrum and relevant particle info
@@ -298,6 +299,13 @@ namespace Gambit {
       }
       // similar for other BEs...
 
+      double peff = 0.1;
+      if ( Utils::isnan((*result)(peff)) )
+      {
+        DarkBit_warning().raise(LOCAL_INFO, "Weff is nan.");
+        invalid_point().raise("Weff is nan in RD_eff_annrate_SUSY.");
+      }
+
     } // function RD_eff_annrate_SUSY
 
 
@@ -352,13 +360,27 @@ namespace Gambit {
       // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
       if (1==1) {
         // What follows below is the standard accurate calculation of oh2 in DS
-        // (fast=0 in dsrdomega).
-        // fast=1 to be added...!? Further TODO: keep track of error flags
+        // either in fast = 0 (<1%)  or fast = 1 (default) mode
+        
+        // Further TODO: keep track of error flags
 
         // the following replaces dsrdcom -- which cannot be linked properly!?
         DS_RDPARS myrdpars;
-        myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
-        myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
+
+        int fast = runOptions->getValueOrDef<int>(1, "fast");
+        switch (fast)
+        {
+          case 0:
+            myrdpars.cosmin=0.996195;myrdpars.waccd=0.005;myrdpars.dpminr=1.0e-4;
+            myrdpars.dpthr=5.0e-4;myrdpars.wdiffr=0.05;myrdpars.wdifft=0.02;
+            break;
+          case 1:
+            myrdpars.cosmin=0.996195;myrdpars.waccd=0.05;myrdpars.dpminr=5.0e-4;
+            myrdpars.dpthr=2.5e-3;myrdpars.wdiffr=0.5;myrdpars.wdifft=0.1;
+            break;
+          default:
+            DarkBit_error().raise(LOCAL_INFO, "Invalid fast flag (should be 0 or 1)");
+        }
         myrdpars.hstep=0.01;myrdpars.hmin=1.0e-9;myrdpars.compeps=0.01;
         myrdpars.xinit=2.0;myrdpars.xfinal=200.0;myrdpars.umax=10.0;
         myrdpars.cfr=0.5;
@@ -514,9 +536,9 @@ namespace Gambit {
     //
     //////////////////////////////////////////////////////////////////////////
 
-    void RD_fraction(double &result)
+    void RD_fraction_from_oh2(double &result)
     {
-      using namespace Pipes::RD_fraction;
+      using namespace Pipes::RD_fraction_from_oh2;
       result = -1;
       double oh2_theory = *Dep::RD_oh2;
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
@@ -530,6 +552,12 @@ namespace Gambit {
       if (result == -1)
         DarkBit_error().raise(LOCAL_INFO, "ERROR in RD_fraction: Unknown mode (options: one, leq_one, any)");
       logger() << "Fraction of dark matter that the scanned model accounts for: " << result << std::endl;
+    }
+
+    void RD_fraction_fixed(double &result)
+    {
+      using namespace Pipes::RD_fraction_fixed;
+      result = 1;
     }
   }
 }

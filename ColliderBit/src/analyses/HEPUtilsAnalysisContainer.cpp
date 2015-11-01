@@ -5,7 +5,6 @@ namespace Gambit {
   namespace ColliderBit {
 
     // Fwd declarations
-    DECLARE_ANALYSIS_FACTORY(Perf);
     DECLARE_ANALYSIS_FACTORY(ATLAS_0LEP_20invfb);
     DECLARE_ANALYSIS_FACTORY(ATLAS_0LEPStop_20invfb);
     DECLARE_ANALYSIS_FACTORY(ATLAS_1LEPStop_20invfb);
@@ -17,6 +16,7 @@ namespace Gambit {
     DECLARE_ANALYSIS_FACTORY(CMS_2LEPDMTOP_20invfb);
     DECLARE_ANALYSIS_FACTORY(CMS_3LEPEW_20invfb);
     DECLARE_ANALYSIS_FACTORY(CMS_MONOJET_20invfb);
+    DECLARE_ANALYSIS_FACTORY(Perf);
 
     // Factory definition
     HEPUtilsAnalysis* mkAnalysis(const std::string& name) {
@@ -58,7 +58,6 @@ namespace Gambit {
       assert(!analysisNames.empty());
       clear();
 
-      /// @TODO: test thread safety.
       for (auto it = analysisNames.begin(); it != analysisNames.end(); ++it) {
         analyses.push_back(mkAnalysis(*it));
       }
@@ -83,16 +82,37 @@ namespace Gambit {
     }
 
 
-    void HEPUtilsAnalysisContainer::add(const HEPUtilsAnalysisContainer& other) {
-      assert(other.analyses.size() != 0);
-      assert(analyses.size() == other.analyses.size());
+    void HEPUtilsAnalysisContainer::add_xsec(const HEPUtilsAnalysisContainer* other) {
+      assert(other->analyses.size() != 0);
+      assert(ready);
+      auto otherIter = other->analyses.begin();
+      add_xsec((*otherIter)->xsec(), (*otherIter)->xsec_err());
+    }
+
+
+    void HEPUtilsAnalysisContainer::improve_xsec(double xs, double xserr) {
+      assert(!analyses.empty());
+      assert(ready);
+      for (auto it = analyses.begin(); it != analyses.end(); ++it)
+        (*it)->improve_xsec(xs, xserr);
+    }
+
+
+    void HEPUtilsAnalysisContainer::improve_xsec(const HEPUtilsAnalysisContainer* other) {
+      assert(other->analyses.size() != 0);
+      assert(ready);
+      auto otherIter = other->analyses.begin();
+      improve_xsec((*otherIter)->xsec(), (*otherIter)->xsec_err());
+    }
+
+
+    void HEPUtilsAnalysisContainer::add(const HEPUtilsAnalysisContainer* other) {
+      assert(other->analyses.size() != 0);
+      assert(analyses.size() == other->analyses.size());
       assert(ready);
       auto myIter = analyses.begin();
-      auto otherIter = other.analyses.begin();
-      add_xsec((*otherIter)->xsec(), (*otherIter)->xsec_err());
+      auto otherIter = other->analyses.begin();
       while (myIter != analyses.end()) {
-        // analyses is a vector of HEPUtilsAnalysis pointers...
-        // Thus, dereferencing the iterator gets me a HEPUtilsAnalysis pointer.
         (*myIter++)->add(*otherIter++);
       }
     }

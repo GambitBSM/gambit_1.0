@@ -24,10 +24,10 @@
 #
 #************************************************
 
-# Require a minimum cmake version of 2.8.0
-cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
+# Require a minimum cmake version of 2.8.5
+cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
 
-if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   SET(CMAKE_BUILD_TYPE Debug CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
@@ -85,8 +85,8 @@ include(cmake/MacOSX.cmake)
 
 # Add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC")
 endif()
 
@@ -158,7 +158,10 @@ find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fopenmp")
+    if (NOT DEFINED OpenMP_Fortran_FLAGS)
+      set(OpenMP_Fortran_FLAGS "-fopenmp")
+    endif()
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 endif()
 
 # Check for Gnu Scientific Library (GSL)
@@ -173,6 +176,42 @@ endif()
 
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
+
+# Add compiler warning flags
+include(cmake/warnings.cmake)
+
+# Construct the full set of compiler flags to be used for external projects
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")# ${CMAKE_C_FLAGS_DEBUG}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")# ${CMAKE_CXX_FLAGS_DEBUG}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")# ${CMAKE_Fortran_FLAGS_DEBUG}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+  # Unless invoked with FORCE_O3, drop down to -O2 optimisation for more reasonable compile time.
+  if (NOT DEFINED FORCE_O3)
+    string(REGEX REPLACE "(-O3)" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+    string(REGEX REPLACE "(-O3)" "-O2" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    string(REGEX REPLACE "(-O3)" "-O2" CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE}")  
+  endif()
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELEASE}")
+  # Never send the -O3 from cmake's release build config onwards to backends, as some are touchy.
+  string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_C_FLAGS "${GAMBIT_C_FLAGS}")
+  string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+  string(REGEX REPLACE "(-O3)" "-O2" GAMBIT_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_MINSIZEREL}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_MINSIZEREL}")
+else()
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")
+endif()
 
 # Set the version number (later to come directly from git tag)
 set(GAMBIT_VERSION_MAJOR 1)
@@ -230,11 +269,15 @@ file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit
 file(GLOB PRINTER_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printers/*.hpp"
                                   "${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
-                                  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp"
-                                  "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp"
-                                  "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
+                                  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp")
+string (REPLACE "//" "/" MODEL_HARVESTER_FILES   "${MODEL_HARVESTER_FILES}")    # (GLOB creates erroneous double slashes)                                  
+string (REPLACE "//" "/" BACKEND_HARVESTER_FILES "${BACKEND_HARVESTER_FILES}")                                    
+string (REPLACE "//" "/" PRINTER_HARVESTER_FILES "${PRINTER_HARVESTER_FILES}")                                    
+string (REPLACE "//" "/" MODULE_HARVESTER_FILES  "${MODULE_HARVESTER_FILES}")                                     
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
+list(APPEND MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml")
+set(MODULE_HARVESTER_FILES ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES})
 foreach(bit ${GAMBIT_BITS})
   if(NOT ScannerBit STREQUAL ${bit})
     set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
@@ -244,11 +287,10 @@ foreach(bit ${GAMBIT_BITS})
   endif()
 endforeach()
 remove_build_files(models_harvested backends_harvested modules_harvested printers_harvested)
-add_gambit_custom(model_harvest   models_harvested   ${MODEL_HARVESTER}   ${MODEL_HARVESTER_FILES})
-add_gambit_custom(backend_harvest backends_harvested ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
-add_gambit_custom(module_harvest  modules_harvested  ${MODULE_HARVESTER}  ${MODULE_HARVESTER_FILES} ${BACKEND_HARVESTER_FILES} 
-                                                     ${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml)
-add_gambit_custom(printer_harvest printers_harvested ${PRINTER_HARVESTER} ${PRINTER_HARVESTER_FILES})
+add_gambit_custom(model_harvest   models_harvested   MODEL_HARVESTER   MODEL_HARVESTER_FILES)
+add_gambit_custom(backend_harvest backends_harvested BACKEND_HARVESTER BACKEND_HARVESTER_FILES)
+add_gambit_custom(module_harvest  modules_harvested  MODULE_HARVESTER  MODULE_HARVESTER_FILES)
+add_gambit_custom(printer_harvest printers_harvested PRINTER_HARVESTER PRINTER_HARVESTER_FILES)
 add_dependencies(module_harvest backend_harvest)
 add_dependencies(printer_harvest module_harvest)
 
@@ -260,7 +302,6 @@ check_result(${result} ${update_cmakelists})
 message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - done.${ColourReset}")
 
 # Include other cmake scripts
-include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/externals.cmake)
 

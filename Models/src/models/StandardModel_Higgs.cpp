@@ -30,17 +30,19 @@
 #include "gambit/Models/models/StandardModel_Higgs.hpp"
 #include "gambit/Elements/spectrum.hpp"
 
+#include "gambit/Models/models/StandardModel_Higgs_running.hpp"
+
 // Activate debug output
 #define SingletDM_DBUG
 
 using namespace Gambit::Utils;
 
 // Need to define MODEL and PARENT in order for helper macros to work correctly
-#define MODEL  StandardModel_Higgs
+#define MODEL  StandardModel_HiggsSector
 #define PARENT StandardModel_Higgs_running
 
 // Translation function definition
-void MODEL_NAMESPACE::StandardModel_Higgs_to_StandardModel_Higgs_running (const ModelParameters &myP, ModelParameters &targetP)
+void MODEL_NAMESPACE::StandardModel_HiggsSector_to_StandardModel_Higgs_running (const ModelParameters &myP, ModelParameters &targetP)
 {
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
    logger()<<"Running interpret_as_parent calculations for SM_Higgs --> SM_Higgs_running..."<<LogTags::info<<EOM;
@@ -70,3 +72,21 @@ void MODEL_NAMESPACE::StandardModel_Higgs_to_StandardModel_Higgs_running (const 
 
 #undef PARENT
 #undef MODEL
+
+
+#define MODEL StandardModel_Higgs
+#define PARENT StandardModel_HiggsSector
+    void MODEL_NAMESPACE::HiggsVEV (const ModelParameters &myP, ModelParameters &targetP)
+    {
+        USE_MODEL_PIPE(PARENT)
+
+        const SMInputs& SM = *Dep::SMINPUTS;
+
+        targetP.setValue("mH", myP["mH"]);
+        double vev = 1. / sqrt(sqrt(2.)*SM.GF);
+        targetP.setValue("vev", vev);
+        logger() << "Higgs vev = " << vev << " GeV" << EOM;
+    }
+#undef PARENT
+#undef MODEL
+

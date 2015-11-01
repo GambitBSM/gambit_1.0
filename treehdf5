@@ -75,7 +75,7 @@ def printcontents(item,prelines):
 
 printcontents(f,'')
                                         
-#quit()
+quit()
 
 ##  #test extraction of data from dataset
 

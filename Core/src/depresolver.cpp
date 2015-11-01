@@ -548,9 +548,11 @@ namespace Gambit
           parents.clear();
           getParentVertices(*it, masterGraph, parents);
           parents.insert(*it);
-          // FIXME: Causes segfault for whatever reason
           // Remove vertices that were already calculated from the ist
-          //parents.erase(colleages.begin(), colleages.end());
+          for ( auto cit = colleages.begin(); cit != colleages.end(); cit++)
+          {
+            parents.erase(*cit);
+          }
           t2p_now = (double) getTimeEstimate(parents, masterGraph);
           t2p_now /= masterGraph[*it]->getInvalidationRate();
           if (t2p_min < 0 or t2p_now < t2p_min)
@@ -571,8 +573,7 @@ namespace Gambit
       return sorted;
     }
 
-    // Evaluates ObsLike vertex, and everything it depends on, and prints
-    // results
+    // Evaluates ObsLike vertex, and everything it depends on, and prints results
     void DependencyResolver::calcObsLike(VertexID vertex, const int pointID)
     {
       // pointID supplied by scanner, and is used to tell the printer which model
@@ -610,6 +611,17 @@ namespace Gambit
       }
     }
 
+    // Get the functor corresponding to a single VertexID
+    functor* DependencyResolver::get_functor(VertexID id)
+    {
+      graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      {
+        if (*vi == id) return masterGraph[id];
+      }
+      return NULL;
+    }
+ 
     // Ensure that the type of a given vertex is equivalent to at least one of a provided list, and return the match.
     str DependencyResolver::checkTypeMatch(VertexID vertex, const str& purpose, const std::vector<str>& types)
     {
@@ -808,16 +820,16 @@ namespace Gambit
 
           // Trigger a dummy print call for all printable functors. This is used by some printers
           // to set up buffers for each of these output streams.
-          logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
+          //logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
 
-          masterGraph[*vi]->print(boundPrinter,-1);     
+          //masterGraph[*vi]->print(boundPrinter,-1);     
         }    
       }
 
       // Force-reset the printer to erase the dummy calls
       // (but don't do this if we are in resume mode!)
       //if(not boundCore->resume) boundPrinter->reset(true);
-      boundPrinter->reset(true); // Actually *do* do it in resume mode as well. Printers should only reset new data, not destroy old data.
+      //boundPrinter->reset(true); // Actually *do* do it in resume mode as well. Printers should only reset new data, not destroy old data.
 
       // sent vector of ID's of functors to be printed to printer.
       // (if we want to only print functor output sometimes, and dynamically

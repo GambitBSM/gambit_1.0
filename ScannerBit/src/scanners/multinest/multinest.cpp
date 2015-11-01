@@ -81,6 +81,9 @@ scanner_plugin(MultiNest, version(3, 9))
       // Retrieve the dimensionality of the scan.
       int ma = get_dimension();
 
+      // Retrieve the global option specifying the minimum interesting likelihood.
+      double gl0 = get_inifile_value<double>("likelihood: model_invalid_for_lnlike_below");
+
       // MultiNest algorithm options.
       int IS (get_inifile_value<int>("IS", 1) );                // do Nested Importance Sampling?
       int mmodal (get_inifile_value<int>("mmodal", 1) );        // do mode separation?
@@ -98,8 +101,7 @@ scanner_plugin(MultiNest, version(3, 9))
       int fb (get_inifile_value<int>("fb", 1) );                // need feedback on standard output?
       int resume ( resume_mode );                               // resume from a previous job?
       int outfile (get_inifile_value<int>("outfile", 1) );      // write output files?
-
-      double logZero (get_inifile_value<double>("logZero", -1E90) ); // points with loglike < logZero will be ignored by MultiNest
+      double ln0 (0.9*get_inifile_value<double>("logZero",gl0));// points with loglike < logZero will be ignored by MultiNest
       int maxiter (get_inifile_value<int>("maxiter", 0) );      // Max no. of iterations, a non-positive value means infinity.
       int initMPI(0);                                           // Initialise MPI in ScannerBit, not in MultiNest
       void *context = 0;                                        // any additional information user wants to pass (not required by MN)
@@ -150,8 +152,9 @@ scanner_plugin(MultiNest, version(3, 9))
          //get_printer().new_stream("stats",stats_options); //FIXME       
          get_printer().new_stream("live",live_options);
       }
-      //ensure mpi processes has same id for parameters;
-      Gambit::Scanner::assign_aux_numbers("Posterior", "LogLike", "pointID", "MPIrank", "Parameters");
+
+      // Ensure that MPI processes have the same IDs for auxiliary print streams;
+      Gambit::Scanner::assign_aux_numbers("Posterior","LastLive");
       
       // Create the object that interfaces to the MultiNest LogLike callback function
       Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, get_printer(), ndims);
@@ -160,7 +163,7 @@ scanner_plugin(MultiNest, version(3, 9))
       //Run MultiNest, passing callback functions for the loglike and dumper.
       std::cout << "Starting MultiNest run..." << std::endl;
       run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, 
-          root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, 
+          root, seed, pWrap, fb, resume, outfile, initMPI, ln0, maxiter, 
           Gambit::MultiNest::callback_loglike, Gambit::MultiNest::callback_dumper, context);
       std::cout << "Multinest run finished!" << std::endl;
       return 0;
@@ -296,8 +299,13 @@ namespace Gambit {
           int thisrank = boundPrinter.get_stream()->getRank(); // MPI rank of this process
           if(thisrank!=0)
           {
-             std::cout<<"Error! ScannerBit MultiNest plugin attempted to run 'dumper' function on a worker process (thisrank=="<<thisrank<<")! MultiNest should only try to run this function on the master process. Most likely this means that your multinest installation is not running in MPI mode correctly, and is actually running independent scans on each process. Alternatively, the version of MultiNest you are using may be too far ahead of what this plugin can handle, if e.g. the described behaviour has changed since this plugin was written."<<std::endl;
-             exit(1);
+             scan_err <<"Error! ScannerBit MultiNest plugin attempted to run 'dumper' function on a worker process "
+                      <<"(thisrank=="<<thisrank<<")! MultiNest should only try to run this function on the master "
+                      <<"process. Most likely this means that your multinest installation is not running in MPI mode "
+                      <<"correctly, and is actually running independent scans on each process. Alternatively, the "
+                      <<"version of MultiNest you are using may be too far ahead of what this plugin can handle, "
+                      <<"if e.g. the described behaviour has changed since this plugin was written."
+                      << scan_end;
           } 
 
           // Get printers for each auxiliary stream
@@ -346,7 +354,6 @@ namespace Gambit {
              {
                  parameters.push_back( posterior[j*nSamples + i] );
              }
-             txt_stream->print(parameters, "Parameters", myrank, pointID);
           }
 
           // The last set of live points

@@ -8,8 +8,7 @@ Priors:
 Printer:
   printer: ascii
   options:
-    output_file: "runs/SpecBit_test/samples/gambit_output.txt"
-    info_file: "runs/SpecBit_test/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 Scanner:
   use_scanner: toy_mcmc
@@ -58,7 +57,6 @@ Rules:
 
 Logger:
 
-  prefix : "runs/MSSMskel_test/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -66,6 +64,8 @@ Logger:
     [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
+
+  default_output_path: "runs/MSSMskel_test"
 
   dependency_resolution:
     prefer_model_specific_functions: false

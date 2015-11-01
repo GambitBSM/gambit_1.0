@@ -1,34 +1,34 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  CMake configuration scripts for obtaining,
-#  configuring, compiling and installing 
+#  configuring, compiling and installing
 #  backends.
-#  
+#
 #  Note that this is not necessarily the canonical
 #  way to manage the compilation of all backends,
 #  and GAMBIT support for backend compilation is
 #  minimal, even with this method -- so please
 #  contact the authors of the respective codes
-#  if they won't compile!  
-#    
+#  if they won't compile!
+#
 #************************************************
-#                                                
+#
 #  Authors (add name and date if you modify):
 #
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
 #  \date 2015 Sep
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
-#  \date 2015 May  
+#  \date 2015 May
 #
 #  \author Chris Rogan
-#          (crogan@cern.ch)              
+#          (crogan@cern.ch)
 #  \date 2015 May
 #
 #  \author Anders Kvellestad
@@ -38,7 +38,7 @@
 #  \author Christoph Weniger
 #          (c.weniger@uva.nl)
 #  \date 2015 Sep
-#                                               
+#
 #************************************************
 
 # DarkSUSY
@@ -62,12 +62,14 @@ ExternalProject_Add(darksusy
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
-        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif 
-        COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif 
-        COMMAND patch -b -p1 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif 
+        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
+        #COMMAND patch -b -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
+        #COMMAND patch -b -p2 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif
+        # FIXME FeynHiggs segfaults with -O2 setting
+ #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
-        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy}
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
 )
@@ -84,9 +86,9 @@ ExternalProject_Add(superiso
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile 
-        COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile
-        COMMAND ${CMAKE_MAKE_PROGRAM} 
+  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile
+        COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${GAMBIT_C_FLAGS}/g" <SOURCE_DIR>/Makefile
+        COMMAND ${CMAKE_MAKE_PROGRAM}
         COMMAND ar x <SOURCE_DIR>/src/libisospin.a
         COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh
         COMMAND chmod u+x make_so.sh
@@ -107,7 +109,7 @@ ExternalProject_Add(ddcalc
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null
   INSTALL_COMMAND ""
 )
 enable_auto_rebuild(ddcalc)
@@ -124,7 +126,7 @@ if(GSL_FOUND)
     string( STRIP "${GAMLIKE_GSL_LIBS}" GAMLIKE_GSL_LIBS )
   endif()
 endif()
-set(gamlike_CXXFLAGS "${CMAKE_CXX_FLAGS}")
+set(gamlike_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 if (NOT GSL_INCLUDE_DIRS STREQUAL "")
   set(gamlike_CXXFLAGS "${gamlike_CXXFLAGS} -I${GSL_INCLUDE_DIRS}")
 endif()
@@ -176,15 +178,15 @@ enable_auto_rebuild(micromegasSingletDM)
 add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
-# - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
-string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
-# - Add compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -xavx")
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -O3 -ffast-math")
+# - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it.
+string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
+# - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
   if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -mavx")  
+    set(pythia_CXXFLAGS "${pythia_CXXFLAGS}")
   endif()
 endif()
 # - Set include directories
@@ -221,7 +223,7 @@ ExternalProject_Add(fastsim
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
   INSTALL_COMMAND cp ""
 )
 enable_auto_rebuild(fastsim)
@@ -233,10 +235,10 @@ set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/1.0.0")
 set(nulike_short_dir "./Backends/installed/nulike/1.0.0")
-set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
+set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
-  #URL 
-  #URL_MD5 
+  #URL
+  #URL_MD5
   #DOWNLOAD_DIR ${backend_download}
   DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
            COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
@@ -245,7 +247,7 @@ ExternalProject_Add(nulike
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE}
   INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 enable_auto_rebuild(nulike)
@@ -263,10 +265,12 @@ ExternalProject_Add(susyhit
   SOURCE_DIR ${susyhit_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND cp -n makefile makefile.orig  COMMAND cp -n sdecay.f sdecay.orig  COMMAND cp -n hdecay.f hdecay.orig 
+  CONFIGURE_COMMAND cp -n makefile makefile.orig  COMMAND cp -n sdecay.f sdecay.orig  COMMAND cp -n hdecay.f hdecay.orig
+            COMMAND cp -n lightst3bod.f lightst3bod.f.orig COMMAND cp -n lightst4bod.f lightst4bod.f.orig
             COMMAND cp makefile.orig makefile.tmp COMMAND cp sdecay.orig sdecay.f.tmp COMMAND cp hdecay.orig hdecay.f.tmp
+            COMMAND cp lightst3bod.f.orig lightst3bod.f.tmp COMMAND cp lightst4bod.f.orig lightst4bod.f.tmp
             COMMAND sed ${dashi} -e "s#FC=\\(.*\\)[[:space:]]*$#FF=\\1${nl}${nl}FC=\\$\\(FF\\)${nl}FFLAGS= -O2 -fPIC#g"
-                                 -e "s#FC)[[:space:]]*-c#FC\\) \\$\\(FFLAGS\\) -c#g" 
+                                 -e "s#FC)[[:space:]]*-c#FC\\) \\$\\(FFLAGS\\) -c#g"
                                  -e "s#\\(clean:.*\\)$#${susyhit_lib}.so:\\$\\(OBJS1\\) \\$\\(OBJS2\\) \\$\\(OBJS3\\)${nl}\t\\$\\(FC\\) -shared -o \\$@ \\$\\(OBJS1\\) \\$\\(OBJS2\\) \\$\\(OBJS3\\)${nl}${nl}\\1#g"
                                  makefile.tmp
             COMMAND sed ${dashi} -e "s#^[[:space:]]*program sdecay[[:space:]]*$#      !Added by GAMBIT to make 100% sure \\'unlikely\\' matches the fortran value.${nl}      double precision function s_hit_unlikely()${nl}        s_hit_unlikely = -123456789D0${nl}      end${nl}${nl}      subroutine sdecay                          !Modified by GAMBIT.#g"
@@ -277,6 +281,49 @@ ExternalProject_Add(susyhit
                                  -e "s#\\!\\([[:space:]]*if(flagoutput\\.eq\\.1\\.D0) then\\)[[:space:]]*$#\\1                !Reinstated by GAMBIT.#g"
                                  -e "/output not a la Les Houches accord/{" -e "N" -e "N" -e "s/else/elseif(flagoutput.eq.0.D0) then            !Modified by GAMBIT./" -e "}"
                                  -e "s#\\(^[[:space:]]*if(flagshsin\\.\\)eq\\(\\.1\\.D0) then\\)#\\1le\\2                 !Modified by GAMBIT.#g"
+                                 -e "s#integer nx1t,ny1t,nnlo,imod(1:2)#logical qcdcorrstok(2), qcdcorrsbok(2), qcdcorrglok!Added by GAMBIT${nl}      integer nx1t,ny1t,nnlo,imod(1:2)#g"
+                                 -e "s#     \\.            + gluitot2lo#     .            + gluitot2lo${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      qcdcorrglok = gluitot2nlo .ge. 0.D0${nl}      if (.not.qcdcorrglok) gluitot2nlo =${nl}     . gluitot2lo / (2.D0 - gluitot2nlo / gluitot2lo)#g"
+                                 -e "s#qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)#qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      do i = 1,2,1${nl}         qcdcorrsbok(i) = sbottot2nlo(i) .ge. 0.D0${nl}         if (.not.qcdcorrsbok(i)) sbottot2nlo(i) =${nl}     .    sbottot2lo(i) / (2.D0 - sbottot2nlo(i) / sbottot2lo(2))${nl}      enddo${nl}#g"
+                                 -e "s#     \\.            qcdst2wsb(2)#     .            qcdst2wsb(2)${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      do i = 1,2,1${nl}         qcdcorrstok(i) = stoptot2nlo(i) .ge. 0.D0${nl}         if (.not.qcdcorrstok(i)) stoptot2nlo(i) =${nl}     .    stoptot2lo(i) / (2.D0 - stoptot2nlo(i) / stoptot2lo(i))${nl}      enddo${nl}#g"
+                                 -e "s#brgst1    = gst1/gluitot#if (qcdcorrglok) brgst1    = gst1/gluitot      !Modified by GAMBIT#g"
+                                 -e "s#brgst2    = gst2/gluitot#if (qcdcorrglok) brgst2    = gst2/gluitot      !Modified by GAMBIT#g"
+                                 -e "s#brgsb1    = gsb1/gluitot#if (qcdcorrglok) brgsb1    = gsb1/gluitot      !Modified by GAMBIT#g"
+                                 -e "s#brgsb2    = gsb2/gluitot#if (qcdcorrglok) brgsb2    = gsb2/gluitot      !Modified by GAMBIT#g"
+                                 -e "s#brgsupl   = gsupl/gluitot#if (qcdcorrglok) brgsupl   = gsupl/gluitot     !Modified by GAMBIT#g"
+                                 -e "s#brgsupr   = gsupr/gluitot#if (qcdcorrglok) brgsupr   = gsupr/gluitot     !Modified by GAMBIT#g"
+                                 -e "s#brgsdownl = gsdownl/gluitot#if (qcdcorrglok) brgsdownl = gsdownl/gluitot   !Modified by GAMBIT#g"
+                                 -e "s#brgsdownr = gsdownr/gluitot#if (qcdcorrglok) brgsdownr = gsdownr/gluitot   !Modified by GAMBIT#g"
+                                 -e "s#brsb1neutt(i)=sb1neutt(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1neutt(i)=sb1neutt(i)/sbottot2(1)    !Modified by GAMBIT#g"
+                                 -e "s#brsb2neutt(i)=sb2neutt(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2neutt(i)=sb2neutt(i)/sbottot2(2)    !Modified by GAMBIT#g"
+                                 -e "s#brsb1chart(i) = sb1chart(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1chart(i) = sb1chart(i)/sbottot2(1)  !Modified by GAMBIT#g"
+                                 -e "s#brsb2chart(i) = sb2chart(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2chart(i) = sb2chart(i)/sbottot2(2)  !Modified by GAMBIT#g"
+                                 -e "s#brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)   !Modified by GAMBIT#g"
+                                 -e "s#brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)   !Modified by GAMBIT#g"
+                                 -e "s#brsb1wst(i)   = sb1wst(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1wst(i)   = sb1wst(i)/sbottot2(1)    !Modified by GAMBIT#g"
+                                 -e "s#brsb2wst(i)   = sb2wst(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2wst(i)   = sb2wst(i)/sbottot2(2)    !Modified by GAMBIT#g"
+                                 -e "s#brsb1glui = sb1glui/sbottot2(1)#if(qcdcorrsbok(1)) brsb1glui = sb1glui/sbottot2(1)             !Modified by GAMBIT#g"
+                                 -e "s#brsb2glui = sb2glui/sbottot2(2)#if(qcdcorrsbok(2)) brsb2glui = sb2glui/sbottot2(2)             !Modified by GAMBIT#g"
+                                 -e "s#brsb2hl   = sb2hl/sbottot2(2)#if(qcdcorrsbok(2)) brsb2hl   = sb2hl/sbottot2(2)               !Modified by GAMBIT#g"
+                                 -e "s#brsb2hh   = sb2hh/sbottot2(2)#if(qcdcorrsbok(2)) brsb2hh   = sb2hh/sbottot2(2)               !Modified by GAMBIT#g"
+                                 -e "s#brsb2ha   = sb2ha/sbottot2(2)#if(qcdcorrsbok(2)) brsb2ha   = sb2ha/sbottot2(2)               !Modified by GAMBIT#g"
+                                 -e "s#brsb2zbot = sb2zbot/sbottot2(2)#if(qcdcorrsbok(2)) brsb2zbot = sb2zbot/sbottot2(2)             !Modified by GAMBIT#g"
+                                 -e "s#brst1neutt(i) = st1neutt(i)/stoptot(1)#if(qcdcorrstok(1)) brst1neutt(i) = st1neutt(i)/stoptot(1)   !Modified by GAMBIT#g"
+                                 -e "s#brst2neutt(i) = st2neutt(i)/stoptot(2)#if(qcdcorrstok(2)) brst2neutt(i) = st2neutt(i)/stoptot(2)   !Modified by GAMBIT#g"
+                                 -e "s#brst1charb(i) = st1charb(i)/stoptot(1)#if(qcdcorrstok(1)) brst1charb(i) = st1charb(i)/stoptot(1)   !Modified by GAMBIT#g"
+                                 -e "s#brst1hcsb(i)  = st1hcsb(i)/stoptot(1)#if(qcdcorrstok(1)) brst1hcsb(i)  = st1hcsb(i)/stoptot(1)    !Modified by GAMBIT#g"
+                                 -e "s#brst1wsb(i)   = st1wsb(i)/stoptot(1)#if(qcdcorrstok(1)) brst1wsb(i)   = st1wsb(i)/stoptot(1)     !Modified by GAMBIT#g"
+                                 -e "s#brst2charb(i) = st2charb(i)/stoptot(2)#if(qcdcorrstok(2)) brst2charb(i) = st2charb(i)/stoptot(2)   !Modified by GAMBIT#g"
+                                 -e "s#brst2hcsb(i)  = st2hcsb(i)/stoptot(2)#if(qcdcorrstok(2)) brst2hcsb(i)  = st2hcsb(i)/stoptot(2)    !Modified by GAMBIT#g"
+                                 -e "s#brst2wsb(i)   = st2wsb(i)/stoptot(2)#if(qcdcorrstok(2)) brst2wsb(i)   = st2wsb(i)/stoptot(2)     !Modified by GAMBIT#g"
+                                 -e "s#brst1glui = st1glui/stoptot(1)#if(qcdcorrstok(1)) brst1glui = st1glui/stoptot(1)              !Modified by GAMBIT#g"
+                                 -e "s#brst2glui = st2glui/stoptot(2)#if(qcdcorrstok(2)) brst2glui = st2glui/stoptot(2)              !Modified by GAMBIT#g"
+                                 -e "s#brst2hl   = st2hl/stoptot(2)#if(qcdcorrstok(2)) brst2hl   = st2hl/stoptot(2)                !Modified by GAMBIT#g"
+                                 -e "s#brst2hh   = st2hh/stoptot(2)#if(qcdcorrstok(2)) brst2hh   = st2hh/stoptot(2)                !Modified by GAMBIT#g"
+                                 -e "s#brst2ha   = st2ha/stoptot(2)#if(qcdcorrstok(2)) brst2ha   = st2ha/stoptot(2)                !Modified by GAMBIT#g"
+                                 -e "s#brst2ztop = st2ztop/stoptot(2)#if(qcdcorrstok(2)) brst2ztop = st2ztop/stoptot(2)              !Modified by GAMBIT#g"
+                                 -e "s#c -------------------- the gluino branching ratios ------------------- c#c -------------------- the gluino branching ratios ------------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrglok) then${nl}        brgst1    = gst1/gluitot2lo${nl}        brgst2    = gst2/gluitot2lo${nl}        brgsb1    = gsb1/gluitot2lo${nl}        brgsb2    = gsb2/gluitot2lo${nl}        brgsupl   = gsupl/gluitot2lo${nl}        brgsupr   = gsupr/gluitot2lo${nl}        brgsdownl = gsdownl/gluitot2lo${nl}        brgsdownr = gsdownr/gluitot2lo${nl}      endif#g"
+                                 -e "s#c ---------------------- the stop branching ratios ------------------- c#c ---------------------- the stop branching ratios ------------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrstok(1)) then${nl}${nl}        do i=1,4,1${nl}           brst1neutt(i) = st1neutt(i)/stoptot2lo(1)${nl}        end do${nl}        do i=1,2,1${nl}           brst1charb(i) = st1charb(i)/stoptot2lo(1)${nl}           brst1hcsb(i)  = st1hcsb(i)/stoptot2lo(1)${nl}           brst1wsb(i)   = st1wsb(i)/stoptot2lo(1)${nl}        end do${nl}        brst1glui = st1glui/stoptot2lo(1)${nl}${nl}      endif${nl}${nl}      if(.not.qcdcorrstok(2)) then${nl}${nl}        do i=1,4,1${nl}           brst2neutt(i) = st2neutt(i)/stoptot2lo(2)${nl}        end do${nl}        do i=1,2,1${nl}           brst2charb(i) = st2charb(i)/stoptot2lo(2)${nl}           brst2hcsb(i)  = st2hcsb(i)/stoptot2lo(2)${nl}           brst2wsb(i)   = st2wsb(i)/stoptot2lo(2)${nl}        end do${nl}        brst2glui = st2glui/stoptot2lo(2)${nl}        brst2hl   = st2hl/stoptot2lo(2)${nl}        brst2hh   = st2hh/stoptot2lo(2)${nl}        brst2ha   = st2ha/stoptot2lo(2)${nl}        brst2ztop = st2ztop/stoptot2lo(2)${nl}${nl}      endif#g"
+                                 -e "s#c --------------------- the sbottom branching ratios ----------------- c#c --------------------- the sbottom branching ratios ----------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrsbok(1)) then${nl}${nl}        do i=1,4,1${nl}           brsb1neutt(i) = sb1neutt(i)/sbottot2lo(1)${nl}        end do${nl}        do i=1,2,1${nl}           brsb1chart(i) = sb1chart(i)/sbottot2lo(1)${nl}           brsb1hcst(i)  = sb1hcst(i)/sbottot2lo(1)${nl}           brsb1wst(i)   = sb1wst(i)/sbottot2lo(1)${nl}        end do${nl}        brsb1glui = sb1glui/sbottot2lo(1)${nl}${nl}      endif${nl}${nl}      if(.not.qcdcorrsbok(2)) then${nl}${nl}        do i=1,4,1${nl}           brsb2neutt(i) = sb2neutt(i)/sbottot2lo(2)${nl}        end do${nl}        do i=1,2,1${nl}           brsb2chart(i) = sb2chart(i)/sbottot2lo(2)${nl}           brsb2hcst(i)  = sb2hcst(i)/sbottot2lo(2)${nl}           brsb2wst(i)   = sb2wst(i)/sbottot2lo(2)${nl}        end do${nl}        brsb2glui = sb2glui/sbottot2lo(2)${nl}        brsb2hl   = sb2hl/sbottot2lo(2)${nl}        brsb2hh   = sb2hh/sbottot2lo(2)${nl}        brsb2ha   = sb2ha/sbottot2lo(2)${nl}        brsb2zbot = sb2zbot/sbottot2lo(2)${nl}${nl}      endif#g"
                                  sdecay.f.tmp
             COMMAND sed ${dashi} -e "/=1: READ SUSY LES HOUCHES ACCORD INPUT/{" -e "N" -e "N" -e "s/\\(.*${nl}c end change susyhit[[:space:]]\\)/\\1C           =2: SLHA INPUT PROVIDED BY CALLING PROGRAM  !Added by GAMBIT.${nl}/" -e "}"
                                  -e "/=1: WRITE SUSY LES HOUCHES ACCORD OUTPUT/{" -e "N" -e "N" -e "s/\\(.*${nl}c end change susyhit[[:space:]]\\)/\\1C           =2: WRITE NOTHING                           !Added by GAMBIT.${nl}/" -e "}"
@@ -289,28 +336,36 @@ ExternalProject_Add(susyhit
                                  -e "s#\\(c -- calculation of the mb pole mass from mb(mb)_MSbar --[[:space:]]*\\)\$#      if(ishai.eq.2) fmb = massval(34)           !Added by GAMBIT.${nl}\\1#g"
                                  -e "/c -- calculation of the mb pole mass from mb(mb)_MSbar --[[:space:]]*\$/{" -e "N" -e "s#\\([[:space:]]*if(smval(5)\\.ne\\.0\\.D0\\))[[:space:]]*then[[:space:]]*\$#\\1 .and. ishai.ne.2) then !Modified by GAMBIT.#" -e "}"
                                  -e "/[[:space:]]*close(nout)[[:space:]]*\$/{" -e "N" -e "N" -e "s#else#elseif (islhao .eq. 0) then                !Modified by GAMBIT.#" -e "}"
+                                 -e "s#\\(^[[:space:]][[:space:]]*.*write.*H[[:space:]]*->[[:space:]]*sbot.*\\)$#c\\1 !Commented out by GAMBIT#g"
+                                 -e "s#\\(^[[:space:]][[:space:]]*\\.[[:space:]]*WHHSB(I,J)/SUSY,WHHSB(I,J)\\)#c\\1                    !Commented out by GAMBIT#g"
                                  hdecay.f.tmp
+            COMMAND sed ${dashi} -e "s#DcharL(3,6,2), EcharR(3,6,2),#DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT#g" lightst3bod.f.tmp > lightst3bod.f
+            COMMAND sed ${dashi} -e "s#DcharL(3,6,2), EcharR(3,6,2),#DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT#g" lightst4bod.f.tmp > lightst4bod.f
             COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" makefile.tmp > makefile
             COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" sdecay.f.tmp > sdecay.f
             COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" hdecay.f.tmp > hdecay.f
+            COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" lightst3bod.f.tmp > lightst3bod.f
+            COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" lightst4bod.f.tmp > lightst4bod.f
             COMMAND ${CMAKE_COMMAND} -E remove makefile.tmp
             COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
             COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
   INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 enable_auto_rebuild(susyhit)
 add_external_clean(susyhit ${susyhit_dir} clean)
 
 # FeynHiggs
-set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.10.4")
+set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.11.2")
 ExternalProject_Add(feynhiggs
-  URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.10.4.tar.gz
-  URL_MD5 afd04154870ab5519603ffdb0e4e2d5b
+  URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.11.2.tar.gz
+  URL_MD5 edb73eafa6dab291bd8827242c16ac0a
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
+  #FIXME this causes seg faults due to the inclusion of -O2.
+  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
@@ -319,7 +374,8 @@ set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 add_external_clean(feynhiggs ${feynhiggs_dir} clean)
 
 # HiggsBounds
-set(higgsbounds_tables_dir "${PROJECT_SOURCE_DIR}/Backends/installed/csboutput_trans_binary")
+set(higgsbounds_tables_loc "${PROJECT_SOURCE_DIR}/Backends/installed/")
+set(higgsbounds_tables_dir "${higgsbounds_tables_loc}csboutput_trans_binary")
 ExternalProject_Add(higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
   URL_MD5 004decca30335ddad95654a04dd034a6
@@ -341,10 +397,10 @@ ExternalProject_Add(higgsbounds
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND cp configure-with-chisq my_configure
-            COMMAND sed ${dashi} -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${higgsbounds_tables_dir}\"|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|clsbtablesdir=.*|clsbtablesdir=\"${higgsbounds_tables_loc}\"|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
-            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggsbounds.so *.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
@@ -362,18 +418,18 @@ ExternalProject_Add(higgssignals
   SOURCE_DIR ${higgssignals_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND cp configure my_configure 
+  CONFIGURE_COMMAND cp configure my_configure
             COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
-            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
+            COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
-        COMMAND mkdir -p lib 
-        COMMAND rm HiggsSignals.o 
-        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.1/*.o" > make_so.sh 
-        COMMAND chmod u+x make_so.sh 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        COMMAND mkdir -p lib
+        COMMAND rm HiggsSignals.o
+        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.1/*.o" > make_so.sh
+        COMMAND chmod u+x make_so.sh
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
@@ -381,14 +437,14 @@ enable_auto_rebuild(higgssignals)
 add_external_clean(higgssignals ${higgssignals_dir} hyperclean)
 
 
-set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
+set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends DEPENDS darksusy micromegas micromegasSingletDM superiso  
+add_custom_target(backends DEPENDS darksusy micromegas micromegasSingletDM superiso
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit)
 
 add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike pythia) #fastsim
 
-add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso  
+add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso
                       clean-higgssignals clean-higgsbounds clean-feynhiggs clean-susyhit clean-delphes clean-flexiblesusy
                       clean-ddcalc clean-gamlike clean-nulike clean-pythia)

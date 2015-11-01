@@ -73,13 +73,30 @@
     #undef FUNCTION
     
     // ==============================
-
     // Get unimproved MSSM spectrum as an SLHAea object
     #define FUNCTION get_MSSM_spectrum_as_SLHAea
     START_FUNCTION(SLHAstruct)                  
     DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*) // Takes a (pointer to a) Spectrum object and returns an SLHAstruct
     #undef FUNCTION
 
+  #undef CAPABILITY
+  
+ 
+  #define CAPABILITY MSSM_spectrum
+    // ============================== 
+    // Convert an MSSM_spectrum into a standard map so that it can be printed
+    #define FUNCTION get_MSSM_spectrum_as_map 
+    START_FUNCTION(map_str_dbl) // Just a string to double map. Can't have commas in macro input
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    #undef FUNCTION    
+  #undef CAPABILITY
+
+  #define CAPABILITY unimproved_MSSM_spectrum
+   // Same as above, but works with unimproved version of spectrum
+    #define FUNCTION get_unimproved_MSSM_spectrum_as_map 
+    START_FUNCTION(map_str_dbl) // Just a string to double map. Can't have commas in macro input
+    DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
+    #undef FUNCTION    
   #undef CAPABILITY
 
 
@@ -116,7 +133,7 @@
                 Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
                 Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
                 Farray< fh_real,1,4>&, fh_real&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs, 2.11), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -133,7 +150,7 @@
     BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&, 
                 Farray<fh_complex, 1,3, 1,3>&, 
                 Farray<fh_complex, 1,3, 1,3>&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs, 2.11), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -149,7 +166,7 @@
                                                     Farray< fh_complex,1,231>&,
                                                     Farray< fh_real,1,978>&,
                                                     Farray< fh_real,1,250>&, int&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs, 2.11), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY

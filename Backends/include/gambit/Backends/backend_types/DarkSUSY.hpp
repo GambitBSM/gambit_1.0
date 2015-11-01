@@ -77,6 +77,12 @@ namespace Gambit
 //      character*8 pname(0:numpartspecies)
   };
 
+    struct DS_MSSMIUSEFUL
+    {
+        Finteger lsp;
+        Finteger kln;
+    };
+    
     struct DS_VRTXS
     {
         Farray< Fdouble_complex,1,50,1,50,1,50 > gl;
@@ -257,6 +263,16 @@ namespace Gambit
       Fdouble wasigsip;
       Fdouble wasigsdp;
       Flogical dswasetupcalled;      
+  };
+
+  struct DS_HMCOM
+  {
+      Fdouble rho0;      // non-rescaled local density
+      Fdouble rhox;      // rescaled local density
+      Fdouble v_sun;     // circular speed at the Sun
+      Fdouble r_0;       // galactocentric distance
+      Fdouble v_earth;   // Keplerian velocity of the Earth around the Sun
+      Finteger hclumpy;  // 1=smooth 2=clumpy
   };
 
 }

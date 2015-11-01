@@ -14,7 +14,9 @@ fi
 
 # Make plot
 filename_in=${1##*/}
-filename_out=${filename_in%.*}.ps
-dot $1 -Tps > $filename_out
-echo "Created "$filename_out" in current directory."
+filename_out1=${filename_in%.*}.ps
+filename_out2=${filename_in%.*}.svg
+dot $1 -Tps > $filename_out1
+dot $1 -Tsvg > $filename_out2
+echo "Created "$filename_out1" and "$filename_out2" in current directory."
 

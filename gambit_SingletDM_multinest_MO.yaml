@@ -9,7 +9,6 @@ Parameters:
 
     StandardModel_Higgs:
       mH: 125.9
-      vev: 246
 
     SingletDM:
         mS:
@@ -43,7 +42,7 @@ Parameters:
         fixed_value: -0.085
 
 #   Uncomment the below to use DarkSUSY nuclear parameters.
-#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
+#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yaml
 
 ##############################
 # Prior setup
@@ -266,3 +265,4 @@ KeyValues:
 
   enable_testing: false
 
+  default_output_path: "runs/DarkBit_SingletDM/"

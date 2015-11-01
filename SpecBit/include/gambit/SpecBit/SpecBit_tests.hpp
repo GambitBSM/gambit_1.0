@@ -28,7 +28,17 @@
      #undef FUNCTION
    
    #undef CAPABILITY
+ 
+   #define CAPABILITY run_light_quark_test
+   START_CAPABILITY                          
    
+     #define FUNCTION light_quark_test            
+     START_FUNCTION(bool)                  
+     DEPENDENCY(qedqcd_subspectrum, const SubSpectrum*)
+     #undef FUNCTION
+   
+   #undef CAPABILITY
+  
    /// @}
 
 #endif

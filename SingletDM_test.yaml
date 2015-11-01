@@ -5,7 +5,6 @@ Parameters:
 
   StandardModel_Higgs:
     mH: 125
-    vev: 238
 
   SingletDM:
     lambda: 0.1
@@ -16,8 +15,7 @@ Priors:
 Printer:
   printer: ascii
   options:
-    output_file: "runs/SingletDM_test/samples/gambit_output.txt"
-    info_file: "runs/SingletDM_test/samples/gambit_output.info"
+    output_file: "gambit_output.txt"
 
 Scanner:
   use_scanner: toy_mcmc
@@ -39,11 +37,12 @@ ObsLikes:
 Rules:
 
 Logger:
-  prefix : "runs/SingletDM_test/logs/"
   redirection:
     [Default] : "default.log"
 
 KeyValues:
+
+  default_output_path: "runs/SingletDM_test"
 
   dependency_resolution:
     prefer_model_specific_functions: false

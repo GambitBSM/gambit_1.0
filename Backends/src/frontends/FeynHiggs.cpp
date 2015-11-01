@@ -81,7 +81,7 @@ BE_INI_FUNCTION
   fh_real ML = sminputs.mTau;    // tau mass
   fh_real MB = sminputs.mBmB;    // bottom mass at m_b
     
-  fh_real MW = fullspectrum->get_Pole_Mass("W+");  // W boson mass
+  fh_real MW = fullspectrum->get(Par::Pole_Mass,"W+");  // W boson mass
   fh_real MZ = sminputs.mZ;                        // Z boson mass
 
   // CKM input parameters in Wolfenstein parameterization
@@ -100,13 +100,13 @@ BE_INI_FUNCTION
         MW, MZ,
         CKMlambda, CKMA, CKMrhobar, CKMetabar);
 
-  fh_real MT = fullspectrum->get_Pole_Mass("t");                      // top quark mass
+  fh_real MT = fullspectrum->get(Par::Pole_Mass,"t");                      // top quark mass
   fh_real TB = SLHAea::to<double>( slhaea.at("MINPAR").at(3).at(1) ); // tan Beta
-  fh_real MA0 = fullspectrum->get_Pole_Mass("A0");   // masses of CP-odd and 
+  fh_real MA0 = fullspectrum->get(Par::Pole_Mass,"A0");   // masses of CP-odd and 
   fh_real MHp = -1.;                                                  // charged Higgs (only one should be given)
   if(MA0 <= 0.){
     MA0 = -1.;
-    MHp = fullspectrum->get_Pole_Mass("H+");
+    MHp = fullspectrum->get(Par::Pole_Mass,"H+");
   }
 
   // cout << "** Top Mass: " << MT << endl;
@@ -181,18 +181,18 @@ BE_INI_FUNCTION
   // cout << Ae.re << " " << Amu.re << " " << Atau.re << endl;
 
   fh_complex MUE;  // Higgs mixing parameter mu
-  MUE.re = spec->runningpars().get_mass_parameter("Mu"); 
+  MUE.re = spec->runningpars().get(Par::mass1,"Mu"); 
   MUE.im = 0;
 
   // cout << "** MU = " << MUE.re << endl;
 
   // gaugino mass parameters. M_1 == 0 => GUT relation is used
   fh_complex M_1, M_2, M_3; 
-  M_1.re = spec->runningpars().get_mass_parameter("M1");   
+  M_1.re = spec->runningpars().get(Par::mass1,"M1");   
   M_1.im = 0;
-  M_2.re = spec->runningpars().get_mass_parameter("M2"); 
+  M_2.re = spec->runningpars().get(Par::mass1,"M2"); 
   M_2.im = 0;
-  M_3.re = spec->runningpars().get_mass_parameter("M3"); 
+  M_3.re = spec->runningpars().get(Par::mass1,"M3"); 
   M_3.im = 0;
 
   // cout << "** M1 = " << M_1.re << endl;
