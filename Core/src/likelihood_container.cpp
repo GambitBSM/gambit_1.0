@@ -25,9 +25,7 @@
 ///  *********************************************
 
 #include "gambit/Core/likelihood_container.hpp"
-#ifdef WITH_MPI
-  #include "gambit/Utils/mpiwrapper.hpp"
-#endif
+#include "gambit/Utils/mpiwrapper.hpp"
 
 //#define CORE_DEBUG
 
