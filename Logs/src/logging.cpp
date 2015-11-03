@@ -743,27 +743,25 @@ namespace Gambit
     /// Write message to log file
     void StdLogger::write(const SortedMessage& mail)
     {
-      // FIXME start some sort of MPI equivalent of openmp atomic/critical
-        // Message reception time (UTC)
-        my_stream<<"("<<Utils::return_time_and_date(mail.received_at)<<")";
-        // Seconds elapsed since start_time
-        std::chrono::duration<double> diff = mail.received_at - start_time;
-        my_stream<<"("<<diff.count()<<" [s])";
-        // MPI rank
-        #ifdef WITH_MPI
-          GMPI::Comm COMM_WORLD;
-          my_stream << "(Rank " << COMM_WORLD.Get_rank() << ")";
-        #endif
-        // Message tags
-        writetags(mail.component_tags);
-        writetags(mail.type_tags);
-        writetags(mail.flag_tags);
-        my_stream<<":"<<std::endl;
-        // Message proper
-        my_stream<<mail.message<<std::endl;
-        my_stream<<"--<>--<>--<>--<>--<>--<>--<>--"<<std::endl;
-        // (I picked a weird end of message boundary so that it would be easily distinguished from formatting that may appear in the message body)
-      // FIXME finish some sort of MPI equivalent of openmp atomic/critical
+      // Message reception time (UTC)
+      my_stream<<"("<<Utils::return_time_and_date(mail.received_at)<<")";
+      // Seconds elapsed since start_time
+      std::chrono::duration<double> diff = mail.received_at - start_time;
+      my_stream<<"("<<diff.count()<<" [s])";
+      // MPI rank
+      #ifdef WITH_MPI
+        GMPI::Comm COMM_WORLD;
+        my_stream << "(Rank " << COMM_WORLD.Get_rank() << ")";
+      #endif
+      // Message tags
+      writetags(mail.component_tags);
+      writetags(mail.type_tags);
+      writetags(mail.flag_tags);
+      my_stream<<":"<<std::endl;
+      // Message proper
+      my_stream<<mail.message<<std::endl;
+      my_stream<<"--<>--<>--<>--<>--<>--<>--<>--"<<std::endl;
+      // (I picked a weird end of message boundary so that it would be easily distinguished from formatting that may appear in the message body)
     }
 
     void StdLogger::writetags(const std::set<LogTag>& tags)
