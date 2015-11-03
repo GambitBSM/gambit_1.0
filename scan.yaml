@@ -96,7 +96,7 @@ Scanner:
     random:
       plugin: random_sampler
       options:
-        point_number: 100000000
+        point_number: 10000000
         like: Likelihood
           
     toy:
