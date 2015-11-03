@@ -30,7 +30,6 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
-#include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
 #include <sstream>
@@ -589,10 +588,6 @@ namespace Gambit
       for (std::vector<VertexID>::iterator it = order.begin(); it != order.end(); ++it)
       {
         std::ostringstream ss;
-        #ifdef WITH_MPI
-          GMPI::Comm COMM_WORLD;
-          ss << "MPI rank " << COMM_WORLD.Get_rank() << "." << endl;
-        #endif
         ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
         logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << EOM;
         masterGraph[*it]->calculate();
