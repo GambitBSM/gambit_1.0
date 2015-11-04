@@ -145,7 +145,7 @@ namespace Gambit
       private:
         std::ofstream my_own_fstream; //Don't use this except in constructor
         std::ostream& my_stream;
-    };
+   };
  
     /// Logging "controller" object
     /// Keeps track of the various "Logger" objects
@@ -236,6 +236,10 @@ namespace Gambit
         void entering_backend(int);
         void leaving_backend();
 
+        /// Setter for "separate_file_per_process" flag
+        /// Must be used before "initialise" in order to have any effect
+        void set_separate_file_per_process(bool flag) {separate_file_per_process=flag;}
+
       private:
         /// Dump the prelim buffer to the 'send' function
         void dump_prelim_buffer();
@@ -262,7 +266,8 @@ namespace Gambit
         /// Buffer variables needed for stream logging
         std::ostringstream stream;
         std::set<int> streamtags;
-        
+
+        bool separate_file_per_process;
     };
 
   } //end namespace Logging

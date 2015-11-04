@@ -73,6 +73,7 @@ Logger:
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
     [Printers]     : "Printers.log"
+  separate_file_per_process: true  # Default is "true"
 
 #======== Generic Name/Value Section ========
 KeyValues:
@@ -164,6 +165,6 @@ KeyValues:
   # Note: I have found that performing the following:
   # > killall gambit -s SIGINT 
   # (i.e. 'gambit' rather than 'mpirun') seems to also work (with soft 
-  # shutdown).I guess this is because mpirun itself does not see the signal, and
+  # shutdown). I guess this is because mpirun itself does not see the signal, and
   # so continues to work as normal so the synchronisation succeeds. This option
   # may not be helpful for cluster jobs though.
