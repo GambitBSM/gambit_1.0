@@ -96,7 +96,7 @@ namespace Gambit
         if (Utils::isnan(edmn)) nans += "n EDM | ";
         if (Utils::isnan(edmHg)) nans += "Hg EDM | ";
         if (not nans.empty()) PrecisionBit_error().raise(LOCAL_INFO, nans+"returned as NaN from FeynHiggs!");
-      #endif PRECISIONBIT_DEBUG
+      #endif
 
       fh_PrecisionObs PrecisionObs;
       PrecisionObs.gmu2 = gm2;

@@ -165,13 +165,7 @@ namespace Gambit
             if (i== j)
             {
               double entry = this->runningpars().get(Par::mass2, M[k].second, i, j);
-              if (entry < 0)
-              {
-                std::ostringstream err;
-                err << comment.str() << " = " << entry << " in spectrum output...   --> OMG IT'S NEGATIVE! CALL THE FUMIGATORS! <--";
-                SpecBit_error().raise(LOCAL_INFO, err.str());
-              }
-              slha["MSOFT"][""] << 30+3*k+i+(k>1?4:0) << sqrt(entry) << "# sqrt("+comment.str()+")";
+              slha["MSOFT"][""] << 30+3*k+i+(k>1?4:0) << sgn(entry)*sqrt(std::abs(entry)) << "# sqrt("+comment.str()+")";
             }
           }
         }
