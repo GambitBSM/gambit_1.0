@@ -181,7 +181,17 @@ namespace Gambit
       , current_module (-1)
       , current_backend(-1)
       , separate_file_per_process(true)
+      , MPIrank        (0)
+      , MPIsize        (1)
     {
+      #ifdef WITH_MPI
+      if(GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        MPIsize = COMM_WORLD.Get_size();
+        MPIrank = COMM_WORLD.Get_rank();
+      }
+      #endif
     }
 
     /// Alternate constructor
@@ -193,7 +203,17 @@ namespace Gambit
       , current_module (-1)
       , current_backend(-1)
       , separate_file_per_process(true)
+      , MPIrank        (0)
+      , MPIsize        (1)
     {
+      #ifdef WITH_MPI
+      if(GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        MPIsize = COMM_WORLD.Get_size();
+        MPIrank = COMM_WORLD.Get_rank();
+      }
+      #endif
     }
 
     // Destructor
@@ -250,15 +270,12 @@ namespace Gambit
           std::string filename = infopair->second;
           std::set<int> tags;
 
-          #ifdef WITH_MPI
-          GMPI::Comm COMM_WORLD;
-          if(separate_file_per_process and COMM_WORLD.Get_size()>1)
+          if(separate_file_per_process and MPIsize>1)
           {
             std::ostringstream unique_filename;
-            unique_filename << filename << "_" << COMM_WORLD.Get_rank();
+            unique_filename << filename << "_" << MPIrank;
             filename = unique_filename.str();
           }
-          #endif
  
           // Log the loggers being created :)
           // (will be put into a preliminary buffer until loggers are all constructed)
@@ -759,8 +776,19 @@ namespace Gambit
 
     /// Constructor
     /// Attach logger object to an existing stream
-    StdLogger::StdLogger(std::ostream& logstream) : my_stream(logstream)
+    StdLogger::StdLogger(std::ostream& logstream) 
+      : my_stream(logstream)
+      , MPIrank(0)
+      , MPIsize(1)
     {
+      #ifdef WITH_MPI
+      if(GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        MPIsize = COMM_WORLD.Get_size();
+        MPIrank = COMM_WORLD.Get_rank();
+      }
+      #endif
       // Check error bits on stream and throw exception in anything is bad
       if( my_stream.fail() | my_stream.bad() )
       {
@@ -772,8 +800,19 @@ namespace Gambit
 
     /// Open new file stream and manage it internally
     StdLogger::StdLogger(const std::string& filename)
-     : my_own_fstream(filename, std::ofstream::out), my_stream(my_own_fstream)
+      : my_own_fstream(filename, std::ofstream::out)
+      , my_stream(my_own_fstream)
+      , MPIrank(0)
+      , MPIsize(1)
     {
+      #ifdef WITH_MPI
+      if(GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        MPIsize = COMM_WORLD.Get_size();
+        MPIrank = COMM_WORLD.Get_rank();
+      }
+      #endif
       // Check error bits on stream and throw exception in anything is bad
       if( my_stream.fail() | my_stream.bad() )
       {
@@ -797,10 +836,8 @@ namespace Gambit
       // Might as well add this even if different ranks output to different
       // files, since people might like to cat together the different files
       // later on or something.
-      #ifdef WITH_MPI
-      GMPI::Comm COMM_WORLD;
-      my_stream << "(Rank " << COMM_WORLD.Get_rank() << ")";
-      #endif
+      if(MPIsize>1) my_stream << "(Rank " << MPIrank << ")";
+
       // Message tags
       writetags(mail.component_tags);
       writetags(mail.type_tags);

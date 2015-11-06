@@ -145,7 +145,11 @@ namespace Gambit
       private:
         std::ofstream my_own_fstream; //Don't use this except in constructor
         std::ostream& my_stream;
-   };
+ 
+        /// MPI variables
+        int MPIrank;
+        int MPIsize;
+  };
  
     /// Logging "controller" object
     /// Keeps track of the various "Logger" objects
@@ -268,6 +272,10 @@ namespace Gambit
         std::set<int> streamtags;
 
         bool separate_file_per_process;
+
+        /// MPI variables
+        int MPIrank;
+        int MPIsize;
     };
 
   } //end namespace Logging
