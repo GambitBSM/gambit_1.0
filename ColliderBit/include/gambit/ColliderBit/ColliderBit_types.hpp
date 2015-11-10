@@ -28,6 +28,7 @@
 #define __ColliderBit_types_hpp__
 
 #include <vector>
+#include <chrono>
 
 #include "gambit/ColliderBit/colliders/SpecializablePythia.hpp"
 #include "gambit/ColliderBit/detectors/DelphesVanilla.hpp"
@@ -50,6 +51,13 @@ namespace Gambit {
     /// @brief Container for log likelihoods from multiple Analyses and SRs
     /// @todo If we want to be able to handle correlations between analyses, we need some way to know which analysis number are at which outer-vector indices
     typedef std::vector<std::vector<SignalRegionData>> ColliderLogLikes;
+
+    // typedefs specifically for timing shit (see ColliderBit_macros.hpp)
+    // timing
+    typedef std::chrono::milliseconds ms;
+    typedef std::chrono::steady_clock steady_clock;
+    typedef std::chrono::steady_clock::time_point tp;
+    typedef std::map<std::string,double> timer_map_type;
   }
 }
 

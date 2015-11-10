@@ -43,6 +43,9 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 
 //#define DUMP_LIMIT_PLOT_DATA
+#ifndef THREADS
+#define THREADS 32
+#endif
 
 namespace Gambit
 {
@@ -100,6 +103,11 @@ namespace Gambit
     std::vector<std::string> analysisNames;
     HEPUtilsAnalysisContainer* globalSubprocessAnalyses = new HEPUtilsAnalysisContainer();
     HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
+    /// Timing stuff
+    timer_map_type timers[THREADS];
+    timer_map_type timer_maxima[THREADS];
+    timer_map_type global_timers;
+    timer_map_type global_timer_maxima;
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -112,20 +120,14 @@ namespace Gambit
     void operateLHCLoop()
     {
       using namespace Pipes::operateLHCLoop;
-      // timing
-      using std::chrono::system_clock;
-      typedef std::chrono::milliseconds ms;
-      ms ms_base, ms_init, ms_start, ms_end, ms_final, ms_loop;
-      ms zero(0);
-      system_clock::time_point tp_outer = system_clock::now();
       static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
+      global_timers.clear();
+      global_timer_maxima.clear();
       nEvents = 0;
       eventsGenerated = false;
 
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
-      ms_base = std::chrono::duration_cast<ms>(system_clock::now() - tp_outer);
-
       // Retrieve runOptions from the YAML file safely...
       GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
       // @todo Subprocess specific nEvents
@@ -148,45 +150,43 @@ namespace Gambit
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
-          ms_init = std::chrono::duration_cast<ms>(system_clock::now() - tp_outer);
-          ms_start = zero;
-          ms_loop = zero;
-          ms_end = zero;
           #pragma omp parallel
           {
-            system_clock::time_point tp_inner = system_clock::now();
+            const int me = omp_get_thread_num();
+            timers[me].clear();
+            timer_maxima[me].clear();
             Loop::executeIteration(START_SUBPROCESS);
-            #pragma omp critical (start_timer)
-            ms_start += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
             // main event loop
             #pragma omp for nowait
             for(int i=0; i<nEvents; i++) {
               if(not *Loop::done) Loop::executeIteration(i);
             }
-            #pragma omp critical (loop_timer)
-            ms_loop += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
             Loop::executeIteration(END_SUBPROCESS);
-            #pragma omp critical (end_timer)
-            ms_end += std::chrono::duration_cast<ms>(system_clock::now() - tp_inner);
+            #pragma omp critical (end_timing)
+            {
+              for(timer_map_type::iterator it=timers[me].begin(); it!=timers[me].end(); ++it)
+                global_timers[it->first] += it->second;
+              for(timer_map_type::iterator it=timer_maxima[me].begin(); it!=timer_maxima[me].end(); ++it)
+                if(it->second > global_timer_maxima[it->first])
+                  global_timer_maxima[it->first] = it->second;
+            }
           }
         }
       }
-      ms_start /= omp_get_max_threads();
-      ms_loop /= omp_get_max_threads();
-      ms_end /= omp_get_max_threads();
       // Nicely thank the loop for stfu, and restore everyone's vocal cords
       std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
-      ms_final = std::chrono::duration_cast<ms>(system_clock::now() - tp_outer);
 
-      std::cout<<"\n$$$$ ColliderBit loop timing (in milliseconds):\n\n";
-      std::cout<<"     Completed BASE_INIT:        "<<ms_base.count()<<endl;
-      std::cout<<"     Completed INIT:             "<<ms_init.count()<<endl;
-      std::cout<<"     Completed FINALIZE:         "<<ms_final.count()<<endl;
-      std::cout<<"  Times per thread:"<<endl;
-      std::cout<<"     Completed START_SUBPROCESS: "<<ms_start.count()<<endl;
-      std::cout<<"     Completed Loop completion:  "<<ms_loop.count()<<endl;
-      std::cout<<"     Completed END_SUBPROCESS:   "<<ms_end.count()<<endl;
+      std::cout<<"\n$$$$ ColliderBit loop timing";
+      std::cout<<"\n============================";
+      std::cout<<"\n$$$$ Totals, in milliseconds, per thread where parallel:\n\n";
+      for(timer_map_type::iterator it=global_timers.begin(); it!=global_timers.end(); ++it)
+        std::cout << "    " << it->first << ":    " << it->second << std::endl;
+      std::cout << "\n\n";
+      std::cout<<"\n$$$$ Maxima for each function call, in milliseconds:\n\n";
+      for(timer_map_type::iterator it=global_timer_maxima.begin(); it!=global_timer_maxima.end(); ++it)
+        std::cout << "    " << it->first << ":    " << it->second << std::endl;
+      std::cout << "\n\n\n";
     }
 
 
@@ -210,47 +210,53 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {
-        // Get Pythia to print its banner.
-        if (print_pythia_banner)
+        TIME_THAT_SHIT_GLOBALLY(getPythia_BASE_INIT)
         {
-          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
-          result.banner(pythia_doc_path);
-          result.clear();
-          print_pythia_banner = false;
-        }
+          // Get Pythia to print its banner.
+          if (print_pythia_banner)
+          {
+            pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
+            result.banner(pythia_doc_path);
+            result.clear();
+            print_pythia_banner = false;
+          }
 
-        // SLHAea object constructed from dependencies on the spectrum and decays.
-        slha.clear();
-        spectrum.clear();
-        slha = Dep::decay_rates->as_slhaea();
-        if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
-        {
-          // MSSM-specific
-          spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
-          SLHAea::Block block("MODSEL");
-          block.push_back("BLOCK MODSEL              # Model selection");
-          SLHAea::Line line;
-          line << 1 << 0 << "# General MSSM";
-          block.push_back(line);
-          slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
-          slha.push_front(block);
-        }
-        else
-        {
-          ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
-        }
+          // SLHAea object constructed from dependencies on the spectrum and decays.
+          slha.clear();
+          spectrum.clear();
+          slha = Dep::decay_rates->as_slhaea();
+          if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+          {
+            // MSSM-specific
+            spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+            SLHAea::Block block("MODSEL");
+            block.push_back("BLOCK MODSEL              # Model selection");
+            SLHAea::Line line;
+            line << 1 << 0 << "# General MSSM";
+            block.push_back(line);
+            slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
+            slha.push_front(block);
+          }
+          else
+          {
+            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
+          }
+        } // end TIME_THAT_SHIT_GLOBALLY
       }
 
       if (*Loop::iteration == INIT)
       {
-        std::string pythiaConfigName;
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
-        // Get pythia options
-        // If the SpecializablePythia specialization is hard-coded, okay with no options.
-        pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        TIME_THAT_SHIT_GLOBALLY(getPythia_INIT)
+        {
+          std::string pythiaConfigName;
+          // Setup new Pythia
+          pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+          // Get pythia options
+          // If the SpecializablePythia specialization is hard-coded, okay with no options.
+          pythiaCommonOptions.clear();
+          if (runOptions->hasKey(*iter, pythiaConfigName))
+            pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        } // end TIME_THAT_SHIT_GLOBALLY
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -272,10 +278,13 @@ namespace Gambit
 
         try
         {
-          if (omp_get_thread_num() == 0)
-            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-          else
-            result.init(pythia_doc_path, pythiaOptions, &slha);
+          TIME_THAT_SHIT(getPythia_initialize_Pythia)
+          {
+            if (omp_get_thread_num() == 0)
+              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+            else
+              result.init(pythia_doc_path, pythiaOptions, &slha);
+          } // end TIME_THAT_SHIT
         }
         catch (SpecializablePythia::InitializationError &e)
         {
@@ -458,45 +467,54 @@ namespace Gambit
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
-        GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-        globalAnalyses->clear();
-        globalAnalyses->init(analysisNames);
+        TIME_THAT_SHIT_GLOBALLY(getAnalysisContainer_BASE_INIT)
+        {
+          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
+          globalAnalyses->clear();
+          globalAnalyses->init(analysisNames);
+        } // end TIME_THAT_SHIT_GLOBALLY
         return;
       }
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
-        // Each thread gets its own Analysis container.
-        // Thus, their initialization is *after* INIT, within omp parallel.
-        if (omp_get_thread_num() == 0) {
-          globalSubprocessAnalyses->clear();
-          globalSubprocessAnalyses->init(analysisNames);
-        }
-        result.clear();
-        result.init(analysisNames);
+        TIME_THAT_SHIT(getAnalysisContainer_START_SUBPROCESS)
+        {
+          // Each thread gets its own Analysis container.
+          // Thus, their initialization is *after* INIT, within omp parallel.
+          if (omp_get_thread_num() == 0) {
+            globalSubprocessAnalyses->clear();
+            globalSubprocessAnalyses->init(analysisNames);
+          }
+          result.clear();
+          result.init(analysisNames);
+        } // end TIME_THAT_SHIT
         return;
       }
 
       if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
       {
-        const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
-        const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
-        result.add_xsec(xs_fb, xserr_fb);
-        // Combine results from this subprocess together
-        #pragma omp critical (access_globalAnalyses)
+        TIME_THAT_SHIT(getAnalysisContainer_END_SUBPROCESS)
         {
-          globalSubprocessAnalyses->add(result);
-          // Use improve_xsec to combine results from the same process type
-          globalSubprocessAnalyses->improve_xsec(result);
-        }
-        // Add total results from this subprocess to the main globalAnalyses container
-        // (Synchronize threads first to ensure all results are totalled)
-        #pragma omp barrier
-        if (omp_get_thread_num() == 0) {
-          globalAnalyses->add(globalSubprocessAnalyses);
-          // Use add_xsec to combine results from the different process types
-          globalAnalyses->add_xsec(globalSubprocessAnalyses);
-        }
+          const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
+          const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
+          result.add_xsec(xs_fb, xserr_fb);
+          // Combine results from this subprocess together
+          #pragma omp critical (access_globalAnalyses)
+          {
+            globalSubprocessAnalyses->add(result);
+            // Use improve_xsec to combine results from the same process type
+            globalSubprocessAnalyses->improve_xsec(result);
+          }
+          // Add total results from this subprocess to the main globalAnalyses container
+          // (Synchronize threads first to ensure all results are totalled)
+          #pragma omp barrier
+          if (omp_get_thread_num() == 0) {
+            globalAnalyses->add(globalSubprocessAnalyses);
+            // Use add_xsec to combine results from the different process types
+            globalAnalyses->add_xsec(globalSubprocessAnalyses);
+          }
+        } // end TIME_THAT_SHIT
         return;
       }
 
@@ -514,7 +532,10 @@ namespace Gambit
 
       /// Get the next event from Pythia8
       try {
-        (*Dep::HardScatteringSim).nextEvent(result);
+        TIME_THAT_SHIT(generatePythia8Event_nextEvent)
+        {
+          (*Dep::HardScatteringSim).nextEvent(result);
+        } // end TIME_THAT_SHIT
       } catch (SpecializablePythia::EventFailureError &e) {
         piped_invalid_point.request("Bad point: Pythia can't generate events");
         Loop::wrapup();
