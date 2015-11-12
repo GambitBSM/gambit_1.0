@@ -1,34 +1,34 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  CMake configuration scripts for obtaining,
-#  configuring, compiling and installing 
+#  configuring, compiling and installing
 #  backends.
-#  
+#
 #  Note that this is not necessarily the canonical
 #  way to manage the compilation of all backends,
 #  and GAMBIT support for backend compilation is
 #  minimal, even with this method -- so please
 #  contact the authors of the respective codes
-#  if they won't compile!  
-#    
+#  if they won't compile!
+#
 #************************************************
-#                                                
+#
 #  Authors (add name and date if you modify):
 #
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
 #  \date 2015 Sep
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
-#  \date 2015 May  
+#  \date 2015 May
 #
 #  \author Chris Rogan
-#          (crogan@cern.ch)              
+#          (crogan@cern.ch)
 #  \date 2015 May
 #
 #  \author Anders Kvellestad
@@ -38,7 +38,7 @@
 #  \author Christoph Weniger
 #          (c.weniger@uva.nl)
 #  \date 2015 Sep
-#                                               
+#
 #************************************************
 
 # DarkSUSY
@@ -62,12 +62,12 @@ ExternalProject_Add(darksusy
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
-        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif 
-        #COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif 
-        #COMMAND patch -b -p1 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif 
+        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
+        #COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
+        #COMMAND patch -b -p1 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
-        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy}
         COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
 )
@@ -84,9 +84,9 @@ ExternalProject_Add(superiso
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile 
+  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile
         COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${GAMBIT_C_FLAGS}/g" <SOURCE_DIR>/Makefile
-        COMMAND ${CMAKE_MAKE_PROGRAM} 
+        COMMAND ${CMAKE_MAKE_PROGRAM}
         COMMAND ar x <SOURCE_DIR>/src/libisospin.a
         COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh
         COMMAND chmod u+x make_so.sh
@@ -176,17 +176,17 @@ enable_auto_rebuild(micromegasSingletDM)
 add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
-# - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
+# - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it.
 # - Pythia will also screw up if trying to use -O3 with CMAKE_BUILD_TYPE=Release, so replace this with -O2
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 string(REGEX REPLACE "(-O3)" "-O2" pythia_CXXFLAGS "${pythia_CXXFLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -xavx")
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
   if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(pythia_CXXFLAGS "${pythia_CXXFLAGS}")  
+    set(pythia_CXXFLAGS "${pythia_CXXFLAGS}")
   endif()
 endif()
 # - Set include directories
@@ -237,8 +237,8 @@ set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/1.0.0")
 set(nulike_short_dir "./Backends/installed/nulike/1.0.0")
 set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
-  #URL 
-  #URL_MD5 
+  #URL
+  #URL_MD5
   #DOWNLOAD_DIR ${backend_download}
   DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
            COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
@@ -247,8 +247,8 @@ ExternalProject_Add(nulike
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
-  INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE}
+  INSTALL_COMMAND
 )
 enable_auto_rebuild(nulike)
 add_external_clean(nulike ${nulike_dir} distclean)
@@ -265,10 +265,10 @@ ExternalProject_Add(susyhit
   SOURCE_DIR ${susyhit_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND cp -n makefile makefile.orig  COMMAND cp -n sdecay.f sdecay.orig  COMMAND cp -n hdecay.f hdecay.orig 
+  CONFIGURE_COMMAND cp -n makefile makefile.orig  COMMAND cp -n sdecay.f sdecay.orig  COMMAND cp -n hdecay.f hdecay.orig
             COMMAND cp makefile.orig makefile.tmp COMMAND cp sdecay.orig sdecay.f.tmp COMMAND cp hdecay.orig hdecay.f.tmp
             COMMAND sed ${dashi} -e "s#FC=\\(.*\\)[[:space:]]*$#FF=\\1${nl}${nl}FC=\\$\\(FF\\)${nl}FFLAGS= -O2 -fPIC#g"
-                                 -e "s#FC)[[:space:]]*-c#FC\\) \\$\\(FFLAGS\\) -c#g" 
+                                 -e "s#FC)[[:space:]]*-c#FC\\) \\$\\(FFLAGS\\) -c#g"
                                  -e "s#\\(clean:.*\\)$#${susyhit_lib}.so:\\$\\(OBJS1\\) \\$\\(OBJS2\\) \\$\\(OBJS3\\)${nl}\t\\$\\(FC\\) -shared -o \\$@ \\$\\(OBJS1\\) \\$\\(OBJS2\\) \\$\\(OBJS3\\)${nl}${nl}\\1#g"
                                  makefile.tmp
             COMMAND sed ${dashi} -e "s#^[[:space:]]*program sdecay[[:space:]]*$#      !Added by GAMBIT to make 100% sure \\'unlikely\\' matches the fortran value.${nl}      double precision function s_hit_unlikely()${nl}        s_hit_unlikely = -123456789D0${nl}      end${nl}${nl}      subroutine sdecay                          !Modified by GAMBIT.#g"
@@ -299,7 +299,7 @@ ExternalProject_Add(susyhit
             COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
             COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
-  INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+  INSTALL_COMMAND
 )
 enable_auto_rebuild(susyhit)
 add_external_clean(susyhit ${susyhit_dir} clean)
@@ -365,18 +365,18 @@ ExternalProject_Add(higgssignals
   SOURCE_DIR ${higgssignals_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND cp configure my_configure 
+  CONFIGURE_COMMAND cp configure my_configure
             COMMAND sed ${dashi} -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/4.2.1|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure
             COMMAND sed ${dashi} -e "s|F90FLAGS =.*|F90FLAGS = ${GAMBIT_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure
             COMMAND <SOURCE_DIR>/my_configure
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} 
-        COMMAND mkdir -p lib 
-        COMMAND rm HiggsSignals.o 
-        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.1/*.o" > make_so.sh 
-        COMMAND chmod u+x make_so.sh 
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        COMMAND mkdir -p lib
+        COMMAND rm HiggsSignals.o
+        COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/4.2.1/*.o" > make_so.sh
+        COMMAND chmod u+x make_so.sh
         COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
@@ -384,14 +384,14 @@ enable_auto_rebuild(higgssignals)
 add_external_clean(higgssignals ${higgssignals_dir} hyperclean)
 
 
-set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim  
+set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends DEPENDS darksusy micromegas micromegasSingletDM superiso  
+add_custom_target(backends DEPENDS darksusy micromegas micromegasSingletDM superiso
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit)
 
 add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike pythia) #fastsim
 
-add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso  
+add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso
                       clean-higgssignals clean-higgsbounds clean-feynhiggs clean-susyhit clean-delphes clean-flexiblesusy
                       clean-ddcalc clean-gamlike clean-nulike clean-pythia)

@@ -16,6 +16,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/backend_info.hpp"
+#include "gambit/Logs/log.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
 namespace Gambit
@@ -32,22 +33,22 @@ namespace Gambit
     try
     {
       bepathfile = YAML::LoadFile(filename);
-      logger << backends << debug << "Successfully loaded custom user backend location file " <<
-             << filename << "." << EOM;
+      logger() << LogTags::backends << LogTags::debug << "Successfully loaded custom user backend location file "
+               << filename << "." << EOM;
       custom_bepathfile_exists = true;
     }
     catch (YAML::Exception &e)
     {
-      logger << backends << debug << "Custom user backend location file " << filename
-             << " could not be read; employing default only." << EOM;
+      logger() << LogTags::backends << LogTags::debug << "Custom user backend location file " << filename
+               << " could not be read; employing default only." << EOM;
       custom_bepathfile_exists = false;
     }
     // Attempt to read default yaml configuration file
     try
     {
       default_bepathfile = YAML::LoadFile(default_filename);
-      logger << backends << debug << "Successfully loaded default backend location file " <<
-             << default_filename << "." << EOM;
+      logger() << LogTags::backends << LogTags::debug << "Successfully loaded default backend location file "
+               << default_filename << "." << EOM;
     }
     catch (YAML::Exception &e)
     {
@@ -60,9 +61,21 @@ namespace Gambit
   }
 
   /// Indicate whether a custom backend locations file exists
-  bool Backends::backend_info::custom_locations_exist()
+  bool Backends::backend_info::custom_locations_exist() const
   {
     return custom_bepathfile_exists;
+  }
+
+  /// Return the path to any custom user backend locations file
+  str Backends::backend_info::backend_locations() const
+  {
+    return filename;
+  }
+
+  /// Return the path to the default backend locations file
+  str Backends::backend_info::default_backend_locations() const
+  {
+    return default_filename;
   }
 
   /// Return the path to a backend library, given a backend name and version.

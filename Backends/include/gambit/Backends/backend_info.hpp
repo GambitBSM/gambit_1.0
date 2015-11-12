@@ -41,6 +41,12 @@ namespace Gambit
         /// Indicate whether a custom backend locations file exists
         bool custom_locations_exist() const;
 
+        /// Return the path to any custom user backend locations file
+        str backend_locations() const;
+
+        /// Return the path to the default backend locations file
+        str default_backend_locations() const;
+
         /// Return the path to a backend library
         str path(str, str) const;
 
