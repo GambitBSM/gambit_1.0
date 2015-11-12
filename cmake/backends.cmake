@@ -225,7 +225,7 @@ ExternalProject_Add(fastsim
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
-  INSTALL_COMMAND cp ""
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(fastsim)
 add_external_clean(fastsim ${fastsim_dir} distclean)
@@ -249,7 +249,7 @@ ExternalProject_Add(nulike
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE}
-  INSTALL_COMMAND
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(nulike)
 add_external_clean(nulike ${nulike_dir} distclean)
@@ -351,7 +351,7 @@ ExternalProject_Add(susyhit
             COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
             COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
-  INSTALL_COMMAND
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(susyhit)
 add_external_clean(susyhit ${susyhit_dir} clean)
