@@ -124,6 +124,7 @@ namespace Gambit
       global_timers.clear();
       global_timer_maxima.clear();
       nEvents = 0;
+      int currentEvent;
       eventsGenerated = false;
 
       // Do the base-level initialisation
@@ -157,9 +158,8 @@ namespace Gambit
             timer_maxima[me].clear();
             Loop::executeIteration(START_SUBPROCESS);
             // main event loop
-            #pragma omp for nowait
-            for(int i=0; i<nEvents; i++) {
-              if(not *Loop::done) Loop::executeIteration(i);
+            while(currentEvent<nEvents) {
+              if(not *Loop::done) Loop::executeIteration(currentEvent++);
             }
             Loop::executeIteration(END_SUBPROCESS);
             #pragma omp critical (end_timing)
