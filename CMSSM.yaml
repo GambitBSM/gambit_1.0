@@ -16,32 +16,21 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-  MSSM7atQ:
-    Qin:
-      fixed_value: 1000.0
-    SignMu:
-      fixed_value: 1
-    Ad_3:
-      range: [1e2, 5e3]
+  CMSSM:
+    M0:
+      range: [100, 5000]
       prior_type: log
-    Au_3:
-      range: [1e2, 5e3]
+    M12:
+      range: [100, 5000]
       prior_type: log
-    M2:
-      range: [1e2, 5e3]
-      prior_type: log
-    TanBeta:
-      range: [3.0, 70.0]
+    A0:
+      range: [-7000, 7000]
       prior_type: flat
-    mHd2:
-      range: [1e4, 2.5e7]
-      prior_type: log
-    mHu2:
-      range: [1e4, 2.5e7]
-      prior_type: log
-    mf2:
-      range: [1e4, 2.5e7]
-      prior_type: log
+    TanBeta:
+      range: [3.0, 70]
+      prior_type: flat
+    SignMu: 1
+
 
 Priors:
 
@@ -52,8 +41,8 @@ Printer:
   printer: hdf5
 
   options:
-    output_file: "samples/MSSM7.hdf5"
-    group: "/MSSM7"
+    output_file: "samples/CMSSM.hdf5"
+    group: "/CMSSM"
     delete_file_if_exists: true
 
 Scanner:
@@ -252,8 +241,10 @@ Rules:
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
-    function: get_MSSMatQ_spectrum
+    function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
       precision_goal:        1.0e-4
       max_iterations:        0
       calculate_sm_masses:   false
@@ -391,4 +382,4 @@ KeyValues:
     model_invalid_for_lnlike_below: -5e5
     debug: true
 
-  default_output_path: "runs/MSSM7/"
+  default_output_path: "runs/CMSSM/"

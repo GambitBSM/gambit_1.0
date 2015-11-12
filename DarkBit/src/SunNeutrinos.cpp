@@ -74,38 +74,7 @@ namespace Gambit
       // FIXME needs to be fixed once BFs are available directly from TH_Process
       std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
-      std::vector<str> neutral_channels[29];
-      neutral_channels[0]  = initVector<str>("h0_1", "h0_1");
-      neutral_channels[1]  = initVector<str>("h0_1", "h0_2");
-      neutral_channels[2]  = initVector<str>("h0_2", "h0_2");
-      neutral_channels[3]  = initVector<str>("A0", "A0");
-      neutral_channels[4]  = initVector<str>("h0_1", "A0");
-      neutral_channels[5]  = initVector<str>("h0_2", "A0");
-      neutral_channels[6]  = initVector<str>("H+", "H-");
-      neutral_channels[7]  = initVector<str>("Z0", "h0_1");
-      neutral_channels[8]  = initVector<str>("Z0", "h0_2");
-      neutral_channels[9]  = initVector<str>("Z0", "A0");
-      // actually W+H- and W-H+
-      neutral_channels[10] = initVector<str>("W+", "H-");
-      neutral_channels[11] = initVector<str>("Z0", "Z0");
-      neutral_channels[12] = initVector<str>("W+", "W-");
-      neutral_channels[13] = initVector<str>("nu_e", "nubar_e");
-      neutral_channels[14] = initVector<str>("e+", "e-");
-      neutral_channels[15] = initVector<str>("nu_mu", "nubar_mu");
-      neutral_channels[16] = initVector<str>("mu+", "mu-");
-      neutral_channels[17] = initVector<str>("nu_tau", "nubar_tau");
-      neutral_channels[18] = initVector<str>("tau+", "tau-");
-      neutral_channels[19] = initVector<str>("u", "ubar");
-      neutral_channels[20] = initVector<str>("d", "dbar");
-      neutral_channels[21] = initVector<str>("c", "cbar");
-      neutral_channels[22] = initVector<str>("s", "sbar");
-      neutral_channels[23] = initVector<str>("t", "tbar");
-      neutral_channels[24] = initVector<str>("b", "bbar");
-      neutral_channels[25] = initVector<str>("g", "g");
-      // actually qqg (not implemented in DS though)
-      neutral_channels[26] = initVector<str>("b", "bbar", "g");
-      neutral_channels[27] = initVector<str>("gamma", "gamma");
-      neutral_channels[28] = initVector<str>("Z0", "gamma");
+      std::vector< std::vector<str> > neutral_channels = BEreq::get_DS_neutral_h_decay_channels(); 
       // the missing channel
       const std::vector<str> adhoc_chan = initVector<str>("W-", "H+");
 
@@ -135,8 +104,8 @@ namespace Gambit
 
       // Set Higgs masses
       std::map<str, TH_ParticleProperty>::const_iterator its[4];
-      its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
-      its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
+      its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
+      its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
       its[2] = Dep::TH_ProcessCatalog->particleProperties.find("A0");
       its[3] = Dep::TH_ProcessCatalog->particleProperties.find("H+");
       Higgs_masses_neutral[0] = (its[0] != Dep::TH_ProcessCatalog->
@@ -151,8 +120,8 @@ namespace Gambit
       // Find out which Higgs exist and have decay data in the process
       // catalogue.
       const TH_Process* h0_decays[3];
-      h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_1");
-      h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_2");
+      h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_2");
+      h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_1");
       h0_decays[2] = Dep::TH_ProcessCatalog->find("A0");
       const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
       const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
@@ -226,23 +195,8 @@ namespace Gambit
       {
 
         // Define the charged Higgs decay channels 
-        std::vector<str> charged_channels[15];
-        charged_channels[0]  = initVector<str>("u", "dbar");
-        charged_channels[1]  = initVector<str>("u", "sbar");
-        charged_channels[2]  = initVector<str>("u", "bbar");
-        charged_channels[3]  = initVector<str>("c", "dbar");
-        charged_channels[4]  = initVector<str>("c", "sbar");
-        charged_channels[5]  = initVector<str>("c", "bbar");
-        charged_channels[6]  = initVector<str>("t", "dbar");
-        charged_channels[7]  = initVector<str>("t", "sbar");
-        charged_channels[8]  = initVector<str>("t", "bbar");
-        charged_channels[9]  = initVector<str>("e", "nu_e");
-        charged_channels[10] = initVector<str>("mu", "nu_mu");
-        charged_channels[11] = initVector<str>("tau", "nu_tau");
-        charged_channels[12] = initVector<str>("W+", "h0_1");
-        charged_channels[13] = initVector<str>("W+", "h0_2");
-        charged_channels[14] = initVector<str>("W+", "A0");
-
+        std::vector< std::vector<str> > charged_channels = BEreq::get_DS_charged_h_decay_channels() 
+;
         // Get the total decay width, for normalising partial widths to BFs.
         // FIXME: Replace when BFs become directly available.
         double totalwidth = 0.0;

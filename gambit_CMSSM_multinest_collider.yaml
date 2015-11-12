@@ -202,7 +202,7 @@ Rules:
     #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
 
   - capability:  ColliderOperator
-    function: operatePythia
+    function: operateLHCLoop
     options:
       nEvents: 10000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
@@ -298,5 +298,3 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-
-  default_output_path: "runs/multinest_CMSSM_collider/"

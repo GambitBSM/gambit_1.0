@@ -574,8 +574,7 @@ namespace Gambit
       return sorted;
     }
 
-    // Evaluates ObsLike vertex, and everything it depends on, and prints
-    // results
+    // Evaluates ObsLike vertex, and everything it depends on, and prints results
     void DependencyResolver::calcObsLike(VertexID vertex, const int pointID)
     {
       // pointID supplied by scanner, and is used to tell the printer which model
@@ -611,6 +610,17 @@ namespace Gambit
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
         if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter,pointID);
       }
+    }
+
+    // Get the functor corresponding to a single VertexID
+    functor* DependencyResolver::get_functor(VertexID id)
+    {
+      graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+      {
+        if (*vi == id) return masterGraph[id];
+      }
+      return NULL;
     }
 
     // Ensure that the type of a given vertex is equivalent to at least one of a provided list, and return the match.

@@ -712,7 +712,7 @@ namespace Gambit
           if(!canDecay)
           {
             DarkBit_warning().raise(LOCAL_INFO,
-                "Unable to pick allowed decay. Keeping particle stable.");
+                "Unable to pick allowed decay for "+ pID+". Keeping particle stable.");
             abortedDecay = true;
             return;
           }

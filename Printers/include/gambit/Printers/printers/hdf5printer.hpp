@@ -51,7 +51,7 @@ namespace Gambit
   {
  
     // Parameter controlling the length of all the standard buffers
-    static const std::size_t BUFFERLENGTH = 100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
+    static const std::size_t BUFFERLENGTH = 5; //100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
 
     /// @{ Helpful typedefs
 
