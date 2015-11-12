@@ -151,6 +151,7 @@ namespace Gambit
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
+          currentEvent = 0;
           #pragma omp parallel
           {
             const int me = omp_get_thread_num();
