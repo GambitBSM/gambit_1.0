@@ -65,7 +65,7 @@ ExternalProject_Add(darksusy
         COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
         #COMMAND patch -b -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
         #COMMAND patch -b -p2 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif
-        # FIXME FeynHiggs segfaults with -O2 setting
+ # FIXME DarkSUSY segfaults with -O2 setting
  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
@@ -179,6 +179,7 @@ add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it.
+# - Pythia will also screw up if trying to use -O3 with CMAKE_BUILD_TYPE=Release, so replace this with -O2
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
@@ -224,7 +225,7 @@ ExternalProject_Add(fastsim
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
-  INSTALL_COMMAND cp ""
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(fastsim)
 add_external_clean(fastsim ${fastsim_dir} distclean)
@@ -248,7 +249,7 @@ ExternalProject_Add(nulike
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE}
-  INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(nulike)
 add_external_clean(nulike ${nulike_dir} distclean)
@@ -350,13 +351,20 @@ ExternalProject_Add(susyhit
             COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
             COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
-  INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(susyhit)
 add_external_clean(susyhit ${susyhit_dir} clean)
 
 # FeynHiggs
 set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.11.2")
+#set(FH_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+#set(FH_C_FLAGS "${GAMBIT_C_FLAGS}")
+#set(FH_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+#set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -fcheck=all ") #For debugging FH
+set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}") #For skipping -O2, which seems to cause issues
+set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to cause issues
+set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
 ExternalProject_Add(feynhiggs
   URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.11.2.tar.gz
   URL_MD5 edb73eafa6dab291bd8827242c16ac0a
@@ -364,13 +372,13 @@ ExternalProject_Add(feynhiggs
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  #FIXME this causes seg faults due to the inclusion of -O2.
-  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, 3)#g" <SOURCE_DIR>/src/Decays/VecSet.F
+            COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
 set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+enable_auto_rebuild(feynhiggs)
 add_external_clean(feynhiggs ${feynhiggs_dir} clean)
 
 # HiggsBounds
