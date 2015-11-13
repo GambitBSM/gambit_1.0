@@ -41,19 +41,6 @@
 #
 #************************************************
 
-
-# Variables for auto-BOSS system
-set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
-set(needs_BOSSing)
-set(needs_BOSSing_failed)
-
-# Check that gccxml is installed (requred by BOSS)
-find_program(GCCXML_PATH gccxml)
-if(NOT GCCXML_PATH)
-  message("${BoldRed}-- GCCXML not found. Backends requiring BOSS will not be built. Please install GCCXML and setup your environment to find the 'gccxml' executable. ${ColourReset}" )
-endif()
-
-
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
 set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
@@ -128,8 +115,6 @@ ExternalProject_Add(ddcalc
 enable_auto_rebuild(ddcalc)
 add_external_clean(ddcalc ${ddcalc_dir} cleanest)
 
-BOSS_backend(ddcalc DDcalc 0.0)
-
 # Gamlike
 if(GSL_FOUND)
   execute_process(
@@ -201,9 +186,6 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
-  if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(pythia_CXXFLAGS "${pythia_CXXFLAGS}")
-  endif()
 endif()
 # - Add "-undefined dynamic_lookup flat_namespace" to linker flags when OSX linker is used
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -228,8 +210,6 @@ ExternalProject_Add(pythia
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND ""
 )
-enable_auto_rebuild(pythia)
-add_external_clean(pythia ${pythia_dir} distclean)
 ExternalProject_Add_Step(pythia apply_hacks
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.cc ${pythia_dir}/src/Pythia.cc
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.cc ${pythia_dir}/src/SusyLesHouches.cc
@@ -240,7 +220,8 @@ ExternalProject_Add_Step(pythia apply_hacks
   DEPENDERS patch
 )
 BOSS_backend(pythia Pythia 8.209)
-
+enable_auto_rebuild(pythia)
+add_external_clean(pythia ${pythia_dir} distclean)
 
 # Fastsim
 set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
@@ -390,7 +371,7 @@ set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.11.2")
 #set(FH_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
 #set(FH_C_FLAGS "${GAMBIT_C_FLAGS}")
 #set(FH_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
-#set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -fcheck=all ") #For debugging FH
+#set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -fcheck=all ") #For debugging FH issues with gfortran
 set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}") #For skipping -O2, which seems to cause issues
 set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to cause issues
 set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
@@ -401,7 +382,7 @@ ExternalProject_Add(feynhiggs
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, 3)#g" <SOURCE_DIR>/src/Decays/VecSet.F
+  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, LEGS)#g" <SOURCE_DIR>/src/Decays/VecSet.F
             COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
