@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:37
+// File generated at Wed 28 Oct 2015 11:35:53
 
 #ifndef NSM_SLHA_H
 #define NSM_SLHA_H

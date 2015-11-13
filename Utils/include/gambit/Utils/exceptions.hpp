@@ -24,6 +24,8 @@
 #include <set>
 #include <string>
 #include <exception>
+#include <vector>
+#include <utility>
 
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Logs/log_tags.hpp"
@@ -87,6 +89,9 @@ namespace Gambit
       /// Get a read-only map of pointers to all instances of this class.
       static const std::map<const char*,exception*>& all_exceptions();
 
+      /// Set the parameter point string to append if a fatal exception is thrown
+      static void set_parameters(std::string);
+
     protected:
 
       /// The set of tags to be passed to the logger
@@ -120,6 +125,9 @@ namespace Gambit
 
       /// Flag indicating if this exception should be considered fatal or not.
       bool isFatal;
+
+      /// Shared string indicating the current values of the paramters.
+      static std::string parameters;
 
   };
 
@@ -242,7 +250,7 @@ namespace Gambit
     
   };
 
-  /// Gambit piped exception class.
+  /// Gambit piped invalid point exception class.
   class Piped_invalid_point
   {
     public:
@@ -262,6 +270,36 @@ namespace Gambit
 
   /// Global instance of piped invalid point class.
   extern Piped_invalid_point piped_invalid_point;
+
+  /// Gambit piped error class.
+  class Piped_exceptions
+  {
+    public:
+      typedef std::pair<std::string,std::string> description;
+      /// Constructor
+      Piped_exceptions(size_t maxExceptions) : flag(false), maxExceptions(maxExceptions) {};
+
+      /// Request an exception.
+      void request(std::string origin, std::string message);
+      void request(description desc);
+
+      /// Check whether any exceptions were requested, and raise them.
+      void check(exception &excep);
+
+      /// Check whether any exceptions were requested without handling them.
+      bool inquire();
+
+    private:
+      bool flag;    
+      size_t maxExceptions;
+      std::vector<description> exceptions;
+  };
+
+  /// Global instance of Piped_exceptions class for errors.
+  extern Piped_exceptions piped_errors;
+
+  /// Global instance of Piped_exceptions class for warnings.
+  extern Piped_exceptions piped_warnings;
 
 }
 

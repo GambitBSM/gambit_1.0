@@ -30,7 +30,7 @@
 
 #define QUIT_IF(condition,fun)                  \
    if (condition)                               \
-      FATAL(#fun ": condition " #condition " not fullfilled!");
+      FATAL(#fun ": " #condition);
 
 #define ROOT2 Electroweak_constants::root2
 

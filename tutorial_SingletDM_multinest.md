@@ -21,7 +21,7 @@ Run scan
 
 The scan can then be invoked with
 
-    ./gambit -f gambit_SingletDM_multinest.yml
+    ./gambit -f gambit_SingletDM_multinest.yaml
 
 If everything well, the results should end up in
 
@@ -37,7 +37,7 @@ with the second file explaining the format of the first file.
 
 If you want to do a run on multiple MPI nodes, run instead
 
-    mpirun -n 4 ./gambit -f gambit_SingletDM_multinest.yml
+    mpirun -n 4 ./gambit -f gambit_SingletDM_multinest.yaml
 
 (for e.g. 4 nodes).  This produces instead output files
 

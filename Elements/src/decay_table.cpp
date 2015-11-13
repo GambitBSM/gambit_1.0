@@ -193,21 +193,57 @@ namespace Gambit
     }
   }
 
-  /// Set branching fraction for decay to a given final state; vector of PDG-context integer pair version.
-  void DecayTable::Entry::set_BF(double BF, double error, std::vector<std::pair<int,int> >& daughters)
+  /// Set branching fraction for decay to a given final state. 1. PDG-context integer pairs (vector)
+  void DecayTable::Entry::set_BF(double BF, double error, const std::vector<std::pair<int,int> >& daughters)
   {
     std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
     check_particles_exist(key);
     channels[key] = std::pair<double, double>(BF, error);
   }
 
-  /// Check if a given final state exists in this DecayTable::Entry; vector of PDG-context integer pair version.
-  bool DecayTable::Entry::has_channel(std::vector<std::pair<int,int> >& daughters)
+  /// Set branching fraction for decay to a given final state. 2. full particle names (vector)
+  void DecayTable::Entry::set_BF(double BF, double error, const std::vector<str>& daughters)
+  {
+    std::multiset< std::pair<int,int> > key;
+    for (auto p = daughters.begin(); p != daughters.end(); ++p) key.insert(Models::ParticleDB().pdg_pair(*p));
+    check_particles_exist(key);
+    channels[key] = std::pair<double, double>(BF, error);
+  }
+
+  /// Check if a given final state exists in this DecayTable::Entry. 1. PDG-context integer pairs (vector)
+  bool DecayTable::Entry::has_channel(const std::vector<std::pair<int,int> >& daughters) const
   {
     std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
     check_particles_exist(key);
     return channels.find(key) != channels.end();
   }
+
+  /// Check if a given final state exists in this DecayTable::Entry. 2. full particle names (vector)
+  bool DecayTable::Entry::has_channel(const std::vector<str>& daughters) const
+  {
+    std::multiset< std::pair<int,int> > key;
+    for (auto p = daughters.begin(); p != daughters.end(); ++p) key.insert(Models::ParticleDB().pdg_pair(*p));
+    check_particles_exist(key);
+    return channels.find(key) != channels.end();
+  }
+
+  /// Retrieve branching fraction for decay to a given final state. 1. PDG-context integer pairs (vector)
+  double DecayTable::Entry::BF(const std::vector<std::pair<int, int> >& daughters) const
+  {
+    std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
+    check_particles_exist(key);
+    return channels.at(key).first;    
+  }
+
+  /// Retrieve branching fraction for decay to a given final state. 2. full particle names (vector)
+  double DecayTable::Entry::BF(const std::vector<str>& daughters) const
+  {
+    std::multiset< std::pair<int,int> > key;
+    for (auto p = daughters.begin(); p != daughters.end(); ++p) key.insert(Models::ParticleDB().pdg_pair(*p));
+    check_particles_exist(key);
+    return channels.at(key).first;    
+  }
+  
 
   /// Output a decay table entry as an SLHAea DECAY block
   /// @{

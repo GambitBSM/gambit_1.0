@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:11:53
+// File generated at Wed 28 Oct 2015 11:23:45
 
 #include "NUHMSSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -102,6 +102,9 @@ NUHMSSM_soft_parameters NUHMSSM_soft_parameters::calc_beta() const
       beta_MassWB += calc_beta_MassWB_two_loop(TRACE_STRUCT);
       beta_MassG += calc_beta_MassG_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
@@ -131,7 +134,7 @@ void NUHMSSM_soft_parameters::clear()
 
 }
 
-const Eigen::ArrayXd NUHMSSM_soft_parameters::get() const
+Eigen::ArrayXd NUHMSSM_soft_parameters::get() const
 {
    Eigen::ArrayXd pars(NUHMSSM_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);

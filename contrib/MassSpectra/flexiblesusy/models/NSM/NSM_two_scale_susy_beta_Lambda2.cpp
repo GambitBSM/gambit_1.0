@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:18
+// File generated at Wed 28 Oct 2015 11:35:23
 
 #include "NSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,7 +37,7 @@ double NSM_susy_parameters::calc_beta_Lambda2_one_loop(const Susy_traces& susy_t
 
    double beta_Lambda2;
 
-   beta_Lambda2 = Re(2*oneOver16PiSqr*Sqr(Lambda3));
+   beta_Lambda2 = Re(-2*oneOver16PiSqr*(36*Sqr(Lambda2) + Sqr(Lambda3)));
 
 
    return beta_Lambda2;
@@ -57,8 +57,29 @@ double NSM_susy_parameters::calc_beta_Lambda2_two_loop(const Susy_traces& susy_t
 
    double beta_Lambda2;
 
-   beta_Lambda2 = Re(4*twoLoop*(-3*traceYdAdjYd - traceYeAdjYe - 3*
-      traceYuAdjYu + Sqr(g1) + 3*Sqr(g2))*Sqr(Lambda3));
+   beta_Lambda2 = Re(-4*twoLoop*(816*Power(Lambda2,3) + 4*Power(Lambda3,3
+      ) - 3*traceYdAdjYd*Sqr(Lambda3) - traceYeAdjYe*Sqr(Lambda3) - 3*
+      traceYuAdjYu*Sqr(Lambda3) + 20*Lambda2*Sqr(Lambda3) + Sqr(g1)*Sqr(Lambda3
+      ) + 3*Sqr(g2)*Sqr(Lambda3)));
+
+
+   return beta_Lambda2;
+}
+
+/**
+ * Calculates the three-loop beta function of Lambda2.
+ *
+ * @return three-loop beta function
+ */
+double NSM_susy_parameters::calc_beta_Lambda2_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_Lambda2;
+
+   beta_Lambda2 = 0;
 
 
    return beta_Lambda2;

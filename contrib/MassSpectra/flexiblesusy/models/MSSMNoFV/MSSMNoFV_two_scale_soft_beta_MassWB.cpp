@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:05:00
+// File generated at Wed 28 Oct 2015 11:46:25
 
 #include "MSSMNoFV_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -64,6 +64,25 @@ double MSSMNoFV_soft_parameters::calc_beta_MassWB_two_loop(const Soft_traces& so
       traceAdjYeTYe + 30*traceAdjYuTYu - 30*MassWB*traceYdAdjYd - 10*MassWB*
       traceYeAdjYe - 30*MassWB*traceYuAdjYu + 9*MassB*Sqr(g1) + 9*MassWB*Sqr(g1
       ) + 250*MassWB*Sqr(g2) + 120*MassG*Sqr(g3) + 120*MassWB*Sqr(g3)));
+
+
+   return beta_MassWB;
+}
+
+/**
+ * Calculates the three-loop beta function of MassWB.
+ *
+ * @return three-loop beta function
+ */
+double MSSMNoFV_soft_parameters::calc_beta_MassWB_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_MassWB;
+
+   beta_MassWB = 0;
 
 
    return beta_MassWB;

@@ -52,7 +52,7 @@ namespace Gambit {
           "CoannCharginosNeutralinos");
       bool CoannSfermions = runOptions->getValueOrDef<bool>(true,
           "CoannSfermions");
-      double CoannMaxMass = runOptions->getValueOrDef<double>(2.1,
+      double CoannMaxMass = runOptions->getValueOrDef<double>(1.6,
           "CoannMaxMass");
 
       // introduce pointers to DS mass spectrum and relevant particle info
@@ -361,14 +361,13 @@ namespace Gambit {
       if (1==1) {
         // What follows below is the standard accurate calculation of oh2 in DS
         // either in fast = 0 (<1%)  or fast = 1 (default) mode
-
-        int fast = runOptions->getValueOrDef<int>(1, "fast");
-
+        
         // Further TODO: keep track of error flags
 
         // the following replaces dsrdcom -- which cannot be linked properly!?
         DS_RDPARS myrdpars;
 
+        int fast = runOptions->getValueOrDef<int>(1, "fast");
         switch (fast)
         {
           case 0:
@@ -378,7 +377,6 @@ namespace Gambit {
           case 1:
             myrdpars.cosmin=0.996195;myrdpars.waccd=0.05;myrdpars.dpminr=5.0e-4;
             myrdpars.dpthr=2.5e-3;myrdpars.wdiffr=0.5;myrdpars.wdifft=0.1;
-            // TODO: still "mcofr" is not switched correctly?
             break;
           default:
             DarkBit_error().raise(LOCAL_INFO, "Invalid fast flag (should be 0 or 1)");

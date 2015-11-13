@@ -23,6 +23,9 @@
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/MicrOmegas.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
+#include <unistd.h>
 
 // Convenience functions (definitions)
 BE_NAMESPACE
@@ -34,7 +37,9 @@ BE_NAMESPACE
       //       7 - 9: e, m, l
       //       10 - 15: Z, ZT, ZL, W, WT, WL
       double tab[250];  // NZ = 250
-      readSpectra();
+      // readSpectra() moved to initialization function.
+      // Must be inside critical block if used here!
+      // readSpectra();
       mInterp(Ecm/2, inP, outN, tab);
       return zInterp(log(E/Ecm*2), tab);
     }
@@ -48,9 +53,15 @@ BE_INI_FUNCTION
 
     std::string filename;
 
+#ifdef WITH_MPI
+    GMPI::Comm comm;
+    int rank = comm.Get_rank();
+#else
+    int rank = 0;
+#endif
+
     // Write out a SLHA file with a random file name;
-    srand (time(NULL));
-    filename = "DarkBit" + std::to_string(rand()) + ".slha";
+    filename = "DarkBit" + std::to_string(Random::draw()) + std::to_string(Random::draw()) + "_" + std::to_string(rank) + ".slha";
     const Spectrum* mySpec = *Dep::MSSM_spectrum;
     SLHAstruct mySLHA = mySpec->getSLHAea();
 
@@ -121,15 +132,36 @@ BE_INI_FUNCTION
     char cdmName[10];
     int error;
 
-    error = lesHinput(byVal(filename_c));
-    if (error != 0) backend_error().raise(LOCAL_INFO, "MicrOmegas function "
-            "lesHinput returned error code: " + std::to_string(error));
+    unsigned int usec = 100000;  // 100 ms delay
+
+    // Trying 100 times before giving up
+    for (int counter = 0; counter < 100; counter++)
+    {
+        usleep(usec);
+        error = lesHinput(byVal(filename_c));
+        if (error != 0) 
+            backend_warning().raise(LOCAL_INFO, 
+                    "Troubles loading SLHA file in MicrOmegas lesHinput: " + filename + "\n"
+                    "Trying again."
+                    );
+        else 
+        {
+            std::cout << "Yeah, loaded " + filename + " on the " << counter << " trial" << std::endl;
+            break;
+        }
+        if (counter == 99) backend_error().raise(LOCAL_INFO, "MicrOmegas function "
+                "lesHinput ("+filename+") returned error code: " + std::to_string(error));
+    }
+
     error = sortOddParticles(byVal(cdmName));
     if (error != 0) backend_error().raise(LOCAL_INFO, "MicrOmegas function "
-            "sortOddParticles returned error code: " + std::to_string(error));
+            "sortOddParticles ("+filename+") returned error code: " + std::to_string(error));
 
     if (remove(filename_c) != 0)
         backend_warning().raise(LOCAL_INFO, "Unable to delete SLHA file "+filename);
+
+    // Initialize yield tables for use in cascade decays
+    readSpectra();
 
 }
 END_BE_INI_FUNCTION

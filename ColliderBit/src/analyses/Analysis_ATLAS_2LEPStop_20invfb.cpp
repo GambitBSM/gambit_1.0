@@ -54,6 +54,7 @@ namespace Gambit {
           _numSRM90DF(0), _numSRM100DF(0), _numSRM110DF(0), _numSRM120DF(0),
           NCUTS(24)
       {
+        set_luminosity(20.3);
         for (int i=0; i<NCUTS; i++) {
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
@@ -61,6 +62,7 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
@@ -365,30 +367,6 @@ namespace Gambit {
         _numSRM100DF += specificOther->_numSRM100DF;
         _numSRM110DF += specificOther->_numSRM110DF;
         _numSRM120DF += specificOther->_numSRM120DF;
-      }
-
-
-      void finalize() {
-        using namespace std;
-
-        // double scale_to = 1339.6;
-        // double trigger_cleaning_eff = 1;//0.53;
-
-        /*cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        cout << "CUT FLOW: ATLAS-CONF-2013-48 - Appendix, Table 8 - stop -> b chargino, stop 400, chargino 250, LSP 1 "<<std::endl;
-        cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-        cout << "filter applied to MC. not scaled to 50 K events, but scaled at the 2 OS SF signal lepton stage" << endl;
-        cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-
-
-        std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
-        for(int j=0; j<NCUTS; j++) {
-          std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[3] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[3] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[3] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[3]<< "%" << endl;
-        }
-        cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-
-        cout << "RESULTS 2LEP " << _numSRM90SF << " " << _numSRM100SF << " " << _numSRM110SF << " " << _numSRM120SF << " " << _numSRM90DF << " " << _numSRM100DF << " " << _numSRM110DF << " " << _numSRM120DF << endl;*/
-
       }
 
 

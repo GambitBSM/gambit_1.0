@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:56:29
+// File generated at Wed 28 Oct 2015 11:46:19
 
 #include "CMSSMNoFV_info.hpp"
 
@@ -30,21 +30,21 @@ namespace CMSSMNoFV_info {
    const double normalization_g3 = 1;
 
    const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 1, 1, 1
-      , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-      2, 4, 2, 1};
+      , 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4,
+      2, 1, 1, 1};
 
-   const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Glu", "VP", "VZ",
-      "Fd", "Fs", "Fb", "Fu", "Fc", "Ft", "Fve", "Fvm", "Fvt", "Fe", "Fm", "Ftau",
-      "SveL", "SvmL", "SvtL", "Sd", "Su", "Se", "Sm", "Stau", "Ss", "Sc", "Sb",
-      "St", "hh", "Ah", "Hpm", "Chi", "Cha", "VWm"};
+   const char* particle_names[NUMBER_OF_PARTICLES] = {"Glu", "VZ", "Fd", "Fs",
+      "Fb", "Fu", "Fc", "Ft", "Fve", "Fvm", "Fvt", "Fe", "Fm", "Ftau", "SveL",
+      "SvmL", "SvtL", "Sd", "Su", "Se", "Sm", "Stau", "Ss", "Sc", "Sb", "St", "hh"
+      , "Ah", "Hpm", "Chi", "Cha", "VG", "VP", "VWm"};
 
-   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "g",
-      "\\tilde{g}", "\\gamma", "Z", "d", "s", "b", "u", "c", "t", "\\nu_e",
-      "\\nu_{\\mu}", "\\nu_{\\tau}", "e", "m", "\\tau", "\\tilde{\\nu}_e",
-      "\\tilde{\\nu}_{\\mu}", "\\tilde{\\nu}_{\\tau}", "\\tilde{d}", "\\tilde{u}",
-      "\\tilde{e}", "\\tilde{\\mu}", "\\tilde{\\tau}", "\\tilde{s}", "\\tilde{c}"
-      , "\\tilde{b}", "\\tilde{t}", "h", "A^0", "H^-", "\\tilde{\\chi}^0",
-      "\\tilde{\\chi}^-", "W^-"};
+   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "\\tilde{g}",
+      "Z", "d", "s", "b", "u", "c", "t", "\\nu_e", "\\nu_{\\mu}", "\\nu_{\\tau}",
+      "e", "m", "\\tau", "\\tilde{\\nu}_e", "\\tilde{\\nu}_{\\mu}",
+      "\\tilde{\\nu}_{\\tau}", "\\tilde{d}", "\\tilde{u}", "\\tilde{e}",
+      "\\tilde{\\mu}", "\\tilde{\\tau}", "\\tilde{s}", "\\tilde{c}", "\\tilde{b}",
+      "\\tilde{t}", "h", "A^0", "H^-", "\\tilde{\\chi}^0", "\\tilde{\\chi}^-",
+      "g", "\\gamma", "W^-"};
 
    const char* parameter_names[NUMBER_OF_PARAMETERS] = {"Yd(0,0)", "Yd(0,1)",
       "Yd(0,2)", "Yd(1,0)", "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)",

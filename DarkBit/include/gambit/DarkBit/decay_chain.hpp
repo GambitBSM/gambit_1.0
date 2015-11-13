@@ -133,7 +133,7 @@ namespace Gambit
             // Calculate Lorentz boost matrix corresponding to beta_xyz. 
             // Always calculate gamma=E/m and use the second version when possible, as this is far more numerically stable.
             void lorentzMatrix(const vec3 &beta_xyz, mat4 &mat);
-            vec4 lorentzMatrix(const vec4 &inVec, const vec3 &beta_xyz, double gamma);              
+            void lorentzMatrix(const vec3 &beta_xyz, mat4 &mat, double gamma);            
             // Boost inVec according to beta_xyz.
             vec4 lorentzBoost(const vec4 &inVec, const vec3 &beta_xyz);          
             // Boost inVec to the frame where a particle at rest (in this frame) would have 4-momentum p_parent

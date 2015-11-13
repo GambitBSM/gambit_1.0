@@ -81,6 +81,7 @@ START_MODULE
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(MSSM_spectrum, const Spectrum*) // needed for spectrum object
     DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -95,7 +96,8 @@ START_MODULE
     BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap, bool)  
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -112,6 +114,7 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -127,7 +130,8 @@ START_MODULE
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -143,6 +147,7 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -154,7 +159,8 @@ START_MODULE
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(Btaunu, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -166,7 +172,8 @@ START_MODULE
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(BDtaunu, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -179,6 +186,7 @@ START_MODULE
     BACKEND_REQ(BDtaunu_BDenu, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -190,7 +198,8 @@ START_MODULE
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(Kmunu_pimunu, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap, bool)   
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -203,6 +212,7 @@ START_MODULE
     BACKEND_REQ(Rmu23, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -215,6 +225,7 @@ START_MODULE
     BACKEND_REQ(Dstaunu, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -226,7 +237,8 @@ START_MODULE
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(Dsmunu, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -239,6 +251,7 @@ START_MODULE
     BACKEND_REQ(Dmunu, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -251,6 +264,7 @@ START_MODULE
     BACKEND_REQ(muon_gm2, (libsuperiso), double, (struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -266,6 +280,7 @@ START_MODULE
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -281,7 +296,8 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -297,7 +313,8 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -313,7 +330,8 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool)   
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -328,7 +346,8 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool)  
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -344,7 +363,8 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool)   
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -360,7 +380,8 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -376,7 +397,8 @@ START_MODULE
     BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -388,7 +410,8 @@ START_MODULE
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -398,8 +421,9 @@ START_MODULE
     START_FUNCTION(Flav_KstarMuMu_obs)
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
-    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) ) 
+    BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -410,7 +434,8 @@ START_MODULE
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -422,6 +447,7 @@ START_MODULE
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -433,6 +459,7 @@ START_MODULE
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -443,7 +470,8 @@ START_MODULE
     DEPENDENCY(FlavBit_fill, parameters)
     BACKEND_REQ(SI_BRBKstarmumu_CONV, (libsuperiso),  Flav_KstarMuMu_obs,(struct parameters*, double, double))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool)
+    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -457,7 +485,8 @@ START_MODULE
     BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
     BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap, bool)     
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -471,7 +500,8 @@ START_MODULE
     BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
     BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
     BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
-    DEPENDENCY(Debug_Cap, bool) 
+    DEPENDENCY(Debug_Cap, bool)  
+    DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -483,8 +513,9 @@ START_MODULE
     DEPENDENCY(FH_HiggsMasses, fh_HiggsMassObs)
       BACKEND_REQ(FHFlavour, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))
       BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-    DEPENDENCY(Debug_Cap, bool) 
+      ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+      DEPENDENCY(Debug_Cap, bool)   
+      DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -501,6 +532,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY Debug_Cap_LL
+  START_CAPABILITY
+    #define FUNCTION Debug_LL
+    START_FUNCTION(bool)
+
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
 
 
 // complicated likelihoods
@@ -515,7 +555,8 @@ START_MODULE
          DEPENDENCY(BRBKstarmumu_60_80, Flav_KstarMuMu_obs)
          DEPENDENCY(BRBKstarmumu_15_17, Flav_KstarMuMu_obs)
          DEPENDENCY(BRBKstarmumu_17_19, Flav_KstarMuMu_obs)
-         DEPENDENCY(Debug_Cap, bool)  
+         DEPENDENCY(Debug_Cap, bool)
+         DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
  #undef CAPABILITY
 
@@ -526,7 +567,8 @@ START_MODULE
     START_FUNCTION(double)
           DEPENDENCY(FlavBit_fill, parameters)
           DEPENDENCY(b2sll_M, FlavBit::Flav_measurement_assym)
-          DEPENDENCY(Debug_Cap, bool)  
+          DEPENDENCY(Debug_Cap, bool)      
+          DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 //#################################################
@@ -536,7 +578,8 @@ START_MODULE
     START_FUNCTION(double)
           DEPENDENCY(FlavBit_fill, parameters)
           DEPENDENCY(b2ll_M, FlavBit::Flav_measurement_assym)
-          DEPENDENCY(Debug_Cap, bool)  
+          DEPENDENCY(Debug_Cap, bool)     
+          DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -547,7 +590,8 @@ START_MODULE
           DEPENDENCY(FlavBit_fill, parameters)
           DEPENDENCY(Bsmumu_untag, double )
           DEPENDENCY(Bdmumu, double )
-          DEPENDENCY(Debug_Cap, bool)  
+          DEPENDENCY(Debug_Cap, bool)
+          DEPENDENCY(Debug_Cap_LL, bool)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -563,7 +607,8 @@ START_MODULE
           DEPENDENCY(Dstaunu, double )
           DEPENDENCY(Dsmunu, double )
           DEPENDENCY(Dmunu, double )
-          DEPENDENCY(Debug_Cap, bool)  
+          DEPENDENCY(Debug_Cap, bool)      
+          DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -573,7 +618,8 @@ START_MODULE
     START_FUNCTION(double)
           DEPENDENCY(FlavBit_fill, parameters)
           DEPENDENCY(SL_M, FlavBit::Flav_measurement_assym)
-         DEPENDENCY(Debug_Cap, bool)  
+          DEPENDENCY(Debug_Cap, bool)     
+          DEPENDENCY(Debug_Cap_LL, bool)
     #undef FUNCTION
   #undef CAPABILITY
 

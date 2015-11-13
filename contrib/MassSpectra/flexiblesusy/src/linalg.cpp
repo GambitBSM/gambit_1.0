@@ -131,7 +131,7 @@ int DoubleVector::closest(double a) const {
 
 void DoubleVector::fillArray(double* array, unsigned offset) const
 {
-   ::fillArray(x, array, offset);
+   softsusy::fillArray(x, array, offset);
 }
 
 
@@ -743,7 +743,7 @@ void diagonaliseSvd(DoubleMatrix & a, DoubleVector & w, DoubleMatrix & v) {
 	  s +=  a(k, i) * a(k, i); 
 	}
 	f = a(i, i); 
-	g = -sign(sqrt(s), f); 
+	g = -sign(std::sqrt(s), f); 
 	h = f * g - s; 
 	a(i, i) = f-g; 
 	for (j = l; j <= n; ++j) {
@@ -764,7 +764,7 @@ void diagonaliseSvd(DoubleMatrix & a, DoubleVector & w, DoubleMatrix & v) {
 	  s +=  a(i, k) * a(i, k); 
 	}
 	f = a(i, l); 
-	g  =  -sign(sqrt(s), f); 
+	g  =  -sign(std::sqrt(s), f); 
 	h = f * g-s; 
 	a(i, l) = f - g; 
 	for (k = l; k <= n; k++) rv1(k) = a(i, k) / h; 
@@ -904,6 +904,7 @@ void diagonaliseSvd(DoubleMatrix & a, DoubleVector & w, DoubleMatrix & v) {
 }
 
 double pythagoras(double a,  double b) {
+  using std::sqrt;
   double absa, absb; 
   absa = abs(a); 
   absb = abs(b); 
@@ -925,6 +926,8 @@ namespace { // helper function only
 
 void diagonaliseJac(DoubleMatrix & a,  int n,  DoubleVector & d,  
 		    DoubleMatrix & v,  int *nrot) {
+  using std::sqrt;
+
   int j, iq, ip, i;
   double tresh, theta, tau, t, sm, s, h, g, c; 
   
@@ -1476,7 +1479,7 @@ DoubleMatrix DoubleMatrix::ludcmp(double & d) const {
 
 void DoubleMatrix::fillArray(double* array, unsigned offset) const
 {
-   ::fillArray(x, array, offset);
+   softsusy::fillArray(x, array, offset);
 }
 
 double DoubleMatrix::determinant() const {
@@ -1489,6 +1492,7 @@ double DoubleMatrix::determinant() const {
 }
 
 double DoubleVector::norm() const {
+  using std::sqrt;
   double f = 0.0;
   int i; for (i=start; i<=end; i++) f += x[i] * x[i];
   return sqrt(f);				   

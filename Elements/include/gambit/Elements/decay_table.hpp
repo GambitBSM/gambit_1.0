@@ -126,13 +126,15 @@ namespace Gambit
 
           /// Set branching fraction for decay to a given final state.
           /// Supports arbitrarily many final state particles.
-          /// Four ways to specify final states: 
+          /// Five ways to specify final states: 
           ///  1. PDG-context integer pairs (vector)
-          ///  2. PDG-context integer pairs (arguments)
-          ///  3. full particle names (arguments)
-          ///  4. short particle names + index integers (arguments)
+          ///  2. full particle names (vector)
+          ///  3. PDG-context integer pairs (arguments)
+          ///  4. full particle names (arguments)
+          ///  5. short particle names + index integers (arguments)
           /// @{
-          void set_BF(double, double, std::vector<std::pair<int,int> >&);
+          void set_BF(double, double, const std::vector<std::pair<int,int> >&);
+          void set_BF(double, double, const std::vector<str>&);
 
           template <typename... Args>
           void set_BF(double BF, double error, std::pair<int,int> p1, Args... args)
@@ -154,16 +156,18 @@ namespace Gambit
 
           /// Check if a given final state exists in this DecayTable::Entry.
           /// Supports arbitrarily many final state particles.
-          /// Four ways to specify final states: 
+          /// Five ways to specify final states: 
           ///  1. PDG-context integer pairs (vector)
-          ///  2. PDG-context integer pairs (arguments)
-          ///  3. full particle names (arguments)
-          ///  4. short particle names + index integers (arguments)
+          ///  2. full particle names (vector)
+          ///  3. PDG-context integer pairs (arguments)
+          ///  4. full particle names (arguments)
+          ///  5. short particle names + index integers (arguments)
           /// @{
-          bool has_channel(std::vector<std::pair<int,int> >&);
+          bool has_channel(const std::vector<std::pair<int,int> >&) const;
+          bool has_channel(const std::vector<str>&) const;
 
           template <typename... Args>
-          bool has_channel(std::pair<int,int> p1, Args... args)
+          bool has_channel(std::pair<int,int> p1, Args... args) const
           {
             std::pair<int,int> particles[] = {p1, args...};
             std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
@@ -172,7 +176,7 @@ namespace Gambit
           }
 
           template <typename... Args>
-          bool has_channel(str p1, Args... args)
+          bool has_channel(str p1, Args... args) const
           {
             std::multiset< std::pair<int,int> > key;
             construct_key(key, p1, args...);
@@ -181,9 +185,17 @@ namespace Gambit
           /// @}
 
           /// Retrieve branching fraction for decay to a given final state.
-          /// Three ways to specify final states: PDG-context integer pairs, full particle names, short particle names + index integers.
+          /// Five ways to specify final states: 
+          ///  1. PDG-context integer pairs (vector)
+          ///  2. full particle names (vector)
+          ///  3. PDG-context integer pairs (arguments)
+          ///  4. full particle names (arguments)
+          ///  5. short particle names + index integers (arguments)
           /// Supports arbitrarily many final state particles.
           /// @{
+          double BF(const std::vector<std::pair<int, int> >&) const;
+          double BF(const std::vector<str>&) const;
+
           template <typename... Args>
           double BF(std::pair<int,int> p1, Args... args) const
           {
@@ -191,7 +203,13 @@ namespace Gambit
             std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             if (channels.find(key) == channels.end())
             {
-              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+              std::ostringstream err;
+              err << "No branching fraction exists for the requested final states:";
+              for (auto particle = key.begin(); particle != key.end(); ++particle)
+              {
+                err << " {" << particle->first << ", " << particle->second << "}"; 
+              }
+              model_error().raise(LOCAL_INFO,err.str());
             }
             return channels.at(key).first;
           }
@@ -203,7 +221,13 @@ namespace Gambit
             construct_key(key, p1, args...);
             if (channels.find(key) == channels.end())
             {
-              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+              std::ostringstream err;
+              err << "No branching fraction exists for the requested final states:";
+              for (auto particle = key.begin(); particle != key.end(); ++particle)
+              {
+                err << " {" << particle->first << ", " << particle->second << "}"; 
+              }
+              model_error().raise(LOCAL_INFO,err.str());
             }
             return channels.at(key).first;
           }
@@ -220,7 +244,13 @@ namespace Gambit
             std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             if (channels.find(key) == channels.end())
             {
-              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+              std::ostringstream err;
+              err << "No branching fraction exists for the requested final states:";
+              for (auto particle = key.begin(); particle != key.end(); ++particle)
+              {
+                err << " {" << particle->first << ", " << particle->second << "}"; 
+              }
+              model_error().raise(LOCAL_INFO,err.str());
             }
             return channels.at(key).second;
           }
@@ -232,7 +262,13 @@ namespace Gambit
             construct_key(key, p1, args...);
             if (channels.find(key) == channels.end())
             {
-              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+              std::ostringstream err;
+              err << "No branching fraction exists for the requested final states:";
+              for (auto particle = key.begin(); particle != key.end(); ++particle)
+              {
+                err << " {" << particle->first << ", " << particle->second << "}"; 
+              }
+              model_error().raise(LOCAL_INFO,err.str());
             }
             return channels.at(key).second;
           }
@@ -249,7 +285,13 @@ namespace Gambit
             std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             if (channels.find(key) == channels.end())
             {
-              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+              std::ostringstream err;
+              err << "No branching fraction exists for the requested final states:";
+              for (auto particle = key.begin(); particle != key.end(); ++particle)
+              {
+                err << " {" << particle->first << ", " << particle->second << "}"; 
+              }
+              model_error().raise(LOCAL_INFO,err.str());
             }
             return channels.at(key);
           }
@@ -261,7 +303,13 @@ namespace Gambit
             construct_key(key, p1, args...);
             if (channels.find(key) == channels.end())
             {
-              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+              std::ostringstream err;
+              err << "No branching fraction exists for the requested final states:";
+              for (auto particle = key.begin(); particle != key.end(); ++particle)
+              {
+                err << " {" << particle->first << ", " << particle->second << "}"; 
+              }
+              model_error().raise(LOCAL_INFO,err.str());
             }
             return channels.at(key);
           }

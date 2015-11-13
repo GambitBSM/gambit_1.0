@@ -186,6 +186,14 @@ def first_simple_type_equivalent(candidate_in, equivs, existing):
         sys.exit(1)
     return common_elements.pop()+candidate_suffix
 
+# Strips all whitespaces from a string, but re-inserts a single regular space after "const".
+def strip_ws(s, qualifiers):
+    for q in qualifiers: 
+        s = re.sub(q+"\s*", q+"__TEMP_SPACE__", s)
+        s = re.sub("\s*", "", s)
+    return re.sub("__TEMP_SPACE__", " ", s)
+      
+
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
 def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
 
@@ -195,6 +203,8 @@ def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_typ
                      "START_CONDITIONAL_DEPENDENCY":1,
                      "BE_INI_DEPENDENCY":2,
                      "BE_INI_CONDITIONAL_DEPENDENCY":2}
+
+    line = re.sub(";", "", line)                         
     splitline = neatsplit('\(|\)|,|\s',line)
 
     qualifier_list = ["const"]
@@ -204,9 +214,9 @@ def addiffunctormacro(line,module,all_modules,typedict,typeheaders,intrinsic_typ
         #This line defines a function and one or more of the arguments defines a candidate type
         index = command_index[splitline[0]]
         if splitline[index] in qualifier_list:
-            candidate_types = set([splitline[index]+" "+splitline[index+1]])            
+            candidate_types = set([splitline[index]+" "+strip_ws(splitline[index+1], qualifier_list)])            
         else:
-            candidate_types = set([splitline[index]])
+            candidate_types = set([strip_ws(splitline[index], qualifier_list)])            
         if splitline[0]=="QUICK_FUNCTION" and len(splitline)>6:
             #Get the dep types out of a QUICK_FUNCTION command
             splitline = re.findall("\(.*?\)",re.sub("QUICK_FUNCTION\(", "", re.sub("\)\)\s*$",")",line) ) )
@@ -269,8 +279,11 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                      "BE_FUNCTION":2, 
                      "BE_CONV_FUNCTION":2,
                      "BACKEND_REQ":0}
-                         
+
+    line = re.sub(";", "", line)                         
     splitline = neatsplit('\(|\)|,|\s',line)
+    
+    qualifier_list = ["const"]
 
     if len(splitline)>1 and splitline[0] in command_index.keys():
         #This line defines a backend functor and one or more of the arguments defines a candidate type
@@ -280,7 +293,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
             args = args.strip()
             if re.search("\)\s*\)\s*$", line): 
                 #This is a backend function requirement
-                leading_type = re.sub("\s*,\s*\(.*?\)\s*$", "", args)
+                leading_type = strip_ws(re.sub("\s*,\s*\(.*?\)\s*$", "", args), qualifier_list)
                 leading_type = first_simple_type_equivalent(leading_type,equiv_classes,be_typeset)
                 functor_template_types = list([leading_type])
                 args = re.sub(".*?,\s*\(\s*", "", re.sub("\s*\)\s*$", "", args) )
@@ -290,15 +303,15 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
                         if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
-                        arg = first_simple_type_equivalent(arg,equiv_classes,be_typeset)
+                        arg = first_simple_type_equivalent(strip_ws(arg, qualifier_list),equiv_classes,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #This is a backend variable requirement
-                args = first_simple_type_equivalent(args,equiv_classes,be_typeset)
+                args = first_simple_type_equivalent(strip_ws(args, qualifier_list),equiv_classes,be_typeset)
                 functor_template_types = list([args+"*"])
 
         else:
-            functor_template_types = list([splitline[command_index[splitline[0]]]])
+            functor_template_types = list([strip_ws(splitline[command_index[splitline[0]]], qualifier_list)])
             functor_template_types[0] = first_simple_type_equivalent(functor_template_types[0],equiv_classes,be_typeset)
             if splitline[0].endswith("FUNCTION"):
                 #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
@@ -314,7 +327,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
                         if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
-                        arg = first_simple_type_equivalent(arg,equiv_classes,be_typeset)
+                        arg = first_simple_type_equivalent(strip_ws(arg, qualifier_list),equiv_classes,be_typeset)
                         functor_template_types.append(arg)
             else:
                 #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
@@ -328,7 +341,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in new_candidate_types:
-            candidate_type = first_simple_type_equivalent(candidate_type,equiv_classes,be_typeset)
+            candidate_type = first_simple_type_equivalent(strip_ws(candidate_type, qualifier_list),equiv_classes,be_typeset)
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.
             if ("Gambit::"+candidate_type in be_typeset):

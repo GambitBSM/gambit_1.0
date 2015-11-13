@@ -254,7 +254,7 @@ namespace Gambit {
     // 
     //     // Only consider final state particles within ATLAS/CMS acceptance
     //     if (!p.isFinal()) continue;
-    //     if (abs(p.eta()) > 5.0) continue;
+    //     if (std::abs(p.eta()) > 5.0) continue;
     //     // Add to total final state momentum
     //     ptot += p.p();
     // 

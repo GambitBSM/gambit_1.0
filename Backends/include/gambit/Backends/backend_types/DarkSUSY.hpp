@@ -265,6 +265,16 @@ namespace Gambit
       Flogical dswasetupcalled;      
   };
 
+  struct DS_HMCOM
+  {
+      Fdouble rho0;      // non-rescaled local density
+      Fdouble rhox;      // rescaled local density
+      Fdouble v_sun;     // circular speed at the Sun
+      Fdouble r_0;       // galactocentric distance
+      Fdouble v_earth;   // Keplerian velocity of the Earth around the Sun
+      Finteger hclumpy;  // 1=smooth 2=clumpy
+  };
+
 }
 
 #endif /* defined __DarkSUSY_types_hpp__ */

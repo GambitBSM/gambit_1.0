@@ -37,6 +37,7 @@ foreach(bit ${ALL_GAMBIT_BITS})
 endforeach()
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/CMakeLists.txt")
 
 # Make sure clean removes the scratch files indicating that the harvesters have been run.
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/models_harvested")

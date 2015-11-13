@@ -589,6 +589,7 @@ namespace Gambit
         std::vector<DDParticleS> P;
     };
 
+    // FIXME: Ecm_min and _max do not appear to be used.
     struct SimYieldChannel
     {
         SimYieldChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
@@ -796,7 +797,7 @@ namespace Gambit
 //          {
 //            sum += it->second;
 //          }
-//          return (abs(sum-1) < 1e-6);
+//          return (std::abs(sum-1) < 1e-6);
 //        }
 //
 //        // DM mass

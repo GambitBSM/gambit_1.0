@@ -130,6 +130,9 @@ namespace Gambit
         /// Calculate a single target vertex.
         void calcObsLike(VertexID, const int);
 
+        /// Get the functor corresponding to a single VertexID
+        functor* get_functor(VertexID);
+
         /// Ensure that the type of a given vertex is equivalent to at least one of a provided list, and return the matching list entry.
         str checkTypeMatch(VertexID, const str&, const std::vector<str>&);
 
