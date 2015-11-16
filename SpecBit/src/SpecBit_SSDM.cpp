@@ -327,12 +327,12 @@ namespace Gambit
       
      // SM->runningpars().RunToScale(MZ);
       SM -> RunToScale(MZ);
-      //double LamZ =fullspectrum->get(Par::dimensionless,"Lambda1");
+      double LamZ =SM->runningpars().get(Par::dimensionless,"Lambda1");
     // double LamZ =fullspectrum->get_HE()->get(Par::dimensionless,"Lambda1");
      
      
       //double LamZ =SM -> PR.get(Par::dimensionless,"Lambda1");
-      SM->runningpars().get_dimensionless_parameter("Lambda1");
+    //  SM->runningpars().get_dimensionless_parameter("Lambda1");
 //      SM->runningpars().RunToScale(MZ+MZ*0.01);
 //      double DeltaLamZ =1;// SM->runningpars().get_dimensionless_parameter("Lambda1");
 //      SM->runningpars().RunToScale(Mpl);

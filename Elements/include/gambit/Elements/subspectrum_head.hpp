@@ -437,7 +437,7 @@ namespace Gambit
    //DECLARE_GETTERS(mass3_parameter,Par::mass3)
    //DECLARE_GETTERS(mass2_parameter,Par::mass2)
    //DECLARE_GETTERS(mass_parameter,Par::mass1)
-   DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
+   //DECLARE_GETTERS(dimensionless_parameter,Par::dimensionless)
    //DECLARE_GETTERS(mass_eigenstate,Par::mass_eigenstate)
   
    ///// setters (and parameter overrides)
