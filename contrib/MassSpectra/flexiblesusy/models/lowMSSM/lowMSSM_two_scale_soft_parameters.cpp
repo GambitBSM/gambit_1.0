@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:16:49
+// File generated at Wed 28 Oct 2015 11:23:50
 
 #include "lowMSSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -102,6 +102,9 @@ lowMSSM_soft_parameters lowMSSM_soft_parameters::calc_beta() const
       beta_MassWB += calc_beta_MassWB_two_loop(TRACE_STRUCT);
       beta_MassG += calc_beta_MassG_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
@@ -131,7 +134,7 @@ void lowMSSM_soft_parameters::clear()
 
 }
 
-const Eigen::ArrayXd lowMSSM_soft_parameters::get() const
+Eigen::ArrayXd lowMSSM_soft_parameters::get() const
 {
    Eigen::ArrayXd pars(lowMSSM_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);

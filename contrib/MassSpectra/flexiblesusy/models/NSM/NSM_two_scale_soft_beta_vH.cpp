@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:29
+// File generated at Wed 28 Oct 2015 11:35:26
 
 #include "NSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -40,8 +40,8 @@ double NSM_soft_parameters::calc_beta_vH_one_loop(const Soft_traces& soft_traces
 
    double beta_vH;
 
-   beta_vH = Re(-(oneOver16PiSqr*(3*traceYdAdjYd + traceYeAdjYe + 3*
-      traceYuAdjYu)*vH));
+   beta_vH = Re(oneOver16PiSqr*vH*(-3*traceYdAdjYd - traceYeAdjYe - 3*
+      traceYuAdjYu + Sqr(g1) + 3*Sqr(g2)));
 
 
    return beta_vH;
@@ -70,7 +70,26 @@ double NSM_soft_parameters::calc_beta_vH_two_loop(const Soft_traces& soft_traces
       traceYeAdjYeYeAdjYe - 648*traceYuAdjYuYuAdjYu + 412*traceYuAdjYu*Sqr(g1)
       + 756*traceYuAdjYu*Sqr(g2) - 18*Sqr(g1)*Sqr(g2) + 36*traceYeAdjYe*(9*Sqr(
       g1) + 7*Sqr(g2)) + 1920*traceYuAdjYu*Sqr(g3) + 4*traceYdAdjYd*(43*Sqr(g1)
-      + 189*Sqr(g2) + 480*Sqr(g3)) + 576*Sqr(Lambda1)));
+      + 189*Sqr(g2) + 480*Sqr(g3)) + 576*Sqr(Lambda1) + 96*Sqr(Lambda3)));
+
+
+   return beta_vH;
+}
+
+/**
+ * Calculates the three-loop beta function of vH.
+ *
+ * @return three-loop beta function
+ */
+double NSM_soft_parameters::calc_beta_vH_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_vH;
+
+   beta_vH = 0;
 
 
    return beta_vH;

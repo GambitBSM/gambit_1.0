@@ -9,13 +9,13 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date 2013 May, Jun, Jul, Sep
 ///  \date 2014 Feb, Mar, Apr
 ///
-///  \author Pat Scott 
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May, Jul, Aug, Nov
 ///  \date 2014 Jan, Mar, Apr, Dec
@@ -30,6 +30,7 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
 #include <sstream>
@@ -45,7 +46,7 @@
 
 // This vertex ID is reserved for nodes that correspond to
 // likelihoods/observables/etc (observables of interest)
-#define OBSLIKE_VERTEXID 58915032 
+#define OBSLIKE_VERTEXID 58915032
 
 // Dependency types
 #define NORMAL_DEPENDENCY 1
@@ -118,7 +119,7 @@ namespace Gambit
       // lists))
       // FIXME: Add type equivalence stuff
       if ( stringComp( observable.capability, quantity.first ) and
-           stringComp( observable.type, quantity.second )) 
+           stringComp( observable.type, quantity.second ))
           return true;
       else return false;
     }
@@ -234,7 +235,7 @@ namespace Gambit
       if ( s1 == "" ) return true;
       if ( s1 == "*" ) return true;
 #ifdef HAVE_REGEX_H
-      if (with_regex) if (std::regex_match(s2, std::regex(s1))) return true; 
+      if (with_regex) if (std::regex_match(s2, std::regex(s1))) return true;
 #endif
       return false;
     }
@@ -265,16 +266,16 @@ namespace Gambit
     ///////////////////////////////////////////////////
 
     // Constructor
-    DependencyResolver::DependencyResolver(const gambit_core &core, 
+    DependencyResolver::DependencyResolver(const gambit_core &core,
                                            const Models::ModelFunctorClaw &claw,
                                            const IniParser::IniFile &iniFile,
                                            const Utils::type_equivalency &equiv_classes,
                                                  Printers::BasePrinter &printer)
-     : boundCore(&core), 
-       boundClaw(&claw), 
-       boundIniFile(&iniFile), 
-       boundTEs(&equiv_classes), 
-       boundPrinter(&printer), 
+     : boundCore(&core),
+       boundClaw(&claw),
+       boundIniFile(&iniFile),
+       boundTEs(&equiv_classes),
+       boundPrinter(&printer),
        index(get(vertex_index,masterGraph)),
        activeFunctorGraphFile(GAMBIT_DIR "/scratch/GAMBIT_active_functor_graph.gv")
     {
@@ -301,7 +302,7 @@ namespace Gambit
       // (cap., typ) --> dep. vertex map
       std::queue<QueueEntry> parQueue;
       QueueEntry queueEntry;
-    
+
       // Set up list of target ObsLikes
       logger() << LogTags::dependency_resolver << endl;
       logger() << "#######################################"   << endl;
@@ -361,7 +362,7 @@ namespace Gambit
     }
 
     /// List of masterGraph content
-    void DependencyResolver::printFunctorList() 
+    void DependencyResolver::printFunctorList()
     {
       // Activate functors compatible with model we scan over (and deactivate the rest)
       makeFunctorsModelCompatible();
@@ -392,11 +393,11 @@ namespace Gambit
 
     // Pretty print function evaluation order
     void DependencyResolver::printFunctorEvalOrder(bool toterminal)
-    { 
+    {
       // Running this lets us check the order of execution. Also helps
       // to verify that we actually have pointers to all the required
       // functors.
-      
+
       // Get order of evaluation
       std::set<VertexID> parents;
       std::set<VertexID> done; //set of vertices already accounted for
@@ -405,8 +406,8 @@ namespace Gambit
       str formatString  = "%-5s %-25s %-25s %-25s\n";
       // Might need to check if terminal supports unicode characters...
       str formatString0 = "%-7s %-23s %-25s %-25s %-25s %-6s\n";  // header
-      str formatString1a= "%-9s %-21s %-25s %-25s %-25s %-6s\n";  // target functors 
-      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s %-25s %-25s %-6s\n";  // target functors 
+      str formatString1a= "%-9s %-21s %-25s %-25s %-25s %-6s\n";  // target functors
+      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s %-25s %-25s %-6s\n";  // target functors
       str formatString2a= "     \u250C\u2500 %-23s %-25s %-25s %-25s %-6s\n";  // parents
       str formatString2b= "     \u251C\u2500 %-23s %-25s %-25s %-25s %-6s\n";
       str formatString3a= "     \u250CX %-23s %-25s %-25s %-25s %-6s\n"; // "already done" parents
@@ -419,10 +420,10 @@ namespace Gambit
       ss << endl << "Initial target functor evaluation order" << endl;
       ss << "----------------------------------" << endl;
       ss << boost::format(formatString)% "#"% "FUNCTION"% "CAPABILITY"% "ORIGIN";
- 
-      for (std::vector<VertexID>::const_iterator 
-                  vi  = order.begin(); 
-                  vi != order.end(); ++vi) 
+
+      for (std::vector<VertexID>::const_iterator
+                  vi  = order.begin();
+                  vi != order.end(); ++vi)
       {
         ss << boost::format(formatString)%
          i%
@@ -440,19 +441,19 @@ namespace Gambit
       ss << endl << "Full initial functor evaluation order" << endl;
       ss << "----------------------------------" << endl;
       ss << boost::format(formatString0)% "#"% "FUNCTION"% "CAPABILITY"% "TYPE"% "ORIGIN"% "PRINT?";
- 
-      for (std::vector<VertexID>::const_iterator 
-                  vi  = order.begin(); 
-                  vi != order.end(); ++vi) 
+
+      for (std::vector<VertexID>::const_iterator
+                  vi  = order.begin();
+                  vi != order.end(); ++vi)
       {
         // loop through parents of each target functor
         parents.clear();
         getParentVertices(*vi, masterGraph, parents);
         parents.insert(*vi);
         bool first = true;
-        for (std::set<VertexID>::const_iterator 
-                  vi2  = parents.begin(); 
-                  vi2 != parents.end(); ++vi2) 
+        for (std::set<VertexID>::const_iterator
+                  vi2  = parents.begin();
+                  vi2 != parents.end(); ++vi2)
         {
             str formatstr;
             bool dowrite = false;
@@ -497,22 +498,22 @@ namespace Gambit
          (*masterGraph[*vi]).origin()%
          (*masterGraph[*vi]).requiresPrinting();
         i++;
-        
+
         done.insert(*vi); // tick this target functor off the list
 
       }
       ss << "(\"X\" indicates that the functor is pre-evaluated before the marked position)" << endl << endl;
-      
+
       if (toterminal)
       {
-        // There is a command line flag to get this information, since it is very 
-        // handy to check before launching a full job. It can always be checked via 
+        // There is a command line flag to get this information, since it is very
+        // handy to check before launching a full job. It can always be checked via
         // the logs, but this feature is more convenient.
         cout << ss.str();
 #ifdef HAVE_GRAPHVIZ
         cout << "To get postscript plot of active functors, please run: " << endl;
         cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh " << activeFunctorGraphFile << " no-loners" << endl;
-#else 
+#else
         cout << "To get postscript plot of active functors, please install graphviz, rerun cmake and remake GAMBIT." << endl << endl;
 #endif
       }
@@ -595,7 +596,7 @@ namespace Gambit
               false, "dependency_resolution", "log_runtime") )
         {
           double T = masterGraph[*it]->getRuntimeAverage();
-          logger() << LogTags::dependency_resolver << LogTags::info << 
+          logger() << LogTags::dependency_resolver << LogTags::info <<
             "Runtime, averaged over multiple calls [s]: " << T << EOM;
         }
         invalid_point_exception* e = masterGraph[*it]->retrieve_invalid_point_exception();
@@ -603,8 +604,8 @@ namespace Gambit
         // TODO: Need to deal with different options for output
         // Print output (currently only to std::cout)
         // Ben: may want to do this call elsewhere; I added it here for testing.
-        // Pat: note that this prints from thread index 0 only, i.e. results created by 
-        //      threads other than the main one need to be accessed with 
+        // Pat: note that this prints from thread index 0 only, i.e. results created by
+        //      threads other than the main one need to be accessed with
         //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
         if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter,pointID);
@@ -621,7 +622,7 @@ namespace Gambit
       }
       return NULL;
     }
- 
+
     // Ensure that the type of a given vertex is equivalent to at least one of a provided list, and return the match.
     str DependencyResolver::checkTypeMatch(VertexID vertex, const str& purpose, const std::vector<str>& types)
     {
@@ -634,8 +635,8 @@ namespace Gambit
           << "of the following types: " << endl << "  " << types << endl
           << "You have tried to assign this purpose to " << masterGraph[vertex]->origin() << "::"
           << masterGraph[vertex]->name() << "," << endl << "which has capability: " << endl
-          << "  " << masterGraph[vertex]->capability() << endl << "and result type: " << endl 
-          << "  [" << masterGraph[vertex]->type() << "]" << endl << "Please assign a different purpose to this entry.";          
+          << "  " << masterGraph[vertex]->capability() << endl << "and result type: " << endl
+          << "  [" << masterGraph[vertex]->type() << "]" << endl << "Please assign a different purpose to this entry.";
       core_error().raise(LOCAL_INFO, msg.str());
       return "If you make core errors non-fatal you deserve what you get.";
     }
@@ -670,7 +671,7 @@ namespace Gambit
     void DependencyResolver::resetAll()
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
-      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         if (masterGraph[*vi]->status() == 2) masterGraph[*vi]->reset();
       }
@@ -713,7 +714,7 @@ namespace Gambit
       const str formatString = "%-20s %-32s %-48s %-32s %-7i\n";
       std::ostringstream stream;
       stream << boost::format(formatString)%"ORIGIN (VERSION)"% "FUNCTION"% "CAPABILITY"% "TYPE"% "STATUS";
-      for (std::vector<functor *>::const_iterator 
+      for (std::vector<functor *>::const_iterator
           it  = functorList.begin();
           it != functorList.end();
           ++it)
@@ -733,20 +734,20 @@ namespace Gambit
     void DependencyResolver::addFunctors()
     {
       // Add primary model functors to masterGraph
-      for (std::vector<primary_model_functor *>::const_iterator 
+      for (std::vector<primary_model_functor *>::const_iterator
           it  = boundCore->getPrimaryModelFunctors().begin();
           it != boundCore->getPrimaryModelFunctors().end();
           ++it)
       {
-        // Ignore functors with status set to 0 or less in order to ignore primary_model_functors 
+        // Ignore functors with status set to 0 or less in order to ignore primary_model_functors
         // that are not to be used for the scan.
-        if ( (*it)->status() > 0 ) 
+        if ( (*it)->status() > 0 )
         {
           boost::add_vertex(*it, this->masterGraph);
         }
       }
       // Add module functors to masterGraph
-      for (std::vector<functor *>::const_iterator 
+      for (std::vector<functor *>::const_iterator
           it  = boundCore->getModuleFunctors().begin();
           it != boundCore->getModuleFunctors().end();
           ++it)
@@ -755,7 +756,7 @@ namespace Gambit
       }
     }
 
-    /// Activate functors that are allowed to be used with one or more of the models being scanned. 
+    /// Activate functors that are allowed to be used with one or more of the models being scanned.
     /// Also activate the model-conditional dependencies and backend requirements of those functors.
     void DependencyResolver::makeFunctorsModelCompatible()
     {
@@ -808,8 +809,8 @@ namespace Gambit
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
-        // (so that later on they can pass this to the printer object to identify themselves)  
-        masterGraph[*vi]->setVertexID(index[*vi]);  
+        // (so that later on they can pass this to the printer object to identify themselves)
+        masterGraph[*vi]->setVertexID(index[*vi]);
 
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
         // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is
@@ -822,8 +823,8 @@ namespace Gambit
           // to set up buffers for each of these output streams.
           //logger() << "Triggering dummy print for functor '"<<masterGraph[*vi]->capability()<<"' ("<<masterGraph[*vi]->type()<<")..." << EOM;
 
-          //masterGraph[*vi]->print(boundPrinter,-1);     
-        }    
+          //masterGraph[*vi]->print(boundPrinter,-1);
+        }
       }
 
       // Force-reset the printer to erase the dummy calls
@@ -839,18 +840,18 @@ namespace Gambit
       // Similarly for extra results, i.e. from any functors not in this
       // initial list, whose "requiresPrinting" flag later gets set to 'true'
       // somehow.)
-      boundPrinter->initialise(functors_to_print); 
+      boundPrinter->initialise(functors_to_print);
     }
 
     std::vector<DRes::VertexID> DependencyResolver::closestCandidateForModel(std::vector<DRes::VertexID> candidates)
     {
-      // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
+      // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors
       // that are more specifically tailored for the model being scanned. Do not consider functors
-      // that are accessible via INTERPRET_AS_X links, as these are all considered to be equally 'far' 
+      // that are accessible via INTERPRET_AS_X links, as these are all considered to be equally 'far'
       // from the model being scanned, with the 'distance' being one step further than the most distant
       // ancestor.
 
-      // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is 
+      // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is
       // found at a given level in the hierarchy.
       std::vector<DRes::VertexID> newCandidates;
       std::set<str> s = boundClaw->get_activemodels();
@@ -858,7 +859,7 @@ namespace Gambit
       while (newCandidates.size() == 0 and not parentModelList.empty())
       {
         for (std::vector<str>::iterator mit = parentModelList.begin(); mit != parentModelList.end(); ++mit)
-        {            
+        {
           // Test each vertex candidate to see if it has been explicitly set up to work with the model *mit
           for (std::vector<DRes::VertexID>::iterator it = candidates.begin(); it != candidates.end(); ++it)
           {
@@ -932,7 +933,7 @@ namespace Gambit
 
       // List of candidate vertices
       std::vector<DRes::VertexID> vertexCandidates;  // enabled
-      std::vector<DRes::VertexID> disabledVertexCandidates;  // disabled 
+      std::vector<DRes::VertexID> disabledVertexCandidates;  // disabled
       // Rules
       std::vector<Rule> rules;
       std::vector<Rule> strong_rules;
@@ -941,7 +942,7 @@ namespace Gambit
       std::vector<DRes::VertexID> filteredVertexCandidates2;
 
       // Make list of candidate vertices.
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Match capabilities and types (no type comparison when no types are
         // given; this can only apply to output nodes).
@@ -952,9 +953,9 @@ namespace Gambit
            )
         {
           // Add vertex to appropriate candidate list
-          if (masterGraph[*vi]->status() > 0) 
+          if (masterGraph[*vi]->status() > 0)
             vertexCandidates.push_back(*vi);
-          else 
+          else
             disabledVertexCandidates.push_back(*vi);
         }
       }
@@ -966,7 +967,7 @@ namespace Gambit
         if (disabledVertexCandidates.size() != 0)
         {
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
-                 << printGenericFunctorList(disabledVertexCandidates) 
+                 << printGenericFunctorList(disabledVertexCandidates)
                  << endl
           << "Status flags:" << endl
           << " 0: This function is not compatible with any model you are scanning." << endl
@@ -975,11 +976,11 @@ namespace Gambit
           << "    class is missing from the backend, or the factory functions" << endl
           << "    for this class have not been BOSSed and loaded correctly." << endl;
         }
-        errmsg << "Please check inifile for typos, and make sure that the" << endl
+        errmsg << "Please check your yaml file for typos, and make sure that the" << endl
         << "models you are scanning are compatible with at least one function" << endl
         << "that provides this capability (they may all have been deactivated" << endl
         << "due to having ALLOW_MODELS declarations which are" << endl
-        << "incompatible with the models selected for scanning)." << endl;  
+        << "incompatible with the models selected for scanning)." << endl;
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
 
@@ -991,20 +992,20 @@ namespace Gambit
       {
         // Make list of all relevant 1st and 2nd level dependency rules.
         const IniParser::ObservablesType & entries = boundIniFile->getRules();
-        for (IniParser::ObservablesType::const_iterator 
+        for (IniParser::ObservablesType::const_iterator
             it = entries.begin(); it != entries.end(); ++it)
         {
           {
             // Evaluate "dependencies" section
             if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and
-                (it->capability != "" or it->function != "" or 
+                (it->capability != "" or it->function != "" or
                  it->type != "" or it->module != ""))
             {
-              for (IniParser::ObservablesType::const_iterator 
-                  it2 = (*it).dependencies.begin(); 
+              for (IniParser::ObservablesType::const_iterator
+                  it2 = (*it).dependencies.begin();
                   it2 != (*it).dependencies.end(); ++it2)
               {
-                if (quantityMatchesIniEntry(quantity, *it2) and 
+                if (quantityMatchesIniEntry(quantity, *it2) and
                     (it2->capability != "" or it2->type != "") and
                     (it2->function != "" or it2->module != ""))
                 {
@@ -1015,12 +1016,12 @@ namespace Gambit
               }
             }
             // Evaluate "functionChain:" section
-            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and 
+            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and
                 it->capability != "" and
                 it->function == "" and
                 (*it).functionChain.size() > 1)
             {
-              for (auto it2 = (*it).functionChain.begin(); 
+              for (auto it2 = (*it).functionChain.begin();
                   it2 != (*it).functionChain.end() - 1; ++it2)
               {
                 if ((*it2) == masterGraph[toVertex]->name())
@@ -1033,7 +1034,7 @@ namespace Gambit
               }
             }
             // Evaluate second order rules
-            if (quantityMatchesIniEntry(quantity, *it) and 
+            if (quantityMatchesIniEntry(quantity, *it) and
                 it->dependencies.size()==0 and
                 (it->capability != "" or it->type != "") and
                 (it->function != "" or it->module != ""))
@@ -1084,12 +1085,12 @@ namespace Gambit
         <<rules.size()-strong_rules.size()<<endl<<endl;
 
       // Make filtered lists
-      for (std::vector<DRes::VertexID>::const_iterator 
-          it = vertexCandidates.begin(); 
+      for (std::vector<DRes::VertexID>::const_iterator
+          it = vertexCandidates.begin();
           it != vertexCandidates.end(); it ++)
       {
         bool valid = true;
-        for (std::vector<Rule>::const_iterator it2 = rules.begin(); 
+        for (std::vector<Rule>::const_iterator it2 = rules.begin();
             it2 != rules.end(); it2 ++)
         {
           if ( not matchesRules(masterGraph[*it], *it2) )
@@ -1100,7 +1101,7 @@ namespace Gambit
         if (valid)
             filteredVertexCandidates.push_back(*it);
         valid = true;
-        for (std::vector<Rule>::const_iterator it2 = strong_rules.begin(); 
+        for (std::vector<Rule>::const_iterator it2 = strong_rules.begin();
             it2 != strong_rules.end(); it2 ++)
         {
           if ( not matchesRules(masterGraph[*it], *it2) )
@@ -1131,7 +1132,7 @@ namespace Gambit
             true, "dependency_resolution", "prefer_model_specific_functions")
           and filteredVertexCandidates.size() > 1)
       {
-        filteredVertexCandidates = 
+        filteredVertexCandidates =
           closestCandidateForModel(filteredVertexCandidates);
         logger() << "A subset of vertex candidates is tailor-made for the scanned model." << endl;
         logger() << "This is used as additional constraint since the YAML rules alone" << endl;
@@ -1206,12 +1207,12 @@ namespace Gambit
         entryExists = true;
       }
       // for all other vertices use the rules entries
-      else 
+      else
       {
         auxEntry = findIniEntry(toVertex, boundIniFile->getRules(), "Rules");
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies, "dependency");
-        if ( auxEntry != NULL and depEntry != NULL ) 
+        if ( auxEntry != NULL and depEntry != NULL )
         {
           entryExists = true;
         }
@@ -1219,7 +1220,7 @@ namespace Gambit
 
       // Loop over all available vertices in masterGraph, and make a list of
       // functors that fulfill the dependency requirement.
-      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Don't allow resolution by deactivated functors
         if (masterGraph[*vi]->status() > 0)
@@ -1240,7 +1241,7 @@ namespace Gambit
       }
 
       // Die if there is no way to fulfill this dependency.
-      if ( vertexCandidates.size() == 0 ) 
+      if ( vertexCandidates.size() == 0 )
       {
         if ( not entryExists )
         {
@@ -1259,15 +1260,15 @@ namespace Gambit
         }
       }
 
-      // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
+      // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors
       // that are more specifically tailored for the model being scanned. Do not consider functors
-      // that are accessible via INTERPRET_AS_X links, as these are all considered to be equally 'far' 
+      // that are accessible via INTERPRET_AS_X links, as these are all considered to be equally 'far'
       // from the model being scanned, with the 'distance' being one step further than the most distant
       // ancestor.
       if ( vertexCandidates.size() > 1 and not ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
            boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") ) )
       {
-        // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is 
+        // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is
         // found at a given level in the hierarchy.
         std::vector<DRes::VertexID> newVertexCandidates;
         std::set<str> s = boundClaw->get_activemodels();
@@ -1275,7 +1276,7 @@ namespace Gambit
         while (newVertexCandidates.size() == 0 and not parentModelList.empty())
         {
           for (std::vector<str>::iterator mit = parentModelList.begin(); mit != parentModelList.end(); ++mit)
-          {            
+          {
             // Test each vertex candidate to see if it has been explicitly set up to work with the model *mit
             for (std::vector<DRes::VertexID>::iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
             {
@@ -1289,7 +1290,7 @@ namespace Gambit
         if (newVertexCandidates.size() != 0) vertexCandidates = newVertexCandidates;
       }
 
-      if ( vertexCandidates.size() > 1 ) 
+      if ( vertexCandidates.size() > 1 )
       {
         str errmsg = "";
         if ( not entryExists )
@@ -1326,7 +1327,7 @@ namespace Gambit
       DRes::VertexID fromVertex, toVertex;
       DRes::EdgeID edge;
       // Inifile entry of ObsLike (if relevant)
-      const IniParser::ObservableType * iniEntry; 
+      const IniParser::ObservableType * iniEntry;
       bool ok;
       sspair quantity;
       int dependency_type;
@@ -1362,7 +1363,7 @@ namespace Gambit
         logger() << endl << "Resolving ";
         logger() << printQuantityToBeResolved(quantity, toVertex) << endl << endl;;
 
-        // Check that ObsLike vertices have non-empty capability 
+        // Check that ObsLike vertices have non-empty capability
         if ( toVertex == OBSLIKE_VERTEXID and quantity.first == "" )
         {
           str errmsg = "ObsLike entry without without capability "
@@ -1428,7 +1429,7 @@ namespace Gambit
             for (boost::tie(ibegin, iend) = in_edges(toVertex, masterGraph);
                 ibegin != iend; ++ibegin)
             {
-              boost::tie(edge, ok) = 
+              boost::tie(edge, ok) =
                 add_edge(source(*ibegin, masterGraph), fromVertex, masterGraph);
             }
             */
@@ -1485,7 +1486,7 @@ namespace Gambit
 
     /// Push module function dependencies on parameter queue
     void DependencyResolver::fillParQueue( std::queue<QueueEntry> *parQueue,
-            DRes::VertexID vertex) 
+            DRes::VertexID vertex)
     {
       bool printme_default = false; // for parQueue constructor
       std::set<sspair> s = (*masterGraph[vertex]).dependencies();
@@ -1494,7 +1495,7 @@ namespace Gambit
         logger() << "Add dependencies of new module function to queue" << endl;
       //else
       //  logger() << "No further module function dependencies" << endl;
-      for (std::set<sspair>::iterator it = s.begin(); it != s.end(); ++it) 
+      for (std::set<sspair>::iterator it = s.begin(); it != s.end(); ++it)
       {
         logger() << (*it).first << " (" << (*it).second << ")" << endl;
         (*parQueue).push(QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default));
@@ -1571,12 +1572,12 @@ namespace Gambit
     /// Node-by-node backend resolution
     void DependencyResolver::resolveVertexBackend(VertexID vertex)
     {
-      functor* solution; 
+      functor* solution;
       std::vector<functor*> previous_successes;
       std::set<str> remaining_groups;
       std::set<sspair> remaining_reqs;
       bool allow_deferral = true;
- 
+
       // If there are no backend requirements, and thus nothing to do, return.
       if ((*masterGraph[vertex]).backendreqs().size() == 0) return;
 
@@ -1598,18 +1599,18 @@ namespace Gambit
 
         // Loop over all groups, including the null group (group="none").
         for (std::set<str>::iterator it = groups.begin(); it != groups.end(); ++it)
-        {       
+        {
           // Switch depending on whether this is a real group or not.
           if (*it == "none")
           {
             // Loop over all the orphan requirements.
             for (std::set<sspair>::iterator req = orphan_reqs.begin(); req != orphan_reqs.end(); ++req)
-            {       
+            {
               logger() << LogTags::dependency_resolver;
               logger() << "Resolving ungrouped requirement " << req->first;
               logger() << " (" << req->second << ")..." << endl << EOM;
 
-              // Find a backend function that fulfills the backend requirement.          
+              // Find a backend function that fulfills the backend requirement.
               std::set<sspair> reqsubset;
               reqsubset.insert(*req);
               solution = solveRequirement(reqsubset,auxEntry,vertex,previous_successes,allow_deferral);
@@ -1657,15 +1658,15 @@ namespace Gambit
               logger() << "Resolution from group " << *it;
               logger() << "deferred until later." << endl << EOM;
             }
-          }   
+          }
         }
-       
+
         // If there has been no improvement this round, turn off deferral and make the next round the last attempt.
         if (orphan_reqs == remaining_reqs and groups == remaining_groups)
         {
           allow_deferral = false;
         }
-        else // Otherwise try again to resolve the remaining groups and orphan requirements, now that some others are known. 
+        else // Otherwise try again to resolve the remaining groups and orphan requirements, now that some others are known.
         {
           orphan_reqs = remaining_reqs;
           groups = remaining_groups;
@@ -1677,9 +1678,9 @@ namespace Gambit
 
     }
 
-    /// Find a backend function that matches any one of a vector of capability-type pairs. 
-    functor* DependencyResolver::solveRequirement(std::set<sspair> reqs, 
-     const IniParser::ObservableType * auxEntry, VertexID vertex, std::vector<functor*> previous_successes, 
+    /// Find a backend function that matches any one of a vector of capability-type pairs.
+    functor* DependencyResolver::solveRequirement(std::set<sspair> reqs,
+     const IniParser::ObservableType * auxEntry, VertexID vertex, std::vector<functor*> previous_successes,
      bool allow_deferral, str group)
     {
       std::vector<functor *> vertexCandidates;
@@ -1689,9 +1690,9 @@ namespace Gambit
       // Loop over all existing backend vertices, and make a list of
       // functors that are available and fulfill the backend dependency requirement
       for (std::vector<functor *>::const_iterator
-          itf  = boundCore->getBackendFunctors().begin(); 
+          itf  = boundCore->getBackendFunctors().begin();
           itf != boundCore->getBackendFunctors().end();
-          ++itf) 
+          ++itf)
       {
         const IniParser::ObservableType * depEntry = NULL;
         bool entryExists = false;
@@ -1701,7 +1702,7 @@ namespace Gambit
         if ( auxEntry != NULL and depEntry != NULL) entryExists = true;
 
         // Without inifile entry, just match any capability-type pair exactly.
-        if ( std::find(reqs.begin(), reqs.end(), (*itf)->quantity()) != reqs.end() 
+        if ( std::find(reqs.begin(), reqs.end(), (*itf)->quantity()) != reqs.end()
         // With inifile entry, we also check capability, type, function name and module name.
         and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry, *boundTEs) : true ) )
         {
@@ -1717,11 +1718,11 @@ namespace Gambit
           std::set<sspair> permitted_bes = (*masterGraph[vertex]).backendspermitted((*itf)->quantity());
           // Then we see if any match.  First we test for generic matches, where any version of any backend is allowed.
           bool permitted = ( permitted_bes.empty()
-          // Next we test for semi-generic matches, where the backend matches and any version of that backend is allowed. 
+          // Next we test for semi-generic matches, where the backend matches and any version of that backend is allowed.
           or std::find(permitted_bes.begin(), permitted_bes.end(), itf_generic) != permitted_bes.end()
           // Finally we test for specific matches, where both the backend and version match what is allowed.
-          or std::find(permitted_bes.begin(), permitted_bes.end(), itf_signature) != permitted_bes.end() );    
-            
+          or std::find(permitted_bes.begin(), permitted_bes.end(), itf_signature) != permitted_bes.end() );
+
           // If the backend vertex is able and allowed,
           if (permitted and not disabled)
           {
@@ -1734,7 +1735,7 @@ namespace Gambit
           {
             // otherwise, add it to disabled vertex candidate list
             disabledVertexCandidates.push_back(*itf);
-          }            
+          }
         }
       }
 
@@ -1752,7 +1753,7 @@ namespace Gambit
       }
 
       // Purge all candidates that conflict with a backend-matching rule.
-      // Start by making a new vector to hold the candidates that survive the purge. 
+      // Start by making a new vector to hold the candidates that survive the purge.
       std::vector<functor *> survivingVertexCandidates;
       // Loop over the current candidates.
       for (std::vector<functor *>::const_iterator it = vertexCandidates.begin(); it != vertexCandidates.end(); ++it)
@@ -1765,27 +1766,27 @@ namespace Gambit
         for (std::set<str>::iterator tagit = tags.begin(); tagit != tags.end(); ++tagit)
         {
           // Find out which other backend requirements exhibiting this tag must be filled from the same backend as the req this candidate would fill.
-          std::set<sspair> must_match = (*masterGraph[vertex]).forcematchingbackend(*tagit);          
-          // Set up a flag to keep track of whether any of the other backend reqs have already been filled. 
+          std::set<sspair> must_match = (*masterGraph[vertex]).forcematchingbackend(*tagit);
+          // Set up a flag to keep track of whether any of the other backend reqs have already been filled.
           bool others_filled = false;
           // Set up a string to keep track of which backend the other backend reqs have been filled from (if any).
           str common_backend_and_version;
           // Loop over the other backend reqs.
           for (std::set<sspair>::iterator mit = must_match.begin(); mit != must_match.end(); ++mit)
           {
-            // Set up a flag to indicate if the other backend req in question has been filled yet.  
+            // Set up a flag to indicate if the other backend req in question has been filled yet.
             bool other_filled = false;
-            // Set up a string to keep track of which backend the other backend req in question has been filled from (if any).            
+            // Set up a string to keep track of which backend the other backend req in question has been filled from (if any).
             str filled_from;
             // Loop over the backend functors that have successfully filled backend reqs already for this funcition
-            for (std::vector<functor*>::const_iterator 
+            for (std::vector<functor*>::const_iterator
                  itf  = previous_successes.begin();
-                 itf != previous_successes.end();    
+                 itf != previous_successes.end();
                  ++itf)
             {
-              // Check if the current previous successful resolution (itf) was of the same backend requirement as the 
+              // Check if the current previous successful resolution (itf) was of the same backend requirement as the
               // current one of the backend requirements (mit) that must be filled from the same backend as the current candidate (it).
-              if ((*itf)->quantity() == *mit) 
+              if ((*itf)->quantity() == *mit)
               {
                 // Note that mit (the current backend req that must be filled from the same backend as the current candidate) has indeed been filled, by itf
                 other_filled = true;
@@ -1794,7 +1795,7 @@ namespace Gambit
                 break;
               }
             }
-            // If the other req has been filled, updated the tracker of whether any of the reqs linked to this flag have been filled, 
+            // If the other req has been filled, updated the tracker of whether any of the reqs linked to this flag have been filled,
             // and compare the filling backend to the one used to fill any other reqs associated with this tag.
             if (other_filled)
             {
@@ -1816,7 +1817,7 @@ namespace Gambit
           // Try to keep this candidate if it comes from the same backend as those already filled, or if none of the others are filled yet.
           keeper = (not others_filled or common_backend_and_version == (*it)->origin() + " v" + (*it)->version());
           if (not keeper) break;
-        } 
+        }
         if (keeper) survivingVertexCandidates.push_back(*it); else disabledVertexCandidates.push_back(*it);
       }
       // Replace the previous list of candidates with the survivors.
@@ -1826,8 +1827,8 @@ namespace Gambit
       if (vertexCandidates.size() == 0)
       {
         std::ostringstream errmsg;
-        errmsg 
-          << "Found no candidates for backend requirements (capability, type):\n" 
+        errmsg
+          << "Found no candidates for backend requirements (capability, type):\n"
           << reqs << "\nfrom group: " << group;
         if (disabledVertexCandidates.size() != 0)
         {
@@ -1839,10 +1840,22 @@ namespace Gambit
                  << " 0: This function is not compatible with any model you are scanning." << endl
                  << "-1: The backend that provides this function is missing." << endl
                  << "-2: The backend is present, but function is absent or broken." << endl
-                 << "\nPlease check that all shared objects exist for the"
-                 << "\nnecessary backends, and that they contain all the"
-                 << "\nnecessary functions required for this scan. Also "
-                 << "\ncheck your backend rules and YAML file.\n";
+                 << endl
+                 << "Make sure to check your YAML file, especially the rules" << endl
+                 << "pertaining to backends."  << endl
+                 << endl
+                 << "Please also check that all shared objects exist for the"  << endl
+                 << "necessary backends, and that they contain all the"  << endl
+                 << "necessary functions required for this scan.  You may"  << endl
+                 << "check the status of different backends by running"  << endl
+                 << "  ./gambit backends"  << endl
+                 << "You may also wish to check the specified search paths for each" << endl
+                 << "backend shared library in "  << endl;
+          if (Backends::backendInfo().custom_locations_exist())
+          {
+            errmsg << "  " << Backends::backendInfo().backend_locations()  << endl << "and"  << endl;
+          }
+          errmsg << "  " << Backends::backendInfo().default_backend_locations()  << endl;
         }
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
@@ -1850,7 +1863,7 @@ namespace Gambit
       // Still more than one candidate...
       if (vertexCandidates.size() > 1)
       {
-        // Check whether any of the remaining candidates is subject to a backend-matching rule, 
+        // Check whether any of the remaining candidates is subject to a backend-matching rule,
         // and might therefore be uniquely chosen over the other(s) if resolution for this req is attempted again, after
         // another of the reqs subject to the same rule is resolved.
         bool rule_exists = false;
@@ -1863,7 +1876,7 @@ namespace Gambit
           for (std::set<str>::iterator tagit = tags.begin(); tagit != tags.end(); ++tagit)
           {
             // Find if there is a backend-matching rule associated with this tag.
-            rule_exists = not (*masterGraph[vertex]).forcematchingbackend(*tagit).empty();          
+            rule_exists = not (*masterGraph[vertex]).forcematchingbackend(*tagit).empty();
             if (rule_exists) break;
           }
           if (rule_exists) break;

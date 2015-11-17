@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:12:25
+// File generated at Wed 28 Oct 2015 11:24:00
 
 #ifndef NUHMSSM_UTILITIES_H
 #define NUHMSSM_UTILITIES_H
@@ -31,17 +31,14 @@
 #include <valarray>
 #include <utility>
 
-#define PHYSICAL(p) model.get_physical().p
-#define MODELPARAMETER(p) model.get_##p()
-
 namespace flexiblesusy {
 
 class NUHMSSM_parameter_getter {
 public:
-   Eigen::ArrayXd get_parameters(const NUHMSSM<Two_scale>& model) {
+   Eigen::ArrayXd get_parameters(const NUHMSSM_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names(const NUHMSSM<Two_scale>&) const {
+   std::vector<std::string> get_parameter_names(const NUHMSSM_mass_eigenstates&) const {
       using namespace NUHMSSM_info;
       return std::vector<std::string>(parameter_names,
                                       parameter_names + NUMBER_OF_PARAMETERS);
@@ -53,8 +50,7 @@ public:
    NUHMSSM_spectrum_plotter();
    ~NUHMSSM_spectrum_plotter() {}
 
-   template <class T>
-   void extract_spectrum(const NUHMSSM<T>&);
+   void extract_spectrum(const NUHMSSM_mass_eigenstates&);
    void write_to_file(const std::string&) const;
 
 private:
@@ -80,37 +76,6 @@ private:
    static std::valarray<double> to_valarray(const Eigen::Array<Scalar, M, N>&);
 };
 
-
-template <class T>
-void NUHMSSM_spectrum_plotter::extract_spectrum(const NUHMSSM<T>& model)
-{
-   spectrum.clear();
-   scale = model.get_scale();
-
-   spectrum.push_back(TParticle("Glu", "\\tilde{g}", to_valarray(PHYSICAL(MGlu))));
-   spectrum.push_back(TParticle("Sd", "\\tilde{d}", to_valarray(PHYSICAL(MSd))));
-   spectrum.push_back(TParticle("Sv", "\\tilde{\\nu}", to_valarray(PHYSICAL(MSv))));
-   spectrum.push_back(TParticle("Su", "\\tilde{u}", to_valarray(PHYSICAL(MSu))));
-   spectrum.push_back(TParticle("Se", "\\tilde{e}", to_valarray(PHYSICAL(MSe))));
-   spectrum.push_back(TParticle("hh", "h", to_valarray(PHYSICAL(Mhh))));
-   spectrum.push_back(TParticle("Ah", "A^0", to_valarray(PHYSICAL(MAh))));
-   spectrum.push_back(TParticle("Hpm", "H^-", to_valarray(PHYSICAL(MHpm))));
-   spectrum.push_back(TParticle("Chi", "\\tilde{\\chi}^0", to_valarray(PHYSICAL(MChi))));
-   spectrum.push_back(TParticle("Cha", "\\tilde{\\chi}^-", to_valarray(PHYSICAL(MCha))));
-
-   if (model.do_calculate_sm_pole_masses()) {
-      spectrum.push_back(TParticle("Fd", "d", to_valarray(PHYSICAL(MFd))));
-      spectrum.push_back(TParticle("Fe", "e", to_valarray(PHYSICAL(MFe))));
-      spectrum.push_back(TParticle("Fu", "u", to_valarray(PHYSICAL(MFu))));
-      spectrum.push_back(TParticle("Fv", "\\nu", to_valarray(PHYSICAL(MFv))));
-      spectrum.push_back(TParticle("VG", "g", to_valarray(PHYSICAL(MVG))));
-      spectrum.push_back(TParticle("VP", "\\gamma", to_valarray(PHYSICAL(MVP))));
-      spectrum.push_back(TParticle("VWm", "W^-", to_valarray(PHYSICAL(MVWm))));
-      spectrum.push_back(TParticle("VZ", "Z", to_valarray(PHYSICAL(MVZ))));
-
-   }
-}
-
 template <class Scalar, int M, int N>
 std::valarray<double> NUHMSSM_spectrum_plotter::to_valarray(const Eigen::Array<Scalar, M, N>& v)
 {
@@ -118,8 +83,5 @@ std::valarray<double> NUHMSSM_spectrum_plotter::to_valarray(const Eigen::Array<S
 }
 
 } // namespace flexiblesusy
-
-#undef PHYSICAL
-#undef MODELPARAMETER
 
 #endif

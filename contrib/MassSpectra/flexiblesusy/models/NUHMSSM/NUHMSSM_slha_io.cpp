@@ -16,15 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:12:25
+// File generated at Wed 28 Oct 2015 11:24:00
 
 #include "NUHMSSM_slha_io.hpp"
 #include "NUHMSSM_input_parameters.hpp"
+#include "NUHMSSM_info.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "numerics2.hpp"
-#include "spectrum_generator_settings.hpp"
-#include "lowe.h"
 #include "config.h"
 
 #include <fstream>
@@ -131,6 +130,9 @@ void NUHMSSM_slha_io::set_spinfo(const Problems<NUHMSSM_info::NUMBER_OF_PARTICLE
       spinfo << FORMAT_SPINFO(4, problems_str.str());
    }
 
+   spinfo << FORMAT_SPINFO(5, NUHMSSM_info::model_name)
+          << FORMAT_SPINFO(9, SARAH_VERSION);
+
    slha_io.set_block(spinfo, SLHA_io::front);
 }
 
@@ -185,11 +187,9 @@ void NUHMSSM_slha_io::set_mass(const NUHMSSM_physical& physical,
 
    if (write_sm_masses) {
       mass
-         << FORMAT_MASS(21, LOCALPHYSICAL(MVG), "VG")
          << FORMAT_MASS(12, LOCALPHYSICAL(MFv(0)), "Fv(1)")
          << FORMAT_MASS(14, LOCALPHYSICAL(MFv(1)), "Fv(2)")
          << FORMAT_MASS(16, LOCALPHYSICAL(MFv(2)), "Fv(3)")
-         << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
          << FORMAT_MASS(23, LOCALPHYSICAL(MVZ), "VZ")
          << FORMAT_MASS(11, LOCALPHYSICAL(MFe(0)), "Fe(1)")
          << FORMAT_MASS(13, LOCALPHYSICAL(MFe(1)), "Fe(2)")
@@ -200,6 +200,8 @@ void NUHMSSM_slha_io::set_mass(const NUHMSSM_physical& physical,
          << FORMAT_MASS(2, LOCALPHYSICAL(MFu(0)), "Fu(1)")
          << FORMAT_MASS(4, LOCALPHYSICAL(MFu(1)), "Fu(2)")
          << FORMAT_MASS(6, LOCALPHYSICAL(MFu(2)), "Fu(3)")
+         << FORMAT_MASS(21, LOCALPHYSICAL(MVG), "VG")
+         << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
       ;
    }
 
@@ -283,6 +285,29 @@ void NUHMSSM_slha_io::read_from_file(const std::string& file_name)
 {
    slha_io.read_from_file(file_name);
    slha_io.read_modsel();
+}
+
+/**
+ * Read SLHA object from source
+ *
+ * calls SLHA_io::read_from_source()
+ *
+ * @param source source name
+ */
+void NUHMSSM_slha_io::read_from_source(const std::string& source)
+{
+   slha_io.read_from_source(source);
+   slha_io.read_modsel();
+}
+
+/**
+ * Read SLHA object from stream
+ *
+ * @param istr stream name
+ */
+void NUHMSSM_slha_io::read_from_stream(std::istream& istr)
+{
+   slha_io.read_from_stream(istr);
 }
 
 /**
@@ -403,10 +428,7 @@ void NUHMSSM_slha_io::fill(NUHMSSM_mass_eigenstates& model) const
  */
 void NUHMSSM_slha_io::fill(Spectrum_generator_settings& settings) const
 {
-   SLHA_io::Tuple_processor flexiblesusy_processor
-      = boost::bind(&NUHMSSM_slha_io::fill_flexiblesusy_tuple, boost::ref(settings), _1, _2);
-
-   slha_io.read_block("FlexibleSUSY", flexiblesusy_processor);
+   slha_io.fill(settings);
 }
 
 void NUHMSSM_slha_io::fill_minpar_tuple(NUHMSSM_input_parameters& input,
@@ -418,7 +440,7 @@ void NUHMSSM_slha_io::fill_minpar_tuple(NUHMSSM_input_parameters& input,
    case 3: input.TanBeta = value; break;
    case 4: input.SignMu = value; break;
    case 5: input.Azero = value; break;
-   default: WARNING("Unrecognized key: " << key); break;
+   default: WARNING("Unrecognized entry in block MINPAR: " << key); break;
    }
 
 }
@@ -429,19 +451,9 @@ void NUHMSSM_slha_io::fill_extpar_tuple(NUHMSSM_input_parameters& input,
    switch (key) {
    case 1: input.mHd2In = value; break;
    case 2: input.mHu2In = value; break;
-   default: WARNING("Unrecognized key: " << key); break;
+   default: WARNING("Unrecognized entry in block EXTPAR: " << key); break;
    }
 
-}
-
-void NUHMSSM_slha_io::fill_flexiblesusy_tuple(Spectrum_generator_settings& settings,
-                                                  int key, double value)
-{
-   if (0 <= key && key < static_cast<int>(Spectrum_generator_settings::NUMBER_OF_OPTIONS)) {
-      settings.set((Spectrum_generator_settings::Settings)key, value);
-   } else {
-      WARNING("Unrecognized key in block FlexibleSUSY: " << key);
-   }
 }
 
 /**
@@ -530,12 +542,10 @@ void NUHMSSM_slha_io::fill_physical(NUHMSSM_physical& physical) const
       LOCALPHYSICAL(ZUR) = ZUR;
    }
 
-   LOCALPHYSICAL(MVG) = slha_io.read_entry("MASS", 21);
    LOCALPHYSICAL(MGlu) = slha_io.read_entry("MASS", 1000021);
    LOCALPHYSICAL(MFv)(0) = slha_io.read_entry("MASS", 12);
    LOCALPHYSICAL(MFv)(1) = slha_io.read_entry("MASS", 14);
    LOCALPHYSICAL(MFv)(2) = slha_io.read_entry("MASS", 16);
-   LOCALPHYSICAL(MVP) = slha_io.read_entry("MASS", 22);
    LOCALPHYSICAL(MVZ) = slha_io.read_entry("MASS", 23);
    LOCALPHYSICAL(MSd)(0) = slha_io.read_entry("MASS", 1000001);
    LOCALPHYSICAL(MSd)(1) = slha_io.read_entry("MASS", 1000003);
@@ -577,6 +587,8 @@ void NUHMSSM_slha_io::fill_physical(NUHMSSM_physical& physical) const
    LOCALPHYSICAL(MFu)(0) = slha_io.read_entry("MASS", 2);
    LOCALPHYSICAL(MFu)(1) = slha_io.read_entry("MASS", 4);
    LOCALPHYSICAL(MFu)(2) = slha_io.read_entry("MASS", 6);
+   LOCALPHYSICAL(MVG) = slha_io.read_entry("MASS", 21);
+   LOCALPHYSICAL(MVP) = slha_io.read_entry("MASS", 22);
    LOCALPHYSICAL(MVWm) = slha_io.read_entry("MASS", 24);
 
 }

@@ -8,8 +8,8 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott  
+///
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2014 Aug
 ///  \date 2015 May
@@ -33,10 +33,19 @@ namespace Gambit
     struct backend_info
     {
 
-      public: 
+      public:
 
         /// Constructor
-        backend_info();                            
+        backend_info();
+
+        /// Indicate whether a custom backend locations file exists
+        bool custom_locations_exist() const;
+
+        /// Return the path to any custom user backend locations file
+        str backend_locations() const;
+
+        /// Return the path to the default backend locations file
+        str default_backend_locations() const;
 
         /// Return the path to a backend library
         str path(str, str) const;
@@ -45,26 +54,26 @@ namespace Gambit
         str corrected_path(str, str) const;
 
         /// Return the path to the folder in which a backend library resides
-        str path_dir(str, str) const;              
+        str path_dir(str, str) const;
 
         /// Key: backend name + version
         std::map<str,str> dlerrors;
 
         /// Key: backend name
         std::map<str,str> defaults;
-        
+
         /// Key: backend name + version
         std::map<str,bool> works;
 
         /// Key: backend name + version
-        std::map<str,bool> classloader;           
+        std::map<str,bool> classloader;
 
         /// Key: backend name + version
-        std::map<str,bool> classes_OK;             
+        std::map<str,bool> classes_OK;
 
         /// Key: backend name + version
         std::map<str,std::set<str> > classes;
-        
+
         /// Key: backend name + version + class name
         std::map<str,std::set<str> > factory_args;
 
@@ -75,7 +84,7 @@ namespace Gambit
         str version_from_safe_version (str, str) const;
 
         /// Given a backend and a true version (with periods), return the safe version
-        str safe_version_from_version (str, str) const; 
+        str safe_version_from_version (str, str) const;
 
         /// Link a backend's version and safe version
         void link_versions(str, str, str);
@@ -83,20 +92,28 @@ namespace Gambit
         /// Override a backend's config file location
         void override_path(str&, str&, str);
 
-      private: 
-        
+      private:
+
         /// Map from backend names to maps between version and safe version
         std::map<str,std::pair<std::map<str,str>,std::map<str,str> > > safe_version_map;
 
         /// Map from backend names to maps between version and paths found by dlinfo
         std::map<str, std::map<str, str> > bepathoverrides;
 
-        /// Filename in which to find the backend locations configuration file.
+        /// Filename in which to find the user's custom backend locations configuration file.
         const str filename;
-        
-        /// YAML node corresponding to backend locations configuration file.
+
+        /// Filename in which to find the default backend locations configuration file.
+        const str default_filename;
+
+        /// YAML node corresponding to user custom backend locations configuration file.
         YAML::Node bepathfile;
 
+        /// YAML node corresponding to default backend locations configuration file.
+        YAML::Node default_bepathfile;
+
+        /// Flag indicating whether or not the user has a custom backend locations file
+        bool custom_bepathfile_exists;
     };
 
   }

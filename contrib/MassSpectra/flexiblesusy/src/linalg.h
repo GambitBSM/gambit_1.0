@@ -13,7 +13,6 @@
 #define LINALG_H
 
 #include <vector>
-using namespace std;
 
 #include "mycomplex.h"
 #include "xpr-vector.h"

@@ -20,8 +20,11 @@
 #define EIGEN_UTILS_H
 
 #include "compare.hpp"
-#include "wrappers.hpp"
 #include <Eigen/Core>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <limits>
 
 namespace flexiblesusy {
 
@@ -54,7 +57,7 @@ void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
    if (pos == idx)
       return;
 
-   const int sign = Sign(idx - pos);
+   const int sign = (idx - pos) < 0 ? -1 : 1;
    int steps = std::abs(idx - pos);
 
    // now we shuffle the states
@@ -128,7 +131,22 @@ void reorder_vector(
    reorder_vector(v, matrix.diagonal().array().eval());
 }
 
+template<class Derived>
+std::string print_scientific(const Eigen::DenseBase<Derived>& v,
+                             unsigned number_of_digits = std::numeric_limits<typename Derived::Scalar>::digits10 + 1)
+{
+   std::ostringstream sstr;
 
+   for (std::size_t i = 0; i < v.rows(); i++) {
+      for (std::size_t k = 0; k < v.cols(); k++) {
+         sstr << std::setprecision(number_of_digits)
+              << std::scientific << v(i,k) << ' ';
+      }
+      sstr << '\n';
+   }
+
+   return sstr.str();
+}
 
 } // namespace flexiblesusy
 

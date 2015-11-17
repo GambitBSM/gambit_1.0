@@ -66,7 +66,7 @@ Convergence_tester_DRbar<Model<Two_scale> >::Convergence_tester_DRbar
    , model(model_)
    , last_iteration_model()
    , it_count(0)
-   , max_it(static_cast<int>(-log(accuracy_goal_) / log(10.0) * 10))
+   , max_it(static_cast<int>(-log10(accuracy_goal_) * 10))
    , accuracy_goal(accuracy_goal_)
    , current_accuracy(std::numeric_limits<double>::infinity())
 {

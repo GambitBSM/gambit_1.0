@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:55:46
+// File generated at Wed 28 Oct 2015 11:46:10
 
 #include "CMSSMNoFV_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -66,6 +66,25 @@ double CMSSMNoFV_susy_parameters::calc_beta_vd_two_loop(const Susy_traces& susy_
       1800*traceYdAdjYdYdAdjYd - 600*traceYdAdjYuYuAdjYd - 600*
       traceYeAdjYeYeAdjYe + 90*Sqr(g1)*Sqr(g2) + 300*traceYeAdjYe*(Sqr(g1) +
       Sqr(g2)) + 100*traceYdAdjYd*(Sqr(g1) + 9*Sqr(g2) + 32*Sqr(g3))));
+
+
+   return beta_vd;
+}
+
+/**
+ * Calculates the three-loop beta function of vd.
+ *
+ * @return three-loop beta function
+ */
+double CMSSMNoFV_susy_parameters::calc_beta_vd_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_vd;
+
+   beta_vd = 0;
 
 
    return beta_vd;

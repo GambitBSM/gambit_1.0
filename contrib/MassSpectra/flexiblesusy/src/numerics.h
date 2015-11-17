@@ -21,6 +21,8 @@
 #include "def.h"
 #include "linalg.h"
 
+#define DoubleMatrix softsusy::DoubleMatrix
+
 /// calculates root(1+x), where x<<1 accurately
 double accurateSqrt1Plusx(double x);
 
@@ -73,7 +75,9 @@ double d0(double m1, double m2, double m3, double m4);
 
 // inlined PV functions
 inline double a0(double m, double q) {
-  if (fabs(m) < EPSTOL) return 0.;
+   using std::fabs;
+   using std::log;
+  if (fabs(m) < softsusy::EPSTOL) return 0.;
   return sqr(m) * (1.0 - 2. * log(abs(m / q)));
 }
 
@@ -102,14 +106,14 @@ inline double b22bar(double p, double m1, double m2, double q) {
   return (log(Complex(1.0 - x)) - x * log(Complex(1.0 - 1.0 / x)) 
          - Complex(1.0)).real();
 	 } */
-double fB(const Complex & x);
+double fB(const softsusy::Complex & x);
 
 double dilogarg(double t);
 double dilog(double x);
 
 double integrandThreshbnr(double x);
-Complex fnfn(double x);
-Complex fnfn(double x, int n1, double p, double m1, double m2, double mt);
+softsusy::Complex fnfn(double x);
+softsusy::Complex fnfn(double x, int n1, double p, double m1, double m2, double mt);
 
 /// Gaussian deviated random number, mean 0 variance 1. Don't re-set idum once
 /// you've initially set it. Initialise with a NEGATIVE integer
@@ -151,7 +155,7 @@ double fps(double z);
 double fs(double z);
 double ffbar(double z);
 
-Complex dilog(const Complex & x);
+softsusy::Complex dilog(const softsusy::Complex & x);
 
 /// Trapezoidal function integration to accuracy tol
 double trapzd(double (*func)(double), double a, double b, int n, 
@@ -254,5 +258,8 @@ void rotate(DoubleMatrix & r, DoubleMatrix & qt, int n, int i, float a,
 	    float b);
 void rsolv(const DoubleMatrix & a, int n, const softsusy::DoubleVector & d, 
 	   softsusy::DoubleVector & b);
+
+#undef DoubleMatrix
+
 #endif
 

@@ -23,7 +23,6 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
 
 /**
  * @file two_scale_solver.hpp

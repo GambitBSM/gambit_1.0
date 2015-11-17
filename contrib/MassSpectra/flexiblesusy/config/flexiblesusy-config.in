@@ -12,6 +12,8 @@ eigenflags="@EIGENFLAGS@"
 fflags="@FFLAGS@"
 gslflags="@GSLFLAGS@"
 gsllibs="@GSLLIBS@"
+ldflags="@LDFLAGS@"
+ldlibs="@LDLIBS@"
 loopfuncflags="@LOOPFUNCFLAGS@"
 cxx="@CXX@"
 fc="@FC@"
@@ -35,6 +37,8 @@ Usage: `basename $0`\
  [--flibs]\
  [--gslflags]\
  [--gsllibs]\
+ [--ldflags]\
+ [--ldlibs]\
  [--loopfuncflags]\
  [--make-lib-cmd]\
  [--math-cmd]\
@@ -61,6 +65,8 @@ Options:
   --flibs               Print FLIBS
   --gslflags            Print compiler flags for GSL
   --gsllibs             Print linker flags for GSL
+  --ldflags             Print LDFLAGS
+  --ldlibs              Print LDLIBS
   --loopfuncflags       Print compiler flags for loop function library
   --make-lib-cmd        Print make library command
   --math-cmd            Print Mathematica kernel command
@@ -93,6 +99,8 @@ while test $# -gt 0; do
         --flibs)         out="$out $flibs"    ;;
         --gslflags)      out="$out $gslflags" ;;
         --gsllibs)       out="$out $gsllibs"  ;;
+        --ldflags)       out="$out $ldflags"  ;;
+        --ldlibs)        out="$out $ldlibs"   ;;
         --loopfuncflags) out="$out $loopfuncflags" ;;
         --make-lib-cmd)  out="$out $makelib"  ;;
         --math-cmd)      out="$out $math"     ;;

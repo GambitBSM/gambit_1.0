@@ -20,7 +20,7 @@
 
 /**
  * @file two_loop_corrections.hpp
- * @brief contains struct for selection of Higgs 2-loop corrections
+ * @brief contains struct for selection of 2-loop corrections
  */
 
 #ifndef TWO_LOOP_CORRECTIONS_H

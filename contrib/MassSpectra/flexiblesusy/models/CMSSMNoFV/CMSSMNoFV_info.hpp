@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:56:29
+// File generated at Wed 28 Oct 2015 11:46:19
 
 #ifndef CMSSMNoFV_INFO_H
 #define CMSSMNoFV_INFO_H
@@ -26,9 +26,9 @@
 namespace flexiblesusy {
 
 namespace CMSSMNoFV_info {
-   enum Particles : unsigned {VG, Glu, VP, VZ, Fd, Fs, Fb, Fu, Fc, Ft, Fve, Fvm
-      , Fvt, Fe, Fm, Ftau, SveL, SvmL, SvtL, Sd, Su, Se, Sm, Stau, Ss, Sc, Sb, St,
-      hh, Ah, Hpm, Chi, Cha, VWm, NUMBER_OF_PARTICLES};
+   enum Particles : unsigned {Glu, VZ, Fd, Fs, Fb, Fu, Fc, Ft, Fve, Fvm, Fvt,
+      Fe, Fm, Ftau, SveL, SvmL, SvtL, Sd, Su, Se, Sm, Stau, Ss, Sc, Sb, St, hh, Ah
+      , Hpm, Chi, Cha, VG, VP, VWm, NUMBER_OF_PARTICLES};
 
    enum Parameters : unsigned {Yd00, Yd01, Yd02, Yd10, Yd11, Yd12, Yd20, Yd21,
       Yd22, Ye00, Ye01, Ye02, Ye10, Ye11, Ye12, Ye20, Ye21, Ye22, Yu00, Yu01, Yu02

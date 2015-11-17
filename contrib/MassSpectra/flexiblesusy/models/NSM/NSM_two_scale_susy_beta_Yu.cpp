@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:22
+// File generated at Wed 28 Oct 2015 11:35:24
 
 #include "NSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -66,20 +66,40 @@ Eigen::Matrix<double,3,3> NSM_susy_parameters::calc_beta_Yu_two_loop(const Susy_
 
    Eigen::Matrix<double,3,3> beta_Yu;
 
-   beta_Yu = (0.0023148148148148147*twoLoop*(2*Yu*(1187*Power(g1,4) -
-      1242*Power(g2,4) - 23328*Power(g3,4) - 1458*traceYdAdjYdYdAdjYd + 324*
-      traceYdAdjYuYuAdjYd - 486*traceYeAdjYeYeAdjYe - 1458*traceYuAdjYuYuAdjYu
-      + 765*traceYuAdjYu*Sqr(g1) + 1215*traceYuAdjYu*Sqr(g2) - 162*Sqr(g1)*Sqr(
-      g2) + 135*traceYeAdjYe*(5*Sqr(g1) + 3*Sqr(g2)) + 4320*traceYuAdjYu*Sqr(g3
-      ) + 456*Sqr(g1)*Sqr(g3) + 1944*Sqr(g2)*Sqr(g3) + 45*traceYdAdjYd*(5*Sqr(
-      g1) + 27*Sqr(g2) + 96*Sqr(g3)) + 1296*Sqr(Lambda1)) - 9*((-180*
-      traceYdAdjYd - 60*traceYeAdjYe - 180*traceYuAdjYu + 43*Sqr(g1) - 27*Sqr(
-      g2) + 768*Sqr(g3))*(Yu*Yd.adjoint()*Yd) + (324*traceYdAdjYd + 108*
-      traceYeAdjYe + 324*traceYuAdjYu + 576*Lambda1 - 223*Sqr(g1) - 405*Sqr(g2)
-      - 768*Sqr(g3))*(Yu*Yu.adjoint()*Yu) + 12*(-11*(Yu*Yd.adjoint()*Yd*
-      Yd.adjoint()*Yd) + Yu*Yd.adjoint()*Yd*Yu.adjoint()*Yu + 4*(Yu*Yu.adjoint(
-      )*Yu*Yd.adjoint()*Yd) - 6*(Yu*Yu.adjoint()*Yu*Yu.adjoint()*Yu))))).real()
+   beta_Yu = (twoLoop*(Yu*(5.49537037037037*Power(g1,4) - 5.75*Power(g2,4
+      ) - 108*Power(g3,4) - 6.75*traceYdAdjYdYdAdjYd + 1.5*traceYdAdjYuYuAdjYd
+      - 2.25*traceYeAdjYeYeAdjYe - 6.75*traceYuAdjYuYuAdjYu +
+      3.5416666666666665*traceYuAdjYu*Sqr(g1) + 5.625*traceYuAdjYu*Sqr(g2) -
+      0.75*Sqr(g1)*Sqr(g2) + 0.625*traceYeAdjYe*(5*Sqr(g1) + 3*Sqr(g2)) + 20*
+      traceYuAdjYu*Sqr(g3) + 2.111111111111111*Sqr(g1)*Sqr(g3) + 9*Sqr(g2)*Sqr(
+      g3) + 0.20833333333333334*traceYdAdjYd*(5*Sqr(g1) + 27*Sqr(g2) + 96*Sqr(
+      g3)) + 6*Sqr(Lambda1) + Sqr(Lambda3)) + 0.020833333333333332*((180*
+      traceYdAdjYd + 60*traceYeAdjYe + 180*traceYuAdjYu - 43*Sqr(g1) + 27*Sqr(
+      g2) - 768*Sqr(g3))*(Yu*Yd.adjoint()*Yd) + (-324*traceYdAdjYd - 108*
+      traceYeAdjYe - 324*traceYuAdjYu + 576*Lambda1 + 223*Sqr(g1) + 405*Sqr(g2)
+      + 768*Sqr(g3))*(Yu*Yu.adjoint()*Yu) + 12*(11*(Yu*Yd.adjoint()*Yd*
+      Yd.adjoint()*Yd) - Yu*Yd.adjoint()*Yd*Yu.adjoint()*Yu - 4*(Yu*Yu.adjoint(
+      )*Yu*Yd.adjoint()*Yd) + 6*(Yu*Yu.adjoint()*Yu*Yu.adjoint()*Yu))))).real()
       ;
+
+
+   return beta_Yu;
+}
+
+/**
+ * Calculates the three-loop beta function of Yu.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> NSM_susy_parameters::calc_beta_Yu_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_Yu;
+
+   beta_Yu = ZEROMATRIX(3,3);
 
 
    return beta_Yu;
