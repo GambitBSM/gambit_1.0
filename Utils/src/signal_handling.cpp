@@ -94,6 +94,20 @@ namespace Gambit
        std::cout << "Another " << (N_signals - MAX_SIGNALS) <<" signals were caught but their values were not recorded (buffer exceeded)"<<std::endl;
      }
    }
+
+   /// Register that shutdown has begun
+   void SignalData::set_shutdown_begun()
+   {
+     shutdown_begun = true;
+     if(ignore_signals_during_shutdown)
+     {
+        /// Redirect all future signals (except of course kill etc.) to the null handlers
+        signal(SIGTERM, sighandler_null);
+        signal(SIGINT,  sighandler_null);
+        signal(SIGUSR1, sighandler_null);
+        signal(SIGUSR2, sighandler_null);
+     }
+   }
    /// @}
 
    /// Retrieve global instance of signal handler options struct
@@ -111,12 +125,21 @@ namespace Gambit
             
    void sighandler_emergency(int sig)
    {
+     if(signaldata().shutdown_begun)
+     {
+       #ifdef WITH_MPI
+       std::cout << "rank "<<signaldata().rank<<": ";
+       #endif
+       std::cout << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
+       sighandler_hard(sig); // calls exit(sig)
+     } 
+     signaldata().add_signal(sig);
+     signaldata().set_shutdown_begun();
      signaldata().call_cleanup(); // Try to cleanup, though behaviour may be undefined.
      #ifdef WITH_MPI
      std::cout << "rank "<<signaldata().rank<<": ";
      #endif
      std::cout << "Gambit has performed an emergency shutdown!" << std::endl;
-     signaldata().add_signal(sig);
      signaldata().display_received_signals();
      std::cout << std::endl;
      exit(sig); // No choice but to call exit here. MPI deadlocks can occur if we return.
@@ -134,30 +157,21 @@ namespace Gambit
      // We will avoid touching streams in this shutdown mode since technically it is undefined behaviour, so no messages here.
      if(signaldata().shutdown_begun)
      {
-       if(signaldata().emergency_shutdown_on_second_signal)
-       {
-         #ifdef WITH_MPI
-         std::cout << "rank "<<signaldata().rank<<": ";
-         #endif
-         std::cout << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown via longjmp, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
-         sighandler_emergency(sig); // calls exit(sig)
-       } 
-       else 
-       {
-         // Ignore signal and hope previous shutdown can finish
-         signaldata().add_signal(sig);
-         return; 
-       }
-     }
-
-     signaldata().add_signal(sig);
-     if(signaldata().havejumped) 
-     {
        #ifdef WITH_MPI
        std::cout << "rank "<<signaldata().rank<<": ";
        #endif
-       std::cout << LOCAL_INFO <<": ERROR from sighandler_emergency_longjmp! No jump point has been set, or jump has already occurred once!" << std::endl;
+       std::cout << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown via longjmp, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
+       sighandler_hard(sig); // calls exit(sig)
+     }
+     signaldata().add_signal(sig);
+     signaldata().set_shutdown_begun();
+     if(signaldata().havejumped) 
+     {
        signaldata().display_received_signals();
+       #ifdef WITH_MPI
+       std::cout << "rank "<<signaldata().rank<<": ";
+       #endif
+       std::cout << LOCAL_INFO <<": ERROR from sighandler_emergency_longjmp! No jump point has been set, or jump has already occurred once! (Either is a bug; should not be able to reach this point if jump occurred already)" << std::endl;
        std::cout << std::endl;
        exit(EXIT_FAILURE);
      }
@@ -168,24 +182,14 @@ namespace Gambit
    {
      if(signaldata().shutdown_begun)
      {
-       if(signaldata().emergency_shutdown_on_second_signal)
-       {
-         #ifdef WITH_MPI
-         std::cout << "rank "<<signaldata().rank<<": ";
-         #endif
-         std::cout << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger soft shutdown, but soft shutdown is already in progress! Initiating emergency shutdown." << std::endl;
-         sighandler_emergency(sig); // calls exit(sig)
-       }
-       else
-       {
-         // Ignore the signal and hope that the shutdown attempt that is already in progress will succeed!
-         signaldata().add_signal(sig);
-         return;
-       }
+       #ifdef WITH_MPI
+       std::cout << "rank "<<signaldata().rank<<": ";
+       #endif
+       std::cout << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger soft shutdown, but soft shutdown is already in progress! Initiating emergency shutdown." << std::endl;
+       sighandler_emergency(sig); // calls exit(sig)
      }
-   
      // We will avoid touching streams in this "clean" shutdown mode since technically it is undefined behaviour, so no messages here.
-     signaldata().shutdown_begun=true;
+     signaldata().set_shutdown_begun();
      signaldata().add_signal(sig);
    }
    

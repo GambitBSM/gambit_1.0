@@ -37,11 +37,19 @@ namespace Gambit
       /// Default (attaches to MPI_COMM_WORLD):
       Comm::Comm() : boundcomm(MPI_COMM_WORLD)
       {
+         if(not Is_initialized())
+         {
+            utils_error().raise(LOCAL_INFO, "Error creating Comm object (wrapper for MPI communicator)! MPI has not been initialised!");
+         }
       }
 
       /// Copy existing communicator
       Comm::Comm(const MPI_Comm& comm) : boundcomm(comm)
       {
+         if(not Is_initialized())
+         {
+            utils_error().raise(LOCAL_INFO, "Error creating Comm object (wrapper for MPI communicator)! MPI has not been initialised!");
+         }
       }
 
       /// Duplicate input communicator into boundcomm

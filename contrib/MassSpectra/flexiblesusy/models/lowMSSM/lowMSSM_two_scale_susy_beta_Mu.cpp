@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:16:40
+// File generated at Wed 28 Oct 2015 11:23:47
 
 #include "lowMSSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -70,6 +70,25 @@ double lowMSSM_susy_parameters::calc_beta_Mu_two_loop(const Susy_traces& susy_tr
       450*traceYuAdjYuYuAdjYu + 60*traceYeAdjYe*Sqr(g1) + 40*traceYuAdjYu*Sqr(
       g1) + 90*Sqr(g1)*Sqr(g2) - 20*traceYdAdjYd*(Sqr(g1) - 40*Sqr(g3)) + 800*
       traceYuAdjYu*Sqr(g3)));
+
+
+   return beta_Mu;
+}
+
+/**
+ * Calculates the three-loop beta function of Mu.
+ *
+ * @return three-loop beta function
+ */
+double lowMSSM_susy_parameters::calc_beta_Mu_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_Mu;
+
+   beta_Mu = 0;
 
 
    return beta_Mu;

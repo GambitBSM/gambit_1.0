@@ -20,17 +20,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_DecayChannel : virtual public AbstractBase
         {
-            private:
-                // IGNORED: Field  -- Name: onModeSave  -- XML id: _24589
-                // IGNORED: Field  -- Name: bRatioSave  -- XML id: _24590
-                // IGNORED: Field  -- Name: currentBRSave  -- XML id: _24591
-                // IGNORED: Field  -- Name: onShellWidthSave  -- XML id: _24592
-                // IGNORED: Field  -- Name: openSecPos  -- XML id: _24593
-                // IGNORED: Field  -- Name: openSecNeg  -- XML id: _24594
-                // IGNORED: Field  -- Name: meModeSave  -- XML id: _24595
-                // IGNORED: Field  -- Name: nProd  -- XML id: _24596
-                // IGNORED: Field  -- Name: prod  -- XML id: _24597
-                // IGNORED: Field  -- Name: hasChangedSave  -- XML id: _24598
             public:
     
                 virtual void onMode(int) =0;

@@ -30,6 +30,7 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
 #include <sstream>
@@ -985,7 +986,7 @@ namespace Gambit
           << "    class is missing from the backend, or the factory functions" << endl
           << "    for this class have not been BOSSed and loaded correctly." << endl;
         }
-        errmsg << "Please check inifile for typos, and make sure that the" << endl
+        errmsg << "Please check your yaml file for typos, and make sure that the" << endl
         << "models you are scanning are compatible with at least one function" << endl
         << "that provides this capability (they may all have been deactivated" << endl
         << "due to having ALLOW_MODELS declarations which are" << endl
@@ -1852,10 +1853,22 @@ namespace Gambit
                  << " 0: This function is not compatible with any model you are scanning." << endl
                  << "-1: The backend that provides this function is missing." << endl
                  << "-2: The backend is present, but function is absent or broken." << endl
-                 << "\nPlease check that all shared objects exist for the"
-                 << "\nnecessary backends, and that they contain all the"
-                 << "\nnecessary functions required for this scan. Also "
-                 << "\ncheck your backend rules and YAML file.\n";
+                 << endl
+                 << "Make sure to check your YAML file, especially the rules" << endl
+                 << "pertaining to backends."  << endl
+                 << endl
+                 << "Please also check that all shared objects exist for the"  << endl
+                 << "necessary backends, and that they contain all the"  << endl
+                 << "necessary functions required for this scan.  You may"  << endl
+                 << "check the status of different backends by running"  << endl
+                 << "  ./gambit backends"  << endl
+                 << "You may also wish to check the specified search paths for each" << endl
+                 << "backend shared library in "  << endl;
+          if (Backends::backendInfo().custom_locations_exist())
+          {
+            errmsg << "  " << Backends::backendInfo().backend_locations()  << endl << "and"  << endl;
+          }
+          errmsg << "  " << Backends::backendInfo().default_backend_locations()  << endl;
         }
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }

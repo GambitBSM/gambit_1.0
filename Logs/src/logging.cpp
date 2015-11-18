@@ -184,14 +184,7 @@ namespace Gambit
       , MPIrank        (0)
       , MPIsize        (1)
     {
-      #ifdef WITH_MPI
-      if(GMPI::Is_initialized())
-      {
-        GMPI::Comm COMM_WORLD;
-        MPIsize = COMM_WORLD.Get_size();
-        MPIrank = COMM_WORLD.Get_rank();
-      }
-      #endif
+      // Note! MPIrank and MPIsize will not be correct until initialisation occurs!
     }
 
     /// Alternate constructor
@@ -206,14 +199,7 @@ namespace Gambit
       , MPIrank        (0)
       , MPIsize        (1)
     {
-      #ifdef WITH_MPI
-      if(GMPI::Is_initialized())
-      {
-        GMPI::Comm COMM_WORLD;
-        MPIsize = COMM_WORLD.Get_size();
-        MPIrank = COMM_WORLD.Get_rank();
-      }
-      #endif
+      // Note! MPIrank and MPIsize will not be correct until initialisation occurs!
     }
 
     // Destructor
@@ -262,6 +248,16 @@ namespace Gambit
     // This is the function that yaml_parser.hpp uses. You provide tags as a set of strings, and the filename as a string. We then construct the logger objects in here.
     void LogMaster::initialise(std::vector<std::pair< std::set<std::string>, std::string >>& loggerinfo)
     {
+       // Fix up the MPI variables
+       #ifdef WITH_MPI
+       if(GMPI::Is_initialized())
+       {
+         GMPI::Comm COMM_WORLD;
+         MPIsize = COMM_WORLD.Get_size();
+         MPIrank = COMM_WORLD.Get_rank();
+       }
+       #endif
+
        // Iterate through map and build the logger objects
        for(std::vector<std::pair< std::set<std::string>, std::string >>::iterator infopair = loggerinfo.begin();
             infopair != loggerinfo.end(); ++infopair)

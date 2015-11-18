@@ -13,6 +13,7 @@
 #include "xpr-base.h"
 #include "mycomplex.h"
 
+#define Complex softsusy::Complex
 
 /******************* ADDITION ******************************/
 /// add two xpr matrices
@@ -923,5 +924,6 @@ operator*( const MatIndexable<double,A>& a, const Indexable<Complex,B>& b )
 				ConstRef<Complex,Indexable<Complex,B> >(b) ));
 }
 
+#undef Complex
 
 #endif

@@ -23,26 +23,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_Hist : virtual public AbstractBase
         {
-            private:
-                // IGNORED: Variable  -- Name: NBINMAX  -- XML id: _24929
-                // IGNORED: Variable  -- Name: NCOLMAX  -- XML id: _24930
-                // IGNORED: Variable  -- Name: NLINES  -- XML id: _24931
-                // IGNORED: Variable  -- Name: TOLERANCE  -- XML id: _24932
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _24933
-                // IGNORED: Variable  -- Name: LARGE  -- XML id: _24934
-                // IGNORED: Variable  -- Name: SMALLFRAC  -- XML id: _24935
-                // IGNORED: Variable  -- Name: DYAC  -- XML id: _24936
-                // IGNORED: Variable  -- Name: NUMBER  -- XML id: _24937
-                // IGNORED: Field  -- Name: title  -- XML id: _24938
-                // IGNORED: Field  -- Name: nBin  -- XML id: _24939
-                // IGNORED: Field  -- Name: nFill  -- XML id: _24940
-                // IGNORED: Field  -- Name: xMin  -- XML id: _24941
-                // IGNORED: Field  -- Name: xMax  -- XML id: _24942
-                // IGNORED: Field  -- Name: dx  -- XML id: _24943
-                // IGNORED: Field  -- Name: under  -- XML id: _24944
-                // IGNORED: Field  -- Name: inside  -- XML id: _24945
-                // IGNORED: Field  -- Name: over  -- XML id: _24946
-                // IGNORED: Field  -- Name: res  -- XML id: _24947
             public:
     
                 virtual Pythia8::Abstract_Hist* operator_equal__BOSS(const Pythia8::Abstract_Hist&) =0;

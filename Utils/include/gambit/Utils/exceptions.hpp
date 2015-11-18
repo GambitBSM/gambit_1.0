@@ -24,6 +24,8 @@
 #include <set>
 #include <string>
 #include <exception>
+#include <vector>
+#include <utility>
 
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Logs/log_tags.hpp"
@@ -248,7 +250,7 @@ namespace Gambit
     
   };
 
-  /// Gambit piped exception class.
+  /// Gambit piped invalid point exception class.
   class Piped_invalid_point
   {
     public:
@@ -265,9 +267,6 @@ namespace Gambit
       bool flag;
       std::string message;
   };
-
-  /// Global instance of piped invalid point class.
-  extern Piped_invalid_point piped_invalid_point;
 
   /// Special exception used during controlled early shutdown
   class SoftShutdownException : public std::exception
@@ -287,6 +286,40 @@ namespace Gambit
     private:
       std::string myWhat;
   };
+
+  /// Global instance of piped invalid point class.
+  extern Piped_invalid_point piped_invalid_point;
+
+  /// Gambit piped error class.
+  class Piped_exceptions
+  {
+    public:
+      typedef std::pair<std::string,std::string> description;
+      /// Constructor
+      Piped_exceptions(size_t maxExceptions) : flag(false), maxExceptions(maxExceptions) {};
+
+      /// Request an exception.
+      void request(std::string origin, std::string message);
+      void request(description desc);
+
+      /// Check whether any exceptions were requested, and raise them.
+      void check(exception &excep);
+
+      /// Check whether any exceptions were requested without handling them.
+      bool inquire();
+
+    private:
+      bool flag;    
+      size_t maxExceptions;
+      std::vector<description> exceptions;
+  };
+
+  /// Global instance of Piped_exceptions class for errors.
+  extern Piped_exceptions piped_errors;
+
+  /// Global instance of Piped_exceptions class for warnings.
+  extern Piped_exceptions piped_warnings;
+
 }
 
 

@@ -73,7 +73,7 @@ Logger:
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
     [Printers]     : "Printers.log"
-  separate_file_per_process: true  # Default is "true"
+  separate_file_per_process: false #true  # Default is "true"
 
 #======== Generic Name/Value Section ========
 KeyValues:
@@ -86,11 +86,18 @@ KeyValues:
 
   # Customise shutdown behaviour on receiving OS signals
   signal_handling:
-    SIGINT : "emergency_shutdown_longjmp"    # default: emergency_shutdown
+    SIGINT : "emergency_shutdown"    # default: emergency_shutdown
     SIGTERM: "emergency_shutdown_longjmp"    # default: emergency_shutdown
     SIGUSR1: "soft_shutdown"    # default: soft_shutdown
     SIGUSR2: "soft_shutdown"    # default: soft_shutdown
-    emergency_shutdown_on_second_signal: true
+    ignore_signals_during_shutdown: true #default: true
+    # I added the 'ignore' option because openMPI automatically sends a SIGTERM
+    # to all processes upon receiving a SIGINT, so both signals get sent 
+    # rapidly. If e.g. an emergency shutdown (or of course soft shutdown) is in
+    # progress when another signal gets received (triggering shutdown again),
+    # then it will probably corrupt the output or crash. I have made this 
+    # behaviour the default, but it might be useful to be able to turn it off,
+    # so I left this possibility in place.
 
   # Select whether MPI_Abort should be called before exiting if an error occurs (default: true)
   use_mpi_abort: true

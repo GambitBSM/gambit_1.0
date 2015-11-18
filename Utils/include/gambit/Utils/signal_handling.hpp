@@ -35,7 +35,7 @@ namespace Gambit
      
      /// Flag to warn if early shutdown is already in process
      bool shutdown_begun = false;
-     bool emergency_shutdown_on_second_signal = true; // Override via inifile value
+     bool ignore_signals_during_shutdown = true; // Override via inifile value
      
      /// Saved information on calling environment for longjmp
      jmp_buf env;
@@ -52,6 +52,9 @@ namespace Gambit
      void set_cleanup(void_func f);
      void call_cleanup();    
 
+     /// Register that shutdown has begun
+     void set_shutdown_begun();
+
      /// Array to record received signals (up to max_signals)
      static const int MAX_SIGNALS = 10;
      int received_signals[MAX_SIGNALS];
@@ -62,8 +65,7 @@ namespace Gambit
 
      /// Print to cout a list of the signals received so far by this process
      void display_received_signals();
-
-     /// 
+ 
    };
 
    /// Retrieve global instance of signal handler options struct

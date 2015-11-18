@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:31:34
+// File generated at Wed 28 Oct 2015 11:34:28
 
 #include "MSSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -104,6 +104,25 @@ Eigen::Matrix<double,3,3> MSSM_soft_parameters::calc_beta_TYd_two_loop(const Sof
       Yd) - 4*(Yd*Yu.adjoint()*TYu*Yu.adjoint()*Yu) - 6*(TYd*Yd.adjoint()*Yd*
       Yd.adjoint()*Yd) - 4*(TYd*Yu.adjoint()*Yu*Yd.adjoint()*Yd) - 2*(TYd*
       Yu.adjoint()*Yu*Yu.adjoint()*Yu))).real();
+
+
+   return beta_TYd;
+}
+
+/**
+ * Calculates the three-loop beta function of TYd.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> MSSM_soft_parameters::calc_beta_TYd_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_TYd;
+
+   beta_TYd = ZEROMATRIX(3,3);
 
 
    return beta_TYd;

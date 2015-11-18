@@ -153,6 +153,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~CoupSUSY();
         
+            private:
+                // Member variable initialiser: 
+                void _memberVariablesInit();
+        
         };
     }
     

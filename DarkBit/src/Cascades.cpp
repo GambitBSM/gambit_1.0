@@ -80,7 +80,14 @@ namespace Gambit {
         disabled.insert("bbar");   
         disabled.insert("g");                        
       }
-      table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable, disabled);
+      try
+      {
+        table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable, disabled);
+      }
+      catch(Piped_exceptions::description err)
+      {
+          DarkBit_error().raise(err.first,err.second);
+      }
       //table.printTable();
     }
 
@@ -114,21 +121,24 @@ namespace Gambit {
         // Set next initial state
         Loop::executeIteration(MC_NEXT_STATE);
         // Event generation loop
-#pragma omp parallel private(it) shared(counter, finished)
+        #pragma omp parallel private(it) shared(counter, finished)
         {
           while (!finished)
           {
-#pragma omp critical (cascadeMC_Counter)
+            #pragma omp critical (cascadeMC_Counter)
             {
               counter++;
               it = counter;
             }
             Loop::executeIteration(it);
-#pragma omp critical (cascadeMC_Counter)
-            if((*Loop::done and (counter >= cMC_minEvents)) 
+            #pragma omp critical (cascadeMC_Counter)
+              if((*Loop::done and ((counter >= cMC_minEvents) or piped_errors.inquire())) 
                 or (counter >= cMC_maxEvents)) finished=true;
           }
         }
+        // Raise any exceptions
+        piped_warnings.check(DarkBit_warning());
+        piped_errors.check(DarkBit_error());
         Loop::reset();
       }
       Loop::executeIteration(MC_FINALIZE);
@@ -154,7 +164,8 @@ namespace Gambit {
       }
       if(int(chainList.size()) <= iteration)
       {
-        DarkBit_error().raise(LOCAL_INFO, 
+        Loop::wrapup(); 
+        piped_errors.request(LOCAL_INFO, 
             "Desync between cascadeMC_LoopManager and cascadeMC_InitialState");
       }
       else
@@ -212,11 +223,19 @@ namespace Gambit {
         case MC_FINALIZE:
           return;
       }
-      ChainParticle* chn = new ChainParticle(
-          vec3(0), &(*Dep::cascadeMC_DecayTable),
-          *Dep::cascadeMC_InitialState); 
-      chn->generateDecayChainMC(cMC_maxChainLength,cMC_Emin); 
-      chain=ChainContainer(chn);
+      ChainParticle* chn;
+      try
+      {
+        chn = new ChainParticle( vec3(0), &(*Dep::cascadeMC_DecayTable),
+                                 *Dep::cascadeMC_InitialState); 
+        chn->generateDecayChainMC(cMC_maxChainLength,cMC_Emin); 
+      }
+      catch(Piped_exceptions::description err)
+      {
+        Loop::wrapup(); 
+        piped_errors.request(err); 
+      }
+      chain=ChainContainer(chn);      
     }
 
     // Function for sampling SimYieldTables (tabulated spectra). 
@@ -263,8 +282,9 @@ namespace Gambit {
           break;
         }
         default:
-          DarkBit_error().raise(LOCAL_INFO,
+          piped_errors.request(LOCAL_INFO,
               "cascadeMC_sampleSimYield called with invalid endpoint state.");
+          return;
       }
       const SimYieldChannel &chn = table.getChannel(p1 , p2, finalState);
       // Get Lorentz boost information
@@ -377,6 +397,9 @@ namespace Gambit {
       static int    cMC_endCheckFrequency; 
       static double cMC_gammaBGPower;
       static double cMC_gammaRelError;      
+      static int    cMC_NhistBins;
+      static double cMC_binLow;
+      static double cMC_binHigh;
       // Histogram list shared between all threads
       static std::map<std::string, std::map<std::string, SimpleHist> > histList;
 
@@ -385,17 +408,25 @@ namespace Gambit {
         case MC_INIT:
           // Initialization
           cMC_minSpecSamples     = 
-            runOptions->getValueOrDef<int>   (5,    "cMC_minSpecSamples");    
+            runOptions->getValueOrDef<int>   (5,      "cMC_minSpecSamples");    
           cMC_maxSpecSamples     = 
-            runOptions->getValueOrDef<int>   (25,   "cMC_maxSpecSamples"); 
+            runOptions->getValueOrDef<int>   (25,     "cMC_maxSpecSamples"); 
           cMC_specValidThreshold = 
-            runOptions->getValueOrDef<double>(0.0,  "cMC_specValidThreshold");
+            runOptions->getValueOrDef<double>(0.0,    "cMC_specValidThreshold");
           cMC_endCheckFrequency  = 
-            runOptions->getValueOrDef<int>   (25,   "cMC_endCheckFrequency");
+            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
           cMC_gammaBGPower       = 
-            runOptions->getValueOrDef<double>(-2.5, "cMC_gammaBGPower");
+            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
           cMC_gammaRelError      = 
-            runOptions->getValueOrDef<double>(0.01, "cMC_gammaRelError");     
+            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
+          // FIXME: This sets equal binning for all particle types.
+          // Each particle type should be allowed to have different binning.
+          cMC_NhistBins          = 
+            runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");                 
+          cMC_binLow             = 
+            runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");      
+          cMC_binHigh            = 
+            runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");  
           histList.clear();
           return;
         case MC_NEXT_STATE:
@@ -412,10 +443,8 @@ namespace Gambit {
                 << " " << *it << std::endl;
             }
             */
-            // FIXME: This defines 50 bins from 1e-3 to 1e3 GeV.
-            // Should not be hardcoded.
             histList[*Dep::cascadeMC_InitialState][*it]=
-              SimpleHist(70,0.001,10000.0,true);
+              SimpleHist(cMC_NhistBins,cMC_binLow,cMC_binHigh,true);
           }
           return;
         case MC_FINALIZE:
@@ -468,6 +497,12 @@ namespace Gambit {
                   histList, *Dep::cascadeMC_InitialState, weight, 
                   cMC_minSpecSamples, cMC_maxSpecSamples,
                   cMC_specValidThreshold);
+              // Check if an error was raised
+              if(piped_errors.inquire())
+              {
+                Loop::wrapup();
+                return;
+              }
             }
           }
           // Analyze multiparticle endpoints (the endpoint particle is here the
@@ -491,6 +526,12 @@ namespace Gambit {
                     *Dep::cascadeMC_InitialState, weight, 
                     cMC_minSpecSamples, cMC_maxSpecSamples,
                     cMC_specValidThreshold);
+                // Check if an error was raised
+                if(piped_errors.inquire())
+                {
+                  Loop::wrapup();
+                  return;
+                }   
               }
             }
             if(!hasTabulated)
@@ -516,6 +557,12 @@ namespace Gambit {
                       *Dep::cascadeMC_InitialState, weight, 
                       cMC_minSpecSamples, cMC_maxSpecSamples,
                       cMC_specValidThreshold);
+                  // Check if an error was raised
+                  if(piped_errors.inquire())
+                  {
+                    Loop::wrapup();
+                    return;
+                  }                      
                 }
               }
             }

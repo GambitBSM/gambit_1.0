@@ -414,6 +414,7 @@ void QedQcd::toMz() {
 // alpha1 is in the GUT normalisation. sinth = sin^2 thetaW(Q) in MSbar
 // scheme
 DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
+  using std::log;
   static const double INVPI = 1.0 / PI;
   /*
   if (displayMu() != MZ) {
@@ -482,6 +483,7 @@ void readIn(QedQcd &mset, const char fname[80]) {
 }
 
 DoubleVector gaugeDerivs(double x, const DoubleVector & y) {
+  using std::exp;
   tempLe->setMu(exp(x));
   tempLe->setAlpha(ALPHA, y.display(1));
   tempLe->setAlpha(ALPHAS, y.display(2));
@@ -506,6 +508,7 @@ double getRunMt(double poleMt, double asmt) {
 // Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
 // it's a very good approximation at these scales, better than 10^-3 accuracy
 double getAsmt(double mtop, double alphasMz) {
+  using std::log;
   return alphasMz / 
       (1.0 - 23.0 * alphasMz / (6.0 * PI) * log(MZ / mtop));
 }

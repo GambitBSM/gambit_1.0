@@ -102,9 +102,9 @@ int main(int argc, char* argv[])
     // shutdown on signals received while shutdown is already in progress
     if(keyvalnode["signal_handling"]) {
        YAML::Node signal_options = keyvalnode["signal_handling"];
-       if(signal_options["emergency_shutdown_on_second_signal"]) {
-          signaldata().emergency_shutdown_on_second_signal = signal_options["emergency_shutdown_on_second_signal"].as<bool>();
-          if(not signaldata().emergency_shutdown_on_second_signal) logger() << "Disabled emergency shutdown on second signal" << std::endl;
+       if(signal_options["ignore_signals_during_shutdown"]) {
+          signaldata().ignore_signals_during_shutdown = signal_options["ignore_signals_during_shutdown"].as<bool>();
+          logger() << "ignore_signals_during_shutdown = "<<signaldata().ignore_signals_during_shutdown<< std::endl;
        }
     } // else use default value (true)
     logger() << EOM;
@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
       #ifdef WITH_MPI
       cout << "rank "<<rank<<": ";
       #endif
-      cout << "GAMBIT has performed a hard shutdown." << endl;
+      cout << "GAMBIT has shutdown (but could not finalise or abort MPI)." << endl;
       signaldata().display_received_signals();
       cout << endl;
     }

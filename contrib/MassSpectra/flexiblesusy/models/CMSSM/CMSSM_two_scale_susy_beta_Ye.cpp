@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:26:33
+// File generated at Wed 28 Oct 2015 11:32:08
 
 #include "CMSSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -67,6 +67,25 @@ Eigen::Matrix<double,3,3> CMSSM_susy_parameters::calc_beta_Ye_two_loop(const Sus
       *traceYeAdjYe*Sqr(g1) + 6*Sqr(g1)*Sqr(g2)) - 4*traceYdAdjYd*(Sqr(g1) - 40
       *Sqr(g3))) + (-9*traceYdAdjYd - 3*traceYeAdjYe + 6*Sqr(g2))*(Ye*
       Ye.adjoint()*Ye) - 4*(Ye*Ye.adjoint()*Ye*Ye.adjoint()*Ye))).real();
+
+
+   return beta_Ye;
+}
+
+/**
+ * Calculates the three-loop beta function of Ye.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> CMSSM_susy_parameters::calc_beta_Ye_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_Ye;
+
+   beta_Ye = ZEROMATRIX(3,3);
 
 
    return beta_Ye;

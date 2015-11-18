@@ -108,12 +108,18 @@ c     write(*,*) 'cspen:', cspen
 
 
 
-c     Introduced by Ben Allanach to provide a wrapper to C class
-      subroutine dilogwrap(a, b, c, d)
+!>    @brief Complex dilogarithm.
+!!    Introduced by Ben Allanach to provide a wrapper to C class
+!!    @param a real part of argument
+!!    @param b imag part of argument
+!!    @param c real part of output
+!!    @param d imag part of output
+      subroutine dilogc(a, b, c, d)
       
       implicit none
       
-      double precision a, b, c, d
+      double precision, intent(in) :: a, b
+      double precision, intent(out) :: c, d
       complex*16 x, l, pCSPEN
       
       x = dcmplx(a, b)

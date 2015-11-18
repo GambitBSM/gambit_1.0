@@ -85,7 +85,7 @@ namespace Gambit
       // couplings in QEDxQCD effective theory
       // Will be initialised by default using values in lowe.h, which we will
       // override next.
-      QedQcd oneset;
+      softsusy::QedQcd oneset;
 
       // Fill QedQcd object with SMInputs values
       setup_QedQcd(oneset,sminputs);

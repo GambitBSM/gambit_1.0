@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:32
+// File generated at Wed 28 Oct 2015 11:35:27
 
 #ifndef NSM_INFO_H
 #define NSM_INFO_H
@@ -26,7 +26,7 @@
 namespace flexiblesusy {
 
 namespace NSM_info {
-   enum Particles : unsigned {VG, Hp, Fv, Ah, VP, VZ, Fd, Fu, Fe, hh, VWp,
+   enum Particles : unsigned {Hp, Fv, Ah, VZ, Fd, Fu, Fe, hh, VG, VP, VWp,
       NUMBER_OF_PARTICLES};
 
    enum Parameters : unsigned {g1, g2, g3, Lambda2, Lambda3, Lambda1, Yu00,
