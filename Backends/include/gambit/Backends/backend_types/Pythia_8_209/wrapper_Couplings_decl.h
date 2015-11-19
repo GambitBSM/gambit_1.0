@@ -48,6 +48,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~Couplings();
         
+            private:
+                // Member variable initialiser: 
+                void _memberVariablesInit();
+        
         };
     }
     

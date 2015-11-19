@@ -27,41 +27,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_ParticleDataEntry : virtual public AbstractBase
         {
-            private:
-                // IGNORED: Variable  -- Name: INVISIBLENUMBER  -- XML id: _29742
-                // IGNORED: Variable  -- Name: INVISIBLETABLE  -- XML id: _29743
-                // IGNORED: Variable  -- Name: KNOWNNOWIDTH  -- XML id: _29744
-                // IGNORED: Variable  -- Name: MAXTAU0FORDECAY  -- XML id: _29745
-                // IGNORED: Variable  -- Name: MINMASSRESONANCE  -- XML id: _29746
-                // IGNORED: Variable  -- Name: NARROWMASS  -- XML id: _29747
-                // IGNORED: Variable  -- Name: CONSTITUENTMASSTABLE  -- XML id: _29748
-                // IGNORED: Field  -- Name: idSave  -- XML id: _29749
-                // IGNORED: Field  -- Name: nameSave  -- XML id: _29750
-                // IGNORED: Field  -- Name: antiNameSave  -- XML id: _29751
-                // IGNORED: Field  -- Name: spinTypeSave  -- XML id: _29752
-                // IGNORED: Field  -- Name: chargeTypeSave  -- XML id: _29753
-                // IGNORED: Field  -- Name: colTypeSave  -- XML id: _29754
-                // IGNORED: Field  -- Name: m0Save  -- XML id: _29755
-                // IGNORED: Field  -- Name: mWidthSave  -- XML id: _29756
-                // IGNORED: Field  -- Name: mMinSave  -- XML id: _29757
-                // IGNORED: Field  -- Name: mMaxSave  -- XML id: _29758
-                // IGNORED: Field  -- Name: tau0Save  -- XML id: _29759
-                // IGNORED: Field  -- Name: constituentMassSave  -- XML id: _29760
-                // IGNORED: Field  -- Name: hasAntiSave  -- XML id: _29761
-                // IGNORED: Field  -- Name: isResonanceSave  -- XML id: _29762
-                // IGNORED: Field  -- Name: mayDecaySave  -- XML id: _29763
-                // IGNORED: Field  -- Name: doExternalDecaySave  -- XML id: _29764
-                // IGNORED: Field  -- Name: isVisibleSave  -- XML id: _29765
-                // IGNORED: Field  -- Name: doForceWidthSave  -- XML id: _29766
-                // IGNORED: Field  -- Name: hasChangedSave  -- XML id: _29767
-                // IGNORED: Field  -- Name: modeBWnow  -- XML id: _29768
-                // IGNORED: Field  -- Name: atanLow  -- XML id: _29769
-                // IGNORED: Field  -- Name: atanDif  -- XML id: _29770
-                // IGNORED: Field  -- Name: mThr  -- XML id: _29771
-                // IGNORED: Field  -- Name: channels  -- XML id: _29772
-                // IGNORED: Field  -- Name: currentBRSum  -- XML id: _29773
-                // IGNORED: Field  -- Name: resonancePtr  -- XML id: _29774
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _29775
             public:
     
                 virtual void setDefaults() =0;
@@ -289,11 +254,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual double resWidthChan__BOSS(double, int) =0;
     
                 virtual double resWidthChan__BOSS(double) =0;
-            private:
-    
-                virtual void setConstituentMass() =0;
-    
-                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > toLower(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >&) =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_ParticleDataEntry*) =0;

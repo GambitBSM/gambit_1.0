@@ -79,6 +79,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~LHdecayTable();
         
+            private:
+                // Member variable initialiser: 
+                void _memberVariablesInit();
+        
         };
     }
     
