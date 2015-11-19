@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:51:46
+// File generated at Wed 28 Oct 2015 11:54:17
 
 #include "MSSMNoFVatMGUT_physical.hpp"
 #include "slha_io.hpp"
@@ -29,16 +29,16 @@ namespace flexiblesusy {
 
 MSSMNoFVatMGUT_physical::MSSMNoFVatMGUT_physical()
    :
-    MVG(0), MGlu(0), MVP(0), MVZ(0), MFd(0), MFs(0), MFb(0), MFu(0), MFc(0),
-       MFt(0), MFve(0), MFvm(0), MFvt(0), MFe(0), MFm(0), MFtau(0), MSveL(0),
-       MSvmL(0), MSvtL(0), MSd(Eigen::Array<double,2,1>::Zero()), MSu(Eigen::Array
-       <double,2,1>::Zero()), MSe(Eigen::Array<double,2,1>::Zero()), MSm(
-       Eigen::Array<double,2,1>::Zero()), MStau(Eigen::Array<double,2,1>::Zero()),
-       MSs(Eigen::Array<double,2,1>::Zero()), MSc(Eigen::Array<double,2,1>::Zero(
-       )), MSb(Eigen::Array<double,2,1>::Zero()), MSt(Eigen::Array<double,2,1>
-       ::Zero()), Mhh(Eigen::Array<double,2,1>::Zero()), MAh(Eigen::Array<double,2
-       ,1>::Zero()), MHpm(Eigen::Array<double,2,1>::Zero()), MChi(Eigen::Array<
-       double,4,1>::Zero()), MCha(Eigen::Array<double,2,1>::Zero()), MVWm(0)
+    MGlu(0), MVZ(0), MFd(0), MFs(0), MFb(0), MFu(0), MFc(0), MFt(0), MFve(0),
+       MFvm(0), MFvt(0), MFe(0), MFm(0), MFtau(0), MSveL(0), MSvmL(0), MSvtL(0),
+       MSd(Eigen::Array<double,2,1>::Zero()), MSu(Eigen::Array<double,2,1>::Zero()
+       ), MSe(Eigen::Array<double,2,1>::Zero()), MSm(Eigen::Array<double,2,1>
+       ::Zero()), MStau(Eigen::Array<double,2,1>::Zero()), MSs(Eigen::Array<double
+       ,2,1>::Zero()), MSc(Eigen::Array<double,2,1>::Zero()), MSb(Eigen::Array<
+       double,2,1>::Zero()), MSt(Eigen::Array<double,2,1>::Zero()), Mhh(
+       Eigen::Array<double,2,1>::Zero()), MAh(Eigen::Array<double,2,1>::Zero()),
+       MHpm(Eigen::Array<double,2,1>::Zero()), MChi(Eigen::Array<double,4,1>::Zero
+       ()), MCha(Eigen::Array<double,2,1>::Zero()), MVG(0), MVP(0), MVWm(0)
 
    , ZD(Eigen::Matrix<double,2,2>::Zero()), ZU(Eigen::Matrix<double,2,2>::Zero(
       )), ZE(Eigen::Matrix<double,2,2>::Zero()), ZM(Eigen::Matrix<double,2,2>
@@ -55,9 +55,7 @@ MSSMNoFVatMGUT_physical::MSSMNoFVatMGUT_physical()
 
 void MSSMNoFVatMGUT_physical::clear()
 {
-   MVG = 0.;
    MGlu = 0.;
-   MVP = 0.;
    MVZ = 0.;
    MFd = 0.;
    MFs = 0.;
@@ -103,6 +101,8 @@ void MSSMNoFVatMGUT_physical::clear()
    MCha = Eigen::Matrix<double,2,1>::Zero();
    UM = Eigen::Matrix<std::complex<double>,2,2>::Zero();
    UP = Eigen::Matrix<std::complex<double>,2,2>::Zero();
+   MVG = 0.;
+   MVP = 0.;
    MVWm = 0.;
 
 }
@@ -134,9 +134,7 @@ void MSSMNoFVatMGUT_physical::print(std::ostream& ostr) const
    ostr << "----------------------------------------\n"
            "pole masses:\n"
            "----------------------------------------\n";
-   ostr << "MVG = " << MVG << '\n';
    ostr << "MGlu = " << MGlu << '\n';
-   ostr << "MVP = " << MVP << '\n';
    ostr << "MVZ = " << MVZ << '\n';
    ostr << "MFd = " << MFd << '\n';
    ostr << "MFs = " << MFs << '\n';
@@ -167,6 +165,8 @@ void MSSMNoFVatMGUT_physical::print(std::ostream& ostr) const
    ostr << "MHpm = " << MHpm.transpose() << '\n';
    ostr << "MChi = " << MChi.transpose() << '\n';
    ostr << "MCha = " << MCha.transpose() << '\n';
+   ostr << "MVG = " << MVG << '\n';
+   ostr << "MVP = " << MVP << '\n';
    ostr << "MVWm = " << MVWm << '\n';
 
    ostr << "----------------------------------------\n"

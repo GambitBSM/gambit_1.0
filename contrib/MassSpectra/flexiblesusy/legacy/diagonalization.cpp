@@ -76,9 +76,9 @@ softsusy::ComplexMatrix phase_rotation(const softsusy::DoubleVector& v)
 
    for (int i = 1; i <= len; i++) {
       if (v(i) < 0.0)
-         rot(i, i) = Complex(0.0, -1.0);
+         rot(i, i) = softsusy::Complex(0.0, -1.0);
       else
-         rot(i, i) = Complex(1.0, 0.0);
+         rot(i, i) = softsusy::Complex(1.0, 0.0);
    }
 
    return rot;
@@ -154,7 +154,7 @@ void AssociateOrderAbs(softsusy::DoubleMatrix& u, softsusy::DoubleMatrix& v, sof
 #endif
    for (int i = w.displayStart(); i <= w.displayEnd(); ++i) {
       for (int j = i + 1; j <= w.displayEnd(); ++j) {
-         if (abs(w.display(i)) > abs(w.display(j))) {
+         if (std::fabs(w.display(i)) > std::fabs(w.display(j))) {
             w.swap(i, j);
             v.swapcols(i, j);
             u.swapcols(i, j);

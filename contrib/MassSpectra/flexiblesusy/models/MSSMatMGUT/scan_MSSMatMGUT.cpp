@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:24:12
+// File generated at Wed 28 Oct 2015 11:33:07
 
 #include "MSSMatMGUT_input_parameters.hpp"
 #include "MSSMatMGUT_spectrum_generator.hpp"
@@ -93,13 +93,12 @@ void set_command_line_parameters(int argc, char* argv[],
 int main(int argc, char* argv[])
 {
    using namespace flexiblesusy;
-   using namespace softsusy;
    typedef Two_scale algorithm_type;
 
    MSSMatMGUT_input_parameters input;
    set_command_line_parameters(argc, argv, input);
 
-   QedQcd oneset;
+   softsusy::QedQcd oneset;
    oneset.toMz();
 
    MSSMatMGUT_spectrum_generator<algorithm_type> spectrum_generator;

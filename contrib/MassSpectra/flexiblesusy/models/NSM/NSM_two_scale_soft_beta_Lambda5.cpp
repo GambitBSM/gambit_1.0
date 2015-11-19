@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:26
+// File generated at Wed 28 Oct 2015 11:35:25
 
 #include "NSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,7 +37,8 @@ double NSM_soft_parameters::calc_beta_Lambda5_one_loop(const Soft_traces& soft_t
 
    double beta_Lambda5;
 
-   beta_Lambda5 = Re(4*oneOver16PiSqr*Lambda3*Lambda4);
+   beta_Lambda5 = Re(-4*oneOver16PiSqr*(Lambda3*Lambda4 + 18*Lambda2*
+      Lambda5));
 
 
    return beta_Lambda5;
@@ -57,8 +58,30 @@ double NSM_soft_parameters::calc_beta_Lambda5_two_loop(const Soft_traces& soft_t
 
    double beta_Lambda5;
 
-   beta_Lambda5 = Re(8*twoLoop*Lambda3*Lambda4*(-3*traceYdAdjYd -
-      traceYeAdjYe - 3*traceYuAdjYu + Sqr(g1) + 3*Sqr(g2)));
+   beta_Lambda5 = Re(-4*twoLoop*(-6*traceYdAdjYd*Lambda3*Lambda4 - 2*
+      traceYeAdjYe*Lambda3*Lambda4 - 6*traceYuAdjYu*Lambda3*Lambda4 + 24*
+      Lambda2*Lambda3*Lambda4 + 2*Lambda3*Lambda4*Sqr(g1) + 6*Lambda3*Lambda4*
+      Sqr(g2) + 828*Lambda5*Sqr(Lambda2) + 8*Lambda4*Sqr(Lambda3) + 9*Lambda5*
+      Sqr(Lambda3)));
+
+
+   return beta_Lambda5;
+}
+
+/**
+ * Calculates the three-loop beta function of Lambda5.
+ *
+ * @return three-loop beta function
+ */
+double NSM_soft_parameters::calc_beta_Lambda5_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_Lambda5;
+
+   beta_Lambda5 = 0;
 
 
    return beta_Lambda5;

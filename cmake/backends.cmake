@@ -65,7 +65,7 @@ ExternalProject_Add(darksusy
         COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
         #COMMAND patch -b -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
         #COMMAND patch -b -p2 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif
-        # FIXME FeynHiggs segfaults with -O2 setting
+ # FIXME DarkSUSY segfaults with -O2 setting
  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
@@ -179,6 +179,7 @@ add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it.
+# - Pythia will also screw up if trying to use -O3 with CMAKE_BUILD_TYPE=Release, so replace this with -O2
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
@@ -224,7 +225,7 @@ ExternalProject_Add(fastsim
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
-  INSTALL_COMMAND cp ""
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(fastsim)
 add_external_clean(fastsim ${fastsim_dir} distclean)
@@ -248,7 +249,7 @@ ExternalProject_Add(nulike
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${nulike_lib}.so FF=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE}
-  INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(nulike)
 add_external_clean(nulike ${nulike_dir} distclean)
@@ -281,11 +282,18 @@ ExternalProject_Add(susyhit
                                  -e "s#\\!\\([[:space:]]*if(flagoutput\\.eq\\.1\\.D0) then\\)[[:space:]]*$#\\1                !Reinstated by GAMBIT.#g"
                                  -e "/output not a la Les Houches accord/{" -e "N" -e "N" -e "s/else/elseif(flagoutput.eq.0.D0) then            !Modified by GAMBIT./" -e "}"
                                  -e "s#\\(^[[:space:]]*if(flagshsin\\.\\)eq\\(\\.1\\.D0) then\\)#\\1le\\2                 !Modified by GAMBIT.#g"
-                                 -e "s#integer nx1t,ny1t,nnlo,imod(1:2)#logical qcdcorrstok(2), qcdcorrsbok(2)     !Added by GAMBIT${nl}      integer nx1t,ny1t,nnlo,imod(1:2)#g"
+                                 -e "s#integer nx1t,ny1t,nnlo,imod(1:2)#logical qcdcorrstok(2), qcdcorrsbok(2), qcdcorrglok!Added by GAMBIT${nl}      integer nx1t,ny1t,nnlo,imod(1:2)#g"
+                                 -e "s#     \\.            + gluitot2lo#     .            + gluitot2lo${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      qcdcorrglok = gluitot2nlo .ge. 0.D0${nl}      if (.not.qcdcorrglok) gluitot2nlo =${nl}     . gluitot2lo / (2.D0 - gluitot2nlo / gluitot2lo)#g"
                                  -e "s#qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)#qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      do i = 1,2,1${nl}         qcdcorrsbok(i) = sbottot2nlo(i) .ge. 0.D0${nl}         if (.not.qcdcorrsbok(i)) sbottot2nlo(i) =${nl}     .    sbottot2lo(i) / (2.D0 - sbottot2nlo(i) / sbottot2lo(2))${nl}      enddo${nl}#g"
                                  -e "s#     \\.            qcdst2wsb(2)#     .            qcdst2wsb(2)${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      do i = 1,2,1${nl}         qcdcorrstok(i) = stoptot2nlo(i) .ge. 0.D0${nl}         if (.not.qcdcorrstok(i)) stoptot2nlo(i) =${nl}     .    stoptot2lo(i) / (2.D0 - stoptot2nlo(i) / stoptot2lo(i))${nl}      enddo${nl}#g"
-                                 -e "s#c ---------------------- the stop branching ratios ------------------- c#c ---------------------- the stop branching ratios ------------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrstok(1)) then${nl}${nl}        do i=1,4,1${nl}           brst1neutt(i) = st1neutt(i)/stoptot2lo(1)${nl}        end do${nl}        do i=1,2,1${nl}           brst1charb(i) = st1charb(i)/stoptot2lo(1)${nl}           brst1hcsb(i)  = st1hcsb(i)/stoptot2lo(1)${nl}           brst1wsb(i)   = st1wsb(i)/stoptot2lo(1)${nl}        end do${nl}        brst1glui = st1glui/stoptot2lo(1)${nl}${nl}      endif${nl}${nl}      if(.not.qcdcorrstok(2)) then${nl}${nl}        do i=1,4,1${nl}           brst2neutt(i) = st2neutt(i)/stoptot2lo(2)${nl}        end do${nl}        do i=1,2,1${nl}           brst2charb(i) = st2charb(i)/stoptot2lo(2)${nl}           brst2hcsb(i)  = st2hcsb(i)/stoptot2lo(2)${nl}           brst2wsb(i)   = st2wsb(i)/stoptot2lo(2)${nl}        end do${nl}        brst2glui = st2glui/stoptot2lo(2)${nl}        brst2hl   = st2hl/stoptot2lo(2)${nl}        brst2hh   = st2hh/stoptot2lo(2)${nl}        brst2ha   = st2ha/stoptot2lo(2)${nl}        brst2ztop = st2ztop/stoptot2lo(2)${nl}${nl}      endif#g"
-                                 -e "s#c --------------------- the sbottom branching ratios ----------------- c#c --------------------- the sbottom branching ratios ----------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrsbok(1)) then${nl}${nl}        do i=1,4,1${nl}           brsb1neutt(i) = sb1neutt(i)/sbottot2lo(1)${nl}        end do${nl}        do i=1,2,1${nl}           brsb1chart(i) = sb1chart(i)/sbottot2lo(1)${nl}           brsb1hcst(i)  = sb1hcst(i)/sbottot2lo(1)${nl}           brsb1wst(i)   = sb1wst(i)/sbottot2lo(1)${nl}        end do${nl}        brsb1glui = sb1glui/sbottot2lo(1)${nl}${nl}      endif${nl}${nl}      if(.not.qcdcorrsbok(2)) then${nl}${nl}        do i=1,4,1${nl}           brsb2neutt(i) = sb2neutt(i)/sbottot2lo(2)${nl}        end do${nl}        do i=1,2,1${nl}           brsb2chart(i) = sb2chart(i)/sbottot2lo(2)${nl}           brsb2hcst(i)  = sb2hcst(i)/sbottot2lo(2)${nl}           brsb2wst(i)   = sb2wst(i)/sbottot2lo(2)${nl}        end do${nl}        brsb2glui = sb2glui/sbottot2lo(2)${nl}        brsb2hl   = sb2hl/sbottot2lo(2)${nl}        brsb2hh   = sb2hh/sbottot2lo(2)${nl}        brsb2ha   = sb2ha/sbottot2lo(2)${nl}        brsb2zbot = sb2zbot/sbottot2lo(2)${nl}${nl}      endif#g"
+                                 -e "s#brgst1    = gst1/gluitot#if (qcdcorrglok) brgst1    = gst1/gluitot      !Modified by GAMBIT#g"
+                                 -e "s#brgst2    = gst2/gluitot#if (qcdcorrglok) brgst2    = gst2/gluitot      !Modified by GAMBIT#g"
+                                 -e "s#brgsb1    = gsb1/gluitot#if (qcdcorrglok) brgsb1    = gsb1/gluitot      !Modified by GAMBIT#g"
+                                 -e "s#brgsb2    = gsb2/gluitot#if (qcdcorrglok) brgsb2    = gsb2/gluitot      !Modified by GAMBIT#g"
+                                 -e "s#brgsupl   = gsupl/gluitot#if (qcdcorrglok) brgsupl   = gsupl/gluitot     !Modified by GAMBIT#g"
+                                 -e "s#brgsupr   = gsupr/gluitot#if (qcdcorrglok) brgsupr   = gsupr/gluitot     !Modified by GAMBIT#g"
+                                 -e "s#brgsdownl = gsdownl/gluitot#if (qcdcorrglok) brgsdownl = gsdownl/gluitot   !Modified by GAMBIT#g"
+                                 -e "s#brgsdownr = gsdownr/gluitot#if (qcdcorrglok) brgsdownr = gsdownr/gluitot   !Modified by GAMBIT#g"
                                  -e "s#brsb1neutt(i)=sb1neutt(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1neutt(i)=sb1neutt(i)/sbottot2(1)    !Modified by GAMBIT#g"
                                  -e "s#brsb2neutt(i)=sb2neutt(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2neutt(i)=sb2neutt(i)/sbottot2(2)    !Modified by GAMBIT#g"
                                  -e "s#brsb1chart(i) = sb1chart(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1chart(i) = sb1chart(i)/sbottot2(1)  !Modified by GAMBIT#g"
@@ -314,6 +322,9 @@ ExternalProject_Add(susyhit
                                  -e "s#brst2hh   = st2hh/stoptot(2)#if(qcdcorrstok(2)) brst2hh   = st2hh/stoptot(2)                !Modified by GAMBIT#g"
                                  -e "s#brst2ha   = st2ha/stoptot(2)#if(qcdcorrstok(2)) brst2ha   = st2ha/stoptot(2)                !Modified by GAMBIT#g"
                                  -e "s#brst2ztop = st2ztop/stoptot(2)#if(qcdcorrstok(2)) brst2ztop = st2ztop/stoptot(2)              !Modified by GAMBIT#g"
+                                 -e "s#c -------------------- the gluino branching ratios ------------------- c#c -------------------- the gluino branching ratios ------------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrglok) then${nl}        brgst1    = gst1/gluitot2lo${nl}        brgst2    = gst2/gluitot2lo${nl}        brgsb1    = gsb1/gluitot2lo${nl}        brgsb2    = gsb2/gluitot2lo${nl}        brgsupl   = gsupl/gluitot2lo${nl}        brgsupr   = gsupr/gluitot2lo${nl}        brgsdownl = gsdownl/gluitot2lo${nl}        brgsdownr = gsdownr/gluitot2lo${nl}      endif#g"
+                                 -e "s#c ---------------------- the stop branching ratios ------------------- c#c ---------------------- the stop branching ratios ------------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrstok(1)) then${nl}${nl}        do i=1,4,1${nl}           brst1neutt(i) = st1neutt(i)/stoptot2lo(1)${nl}        end do${nl}        do i=1,2,1${nl}           brst1charb(i) = st1charb(i)/stoptot2lo(1)${nl}           brst1hcsb(i)  = st1hcsb(i)/stoptot2lo(1)${nl}           brst1wsb(i)   = st1wsb(i)/stoptot2lo(1)${nl}        end do${nl}        brst1glui = st1glui/stoptot2lo(1)${nl}${nl}      endif${nl}${nl}      if(.not.qcdcorrstok(2)) then${nl}${nl}        do i=1,4,1${nl}           brst2neutt(i) = st2neutt(i)/stoptot2lo(2)${nl}        end do${nl}        do i=1,2,1${nl}           brst2charb(i) = st2charb(i)/stoptot2lo(2)${nl}           brst2hcsb(i)  = st2hcsb(i)/stoptot2lo(2)${nl}           brst2wsb(i)   = st2wsb(i)/stoptot2lo(2)${nl}        end do${nl}        brst2glui = st2glui/stoptot2lo(2)${nl}        brst2hl   = st2hl/stoptot2lo(2)${nl}        brst2hh   = st2hh/stoptot2lo(2)${nl}        brst2ha   = st2ha/stoptot2lo(2)${nl}        brst2ztop = st2ztop/stoptot2lo(2)${nl}${nl}      endif#g"
+                                 -e "s#c --------------------- the sbottom branching ratios ----------------- c#c --------------------- the sbottom branching ratios ----------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrsbok(1)) then${nl}${nl}        do i=1,4,1${nl}           brsb1neutt(i) = sb1neutt(i)/sbottot2lo(1)${nl}        end do${nl}        do i=1,2,1${nl}           brsb1chart(i) = sb1chart(i)/sbottot2lo(1)${nl}           brsb1hcst(i)  = sb1hcst(i)/sbottot2lo(1)${nl}           brsb1wst(i)   = sb1wst(i)/sbottot2lo(1)${nl}        end do${nl}        brsb1glui = sb1glui/sbottot2lo(1)${nl}${nl}      endif${nl}${nl}      if(.not.qcdcorrsbok(2)) then${nl}${nl}        do i=1,4,1${nl}           brsb2neutt(i) = sb2neutt(i)/sbottot2lo(2)${nl}        end do${nl}        do i=1,2,1${nl}           brsb2chart(i) = sb2chart(i)/sbottot2lo(2)${nl}           brsb2hcst(i)  = sb2hcst(i)/sbottot2lo(2)${nl}           brsb2wst(i)   = sb2wst(i)/sbottot2lo(2)${nl}        end do${nl}        brsb2glui = sb2glui/sbottot2lo(2)${nl}        brsb2hl   = sb2hl/sbottot2lo(2)${nl}        brsb2hh   = sb2hh/sbottot2lo(2)${nl}        brsb2ha   = sb2ha/sbottot2lo(2)${nl}        brsb2zbot = sb2zbot/sbottot2lo(2)${nl}${nl}      endif#g"
                                  sdecay.f.tmp
             COMMAND sed ${dashi} -e "/=1: READ SUSY LES HOUCHES ACCORD INPUT/{" -e "N" -e "N" -e "s/\\(.*${nl}c end change susyhit[[:space:]]\\)/\\1C           =2: SLHA INPUT PROVIDED BY CALLING PROGRAM  !Added by GAMBIT.${nl}/" -e "}"
                                  -e "/=1: WRITE SUSY LES HOUCHES ACCORD OUTPUT/{" -e "N" -e "N" -e "s/\\(.*${nl}c end change susyhit[[:space:]]\\)/\\1C           =2: WRITE NOTHING                           !Added by GAMBIT.${nl}/" -e "}"
@@ -340,13 +351,20 @@ ExternalProject_Add(susyhit
             COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
             COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
-  INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+  INSTALL_COMMAND ""
 )
 enable_auto_rebuild(susyhit)
 add_external_clean(susyhit ${susyhit_dir} clean)
 
 # FeynHiggs
 set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.11.2")
+#set(FH_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+#set(FH_C_FLAGS "${GAMBIT_C_FLAGS}")
+#set(FH_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+#set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -fcheck=all ") #For debugging FH
+set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}") #For skipping -O2, which seems to cause issues
+set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to cause issues
+set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
 ExternalProject_Add(feynhiggs
   URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.11.2.tar.gz
   URL_MD5 edb73eafa6dab291bd8827242c16ac0a
@@ -354,13 +372,13 @@ ExternalProject_Add(feynhiggs
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  #FIXME this causes seg faults due to the inclusion of -O2.
-  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, 3)#g" <SOURCE_DIR>/src/Decays/VecSet.F
+            COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
 set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+enable_auto_rebuild(feynhiggs)
 add_external_clean(feynhiggs ${feynhiggs_dir} clean)
 
 # HiggsBounds
