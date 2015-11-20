@@ -66,11 +66,6 @@ namespace Gambit
         /// Instruct printers that scan has finished and to perform cleanup
         void finalise(bool abnormal=false);
 
-        /// For debugging: check up on MPI
-        #ifdef WITH_MPI
-        bool Is_MPI_initialized()  { return GMPI::Is_initialized(); }
-        #endif
-
   };
 
 

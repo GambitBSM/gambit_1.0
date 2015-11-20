@@ -268,6 +268,25 @@ namespace Gambit
       std::string message;
   };
 
+  /// Special exception used during controlled early shutdown
+  class SoftShutdownException : public std::exception
+  {
+    public:
+      SoftShutdownException(const std::string& message);
+      virtual const char* what() const throw();
+    private:
+      std::string myWhat;
+  };
+  /// Special exception used during emergency early shutdown
+  class HardShutdownException : public std::exception
+  {
+    public:
+      HardShutdownException(const std::string& message);
+      virtual const char* what() const throw();
+    private:
+      std::string myWhat;
+  };
+
   /// Global instance of piped invalid point class.
   extern Piped_invalid_point piped_invalid_point;
 

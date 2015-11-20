@@ -80,10 +80,9 @@ def un2str(x, xe, precision=2):
     no_int = round(x*10**(-no_exp))
 
     # format - nom(unc)exp
-    fieldw = x_exp - no_exp
+    fieldw = - x_exp - no_exp
     fmt = '%%.%df' % fieldw
     result1 = (fmt + '(%.0f)e%d') % (no_int*10**(-fieldw), un_int, x_exp)
-
     # format - nom(unc)
     fieldw = max(0, -no_exp)
     fmt = '%%.%df' % fieldw
