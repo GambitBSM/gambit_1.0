@@ -139,14 +139,13 @@ BE_INI_FUNCTION
     {
         usleep(usec);
         error = lesHinput(byVal(filename_c));
-        if (error != 0) 
-            backend_warning().raise(LOCAL_INFO, 
+        if (error != 0)
+            backend_warning().raise(LOCAL_INFO,
                     "Troubles loading SLHA file in MicrOmegas lesHinput: " + filename + "\n"
                     "Trying again."
                     );
-        else 
+        else
         {
-            std::cout << "Yeah, loaded " + filename + " on the " << counter << " trial" << std::endl;
             break;
         }
         if (counter == 99) backend_error().raise(LOCAL_INFO, "MicrOmegas function "

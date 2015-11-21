@@ -20,39 +20,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_AlphaStrong : virtual public AbstractBase
         {
-            protected:
-                // IGNORED: Field  -- Name: isInit  -- XML id: _29668
-                // IGNORED: Field  -- Name: order  -- XML id: _29669
-                // IGNORED: Field  -- Name: nfmax  -- XML id: _29670
-                // IGNORED: Field  -- Name: Lambda3Save  -- XML id: _29671
-                // IGNORED: Field  -- Name: Lambda4Save  -- XML id: _29672
-                // IGNORED: Field  -- Name: Lambda5Save  -- XML id: _29673
-                // IGNORED: Field  -- Name: Lambda6Save  -- XML id: _29674
-                // IGNORED: Field  -- Name: Lambda3Save2  -- XML id: _29675
-                // IGNORED: Field  -- Name: Lambda4Save2  -- XML id: _29676
-                // IGNORED: Field  -- Name: Lambda5Save2  -- XML id: _29677
-                // IGNORED: Field  -- Name: Lambda6Save2  -- XML id: _29678
-                // IGNORED: Field  -- Name: scale2Min  -- XML id: _29679
-                // IGNORED: Variable  -- Name: MZ  -- XML id: _29680
-                // IGNORED: Field  -- Name: mc  -- XML id: _29681
-                // IGNORED: Field  -- Name: mb  -- XML id: _29682
-                // IGNORED: Field  -- Name: mt  -- XML id: _29683
-                // IGNORED: Field  -- Name: mc2  -- XML id: _29684
-                // IGNORED: Field  -- Name: mb2  -- XML id: _29685
-                // IGNORED: Field  -- Name: mt2  -- XML id: _29686
-                // IGNORED: Field  -- Name: useCMW  -- XML id: _29687
-                // IGNORED: Variable  -- Name: FACCMW3  -- XML id: _29688
-                // IGNORED: Variable  -- Name: FACCMW4  -- XML id: _29689
-                // IGNORED: Variable  -- Name: FACCMW5  -- XML id: _29690
-                // IGNORED: Variable  -- Name: FACCMW6  -- XML id: _29691
-                // IGNORED: Variable  -- Name: SAFETYMARGIN1  -- XML id: _29692
-                // IGNORED: Variable  -- Name: SAFETYMARGIN2  -- XML id: _29693
-            private:
-                // IGNORED: Variable  -- Name: NITER  -- XML id: _29694
-                // IGNORED: Field  -- Name: lastCallToFull  -- XML id: _29695
-                // IGNORED: Field  -- Name: valueRef  -- XML id: _29696
-                // IGNORED: Field  -- Name: valueNow  -- XML id: _29697
-                // IGNORED: Field  -- Name: scale2Now  -- XML id: _29698
             public:
     
                 virtual void init(double, int, int, bool) =0;

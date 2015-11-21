@@ -186,9 +186,12 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
-  if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(pythia_CXXFLAGS "${pythia_CXXFLAGS}")
-  endif()
+endif()
+# - Add "-undefined dynamic_lookup flat_namespace" to linker flags when OSX linker is used
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(pythia_CXX_SHARED_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup flat_namespace")
+else()
+  set(pythia_CXX_SHARED_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}")
 endif()
 # - Set include directories
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
@@ -197,19 +200,26 @@ set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
 set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.209")
 # - Actual configure and compile commands
 ExternalProject_Add(pythia
-  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-           COMMAND ${CMAKE_COMMAND} -E copy_directory ${pythia_location} ${pythia_dir}
+  URL http://home.thep.lu.se/~torbjorn/pythia8/pythia8209.tgz
+  URL_MD5 1b9e9dc2f8a2c2db63bce739242fbc12
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${pythia_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so"
-  COMMAND echo "OSX DEBUG: CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}"
-  COMMAND echo "OSX DEBUG: pythia_CXXFLAGS = ${pythia_CXXFLAGS}"
-  COMMAND echo "OSX DEBUG: CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS = ${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}"
+  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}"
   INSTALL_COMMAND ""
 )
+ExternalProject_Add_Step(pythia apply_hacks
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.cc ${pythia_dir}/src/Pythia.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.cc ${pythia_dir}/src/SusyLesHouches.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ResonanceDecays.cc ${pythia_dir}/src/ResonanceDecays.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.h ${pythia_dir}/include/Pythia8/Pythia.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.h ${pythia_dir}/include/Pythia8/SusyLesHouches.h
+  DEPENDEES download
+  DEPENDERS patch
+)
+BOSS_backend(pythia Pythia 8.209)
 enable_auto_rebuild(pythia)
 add_external_clean(pythia ${pythia_dir} distclean)
 
@@ -361,7 +371,7 @@ set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.11.2")
 #set(FH_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
 #set(FH_C_FLAGS "${GAMBIT_C_FLAGS}")
 #set(FH_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
-#set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -fcheck=all ") #For debugging FH
+#set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -fcheck=all ") #For debugging FH issues with gfortran
 set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}") #For skipping -O2, which seems to cause issues
 set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to cause issues
 set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
@@ -372,7 +382,7 @@ ExternalProject_Add(feynhiggs
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, 3)#g" <SOURCE_DIR>/src/Decays/VecSet.F
+  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, LEGS)#g" <SOURCE_DIR>/src/Decays/VecSet.F
             COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
@@ -456,3 +466,8 @@ add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike pythia) #fastsi
 add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso
                       clean-higgssignals clean-higgsbounds clean-feynhiggs clean-susyhit clean-delphes clean-flexiblesusy
                       clean-ddcalc clean-gamlike clean-nulike clean-pythia)
+
+
+# Print the list of backends that require BOSSing
+message("${Yellow}-- BOSS step successfully generated for the following cmake targets: ${needs_BOSSing} ${ColourReset}")
+message("${Yellow}-- Failed to generate BOSS step for the following cmake targets: ${needs_BOSSing_failed} ${ColourReset}")

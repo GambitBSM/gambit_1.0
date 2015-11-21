@@ -25,25 +25,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_Particle : virtual public AbstractBase
         {
-            protected:
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _26961
-                // IGNORED: Field  -- Name: idSave  -- XML id: _26962
-                // IGNORED: Field  -- Name: statusSave  -- XML id: _26963
-                // IGNORED: Field  -- Name: mother1Save  -- XML id: _26964
-                // IGNORED: Field  -- Name: mother2Save  -- XML id: _26965
-                // IGNORED: Field  -- Name: daughter1Save  -- XML id: _26966
-                // IGNORED: Field  -- Name: daughter2Save  -- XML id: _26967
-                // IGNORED: Field  -- Name: colSave  -- XML id: _26968
-                // IGNORED: Field  -- Name: acolSave  -- XML id: _26969
-                // IGNORED: Field  -- Name: pSave  -- XML id: _26970
-                // IGNORED: Field  -- Name: mSave  -- XML id: _26971
-                // IGNORED: Field  -- Name: scaleSave  -- XML id: _26972
-                // IGNORED: Field  -- Name: polSave  -- XML id: _26973
-                // IGNORED: Field  -- Name: hasVertexSave  -- XML id: _26974
-                // IGNORED: Field  -- Name: vProdSave  -- XML id: _26975
-                // IGNORED: Field  -- Name: tauSave  -- XML id: _26976
-                // IGNORED: Field  -- Name: pdePtr  -- XML id: _26977
-                // IGNORED: Field  -- Name: evtPtr  -- XML id: _26978
             public:
     
                 virtual Pythia8::Abstract_Particle* operator_equal__BOSS(const Pythia8::Abstract_Particle&) =0;
