@@ -18,6 +18,8 @@
 ///
 ///  *********************************************
 
+#include <chrono>
+
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
@@ -455,13 +457,37 @@ namespace Gambit {
         if (widthheavyHiggs<0.1) 
           (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
+        // Dump Weff info on screen
         for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
 
+        // Set up timing
+        std::chrono::time_point<std::chrono::system_clock> start, end;
+
         // tabulate invariant rate
         logger() << "Tabulating RD_eff_annrate..." << std::endl;
+        start = std::chrono::system_clock::now();
         BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
+        end = std::chrono::system_clock::now();
         logger() << "...done!" << std::endl;
+
+        // Get runtime
+        double runtime = (end - start).count();
+
+        //if (runOptions->getValueOrDef<bool>(false, "debugMode"))
+        {
+          // Check if runtime too long
+          if ( runtime > 30. )
+          {
+            std::cout << "Duration: " << runtime << std::endl;
+            const Spectrum* mySpec = *Dep::MSSM_spectrum;
+            SLHAstruct mySLHA = mySpec->getSLHAea();
+            std::ofstream ofs("RelicDensity_debug.slha");
+            ofs << mySLHA;
+            ofs.close();
+            exit(1);  // And stop
+          }
+        }
 
         // Check whether piped invalid point was thrown
         piped_invalid_point.check();

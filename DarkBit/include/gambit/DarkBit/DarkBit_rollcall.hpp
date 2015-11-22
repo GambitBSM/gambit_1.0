@@ -153,6 +153,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
+      DEPENDENCY(MSSM_spectrum, const Spectrum*) 
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
       BACKEND_REQ(dsrdeqn, (), void, (double(*)(double&),double&,double&,double&,double&,int&))
