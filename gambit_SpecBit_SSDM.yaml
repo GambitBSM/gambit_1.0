@@ -65,7 +65,7 @@ Parameters:
       mH:
         range: [125, 135]
         prior_type: flat
-      vev: 246
+   #   vev: 246
 
 
 
@@ -95,9 +95,9 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/VS_spartan/samples/gambit_output.txt"
+    output_file: "gambit_output.txt"
     # name of info file (explains content of output file)
-    info_file: "runs/VS_spartan/samples/gambit_output.info"
+   # info_file: "runs/VS_spartan/samples/gambit_output.info"
     buffer_length: 1
 
 ##############################
@@ -193,7 +193,6 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/DarkBit_SingletDM/logs/"
   redirection:
     # [Debug] : stdout #"debug.log"
     # [Default] : stdout #"default.log"
@@ -248,4 +247,6 @@ KeyValues:
     ExampleBit_A_error: non-fatal
 
   enable_testing: false
+
+  default_output_path: "runs/SSDM/"
 

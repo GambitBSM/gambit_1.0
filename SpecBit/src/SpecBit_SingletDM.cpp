@@ -32,26 +32,6 @@
 // Switch for debug mode
 #define SpecBit_DBUG
 
-#define SWAP(a,b) {double temp;temp=a;a=b;b=temp;}
-
-
-inline void shft2a(double &a, double &b, const double c)
-{
-    a=b;
-    b=c;
-}
-inline void shft3a(double &a, double &b, double &c, const double d)
-{
-    a=b;
-    b=c;
-    c=d;
-}
-inline void mov3a(double &a, double &b, double &c, const double d, const double e,
-                  const double f)
-{
-    a=d; b=e; c=f;
-}
-
 
 namespace Gambit
 {

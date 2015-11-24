@@ -77,6 +77,8 @@ namespace Gambit {
             virtual double GetScale() const;
             virtual void SetScale(double scale);           
             virtual void RunToScale(double scale);
+        
+
 
             //constructors
             SSDMSpec(bool switch_index_convention=false);

@@ -296,6 +296,7 @@ namespace Gambit
       using namespace softsusy;
       namespace myPipe = Pipes::VS_age_func;//get_SingletDM_spectrum;
       using namespace Gambit;
+      using namespace SpecBit;
       //const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
 
       const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
@@ -310,312 +311,150 @@ namespace Gambit
       std::unique_ptr<SubSpectrum> SM = fullspectrum->clone_HE(); // COPIES Spectrum object
       //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();
       
-     //    vvvvvvvvvvvv    Finding minimum value of Lambda      vvvvvvvvvvvvv
-      
-      double a,b,fa,fb,fc;
-      double ax,bx,cx;
-      double fu,ftmp;
-      double ulim,u,utmp;const double GOLD=1.618034,GLIMIT=100.0;//TINY=1.0e-20;
-      
-      //vvvvvvvvvvvv    Bracketing of minimum Lambda      vvvvvvvvvvvvv
-      
-      const int ITMAX=100;
-      double tol=3e-6;
-      double MZ=92;
-      double Mpl=1.1e19;// Define upper cutoff
-      
       
      // SM->runningpars().RunToScale(MZ);
       SM -> RunToScale(MZ);
       double LamZ =SM->runningpars().get(Par::dimensionless,"Lambda1");
-    // double LamZ =fullspectrum->get_HE()->get(Par::dimensionless,"Lambda1");
-     
-     
-      //double LamZ =SM -> PR.get(Par::dimensionless,"Lambda1");
-    //  SM->runningpars().get_dimensionless_parameter("Lambda1");
-//      SM->runningpars().RunToScale(MZ+MZ*0.01);
-//      double DeltaLamZ =1;// SM->runningpars().get_dimensionless_parameter("Lambda1");
-//      SM->runningpars().RunToScale(Mpl);
-//      double fMpl =1;// SM->runningpars().get_dimensionless_parameter("Lambda1");
-//      SM->runningpars().RunToScale(Mpl-0.01*Mpl);
-//      double DeltafMpl = 1;//SM->runningpars().get_dimensionless_parameter("Lambda1");
-////
-//
-//      
-//      if (DeltafMpl<fMpl)
-//      {
-//      a=Mpl;b=(Mpl-0.01*Mpl);fa=fMpl;fb=DeltafMpl;
-//      cout<< "Mpl" << endl;
-//      }
-//      else if (DeltaLamZ<LamZ)
-//      {
-//      a=MZ,b=(MZ+MZ*0.01);fa=LamZ;fb=DeltaLamZ;
-//      }
-//      //Here GOLD is the default ratio by which successive intervals are magnified and GLIMIT
-//      //is the maximum magnification allowed for a parabolic-fit step.
-//      ax=a; bx=b;
-//      if (fb > fa) { //Switch roles of a and b so that we can go downhill in the direction from a to b.
-//      SWAP(ax,bx);
-//      SWAP(fb,fa);
-//      }
-//      cx=bx+GOLD*(bx-ax); //First guess for c.
-//      
-//      SM->runningpars().RunToScale(cx);
-//      fc = 1;//SM->runningpars().get_dimensionless_parameter("Lambda1");
-//
-//      
-//      cout << " c = " << cx<<endl;
-//      while (fb > fc)
-//      { //Keep returning here until we bracket.
-//        double r=(bx-ax)*(fb-fc);
-//        double q=(bx-cx)*(fb-fa);
-//        u=bx-((bx-cx)*q-(bx-ax)*r)/(2.0*SIGN(abs(q-r),q-r)); // need to be careful of division by zero here
-//        ulim=bx+GLIMIT*(cx-bx);
-//        //We won’t go farther than this. Test various possibilities:
-//        if ((bx-u)*(u-cx) > 0.0) { //Parabolic u is between b and c: try it.
-//
-//        cout << " u 1 = " << u <<endl;
-//        SM->runningpars().RunToScale(u);
-//        
-//        fu = 1;//SM->runningpars().get_dimensionless_parameter("Lambda1");
-// 
-//        if (fu < fc) { //Got a minimum between b and c.
-//        ax=bx;
-//        bx=u;
-//        fa=fb;
-//        fb=fu;
-//        break;
-//        } else if (fu > fb) {// Got a minimum between between a and u.
-//        cx=u;
-//        fc=fu;
-//        break;
-//        }
-//        u=cx+GOLD*(cx-bx); //Parabolic fit was no use. Use default magfu=
-//
-//        SM->runningpars().RunToScale(u);
-//        cout << " u5 = " << u <<endl;
-//        fu = 1;//SM->runningpars().get_dimensionless_parameter("Lambda1");
-// 
-//        } else if ((cx-u)*(u-ulim) > 0.0) { //Parabolic fit is between c and
-//        cout << " u2 = " << u <<endl;
-//        SM->runningpars().RunToScale(u);
-//        fu =1;// SM->runningpars().get_dimensionless_parameter("Lambda1");
-//
-//        
-//        
-//        if (fu < fc) {
-//        utmp=u+GOLD*(u-cx);shft3a(bx,cx,u,utmp);
-//        SM->runningpars().RunToScale(u);
-//        double ftmp = 1;// SM->runningpars().get_dimensionless_parameter("Lambda1");
-//        shft3a(fb,fc,fu,ftmp);
-//        }
-//        } else if ((u-ulim)*(ulim-cx) >= 0.0) { //Limit parabolic u to maximum
-//        u=ulim; //allowed value.
-//
-//        cout << " u3 = " << u <<endl;
-//        SM->runningpars().RunToScale(u);
-//        fu =1;// SM->runningpars().get_dimensionless_parameter("Lambda1");
-//  
-//        } else { //Reject parabolic u, use default magnificau=
-//        u=cx+GOLD*(cx-bx); //tion.
-//        
-//        u=pow ( 10,  log10(abs(cx-bx))/2 );
-//        
-//        
-//        cout << " u4 = " << u <<endl;
-//        SM->runningpars().RunToScale(u);
-//        fu = SM->runningpars().get(Par::dimensionless,"Lambda1");//
-//  //get_dimensionless_parameter("Lambda1");
-//
-//        
-//        
-//        }
-//        shft3a(ax,bx,cx,u); //Eliminate oldest point and continue.
-//        shft3a(fa,fb,fc,fu);
-//      }
-//    
-//      cout<< "here 2" <<endl;
-//      // ^^^^^^^^^^^^^^^^^^^^^^^^ bracketing complete ^^^^^^^^^^^^^^^^^^^^^^^^^
-//      
-//      
-//      // bracketing complete now need to find minimum lambda value, using Brent's method
-//      
-//      
-//
-//      const double CGOLD=0.3819660;
-//      const double ZEPS=numeric_limits<double>::epsilon()*1.0e-3;
-//      //Here ITMAX is the maximum allowed number of iterations;
-//      //and ZEPS is a small number that protects against trying to achieve fractional accuracy
-//      //for a minimum that happens to be exactly zero.
-//      double d=0.0,etemp,fv,fw,fx;
-//      double p,q,r,tol1,tol2,v,w,x,xm;
-//      double e=0.0;                                                   //This will be the distance moved on the step before last.
-//      a=(ax < cx ? ax : cx);                                          //a and b must be in ascending order,
-//      b=(ax > cx ? ax : cx);                                          //but input abscissas need not be.
-//      x=w=v=bx;                                                       // Initializations...
-//
-//      SM->runningpars().RunToScale(x);
-//
-//      double iterations;
-//      fw=fv=fx=SM->runningpars().get(Par::dimensionless,"Lambda1");
-////runningpars().get_dimensionless_parameter("Lambda1"); //function evaluation
-//      
-//      
-//      for (int iter=0;iter<ITMAX;iter++)
-//      {                            //  Main program loop.
-//          xm=0.5*(a+b);
-//          tol2=2.0*(tol1=tol*abs(x)+ZEPS);
-//          if (abs(x-xm) <= (tol2-0.5*(b-a)))
-//          {                      //Test for done here.
-//              iterations=iter;
-//              cout << "minimum found after " << iterations << " iterations" << endl;
-//              break;
-//          }
-//          if (abs(e) > tol1)
-//          {                       //Construct a trial parabolic fit.
-//              r=(x-w)*(fx-fv);
-//              q=(x-v)*(fx-fw);
-//              p=(x-v)*q-(x-w)*r;
-//              q=2.0*(q-r);
-//              if (q > 0.0) p = -p;
-//              q=abs(q);
-//              etemp=e;
-//              e=d;
-//              if (abs(p) >= abs(0.5*q*etemp) || p <= q*(a-x)
-//                  || p >= q*(b-x))
-//                  d=CGOLD*(e=(x >= xm ? a-x : b-x));
-//              //The above conditions determine the acceptability of the parabolic fit. Here
-//              //we take the golden section step into the larger of the two segments.
-//              else
-//              {
-//                  d=p/q;                                              //Take the parabolic step.
-//                  u=x+d;
-//                  if (u-a < tol2 || b-u < tol2)
-//                      d=SIGN(tol1,xm-x);
-//              }
-//          } else
-//          {
-//              d=CGOLD*(e=(x >= xm ? a-x : b-x));
-//          }
-//          u=(abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
-//          
-//
-//          SM->runningpars().RunToScale(u);
-//          //fu = SM->runningpars().get_dimensionless_parameter("Lambda1");
-//        
-//          fu=runningpars().get(Par::dimensionless,"Lambda1");
-//        
-//          //This is the one function evaluation per iteration.
-//          
-//          //cout<< u << endl;
-//          if (fu <= fx)
-//          {                                             //Now decide what to do with our func
-//              if(u >= x) a=x; else b=x;
-//              shft3a(v,w,x,u);                             //Housekeeping follows:
-//              shft3a(fv,fw,fx,fu);
-//              
-//          }
-//          else
-//          {
-//              if (u < x) a=u; else b=u;
-//              if (fu <= fw || w == x)
-//              {
-//                  v=w;
-//                  w=u;
-//                  fv=fw;
-//                  fw=fu;
-//              } else if (fu <= fv || v == x || v == w)
-//              {
-//                  v=u;
-//                  fv=fu;
-//              }
-//          }
-//      }
-//       cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<endl;
-//      
-//      
-//      // ^^^^^^^^^^^^^^^^^^  minimumn value of Lambda found   ^^^^^^^^^^^^^^^^^^^^^^
-//      double prob;
-//      if (fu<0)
-//      {
-//      // Calculate probability function for transition rate to false vacuum
-//     // prob=exp(-exp(4*140-2600/(abs(fu)/0.01))*pow(u/(1.2e19),4)); //probability of 0 decays
-//
-//      prob=log10(exp(4*140-2600/(abs(fu)/0.01))*pow(u/(1.2e19),4)  ); //probability of 0 decays
-//
-//      prob= 1/(exp(3*140-2600/(abs(fu)/0.01))*pow(1/(1.2e19),3)*pow(u,4))  ; //expected lifetime of universe
-//
-//      }
-//      else
-//      {
-//      prob=1; // vacuum is absolutely stable
-//      }
-//      
-//      
-//      SMInputs sminputs = fullspectrum->get_SMInputs();
-//      //std::unique_ptr<SubSpectrum> SM = fullspectrum->clone_HE();
-//      
-//      SSDM_input_parameters input;
-//      fill_SSDM_input(input,myPipe::Param);
-//      input.QHin=Mpl;
-//      cout<< "refilled input parameters" << endl;
-//     // spectrum* spec2=run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
-//
-//
-//            // Create spectrum generator object
-//      
-//      typename SSDM_interface<ALGORITHM1>::SpectrumGenerator spectrum_generator;
-//
-//      // Spectrum generator settings
-//      // Default options copied from flexiblesusy/src/spectrum_generator_settings.hpp
-//      //
-//      // | enum                             | possible values              | default value   |
-//      // |----------------------------------|------------------------------|-----------------|
-//      // | precision                        | any positive double          | 1.0e-4          |
-//      // | max_iterations                   | any positive double          | 0 (= automatic) |
-//      // | algorithm                        | 0 (two-scale) or 1 (lattice) | 0 (= two-scale) |
-//      // | calculate_sm_masses              | 0 (no) or 1 (yes)            | 0 (= no)        |
-//      // | pole_mass_loop_order             | 0, 1, 2                      | 2 (= 2-loop)    |
-//      // | ewsb_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
-//      // | beta_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
-//      // | threshold_corrections_loop_order | 0, 1                         | 1 (= 1-loop)    |
-//      // | higgs_2loop_correction_at_as     | 0, 1                         | 1 (= enabled)   |
-//      // | higgs_2loop_correction_ab_as     | 0, 1                         | 1 (= enabled)   |
-//      // | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
-//      // | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
-//
-//      QedQcd oneset;
-//
-//      // Fill QedQcd object with SMInputs values
-//      setup_QedQcd(oneset,sminputs);
-//
-//      // Run everything to Mz
-//      oneset.toMz();
-//      
-//      
-//      
-//      cout<< "Lambda 2 is " << input.Lambda2Input << endl;
-//
-//
-//      spectrum_generator.run(oneset, input);
-//      std::ostringstream warnings;
-//      const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems
-//      = spectrum_generator.get_problems();
-//      const bool error = problems.have_problem();
-//      //problems.print_warnings(warnings);
-//      //std::ostringstream problems_str;
-//      //problems.print_problems(problems_str);
-//      //cout<< FORMAT_SPINFO(4, problems_str.str()) <<endl;
-//      if (error==1)
-//      {
-//          //FlexibleSUSY error, may be unperturbative
-//          cout<< "ERROR" << endl;
-//        
-//      }
-//
-//      
-//      
+      //
+
+
+      double u_1=1;
+      double u_2=10;
+      double u_3=20;
+      double lambda_1,lambda_2,lambda_3;
+      double min_u;
+
+      // fit parabola (in log space) to 3 trial points and use this to estimate the minimum, zooming in on the region of interest
+      for (int i=1;i<3;i++)
+      {
       
+      SM -> RunToScale(pow(10,u_1));
+      lambda_1 =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      SM -> RunToScale(pow(10,u_2));
+      lambda_2 =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      SM -> RunToScale(pow(10,u_3));
+      lambda_3 =SM->runningpars().get(Par::dimensionless,"Lambda1");
+
+      
+      
+      
+      
+
+      double min_u= (lambda_1*(pow(u_2,2)-pow(u_3,2))  - lambda_2*(pow(u_1,2)-pow(u_3,2)) + lambda_3*(pow(u_1,2)-pow(u_2,2)));
+      min_u=(min_u/( lambda_1*(u_2-u_3)+ lambda_2*(u_3-u_1)  +lambda_3*(u_1-u_2)))/2;
+
+      u_1=min_u-2/(pow(float(i),0.01));
+      u_2=min_u;
+      u_3=min_u+2/(pow(float(i),0.01));
+      }
+      // run downhill minimization routine to find exact minimum
+      double ax=pow(10,u_1);
+      double bx=pow(10,u_2);
+      double cx=pow(10,u_3);
+
+      int ITMAX=100;
+      double tol=0.0001;
+      double xmin, fmin;
+      const double CGOLD=0.3819660;
+      const double ZEPS=numeric_limits<double>::epsilon()*1.0e-3;
+      //Here ITMAX is the maximum allowed number of iterations; CGOLD is the golden ratio;
+      //and ZEPS is a small number that protects against trying to achieve fractional accuracy
+      //for a minimum that happens to be exactly zero.
+      double d=0.0,etemp,fu,fv,fw,fx;
+      double p,q,r,tol1,tol2,u,v,w,x,xm;
+      double e=0.0;                                                   //This will be the distance moved on the step before last.
+      double a=(ax < cx ? ax : cx);
+      double b=(ax > cx ? ax : cx);
+      x=w=v=bx;
+      double iterations;
+     // fw=fv=fx=calc_lambda(x); //function evaluation
+      
+      SM -> RunToScale(x);
+      fw=fv=fx =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      
+      
+      for (int iter=0;iter<ITMAX;iter++)
+      {                            //  Main program loop.
+          xm=0.5*(a+b);
+          tol2=2.0*(tol1=tol*abs(x)+ZEPS);
+          if (abs(x-xm) <= (tol2-0.5*(b-a)))
+          {                      //Test for done here.
+              fmin=fx;
+              xmin=x;
+              iterations=iter;
+              break;
+          }
+          if (abs(e) > tol1)
+          {                       //Construct a trial parabolic fit.
+              r=(x-w)*(fx-fv);
+              q=(x-v)*(fx-fw);
+              p=(x-v)*q-(x-w)*r;
+              q=2.0*(q-r);
+              if (q > 0.0) p = -p;
+              q=abs(q);
+              etemp=e;
+              e=d;
+              if (abs(p) >= abs(0.5*q*etemp) || p <= q*(a-x)
+                  || p >= q*(b-x))
+                  d=CGOLD*(e=(x >= xm ? a-x : b-x));
+              //The above conditions determine the acceptability of the parabolic fit. Here
+              //we take the golden section step into the larger of the two segments.
+              else
+              {
+                  d=p/q;                                              //Take the parabolic step.
+                  u=x+d;
+                  if (u-a < tol2 || b-u < tol2)
+                      d=SIGN(tol1,xm-x);
+              }
+          }
+          else
+          {
+              d=CGOLD*(e=(x >= xm ? a-x : b-x));
+          }
+          u=(abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
+        
+        //  fu=calc_lambda(u);
+        
+          SM -> RunToScale(u);
+          fu =SM->runningpars().get(Par::dimensionless,"Lambda1");
+        
+        
+        
+          if (fu <= fx)
+          {                                             //Now decide what to do with our func
+              if(u >= x) a=x; else b=x;
+              shift(v,w,x,u);
+              shift(fv,fw,fx,fu);
+          }
+          else
+          {
+              if (u < x) a=u; else b=u;
+              if (fu <= fw || w == x)
+              {
+                  v=w;
+                  w=u;
+                  fv=fw;
+                  fw=fu;
+              } else if (fu <= fv || v == x || v == w)
+              {
+                  v=u;
+                  fv=fu;
+              }
+          }
+      }
+      cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<endl;
+
+      double lambda_min=fu;
+
+      if (lambda_min<0)
+      {
+      double LB=u;
+      }
+      else
+      {
+      double LB=1.22e19;
+      }
+
 
       
       result=1;//prob;
