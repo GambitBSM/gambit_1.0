@@ -16,15 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:14
+// File generated at Tue 24 Nov 2015 14:29:53
 
 #include "SSDM_slha_io.hpp"
 #include "SSDM_input_parameters.hpp"
+#include "SSDM_info.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "numerics2.hpp"
-#include "spectrum_generator_settings.hpp"
-#include "lowe.h"
 #include "config.h"
 
 #include <fstream>
@@ -70,8 +69,8 @@ void SSDM_slha_io::set_extpar(const SSDM_input_parameters& input)
    std::ostringstream extpar;
 
    extpar << "Block EXTPAR\n";
-   extpar << FORMAT_ELEMENT(0, input.Qin, "Qin");
-   extpar << FORMAT_ELEMENT(1, input.QHin, "QHin");
+   extpar << FORMAT_ELEMENT(0, input.QEWSB, "QEWSB");
+   extpar << FORMAT_ELEMENT(1, input.Qin, "Qin");
    slha_io.set_block(extpar);
 
 }
@@ -128,6 +127,9 @@ void SSDM_slha_io::set_spinfo(const Problems<SSDM_info::NUMBER_OF_PARTICLES>& pr
       problems.print_problems(problems_str);
       spinfo << FORMAT_SPINFO(4, problems_str.str());
    }
+
+   spinfo << FORMAT_SPINFO(5, SSDM_info::model_name)
+          << FORMAT_SPINFO(9, SARAH_VERSION);
 
    slha_io.set_block(spinfo, SLHA_io::front);
 }
@@ -244,6 +246,29 @@ void SSDM_slha_io::read_from_file(const std::string& file_name)
 }
 
 /**
+ * Read SLHA object from source
+ *
+ * calls SLHA_io::read_from_source()
+ *
+ * @param source source name
+ */
+void SSDM_slha_io::read_from_source(const std::string& source)
+{
+   slha_io.read_from_source(source);
+   slha_io.read_modsel();
+}
+
+/**
+ * Read SLHA object from stream
+ *
+ * @param istr stream name
+ */
+void SSDM_slha_io::read_from_stream(std::istream& istr)
+{
+   slha_io.read_from_stream(istr);
+}
+
+/**
  * Fill struct of model input parameters from SLHA object (MINPAR and
  * EXTPAR blocks)
  *
@@ -287,7 +312,7 @@ void SSDM_slha_io::fill_drbar_parameters(SSDM_mass_eigenstates& model) const
    }
    model.set_v(slha_io.read_entry("HMIX", 3));
    model.set_mu2(slha_io.read_entry("SM", 1));
-   model.set_mS2(slha_io.read_entry("MSOFT", 22));
+   model.set_ms2(slha_io.read_entry("MSOFT", 22));
    model.set_Lambda1(slha_io.read_entry("SM", 2));
    model.set_Lambda2(slha_io.read_entry("HDM", 2));
    model.set_Lambda3(slha_io.read_entry("HDM", 3));
@@ -318,10 +343,7 @@ void SSDM_slha_io::fill(SSDM_mass_eigenstates& model) const
  */
 void SSDM_slha_io::fill(Spectrum_generator_settings& settings) const
 {
-   SLHA_io::Tuple_processor flexiblesusy_processor
-      = boost::bind(&SSDM_slha_io::fill_flexiblesusy_tuple, boost::ref(settings), _1, _2);
-
-   slha_io.read_block("FlexibleSUSY", flexiblesusy_processor);
+   slha_io.fill(settings);
 }
 
 void SSDM_slha_io::fill_minpar_tuple(SSDM_input_parameters& input,
@@ -332,7 +354,7 @@ void SSDM_slha_io::fill_minpar_tuple(SSDM_input_parameters& input,
    case 2: input.Lambda2Input = value; break;
    case 3: input.Lambda3Input = value; break;
    case 4: input.mS2Input = value; break;
-   default: WARNING("Unrecognized key: " << key); break;
+   default: WARNING("Unrecognized entry in block MINPAR: " << key); break;
    }
 
 }
@@ -341,21 +363,11 @@ void SSDM_slha_io::fill_extpar_tuple(SSDM_input_parameters& input,
                                                 int key, double value)
 {
    switch (key) {
-   case 0: input.Qin = value; break;
-   case 1: input.QHin = value; break;
-   default: WARNING("Unrecognized key: " << key); break;
+   case 0: input.QEWSB = value; break;
+   case 1: input.Qin = value; break;
+   default: WARNING("Unrecognized entry in block EXTPAR: " << key); break;
    }
 
-}
-
-void SSDM_slha_io::fill_flexiblesusy_tuple(Spectrum_generator_settings& settings,
-                                                  int key, double value)
-{
-   if (0 <= key && key < static_cast<int>(Spectrum_generator_settings::NUMBER_OF_OPTIONS)) {
-      settings.set((Spectrum_generator_settings::Settings)key, value);
-   } else {
-      WARNING("Unrecognized key in block FlexibleSUSY: " << key);
-   }
 }
 
 /**

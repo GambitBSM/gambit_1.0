@@ -16,20 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:27
+// File generated at Tue 24 Nov 2015 14:30:09
 
 /**
  * @file SSDM_mass_eigenstates.hpp
+ *
  * @brief contains class for model with routines needed to solve boundary
- *        value problem using the two_scale solver by solvingt EWSB
+ *        value problem using the two_scale solver by solving EWSB
  *        and determine the pole masses and mixings
  *
- * This file was generated at Mon 5 Oct 2015 12:42:27 with FlexibleSUSY
- * 1.1.0 (git commit: v1.1.0-3-ga4e5ebd) and SARAH 4.5.6 .
+ * This file was generated at Tue 24 Nov 2015 14:30:09 with FlexibleSUSY
+ * 1.2.4 (git commit: v1.2.4-85-g706a210) and SARAH 4.5.6 .
  */
 
-#ifndef SSDM_IMODEL_H
-#define SSDM_IMODEL_H
+#ifndef SSDM_MASS_EIGENSTATES_H
+#define SSDM_MASS_EIGENSTATES_H
 
 #include "SSDM_two_scale_soft_parameters.hpp"
 #include "SSDM_physical.hpp"
@@ -66,6 +67,7 @@ public:
    void calculate_DRbar_masses();
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
+   void check_pole_masses_for_tachyons();
    virtual void clear();
    void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
@@ -77,9 +79,13 @@ public:
    void set_ewsb_iteration_precision(double);
    void set_ewsb_loop_order(unsigned);
    void set_two_loop_corrections(const Two_loop_corrections&);
+   const Two_loop_corrections& get_two_loop_corrections() const;
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
+   std::size_t get_number_of_ewsb_iterations() const;
+   std::size_t get_number_of_mass_iterations() const;
    void set_pole_mass_loop_order(unsigned);
+   unsigned get_pole_mass_loop_order() const;
    void set_physical(const SSDM_physical&);
    double get_ewsb_iteration_precision() const;
    double get_ewsb_loop_order() const;
@@ -97,6 +103,7 @@ public:
    void run_to(double scale, double eps = -1.0);
    void print(std::ostream&) const;
    void set_precision(double);
+   double get_precision() const;
 
 
    double get_MVG() const { return MVG; }
@@ -384,6 +391,7 @@ public:
 
 
 
+
    void calculate_MVG_pole();
    void calculate_Mss_pole();
    void calculate_MFv_pole();
@@ -397,10 +405,10 @@ public:
    double calculate_MVWp_pole(double);
    double calculate_MVZ_pole(double);
 
+   double calculate_MFv_DRbar(double, int) const;
+   double calculate_MFe_DRbar(double, int) const;
    double calculate_MFu_DRbar(double, int) const;
    double calculate_MFd_DRbar(double, int) const;
-   double calculate_MFe_DRbar(double, int) const;
-   double calculate_MFv_DRbar(double, int) const;
    double calculate_MVP_DRbar(double);
    double calculate_MVZ_DRbar(double);
    double calculate_MVWp_DRbar(double);

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:09
+// File generated at Tue 24 Nov 2015 14:29:46
 
 #include "SSDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -61,6 +61,25 @@ double SSDM_susy_parameters::calc_beta_Lambda3_two_loop(const Susy_traces& susy_
       ) - 80*Lambda3*Sqr(Lambda2) - 12*traceYdAdjYd*Sqr(Lambda2) - 4*
       traceYeAdjYe*Sqr(Lambda2) - 12*traceYuAdjYu*Sqr(Lambda2) + 2.4*Sqr(g1)*
       Sqr(Lambda2) + 12*Sqr(g2)*Sqr(Lambda2)));
+
+
+   return beta_Lambda3;
+}
+
+/**
+ * Calculates the three-loop beta function of Lambda3.
+ *
+ * @return three-loop beta function
+ */
+double SSDM_susy_parameters::calc_beta_Lambda3_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_Lambda3;
+
+   beta_Lambda3 = 0;
 
 
    return beta_Lambda3;

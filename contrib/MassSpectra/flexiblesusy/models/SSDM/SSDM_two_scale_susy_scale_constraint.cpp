@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:15
+// File generated at Tue 24 Nov 2015 14:29:54
 
 #include "SSDM_two_scale_susy_scale_constraint.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -26,6 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
+#include "threshold_loop_functions.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -38,8 +39,11 @@ namespace flexiblesusy {
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
 #define LowEnergyConstant(p) Electroweak_constants::p
+#define MZPole Electroweak_constants::MZ
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
+#define SCALE model->get_scale()
+#define THRESHOLD static_cast<int>(model->get_thresholds())
 #define MODEL model
 #define MODELCLASSNAME SSDM<Two_scale>
 
@@ -72,15 +76,8 @@ void SSDM_susy_scale_constraint<Two_scale>::apply()
    update_scale();
 
    // apply user-defined susy scale constraints
-   const auto HiggsIN = INPUTPARAMETER(HiggsIN);
+   MODEL->solve_ewsb();
 
-   MODEL->set_mu2(Re(HiggsIN));
-
-
-   // the parameters, which are fixed by the EWSB eqs., will now be
-   // defined at this scale (at the EWSB loop level defined in the
-   // model)
-   model->solve_ewsb();
 }
 
 double SSDM_susy_scale_constraint<Two_scale>::get_scale() const
@@ -123,9 +120,9 @@ void SSDM_susy_scale_constraint<Two_scale>::initialize()
    assert(model && "SSDM_susy_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   const auto Qin = INPUTPARAMETER(Qin);
+   const auto QEWSB = INPUTPARAMETER(QEWSB);
 
-   initial_scale_guess = Qin;
+   initial_scale_guess = QEWSB;
 
    scale = initial_scale_guess;
 }
@@ -135,9 +132,9 @@ void SSDM_susy_scale_constraint<Two_scale>::update_scale()
    assert(model && "SSDM_susy_scale_constraint<Two_scale>::"
           "update_scale(): model pointer is zero.");
 
-   const auto Qin = INPUTPARAMETER(Qin);
+   const auto QEWSB = INPUTPARAMETER(QEWSB);
 
-   scale = Qin;
+   scale = QEWSB;
 
 
 }

@@ -18,6 +18,6 @@
 
 
 LIBSSDM_SRC += \
-	models/SSDM/SSDM_two_scale_soft_beta_mS2.cpp \
+	models/SSDM/SSDM_two_scale_soft_beta_ms2.cpp \
 	models/SSDM/SSDM_two_scale_soft_beta_mu2.cpp \
 	models/SSDM/SSDM_two_scale_soft_beta_v.cpp

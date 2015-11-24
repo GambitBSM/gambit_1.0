@@ -49,31 +49,6 @@
 // Switch for debug mode
 #define SpecBit_DBUG 
 
-
-
-#define SWAP(a,b) {double temp;temp=a;a=b;b=temp;}
-
-
-
-inline void shft2a(double &a, double &b, const double c)
-{
-    a=b;
-    b=c;
-}
-inline void shft3a(double &a, double &b, double &c, const double d)
-{
-    a=b;
-    b=c;
-    c=d;
-}
-inline void mov3a(double &a, double &b, double &c, const double d, const double e,
-                  const double f)
-{
-    a=d; b=e; c=f;
-}
-
-
-
 namespace Gambit
 {
 
@@ -311,8 +286,6 @@ namespace Gambit
       std::unique_ptr<SubSpectrum> SM = fullspectrum->clone_HE(); // COPIES Spectrum object
       //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();
       
-      
-     // SM->runningpars().RunToScale(MZ);
       SM -> RunToScale(MZ);
       double LamZ =SM->runningpars().get(Par::dimensionless,"Lambda1");
       //
@@ -327,22 +300,14 @@ namespace Gambit
       // fit parabola (in log space) to 3 trial points and use this to estimate the minimum, zooming in on the region of interest
       for (int i=1;i<3;i++)
       {
-      
       SM -> RunToScale(pow(10,u_1));
       lambda_1 =SM->runningpars().get(Par::dimensionless,"Lambda1");
       SM -> RunToScale(pow(10,u_2));
       lambda_2 =SM->runningpars().get(Par::dimensionless,"Lambda1");
       SM -> RunToScale(pow(10,u_3));
       lambda_3 =SM->runningpars().get(Par::dimensionless,"Lambda1");
-
-      
-      
-      
-      
-
       double min_u= (lambda_1*(pow(u_2,2)-pow(u_3,2))  - lambda_2*(pow(u_1,2)-pow(u_3,2)) + lambda_3*(pow(u_1,2)-pow(u_2,2)));
       min_u=(min_u/( lambda_1*(u_2-u_3)+ lambda_2*(u_3-u_1)  +lambda_3*(u_1-u_2)))/2;
-
       u_1=min_u-2/(pow(float(i),0.01));
       u_2=min_u;
       u_3=min_u+2/(pow(float(i),0.01));
@@ -357,18 +322,13 @@ namespace Gambit
       double xmin, fmin;
       const double CGOLD=0.3819660;
       const double ZEPS=numeric_limits<double>::epsilon()*1.0e-3;
-      //Here ITMAX is the maximum allowed number of iterations; CGOLD is the golden ratio;
-      //and ZEPS is a small number that protects against trying to achieve fractional accuracy
-      //for a minimum that happens to be exactly zero.
       double d=0.0,etemp,fu,fv,fw,fx;
       double p,q,r,tol1,tol2,u,v,w,x,xm;
-      double e=0.0;                                                   //This will be the distance moved on the step before last.
+      double e=0.0;
       double a=(ax < cx ? ax : cx);
       double b=(ax > cx ? ax : cx);
       x=w=v=bx;
       double iterations;
-     // fw=fv=fx=calc_lambda(x); //function evaluation
-      
       SM -> RunToScale(x);
       fw=fv=fx =SM->runningpars().get(Par::dimensionless,"Lambda1");
       
@@ -397,11 +357,9 @@ namespace Gambit
               if (abs(p) >= abs(0.5*q*etemp) || p <= q*(a-x)
                   || p >= q*(b-x))
                   d=CGOLD*(e=(x >= xm ? a-x : b-x));
-              //The above conditions determine the acceptability of the parabolic fit. Here
-              //we take the golden section step into the larger of the two segments.
               else
               {
-                  d=p/q;                                              //Take the parabolic step.
+                  d=p/q;
                   u=x+d;
                   if (u-a < tol2 || b-u < tol2)
                       d=SIGN(tol1,xm-x);
@@ -413,15 +371,13 @@ namespace Gambit
           }
           u=(abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
         
-        //  fu=calc_lambda(u);
-        
           SM -> RunToScale(u);
           fu =SM->runningpars().get(Par::dimensionless,"Lambda1");
         
         
         
           if (fu <= fx)
-          {                                             //Now decide what to do with our func
+          {
               if(u >= x) a=x; else b=x;
               shift(v,w,x,u);
               shift(fv,fw,fx,fu);

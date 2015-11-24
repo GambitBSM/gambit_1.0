@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:12
+// File generated at Tue 24 Nov 2015 14:29:50
 
 #include "SSDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -40,7 +40,7 @@ double SSDM_soft_parameters::calc_beta_mu2_one_loop(const Soft_traces& soft_trac
 
    double beta_mu2;
 
-   beta_mu2 = Re(oneOver16PiSqr*(2*Lambda2*mS2 + 12*Lambda1*mu2 + 6*mu2*
+   beta_mu2 = Re(oneOver16PiSqr*(4*Lambda2*ms2 + 6*Lambda1*mu2 + 6*mu2*
       traceYdAdjYd + 2*mu2*traceYeAdjYe + 6*mu2*traceYuAdjYu - 0.9*mu2*Sqr(g1)
       - 4.5*mu2*Sqr(g2)));
 
@@ -68,13 +68,32 @@ double SSDM_soft_parameters::calc_beta_mu2_two_loop(const Soft_traces& soft_trac
 
    beta_mu2 = Re(twoLoop*(4.1775*Power(g1,4)*mu2 - 9.0625*Power(g2,4)*mu2
       - 13.5*mu2*traceYdAdjYdYdAdjYd - 21*mu2*traceYdAdjYuYuAdjYd - 4.5*mu2*
-      traceYeAdjYeYeAdjYe - 72*Lambda1*mu2*traceYuAdjYu - 13.5*mu2*
-      traceYuAdjYuYuAdjYu + 14.4*Lambda1*mu2*Sqr(g1) + 4.25*mu2*traceYuAdjYu*
-      Sqr(g1) + 72*Lambda1*mu2*Sqr(g2) + 11.25*mu2*traceYuAdjYu*Sqr(g2) + 1.125
-      *mu2*Sqr(g1)*Sqr(g2) + 0.75*mu2*traceYeAdjYe*(-32*Lambda1 + 5*Sqr(g1) + 5
-      *Sqr(g2)) + 40*mu2*traceYuAdjYu*Sqr(g3) + 0.25*mu2*traceYdAdjYd*(-288*
-      Lambda1 + 5*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3)) - 60*mu2*Sqr(Lambda1) - 8
-      *mS2*Sqr(Lambda2) - 2*mu2*Sqr(Lambda2)));
+      traceYeAdjYeYeAdjYe - 36*Lambda1*mu2*traceYuAdjYu - 13.5*mu2*
+      traceYuAdjYuYuAdjYu + 7.2*Lambda1*mu2*Sqr(g1) + 4.25*mu2*traceYuAdjYu*Sqr
+      (g1) + 36*Lambda1*mu2*Sqr(g2) + 11.25*mu2*traceYuAdjYu*Sqr(g2) + 1.125*
+      mu2*Sqr(g1)*Sqr(g2) + 0.75*mu2*traceYeAdjYe*(-16*Lambda1 + 5*Sqr(g1) + 5*
+      Sqr(g2)) + 40*mu2*traceYuAdjYu*Sqr(g3) + 0.25*mu2*traceYdAdjYd*(-144*
+      Lambda1 + 5*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3)) - 15*mu2*Sqr(Lambda1) -
+      16*ms2*Sqr(Lambda2) - 2*mu2*Sqr(Lambda2)));
+
+
+   return beta_mu2;
+}
+
+/**
+ * Calculates the three-loop beta function of mu2.
+ *
+ * @return three-loop beta function
+ */
+double SSDM_soft_parameters::calc_beta_mu2_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_mu2;
+
+   beta_mu2 = 0;
 
 
    return beta_mu2;

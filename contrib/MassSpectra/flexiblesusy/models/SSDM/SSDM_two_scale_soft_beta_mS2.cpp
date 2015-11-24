@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:12
+// File generated at Tue 24 Nov 2015 14:29:49
 
 #include "SSDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -27,43 +27,62 @@ namespace flexiblesusy {
 #define TRACE_STRUCT soft_traces
 
 /**
- * Calculates the one-loop beta function of mS2.
+ * Calculates the one-loop beta function of ms2.
  *
  * @return one-loop beta function
  */
-double SSDM_soft_parameters::calc_beta_mS2_one_loop(const Soft_traces& soft_traces) const
+double SSDM_soft_parameters::calc_beta_ms2_one_loop(const Soft_traces& soft_traces) const
 {
 
 
-   double beta_mS2;
+   double beta_ms2;
 
-   beta_mS2 = Re(8*(3*Lambda3*mS2 + Lambda2*mu2)*oneOver16PiSqr);
+   beta_ms2 = Re(4*(6*Lambda3*ms2 + Lambda2*mu2)*oneOver16PiSqr);
 
 
-   return beta_mS2;
+   return beta_ms2;
 }
 
 /**
- * Calculates the two-loop beta function of mS2.
+ * Calculates the two-loop beta function of ms2.
  *
  * @return two-loop beta function
  */
-double SSDM_soft_parameters::calc_beta_mS2_two_loop(const Soft_traces& soft_traces) const
+double SSDM_soft_parameters::calc_beta_ms2_two_loop(const Soft_traces& soft_traces) const
 {
    const double traceYdAdjYd = TRACE_STRUCT.traceYdAdjYd;
    const double traceYeAdjYe = TRACE_STRUCT.traceYeAdjYe;
    const double traceYuAdjYu = TRACE_STRUCT.traceYuAdjYu;
 
 
-   double beta_mS2;
+   double beta_ms2;
 
-   beta_mS2 = Re(-1.6*twoLoop*(30*Lambda2*mu2*traceYdAdjYd + 10*Lambda2*
-      mu2*traceYeAdjYe + 30*Lambda2*mu2*traceYuAdjYu - 6*Lambda2*mu2*Sqr(g1) -
-      30*Lambda2*mu2*Sqr(g2) + 5*mS2*Sqr(Lambda2) + 20*mu2*Sqr(Lambda2) + 300*
-      mS2*Sqr(Lambda3)));
+   beta_ms2 = Re(-1.6*twoLoop*(15*Lambda2*mu2*traceYdAdjYd + 5*Lambda2*
+      mu2*traceYeAdjYe + 15*Lambda2*mu2*traceYuAdjYu - 3*Lambda2*mu2*Sqr(g1) -
+      15*Lambda2*mu2*Sqr(g2) + 5*ms2*Sqr(Lambda2) + 10*mu2*Sqr(Lambda2) + 300*
+      ms2*Sqr(Lambda3)));
 
 
-   return beta_mS2;
+   return beta_ms2;
+}
+
+/**
+ * Calculates the three-loop beta function of ms2.
+ *
+ * @return three-loop beta function
+ */
+double SSDM_soft_parameters::calc_beta_ms2_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_ms2;
+
+   beta_ms2 = 0;
+
+
+   return beta_ms2;
 }
 
 } // namespace flexiblesusy

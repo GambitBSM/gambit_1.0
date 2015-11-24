@@ -65,6 +65,7 @@ LIBSSDM_HDR += \
 		$(DIR)/SSDM_model_slha.hpp \
 		$(DIR)/SSDM_physical.hpp \
 		$(DIR)/SSDM_slha_io.hpp \
+		$(DIR)/SSDM_spectrum_generator_interface.hpp \
 		$(DIR)/SSDM_spectrum_generator.hpp \
 		$(DIR)/SSDM_susy_scale_constraint.hpp \
 		$(DIR)/SSDM_utilities.hpp \
@@ -119,6 +120,10 @@ EXESSDM_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXESSDM_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(EXESSDM_SRC)))
 
+EXESSDM_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXESSDM_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXESSDM_SRC)))
+
 LIBSSDM_DEP := \
 		$(LIBSSDM_OBJ:.o=.d)
 
@@ -126,15 +131,6 @@ EXESSDM_DEP := \
 		$(EXESSDM_OBJ:.o=.d)
 
 LIBSSDM     := $(DIR)/lib$(MODNAME)$(LIBEXT)
-
-RUN_SSDM_OBJ := $(DIR)/run_SSDM.o
-RUN_SSDM_EXE := $(DIR)/run_SSDM.x
-
-RUN_CMD_LINE_SSDM_OBJ := $(DIR)/run_cmd_line_SSDM.o
-RUN_CMD_LINE_SSDM_EXE := $(DIR)/run_cmd_line_SSDM.x
-
-SCAN_SSDM_OBJ := $(DIR)/scan_SSDM.o
-SCAN_SSDM_EXE := $(DIR)/scan_SSDM.x
 
 METACODE_STAMP_SSDM := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
@@ -172,11 +168,10 @@ clean-$(MODNAME)-obj:
 		-rm -f $(LIBSSDM_OBJ)
 		-rm -f $(EXESSDM_OBJ)
 
+
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBSSDM)
-		-rm -f $(RUN_SSDM_EXE)
-		-rm -f $(RUN_CMD_LINE_SSDM_EXE)
-		-rm -f $(SCAN_SSDM_EXE)
+		-rm -f $(EXESSDM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
@@ -220,16 +215,10 @@ endif
 $(LIBSSDM): $(LIBSSDM_OBJ)
 		$(MAKELIB) $@ $^
 
-$(RUN_SSDM_EXE): $(RUN_SSDM_OBJ) $(LIBSSDM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(RUN_CMD_LINE_SSDM_EXE): $(RUN_CMD_LINE_SSDM_OBJ) $(LIBSSDM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(SCAN_SSDM_EXE): $(SCAN_SSDM_OBJ) $(LIBSSDM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+$(DIR)/%.x: $(DIR)/%.o $(LIBSSDM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(LDLIBS)
 
 ALLDEP += $(LIBSSDM_DEP) $(EXESSDM_DEP)
 ALLSRC += $(LIBSSDM_SRC) $(EXESSDM_SRC)
 ALLLIB += $(LIBSSDM)
-ALLEXE += $(RUN_SSDM_EXE) $(RUN_CMD_LINE_SSDM_EXE) $(SCAN_SSDM_EXE)
+ALLEXE += $(EXESSDM_EXE)

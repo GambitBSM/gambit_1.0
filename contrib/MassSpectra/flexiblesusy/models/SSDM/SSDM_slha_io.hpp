@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:14
+// File generated at Tue 24 Nov 2015 14:29:53
 
 #ifndef SSDM_SLHA_IO_H
 #define SSDM_SLHA_IO_H
@@ -27,6 +27,7 @@
 #include "slha_io.hpp"
 #include "ckm.hpp"
 #include "ew_input.hpp"
+#include "lowe.h"
 
 #include <Eigen/Core>
 #include <string>
@@ -57,7 +58,7 @@ public:
 
    void clear();
 
-   void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
+   void fill(softsusy::QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(SSDM_input_parameters&) const;
    void fill(SSDM_mass_eigenstates&) const;
    template <class T> void fill(SSDM_slha<T>&) const;
@@ -65,6 +66,8 @@ public:
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
+   void read_from_source(const std::string&);
+   void read_from_stream(std::istream&);
    void set_extpar(const SSDM_input_parameters&);
    template <class T> void set_extra(const SSDM_slha<T>&, const SSDM_scales&);
    void set_minpar(const SSDM_input_parameters&);
@@ -77,16 +80,15 @@ public:
 
    static void fill_minpar_tuple(SSDM_input_parameters&, int, double);
    static void fill_extpar_tuple(SSDM_input_parameters&, int, double);
-   static void fill_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const SSDM_slha<T>&, const QedQcd&, const SSDM_scales&);
+   static void fill_slhaea(SLHAea::Coll&, const SSDM_slha<T>&, const softsusy::QedQcd&, const SSDM_scales&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const SSDM_slha<T>&, const QedQcd&);
+   static SLHAea::Coll fill_slhaea(const SSDM_slha<T>&, const softsusy::QedQcd&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const SSDM_slha<T>&, const QedQcd&, const SSDM_scales&);
+   static SLHAea::Coll fill_slhaea(const SSDM_slha<T>&, const softsusy::QedQcd&, const SSDM_scales&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
@@ -117,7 +119,7 @@ void SSDM_slha_io::fill(SSDM_slha<T>& model) const
 template <class T>
 void SSDM_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const SSDM_slha<T>& model,
-   const QedQcd& qedqcd, const SSDM_scales& scales)
+   const softsusy::QedQcd& qedqcd, const SSDM_scales& scales)
 {
    SSDM_slha_io slha_io;
    const SSDM_input_parameters& input = model.get_input();
@@ -139,7 +141,7 @@ void SSDM_slha_io::fill_slhaea(
 
 template <class T>
 SLHAea::Coll SSDM_slha_io::fill_slhaea(
-   const SSDM_slha<T>& model, const QedQcd& qedqcd)
+   const SSDM_slha<T>& model, const softsusy::QedQcd& qedqcd)
 {
    SSDM_scales scales;
 
@@ -148,7 +150,7 @@ SLHAea::Coll SSDM_slha_io::fill_slhaea(
 
 template <class T>
 SLHAea::Coll SSDM_slha_io::fill_slhaea(
-   const SSDM_slha<T>& model, const QedQcd& qedqcd,
+   const SSDM_slha<T>& model, const softsusy::QedQcd& qedqcd,
    const SSDM_scales& scales)
 {
    SLHAea::Coll slhaea;
@@ -195,7 +197,7 @@ void SSDM_slha_io::set_model_parameters(const SSDM_slha<T>& model)
    {
       std::ostringstream block;
       block << "Block MSOFT Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
-            << FORMAT_ELEMENT(22, (MODELPARAMETER(mS2)), "mS2")
+            << FORMAT_ELEMENT(22, (MODELPARAMETER(ms2)), "ms2")
       ;
       slha_io.set_block(block);
    }

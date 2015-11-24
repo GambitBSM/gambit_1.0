@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:27
+// File generated at Tue 24 Nov 2015 14:30:09
 
 /**
  * @file SSDM_mass_eigenstates.cpp
@@ -26,8 +26,8 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Mon 5 Oct 2015 12:42:27 with FlexibleSUSY
- * 1.1.0 (git commit: v1.1.0-3-ga4e5ebd) and SARAH 4.5.6 .
+ * This file was generated at Tue 24 Nov 2015 14:30:09 with FlexibleSUSY
+ * 1.2.4 (git commit: v1.2.4-85-g706a210) and SARAH 4.5.6 .
  */
 
 #include "SSDM_mass_eigenstates.hpp"
@@ -43,6 +43,7 @@
 #include "config.h"
 #include "pv.hpp"
 #include "functors.hpp"
+
 
 
 
@@ -72,6 +73,7 @@ using namespace SSDM_info;
 #define HIGGS_2LOOP_CORRECTION_AT_AT     two_loop_corrections.higgs_at_at
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
 #define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
+#define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
 #ifdef ENABLE_THREADS
    std::mutex CLASSNAME::mtx_fortran;
@@ -146,14 +148,29 @@ void CLASSNAME::set_two_loop_corrections(const Two_loop_corrections& two_loop_co
    two_loop_corrections = two_loop_corrections_;
 }
 
+const Two_loop_corrections& CLASSNAME::get_two_loop_corrections() const
+{
+   return two_loop_corrections;
+}
+
 void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
 {
    number_of_ewsb_iterations = iterations;
 }
 
+std::size_t CLASSNAME::get_number_of_ewsb_iterations() const
+{
+   return number_of_ewsb_iterations;
+}
+
 void CLASSNAME::set_number_of_mass_iterations(std::size_t iterations)
 {
    number_of_mass_iterations = iterations;
+}
+
+std::size_t CLASSNAME::get_number_of_mass_iterations() const
+{
+   return number_of_mass_iterations;
 }
 
 void CLASSNAME::set_precision(double precision_)
@@ -167,6 +184,11 @@ void CLASSNAME::set_pole_mass_loop_order(unsigned loop_order)
    pole_mass_loop_order = loop_order;
 }
 
+unsigned CLASSNAME::get_pole_mass_loop_order() const
+{
+   return pole_mass_loop_order;
+}
+
 void CLASSNAME::set_ewsb_iteration_precision(double precision)
 {
    ewsb_iteration_precision = precision;
@@ -175,6 +197,11 @@ void CLASSNAME::set_ewsb_iteration_precision(double precision)
 double CLASSNAME::get_ewsb_iteration_precision() const
 {
    return ewsb_iteration_precision;
+}
+
+double CLASSNAME::get_precision() const
+{
+   return precision;
 }
 
 double CLASSNAME::get_ewsb_loop_order() const
@@ -315,7 +342,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 #endif
    }
 
-   for_each(solvers, solvers + number_of_solvers, Delete_object());
+   std::for_each(solvers, solvers + number_of_solvers, Delete_object());
 
    return status;
 }
@@ -359,7 +386,7 @@ int CLASSNAME::solve_ewsb_tree_level()
 
    const double old_Lambda1 = Lambda1;
 
-   Lambda1 = Re(-(mu2/Sqr(v)));
+   Lambda1 = Re((-2*mu2)/Sqr(v));
 
    const bool is_finite = IsFinite(Lambda1);
 
@@ -426,7 +453,7 @@ int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
 
    double Lambda1;
 
-   Lambda1 = Re((-(mu2*v) + tadpole[0])/Power(v,3));
+   Lambda1 = Re((-2*(mu2*v - tadpole[0]))/Power(v,3));
 
    const bool is_finite = IsFinite(Lambda1);
 
@@ -675,7 +702,7 @@ void CLASSNAME::copy_DRbar_masses_to_pole_masses()
 
 /**
  * reorders DRbar masses so that golstones are placed at the index
- * specified in the model files definition of the associuated
+ * specified in the model files definition of the associated
  * gauge boson (see Z-boson definition in default particles.m file
  * in the Models directory of your SARAH distribution for example)
  */
@@ -694,6 +721,17 @@ void CLASSNAME::reorder_pole_masses()
 {
 
 }
+
+/**
+ * Checks the pole masses for tachyons
+ */
+void CLASSNAME::check_pole_masses_for_tachyons()
+{
+   if (PHYSICAL(Mss) < 0.) problems.flag_tachyon(ss);
+   if (PHYSICAL(Mhh) < 0.) problems.flag_tachyon(hh);
+
+}
+
 /**
  * calculates spectrum for model once the DRbar parameters at
  * at low energies are known
@@ -710,6 +748,8 @@ void CLASSNAME::calculate_spectrum()
       copy_DRbar_masses_to_pole_masses();
    else
       reorder_pole_masses();
+
+   check_pole_masses_for_tachyons();
 
    if (problems.have_problem() && !force_output) {
       clear_DRbar_parameters();
@@ -787,8 +827,8 @@ void CLASSNAME::calculate_MVG()
 
 double CLASSNAME::get_mass_matrix_Hp() const
 {
-   const double mass_matrix_Hp = Re(mu2 + Lambda1*Sqr(v) + 0.25*Sqr(g2)*
-      Sqr(v));
+   const double mass_matrix_Hp = Re(0.25*(4*mu2 + 2*Lambda1*Sqr(v) + Sqr(
+      g2)*Sqr(v)));
 
    return mass_matrix_Hp;
 }
@@ -806,7 +846,7 @@ void CLASSNAME::calculate_MHp()
 
 double CLASSNAME::get_mass_matrix_ss() const
 {
-   const double mass_matrix_ss = Re(mS2 + Lambda2*Sqr(v));
+   const double mass_matrix_ss = Re(2*ms2 + Lambda2*Sqr(v));
 
    return mass_matrix_ss;
 }
@@ -845,8 +885,8 @@ void CLASSNAME::calculate_MFv()
 
 double CLASSNAME::get_mass_matrix_Ah() const
 {
-   const double mass_matrix_Ah = Re(0.25*(4*(mu2 + Lambda1*Sqr(v)) + Sqr(
-      v)*Sqr(g2*Cos(ThetaW()) + 0.7745966692414834*g1*Sin(ThetaW()))));
+   const double mass_matrix_Ah = Re(0.25*(2*(2*mu2 + Lambda1*Sqr(v)) +
+      Sqr(v)*Sqr(g2*Cos(ThetaW()) + 0.7745966692414834*g1*Sin(ThetaW()))));
 
    return mass_matrix_Ah;
 }
@@ -864,7 +904,7 @@ void CLASSNAME::calculate_MAh()
 
 double CLASSNAME::get_mass_matrix_hh() const
 {
-   const double mass_matrix_hh = Re(mu2 + 3*Lambda1*Sqr(v));
+   const double mass_matrix_hh = Re(mu2 + 1.5*Lambda1*Sqr(v));
 
    return mass_matrix_hh;
 }
@@ -1026,7 +1066,7 @@ void CLASSNAME::calculate_MVWp()
 
 double CLASSNAME::get_ewsb_eq_hh_1() const
 {
-   double result = Re(mu2*v + Lambda1*Power(v,3));
+   double result = Re(mu2*v + 0.5*Lambda1*Power(v,3));
 
    return result;
 }
@@ -1037,7 +1077,7 @@ double CLASSNAME::CpconjHpHphh() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1*v;
+   result = -(Lambda1*v);
 
    return result;
 }
@@ -1102,7 +1142,7 @@ double CLASSNAME::CpHpconjHpAhAh() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1;
+   result = -Lambda1;
 
    return result;
 }
@@ -1111,7 +1151,7 @@ double CLASSNAME::CpHpconjHphhhh() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1;
+   result = -Lambda1;
 
    return result;
 }
@@ -1129,7 +1169,7 @@ double CLASSNAME::CpHpconjHpconjHpHp() const
 {
    double result = 0.0;
 
-   result = -4*Lambda1;
+   result = -2*Lambda1;
 
    return result;
 }
@@ -1304,7 +1344,7 @@ double CLASSNAME::CpAhhhAh() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1*v;
+   result = -(Lambda1*v);
 
    return result;
 }
@@ -1331,7 +1371,7 @@ double CLASSNAME::CpAhAhAhAh() const
 {
    double result = 0.0;
 
-   result = -6*Lambda1;
+   result = -3*Lambda1;
 
    return result;
 }
@@ -1340,7 +1380,7 @@ double CLASSNAME::CpAhAhhhhh() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1;
+   result = -Lambda1;
 
    return result;
 }
@@ -1358,7 +1398,7 @@ double CLASSNAME::CpAhAhconjHpHp() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1;
+   result = -Lambda1;
 
    return result;
 }
@@ -1531,7 +1571,7 @@ double CLASSNAME::CphhAhAh() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1*v;
+   result = -(Lambda1*v);
 
    return result;
 }
@@ -1540,7 +1580,7 @@ double CLASSNAME::Cphhhhhh() const
 {
    double result = 0.0;
 
-   result = -6*Lambda1*v;
+   result = -3*Lambda1*v;
 
    return result;
 }
@@ -1595,7 +1635,7 @@ double CLASSNAME::CphhconjHpHp() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1*v;
+   result = -(Lambda1*v);
 
    return result;
 }
@@ -1613,7 +1653,7 @@ double CLASSNAME::CphhhhAhAh() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1;
+   result = -Lambda1;
 
    return result;
 }
@@ -1622,7 +1662,7 @@ double CLASSNAME::Cphhhhhhhh() const
 {
    double result = 0.0;
 
-   result = -6*Lambda1;
+   result = -3*Lambda1;
 
    return result;
 }
@@ -1640,7 +1680,7 @@ double CLASSNAME::CphhhhconjHpHp() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1;
+   result = -Lambda1;
 
    return result;
 }
@@ -4964,6 +5004,8 @@ std::complex<double> CLASSNAME::tadpole_hh() const
 
 
 
+
+
 void CLASSNAME::calculate_MVG_pole()
 {
    // diagonalization with high precision
@@ -5000,13 +5042,10 @@ void CLASSNAME::calculate_Mss_pole()
    do {
       const double M_tree(get_mass_matrix_ss());
       const double p = old_Mss;
-      const double self_energy = Re(self_energy_ss(p));
+      double self_energy = Re(self_energy_ss(p));
       const double mass_sqr = M_tree - self_energy;
 
-      if (mass_sqr < 0.)
-         problems.flag_tachyon(ss);
-
-      PHYSICAL(Mss) = AbsSqrt(mass_sqr);
+      PHYSICAL(Mss) = SignedAbsSqrt(mass_sqr);
 
       new_Mss = PHYSICAL(Mss);
       diff = MaxRelDiff(new_Mss, old_Mss);
@@ -5057,13 +5096,10 @@ void CLASSNAME::calculate_Mhh_pole()
    do {
       const double M_tree(get_mass_matrix_hh());
       const double p = old_Mhh;
-      const double self_energy = Re(self_energy_hh(p));
+      double self_energy = Re(self_energy_hh(p));
       const double mass_sqr = M_tree - self_energy;
 
-      if (mass_sqr < 0.)
-         problems.flag_tachyon(hh);
-
-      PHYSICAL(Mhh) = AbsSqrt(mass_sqr);
+      PHYSICAL(Mhh) = SignedAbsSqrt(mass_sqr);
 
       new_Mhh = PHYSICAL(Mhh);
       diff = MaxRelDiff(new_Mhh, old_Mhh);
@@ -5401,6 +5437,29 @@ double CLASSNAME::calculate_MVZ_pole(double p)
 }
 
 
+double CLASSNAME::calculate_MFv_DRbar(double, int) const
+{
+   return 0.0;
+}
+
+double CLASSNAME::calculate_MFe_DRbar(double m_sm_msbar, int idx) const
+{
+   const double p = m_sm_msbar;
+   const double self_energy_1  = Re(self_energy_Fe_1_heavy_rotated(p, idx
+      , idx));
+   const double self_energy_PL = Re(self_energy_Fe_PL_heavy_rotated(p,
+      idx, idx));
+   const double self_energy_PR = Re(self_energy_Fe_PR_heavy_rotated(p,
+      idx, idx));
+   const double drbar_conversion = 1;
+   const double m_sm_drbar = m_sm_msbar * drbar_conversion;
+
+   const double m_susy_drbar = m_sm_drbar + self_energy_1 + m_sm_drbar *
+      (self_energy_PL + self_energy_PR);
+
+   return m_susy_drbar;
+}
+
 double CLASSNAME::calculate_MFu_DRbar(double m_pole, int idx) const
 {
    const double p = m_pole;
@@ -5444,29 +5503,6 @@ double CLASSNAME::calculate_MFd_DRbar(double m_sm_msbar, int idx) const
       self_energy_PL - self_energy_PR);
 
    return m_susy_drbar;
-}
-
-double CLASSNAME::calculate_MFe_DRbar(double m_sm_msbar, int idx) const
-{
-   const double p = m_sm_msbar;
-   const double self_energy_1  = Re(self_energy_Fe_1_heavy_rotated(p, idx
-      , idx));
-   const double self_energy_PL = Re(self_energy_Fe_PL_heavy_rotated(p,
-      idx, idx));
-   const double self_energy_PR = Re(self_energy_Fe_PR_heavy_rotated(p,
-      idx, idx));
-   const double drbar_conversion = 1;
-   const double m_sm_drbar = m_sm_msbar * drbar_conversion;
-
-   const double m_susy_drbar = m_sm_drbar + self_energy_1 + m_sm_drbar *
-      (self_energy_PL + self_energy_PR);
-
-   return m_susy_drbar;
-}
-
-double CLASSNAME::calculate_MFv_DRbar(double, int) const
-{
-   return 0.0;
 }
 
 double CLASSNAME::calculate_MVP_DRbar(double)

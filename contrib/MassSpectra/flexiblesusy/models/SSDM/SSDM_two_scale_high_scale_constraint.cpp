@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:14
+// File generated at Tue 24 Nov 2015 14:29:54
 
 #include "SSDM_two_scale_high_scale_constraint.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -26,6 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
+#include "threshold_loop_functions.hpp"
 #include "numerics2.hpp"
 
 #include <cassert>
@@ -41,8 +42,11 @@ namespace flexiblesusy {
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
 #define LowEnergyConstant(p) Electroweak_constants::p
+#define MZPole Electroweak_constants::MZ
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
+#define SCALE model->get_scale()
+#define THRESHOLD static_cast<int>(model->get_thresholds())
 #define MODEL model
 #define MODELCLASSNAME SSDM<Two_scale>
 
@@ -96,55 +100,81 @@ void SSDM_high_scale_constraint<Two_scale>::apply()
    update_scale();
 
 
-   {
-      const auto g1 = MODELPARAMETER(g1);
-      const auto g2 = MODELPARAMETER(g2);
-      const auto g3 = MODELPARAMETER(g3);
-      const auto Lambda3 = MODELPARAMETER(Lambda3);
-      const auto Lambda2 = MODELPARAMETER(Lambda2);
-      const auto Lambda1 = MODELPARAMETER(Lambda1);
-      const auto Yu = MODELPARAMETER(Yu);
-      const auto Yd = MODELPARAMETER(Yd);
-      const auto Ye = MODELPARAMETER(Ye);
 
-      if (MaxAbsValue(g1) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("g1", MaxAbsValue(g1), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("g1");
-      if (MaxAbsValue(g2) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("g2", MaxAbsValue(g2), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("g2");
-      if (MaxAbsValue(g3) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("g3", MaxAbsValue(g3), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("g3");
-      if (MaxAbsValue(Lambda3) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("Lambda3", MaxAbsValue(Lambda3), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("Lambda3");
-      if (MaxAbsValue(Lambda2) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("Lambda2", MaxAbsValue(Lambda2), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("Lambda2");
-      if (MaxAbsValue(Lambda1) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("Lambda1", MaxAbsValue(Lambda1), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("Lambda1");
-      if (MaxAbsValue(Yu) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("Yu", MaxAbsValue(Yu), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("Yu");
-      if (MaxAbsValue(Yd) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("Yd", MaxAbsValue(Yd), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("Yd");
-      if (MaxAbsValue(Ye) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter("Ye", MaxAbsValue(Ye), model->get_scale(), 3.5449077018110318);
-      else
-         model->get_problems().unflag_non_perturbative_parameter("Ye");
+   check_non_perturbative();
+}
 
+bool SSDM_high_scale_constraint<Two_scale>::check_non_perturbative()
+{
+   bool problem = false;
+
+   const auto g1 = MODELPARAMETER(g1);
+   const auto g2 = MODELPARAMETER(g2);
+   const auto g3 = MODELPARAMETER(g3);
+   const auto Lambda3 = MODELPARAMETER(Lambda3);
+   const auto Lambda2 = MODELPARAMETER(Lambda2);
+   const auto Lambda1 = MODELPARAMETER(Lambda1);
+   const auto Yu = MODELPARAMETER(Yu);
+   const auto Yd = MODELPARAMETER(Yd);
+   const auto Ye = MODELPARAMETER(Ye);
+
+   if (MaxAbsValue(g1) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("g1", MaxAbsValue(g1), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("g1");
    }
+   if (MaxAbsValue(g2) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("g2", MaxAbsValue(g2), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("g2");
+   }
+   if (MaxAbsValue(g3) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("g3", MaxAbsValue(g3), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("g3");
+   }
+   if (MaxAbsValue(Lambda3) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("Lambda3", MaxAbsValue(Lambda3), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("Lambda3");
+   }
+   if (MaxAbsValue(Lambda2) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("Lambda2", MaxAbsValue(Lambda2), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("Lambda2");
+   }
+   if (MaxAbsValue(Lambda1) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("Lambda1", MaxAbsValue(Lambda1), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("Lambda1");
+   }
+   if (MaxAbsValue(Yu) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("Yu", MaxAbsValue(Yu), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("Yu");
+   }
+   if (MaxAbsValue(Yd) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("Yd", MaxAbsValue(Yd), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("Yd");
+   }
+   if (MaxAbsValue(Ye) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("Ye", MaxAbsValue(Ye), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("Ye");
+   }
+
+
+   return problem;
 }
 
 double SSDM_high_scale_constraint<Two_scale>::get_scale() const
@@ -189,9 +219,9 @@ void SSDM_high_scale_constraint<Two_scale>::initialize()
    assert(model && "SSDM_high_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   const auto QHin = INPUTPARAMETER(QHin);
+   const auto Qin = INPUTPARAMETER(Qin);
 
-   initial_scale_guess = QHin;
+   initial_scale_guess = Qin;
 
    scale = initial_scale_guess;
 }
@@ -204,9 +234,9 @@ void SSDM_high_scale_constraint<Two_scale>::update_scale()
    const double currentScale = model->get_scale();
    const SSDM_soft_parameters beta_functions(model->calc_beta());
 
-   const auto QHin = INPUTPARAMETER(QHin);
+   const auto Qin = INPUTPARAMETER(Qin);
 
-   scale = QHin;
+   scale = Qin;
 
 
    if (errno == ERANGE) {

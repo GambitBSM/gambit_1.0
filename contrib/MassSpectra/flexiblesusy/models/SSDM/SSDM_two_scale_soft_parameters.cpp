@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:12
+// File generated at Tue 24 Nov 2015 14:29:49
 
 #include "SSDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -31,7 +31,7 @@ namespace flexiblesusy {
 
 SSDM_soft_parameters::SSDM_soft_parameters(const SSDM_input_parameters& input_)
    : SSDM_susy_parameters(input_)
-   , mS2(0), mu2(0), v(0)
+   , ms2(0), mu2(0), v(0)
 
 {
    set_number_of_parameters(numberOfParameters);
@@ -39,11 +39,11 @@ SSDM_soft_parameters::SSDM_soft_parameters(const SSDM_input_parameters& input_)
 
 SSDM_soft_parameters::SSDM_soft_parameters(
    const SSDM_susy_parameters& susy_model
-   , double mS2_, double mu2_, double v_
+   , double ms2_, double mu2_, double v_
 
 )
    : SSDM_susy_parameters(susy_model)
-   , mS2(mS2_), mu2(mu2_), v(v_)
+   , ms2(ms2_), mu2(mu2_), v(v_)
 
 {
    set_number_of_parameters(numberOfParameters);
@@ -59,39 +59,42 @@ SSDM_soft_parameters SSDM_soft_parameters::calc_beta() const
    Soft_traces soft_traces;
    calc_soft_traces(soft_traces);
 
-   double beta_mS2(calc_beta_mS2_one_loop(TRACE_STRUCT));
+   double beta_ms2(calc_beta_ms2_one_loop(TRACE_STRUCT));
    double beta_mu2(calc_beta_mu2_one_loop(TRACE_STRUCT));
    double beta_v(calc_beta_v_one_loop(TRACE_STRUCT));
 
    if (get_loops() > 1) {
-      beta_mS2 += calc_beta_mS2_two_loop(TRACE_STRUCT);
+      beta_ms2 += calc_beta_ms2_two_loop(TRACE_STRUCT);
       beta_mu2 += calc_beta_mu2_two_loop(TRACE_STRUCT);
       beta_v += calc_beta_v_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
    const SSDM_susy_parameters susy_betas(SSDM_susy_parameters::calc_beta());
 
-   return SSDM_soft_parameters(susy_betas, beta_mS2, beta_mu2, beta_v);
+   return SSDM_soft_parameters(susy_betas, beta_ms2, beta_mu2, beta_v);
 }
 
 void SSDM_soft_parameters::clear()
 {
    SSDM_susy_parameters::clear();
 
-   mS2 = 0.;
+   ms2 = 0.;
    mu2 = 0.;
    v = 0.;
 
 }
 
-const Eigen::ArrayXd SSDM_soft_parameters::get() const
+Eigen::ArrayXd SSDM_soft_parameters::get() const
 {
    Eigen::ArrayXd pars(SSDM_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);
 
-   pars(33) = mS2;
+   pars(33) = ms2;
    pars(34) = mu2;
    pars(35) = v;
 
@@ -103,7 +106,7 @@ void SSDM_soft_parameters::print(std::ostream& ostr) const
 {
    SSDM_susy_parameters::print(ostr);
    ostr << "soft parameters:\n";
-   ostr << "mS2 = " << mS2 << '\n';
+   ostr << "ms2 = " << ms2 << '\n';
    ostr << "mu2 = " << mu2 << '\n';
    ostr << "v = " << v << '\n';
 
@@ -113,7 +116,7 @@ void SSDM_soft_parameters::set(const Eigen::ArrayXd& pars)
 {
    SSDM_susy_parameters::set(pars);
 
-   mS2 = pars(33);
+   ms2 = pars(33);
    mu2 = pars(34);
    v = pars(35);
 

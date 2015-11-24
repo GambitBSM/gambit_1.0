@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:28
+// File generated at Tue 24 Nov 2015 14:30:10
 
 #include "SSDM_input_parameters.hpp"
 #include "SSDM_spectrum_generator.hpp"
@@ -40,8 +40,8 @@ void print_usage()
       "  --Lambda2Input=<value>\n"
       "  --Lambda3Input=<value>\n"
       "  --mS2Input=<value>\n"
+      "  --QEWSB=<value>\n"
       "  --Qin=<value>\n"
-      "  --QHin=<value>\n"
 
       "  --help,-h                         print this help message"
              << std::endl;
@@ -65,10 +65,10 @@ void set_command_line_parameters(int argc, char* argv[],
       if(Command_line_options::get_parameter_value(option, "--mS2Input=", input.mS2Input))
          continue;
 
-      if(Command_line_options::get_parameter_value(option, "--Qin=", input.Qin))
+      if(Command_line_options::get_parameter_value(option, "--QEWSB=", input.QEWSB))
          continue;
 
-      if(Command_line_options::get_parameter_value(option, "--QHin=", input.QHin))
+      if(Command_line_options::get_parameter_value(option, "--Qin=", input.Qin))
          continue;
 
       
@@ -88,13 +88,12 @@ void set_command_line_parameters(int argc, char* argv[],
 int main(int argc, char* argv[])
 {
    using namespace flexiblesusy;
-   using namespace softsusy;
    typedef Two_scale algorithm_type;
 
    SSDM_input_parameters input;
    set_command_line_parameters(argc, argv, input);
 
-   QedQcd oneset;
+   softsusy::QedQcd oneset;
    oneset.toMz();
 
    SSDM_spectrum_generator<algorithm_type> spectrum_generator;

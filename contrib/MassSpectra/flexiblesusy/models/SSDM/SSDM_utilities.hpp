@@ -16,12 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:14
+// File generated at Tue 24 Nov 2015 14:29:53
 
 #ifndef SSDM_UTILITIES_H
 #define SSDM_UTILITIES_H
 
-#include "SSDM_two_scale_model.hpp"
+#include "SSDM_mass_eigenstates.hpp"
 #include "SSDM_info.hpp"
 #include "wrappers.hpp"
 
@@ -31,20 +31,55 @@
 #include <valarray>
 #include <utility>
 
-#define PHYSICAL(p) model.get_physical().p
-#define MODELPARAMETER(p) model.get_##p()
+namespace softsusy {
+class QedQcd;
+}
 
 namespace flexiblesusy {
 
 class SSDM_parameter_getter {
 public:
-   Eigen::ArrayXd get_parameters(const SSDM<Two_scale>& model) {
+   Eigen::ArrayXd get_parameters(const SSDM_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names(const SSDM<Two_scale>&) const {
+   std::vector<std::string> get_parameter_names() const {
       using namespace SSDM_info;
       return std::vector<std::string>(parameter_names,
                                       parameter_names + NUMBER_OF_PARAMETERS);
+   }
+   std::vector<std::string> get_particle_names() const {
+      using namespace SSDM_info;
+      return std::vector<std::string>(particle_names,
+                                      particle_names + NUMBER_OF_PARTICLES);
+   }
+   std::vector<std::string> get_mass_names() const {
+      using namespace SSDM_info;
+      std::vector<std::string> masses;
+      for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
+         for (unsigned m = 0; m < particle_multiplicities[i]; m++) {
+            masses.push_back(
+               std::string("M") + particle_names[i] +
+               (particle_multiplicities[i] == 1 ? "" : "(" + std::to_string(m) + ")"));
+         }
+      }
+      return masses;
+   }
+   std::vector<std::string> get_mixing_names() const {
+      using namespace SSDM_info;
+      return std::vector<std::string>(particle_mixing_names,
+                                      particle_mixing_names + NUMBER_OF_MIXINGS);
+   }
+   std::vector<std::string> get_input_parameter_names() const {
+      using namespace SSDM_info;
+      return std::vector<std::string>(input_parameter_names,
+                                      input_parameter_names + NUMBER_OF_INPUT_PARAMETERS);
+   }
+   std::size_t get_number_of_masses() const {
+      using namespace SSDM_info;
+      std::size_t number_of_masses = 0;
+      for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++)
+         number_of_masses += particle_multiplicities[i];
+      return number_of_masses;
    }
 };
 
@@ -53,8 +88,7 @@ public:
    SSDM_spectrum_plotter();
    ~SSDM_spectrum_plotter() {}
 
-   template <class T>
-   void extract_spectrum(const SSDM<T>&);
+   void extract_spectrum(const SSDM_mass_eigenstates&);
    void write_to_file(const std::string&) const;
 
 private:
@@ -80,40 +114,22 @@ private:
    static std::valarray<double> to_valarray(const Eigen::Array<Scalar, M, N>&);
 };
 
-
-template <class T>
-void SSDM_spectrum_plotter::extract_spectrum(const SSDM<T>& model)
-{
-   spectrum.clear();
-   scale = model.get_scale();
-
-   spectrum.push_back(TParticle("ss", "S", to_valarray(PHYSICAL(Mss))));
-   spectrum.push_back(TParticle("hh", "h", to_valarray(PHYSICAL(Mhh))));
-
-   if (model.do_calculate_sm_pole_masses()) {
-      spectrum.push_back(TParticle("Ah", "A^0", to_valarray(PHYSICAL(MAh))));
-      spectrum.push_back(TParticle("Fd", "d", to_valarray(PHYSICAL(MFd))));
-      spectrum.push_back(TParticle("Fe", "e", to_valarray(PHYSICAL(MFe))));
-      spectrum.push_back(TParticle("Fu", "u", to_valarray(PHYSICAL(MFu))));
-      spectrum.push_back(TParticle("Fv", "\\nu", to_valarray(PHYSICAL(MFv))));
-      spectrum.push_back(TParticle("Hp", "H^+", to_valarray(PHYSICAL(MHp))));
-      spectrum.push_back(TParticle("VG", "g", to_valarray(PHYSICAL(MVG))));
-      spectrum.push_back(TParticle("VP", "\\gamma", to_valarray(PHYSICAL(MVP))));
-      spectrum.push_back(TParticle("VWp", "W^+", to_valarray(PHYSICAL(MVWp))));
-      spectrum.push_back(TParticle("VZ", "Z", to_valarray(PHYSICAL(MVZ))));
-
-   }
-}
-
 template <class Scalar, int M, int N>
 std::valarray<double> SSDM_spectrum_plotter::to_valarray(const Eigen::Array<Scalar, M, N>& v)
 {
    return std::valarray<double>(v.data(), v.size());
 }
 
-} // namespace flexiblesusy
+namespace SSDM_database {
 
-#undef PHYSICAL
-#undef MODELPARAMETER
+/// append parameter point to database
+void to_database(const std::string&, const SSDM_mass_eigenstates&, const softsusy::QedQcd* qedqcd = 0);
+
+/// fill model from an entry of the database
+SSDM_mass_eigenstates from_database(const std::string&, std::size_t, softsusy::QedQcd* qedqcd = 0);
+
+} // namespace SSDM_database
+
+} // namespace flexiblesusy
 
 #endif

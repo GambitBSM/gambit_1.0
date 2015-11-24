@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:09
+// File generated at Tue 24 Nov 2015 14:29:46
 
 #ifndef SSDM_TWO_SCALE_susy_parameters_H
 #define SSDM_TWO_SCALE_susy_parameters_H
@@ -45,7 +45,7 @@ public:
 );
    virtual ~SSDM_susy_parameters() {}
    virtual Eigen::ArrayXd beta() const;
-   virtual const Eigen::ArrayXd get() const;
+   virtual Eigen::ArrayXd get() const;
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
    const SSDM_input_parameters& get_input() const;
@@ -119,22 +119,31 @@ private:
 
    double calc_beta_g1_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_g1_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_g1_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_g2_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_g2_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_g2_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_g3_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_g3_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_g3_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda3_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda3_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_Lambda3_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda2_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda2_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_Lambda2_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda1_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda1_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_Lambda1_three_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yu_one_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yu_two_loop(const TRACE_STRUCT_TYPE&) const;
+   Eigen::Matrix<double,3,3> calc_beta_Yu_three_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yd_one_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yd_two_loop(const TRACE_STRUCT_TYPE&) const;
+   Eigen::Matrix<double,3,3> calc_beta_Yd_three_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Ye_one_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Ye_two_loop(const TRACE_STRUCT_TYPE&) const;
+   Eigen::Matrix<double,3,3> calc_beta_Ye_three_loop(const TRACE_STRUCT_TYPE&) const;
 
 };
 

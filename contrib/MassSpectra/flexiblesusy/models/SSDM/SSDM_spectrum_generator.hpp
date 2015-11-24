@@ -16,22 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:28
+// File generated at Tue 24 Nov 2015 14:30:10
 
 #ifndef SSDM_SPECTRUM_GENERATOR_H
 #define SSDM_SPECTRUM_GENERATOR_H
 
-#include "SSDM_two_scale_model.hpp"
+#include "SSDM_spectrum_generator_interface.hpp"
 #include "SSDM_two_scale_high_scale_constraint.hpp"
 #include "SSDM_two_scale_susy_scale_constraint.hpp"
 #include "SSDM_two_scale_low_scale_constraint.hpp"
 #include "SSDM_two_scale_convergence_tester.hpp"
 #include "SSDM_two_scale_initial_guesser.hpp"
-#include "SSDM_utilities.hpp"
+#include "SSDM_input_parameters.hpp"
 
-#include "coupling_monitor.hpp"
+#include "lowe.h"
 #include "error.hpp"
-#include "two_loop_corrections.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
@@ -41,69 +40,34 @@
 namespace flexiblesusy {
 
 template <class T>
-class SSDM_spectrum_generator {
+class SSDM_spectrum_generator
+   : public SSDM_spectrum_generator_interface<T> {
 public:
    SSDM_spectrum_generator()
-      : solver(), model()
+      : SSDM_spectrum_generator_interface<T>()
+      , solver()
       , high_scale_constraint()
       , susy_scale_constraint()
       , low_scale_constraint()
       , high_scale(0.)
       , susy_scale(0.)
       , low_scale(0.)
-      , parameter_output_scale(0.)
-      , precision_goal(1.0e-4)
-      , reached_precision(std::numeric_limits<double>::infinity())
-      , beta_zero_threshold(1.0e-11)
-      , max_iterations(0)
-      , beta_loop_order(2)
-      , threshold_corrections_loop_order(2)
-      , calculate_sm_masses(false)
-      , force_output(false)
    {}
-   ~SSDM_spectrum_generator() {}
+   virtual ~SSDM_spectrum_generator() {}
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
-   const SSDM<T>& get_model() const { return model; }
-   const Problems<SSDM_info::NUMBER_OF_PARTICLES>& get_problems() const {
-      return model.get_problems();
-   }
-   int get_exit_code() const { return get_problems().have_problem(); }
-   double get_reached_precision() const { return reached_precision; }
-   void set_parameter_output_scale(double s) { parameter_output_scale = s; }
-   void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
-   void set_ewsb_loop_order(unsigned l) { model.set_ewsb_loop_order(l); }
-   void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
-   void set_beta_zero_threshold(double t) { beta_zero_threshold = t; }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
-   void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
-   void set_force_output(bool flag) { force_output = flag; }
-   void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
-   void set_two_loop_corrections(const Two_loop_corrections& c) { model.set_two_loop_corrections(c); }
 
-   void run(const QedQcd& oneset, const SSDM_input_parameters& input);
-   void write_running_couplings(const std::string& filename = "SSDM_rge_running.dat") const;
-   void write_spectrum(const std::string& filename = "SSDM_spectrum.dat") const;
+   virtual void run(const softsusy::QedQcd&, const SSDM_input_parameters&);
+   void write_running_couplings(const std::string& filename = "SSDM_rgflow.dat") const;
 
 private:
    RGFlow<T> solver;
-   SSDM<T> model;
    SSDM_high_scale_constraint<T> high_scale_constraint;
    SSDM_susy_scale_constraint<T> susy_scale_constraint;
    SSDM_low_scale_constraint<T>  low_scale_constraint;
    double high_scale, susy_scale, low_scale;
-   double parameter_output_scale; ///< output scale for running parameters
-   double precision_goal; ///< precision goal
-   double reached_precision; ///< the precision that was reached
-   double beta_zero_threshold; ///< beta function zero threshold
-   unsigned max_iterations; ///< maximum number of iterations
-   unsigned beta_loop_order; ///< beta-function loop order
-   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
-   bool calculate_sm_masses; ///< calculate SM pole masses
-   bool force_output; ///< force output
 };
 
 /**
@@ -118,16 +82,17 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void SSDM_spectrum_generator<T>::run(const QedQcd& oneset,
+void SSDM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                                 const SSDM_input_parameters& input)
 {
+   SSDM<T>& model = this->model;
    model.clear();
    model.set_input_parameters(input);
-   model.do_calculate_sm_pole_masses(calculate_sm_masses);
-   model.do_force_output(force_output);
-   model.set_loops(beta_loop_order);
-   model.set_thresholds(threshold_corrections_loop_order);
-   model.set_zero_threshold(beta_zero_threshold);
+   model.do_calculate_sm_pole_masses(this->calculate_sm_masses);
+   model.do_force_output(this->force_output);
+   model.set_loops(this->beta_loop_order);
+   model.set_thresholds(this->threshold_corrections_loop_order);
+   model.set_zero_threshold(this->beta_zero_threshold);
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
@@ -153,16 +118,16 @@ void SSDM_spectrum_generator<T>::run(const QedQcd& oneset,
    downward_constraints[1] = &susy_scale_constraint;
    downward_constraints[2] = &low_scale_constraint;
 
-   SSDM_convergence_tester<T> convergence_tester(&model, precision_goal);
-   if (max_iterations > 0)
-      convergence_tester.set_max_iterations(max_iterations);
+   SSDM_convergence_tester<T> convergence_tester(&model, this->precision_goal);
+   if (this->max_iterations > 0)
+      convergence_tester.set_max_iterations(this->max_iterations);
 
    SSDM_initial_guesser<T> initial_guesser(&model, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);
 
-   Two_scale_increasing_precision precision(10.0, precision_goal);
+   Two_scale_increasing_precision precision(10.0, this->precision_goal);
 
    solver.reset();
    solver.set_convergence_tester(&convergence_tester);
@@ -171,14 +136,14 @@ void SSDM_spectrum_generator<T>::run(const QedQcd& oneset,
    solver.add_model(&model, upward_constraints, downward_constraints);
 
    high_scale = susy_scale = low_scale = 0.;
-   reached_precision = std::numeric_limits<double>::infinity();
+   this->reached_precision = std::numeric_limits<double>::infinity();
 
    try {
       solver.solve();
       high_scale = high_scale_constraint.get_scale();
       susy_scale = susy_scale_constraint.get_scale();
       low_scale  = low_scale_constraint.get_scale();
-      reached_precision = convergence_tester.get_current_accuracy();
+      this->reached_precision = convergence_tester.get_current_accuracy();
 
       model.run_to(susy_scale);
       model.solve_ewsb();
@@ -189,8 +154,8 @@ void SSDM_spectrum_generator<T>::run(const QedQcd& oneset,
          = low_scale_constraint.get_sm_parameters().displayPoleMW();
 
       // run to output scale (if scale > 0)
-      if (!is_zero(parameter_output_scale)) {
-         model.run_to(parameter_output_scale);
+      if (!is_zero(this->parameter_output_scale)) {
+         model.run_to(this->parameter_output_scale);
       }
    } catch (const NoConvergenceError&) {
       model.get_problems().flag_no_convergence();
@@ -216,30 +181,10 @@ void SSDM_spectrum_generator<T>::run(const QedQcd& oneset,
  * @param filename name of output file
  */
 template <class T>
-void SSDM_spectrum_generator<T>::write_running_couplings(const std::string& filename) const
+void SSDM_spectrum_generator<T>::write_running_couplings(
+   const std::string& filename) const
 {
-   SSDM<T> tmp_model(model);
-   tmp_model.run_to(low_scale);
-
-   SSDM_parameter_getter parameter_getter;
-   Coupling_monitor<SSDM<T>, SSDM_parameter_getter>
-      coupling_monitor(tmp_model, parameter_getter);
-
-   coupling_monitor.run(low_scale, high_scale, 1000, true);  //edited to 1000 from 100
-   coupling_monitor.write_to_file(filename);
-}
-
-/**
- * Write spectrum (pole masses) to a text file
- *
- * @param filename output file name
- */
-template <class T>
-void SSDM_spectrum_generator<T>::write_spectrum(const std::string& filename) const
-{
-   SSDM_spectrum_plotter plotter;
-   plotter.extract_spectrum<T>(model);
-   plotter.write_to_file(filename);
+   SSDM_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, high_scale);
 }
 
 } // namespace flexiblesusy

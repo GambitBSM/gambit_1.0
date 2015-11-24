@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:12
+// File generated at Tue 24 Nov 2015 14:29:49
 
 #include "SSDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -71,10 +71,29 @@ Eigen::Matrix<double,3,3> SSDM_susy_parameters::calc_beta_Ye_two_loop(const Susy
       traceYeAdjYeYeAdjYe - 1350*traceYuAdjYuYuAdjYu + 425*traceYuAdjYu*Sqr(g1)
       + 1125*traceYuAdjYu*Sqr(g2) + 270*Sqr(g1)*Sqr(g2) + 375*traceYeAdjYe*(
       Sqr(g1) + Sqr(g2)) + 4000*traceYuAdjYu*Sqr(g3) + 125*traceYdAdjYd*(Sqr(g1
-      ) + 9*Sqr(g2) + 32*Sqr(g3)) + 1200*Sqr(Lambda1) + 200*Sqr(Lambda2)) +
-      0.0375*((-320*Lambda1 - 180*traceYdAdjYd - 60*traceYeAdjYe - 180*
+      ) + 9*Sqr(g2) + 32*Sqr(g3)) + 300*Sqr(Lambda1) + 200*Sqr(Lambda2)) +
+      0.0375*((-160*Lambda1 - 180*traceYdAdjYd - 60*traceYeAdjYe - 180*
       traceYuAdjYu + 129*Sqr(g1) + 225*Sqr(g2))*(Ye*Ye.adjoint()*Ye) + 40*(Ye*
       Ye.adjoint()*Ye*Ye.adjoint()*Ye)))).real();
+
+
+   return beta_Ye;
+}
+
+/**
+ * Calculates the three-loop beta function of Ye.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> SSDM_susy_parameters::calc_beta_Ye_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_Ye;
+
+   beta_Ye = ZEROMATRIX(3,3);
 
 
    return beta_Ye;

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:13
+// File generated at Tue 24 Nov 2015 14:29:50
 
 #include "SSDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -70,8 +70,27 @@ double SSDM_soft_parameters::calc_beta_v_two_loop(const Soft_traces& soft_traces
       traceYeAdjYeYeAdjYe - 5400*traceYuAdjYuYuAdjYu + 2060*traceYuAdjYu*Sqr(g1
       ) + 6300*traceYuAdjYu*Sqr(g2) - 90*Sqr(g1)*Sqr(g2) + 60*traceYeAdjYe*(27*
       Sqr(g1) + 35*Sqr(g2)) + 16000*traceYuAdjYu*Sqr(g3) + 20*traceYdAdjYd*(43*
-      Sqr(g1) + 315*Sqr(g2) + 800*Sqr(g3)) + 4800*Sqr(Lambda1) + 800*Sqr(
+      Sqr(g1) + 315*Sqr(g2) + 800*Sqr(g3)) + 1200*Sqr(Lambda1) + 800*Sqr(
       Lambda2)));
+
+
+   return beta_v;
+}
+
+/**
+ * Calculates the three-loop beta function of v.
+ *
+ * @return three-loop beta function
+ */
+double SSDM_soft_parameters::calc_beta_v_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_v;
+
+   beta_v = 0;
 
 
    return beta_v;

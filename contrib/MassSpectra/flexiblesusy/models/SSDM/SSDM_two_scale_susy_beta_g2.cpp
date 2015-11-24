@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:09
+// File generated at Tue 24 Nov 2015 14:29:46
 
 #include "SSDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -60,6 +60,25 @@ double SSDM_susy_parameters::calc_beta_g2_two_loop(const Susy_traces& susy_trace
    beta_g2 = Re(0.03333333333333333*Power(g2,3)*twoLoop*(-45*traceYdAdjYd
       - 15*traceYeAdjYe - 45*traceYuAdjYu + 27*Sqr(g1) + 175*Sqr(g2) + 360*Sqr
       (g3)));
+
+
+   return beta_g2;
+}
+
+/**
+ * Calculates the three-loop beta function of g2.
+ *
+ * @return three-loop beta function
+ */
+double SSDM_susy_parameters::calc_beta_g2_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_g2;
+
+   beta_g2 = 0;
 
 
    return beta_g2;

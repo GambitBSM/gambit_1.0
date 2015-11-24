@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:15
+// File generated at Tue 24 Nov 2015 14:29:55
 
 #include "SSDM_two_scale_initial_guesser.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -38,7 +38,7 @@ namespace flexiblesusy {
 
 SSDM_initial_guesser<Two_scale>::SSDM_initial_guesser(
    SSDM<Two_scale>* model_,
-   const QedQcd& oneset_,
+   const softsusy::QedQcd& oneset_,
    const SSDM_low_scale_constraint<Two_scale>& low_constraint_,
    const SSDM_susy_scale_constraint<Two_scale>& susy_constraint_,
    const SSDM_high_scale_constraint<Two_scale>& high_constraint_
@@ -89,6 +89,7 @@ void SSDM_initial_guesser<Two_scale>::guess()
    const auto Lambda2Input = INPUTPARAMETER(Lambda2Input);
    const auto Lambda3Input = INPUTPARAMETER(Lambda3Input);
    const auto mS2Input = INPUTPARAMETER(mS2Input);
+   const auto HiggsIN = INPUTPARAMETER(HiggsIN);
 
    MODEL->set_v(Re(LowEnergyConstant(vev)));
    calculate_Yu_DRbar();
@@ -96,13 +97,16 @@ void SSDM_initial_guesser<Two_scale>::guess()
    calculate_Ye_DRbar();
    MODEL->set_Lambda2(Re(Lambda2Input));
    MODEL->set_Lambda3(Re(Lambda3Input));
-   MODEL->set_mS2(Re(mS2Input));
+   MODEL->set_ms2(Re(mS2Input));
+   MODEL->set_mu2(Re(HiggsIN));
 
  * \endcode
  */
 void SSDM_initial_guesser<Two_scale>::guess_susy_parameters()
 {
-   QedQcd leAtMt(oneset);
+   using namespace softsusy;
+
+   softsusy::QedQcd leAtMt(oneset);
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
@@ -130,6 +134,7 @@ void SSDM_initial_guesser<Two_scale>::guess_susy_parameters()
    const auto Lambda2Input = INPUTPARAMETER(Lambda2Input);
    const auto Lambda3Input = INPUTPARAMETER(Lambda3Input);
    const auto mS2Input = INPUTPARAMETER(mS2Input);
+   const auto HiggsIN = INPUTPARAMETER(HiggsIN);
 
    MODEL->set_v(Re(LowEnergyConstant(vev)));
    calculate_Yu_DRbar();
@@ -137,7 +142,8 @@ void SSDM_initial_guesser<Two_scale>::guess_susy_parameters()
    calculate_Ye_DRbar();
    MODEL->set_Lambda2(Re(Lambda2Input));
    MODEL->set_Lambda3(Re(Lambda3Input));
-   MODEL->set_mS2(Re(mS2Input));
+   MODEL->set_ms2(Re(mS2Input));
+   MODEL->set_mu2(Re(HiggsIN));
 
 }
 

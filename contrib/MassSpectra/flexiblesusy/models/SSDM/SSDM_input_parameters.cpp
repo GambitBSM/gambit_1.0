@@ -16,13 +16,39 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:13
+// File generated at Tue 24 Nov 2015 14:29:51
 
 #include "SSDM_input_parameters.hpp"
+#include "wrappers.hpp"
 
 #define INPUT(p) input.p
 
 namespace flexiblesusy {
+
+Eigen::ArrayXd SSDM_input_parameters::get() const
+{
+   Eigen::ArrayXd pars(6);
+
+   pars(0) = HiggsIN;
+   pars(1) = Lambda2Input;
+   pars(2) = Lambda3Input;
+   pars(3) = mS2Input;
+   pars(4) = QEWSB;
+   pars(5) = Qin;
+
+   return pars;
+}
+
+void SSDM_input_parameters::set(const Eigen::ArrayXd& pars)
+{
+   HiggsIN = pars(0);
+   Lambda2Input = pars(1);
+   Lambda3Input = pars(2);
+   mS2Input = pars(3);
+   QEWSB = pars(4);
+   Qin = pars(5);
+
+}
 
 std::ostream& operator<<(std::ostream& ostr, const SSDM_input_parameters& input)
 {
@@ -30,8 +56,8 @@ std::ostream& operator<<(std::ostream& ostr, const SSDM_input_parameters& input)
    ostr << "Lambda2Input = " << INPUT(Lambda2Input) << ", ";
    ostr << "Lambda3Input = " << INPUT(Lambda3Input) << ", ";
    ostr << "mS2Input = " << INPUT(mS2Input) << ", ";
+   ostr << "QEWSB = " << INPUT(QEWSB) << ", ";
    ostr << "Qin = " << INPUT(Qin) << ", ";
-   ostr << "QHin = " << INPUT(QHin) << ", ";
 
    return ostr;
 }

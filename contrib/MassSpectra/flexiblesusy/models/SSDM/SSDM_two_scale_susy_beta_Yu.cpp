@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:11
+// File generated at Tue 24 Nov 2015 14:29:48
 
 #include "SSDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -72,14 +72,33 @@ Eigen::Matrix<double,3,3> SSDM_susy_parameters::calc_beta_Yu_two_loop(const Susy
       + 2.125*traceYuAdjYu*Sqr(g1) + 5.625*traceYuAdjYu*Sqr(g2) - 0.45*Sqr(g1)
       *Sqr(g2) + 1.875*traceYeAdjYe*(Sqr(g1) + Sqr(g2)) + 20*traceYuAdjYu*Sqr(
       g3) + 1.2666666666666666*Sqr(g1)*Sqr(g3) + 9*Sqr(g2)*Sqr(g3) + 0.625*
-      traceYdAdjYd*(Sqr(g1) + 9*Sqr(g2) + 32*Sqr(g3)) + 6*Sqr(Lambda1) + Sqr(
+      traceYdAdjYd*(Sqr(g1) + 9*Sqr(g2) + 32*Sqr(g3)) + 1.5*Sqr(Lambda1) + Sqr(
       Lambda2)) + 0.0125*((300*traceYdAdjYd + 100*traceYeAdjYe + 300*
       traceYuAdjYu - 43*Sqr(g1) + 45*Sqr(g2) - 1280*Sqr(g3))*(Yu*Yd.adjoint()*
-      Yd) + (-960*Lambda1 - 540*traceYdAdjYd - 180*traceYeAdjYe - 540*
+      Yd) + (-480*Lambda1 - 540*traceYdAdjYd - 180*traceYeAdjYe - 540*
       traceYuAdjYu + 223*Sqr(g1) + 675*Sqr(g2) + 1280*Sqr(g3))*(Yu*Yu.adjoint()
       *Yu) + 20*(11*(Yu*Yd.adjoint()*Yd*Yd.adjoint()*Yd) - Yu*Yd.adjoint()*Yd*
       Yu.adjoint()*Yu - 4*(Yu*Yu.adjoint()*Yu*Yd.adjoint()*Yd) + 6*(Yu*
       Yu.adjoint()*Yu*Yu.adjoint()*Yu))))).real();
+
+
+   return beta_Yu;
+}
+
+/**
+ * Calculates the three-loop beta function of Yu.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> SSDM_susy_parameters::calc_beta_Yu_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_Yu;
+
+   beta_Yu = ZEROMATRIX(3,3);
 
 
    return beta_Yu;

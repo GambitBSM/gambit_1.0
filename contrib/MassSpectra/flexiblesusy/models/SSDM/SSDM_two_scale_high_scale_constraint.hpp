@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:14
+// File generated at Tue 24 Nov 2015 14:29:54
 
 #ifndef SSDM_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
 #define SSDM_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
@@ -51,6 +51,7 @@ public:
 
 protected:
    void update_scale();
+   bool check_non_perturbative();
 
 private:
    double scale;

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:13
+// File generated at Tue 24 Nov 2015 14:29:51
 
 #ifndef SSDM_INPUT_PARAMETERS_H
 #define SSDM_INPUT_PARAMETERS_H
@@ -31,13 +31,17 @@ struct SSDM_input_parameters {
    double Lambda2Input;
    double Lambda3Input;
    double mS2Input;
+   double QEWSB;
    double Qin;
-   double QHin;
 
    SSDM_input_parameters()
-      : HiggsIN(0), Lambda2Input(0), Lambda3Input(0), mS2Input(0), Qin(0), QHin(0)
+      : HiggsIN(0), Lambda2Input(0), Lambda3Input(0), mS2Input(0), QEWSB(0), Qin(0
+   )
 
    {}
+
+   Eigen::ArrayXd get() const;
+   void set(const Eigen::ArrayXd&);
 };
 
 std::ostream& operator<<(std::ostream&, const SSDM_input_parameters&);

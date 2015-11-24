@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 5 Oct 2015 12:42:09
+// File generated at Tue 24 Nov 2015 14:29:46
 
 #include "SSDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -92,6 +92,9 @@ SSDM_susy_parameters SSDM_susy_parameters::calc_beta() const
       beta_Yd += calc_beta_Yd_two_loop(TRACE_STRUCT);
       beta_Ye += calc_beta_Ye_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
@@ -116,7 +119,7 @@ void SSDM_susy_parameters::clear()
 
 
 
-const Eigen::ArrayXd SSDM_susy_parameters::get() const
+Eigen::ArrayXd SSDM_susy_parameters::get() const
 {
    Eigen::ArrayXd pars(numberOfParameters);
 
