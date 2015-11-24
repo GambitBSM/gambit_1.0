@@ -14,7 +14,7 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///    \date 2015 May
-///  
+///
 ///  *********************************************
 
 #include <string>
@@ -28,7 +28,7 @@
 #include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
 
 // Switch for debug mode
-#define SpecBit_DBUG 
+#define SpecBit_DBUG
 
 namespace Gambit
 {
@@ -52,7 +52,7 @@ namespace Gambit
 
       // Run everything to Mz
       oneset.toMz();
- 
+
       // Create a SubSpectrum object to wrap the qedqcd object
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
@@ -61,7 +61,7 @@ namespace Gambit
       // Initialise an object to carry the Singlet plus Higgs sector information
       SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = *myPipe::Param.at("mH");
-      singletmodel.HiggsVEV        = *myPipe::Param.at("vev");
+      singletmodel.HiggsVEV        = 1. / sqrt(sqrt(2.)*sminputs.GF);
       singletmodel.SingletPoleMass = *myPipe::Param.at("mS");
       singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
 
