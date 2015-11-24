@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:12:25
+// File generated at Wed 28 Oct 2015 11:24:00
 
 #ifndef NUHMSSM_INFO_H
 #define NUHMSSM_INFO_H
@@ -26,8 +26,8 @@
 namespace flexiblesusy {
 
 namespace NUHMSSM_info {
-   enum Particles : unsigned {VG, Glu, Fv, VP, VZ, Sd, Sv, Su, Se, hh, Ah, Hpm,
-      Chi, Cha, Fe, Fd, Fu, VWm, NUMBER_OF_PARTICLES};
+   enum Particles : unsigned {Glu, Fv, VZ, Sd, Sv, Su, Se, hh, Ah, Hpm, Chi,
+      Cha, Fe, Fd, Fu, VG, VP, VWm, NUMBER_OF_PARTICLES};
 
    enum Parameters : unsigned {Yd00, Yd01, Yd02, Yd10, Yd11, Yd12, Yd20, Yd21,
       Yd22, Ye00, Ye01, Ye02, Ye10, Ye11, Ye12, Ye20, Ye21, Ye22, Yu00, Yu01, Yu02

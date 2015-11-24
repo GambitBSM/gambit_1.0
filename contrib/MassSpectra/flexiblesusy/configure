@@ -5,11 +5,12 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
-FLEXIBLESUSY_MINOR=1
-FLEXIBLESUSY_PATCH=0
+FLEXIBLESUSY_MINOR=2
+FLEXIBLESUSY_PATCH=4
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
+GM2CALC_VERSION="0.2.16-dev"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -99,6 +100,7 @@ options="                    \
    enable_silent             \
    enable_static_libs        \
    enable_threads            \
+   enable_tsil               \
    enable_verbose            \
 "
 
@@ -114,6 +116,7 @@ enable_meta="no"
 enable_silent="no"
 enable_static_libs="yes"
 enable_threads="yes"
+enable_tsil="no"
 enable_verbose="no"
 
 # corresponding preprocessor define statements
@@ -125,6 +128,7 @@ DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
+DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
 DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
 
 boost_lib_dir=""
@@ -139,29 +143,33 @@ looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2"
-CXXFLAGS_DEP_GEN="-std=c++11"
+CFLAGS="-O2"
 FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 THREADLIBS=""
+LDFLAGS=""
+LDLIBS=""
 LIBEXT=".a"
 CXX="g++"
-CXX_DEP_GEN="${CXX}"
+CC="gcc"
 EIGENFLAGS=""
 FC="gfortran"
-FOR_DEP_GEN="${FC}"
 GSLLIBS=""
 INSTALL_DIR=""
 BLASLIBS=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
+OPTIONAL_MODULES=""
+tsil_lib_dir=""
+tsil_inc_dir=""
 # available RG algorithms
 ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
-MODELS="all"
+MODELS=""
 # addons that will be compiled
 ADDONS=""
 
@@ -175,16 +183,8 @@ required_gpp_compiler_version="4.4.7"
 required_clang_compiler_version="3.1.0"
 required_icpc_compiler_version="12.1.0"
 
-# C++ dependency generator type and version
-cxx_dep_gen_type="unknown"
-cxx_dep_gen_version="unknown"
-
-# required C++ dependency generator versions
-# to be added
-
-# C++ compiler and dependency generator versions accepting `-std=c++11'
+# C++ compiler versions accepting `-std=c++11'
 std_cxx11_compiler_version="unknown"
-std_cxx11_dep_gen_version="unknown"
 std_cxx11_gpp_version="4.7.0"
 std_cxx11_clang_version="3.0.0"
 std_cxx11_icpc_version="13.0.0"
@@ -388,9 +388,12 @@ check_library() {
 
     if test "x$found_dir" = "x" || test "x$found_lib" = "x" ; then
         result "not found in $libdirs"
+        return 1
     else
         result "found in $found_dir"
     fi
+
+    return 0
 }
 
 #_____________________________________________________________________
@@ -446,9 +449,12 @@ check_header() {
 
     if test "x$found_dir" = "x" || test "x$found_hdr" = "x" ; then
         result "not found in $hdrdirs"
+        return 1
     else
         result "found in $found_dir"
     fi
+
+    return 0
 }
 
 #_____________________________________________________________________
@@ -1261,43 +1267,6 @@ check_icpc_features() {
 }
 
 #_____________________________________________________________________
-check_cxx_dep_gen_type() {
-    checking_msg "type of C++ file dependency generator ${CXX_DEP_GEN}"
-
-    get_cxx_compiler_type "$CXX_DEP_GEN" cxx_dep_gen_type || return 1
-
-    case "$cxx_dep_gen_type" in
-    gnu)   result "GNU"
-	   std_cxx11_dep_gen_version="$std_cxx11_gpp_version" ;;
-    clang) result "Clang"
-	   std_cxx11_dep_gen_version="$std_cxx11_clang_version" ;;
-    intel) result "Intel"
-	   std_cxx11_dep_gen_version="$std_cxx11_icpc_version" ;;
-    *)     result "unknown"
-    esac
-
-    logmsg "C++ dependency generator type: ${cxx_dep_gen_type}"
-}
-
-#_____________________________________________________________________
-check_cxx_dep_gen_version() {
-    checking_msg "$CXX_DEP_GEN dependency generator version"
-
-    case "$cxx_dep_gen_type" in
-    gnu)   get_gpp_version   "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
-    clang) get_clang_version "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
-    intel) get_icpc_version  "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
-    *)     result "unknown"
-	   message "Warning: could not check C++ dependency generator version because"
-           message "   its type is unknown."
-	   return 1 ;;
-    esac
-
-    result "$cxx_dep_gen_version"
-    logmsg "   $CXX_DEP_GEN dependency generator version found: $cxx_dep_gen_version"
-}
-
-#_____________________________________________________________________
 get_cxx_compiler_type() {
     if test $# -ne 2; then
         message "get_cxx_compiler_type(): too few arguments"
@@ -1413,6 +1382,20 @@ get_clang_version() {
 }
 
 #_____________________________________________________________________
+check_cc() {
+    checking_msg "C compiler $CC"
+    exists_in_path "$CC"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A C compiler must be installed to compile FlexibleSUSY!"
+        message "   Use --with-cc= to specify the C compiler to be used."
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
 check_cxx() {
     checking_msg "C++ compiler $CXX"
     exists_in_path "$CXX"
@@ -1468,31 +1451,6 @@ check_cxxflags() {
             CXXFLAGS="${CXXFLAGS} -U__STRICT_ANSI__"
 	} ;;
     esac
-}
-
-#_____________________________________________________________________
-check_cxx_dep_gen() {
-    checking_msg "C++ file dependency generator $CXX_DEP_GEN"
-    exists_in_path "$CXX_DEP_GEN"
-    if [ -z "$cmd" ] ; then
-        result "not found"
-        message "Error: A C++ file dependency generator must be installed!"
-        message "   Use --with-cxx-dep-gen= to specify the dependency generator"
-        message "   that should be used."
-        exit 1
-    else
-        result "found $cmd"
-    fi
-}
-
-#_____________________________________________________________________
-check_cxxflags_dep_gen() {
-    if version_at_least "$cxx_dep_gen_version" \
-			"$std_cxx11_dep_gen_version"; then
-        CXXFLAGS_DEP_GEN="-std=c++11"
-    else
-        CXXFLAGS_DEP_GEN="-std=c++0x"
-    fi
 }
 
 #_____________________________________________________________________
@@ -1595,6 +1553,10 @@ check_fflags() {
 
 #_____________________________________________________________________
 check_fortran_libs() {
+    if test "x${FLIBS}" != "x" ; then
+        return
+    fi
+
     case "$FC" in
         gfortran*)
             gfortran_lib_search_paths=`${FC} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' '`
@@ -1613,28 +1575,13 @@ check_fortran_libs() {
 }
 
 #_____________________________________________________________________
-check_fortran_dep_gen() {
-    checking_msg "Fortran file dependency generator $FOR_DEP_GEN"
-    exists_in_path "$FOR_DEP_GEN"
-    if [ -z "$cmd" ] ; then
-        result "not found"
-        message "Error: A Fortran file dependency generator must be installed!"
-        message "   Use --with-fortran-dep-gen= to specify the dependency generator"
-        message "   that should be used."
-        exit 1
-    else
-        result "found $cmd"
-    fi
-}
-
-#_____________________________________________________________________
 check_blas_libs_using_options() {
     check_library "libblas" "$blas_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
         message "Error: libblas must be installed!"
         message "  It can be downloaded from http://www.netlib.org/blas"
-        #exit 1
+        exit 1
     else
         local BLASLIBS_=-lblas
         if [ -z "$blas_lib_dir" ]; then
@@ -1654,7 +1601,7 @@ check_lapack_libs_using_options() {
     if test "x$found_lib" = "x" ; then
         message "Error: liblapack must be installed!"
         message "  It can be downloaded from http://www.netlib.org/lapack"
-        #exit 1
+        exit 1
     else
         local LAPACKLIBS_=-llapack
         if [ -z "$lapack_lib_dir" ]; then
@@ -1707,6 +1654,39 @@ check_looptools_incl() {
 }
 
 #_____________________________________________________________________
+check_tsil_libs() {
+    check_library "libtsil" "$tsil_lib_dir" \
+       "$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        message "Error: libtsil not found."
+        exit 1
+    else
+        local TSILLIBS_="-ltsil"
+        if [ -z "$tsil_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            TSILLIBS="$TSILLIBS_"
+        else
+            TSILLIBS="-L$tsil_lib_dir $TSILLIBS_"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
+check_tsil_incl() {
+    check_header "tsil.h" "$tsil_inc_dir" \
+	"$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        message "Error: tsil.h not found in $tsil_inc_dir $default_inc_paths."
+        exit 1
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$tsil_inc_dir" ]; then
+            TSILFLAGS="-I$tsil_inc_dir"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 find_symbol_using_pkgconfig() {
     local symbol
     local pkg
@@ -1742,6 +1722,9 @@ find_symbol_using_pkgconfig() {
 
 #_____________________________________________________________________
 check_blas_libs() {
+    # user has set BLASLIBS explicitly, no need to search
+    test -n "$BLASLIBS" && return 0
+
     if find_symbol_using_pkgconfig blas ztpsv_; then
 	BLASLIBS="$linker_flags"
     else
@@ -1751,6 +1734,9 @@ check_blas_libs() {
 
 #_____________________________________________________________________
 check_lapack_libs() {
+    # user has set LAPACKLIBS explicitly, no need to search
+    test -n "$LAPACKLIBS" && return 0
+
     if find_symbol_using_pkgconfig lapack dgbsv_; then
 	LAPACKLIBS="$linker_flags"
     else
@@ -2015,6 +2001,12 @@ enable_defines() {
         message "Disabling multi-threading"
         logmsg "   ${DEFINE_ENABLE_THREADS}"
     fi
+
+    if test "x${enable_tsil}" = "xyes" ; then
+        DEFINE_ENABLE_TSIL="#define ENABLE_TSIL 1"
+        message "Enabling tsil"
+        logmsg "   ${DEFINE_ENABLE_TSIL}"
+    fi
 }
 
 #_____________________________________________________________________
@@ -2037,18 +2029,19 @@ replace_markers() {
 	-e "s|@THREADLIBS@|$THREADLIBS|"   \
 	-e "s|@CPPFLAGS@|$CPPFLAGS|"       \
 	-e "s|@CXXFLAGS@|$CXXFLAGS|"       \
-	-e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
 	-e "s|@CXX@|$CXX|"                 \
-	-e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
+	-e "s|@CFLAGS@|$CFLAGS|"           \
+	-e "s|@CC@|$CC|"                   \
 	-e "s|@FC@|$FC|"                   \
 	-e "s|@FFLAGS@|$FFLAGS|"           \
 	-e "s|@FLIBS@|$FLIBS|"             \
-	-e "s|@FOR_DEP_GEN@|$FOR_DEP_GEN|" \
 	-e "s|@FSCONFIG@|$FSCONFIG|"       \
 	-e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
 	-e "s|@GSLLIBS@|$GSLLIBS|"         \
 	-e "s|@GSLFLAGS@|$GSLFLAGS|"       \
 	-e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+        -e "s|@LDFLAGS@|$LDFLAGS|"         \
+        -e "s|@LDLIBS@|$LDLIBS|"           \
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
 	-e "s|@ENABLE_FFLITE@|$enable_fflite|" \
@@ -2059,9 +2052,13 @@ replace_markers() {
 	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
 	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
+	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
+	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
+	-e "s|@TSILLIBS@|$TSILLIBS|"              \
+	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
 	-e "s|@MAKELIB@|$MAKELIB|"         \
 	-e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
@@ -2102,22 +2099,30 @@ Package directories, compilation settings and model selection
                             (default: $ALGORITHMS)
                             possible values: all $available_algorithms
   --with-blas-libdir=       Path to search for BLAS library
+  --with-blas-libs=         BLAS libraries to be linked
   --with-boost-libdir=      Path to search for BOOST libraries
   --with-boost-incdir=      Path to search for BOOST headers
   --with-cxx=               C++ compiler (default: $CXX)
   --with-cxxflags=          C++ compiler flags (default: $CXXFLAGS)
-  --with-cxx-dep-gen=       C++ file dependency generator (default: $CXX_DEP_GEN)
   --with-eigen-incdir=      Path to search for Eigen headers
   --with-fc=                Fortran compiler (default: $FC)
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
-  --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
+  --with-flibs=             Fortran libraries (default: $FLIBS)
+                            If empty, FLIBS will be determined automatically.
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
+  --with-lapack-libs=       LAPACK libraries to be linked
+  --with-ldflags=           Linker flags (default: $LDFLAGS)
+  --with-ldlibs=            Additional libraries to be linked (default: $LDLIBS)
   --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
-  --with-make-lib-cmd       Command to make library (default: $MAKELIB)
+  --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
+  --with-optional-modules=  Load optional FlexibleSUSY modules
+                            (for example the \`test' or \`examples' module)
+  --with-tsil-libdir=       Path to search for TSIL library
+  --with-tsil-incdir=       Path to search for TSIL header
 EOF
 cat <<EOF
   --with-models=            Comma separated list of models to be build
@@ -2194,24 +2199,32 @@ if test $# -gt 0 ; then
             --with-addons=*)         ADDONS=$optarg ;;
             --with-algorithms=*)     ALGORITHMS=$optarg ;;
             --with-blas-libdir=*)    blas_lib_dir=$optarg ;;
+            --with-blas-libs=*)      BLASLIBS=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
+            --with-cc=*)             CC=$optarg ;;
+            --with-cflags=*)         CFLAGS=$optarg ;;
             --with-cxx=*)            CXX=$optarg ;;
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
-            --with-cxx-dep-gen=*)    CXX_DEP_GEN=$optarg ;;
             --with-eigen-incdir=*)   eigen_inc_dir=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
-            --with-fortran-dep-gen=*) FOR_DEP_GEN=$optarg ;;
+            --with-flibs=*)          FLIBS=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
+            --with-lapack-libs=*)    LAPACKLIBS=$optarg ;;
+            --with-ldflags=*)        LDFLAGS=$optarg ;;
+            --with-ldlibs=*)         LDLIBS=$optarg ;;
             --with-lib-ext=*)        LIBEXT=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
             --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
+            --with-optional-modules=*) OPTIONAL_MODULES=$optarg ;;
+            --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
+            --with-tsil-incdir=*)    tsil_inc_dir=$optarg ;;
             --help|-h)               help; exit 0 ;;
             --version|-v)            version; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
@@ -2234,13 +2247,9 @@ if test "x${enable_compile}" = "xyes"; then
     check_cxx_compiler_version
     check_cxx_compiler_features
     check_cxxflags
-    check_cxx_dep_gen
-    check_cxx_dep_gen_type
-    check_cxx_dep_gen_version
-    check_cxxflags_dep_gen
+    check_cc
     check_fc
     check_fflags
-    check_fortran_dep_gen
     check_boost
     check_boost_version
     check_boost_test_incl
@@ -2258,6 +2267,10 @@ if test "x${enable_compile}" = "xyes"; then
     if test "x$enable_looptools" = "xyes"; then
         check_looptools_incl
         check_looptools_libs
+    fi
+    if test "x$enable_tsil" = "xyes"; then
+        check_tsil_incl
+        check_tsil_libs
     fi
     check_makelib
     check_random_number_generator
@@ -2295,13 +2308,19 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@CFLAGS@|$CFLAGS|"           \
+    -e "s|@CC@|$CC|"                   \
     -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FC@|$FC|"                   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
+    -e "s|@LDFLAGS@|$LDFLAGS|"         \
+    -e "s|@LDLIBS@|$LDLIBS|"           \
     -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
+    -e "s|@TSILLIBS@|$TSILLIBS|"       \
+    -e "s|@TSILFLAGS@|$TSILFLAGS|"     \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
@@ -2314,6 +2333,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@GIT_COMMIT@|$GIT_COMMIT|"                 \
+    -e "s|@GM2CALC_VERSION@|$GM2CALC_VERSION|"       \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"                  \
     -e "s|@BLASLIBS@|$BLASLIBS|"                     \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"           \
@@ -2322,6 +2342,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"                 \
     -e "s|@CXX@|$CXX|"                               \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"                     \
+    -e "s|@CC@|$CC|"                                 \
+    -e "s|@CFLAGS@|$CFLAGS|"                         \
     -e "s|@EIGENFLAGS@|$EIGENFLAGS|"                 \
     -e "s|@FC@|$FC|"                                 \
     -e "s|@FFLAGS@|$FFLAGS|"                         \
@@ -2345,6 +2367,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
+    -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
     -e "s|@DEFINE_ENABLE_VERBOSE@|$DEFINE_ENABLE_VERBOSE|"     \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 

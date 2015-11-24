@@ -40,4 +40,54 @@ bool is_finite(const gsl_vector* x)
    return is_finite;
 }
 
+/**
+ * Returns an Eigen array which contains the elements of the given GSL
+ * vector.
+ *
+ * @param v GSL vector
+ * @return Eigen array
+ */
+Eigen::ArrayXd to_eigen_array(const gsl_vector* v)
+{
+   const std::size_t dim = v->size;
+   Eigen::ArrayXd xa(dim);
+
+   for (std::size_t i = 0; i < dim; i++)
+      xa(i) = gsl_vector_get(v, i);
+
+   return xa;
+}
+
+/**
+ * Allocates a new GSL vector and fills it with the values of the
+ * given Eigen array.
+ *
+ * @param v Eigen arry
+ * @return new allocated GSL vector
+ */
+gsl_vector* to_gsl_vector(const Eigen::ArrayXd& v)
+{
+   gsl_vector* result = gsl_vector_alloc(v.rows());
+
+   copy(v, result);
+
+   return result;
+}
+
+/**
+ * Copies values from an Eigen array to a GSL vector.
+ *
+ * @param src Eigen array
+ * @param dst GSL vector
+ */
+void copy(const Eigen::ArrayXd& src, gsl_vector* dst)
+{
+   const std::size_t dim = src.rows();
+
+   assert(dim == dst->size);
+
+   for (std::size_t i = 0; i < dim; i++)
+      gsl_vector_set(dst, i, src(i));
+}
+
 }

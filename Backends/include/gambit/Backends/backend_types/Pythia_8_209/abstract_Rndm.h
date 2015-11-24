@@ -22,19 +22,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_Rndm : virtual public AbstractBase
         {
-            private:
-                // IGNORED: Variable  -- Name: DEFAULTSEED  -- XML id: _26383
-                // IGNORED: Field  -- Name: initRndm  -- XML id: _26384
-                // IGNORED: Field  -- Name: i97  -- XML id: _26385
-                // IGNORED: Field  -- Name: j97  -- XML id: _26386
-                // IGNORED: Field  -- Name: seedSave  -- XML id: _26387
-                // IGNORED: Field  -- Name: sequence  -- XML id: _26388
-                // IGNORED: Field  -- Name: u  -- XML id: _26389
-                // IGNORED: Field  -- Name: c  -- XML id: _26390
-                // IGNORED: Field  -- Name: cd  -- XML id: _26391
-                // IGNORED: Field  -- Name: cm  -- XML id: _26392
-                // IGNORED: Field  -- Name: useExternalRndm  -- XML id: _26393
-                // IGNORED: Field  -- Name: rndmEngPtr  -- XML id: _26394
             public:
     
                 virtual void init(int) =0;

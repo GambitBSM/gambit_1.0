@@ -66,9 +66,9 @@ Printer:
 
 Scanner:
 
-  use_objectives: EggBox, gaussian
+  use_objectives: gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner:  multinest
+  use_scanner: multinest
   #find_shift
   #find_kernel
   #object_detection
@@ -93,14 +93,11 @@ Scanner:
       verbosity: 1
       aux_printer_txt_options:
       
-    ransample:
+    random:
       plugin: random_sampler
       options:
-        #point_number: 20
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
+        point_number: 100000000
+        like: Likelihood
           
     toy:
       purpose: Likelihood
@@ -394,11 +391,11 @@ Scanner:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
       parameters:
-        same:
-          same_as: "gaussian::param_0"
-          scale: -2
-          shift: -1
-        param...1:
+        #same:
+        #  same_as: "gaussian::param_0"
+        #  scale: -2
+        #  shift: -1
+        param...10:
           range: [-5, 5]
       
     test:

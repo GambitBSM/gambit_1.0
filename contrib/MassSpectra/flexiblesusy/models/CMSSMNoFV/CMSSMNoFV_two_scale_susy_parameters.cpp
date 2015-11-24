@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:55:42
+// File generated at Wed 28 Oct 2015 11:46:08
 
 #include "CMSSMNoFV_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -92,6 +92,9 @@ CMSSMNoFV_susy_parameters CMSSMNoFV_susy_parameters::calc_beta() const
       beta_vd += calc_beta_vd_two_loop(TRACE_STRUCT);
       beta_vu += calc_beta_vu_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
@@ -244,7 +247,7 @@ Eigen::Matrix<double,3,3> CLASSNAME::get_SeR0SeR0() const
 }
 
 
-const Eigen::ArrayXd CMSSMNoFV_susy_parameters::get() const
+Eigen::ArrayXd CMSSMNoFV_susy_parameters::get() const
 {
    Eigen::ArrayXd pars(numberOfParameters);
 

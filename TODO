@@ -154,6 +154,7 @@ Core done:
 * Get run resume working
 * Fix rollcall modification not triggering harvester rerun
 * Fix clean-flexiblesusy not cleaning to the point where it actually triggers remake
+* make backend_locations.yaml.default, use it if custom file is missing.  Add message referring to backend_location.yaml and running ./gambit backends when backend resolution fails.
 
 
 Models done:

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:27:10
+// File generated at Wed 28 Oct 2015 11:32:25
 
 #include "CMSSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -62,6 +62,25 @@ double CMSSM_soft_parameters::calc_beta_MassG_two_loop(const Soft_traces& soft_t
       traceAdjYuTYu - 20*MassG*traceYdAdjYd - 20*MassG*traceYuAdjYu + 11*MassB*
       Sqr(g1) + 11*MassG*Sqr(g1) + 45*MassG*Sqr(g2) + 45*MassWB*Sqr(g2) + 140*
       MassG*Sqr(g3)));
+
+
+   return beta_MassG;
+}
+
+/**
+ * Calculates the three-loop beta function of MassG.
+ *
+ * @return three-loop beta function
+ */
+double CMSSM_soft_parameters::calc_beta_MassG_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_MassG;
+
+   beta_MassG = 0;
 
 
    return beta_MassG;

@@ -29,20 +29,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_UserHooks : virtual public AbstractBase
         {
-            protected:
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _26114
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _26115
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _26116
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _26117
-                // IGNORED: Field  -- Name: beamAPtr  -- XML id: _26118
-                // IGNORED: Field  -- Name: beamBPtr  -- XML id: _26119
-                // IGNORED: Field  -- Name: beamPomAPtr  -- XML id: _26120
-                // IGNORED: Field  -- Name: beamPomBPtr  -- XML id: _26121
-                // IGNORED: Field  -- Name: coupSMPtr  -- XML id: _26122
-                // IGNORED: Field  -- Name: partonSystemsPtr  -- XML id: _26123
-                // IGNORED: Field  -- Name: sigmaTotPtr  -- XML id: _26124
-                // IGNORED: Field  -- Name: workEvent  -- XML id: _26125
-                // IGNORED: Field  -- Name: selBias  -- XML id: _26126
             public:
     
                 virtual bool initAfterBeams() =0;
@@ -110,15 +96,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual bool canReconnectResonanceSystems() =0;
     
                 virtual bool doReconnectResonanceSystems__BOSS(int, Pythia8::Abstract_Event&) =0;
-            protected:
-    
-                virtual void omitResonanceDecays__BOSS(const Pythia8::Abstract_Event&, bool) =0;
-    
-                virtual void omitResonanceDecays__BOSS(const Pythia8::Abstract_Event&) =0;
-    
-                virtual void subEvent__BOSS(const Pythia8::Abstract_Event&, bool) =0;
-    
-                virtual void subEvent__BOSS(const Pythia8::Abstract_Event&) =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_UserHooks*) =0;

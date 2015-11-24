@@ -1,22 +1,22 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  CMake configuration script for contributed
 #  packages in GAMBIT.
-#    
+#
 #************************************************
-#                                                
-#  Authors (add name and date if you modify):                                    
-#                                                
+#
+#  Authors (add name and date if you modify):
+#
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
-#                                               
+#
 #************************************************
 
 include(ExternalProject)
@@ -33,8 +33,8 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 #contrib/mkpath
 set(mkpath_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/mkpath/include")
 include_directories("${mkpath_INCLUDE_DIR}")
-add_gambit_library(mkpath OPTION OBJECT 
-                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/mkpath/src/mkpath.c 
+add_gambit_library(mkpath OPTION OBJECT
+                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/mkpath/src/mkpath.c
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/mkpath/include/mkpath/mkpath.h)
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:mkpath>)
 
@@ -48,7 +48,7 @@ set (DELPHES_DIR "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
 set (DELPHES_DICTS "${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes/BTaggingWithTruthModule_dict.cc"
                    "${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes/AbsoluteIsolationModule_dict.cc"
                    "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes/BTaggingWithTruthModule_dict.h"
-                   "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes/AbsoluteIsolationModule_dict.h")                   
+                   "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes/AbsoluteIsolationModule_dict.h")
 string(REGEX MATCH ";D;|;De;|;Del;|;Delp;|;Delph;|;Delphe;|;Delphes" DITCH_DELPHES ";${itch};")
 include_directories("${DELPHES_DIR}" "${DELPHES_DIR}/external" "${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
 if(DITCH_DELPHES OR NOT ";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
@@ -66,8 +66,8 @@ else()
   ExternalProject_Add(delphes
     SOURCE_DIR ${DELPHES_DIR}
     BUILD_IN_SOURCE 1
-    CONFIGURE_COMMAND ./configure 
-              COMMAND cp <SOURCE_DIR>/Makefile <SOURCE_DIR>/Makefile.orig 
+    CONFIGURE_COMMAND ./configure
+              COMMAND cp <SOURCE_DIR>/Makefile <SOURCE_DIR>/Makefile.orig
               COMMAND sed ${dashi} "s,\ ..EXECUTABLE.,,g" <SOURCE_DIR>/Makefile
               COMMAND sed ${dashi} "s/${DELPHES_BAD_LINE}/\\1/g" <SOURCE_DIR>/Makefile
     BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} all
@@ -93,17 +93,17 @@ endif()
 #contrib/fjcore-3.1.3; compile only if Delphes is ditched and ColliderBit is not.
 set(fjcore_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include")
 include_directories("${fjcore_INCLUDE_DIR}")
-add_gambit_library(fjcore OPTION OBJECT 
-                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc 
+add_gambit_library(fjcore OPTION OBJECT
+                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/src/fjcore.cc
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/fjcore-3.1.3/include/fastjet/fjcore.hh)
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:fjcore>)
 
 #contrib/MassSpectra; include only if SpecBit is in use
 set (FS_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy")
 if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
-  
+
   set (EXCLUDE_FLEXIBLESUSY FALSE)
-  
+
   # Always use -O2 for flexiblesusy because it's so damn slow otherwise.
   set(FS_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
   set(FS_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
@@ -111,7 +111,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
     set(FS_CXX_FLAGS "${FS_CXX_FLAGS} -O2")
     set(FS_Fortran_FLAGS "${FS_Fortran_FLAGS} -O2")
   endif()
-  
+
   # Determine compiler libraries needed by flexiblesusy.
   if(CMAKE_Fortran_COMPILER MATCHES "gfortran*")
     set(flexiblesusy_extralibs "${flexiblesusy_extralibs} -lgfortran -lm")
@@ -127,31 +127,30 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/contrib/eigen3")
   include_directories("${EIGEN3_DIR}")
 
-  # The flexiblesusy configure script doesn't always find all the lapack libs, so use CMake to find them instead
-  message("${BoldYellow}-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LINKLIBS}${ColourReset}")
-
   # FlexibleSUSY configure options
-  set(FS_OPTIONS ${FS_OPTIONS} 
+  set(FS_OPTIONS ${FS_OPTIONS}
        --with-cxx=${CMAKE_CXX_COMPILER}
-       --with-cxx-dep-gen=${CMAKE_CXX_COMPILER}
        --with-cxxflags=${FS_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
-       --with-fortran-dep-gen=${CMAKE_CXX_COMPILER} #just because newer iforts don't do depgen how FS expects. 
        --with-fflags=${FS_Fortran_FLAGS}
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}
+       --with-lapack-libs=${LAPACK_LINKLIBS}
+       --with-blas-libs=${LAPACK_LINKLIBS}
       #--enable-verbose flag causes verbose output at runtime as well. Maybe set it dynamically somehow in future.
      )
 
   # Set the models (spectrum generators) existing in flexiblesusy (could autogen this, but that would build some things we don't need)
+
+
   set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM SSDM)
  
+
   # Explain how to build each of the flexiblesusy spectrum generators we need.  Configure now, serially, to prevent parallel build issues.
   string (REPLACE ";" "," BUILT_FS_MODELS_COMMAS "${BUILT_FS_MODELS}")
   set(config_command ./configure ${FS_OPTIONS} --with-models=${BUILT_FS_MODELS_COMMAS})
-  add_custom_target(configure-flexiblesusy COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold "Old lady GAMBIT say: no cry about missing LAPACK and BLAS little flexisusy, I take care of it."
-                                           COMMAND cd ${FS_DIR} && ${config_command})
+  add_custom_target(configure-flexiblesusy COMMAND cd ${FS_DIR} && ${config_command})
   message("${Yellow}-- Configuring FlexibleSUSY for models: ${BoldYellow}${BUILT_FS_MODELS_COMMAS}${ColourReset}")
   execute_process(COMMAND ${config_command}
                   WORKING_DIRECTORY ${FS_DIR}
@@ -160,7 +159,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
                  )
   if (NOT "${result}" STREQUAL "0")
     message("${BoldRed}-- Configuring FlexibleSUSY failed.  Here's what I tried to do:\n${config_command}\n${output}${ColourReset}" )
-    message(FATAL_ERROR "Configuring FlexibleSUSY failed." ) 
+    message(FATAL_ERROR "Configuring FlexibleSUSY failed." )
   endif()
   message("${Yellow}-- Configuring FlexibleSUSY - done.${ColourReset}")
 
@@ -168,17 +167,17 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   ExternalProject_Add(flexiblesusy
     SOURCE_DIR ${FS_DIR}
     BUILD_IN_SOURCE 1
-    BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LINKLIBS}
+    BUILD_COMMAND $(MAKE) alllib
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
   )
-  
+
   # Set linking commands.  Link order matters! The core flexiblesusy libraries need to come after the model libraries but before the other link flags.
   set(flexiblesusy_LDFLAGS "-L${FS_DIR}/src -lflexisusy -L${FS_DIR}/legacy -llegacy ${flexiblesusy_LDFLAGS}")
   foreach(_MODEL ${BUILT_FS_MODELS})
     set(flexiblesusy_LDFLAGS "-L${FS_DIR}/models/${_MODEL} -l${_MODEL} ${flexiblesusy_LDFLAGS}")
   endforeach()
-  
+
   # Set up include paths
   include_directories("${FS_DIR}/..")
   include_directories("${FS_DIR}/src")

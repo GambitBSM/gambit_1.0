@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:27:16
+// File generated at Wed 28 Oct 2015 11:32:28
 
 #include "CMSSM_utilities.hpp"
 #include "CMSSM_input_parameters.hpp"
@@ -31,8 +31,6 @@
 #define PHYSICAL(p) model.get_physical().p
 #define MODELPARAMETER(p) model.get_##p()
 
-using namespace softsusy;
-
 namespace flexiblesusy {
 
 CMSSM_spectrum_plotter::CMSSM_spectrum_plotter()
@@ -40,6 +38,36 @@ CMSSM_spectrum_plotter::CMSSM_spectrum_plotter()
    , scale(0.0)
    , width(16)
 {
+}
+
+
+void CMSSM_spectrum_plotter::extract_spectrum(const CMSSM_mass_eigenstates& model)
+{
+   spectrum.clear();
+   scale = model.get_scale();
+
+   spectrum.push_back(TParticle("Glu", "\\tilde{g}", to_valarray(PHYSICAL(MGlu))));
+   spectrum.push_back(TParticle("Sd", "\\tilde{d}", to_valarray(PHYSICAL(MSd))));
+   spectrum.push_back(TParticle("Sv", "\\tilde{\\nu}", to_valarray(PHYSICAL(MSv))));
+   spectrum.push_back(TParticle("Su", "\\tilde{u}", to_valarray(PHYSICAL(MSu))));
+   spectrum.push_back(TParticle("Se", "\\tilde{e}", to_valarray(PHYSICAL(MSe))));
+   spectrum.push_back(TParticle("hh", "h", to_valarray(PHYSICAL(Mhh))));
+   spectrum.push_back(TParticle("Ah", "A^0", to_valarray(PHYSICAL(MAh))));
+   spectrum.push_back(TParticle("Hpm", "H^-", to_valarray(PHYSICAL(MHpm))));
+   spectrum.push_back(TParticle("Chi", "\\tilde{\\chi}^0", to_valarray(PHYSICAL(MChi))));
+   spectrum.push_back(TParticle("Cha", "\\tilde{\\chi}^-", to_valarray(PHYSICAL(MCha))));
+
+   if (model.do_calculate_sm_pole_masses()) {
+      spectrum.push_back(TParticle("Fd", "d", to_valarray(PHYSICAL(MFd))));
+      spectrum.push_back(TParticle("Fe", "e", to_valarray(PHYSICAL(MFe))));
+      spectrum.push_back(TParticle("Fu", "u", to_valarray(PHYSICAL(MFu))));
+      spectrum.push_back(TParticle("Fv", "\\nu", to_valarray(PHYSICAL(MFv))));
+      spectrum.push_back(TParticle("VG", "g", to_valarray(PHYSICAL(MVG))));
+      spectrum.push_back(TParticle("VP", "\\gamma", to_valarray(PHYSICAL(MVP))));
+      spectrum.push_back(TParticle("VWm", "W^-", to_valarray(PHYSICAL(MVWm))));
+      spectrum.push_back(TParticle("VZ", "Z", to_valarray(PHYSICAL(MVZ))));
+
+   }
 }
 
 void CMSSM_spectrum_plotter::write_to_file(const std::string& file_name) const
@@ -56,7 +84,7 @@ void CMSSM_spectrum_plotter::write_to_file(const std::string& file_name) const
       return;
    }
 
-   filestr << "### one-loop pole masses (Q = " << scale << " GeV)\n";
+   filestr << "### pole masses (Q = " << scale << " GeV)\n";
    write_spectrum(spectrum, filestr);
 
    filestr.close();

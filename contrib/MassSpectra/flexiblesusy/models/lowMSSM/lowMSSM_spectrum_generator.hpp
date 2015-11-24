@@ -16,21 +16,20 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:19:15
+// File generated at Wed 28 Oct 2015 11:30:31
 
 #ifndef lowMSSM_SPECTRUM_GENERATOR_H
 #define lowMSSM_SPECTRUM_GENERATOR_H
 
-#include "lowMSSM_two_scale_model.hpp"
+#include "lowMSSM_spectrum_generator_interface.hpp"
 #include "lowMSSM_two_scale_susy_scale_constraint.hpp"
 #include "lowMSSM_two_scale_low_scale_constraint.hpp"
 #include "lowMSSM_two_scale_convergence_tester.hpp"
 #include "lowMSSM_two_scale_initial_guesser.hpp"
-#include "lowMSSM_utilities.hpp"
+#include "lowMSSM_input_parameters.hpp"
 
-#include "coupling_monitor.hpp"
+#include "lowe.h"
 #include "error.hpp"
-#include "two_loop_corrections.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
@@ -40,66 +39,31 @@
 namespace flexiblesusy {
 
 template <class T>
-class lowMSSM_spectrum_generator {
+class lowMSSM_spectrum_generator
+   : public lowMSSM_spectrum_generator_interface<T> {
 public:
    lowMSSM_spectrum_generator()
-      : solver(), model()
+      : lowMSSM_spectrum_generator_interface<T>()
+      , solver()
       , susy_scale_constraint()
       , low_scale_constraint()
       , susy_scale(0.)
       , low_scale(0.)
-      , parameter_output_scale(0.)
-      , precision_goal(1.0e-4)
-      , reached_precision(std::numeric_limits<double>::infinity())
-      , beta_zero_threshold(1.0e-11)
-      , max_iterations(0)
-      , beta_loop_order(2)
-      , threshold_corrections_loop_order(2)
-      , calculate_sm_masses(false)
-      , force_output(false)
    {}
-   ~lowMSSM_spectrum_generator() {}
+   virtual ~lowMSSM_spectrum_generator() {}
 
    double get_high_scale() const { return 0.; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
-   const lowMSSM<T>& get_model() const { return model; }
-   const Problems<lowMSSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
-      return model.get_problems();
-   }
-   int get_exit_code() const { return get_problems().have_problem(); }
-   double get_reached_precision() const { return reached_precision; }
-   void set_parameter_output_scale(double s) { parameter_output_scale = s; }
-   void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
-   void set_ewsb_loop_order(unsigned l) { model.set_ewsb_loop_order(l); }
-   void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
-   void set_beta_zero_threshold(double t) { beta_zero_threshold = t; }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
-   void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
-   void set_force_output(bool flag) { force_output = flag; }
-   void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
-   void set_two_loop_corrections(const Two_loop_corrections& c) { model.set_two_loop_corrections(c); }
 
-   void run(const QedQcd& oneset, const lowMSSM_input_parameters& input);
-   void write_running_couplings(const std::string& filename = "lowMSSM_rge_running.dat") const;
-   void write_spectrum(const std::string& filename = "lowMSSM_spectrum.dat") const;
+   virtual void run(const softsusy::QedQcd&, const lowMSSM_input_parameters&);
+   void write_running_couplings(const std::string& filename = "lowMSSM_rgflow.dat") const;
 
 private:
    RGFlow<T> solver;
-   lowMSSM<T> model;
    lowMSSM_susy_scale_constraint<T> susy_scale_constraint;
    lowMSSM_low_scale_constraint<T>  low_scale_constraint;
    double susy_scale, low_scale;
-   double parameter_output_scale; ///< output scale for running parameters
-   double precision_goal; ///< precision goal
-   double reached_precision; ///< the precision that was reached
-   double beta_zero_threshold; ///< beta function zero threshold
-   unsigned max_iterations; ///< maximum number of iterations
-   unsigned beta_loop_order; ///< beta-function loop order
-   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
-   bool calculate_sm_masses; ///< calculate SM pole masses
-   bool force_output; ///< force output
 };
 
 /**
@@ -114,16 +78,17 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void lowMSSM_spectrum_generator<T>::run(const QedQcd& oneset,
+void lowMSSM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                                 const lowMSSM_input_parameters& input)
 {
+   lowMSSM<T>& model = this->model;
    model.clear();
    model.set_input_parameters(input);
-   model.do_calculate_sm_pole_masses(calculate_sm_masses);
-   model.do_force_output(force_output);
-   model.set_loops(beta_loop_order);
-   model.set_thresholds(threshold_corrections_loop_order);
-   model.set_zero_threshold(beta_zero_threshold);
+   model.do_calculate_sm_pole_masses(this->calculate_sm_masses);
+   model.do_force_output(this->force_output);
+   model.set_loops(this->beta_loop_order);
+   model.set_thresholds(this->threshold_corrections_loop_order);
+   model.set_zero_threshold(this->beta_zero_threshold);
 
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
@@ -145,14 +110,14 @@ void lowMSSM_spectrum_generator<T>::run(const QedQcd& oneset,
    downward_constraints[0] = &susy_scale_constraint;
    downward_constraints[1] = &low_scale_constraint;
 
-   lowMSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
-   if (max_iterations > 0)
-      convergence_tester.set_max_iterations(max_iterations);
+   lowMSSM_convergence_tester<T> convergence_tester(&model, this->precision_goal);
+   if (this->max_iterations > 0)
+      convergence_tester.set_max_iterations(this->max_iterations);
 
    lowMSSM_initial_guesser<T> initial_guesser(&model, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint);
-   Two_scale_increasing_precision precision(10.0, precision_goal);
+   Two_scale_increasing_precision precision(10.0, this->precision_goal);
 
    solver.reset();
    solver.set_convergence_tester(&convergence_tester);
@@ -161,13 +126,13 @@ void lowMSSM_spectrum_generator<T>::run(const QedQcd& oneset,
    solver.add_model(&model, upward_constraints, downward_constraints);
 
    susy_scale = low_scale = 0.;
-   reached_precision = std::numeric_limits<double>::infinity();
+   this->reached_precision = std::numeric_limits<double>::infinity();
 
    try {
       solver.solve();
       susy_scale = susy_scale_constraint.get_scale();
       low_scale  = low_scale_constraint.get_scale();
-      reached_precision = convergence_tester.get_current_accuracy();
+      this->reached_precision = convergence_tester.get_current_accuracy();
 
       model.run_to(susy_scale);
       model.solve_ewsb();
@@ -178,8 +143,8 @@ void lowMSSM_spectrum_generator<T>::run(const QedQcd& oneset,
          = low_scale_constraint.get_sm_parameters().displayPoleMW();
 
       // run to output scale (if scale > 0)
-      if (!is_zero(parameter_output_scale)) {
-         model.run_to(parameter_output_scale);
+      if (!is_zero(this->parameter_output_scale)) {
+         model.run_to(this->parameter_output_scale);
       }
    } catch (const NoConvergenceError&) {
       model.get_problems().flag_no_convergence();
@@ -200,35 +165,15 @@ void lowMSSM_spectrum_generator<T>::run(const QedQcd& oneset,
 
 /**
  * Create a text file which contains the values of all model
- * parameters at all scales between the low-scale and the susy-scale.
+ * parameters at all scales between the low-scale and the high-scale.
  *
  * @param filename name of output file
  */
 template <class T>
-void lowMSSM_spectrum_generator<T>::write_running_couplings(const std::string& filename) const
+void lowMSSM_spectrum_generator<T>::write_running_couplings(
+   const std::string& filename) const
 {
-   lowMSSM<T> tmp_model(model);
-   tmp_model.run_to(low_scale);
-
-   lowMSSM_parameter_getter parameter_getter;
-   Coupling_monitor<lowMSSM<T>, lowMSSM_parameter_getter>
-      coupling_monitor(tmp_model, parameter_getter);
-
-   coupling_monitor.run(low_scale, susy_scale, 100, true);
-   coupling_monitor.write_to_file(filename);
-}
-
-/**
- * Write spectrum (pole masses) to a text file
- *
- * @param filename output file name
- */
-template <class T>
-void lowMSSM_spectrum_generator<T>::write_spectrum(const std::string& filename) const
-{
-   lowMSSM_spectrum_plotter plotter;
-   plotter.extract_spectrum<T>(model);
-   plotter.write_to_file(filename);
+   lowMSSM_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, susy_scale);
 }
 
 } // namespace flexiblesusy

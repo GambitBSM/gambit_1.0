@@ -61,7 +61,8 @@ namespace Gambit
         /// Ask the printer for the highest ID number known for a given rank
         /// process (needed for resuming, so the scanner can resume assigning
         /// point ID from this value. 
-        virtual unsigned long getHighestPointID(const int rank) = 0;
+        /// TODO: DEPRECATED
+        //virtual unsigned long getHighestPointID(const int rank) = 0;
 
         /// Declarations of minimal print functions needed by ScannerBit
         #define SCANNER_PRINTABLE_TYPES \

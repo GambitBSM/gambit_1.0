@@ -51,7 +51,7 @@ namespace Gambit
   {
  
     // Parameter controlling the length of all the standard buffers
-    static const std::size_t BUFFERLENGTH = 5; //100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
+    static const std::size_t BUFFERLENGTH = 100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
 
     /// @{ Helpful typedefs
 
@@ -166,7 +166,8 @@ namespace Gambit
         /// Ask the printer for the highest ID number known for a given rank
         /// process (needed for resuming, so the scanner can resume assigning
         /// point ID from this value. 
-        unsigned long getHighestPointID(const int rank);
+        // TODO: DEPRECATED
+        //unsigned long getHighestPointID(const int rank);
 
         /// Check if PPIDpair exists in global index list
         bool seen_PPID_before(const PPIDpair& ppid);
@@ -209,7 +210,10 @@ namespace Gambit
         std::string get_printer_name() { return printer_name; }
 
         /// Get the number of RA write locations known to the primary printer
-        unsigned long get_N_RApointIDs() { return primary_printer->reverse_global_index_lookup.size(); }
+        /// NOTE: the meaning of this has changed slightly; it is the number of queued
+        /// up RA write commands that should exist in the output datasets. The primary
+        /// printer no longer tracks all of the IDs for every RA write command.
+        unsigned long get_N_RApointIDs() { return primary_printer->reverse_global_index_lookup.size() + primary_printer->RA_dset_offset; }
 
         /// Get the number of pointIDs know to this printer
         /// (should correspond to the number of "appends" each active buffer has received)
@@ -427,6 +431,13 @@ namespace Gambit
 
         // Matching vector for the above, for reverse lookup
         std::vector<PPIDpair> reverse_global_index_lookup;
+
+        /// Offset needed to be added to the reverse lookup in
+        /// order for it to match the output dataset position correctly
+        unsigned long RA_dset_offset = 0; 
+
+        /// Max number of PPIDpairs to be tracked
+        static const unsigned long MAX_PPIDPAIRS = 10*BUFFERLENGTH;
 
         /// Label for printer, mostly for more helpful error messages
         std::string printer_name;

@@ -16,7 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Aug 2015 00:58:39
+
+// File generated at Wed 28 Oct 2015 11:35:26
 
 #include "NSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -56,6 +57,24 @@ double NSM_soft_parameters::calc_beta_vS_two_loop(const Soft_traces& soft_traces
 
    beta_vS = Re(-4*twoLoop*vS*(12*Sqr(Lambda2) + Sqr(Lambda3)));
 
+
+   return beta_vS;
+}
+
+/**
+ * Calculates the three-loop beta function of vS.
+ *
+ * @return three-loop beta function
+ */
+double NSM_soft_parameters::calc_beta_vS_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_vS;
+
+   beta_vS = 0;
 
    return beta_vS;
 }

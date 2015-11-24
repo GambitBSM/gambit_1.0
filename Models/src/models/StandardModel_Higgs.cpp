@@ -48,11 +48,8 @@ void MODEL_NAMESPACE::StandardModel_HiggsSector_to_StandardModel_Higgs_running (
    logger()<<"Running interpret_as_parent calculations for SM_Higgs --> SM_Higgs_running..."<<LogTags::info<<EOM;
   
 
-  double tree_level_H_mass,mh2,v;
+  double tree_level_H_mass,mh2;
   tree_level_H_mass=myP.getValue("mH");
-  v=myP.getValue("vev");
-  
-  targetP.setValue("vev",v);
   
   mh2=0.5*pow(tree_level_H_mass,2);
   
@@ -70,23 +67,6 @@ void MODEL_NAMESPACE::StandardModel_HiggsSector_to_StandardModel_Higgs_running (
    #endif
 }
 
-#undef PARENT
-#undef MODEL
-
-
-#define MODEL StandardModel_Higgs
-#define PARENT StandardModel_HiggsSector
-    void MODEL_NAMESPACE::HiggsVEV (const ModelParameters &myP, ModelParameters &targetP)
-    {
-        USE_MODEL_PIPE(PARENT)
-
-        const SMInputs& SM = *Dep::SMINPUTS;
-
-        targetP.setValue("mH", myP["mH"]);
-        double vev = 1. / sqrt(sqrt(2.)*SM.GF);
-        targetP.setValue("vev", vev);
-        logger() << "Higgs vev = " << vev << " GeV" << EOM;
-    }
 #undef PARENT
 #undef MODEL
 

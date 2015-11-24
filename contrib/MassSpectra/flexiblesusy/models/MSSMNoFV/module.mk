@@ -65,6 +65,7 @@ LIBMSSMNoFV_HDR += \
 		$(DIR)/MSSMNoFV_model_slha.hpp \
 		$(DIR)/MSSMNoFV_physical.hpp \
 		$(DIR)/MSSMNoFV_slha_io.hpp \
+		$(DIR)/MSSMNoFV_spectrum_generator_interface.hpp \
 		$(DIR)/MSSMNoFV_spectrum_generator.hpp \
 		$(DIR)/MSSMNoFV_susy_scale_constraint.hpp \
 		$(DIR)/MSSMNoFV_utilities.hpp \
@@ -119,6 +120,10 @@ EXEMSSMNoFV_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXEMSSMNoFV_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(EXEMSSMNoFV_SRC)))
 
+EXEMSSMNoFV_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXEMSSMNoFV_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXEMSSMNoFV_SRC)))
+
 LIBMSSMNoFV_DEP := \
 		$(LIBMSSMNoFV_OBJ:.o=.d)
 
@@ -126,15 +131,6 @@ EXEMSSMNoFV_DEP := \
 		$(EXEMSSMNoFV_OBJ:.o=.d)
 
 LIBMSSMNoFV     := $(DIR)/lib$(MODNAME)$(LIBEXT)
-
-RUN_MSSMNoFV_OBJ := $(DIR)/run_MSSMNoFV.o
-RUN_MSSMNoFV_EXE := $(DIR)/run_MSSMNoFV.x
-
-RUN_CMD_LINE_MSSMNoFV_OBJ := $(DIR)/run_cmd_line_MSSMNoFV.o
-RUN_CMD_LINE_MSSMNoFV_EXE := $(DIR)/run_cmd_line_MSSMNoFV.x
-
-SCAN_MSSMNoFV_OBJ := $(DIR)/scan_MSSMNoFV.o
-SCAN_MSSMNoFV_EXE := $(DIR)/scan_MSSMNoFV.x
 
 METACODE_STAMP_MSSMNoFV := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
@@ -175,9 +171,7 @@ clean-$(MODNAME)-obj:
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBMSSMNoFV)
-		-rm -f $(RUN_MSSMNoFV_EXE)
-		-rm -f $(RUN_CMD_LINE_MSSMNoFV_EXE)
-		-rm -f $(SCAN_MSSMNoFV_EXE)
+		-rm -f $(EXEMSSMNoFV_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
@@ -221,16 +215,10 @@ endif
 $(LIBMSSMNoFV): $(LIBMSSMNoFV_OBJ)
 		$(MAKELIB) $@ $^
 
-$(RUN_MSSMNoFV_EXE): $(RUN_MSSMNoFV_OBJ) $(LIBMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(RUN_CMD_LINE_MSSMNoFV_EXE): $(RUN_CMD_LINE_MSSMNoFV_OBJ) $(LIBMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(SCAN_MSSMNoFV_EXE): $(SCAN_MSSMNoFV_OBJ) $(LIBMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+$(DIR)/%.x: $(DIR)/%.o $(LIBMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBMSSMNoFV_DEP) $(EXEMSSMNoFV_DEP)
 ALLSRC += $(LIBMSSMNoFV_SRC) $(EXEMSSMNoFV_SRC)
 ALLLIB += $(LIBMSSMNoFV)
-ALLEXE += $(RUN_MSSMNoFV_EXE) $(RUN_CMD_LINE_MSSMNoFV_EXE) $(SCAN_MSSMNoFV_EXE)
+ALLEXE += $(EXEMSSMNoFV_EXE)

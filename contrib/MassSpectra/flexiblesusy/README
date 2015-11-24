@@ -219,6 +219,25 @@ have to rebuild them via
    $ make allexec
 
 
+Statically linked executables
+=============================
+
+External libraries can be statically linked to the spectrum generator
+executables by setting linker specific flags in LDFLAGS.  On some
+systems additional libraries have to be linked to the executables in
+such cases.  In FlexibleSUSY such additional libraries can be
+specified in the variable LDLIBS.
+
+Example (using g++ on Debian Jessie):
+
+   $ ./configure --with-models=CMSSM \
+     --with-ldflags="-static" \
+     --with-ldlibs="-lquadmath"
+
+This will create a standalone executable which does not depend on
+dynamic libraries.
+
+
 Looptools
 =========
 
