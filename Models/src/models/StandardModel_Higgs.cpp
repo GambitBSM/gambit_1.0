@@ -38,11 +38,11 @@
 using namespace Gambit::Utils;
 
 // Need to define MODEL and PARENT in order for helper macros to work correctly
-#define MODEL  StandardModel_HiggsSector
+#define MODEL  StandardModel_Higgs
 #define PARENT StandardModel_Higgs_running
 
 // Translation function definition
-void MODEL_NAMESPACE::StandardModel_HiggsSector_to_StandardModel_Higgs_running (const ModelParameters &myP, ModelParameters &targetP)
+void MODEL_NAMESPACE::StandardModel_Higgs_to_StandardModel_Higgs_running (const ModelParameters &myP, ModelParameters &targetP)
 {
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
    logger()<<"Running interpret_as_parent calculations for SM_Higgs --> SM_Higgs_running..."<<LogTags::info<<EOM;

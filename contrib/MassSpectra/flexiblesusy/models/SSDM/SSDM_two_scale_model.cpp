@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 24 Nov 2015 14:30:09
+// File generated at Wed 25 Nov 2015 11:56:53
 
 /**
  * @file SSDM_two_scale_model.cpp
@@ -26,8 +26,8 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Tue 24 Nov 2015 14:30:09 with FlexibleSUSY
- * 1.2.4 (git commit: v1.2.4-85-g706a210) and SARAH 4.5.6 .
+ * This file was generated at Wed 25 Nov 2015 11:56:53 with FlexibleSUSY
+ * 1.2.4 (git commit: unknown) and SARAH 4.5.6 .
  */
 
 #include "SSDM_two_scale_model.hpp"

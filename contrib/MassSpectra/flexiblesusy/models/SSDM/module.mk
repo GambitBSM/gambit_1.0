@@ -168,6 +168,17 @@ clean-$(MODNAME)-obj:
 		-rm -f $(LIBSSDM_OBJ)
 		-rm -f $(EXESSDM_OBJ)
 
+# BEGIN: NOT EXPORTED ##########################################
+clean-$(MODNAME)-src:
+		-rm -f $(LIBSSDM_SRC)
+		-rm -f $(LIBSSDM_HDR)
+		-rm -f $(EXESSDM_SRC)
+		-rm -f $(METACODE_STAMP_SSDM)
+		-rm -f $(SSDM_TWO_SCALE_MK)
+		-rm -f $(SSDM_GNUPLOT)
+
+clean-$(MODNAME): clean-$(MODNAME)-src
+# END:   NOT EXPORTED ##########################################
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBSSDM)
@@ -216,7 +227,7 @@ $(LIBSSDM): $(LIBSSDM_OBJ)
 		$(MAKELIB) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBSSDM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBSSDM_DEP) $(EXESSDM_DEP)
 ALLSRC += $(LIBSSDM_SRC) $(EXESSDM_SRC)

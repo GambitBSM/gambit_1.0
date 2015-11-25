@@ -16,7 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-
 // File generated at Wed 28 Oct 2015 11:35:26
 
 #include "NSM_two_scale_soft_parameters.hpp"
@@ -75,6 +74,7 @@ double NSM_soft_parameters::calc_beta_vS_three_loop(const Soft_traces& soft_trac
    double beta_vS;
 
    beta_vS = 0;
+
 
    return beta_vS;
 }

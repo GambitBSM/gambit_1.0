@@ -28,7 +28,7 @@
 #define MODEL StandardModel_Higgs
 #define PARENT StandardModel_Higgs_running
   START_MODEL
-  INTERPRET_AS_PARENT__FUNCTION(StandardModel_HiggsSector_to_StandardModel_Higgs_running)
+  INTERPRET_AS_PARENT__FUNCTION(StandardModel_Higgs_to_StandardModel_Higgs_running)
 
   DEFINEPARS(mH)
 

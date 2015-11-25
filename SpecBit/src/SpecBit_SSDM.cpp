@@ -88,7 +88,7 @@ namespace Gambit
       // couplings in QEDxQCD effective theory
       // Will be initialised by default using values in lowe.h, which we will
       // override next. 
-      QedQcd oneset;
+      softsusy::QedQcd oneset;
 
       // Fill QedQcd object with SMInputs values
       setup_QedQcd(oneset,sminputs);
@@ -246,7 +246,7 @@ namespace Gambit
       input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
       input.Lambda2Input=lambda_hs;
       input.Lambda3Input=0;
-      input.Qin=173.15;  // scale where EWSB conditions are applied
+      input.QEWSB=173.15;  // scale where EWSB conditions are applied
     }
 
     void get_SSDM_spectrum(const Spectrum* &result)
@@ -257,7 +257,7 @@ namespace Gambit
       SSDM_input_parameters input;
       cout<< "get spectrum started" << endl;
       fill_SSDM_input(input,myPipe::Param);
-      input.QHin=1e3;
+      input.Qin=1e3;
       cout<< "Filled input parameters" << endl;
       result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }

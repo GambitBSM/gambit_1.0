@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 24 Nov 2015 14:30:10
+// File generated at Wed 25 Nov 2015 11:56:54
 
 #ifndef SSDM_SPECTRUM_GENERATOR_H
 #define SSDM_SPECTRUM_GENERATOR_H

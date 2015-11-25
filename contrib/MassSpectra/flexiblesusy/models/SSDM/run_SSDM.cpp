@@ -16,12 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 24 Nov 2015 14:30:10
+// File generated at Wed 25 Nov 2015 11:56:54
 
 #include "SSDM_input_parameters.hpp"
 #include "SSDM_slha_io.hpp"
 #include "SSDM_spectrum_generator.hpp"
-#include "SSDM_utilities.hpp"
 
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
@@ -41,7 +40,6 @@ int main(int argc, const char* argv[])
    if (options.must_exit())
       return options.status();
 
-   const std::string database_output_file(options.get_database_output_file());
    const std::string rgflow_file(options.get_rgflow_file());
    const std::string slha_input_source(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
@@ -85,28 +83,20 @@ int main(int argc, const char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   // SLHA output
-   if (!slha_output_file.empty()) {
-      slha_io.set_spinfo(problems);
-      slha_io.set_minpar(input);
-      slha_io.set_extpar(input);
-      if (!problems.have_problem() ||
-          spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
-         slha_io.set_spectrum(model);
-         slha_io.set_extra(model, scales);
-      }
-
-      if (slha_output_file == "-") {
-         slha_io.write_to_stream(std::cout);
-      } else {
-         slha_io.write_to_file(slha_output_file);
-      }
+   // output
+   slha_io.set_spinfo(problems);
+   slha_io.set_minpar(input);
+   slha_io.set_extpar(input);
+   if (!problems.have_problem() ||
+       spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
+      slha_io.set_spectrum(model);
+      slha_io.set_extra(model, scales);
    }
 
-   if (!database_output_file.empty() &&
-       (!problems.have_problem() ||
-        spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
-      SSDM_database::to_database(database_output_file, model, &oneset);
+   if (slha_output_file.empty()) {
+      slha_io.write_to_stream(std::cout);
+   } else {
+      slha_io.write_to_file(slha_output_file);
    }
 
    if (!spectrum_file.empty())

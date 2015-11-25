@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 24 Nov 2015 14:30:09
+// File generated at Wed 25 Nov 2015 11:56:53
 
 #ifndef SSDM_PHYSICAL_H
 #define SSDM_PHYSICAL_H
@@ -34,23 +34,19 @@ struct SSDM_physical {
    void clear();
    void convert_to_hk();   ///< converts pole masses to HK convention
    void convert_to_slha(); ///< converts pole masses to SLHA convention
-   Eigen::ArrayXd get() const; ///< returns array with all masses and mixings
-   void set(const Eigen::ArrayXd&); ///< set all masses and mixings
-   Eigen::ArrayXd get_masses() const; ///< returns array with all masses
-   void set_masses(const Eigen::ArrayXd&); ///< set all masses
    void print(std::ostream&) const;
 
-   double MVG;
    double MHp;
    double Mss;
    Eigen::Array<double,3,1> MFv;
    double MAh;
    double Mhh;
-   double MVP;
    double MVZ;
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
    Eigen::Array<double,3,1> MFe;
+   double MVG;
+   double MVP;
    double MVWp;
 
    Eigen::Matrix<std::complex<double>,3,3> Vd;

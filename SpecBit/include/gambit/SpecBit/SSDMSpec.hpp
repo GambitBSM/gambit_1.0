@@ -203,7 +203,7 @@ namespace Gambit
 
         {
             typename MTget::fmap0 tmp_map;
-            tmp_map["mS2"]  = &Model::get_mS2;
+            tmp_map["mS2"]  = &Model::get_ms2;
             tmp_map["mu2"] = &Model::get_mu2;
             map_collection[Par::mass2].map0 = tmp_map;
          }
@@ -297,7 +297,7 @@ namespace Gambit
          {
             typename MTset::fmap0 tmp_map;
 
-            tmp_map["mS2"] = &Model::set_mS2;
+            tmp_map["mS2"] = &Model::set_ms2;
             tmp_map["mu2"] = &Model::set_mu2;
 
             map_collection[Par::mass2].map0 = tmp_map;

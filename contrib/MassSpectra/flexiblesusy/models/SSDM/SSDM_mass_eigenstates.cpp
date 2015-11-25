@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 24 Nov 2015 14:30:09
+// File generated at Wed 25 Nov 2015 11:56:53
 
 /**
  * @file SSDM_mass_eigenstates.cpp
@@ -26,8 +26,8 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Tue 24 Nov 2015 14:30:09 with FlexibleSUSY
- * 1.2.4 (git commit: v1.2.4-85-g706a210) and SARAH 4.5.6 .
+ * This file was generated at Wed 25 Nov 2015 11:56:53 with FlexibleSUSY
+ * 1.2.4 (git commit: unknown) and SARAH 4.5.6 .
  */
 
 #include "SSDM_mass_eigenstates.hpp"
@@ -100,9 +100,9 @@ CLASSNAME::SSDM_mass_eigenstates(const SSDM_input_parameters& input_)
 #ifdef ENABLE_THREADS
    , thread_exception()
 #endif
-   , MVG(0), MHp(0), Mss(0), MFv(Eigen::Array<double,3,1>::Zero()), MAh(0), Mhh
-      (0), MVP(0), MVZ(0), MFd(Eigen::Array<double,3,1>::Zero()), MFu(Eigen::Array
-      <double,3,1>::Zero()), MFe(Eigen::Array<double,3,1>::Zero()), MVWp(0)
+   , MHp(0), Mss(0), MFv(Eigen::Array<double,3,1>::Zero()), MAh(0), Mhh(0), MVZ
+      (0), MFd(Eigen::Array<double,3,1>::Zero()), MFu(Eigen::Array<double,3,1>
+      ::Zero()), MFe(Eigen::Array<double,3,1>::Zero()), MVG(0), MVP(0), MVWp(0)
 
    , Vd(Eigen::Matrix<std::complex<double>,3,3>::Zero()), Ud(Eigen::Matrix<
       std::complex<double>,3,3>::Zero()), Vu(Eigen::Matrix<std::complex<double>,3,
@@ -518,17 +518,17 @@ void CLASSNAME::print(std::ostream& ostr) const
    ostr << "----------------------------------------\n"
            "tree-level DRbar masses:\n"
            "----------------------------------------\n";
-   ostr << "MVG = " << MVG << '\n';
    ostr << "MHp = " << MHp << '\n';
    ostr << "Mss = " << Mss << '\n';
    ostr << "MFv = " << MFv.transpose() << '\n';
    ostr << "MAh = " << MAh << '\n';
    ostr << "Mhh = " << Mhh << '\n';
-   ostr << "MVP = " << MVP << '\n';
    ostr << "MVZ = " << MVZ << '\n';
    ostr << "MFd = " << MFd.transpose() << '\n';
    ostr << "MFu = " << MFu.transpose() << '\n';
    ostr << "MFe = " << MFe.transpose() << '\n';
+   ostr << "MVG = " << MVG << '\n';
+   ostr << "MVP = " << MVP << '\n';
    ostr << "MVWp = " << MVWp << '\n';
 
    ostr << "----------------------------------------\n"
@@ -597,9 +597,9 @@ void CLASSNAME::calculate_DRbar_masses()
 
    solve_ewsb_tree_level();
 
+   calculate_MVZ();
    calculate_MVG();
    calculate_MVP();
-   calculate_MVZ();
    calculate_MVWp();
    calculate_MHp();
    calculate_Mss();
@@ -635,21 +635,21 @@ void CLASSNAME::calculate_pole_masses()
    std::thread thread_Mss(Thread(this, &CLASSNAME::calculate_Mss_pole));
 
    if (calculate_sm_pole_masses) {
-      std::thread thread_MVG(Thread(this, &CLASSNAME::calculate_MVG_pole));
       std::thread thread_MFv(Thread(this, &CLASSNAME::calculate_MFv_pole));
-      std::thread thread_MVP(Thread(this, &CLASSNAME::calculate_MVP_pole));
       std::thread thread_MVZ(Thread(this, &CLASSNAME::calculate_MVZ_pole));
       std::thread thread_MFd(Thread(this, &CLASSNAME::calculate_MFd_pole));
       std::thread thread_MFu(Thread(this, &CLASSNAME::calculate_MFu_pole));
       std::thread thread_MFe(Thread(this, &CLASSNAME::calculate_MFe_pole));
+      std::thread thread_MVG(Thread(this, &CLASSNAME::calculate_MVG_pole));
+      std::thread thread_MVP(Thread(this, &CLASSNAME::calculate_MVP_pole));
       std::thread thread_MVWp(Thread(this, &CLASSNAME::calculate_MVWp_pole));
-      thread_MVG.join();
       thread_MFv.join();
-      thread_MVP.join();
       thread_MVZ.join();
       thread_MFd.join();
       thread_MFu.join();
       thread_MFe.join();
+      thread_MVG.join();
+      thread_MVP.join();
       thread_MVWp.join();
    }
 
@@ -664,13 +664,13 @@ void CLASSNAME::calculate_pole_masses()
    calculate_Mss_pole();
 
    if (calculate_sm_pole_masses) {
-      calculate_MVG_pole();
       calculate_MFv_pole();
-      calculate_MVP_pole();
       calculate_MVZ_pole();
       calculate_MFd_pole();
       calculate_MFu_pole();
       calculate_MFe_pole();
+      calculate_MVG_pole();
+      calculate_MVP_pole();
       calculate_MVWp_pole();
    }
 
@@ -679,13 +679,11 @@ void CLASSNAME::calculate_pole_masses()
 
 void CLASSNAME::copy_DRbar_masses_to_pole_masses()
 {
-   PHYSICAL(MVG) = MVG;
    PHYSICAL(MHp) = MHp;
    PHYSICAL(Mss) = Mss;
    PHYSICAL(MFv) = MFv;
    PHYSICAL(MAh) = MAh;
    PHYSICAL(Mhh) = Mhh;
-   PHYSICAL(MVP) = MVP;
    PHYSICAL(MVZ) = MVZ;
    PHYSICAL(MFd) = MFd;
    PHYSICAL(Vd) = Vd;
@@ -696,6 +694,8 @@ void CLASSNAME::copy_DRbar_masses_to_pole_masses()
    PHYSICAL(MFe) = MFe;
    PHYSICAL(Ve) = Ve;
    PHYSICAL(Ue) = Ue;
+   PHYSICAL(MVG) = MVG;
+   PHYSICAL(MVP) = MVP;
    PHYSICAL(MVWp) = MVWp;
 
 }
@@ -759,13 +759,11 @@ void CLASSNAME::calculate_spectrum()
 
 void CLASSNAME::clear_DRbar_parameters()
 {
-   MVG = 0.;
    MHp = 0.;
    Mss = 0.;
    MFv = Eigen::Matrix<double,3,1>::Zero();
    MAh = 0.;
    Mhh = 0.;
-   MVP = 0.;
    MVZ = 0.;
    MFd = Eigen::Matrix<double,3,1>::Zero();
    Vd = Eigen::Matrix<std::complex<double>,3,3>::Zero();
@@ -776,6 +774,8 @@ void CLASSNAME::clear_DRbar_parameters()
    MFe = Eigen::Matrix<double,3,1>::Zero();
    Ve = Eigen::Matrix<std::complex<double>,3,3>::Zero();
    Ue = Eigen::Matrix<std::complex<double>,3,3>::Zero();
+   MVG = 0.;
+   MVP = 0.;
    MVWp = 0.;
 
 
@@ -811,19 +811,6 @@ void CLASSNAME::run_to(double scale, double eps)
 
 
 
-
-double CLASSNAME::get_mass_matrix_VG() const
-{
-   const double mass_matrix_VG = Re(0);
-
-   return mass_matrix_VG;
-}
-
-void CLASSNAME::calculate_MVG()
-{
-   const auto mass_matrix_VG = get_mass_matrix_VG();
-   MVG = calculate_singlet_mass(mass_matrix_VG);
-}
 
 double CLASSNAME::get_mass_matrix_Hp() const
 {
@@ -918,19 +905,6 @@ void CLASSNAME::calculate_Mhh()
       problems.flag_tachyon(SSDM_info::hh);
 
    Mhh = AbsSqrt(Mhh);
-}
-
-double CLASSNAME::get_mass_matrix_VP() const
-{
-   const double mass_matrix_VP = Re(0);
-
-   return mass_matrix_VP;
-}
-
-void CLASSNAME::calculate_MVP()
-{
-   const auto mass_matrix_VP = get_mass_matrix_VP();
-   MVP = calculate_singlet_mass(mass_matrix_VP);
 }
 
 double CLASSNAME::get_mass_matrix_VZ() const
@@ -1043,6 +1017,32 @@ void CLASSNAME::calculate_MFe()
 #else
    fs_svd(mass_matrix_Fe, MFe, Ve, Ue);
 #endif
+}
+
+double CLASSNAME::get_mass_matrix_VG() const
+{
+   const double mass_matrix_VG = Re(0);
+
+   return mass_matrix_VG;
+}
+
+void CLASSNAME::calculate_MVG()
+{
+   const auto mass_matrix_VG = get_mass_matrix_VG();
+   MVG = calculate_singlet_mass(mass_matrix_VG);
+}
+
+double CLASSNAME::get_mass_matrix_VP() const
+{
+   const double mass_matrix_VP = Re(0);
+
+   return mass_matrix_VP;
+}
+
+void CLASSNAME::calculate_MVP()
+{
+   const auto mass_matrix_VP = get_mass_matrix_VP();
+   MVP = calculate_singlet_mass(mass_matrix_VP);
 }
 
 double CLASSNAME::get_mass_matrix_VWp() const
@@ -5006,29 +5006,6 @@ std::complex<double> CLASSNAME::tadpole_hh() const
 
 
 
-void CLASSNAME::calculate_MVG_pole()
-{
-   // diagonalization with high precision
-   unsigned iteration = 0;
-   double diff = 0.0;
-   decltype(MVG) old_MVG(MVG), new_MVG(MVG);
-
-   do {
-      PHYSICAL(MVG) = 0.;
-
-      new_MVG = PHYSICAL(MVG);
-      diff = MaxRelDiff(new_MVG, old_MVG);
-      old_MVG = new_MVG;
-      iteration++;
-   } while (diff > precision
-            && iteration < number_of_mass_iterations);
-
-   if (diff > precision)
-      problems.flag_no_pole_mass_convergence(SSDM_info::VG);
-   else
-      problems.unflag_no_pole_mass_convergence(SSDM_info::VG);
-}
-
 void CLASSNAME::calculate_Mss_pole()
 {
    if (!force_output && problems.is_tachyon(ss))
@@ -5112,29 +5089,6 @@ void CLASSNAME::calculate_Mhh_pole()
       problems.flag_no_pole_mass_convergence(SSDM_info::hh);
    else
       problems.unflag_no_pole_mass_convergence(SSDM_info::hh);
-}
-
-void CLASSNAME::calculate_MVP_pole()
-{
-   // diagonalization with high precision
-   unsigned iteration = 0;
-   double diff = 0.0;
-   decltype(MVP) old_MVP(MVP), new_MVP(MVP);
-
-   do {
-      PHYSICAL(MVP) = 0.;
-
-      new_MVP = PHYSICAL(MVP);
-      diff = MaxRelDiff(new_MVP, old_MVP);
-      old_MVP = new_MVP;
-      iteration++;
-   } while (diff > precision
-            && iteration < number_of_mass_iterations);
-
-   if (diff > precision)
-      problems.flag_no_pole_mass_convergence(SSDM_info::VP);
-   else
-      problems.unflag_no_pole_mass_convergence(SSDM_info::VP);
 }
 
 void CLASSNAME::calculate_MVZ_pole()
@@ -5372,6 +5326,52 @@ void CLASSNAME::calculate_MFe_pole()
       problems.flag_no_pole_mass_convergence(SSDM_info::Fe);
    else
       problems.unflag_no_pole_mass_convergence(SSDM_info::Fe);
+}
+
+void CLASSNAME::calculate_MVG_pole()
+{
+   // diagonalization with high precision
+   unsigned iteration = 0;
+   double diff = 0.0;
+   decltype(MVG) old_MVG(MVG), new_MVG(MVG);
+
+   do {
+      PHYSICAL(MVG) = 0.;
+
+      new_MVG = PHYSICAL(MVG);
+      diff = MaxRelDiff(new_MVG, old_MVG);
+      old_MVG = new_MVG;
+      iteration++;
+   } while (diff > precision
+            && iteration < number_of_mass_iterations);
+
+   if (diff > precision)
+      problems.flag_no_pole_mass_convergence(SSDM_info::VG);
+   else
+      problems.unflag_no_pole_mass_convergence(SSDM_info::VG);
+}
+
+void CLASSNAME::calculate_MVP_pole()
+{
+   // diagonalization with high precision
+   unsigned iteration = 0;
+   double diff = 0.0;
+   decltype(MVP) old_MVP(MVP), new_MVP(MVP);
+
+   do {
+      PHYSICAL(MVP) = 0.;
+
+      new_MVP = PHYSICAL(MVP);
+      diff = MaxRelDiff(new_MVP, old_MVP);
+      old_MVP = new_MVP;
+      iteration++;
+   } while (diff > precision
+            && iteration < number_of_mass_iterations);
+
+   if (diff > precision)
+      problems.flag_no_pole_mass_convergence(SSDM_info::VP);
+   else
+      problems.unflag_no_pole_mass_convergence(SSDM_info::VP);
 }
 
 void CLASSNAME::calculate_MVWp_pole()

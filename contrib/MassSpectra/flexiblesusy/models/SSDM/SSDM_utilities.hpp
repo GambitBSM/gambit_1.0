@@ -16,12 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 24 Nov 2015 14:29:53
+// File generated at Wed 25 Nov 2015 11:56:17
 
 #ifndef SSDM_UTILITIES_H
 #define SSDM_UTILITIES_H
 
-#include "SSDM_mass_eigenstates.hpp"
+#include "SSDM_two_scale_model.hpp"
 #include "SSDM_info.hpp"
 #include "wrappers.hpp"
 
@@ -31,10 +31,6 @@
 #include <valarray>
 #include <utility>
 
-namespace softsusy {
-class QedQcd;
-}
-
 namespace flexiblesusy {
 
 class SSDM_parameter_getter {
@@ -42,44 +38,10 @@ public:
    Eigen::ArrayXd get_parameters(const SSDM_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names() const {
+   std::vector<std::string> get_parameter_names(const SSDM_mass_eigenstates&) const {
       using namespace SSDM_info;
       return std::vector<std::string>(parameter_names,
                                       parameter_names + NUMBER_OF_PARAMETERS);
-   }
-   std::vector<std::string> get_particle_names() const {
-      using namespace SSDM_info;
-      return std::vector<std::string>(particle_names,
-                                      particle_names + NUMBER_OF_PARTICLES);
-   }
-   std::vector<std::string> get_mass_names() const {
-      using namespace SSDM_info;
-      std::vector<std::string> masses;
-      for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
-         for (unsigned m = 0; m < particle_multiplicities[i]; m++) {
-            masses.push_back(
-               std::string("M") + particle_names[i] +
-               (particle_multiplicities[i] == 1 ? "" : "(" + std::to_string(m) + ")"));
-         }
-      }
-      return masses;
-   }
-   std::vector<std::string> get_mixing_names() const {
-      using namespace SSDM_info;
-      return std::vector<std::string>(particle_mixing_names,
-                                      particle_mixing_names + NUMBER_OF_MIXINGS);
-   }
-   std::vector<std::string> get_input_parameter_names() const {
-      using namespace SSDM_info;
-      return std::vector<std::string>(input_parameter_names,
-                                      input_parameter_names + NUMBER_OF_INPUT_PARAMETERS);
-   }
-   std::size_t get_number_of_masses() const {
-      using namespace SSDM_info;
-      std::size_t number_of_masses = 0;
-      for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++)
-         number_of_masses += particle_multiplicities[i];
-      return number_of_masses;
    }
 };
 
@@ -119,16 +81,6 @@ std::valarray<double> SSDM_spectrum_plotter::to_valarray(const Eigen::Array<Scal
 {
    return std::valarray<double>(v.data(), v.size());
 }
-
-namespace SSDM_database {
-
-/// append parameter point to database
-void to_database(const std::string&, const SSDM_mass_eigenstates&, const softsusy::QedQcd* qedqcd = 0);
-
-/// fill model from an entry of the database
-SSDM_mass_eigenstates from_database(const std::string&, std::size_t, softsusy::QedQcd* qedqcd = 0);
-
-} // namespace SSDM_database
 
 } // namespace flexiblesusy
 
