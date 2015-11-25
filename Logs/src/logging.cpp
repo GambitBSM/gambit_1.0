@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <limits>
 #include <chrono>
+#include <omp.h>
 
 // Gambit
 #include "gambit/Logs/logging.hpp"
@@ -178,11 +179,15 @@ namespace Gambit
     LogMaster::LogMaster()
       : loggers_readyQ (false)
       , silenced       (false)
-      , current_module (-1)
-      , current_backend(-1)
       , separate_file_per_process(true)
       , MPIrank        (0)
       , MPIsize        (1)
+      , globlMaxThreads(omp_get_max_threads())
+      , current_module (NULL)
+      , current_backend(NULL)
+      , stream         (NULL)
+      , streamtags     (NULL)
+      , backlog        (NULL)
     {
       // Note! MPIrank and MPIsize will not be correct until initialisation occurs!
     }
@@ -193,13 +198,61 @@ namespace Gambit
       : loggers        (loggersIN)
       , loggers_readyQ (true)
       , silenced       (false)
-      , current_module (-1)
-      , current_backend(-1)
       , separate_file_per_process(true)
       , MPIrank        (0)
       , MPIsize        (1)
+      , globlMaxThreads(omp_get_max_threads())
+      , current_module (NULL)
+      , current_backend(NULL)
+      , stream         (NULL)
+      , streamtags     (NULL)
+      , backlog        (NULL)
     {
       // Note! MPIrank and MPIsize will not be correct until initialisation occurs!
+    }
+
+    // Initialise dynamic memory required for thread safety
+    void LogMaster::init_memory()
+    {
+      int n = globlMaxThreads;
+      // Reserve enough space to hold as many variables as there are slots (threads) allowed
+      if(stream==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_stream)
+        {
+          if(stream==NULL) stream = new std::ostringstream[n];
+        }
+      }
+      if(streamtags==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_streamtags)
+        {
+          if(streamtags==NULL) stream = new std::set<int>[n];
+        }
+      }
+      if(backlog==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_backlog)
+        {
+          if(backlog==NULL) backlog = new std::stack<Message>[n];
+        }
+      }
+      if(current_module==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_current_module)
+        {
+          if(current_module==NULL) current_module = new int[n];
+          std::fill(current_module, current_module+n, -1);
+        }
+      }
+      if(current_backend==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_current_backend)
+        {
+          if(current_backend==NULL) current_backend = new int[n];
+          std::fill(current_backend, current_backend+n, -1);
+        }
+      }
     }
 
     // Destructor
@@ -208,9 +261,9 @@ namespace Gambit
        if(not silenced)
        {
          // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
-         if (prelim_buffer.size()!=0)
+         if (backlog!=NULL and backlog.size()!=0)
          {
-           std::cout<<"Logger buffer is not empty; attempting to deliver unsent messages to the logs..."<<std::endl;
+           std::cout<<"Logger backlog buffer is not empty; attempting to deliver unsent messages to the logs..."<<std::endl;
            if (not loggers_readyQ)
            {
              std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
@@ -222,14 +275,17 @@ namespace Gambit
            }
            std::cout<<"Delivering messages..."<<std::endl;
            // Dump buffered messages
-           dump_prelim_buffer();
+           empty_backlog();
            std::cout<<"Messages delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
          }
 
          // Check if there is anything in the output stream that has not been sent, and send it if there is
-         if (not stream.str().empty() or not streamtags.empty())
+         if (stream != NULL and streamtags!= NULL)
          {
-           *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+           if (not stream.str().empty() or not streamtags.empty())
+           {
+             *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+           }
          }
        }
 
@@ -242,6 +298,11 @@ namespace Gambit
          //(keyvalue->second)->flush();
          delete (keyvalue->second);
        }
+
+       // Delete the thread variables
+       if (stream != NULL)     delete [] stream;
+       if (streamtags != NULL) delete [] streamtags;
+       if (backlog != NULL)    delete [] backlog;
     }
 
     /// Function to construct loggers according to blueprint
@@ -316,7 +377,7 @@ namespace Gambit
        *this << EOM; // End message about loggers.
        // Set logger objects ready for use and dump any buffered messages
        loggers_readyQ = true;
-       dump_prelim_buffer();
+       empty_backlog();
     }
 
     // Overload for initialise to allow input of logging instructions via maps
@@ -362,16 +423,22 @@ namespace Gambit
        return silenced;
     }
 
-    // Dump the prelim buffer to the 'finalsend' function
-    void LogMaster::dump_prelim_buffer()
+    // Dump the backlog buffer to the 'finalsend' function
+    void LogMaster::empty_backlog()
     {
-       for(std::vector<Message>::iterator msg = prelim_buffer.begin();
-            msg != prelim_buffer.end(); ++msg)
+       if(omp_get_level()!=0)
        {
-         finalsend(*msg);
+          logging_error().raise(LOCAL_INFO, "Tried to run empty_backlog() (in LogMaster) from inside an omp parallel block! This should not be possible, please file a bug report.");
        }
-       // Clear the buffer
-       prelim_buffer.clear();
+
+       for(int i=0; i<globlMaxThreads; i++)
+       {
+         for(size_t j=0; j<backlog[i].size(); j++)
+         {
+            finalsend(backlog[i].top());
+            backlog[i].pop();
+         }
+       }
     }
 
     /// Main logging function (user-friendly overloaded version)
@@ -512,32 +579,34 @@ namespace Gambit
 
        // Preliminary stuff
 
+       // Get thread number
+       int i = omp_get_thread_num();
+
        // Automatically add the "def" (Default) tag so that the message definitely tries to go somewhere
        tags.insert(def);
 
        // Automatically add the tags for the "current" module and backend to the tags list
-       if (current_module != -1)
+       if (current_module[i] != -1)
        {
          //std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str()[current_module]<<std::endl;
-         tags.insert(current_module);
+         tags.insert(current_module[i]);
        }
-       if (current_backend != -1)
+       if (current_backend[i] != -1)
        {
          //std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str()[current_backend]<<std::endl;
-         tags.insert(current_backend);
+         tags.insert(current_backend[i]);
        }
 
        // If the loggers have not yet been initialised, buffer the message
-       if ( not loggers_readyQ )
+       if(omp_get_level()!=0 or not loggers_readyQ)
        {
-         //std::cout<<"Loggers not ready, buffering message..."<<std::endl;
-         prelim_buffer.emplace_back(message,tags); //time stamp automatically added NOW
-         return;
+         backlog[i].emplace(message,tags); //time stamp automatically added NOW
        }
-       //std::cout<<"Loggers ready, forwarding message..."<<std::endl;
-
-       finalsend(Message(message,tags)); //time stamp automatically added NOW
-
+       else
+       {
+         if(omp_get_level()==0) empty_backlog();
+         finalsend(Message(message,tags)); //time stamp automatically added NOW
+       }
     } // end LogHub::send
 
     /// Version of send function used by buffer dump; skips all the tag modification stuff
@@ -587,121 +656,77 @@ namespace Gambit
     /// Handle LogTag input
     LogMaster& LogMaster::operator<< (const LogTag& tag)
     {
-       block_signals();
-       #pragma omp critical
-       {
-          streamtags.insert(tag);
-       }
-       unblock_signals();
+       init_memory();
+       streamtags[omp_get_thread_num()].insert(tag);
        return *this;
     }
 
     /// Handle end of message character
     LogMaster& LogMaster::operator<< (const endofmessage&)
     {
-       block_signals();
-       #pragma omp critical (LogMaster_steram_EOM)
-       {
-         // Collect the stream and tags, then send the message
-         send(stream.str(), streamtags);
-         // Clear stream and tags for next message;
-         stream.str(std::string()); //TODO: check that this works properly on all compilers...
-         streamtags.clear();
-       }
-       unblock_signals();
+       init_memory();
+       size_t i = omp_get_thread_num();
+       // Collect the stream and tags, then send the message
+       send(stream[i].str(), streamtags[i]);
+       // Clear stream and tags for next message;
+       stream[i].str(std::string()); //TODO: check that this works properly on all compilers...
+       streamtags[i].clear();
        return *this;
     }
 
     /// Handle various stream manipulators
     LogMaster& LogMaster::operator<< (const manip1 fp)
     {
-       block_signals();
-       #pragma omp critical
-       {
-         stream << fp;
-       }
-       unblock_signals();
+       init_memory();
+       stream[omp_get_thread_num()] << fp;
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip2 fp)
     {
-       block_signals();
-       #pragma omp critical
-       {
-         stream << fp;
-       }
-       unblock_signals();
+       init_memory();
+       stream[omp_get_thread_num()] << fp;
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip3 fp)
     {
-       block_signals();
-       #pragma omp critical
-       {
-         stream << fp;
-       }
-       unblock_signals();
+       init_memory();
+       stream[omp_get_thread_num()] << fp;
        return *this;
     }
 
     void LogMaster::entering_module(int i)
     {
-       block_signals();
-       #pragma omp critical (current_module)
-       {
-         current_module = i;
-       }
-       unblock_signals();
+       init_memory();
+       current_module[omp_get_thread_num()] = i;
     }
 
     void LogMaster::leaving_module()
     {
-       block_signals();
-       #pragma omp critical (current_module)
-       {
-         current_module = -1;
-       }
-       unblock_signals();
+       init_memory();
+       current_module[omp_get_thread_num()] = -1;
        leaving_backend();
     }
 
     void LogMaster::entering_backend(int i)
     {
-       block_signals();
-       #pragma omp critical (current_backend)
-       {
-         current_backend = i;
-       }
-       #pragma omp critical(LogMaster_entering_backend)
-       {
-          *this<<"setting current_backend="<<i;
-          *this<<logs<<debug<<EOM;
-       }
+       init_memory();
+       current_backend[omp_get_thread_num()] = i;
+       *this<<"setting current_backend="<<i;
+       *this<<logs<<debug<<EOM;
        // TODO: Activate std::out and std::err redirection, if requested in inifile
-       unblock_signals();
-   }
+    }
     void LogMaster::leaving_backend()
     { 
-       block_signals();
+       init_memory();
        int cb_test;
-       #pragma omp critical (current_backend)
-       {
-         cb_test = current_backend;
-       }
+       cb_test = current_backend[omp_get_thread_num()];
        if (cb_test == -1) return;
-       #pragma omp critical (current_backend)
-       {
-         current_backend = -1;
-       }
-       #pragma omp critical(LogMaster_leaving_backend)
-       {
-          *this<<"restoring current_backend="<<-1;
-          *this<<logs<<debug<<EOM;
-       }
+       current_backend[omp_get_thread_num()] = -1;
+       *this<<"restoring current_backend="<<-1;
+       *this<<logs<<debug<<EOM;
        // TODO: Restore std::out and std::err to normal
-       unblock_signals();
     }
 
     /// Constructor for SortedMessage struct

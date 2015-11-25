@@ -33,6 +33,7 @@
 #include <iostream>
 #include <cmath>
 #include <functional>
+#include <omp.h>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
@@ -262,9 +263,16 @@ namespace Gambit
     {
       using namespace Pipes::exampleEventGen;
       result = Random::draw()*5.0;                 // Generate and return the random number
+      //#pragma omp critical (print)
+      //{
+      //  cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
+      //}
+
+      // testing loggers during parallel block...
+      logger() << "thread "<<omp_get_thread_num()<<": Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       #pragma omp critical (print)
       {
-        cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
+        logger() << EOM;
       }
       //if (result > 2.0) invalid_point().raise("This point is annoying.");
     }

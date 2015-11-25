@@ -245,8 +245,8 @@ namespace Gambit
         void set_separate_file_per_process(bool flag) {separate_file_per_process=flag;}
 
       private:
-        /// Dump the prelim buffer to the 'send' function
-        void dump_prelim_buffer();
+        /// Empty the backlog buffer to the 'send' function
+        void empty_backlog();
      
         /// Map to identify loggers
         std::map<std::set<int>,BaseLogger*> loggers;
@@ -254,28 +254,36 @@ namespace Gambit
         /// Global ignore set; if these tags/integers are seen, ignore messages containing them.
         std::set<int> ignore;
   
-        /// Messages sent before logger objects are created will be buffered in this vector.
-        std::vector<Message> prelim_buffer;
-
         /// Flag to set whether loggers have been initialised not
         bool loggers_readyQ;
 
         /// Flag to silence logger 
         bool silenced;
 
-        /// int current_function; Can generalise to this if we discover that we really want to...
-        int current_module;  // index -1 means "not in any module"
-        int current_backend; // index -1 means "not in any backend"
-
-        /// Buffer variables needed for stream logging
-        std::ostringstream stream;
-        std::set<int> streamtags;
-
         bool separate_file_per_process;
 
         /// MPI variables
         int MPIrank;
         int MPIsize;
+
+        /// Max number of threads that could potentially be running
+        int globlMaxThreads;
+
+        /// @{ Variables that need to be threadsafe
+
+        /// int current_function; Can generalise to this if we discover that we really want to...
+        *int current_module;  // index -1 means "not in any module"
+        *int current_backend; // index -1 means "not in any backend"
+
+        /// Buffer variables needed for stream logging
+        *std::ostringstream stream;
+        *std::set<int> streamtags;
+
+        /// Messages sent before logger objects are created will be buffered
+        /// Same for messages sent while inside omp parallel blocks
+        *std::stack<Message> backlog;
+
+        /// @}
     };
 
   } //end namespace Logging
