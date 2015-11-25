@@ -212,7 +212,7 @@ namespace Gambit
 //         problems.print_warnings(errmsg); 
 //         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
 //      }  
-
+//
 //      // Write SLHA file (for debugging purposes...)
 //      #ifdef SpecBit_DBUG
 //         typename MI::SlhaIo slha_io;
@@ -220,11 +220,11 @@ namespace Gambit
 //         slha_io.set_sminputs(oneset);
 //         slha_io.set_minpar(input);
 //         slha_io.set_extpar(input);
-//         slha_io.set_spectrum(mssmspec.model_interface.model);
-//         slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
+//         slha_io.set_spectrum(ssdmspec.model_interface.model);
+//         slha_io.write_to_file("SpecBit/initial_SSDM_spectrum.slha");
 //      #endif
 
-      // Package pointer to QedQcd SubSpectrum object along with pointer to MSSM SubSpectrum object, 
+      // Package pointer to QedQcd SubSpectrum object along with pointer to SSDM SubSpectrum object,
       // and SMInputs struct.
       // Return pointer to this package.
       static Spectrum matched_spectra;
@@ -401,19 +401,39 @@ namespace Gambit
       cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<endl;
 
       double lambda_min=fu;
-
+      double lifetime;
       if (lambda_min<0)
       {
-      double LB=u;
+        double LB=u;
+        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4);
+        cout<< "tunnelling rate is approximately  " << p << endl;
+     
+        if (p>1)
+        {
+            cout<< "vacuum is unstable" << endl;
+            stability=2; // unstable
+        }
+        else
+        {
+            cout<< "vacuum is metastable" << endl;
+            stability=1; // metastable
+        }
+       
+        lifetime=1/(exp(3*140-2600/(abs(lambda_min)/0.01))*pow(1/(1.2e19),3)*pow(LB,4));
       }
       else
       {
-      double LB=1.22e19;
+        double LB=1.22e19;
+        lifetime=1e99;
+        stability=0; // stabe
       }
+      
+      
+     
 
 
       
-      result=1;//prob;
+      result=lifetime;
     }
 
 

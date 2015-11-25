@@ -46,12 +46,14 @@ namespace Gambit
 
    namespace SpecBit
    {
-    void shift(double &a, double &b, double &c, const double d)
-    {
-        a=b;
-        b=c;
-        c=d;
-    }
+      void shift(double &a, double &b, double &c, const double d)
+      {
+          a=b;
+          b=c;
+          c=d;
+      }
+      int stability; // stability flag
+     
       //
       // IMPLEMENTATION OF SSDMSpec MEMBER FUNCTIONS FOLLOWS  // edited for use with SSDM with most functions removed (JM)
       // 
