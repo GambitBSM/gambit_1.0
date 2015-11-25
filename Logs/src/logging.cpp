@@ -227,7 +227,7 @@ namespace Gambit
       {
         #pragma omp critical(logmaster_common_init_memory_streamtags)
         {
-          if(streamtags==NULL) stream = new std::set<int>[n];
+          if(streamtags==NULL) streamtags = new std::set<int>[n];
         }
       }
       if(backlog==NULL)
@@ -260,33 +260,49 @@ namespace Gambit
     {
        if(not silenced)
        {
-         // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
-         if (backlog!=NULL and backlog.size()!=0)
-         {
-           std::cout<<"Logger backlog buffer is not empty; attempting to deliver unsent messages to the logs..."<<std::endl;
-           if (not loggers_readyQ)
-           {
-             std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
-             StdLogger* deflogger = new StdLogger(GAMBIT_DIR "/scratch/default.log");
-             std::set<int> deftag;
-             deftag.insert(def);
-             loggers[deftag] = deflogger;
-             loggers_readyQ = true;
-           }
-           std::cout<<"Delivering messages..."<<std::endl;
-           // Dump buffered messages
-           empty_backlog();
-           std::cout<<"Messages delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
-         }
-
          // Check if there is anything in the output stream that has not been sent, and send it if there is
+         // (these messages will get backlogged because they are sent (ended) from a parallel block, but we are
+         // about to empty the backlogs anyway so that is no problem).
          if (stream != NULL and streamtags!= NULL)
          {
-           if (not stream.str().empty() or not streamtags.empty())
-           {
-             *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+           #pragma omp parallel
+           {  
+              int i = omp_get_thread_num();
+              if (not stream[i].str().empty() or not streamtags[i].empty())
+              {
+                *this <<"#### NO EOM RECEIVED FOR MESSAGE FROM THREAD ("<<i<<"): MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+              }
            }
          }
+
+         // Empty message backlogs if needed
+         if (backlog!=NULL)
+         {
+           bool backlog_empty = true;
+           for(int i=0; i<globlMaxThreads; i++)
+           {
+              if(backlog[i].size()!=0) backlog_empty = false;
+           }
+           if (not backlog_empty)
+           {
+             *this<<"Logger backlog buffer not empty during LogMaster destruction; attempting to deliver unsent messages to the logs..."<<EOM;
+             // If LogMaster was never initialised, create a default log file to which the messages can be dumped.
+             if (not loggers_readyQ)
+             {
+               std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
+               StdLogger* deflogger = new StdLogger(GAMBIT_DIR "/scratch/default.log");
+               std::set<int> deftag;
+               deftag.insert(def);
+               loggers[deftag] = deflogger;
+               loggers_readyQ = true;
+             }
+             std::cout<<"Delivering messages..."<<std::endl;
+             // Dump buffered messages
+             empty_backlog();
+             std::cout<<"Messages delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
+           }
+         }
+
        }
 
        // Delete logger objects

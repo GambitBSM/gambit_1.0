@@ -23,6 +23,9 @@
 
 // Standard libraries
 #include <set>
+#include <map>
+#include <vector>
+#include <stack>
 #include <fstream>
 #include <stdexcept>
 #include <chrono> 
@@ -176,6 +179,9 @@ namespace Gambit
         /// (that have been buffered) into a default log file. These will be log messages coming from initialisation code and so on.
         ~LogMaster();
 
+        /// Initialise dynamic memory required for thread safety
+        void init_memory();
+
         /// Function to construct loggers according to blueprint
         // This is the function that yaml_parser.hpp uses. You provide tags as a set of strings, and the filename as a string. We then construct the logger objects in here.
         // This needs to be a vector of pairs rather than a map in case people want duplicate output streams of certain logs. In this case there will be duplicate keys, which a map cannot allow.
@@ -224,7 +230,7 @@ namespace Gambit
         template <typename TYPE>
         LogMaster& operator << (const TYPE& input)
         {
-           stream << input;
+           stream[omp_get_thread_num()] << input;
            return *this;
         }
         LogMaster& operator << (const LogTag&);
@@ -272,16 +278,16 @@ namespace Gambit
         /// @{ Variables that need to be threadsafe
 
         /// int current_function; Can generalise to this if we discover that we really want to...
-        *int current_module;  // index -1 means "not in any module"
-        *int current_backend; // index -1 means "not in any backend"
+        int* current_module;  // index -1 means "not in any module"
+        int* current_backend; // index -1 means "not in any backend"
 
         /// Buffer variables needed for stream logging
-        *std::ostringstream stream;
-        *std::set<int> streamtags;
+        std::ostringstream* stream;
+        std::set<int>* streamtags;
 
         /// Messages sent before logger objects are created will be buffered
         /// Same for messages sent while inside omp parallel blocks
-        *std::stack<Message> backlog;
+        std::stack<Message>* backlog;
 
         /// @}
     };
