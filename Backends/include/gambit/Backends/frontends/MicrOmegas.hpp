@@ -23,6 +23,7 @@ BE_FUNCTION(darkOmega, double, (double*, int, double), "darkOmega", "oh2")
 BE_FUNCTION(suspectSUGRA, int, (double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double), "suspectSUGRA", "suspectSUGRA")
 BE_FUNCTION(lesHinput, int, (char*), "lesHinput", "lesHinput")
 BE_FUNCTION(sortOddParticles, int, (char*), "sortOddParticles","mass_spectrum")
+BE_FUNCTION(cleanDecayTable, void, (), "cleanDecayTable", "cleanDecayTable")
 BE_FUNCTION(nucleonAmplitudes, int, (double(*)(double,double,double,double), double*, double*, double*, double*), "nucleonAmplitudes", "nucleonAmplitudes" )
 BE_FUNCTION(FeScLoop, double, (double, double, double, double), "FeScLoop", "FeScLoop")
 BE_FUNCTION(calcScalarQuarkFF, void, (double, double, double, double), "calcScalarQuarkFF", "calcScalarQuarkFF")
@@ -33,6 +34,8 @@ BE_FUNCTION(readSpectra, int, (), "readSpectra", "readSpectra")
 
 BE_VARIABLE(MicrOmegas::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
 BE_VARIABLE(int, ForceUG, "ForceUG", "ForceUG")
+BE_VARIABLE(int, VZdecay, "VZdecay", "VZdecay")
+BE_VARIABLE(int, VWdecay, "VWdecay", "VWdecay")
 
 BE_CONV_FUNCTION(dNdE, double, (double,double,int,int), "dNdE")
 
