@@ -66,11 +66,11 @@ Scanner:
 
 ObsLikes:
 
-  #  - capability: lnL_oh2
-  #    purpose:    Likelihood
+    - capability: lnL_oh2
+      purpose:    Likelihood
 
-  #  - capability: lnL_FermiLATdwarfs
-  #    purpose:    Likelihood
+    - capability: lnL_FermiLATdwarfs
+      purpose:    Likelihood
 
     - capability: lnL_XENON100_2012
       purpose:    Likelihood
@@ -178,8 +178,8 @@ ObsLikes:
       capability: HS_LHC_lnL
 
 
- #   - capability: RD_oh2
-#      purpose:    Observable
+    - capability: RD_oh2
+      purpose:    Observable
 
     - capability: mwimp
       purpose:    Observable
@@ -206,25 +206,25 @@ ObsLikes:
 Rules:
 
   # Choose to implement the relic density as an upper bound, not a detection
-#  - capability: lnL_oh2
-#    function: lnL_oh2_Simple
+  - capability: lnL_oh2
+    function: lnL_oh2_Simple
 
   # Use the DarkBit native relic density calculator
   #- capability: RD_oh2
   #  function: RD_oh2_general
 
   # Use DarkSUSY or MicrOmegas for the relic density?
- # - capability: RD_oh2
+  - capability: RD_oh2
     #function: RD_oh2_DarkSUSY
- #   function: RD_oh2_MicrOmegas
- #   options:
- #     fast: 1
- #     omtype: 1
- #     Beps: 1e-5
+    function: RD_oh2_MicrOmegas
+    options:
+      fast: 1
+      omtype: 1
+      Beps: 1e-5
 
   # Choose to use detailed Fermi Pass 8 dwarf likelihoood, using gamlike
-#  - capability: lnL_FermiLATdwarfs
-#    function:  lnL_FermiLATdwarfs_gamLike
+  - capability: lnL_FermiLATdwarfs
+    function:  lnL_FermiLATdwarfs_gamLike
 
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
