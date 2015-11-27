@@ -197,11 +197,11 @@ endif()
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 # - Set local paths
 set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
-set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.209")
+set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212")
 # - Actual configure and compile commands
 ExternalProject_Add(pythia
-  URL http://home.thep.lu.se/~torbjorn/pythia8/pythia8209.tgz
-  URL_MD5 1b9e9dc2f8a2c2db63bce739242fbc12
+  URL http://home.thep.lu.se/~torbjorn/pythia8/pythia8212.tgz
+  URL_MD5 0886d1b2827d8f0cd2ae69b925045f40
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${pythia_dir}
   BUILD_IN_SOURCE 1
@@ -212,14 +212,17 @@ ExternalProject_Add(pythia
 )
 ExternalProject_Add_Step(pythia apply_hacks
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.cc ${pythia_dir}/src/Pythia.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ParticleData.cc ${pythia_dir}/src/ParticleData.cc
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.cc ${pythia_dir}/src/SusyLesHouches.cc
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ResonanceDecays.cc ${pythia_dir}/src/ResonanceDecays.cc
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.h ${pythia_dir}/include/Pythia8/Pythia.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ParticleData.h ${pythia_dir}/include/Pythia8/ParticleData.h
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.h ${pythia_dir}/include/Pythia8/SusyLesHouches.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Settings.h ${pythia_dir}/include/Pythia8/Settings.h
   DEPENDEES download
   DEPENDERS patch
 )
-BOSS_backend(pythia Pythia 8.209)
+BOSS_backend(pythia Pythia 8.212)
 enable_auto_rebuild(pythia)
 add_external_clean(pythia ${pythia_dir} distclean)
 
