@@ -20,6 +20,11 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author James McKay
+///           (j.mckay14@imperial.ac.uk)
+///
+///  \date 2015 Nov
+///
 ///  *********************************************
 
 #include <string>
@@ -42,7 +47,6 @@
 #include "flexiblesusy/src/lowe.h" // From softsusy; used by flexiblesusy
 #include "flexiblesusy/src/numerics2.hpp"
 #include "flexiblesusy/src/two_loop_corrections.hpp"
-
 
 
 
@@ -164,7 +168,7 @@ namespace Gambit
       spectrum_generator.run(oneset, input);
    
       // Extract report on problems...
-      const typename MI::Problems& problems = spectrum_generator.get_problems();
+   //  const typename MI::Problems& problems = spectrum_generator.get_problems();
      
       // Create Model_interface to carry the input and results, and know
       // how to access the flexiblesusy routines.
@@ -237,15 +241,14 @@ namespace Gambit
     template <class T>
     void fill_SSDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
-
-      double mH2,mS2,lambda_hs;
-      mH2 = *Param.at("mH2");
-      mS2 = *Param.at("mS2");
-      lambda_hs = *Param.at("lambda_hS");
+      double mH2 = *Param.at("mH2");
+      double mS2 = *Param.at("mS2");
+      double lambda_hs = *Param.at("lambda_hS");
+      double lambda_s= *Param.at("lambda_S");
       input.HiggsIN=-mH2;//-pow(mH,2)/2;
       input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
       input.Lambda2Input=lambda_hs;
-      input.Lambda3Input=0;
+      input.Lambda3Input=lambda_s;
       input.QEWSB=173.15;  // scale where EWSB conditions are applied
     }
 
@@ -257,7 +260,7 @@ namespace Gambit
       SSDM_input_parameters input;
       cout<< "get spectrum started" << endl;
       fill_SSDM_input(input,myPipe::Param);
-      input.Qin=1e3;
+      input.Qin=173.15;
       cout<< "Filled input parameters" << endl;
       result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }
@@ -265,7 +268,7 @@ namespace Gambit
 
 
 
-    void VS_age_func(double &result)
+    void VS_age_func(std::pair<double, double>& age_pair)
     {
       using namespace flexiblesusy;
       using namespace softsusy;
@@ -275,19 +278,19 @@ namespace Gambit
       //const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
 
       const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
-      //const SubSpectrum* spec = fullspectrum->get_HE(); // SSDMSpec SubSpectrum object
+      const SubSpectrum* spec = fullspectrum->get_HE(); // SSDMSpec SubSpectrum object
      
-//      cout<<"Scalar pole mass:" << endl;
-//      cout<<spec->phys().get_Pole_Mass("S")  <<endl;
-//      cout<<"Higgs pole mass:" << endl;
-//      cout<<spec->phys().get_Pole_Mass("h0")  <<endl;
+      cout<<"Scalar pole mass:" << endl;
+      cout<<spec->phys().get(Par::Pole_Mass,"S")  <<endl;
+      cout<<"Higgs pole mass:" << endl;
+      cout<<spec->phys().get(Par::Pole_Mass,"h0")  <<endl;
 
       //SMInputs sminputs = fullspectrum->get_SMInputs();
       std::unique_ptr<SubSpectrum> SM = fullspectrum->clone_HE(); // COPIES Spectrum object
       //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();
-      
+  
       SM -> RunToScale(MZ);
-      double LamZ =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      //double LamZ =SM->runningpars().get(Par::dimensionless,"Lambda1");
       //
 
 
@@ -295,7 +298,6 @@ namespace Gambit
       double u_2=10;
       double u_3=20;
       double lambda_1,lambda_2,lambda_3;
-      double min_u;
 
       // fit parabola (in log space) to 3 trial points and use this to estimate the minimum, zooming in on the region of interest
       for (int i=1;i<3;i++)
@@ -311,6 +313,8 @@ namespace Gambit
       u_1=min_u-2/(pow(float(i),0.01));
       u_2=min_u;
       u_3=min_u+2/(pow(float(i),0.01));
+      cout<< "here " << endl;
+      SM = fullspectrum->clone_HE(); // clone the original spectrum incase the above calcuations have run into a non-perturbative scale and thus the spectrum is no longer reliable
       }
       // run downhill minimization routine to find exact minimum
       double ax=pow(10,u_1);
@@ -319,7 +323,6 @@ namespace Gambit
 
       int ITMAX=100;
       double tol=0.0001;
-      double xmin, fmin;
       const double CGOLD=0.3819660;
       const double ZEPS=numeric_limits<double>::epsilon()*1.0e-3;
       double d=0.0,etemp,fu,fv,fw,fx;
@@ -328,7 +331,6 @@ namespace Gambit
       double a=(ax < cx ? ax : cx);
       double b=(ax > cx ? ax : cx);
       x=w=v=bx;
-      double iterations;
       SM -> RunToScale(x);
       fw=fv=fx =SM->runningpars().get(Par::dimensionless,"Lambda1");
       
@@ -339,9 +341,6 @@ namespace Gambit
           tol2=2.0*(tol1=tol*abs(x)+ZEPS);
           if (abs(x-xm) <= (tol2-0.5*(b-a)))
           {                      //Test for done here.
-              fmin=fx;
-              xmin=x;
-              iterations=iter;
               break;
           }
           if (abs(e) > tol1)
@@ -401,10 +400,10 @@ namespace Gambit
       cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<endl;
 
       double lambda_min=fu;
-      double lifetime;
+      double lifetime,LB;
       if (lambda_min<0)
       {
-        double LB=u;
+        LB=u;
         double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4);
         cout<< "tunnelling rate is approximately  " << p << endl;
      
@@ -423,28 +422,77 @@ namespace Gambit
       }
       else
       {
-        double LB=1.22e19;
+        LB=1.22e19;
         lifetime=1e99;
         stability=0; // stabe
       }
-      
-      
      
-
-
-      
-      result=lifetime;
+     //std::pair<double, double> age_pair;
+    
+      age_pair = std::make_pair (lifetime,LB);
+    
+      //result=liftime;
+     //high_energy_minimum=LB;
+     
+     
     }
 
 
 
 
+
+
+//    void check_perturb(int &result)
+//    {
+//    input.Qin=scale;
+
+// my version of the problem checker used with FlexibleSUSY
+//spectrum_generator.run(oneset,input);
+//
+//std::ostringstream warnings;
+//const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
+//const bool error = problems.have_problem();
+//problems.print_warnings(warnings);
+//if (error==1)
+//{
+//  // check for errors
+//  std::ostringstream problems_str;
+//  problems.print_problems(problems_str);
+//  
+//  cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
+
+//
+
+
+// original problem checker from MSSM_Spec
+//  const typename MI::Problems& problems = spectrum_generator.get_problems();
+
+
+//      if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
+//      {
+//         ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
+//         // just die.
+//         std::ostringstream errmsg;
+//         errmsg << "A serious problem was encountered during spectrum generation!; ";
+//         errmsg << "Message from FlexibleSUSY below:" << std::endl;
+//         problems.print_problems(errmsg); 
+//         problems.print_warnings(errmsg); 
+//         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
+//      }
+
+
+
+//    }
+    
+
+
     void VS_likelihood_func(double &result)
     {
       namespace myPipe = Pipes::VS_likelihood_func;//
-      using namespace Gambit;
-      const double& age = *myPipe::Dep::VS_age;
-      result=log10(  (1/age) * exp(140) * (1/ (1.2e19) )   );
+     // using namespace Gambit;
+      //ddpair age = *myPipe::Dep::VS_age;
+     // result=log10(  ( 1 / ( std::get<0>(age) ) ) * exp(140) * (1/ (1.2e19) )   );
+     result=1;
     }
     
     // use the below to create a simple function with output pole masses to use as observables

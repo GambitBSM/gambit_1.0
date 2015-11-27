@@ -19,13 +19,13 @@
 Parameters: 
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
-         range: [170, 190]
+         range: [173.15,173.15]
          prior_type: flat
 
       # SLHA1
       alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
       GF      :  1.16637870E-05 # G_Fermi **
-      alphaS  :  1.18500000E-01 # alpha_s(mZ)^MSbar ^
+      alphaS  :  1.18400000E-01 # alpha_s(mZ)^MSbar ^
       mZ      :  9.11876000E+01 # mZ(pole) !
       mBmB    :  4.18000000E+00 # mb(mb)^MSbar &
       mTau    :  1.77682000E+00 # mtau(pole) §
@@ -63,16 +63,16 @@ Parameters:
 
     StandardModel_Higgs:
       mH:
-        range: [125, 135]
+        range: [125, 125]
         prior_type: flat
    #   vev: 246
 
 
 
-    SingletDM:
-      mS: 30
+    SingletDM_running:
+      mS2: 1000
       lambda_hS: 0.1
-      #lambda_S: 0.0001
+      lambda_S: 0.1
 
 
 
@@ -127,7 +127,7 @@ Scanner:
       version: ">=1.0"
       options:
         purpose: Likelihood
-        grid_pts: 3 #NxN grid
+        grid_pts: 1 #NxN grid
             
     grid:
       plugin: grid

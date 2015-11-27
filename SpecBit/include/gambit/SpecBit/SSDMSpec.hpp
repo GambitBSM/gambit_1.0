@@ -53,6 +53,7 @@ namespace Gambit
           c=d;
       }
       int stability; // stability flag
+      double high_energy_minimum;  // scale at which high energy minimum occurs (or if no second minimum then default is Planck scale)
      
       //
       // IMPLEMENTATION OF SSDMSpec MEMBER FUNCTIONS FOLLOWS  // edited for use with SSDM with most functions removed (JM)

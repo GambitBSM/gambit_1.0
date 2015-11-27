@@ -42,7 +42,7 @@
   START_CAPABILITY                          
 
     #define FUNCTION VS_age_func
-    START_FUNCTION(double)
+    START_FUNCTION(ddpair)
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(SSDM_spectrum,const Spectrum*)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
@@ -59,7 +59,7 @@
 
     #define FUNCTION VS_likelihood_func
     START_FUNCTION(double)
-    DEPENDENCY(VS_age, double)
+    DEPENDENCY(VS_age, ddpair)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
     MODEL_GROUP(singlet, (SingletDM_running))
