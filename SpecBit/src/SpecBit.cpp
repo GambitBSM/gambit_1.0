@@ -44,7 +44,7 @@ namespace Gambit
     //  them up to their dependencies, and input parameters.
 
     /// Initialise QedQcd object from SMInputs data
-    void setup_QedQcd(QedQcd& oneset /*output*/, const SMInputs& sminputs /*input*/)
+    void setup_QedQcd(softsusy::QedQcd& oneset /*output*/, const SMInputs& sminputs /*input*/)
     {
       // Set pole masses (to be treated specially)
       oneset.setPoleMt(sminputs.mT);
@@ -52,18 +52,18 @@ namespace Gambit
       oneset.setPoleMtau(sminputs.mTau);
       oneset.setMbMb(sminputs.mBmB);
       /// set running quark masses
-      oneset.setMass(mDown,    sminputs.mD);
-      oneset.setMass(mUp,      sminputs.mU);
-      oneset.setMass(mStrange, sminputs.mS);
-      oneset.setMass(mCharm,   sminputs.mCmC);
+      oneset.setMass(softsusy::mDown,    sminputs.mD);
+      oneset.setMass(softsusy::mUp,      sminputs.mU);
+      oneset.setMass(softsusy::mStrange, sminputs.mS);
+      oneset.setMass(softsusy::mCharm,   sminputs.mCmC);
       /// set QED and QCD structure constants
-      oneset.setAlpha(ALPHA, 1./sminputs.alphainv);
-      oneset.setAlpha(ALPHAS, sminputs.alphaS);
+      oneset.setAlpha(softsusy::ALPHA, 1./sminputs.alphainv);
+      oneset.setAlpha(softsusy::ALPHAS, sminputs.alphaS);
       /// NOTE! These assume the input electron and muon pole masses are "close
       /// enough" to MSbar masses at MZ. The object does the same with its 
       /// default values so I guess it is ok.
-      oneset.setMass(mElectron, sminputs.mE);
-      oneset.setMass(mMuon,     sminputs.mMu);
+      oneset.setMass(softsusy::mElectron, sminputs.mE);
+      oneset.setMass(softsusy::mMuon,     sminputs.mMu);
       oneset.setPoleMZ(sminputs.mZ);
     }
 

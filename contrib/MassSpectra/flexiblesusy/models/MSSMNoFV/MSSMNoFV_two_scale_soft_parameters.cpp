@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:04:33
+// File generated at Wed 28 Oct 2015 11:46:19
 
 #include "MSSMNoFV_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -102,6 +102,9 @@ MSSMNoFV_soft_parameters MSSMNoFV_soft_parameters::calc_beta() const
       beta_MassWB += calc_beta_MassWB_two_loop(TRACE_STRUCT);
       beta_MassG += calc_beta_MassG_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
@@ -131,7 +134,7 @@ void MSSMNoFV_soft_parameters::clear()
 
 }
 
-const Eigen::ArrayXd MSSMNoFV_soft_parameters::get() const
+Eigen::ArrayXd MSSMNoFV_soft_parameters::get() const
 {
    Eigen::ArrayXd pars(MSSMNoFV_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);

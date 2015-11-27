@@ -65,6 +65,7 @@ LIBCMSSM_HDR += \
 		$(DIR)/CMSSM_model_slha.hpp \
 		$(DIR)/CMSSM_physical.hpp \
 		$(DIR)/CMSSM_slha_io.hpp \
+		$(DIR)/CMSSM_spectrum_generator_interface.hpp \
 		$(DIR)/CMSSM_spectrum_generator.hpp \
 		$(DIR)/CMSSM_susy_scale_constraint.hpp \
 		$(DIR)/CMSSM_utilities.hpp \
@@ -119,6 +120,10 @@ EXECMSSM_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXECMSSM_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(EXECMSSM_SRC)))
 
+EXECMSSM_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXECMSSM_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXECMSSM_SRC)))
+
 LIBCMSSM_DEP := \
 		$(LIBCMSSM_OBJ:.o=.d)
 
@@ -126,15 +131,6 @@ EXECMSSM_DEP := \
 		$(EXECMSSM_OBJ:.o=.d)
 
 LIBCMSSM     := $(DIR)/lib$(MODNAME)$(LIBEXT)
-
-RUN_CMSSM_OBJ := $(DIR)/run_CMSSM.o
-RUN_CMSSM_EXE := $(DIR)/run_CMSSM.x
-
-RUN_CMD_LINE_CMSSM_OBJ := $(DIR)/run_cmd_line_CMSSM.o
-RUN_CMD_LINE_CMSSM_EXE := $(DIR)/run_cmd_line_CMSSM.x
-
-SCAN_CMSSM_OBJ := $(DIR)/scan_CMSSM.o
-SCAN_CMSSM_EXE := $(DIR)/scan_CMSSM.x
 
 METACODE_STAMP_CMSSM := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
@@ -175,9 +171,7 @@ clean-$(MODNAME)-obj:
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBCMSSM)
-		-rm -f $(RUN_CMSSM_EXE)
-		-rm -f $(RUN_CMD_LINE_CMSSM_EXE)
-		-rm -f $(SCAN_CMSSM_EXE)
+		-rm -f $(EXECMSSM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
@@ -221,16 +215,10 @@ endif
 $(LIBCMSSM): $(LIBCMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
-$(RUN_CMSSM_EXE): $(RUN_CMSSM_OBJ) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(RUN_CMD_LINE_CMSSM_EXE): $(RUN_CMD_LINE_CMSSM_OBJ) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(SCAN_CMSSM_EXE): $(SCAN_CMSSM_OBJ) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+$(DIR)/%.x: $(DIR)/%.o $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBCMSSM_DEP) $(EXECMSSM_DEP)
 ALLSRC += $(LIBCMSSM_SRC) $(EXECMSSM_SRC)
 ALLLIB += $(LIBCMSSM)
-ALLEXE += $(RUN_CMSSM_EXE) $(RUN_CMD_LINE_CMSSM_EXE) $(SCAN_CMSSM_EXE)
+ALLEXE += $(EXECMSSM_EXE)

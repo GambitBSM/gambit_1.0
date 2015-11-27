@@ -244,12 +244,9 @@ namespace Gambit
                   doread=true; 
                   data->pointIDs.resize(dims[0]);
                   buffer=&(data->pointIDs[0]);
-                  //get_hdf5_data_type<unsigned long> h5t; //::type().getId();
-                  //memtype=h5t.type().getId();
-                  memtype=H5T_NATIVE_ULONG;
-                  ///TODO: Why do I have to manually set these datatypes? The .getId() calls don't seem to return the
-                  /// correct types. Is something weird happening in the C++ API which changes these before writing
-                  /// to file?
+                  get_hdf5_data_type<unsigned long> h5t;
+                  memtype=h5t.type();
+                  //memtype=H5T_NATIVE_ULONG; // Should return this
                   label="previous pointIDs";
                }
                else if( strcmp(name,"pointID_isvalid")==0 ) 
@@ -258,9 +255,9 @@ namespace Gambit
                   doread=true; 
                   data->pointIDs_isvalid.resize(dims[0]);
                   buffer=&(data->pointIDs_isvalid[0]);
-                  //get_hdf5_data_type<int> h5t; //::type().getId();
-                  //memtype=h5t.type().getId();
-                  memtype=H5T_NATIVE_INT;
+                  get_hdf5_data_type<int> h5t;
+                  memtype=h5t.type();
+                  //memtype=H5T_NATIVE_INT;
                   label="previous pointIDs_isvalid";
                }
                else if( strcmp(name,"MPIrank")==0 )
@@ -269,9 +266,9 @@ namespace Gambit
                   doread=true;
                   data->mpiranks.resize(dims[0]);
                   buffer=&(data->mpiranks[0]);
-                  //get_hdf5_data_type<unsigned int> h5t; //::type().getId();
-                  //memtype=h5t.type().getId();
-                  memtype=H5T_NATIVE_UINT;
+                  get_hdf5_data_type<unsigned int> h5t;
+                  memtype=h5t.type();
+                  //memtype=H5T_NATIVE_UINT;
                   label="previous MPI ranks";
                }
                else if( strcmp(name,"MPIrank_isvalid")==0 )
@@ -280,11 +277,9 @@ namespace Gambit
                   doread=true;
                   data->mpiranks_isvalid.resize(dims[0]);
                   buffer=&(data->mpiranks_isvalid[0]);
-                  //get_hdf5_data_type<int> h5t; //::type().getId();
-                  //memtype=h5t::type().getId();
-                  memtype=H5T_NATIVE_INT;
-                  //std::cout << "test: h5t.type().getId() = "<<h5t.type().getId() <<std::endl;
-                  //std::cout << "      H5T_NATIVE_INT    = "<<H5T_NATIVE_UINT<<std::endl;
+                  get_hdf5_data_type<int> h5t;
+                  memtype=h5t.type();
+                  //memtype=H5T_NATIVE_INT;
                   label="previous MPIranks_isvalid";
                }
 
@@ -843,16 +838,17 @@ namespace Gambit
     /// Ask the printer for the highest ID number known for a given rank
     /// process (needed for resuming, so the scanner can resume assigning
     /// point IDs from this value. 
-    unsigned long HDF5Printer::getHighestPointID(const int rank)
-    {
-       long highest = 0;
-       std::vector<PPIDpair>& all_ppids = primary_printer->reverse_global_index_lookup;
-       for(std::vector<PPIDpair>::iterator it = all_ppids.begin(); it != all_ppids.end(); it++)
-       {
-          if(it->rank==rank and it->pointID > highest) highest = it->pointID;
-       }
-       return highest;
-    }
+    // TODO: DEPRECATED
+    //unsigned long HDF5Printer::getHighestPointID(const int rank)
+    //{
+    //   long highest = 0;
+    //   std::vector<PPIDpair>& all_ppids = primary_printer->reverse_global_index_lookup;
+    //   for(std::vector<PPIDpair>::iterator it = all_ppids.begin(); it != all_ppids.end(); it++)
+    //   {
+    //      if(it->rank==rank and it->pointID > highest) highest = it->pointID;
+    //   }
+    //   return highest;
+    //}
 
     /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
@@ -1039,9 +1035,9 @@ namespace Gambit
       int rc = pclose(fp);
       if(rc!=0)
       {
-        // Python error occurred
+         // Python error occurred
          std::ostringstream errmsg;
-         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered. Please see printer-tagged log files for the Python traceback.";
+         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call is below:" << std::endl << output.str();
          printer_error().raise(LOCAL_INFO, errmsg.str());              
       }
       // Otherwise everything should be ok!
@@ -1117,6 +1113,12 @@ namespace Gambit
     /// Add PPIDpair to global index list
     /// In this version of the HDF5Printer, this list applies only to RA points.
     /// Synchronised writes are not tracked.
+    /// UPDATE! Due to memory issues with tracking many RA points, we now only track
+    /// the last 10*BUFFERLENGTH points. When the PPID list gets "full" we do a flush,
+    /// and then start tracking again, with the new list getting assigned only indices
+    /// above the highest in the previous list. This means that the output will
+    /// potentially have duplicate RA write commands, so the post-processing should be
+    /// sure to preferrentially take the latest commands over earlier ones.
     void HDF5Printer::add_PPID_to_list(const PPIDpair& ppid)
     {
       // Check if it is in the lookup map already
@@ -1129,8 +1131,26 @@ namespace Gambit
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
       
-      // Ok, now safe to add it 
-      lookup[ppid] = reverse_lookup.size();
+      // If the list has reached its max allowed length, flush any queued RA
+      // writes, clear the list, and increment RA_dset_offset.
+      if(reverse_lookup.size()==MAX_PPIDPAIRS)
+      {
+         for (BaseBufferMap::iterator it = primary_printer->all_buffers.begin(); it != primary_printer->all_buffers.end(); it++)
+         {
+           if(it->second->is_synchronised())
+           { /*do nothing, these are the sync buffers*/ }
+           else
+           {
+             it->second->RA_flush(primary_printer->global_index_lookup);
+           }
+         }
+         lookup.clear();
+         reverse_lookup.clear();    
+         primary_printer->RA_dset_offset += MAX_PPIDPAIRS;
+      }
+
+      // Ok, now safe to add new stuff
+      lookup[ppid] = reverse_lookup.size() + primary_printer->RA_dset_offset;
       reverse_lookup.push_back(ppid);
 
       // Need to make sure the pointID and MPIrank are stashed at this location in the RA output
@@ -1141,6 +1161,14 @@ namespace Gambit
       //std::cout << "rank "<<myRank<<": adding new RA PPID to list: (" << pointID << "," << mpirank << ")" << std::endl;
       print(pointID, "RA_pointID", -2000, mpirank, pointID);
       print(mpirank, "RA_MPIrank", -2001, mpirank, pointID);
+    }
+
+    /// Completely reset the PPIDlists
+    void HDF5Printer::reset_PPID_lists()
+    {
+       primary_printer->global_index_lookup.clear();
+       primary_printer->reverse_global_index_lookup.clear();    
+       primary_printer->RA_dset_offset = 0;
     }
 
     /// Check if PPIDpair exists in global index list
@@ -1346,6 +1374,12 @@ namespace Gambit
              it->second->reset(force);
            }
          }
+         // Also need to reset the PPID lists
+         // TODO: The HDF5Printer currently assumes that ALL the auxilliary printers are
+         // reset together. This is not really what we want, but to deal with it I would
+         // need to make e.g. a separate "RA" group in the hdf5 output for every aux
+         // stream, and then get the combine script to combine them all.
+         reset_PPID_lists();
       }
     }
 

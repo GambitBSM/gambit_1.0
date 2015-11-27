@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:24
+// File generated at Wed 28 Oct 2015 11:35:25
 
 #include "NSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -71,9 +71,29 @@ Eigen::Matrix<double,3,3> NSM_susy_parameters::calc_beta_Ye_two_loop(const Susy_
       traceYeAdjYeYeAdjYe - 162*traceYuAdjYuYuAdjYu + 85*traceYuAdjYu*Sqr(g1) +
       135*traceYuAdjYu*Sqr(g2) + 54*Sqr(g1)*Sqr(g2) + 15*traceYeAdjYe*(5*Sqr(
       g1) + 3*Sqr(g2)) + 480*traceYuAdjYu*Sqr(g3) + 5*traceYdAdjYd*(5*Sqr(g1) +
-      27*Sqr(g2) + 96*Sqr(g3)) + 144*Sqr(Lambda1)) + 9*((-36*traceYdAdjYd - 12
-      *traceYeAdjYe - 36*traceYuAdjYu - 64*Lambda1 + 43*Sqr(g1) + 45*Sqr(g2))*(
-      Ye*Ye.adjoint()*Ye) + 8*(Ye*Ye.adjoint()*Ye*Ye.adjoint()*Ye)))).real();
+      27*Sqr(g2) + 96*Sqr(g3)) + 144*Sqr(Lambda1) + 24*Sqr(Lambda3)) + 9*((-36
+      *traceYdAdjYd - 12*traceYeAdjYe - 36*traceYuAdjYu + 64*Lambda1 + 43*Sqr(
+      g1) + 45*Sqr(g2))*(Ye*Ye.adjoint()*Ye) + 8*(Ye*Ye.adjoint()*Ye*Ye.adjoint
+      ()*Ye)))).real();
+
+
+   return beta_Ye;
+}
+
+/**
+ * Calculates the three-loop beta function of Ye.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> NSM_susy_parameters::calc_beta_Ye_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_Ye;
+
+   beta_Ye = ZEROMATRIX(3,3);
 
 
    return beta_Ye;

@@ -14,15 +14,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     }
     namespace Pythia8
     {
+        class CoupSUSY;
+    }
+    namespace Pythia8
+    {
         class Info;
     }
     namespace Pythia8
     {
         class DecayChannel;
-    }
-    namespace Pythia8
-    {
-        class CoupSUSY;
     }
     namespace Pythia8
     {
@@ -59,6 +59,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         class Parm;
+    }
+    namespace Pythia8
+    {
+        class LHdecayChannel;
     }
     namespace Pythia8
     {
@@ -103,10 +107,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         class ResonanceGmZ;
-    }
-    namespace Pythia8
-    {
-        class LHdecayChannel;
     }
     namespace Pythia8
     {

@@ -9,7 +9,7 @@
 
 #include "utils.h"
 
-double frexp(const Complex & c, int * i) {
+double frexp(const softsusy::Complex & c, int * i) {
   int a, b;
   frexp(c.real(), &a);
   frexp(c.imag(), &b);

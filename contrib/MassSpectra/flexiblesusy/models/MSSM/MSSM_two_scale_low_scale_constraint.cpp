@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:32:12
+// File generated at Wed 28 Oct 2015 11:34:46
 
 #include "MSSM_two_scale_low_scale_constraint.hpp"
 #include "MSSM_two_scale_model.hpp"
@@ -26,6 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
+#include "threshold_loop_functions.hpp"
 #include "weinberg_angle.hpp"
 
 #include <cassert>
@@ -40,13 +41,16 @@ namespace flexiblesusy {
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
 #define LowEnergyConstant(p) Electroweak_constants::p
+#define MZPole oneset.displayPoleMZ()
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
+#define SCALE model->get_scale()
 #define MODEL model
 #define MODELCLASSNAME MSSM<Two_scale>
 #define CKM ckm
 #define PMNS pmns
 #define THETAW theta_w
+#define THRESHOLD static_cast<int>(model->get_thresholds())
 #define ALPHA_EM_DRBAR alpha_em_drbar
 #define CALCULATE_DRBAR_MASSES() model->calculate_DRbar_masses()
 
@@ -79,7 +83,7 @@ MSSM_low_scale_constraint<Two_scale>::MSSM_low_scale_constraint()
 }
 
 MSSM_low_scale_constraint<Two_scale>::MSSM_low_scale_constraint(
-   MSSM<Two_scale>* model_, const QedQcd& oneset_)
+   MSSM<Two_scale>* model_, const softsusy::QedQcd& oneset_)
    : Constraint<Two_scale>()
    , model(model_)
    , oneset(oneset_)
@@ -149,12 +153,13 @@ void MSSM_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
    model = cast_model<MSSM<Two_scale>*>(model_);
 }
 
-void MSSM_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd& oneset_)
+void MSSM_low_scale_constraint<Two_scale>::set_sm_parameters(
+   const softsusy::QedQcd& oneset_)
 {
    oneset = oneset_;
 }
 
-const QedQcd& MSSM_low_scale_constraint<Two_scale>::get_sm_parameters() const
+const softsusy::QedQcd& MSSM_low_scale_constraint<Two_scale>::get_sm_parameters() const
 {
    return oneset;
 }
@@ -164,7 +169,7 @@ void MSSM_low_scale_constraint<Two_scale>::clear()
    scale = 0.;
    initial_scale_guess = 0.;
    model = NULL;
-   oneset = QedQcd();
+   oneset = softsusy::QedQcd();
    MWDRbar = 0.;
    MZDRbar = 0.;
    AlphaS = 0.;
@@ -181,7 +186,7 @@ void MSSM_low_scale_constraint<Two_scale>::initialize()
    assert(model && "MSSM_low_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   initial_scale_guess =  oneset.displayPoleMZ();
+   initial_scale_guess = MZPole;
 
    scale = initial_scale_guess;
 
@@ -203,7 +208,7 @@ void MSSM_low_scale_constraint<Two_scale>::update_scale()
    assert(model && "MSSM_low_scale_constraint<Two_scale>::"
           "update_scale(): model pointer is zero.");
 
-   scale = oneset.displayPoleMZ();
+   scale = MZPole;
 
 
 }
@@ -217,8 +222,8 @@ void MSSM_low_scale_constraint<Two_scale>::calculate_threshold_corrections()
    assert(model && "MSSM_low_scale_constraint<Two_scale>::"
           "calculate_threshold_corrections(): model pointer is zero");
 
-   const double alpha_em = oneset.displayAlpha(ALPHA);
-   const double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double alpha_em = oneset.displayAlpha(softsusy::ALPHA);
+   const double alpha_s  = oneset.displayAlpha(softsusy::ALPHAS);
    const double mw_pole  = oneset.displayPoleMW();
    const double mz_pole  = oneset.displayPoleMZ();
 
@@ -384,28 +389,27 @@ double MSSM_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(double alp
    const auto MSe = MODELPARAMETER(MSe);
    const auto MSu = MODELPARAMETER(MSu);
 
-   const double delta_alpha_em_SM = 0.15915494309189535*alphaEm*(
-      0.3333333333333333 - 1.7777777777777777*FiniteLog(Abs(MFu(2)/currentScale)))
-      ;
+   const double delta_alpha_em_SM = -0.28294212105225836*alphaEm*FiniteLog(Abs(
+      MFu(2)/currentScale));
 
    const double delta_alpha_em = 0.15915494309189535*alphaEm*(
-      -1.3333333333333333*FiniteLog(Abs(MCha(0)/currentScale)) -
-      1.3333333333333333*FiniteLog(Abs(MCha(1)/currentScale)) - 0.3333333333333333
-      *FiniteLog(Abs(MHpm(1)/currentScale)) - 0.1111111111111111*FiniteLog(Abs(MSd
-      (0)/currentScale)) - 0.1111111111111111*FiniteLog(Abs(MSd(1)/currentScale))
-      - 0.1111111111111111*FiniteLog(Abs(MSd(2)/currentScale)) -
-      0.1111111111111111*FiniteLog(Abs(MSd(3)/currentScale)) - 0.1111111111111111*
-      FiniteLog(Abs(MSd(4)/currentScale)) - 0.1111111111111111*FiniteLog(Abs(MSd(5
-      )/currentScale)) - 0.3333333333333333*FiniteLog(Abs(MSe(0)/currentScale)) -
-      0.3333333333333333*FiniteLog(Abs(MSe(1)/currentScale)) - 0.3333333333333333*
-      FiniteLog(Abs(MSe(2)/currentScale)) - 0.3333333333333333*FiniteLog(Abs(MSe(3
-      )/currentScale)) - 0.3333333333333333*FiniteLog(Abs(MSe(4)/currentScale)) -
-      0.3333333333333333*FiniteLog(Abs(MSe(5)/currentScale)) - 0.4444444444444444*
-      FiniteLog(Abs(MSu(0)/currentScale)) - 0.4444444444444444*FiniteLog(Abs(MSu(1
-      )/currentScale)) - 0.4444444444444444*FiniteLog(Abs(MSu(2)/currentScale)) -
-      0.4444444444444444*FiniteLog(Abs(MSu(3)/currentScale)) - 0.4444444444444444*
-      FiniteLog(Abs(MSu(4)/currentScale)) - 0.4444444444444444*FiniteLog(Abs(MSu(5
-      )/currentScale)));
+      0.3333333333333333 - 1.3333333333333333*FiniteLog(Abs(MCha(0)/currentScale))
+      - 1.3333333333333333*FiniteLog(Abs(MCha(1)/currentScale)) -
+      0.3333333333333333*FiniteLog(Abs(MHpm(1)/currentScale)) - 0.1111111111111111
+      *FiniteLog(Abs(MSd(0)/currentScale)) - 0.1111111111111111*FiniteLog(Abs(MSd(
+      1)/currentScale)) - 0.1111111111111111*FiniteLog(Abs(MSd(2)/currentScale)) -
+      0.1111111111111111*FiniteLog(Abs(MSd(3)/currentScale)) - 0.1111111111111111
+      *FiniteLog(Abs(MSd(4)/currentScale)) - 0.1111111111111111*FiniteLog(Abs(MSd(
+      5)/currentScale)) - 0.3333333333333333*FiniteLog(Abs(MSe(0)/currentScale)) -
+      0.3333333333333333*FiniteLog(Abs(MSe(1)/currentScale)) - 0.3333333333333333
+      *FiniteLog(Abs(MSe(2)/currentScale)) - 0.3333333333333333*FiniteLog(Abs(MSe(
+      3)/currentScale)) - 0.3333333333333333*FiniteLog(Abs(MSe(4)/currentScale)) -
+      0.3333333333333333*FiniteLog(Abs(MSe(5)/currentScale)) - 0.4444444444444444
+      *FiniteLog(Abs(MSu(0)/currentScale)) - 0.4444444444444444*FiniteLog(Abs(MSu(
+      1)/currentScale)) - 0.4444444444444444*FiniteLog(Abs(MSu(2)/currentScale)) -
+      0.4444444444444444*FiniteLog(Abs(MSu(3)/currentScale)) - 0.4444444444444444
+      *FiniteLog(Abs(MSu(4)/currentScale)) - 0.4444444444444444*FiniteLog(Abs(MSu(
+      5)/currentScale)));
 
    return delta_alpha_em + delta_alpha_em_SM;
 
@@ -456,12 +460,13 @@ void MSSM_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
           "calculate_Yu_DRbar(): model pointer is zero");
 
    Eigen::Matrix<std::complex<double>,3,3> topDRbar(ZEROMATRIXCOMPLEX(3,3));
-   topDRbar(0,0)      = oneset.displayMass(mUp);
-   topDRbar(1,1)      = oneset.displayMass(mCharm);
-   topDRbar(2,2)      = oneset.displayMass(mTop);
+   topDRbar(0,0)      = oneset.displayMass(softsusy::mUp);
+   topDRbar(1,1)      = oneset.displayMass(softsusy::mCharm);
+   topDRbar(2,2)      = oneset.displayMass(softsusy::mTop);
 
-   if (model->get_thresholds())
-      topDRbar(2,2) = model->calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
+   if (model->get_thresholds()) {
+      topDRbar(2,2) = MODEL->calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
+   }
 
    const auto vu = MODELPARAMETER(vu);
    MODEL->set_Yu((((1.4142135623730951*topDRbar)/vu).transpose()).real());
@@ -474,12 +479,13 @@ void MSSM_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
           "calculate_Yd_DRbar(): model pointer is zero");
 
    Eigen::Matrix<std::complex<double>,3,3> bottomDRbar(ZEROMATRIXCOMPLEX(3,3));
-   bottomDRbar(0,0)   = oneset.displayMass(mDown);
-   bottomDRbar(1,1)   = oneset.displayMass(mStrange);
-   bottomDRbar(2,2)   = oneset.displayMass(mBottom);
+   bottomDRbar(0,0)   = oneset.displayMass(softsusy::mDown);
+   bottomDRbar(1,1)   = oneset.displayMass(softsusy::mStrange);
+   bottomDRbar(2,2)   = oneset.displayMass(softsusy::mBottom);
 
-   if (model->get_thresholds())
-      bottomDRbar(2,2) = model->calculate_MFd_DRbar(oneset.displayMass(mBottom), 2);
+   if (model->get_thresholds()) {
+      bottomDRbar(2,2) = MODEL->calculate_MFd_DRbar(oneset.displayMass(softsusy::mBottom), 2);
+   }
 
    const auto vd = MODELPARAMETER(vd);
    MODEL->set_Yd((((1.4142135623730951*bottomDRbar)/vd).transpose()).real());
@@ -492,14 +498,14 @@ void MSSM_low_scale_constraint<Two_scale>::calculate_Ye_DRbar()
           "calculate_Ye_DRbar(): model pointer is zero");
 
    Eigen::Matrix<std::complex<double>,3,3> electronDRbar(ZEROMATRIXCOMPLEX(3,3));
-   electronDRbar(0,0) = oneset.displayMass(mElectron);
-   electronDRbar(1,1) = oneset.displayMass(mMuon);
-   electronDRbar(2,2) = oneset.displayMass(mTau);
+   electronDRbar(0,0) = oneset.displayMass(softsusy::mElectron);
+   electronDRbar(1,1) = oneset.displayMass(softsusy::mMuon);
+   electronDRbar(2,2) = oneset.displayMass(softsusy::mTau);
 
    if (model->get_thresholds()) {
-      electronDRbar(0,0) = model->calculate_MFe_DRbar(oneset.displayMass(mElectron), 0);
-      electronDRbar(1,1) = model->calculate_MFe_DRbar(oneset.displayMass(mMuon), 1);
-      electronDRbar(2,2) = model->calculate_MFe_DRbar(oneset.displayMass(mTau), 2);
+      electronDRbar(0,0) = MODEL->calculate_MFe_DRbar(oneset.displayMass(softsusy::mElectron), 0);
+      electronDRbar(1,1) = MODEL->calculate_MFe_DRbar(oneset.displayMass(softsusy::mMuon), 1);
+      electronDRbar(2,2) = MODEL->calculate_MFe_DRbar(oneset.displayMass(softsusy::mTau), 2);
    }
 
    const auto vd = MODELPARAMETER(vd);

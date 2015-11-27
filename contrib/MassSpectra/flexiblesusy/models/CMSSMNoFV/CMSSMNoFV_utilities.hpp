@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:56:29
+// File generated at Wed 28 Oct 2015 11:46:19
 
 #ifndef CMSSMNoFV_UTILITIES_H
 #define CMSSMNoFV_UTILITIES_H
@@ -31,17 +31,14 @@
 #include <valarray>
 #include <utility>
 
-#define PHYSICAL(p) model.get_physical().p
-#define MODELPARAMETER(p) model.get_##p()
-
 namespace flexiblesusy {
 
 class CMSSMNoFV_parameter_getter {
 public:
-   Eigen::ArrayXd get_parameters(const CMSSMNoFV<Two_scale>& model) {
+   Eigen::ArrayXd get_parameters(const CMSSMNoFV_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names(const CMSSMNoFV<Two_scale>&) const {
+   std::vector<std::string> get_parameter_names(const CMSSMNoFV_mass_eigenstates&) const {
       using namespace CMSSMNoFV_info;
       return std::vector<std::string>(parameter_names,
                                       parameter_names + NUMBER_OF_PARAMETERS);
@@ -53,8 +50,7 @@ public:
    CMSSMNoFV_spectrum_plotter();
    ~CMSSMNoFV_spectrum_plotter() {}
 
-   template <class T>
-   void extract_spectrum(const CMSSMNoFV<T>&);
+   void extract_spectrum(const CMSSMNoFV_mass_eigenstates&);
    void write_to_file(const std::string&) const;
 
 private:
@@ -80,53 +76,6 @@ private:
    static std::valarray<double> to_valarray(const Eigen::Array<Scalar, M, N>&);
 };
 
-
-template <class T>
-void CMSSMNoFV_spectrum_plotter::extract_spectrum(const CMSSMNoFV<T>& model)
-{
-   spectrum.clear();
-   scale = model.get_scale();
-
-   spectrum.push_back(TParticle("Glu", "\\tilde{g}", to_valarray(PHYSICAL(MGlu))));
-   spectrum.push_back(TParticle("SveL", "\\tilde{\\nu}_e", to_valarray(PHYSICAL(MSveL))));
-   spectrum.push_back(TParticle("SvmL", "\\tilde{\\nu}_{\\mu}", to_valarray(PHYSICAL(MSvmL))));
-   spectrum.push_back(TParticle("SvtL", "\\tilde{\\nu}_{\\tau}", to_valarray(PHYSICAL(MSvtL))));
-   spectrum.push_back(TParticle("Sd", "\\tilde{d}", to_valarray(PHYSICAL(MSd))));
-   spectrum.push_back(TParticle("Su", "\\tilde{u}", to_valarray(PHYSICAL(MSu))));
-   spectrum.push_back(TParticle("Se", "\\tilde{e}", to_valarray(PHYSICAL(MSe))));
-   spectrum.push_back(TParticle("Sm", "\\tilde{\\mu}", to_valarray(PHYSICAL(MSm))));
-   spectrum.push_back(TParticle("Stau", "\\tilde{\\tau}", to_valarray(PHYSICAL(MStau))));
-   spectrum.push_back(TParticle("Ss", "\\tilde{s}", to_valarray(PHYSICAL(MSs))));
-   spectrum.push_back(TParticle("Sc", "\\tilde{c}", to_valarray(PHYSICAL(MSc))));
-   spectrum.push_back(TParticle("Sb", "\\tilde{b}", to_valarray(PHYSICAL(MSb))));
-   spectrum.push_back(TParticle("St", "\\tilde{t}", to_valarray(PHYSICAL(MSt))));
-   spectrum.push_back(TParticle("hh", "h", to_valarray(PHYSICAL(Mhh))));
-   spectrum.push_back(TParticle("Ah", "A^0", to_valarray(PHYSICAL(MAh))));
-   spectrum.push_back(TParticle("Hpm", "H^-", to_valarray(PHYSICAL(MHpm))));
-   spectrum.push_back(TParticle("Chi", "\\tilde{\\chi}^0", to_valarray(PHYSICAL(MChi))));
-   spectrum.push_back(TParticle("Cha", "\\tilde{\\chi}^-", to_valarray(PHYSICAL(MCha))));
-
-   if (model.do_calculate_sm_pole_masses()) {
-      spectrum.push_back(TParticle("Fb", "b", to_valarray(PHYSICAL(MFb))));
-      spectrum.push_back(TParticle("Fc", "c", to_valarray(PHYSICAL(MFc))));
-      spectrum.push_back(TParticle("Fd", "d", to_valarray(PHYSICAL(MFd))));
-      spectrum.push_back(TParticle("Fe", "e", to_valarray(PHYSICAL(MFe))));
-      spectrum.push_back(TParticle("Fm", "m", to_valarray(PHYSICAL(MFm))));
-      spectrum.push_back(TParticle("Fs", "s", to_valarray(PHYSICAL(MFs))));
-      spectrum.push_back(TParticle("Ft", "t", to_valarray(PHYSICAL(MFt))));
-      spectrum.push_back(TParticle("Ftau", "\\tau", to_valarray(PHYSICAL(MFtau))));
-      spectrum.push_back(TParticle("Fu", "u", to_valarray(PHYSICAL(MFu))));
-      spectrum.push_back(TParticle("Fve", "\\nu_e", to_valarray(PHYSICAL(MFve))));
-      spectrum.push_back(TParticle("Fvm", "\\nu_{\\mu}", to_valarray(PHYSICAL(MFvm))));
-      spectrum.push_back(TParticle("Fvt", "\\nu_{\\tau}", to_valarray(PHYSICAL(MFvt))));
-      spectrum.push_back(TParticle("VG", "g", to_valarray(PHYSICAL(MVG))));
-      spectrum.push_back(TParticle("VP", "\\gamma", to_valarray(PHYSICAL(MVP))));
-      spectrum.push_back(TParticle("VWm", "W^-", to_valarray(PHYSICAL(MVWm))));
-      spectrum.push_back(TParticle("VZ", "Z", to_valarray(PHYSICAL(MVZ))));
-
-   }
-}
-
 template <class Scalar, int M, int N>
 std::valarray<double> CMSSMNoFV_spectrum_plotter::to_valarray(const Eigen::Array<Scalar, M, N>& v)
 {
@@ -134,8 +83,5 @@ std::valarray<double> CMSSMNoFV_spectrum_plotter::to_valarray(const Eigen::Array
 }
 
 } // namespace flexiblesusy
-
-#undef PHYSICAL
-#undef MODELPARAMETER
 
 #endif

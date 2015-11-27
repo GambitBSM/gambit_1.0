@@ -107,7 +107,8 @@ namespace Gambit
         /// process (needed for resuming, so the scanner can resume assigning
         /// point ID from this value. 
         /// TODO: This does not work yet! Needed for resuming, which is not yet implemented in the asciiprinter
-        unsigned long getHighestPointID(const int rank) { return -1; }
+        /// DEPRECATED!
+        //unsigned long getHighestPointID(const int rank) { return -1; }
 
         ///@}
       

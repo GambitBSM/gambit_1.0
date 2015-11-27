@@ -29,6 +29,7 @@
 
 #include "gambit/Core/container_factory.hpp"
 #include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Utils/mpiwrapper.hpp"
 
 namespace Gambit
 {
@@ -51,17 +52,40 @@ namespace Gambit
       /// Bound prior object
       Priors::CompositePrior &prior;
 
+      /// Bound printer object
+      Printers::BaseBasePrinter &printer;
+
       /// Map of parameter names to values
       std::unordered_map<str, double> parameterMap;
 
       /// Map of scanned model names to primary model functors
       std::map<str, primary_model_functor *> functorMap;
 
+      /// MPI communicator group for errors
+      #ifdef WITH_MPI
+      GMPI::Comm& errorComm;
+      #endif
+
       /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
 
       /// Map of return types of target functors
       std::map<DRes::VertexID,str> return_types;
+
+      /// Global record of time that last likelihood evaluation began, for computing true total iteration time.
+      std::chrono::time_point<std::chrono::system_clock> previous_startL;
+      /// Global record of time that last likelihood evaluation ended, for computing intra-iteration overhead time.
+      std::chrono::time_point<std::chrono::system_clock> previous_endL;
+
+      /// Print labels for timing data
+      const str intralooptime_label; // Time elapsed during likelihood evaluations
+      const str interlooptime_label; // Time elapsed between likelihood evaluation
+      const str totallooptime_label; // Time elapsed from end of one likelihood evaluation to end of next (sum of the above two)
+
+      /// printer IDs for timing data
+      const int intraloopID;
+      const int interloopID;
+      const int totalloopID;
 
       /// Run in likelihood debug mode?
       bool debug;
@@ -71,7 +95,11 @@ namespace Gambit
       /// Constructor
       Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
-       Priors::CompositePrior &prior, const str &purpose);
+       Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+       #ifdef WITH_MPI
+       , GMPI::Comm& comm
+       #endif
+      );
 
       /// Do the prior transformation and populate the parameter map  
       void setParameters (const std::vector<double> &vec); 

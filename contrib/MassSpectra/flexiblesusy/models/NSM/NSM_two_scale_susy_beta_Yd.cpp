@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:23
+// File generated at Wed 28 Oct 2015 11:35:24
 
 #include "NSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -73,13 +73,33 @@ Eigen::Matrix<double,3,3> NSM_susy_parameters::calc_beta_Yd_two_loop(const Susy_
       2.25*Sqr(g1)*Sqr(g2) + 0.625*traceYeAdjYe*(5*Sqr(g1) + 3*Sqr(g2)) + 20*
       traceYuAdjYu*Sqr(g3) + 3.4444444444444446*Sqr(g1)*Sqr(g3) + 9*Sqr(g2)*Sqr
       (g3) + 0.20833333333333334*traceYdAdjYd*(5*Sqr(g1) + 27*Sqr(g2) + 96*Sqr(
-      g3)) + 6*Sqr(Lambda1)) + 0.020833333333333332*((-324*traceYdAdjYd - 108*
-      traceYeAdjYe - 324*traceYuAdjYu - 576*Lambda1 + 187*Sqr(g1) + 405*Sqr(g2)
-      + 768*Sqr(g3))*(Yd*Yd.adjoint()*Yd) + (180*traceYdAdjYd + 60*
-      traceYeAdjYe + 180*traceYuAdjYu - 79*Sqr(g1) + 27*Sqr(g2) - 768*Sqr(g3))*
-      (Yd*Yu.adjoint()*Yu) + 12*(6*(Yd*Yd.adjoint()*Yd*Yd.adjoint()*Yd) - 4*(Yd
-      *Yd.adjoint()*Yd*Yu.adjoint()*Yu) - Yd*Yu.adjoint()*Yu*Yd.adjoint()*Yd +
-      11*(Yd*Yu.adjoint()*Yu*Yu.adjoint()*Yu))))).real();
+      g3)) + 6*Sqr(Lambda1) + Sqr(Lambda3)) + 0.020833333333333332*((-324*
+      traceYdAdjYd - 108*traceYeAdjYe - 324*traceYuAdjYu + 576*Lambda1 + 187*
+      Sqr(g1) + 405*Sqr(g2) + 768*Sqr(g3))*(Yd*Yd.adjoint()*Yd) + (180*
+      traceYdAdjYd + 60*traceYeAdjYe + 180*traceYuAdjYu - 79*Sqr(g1) + 27*Sqr(
+      g2) - 768*Sqr(g3))*(Yd*Yu.adjoint()*Yu) + 12*(6*(Yd*Yd.adjoint()*Yd*
+      Yd.adjoint()*Yd) - 4*(Yd*Yd.adjoint()*Yd*Yu.adjoint()*Yu) - Yd*Yu.adjoint
+      ()*Yu*Yd.adjoint()*Yd + 11*(Yd*Yu.adjoint()*Yu*Yu.adjoint()*Yu))))).real(
+      );
+
+
+   return beta_Yd;
+}
+
+/**
+ * Calculates the three-loop beta function of Yd.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> NSM_susy_parameters::calc_beta_Yd_three_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_Yd;
+
+   beta_Yd = ZEROMATRIX(3,3);
 
 
    return beta_Yd;

@@ -29,19 +29,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_ParticleData : virtual public AbstractBase
         {
-            private:
-                // IGNORED: Field  -- Name: modeBreitWigner  -- XML id: _23526
-                // IGNORED: Field  -- Name: maxEnhanceBW  -- XML id: _23527
-                // IGNORED: Field  -- Name: mQRun  -- XML id: _23528
-                // IGNORED: Field  -- Name: Lambda5Run  -- XML id: _23529
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _23530
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _23531
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _23532
-                // IGNORED: Field  -- Name: couplingsPtr  -- XML id: _23533
-                // IGNORED: Field  -- Name: pdt  -- XML id: _23534
-                // IGNORED: Field  -- Name: particlePtr  -- XML id: _23535
-                // IGNORED: Field  -- Name: isInit  -- XML id: _23536
-                // IGNORED: Field  -- Name: readingFailedSave  -- XML id: _23537
             public:
     
                 virtual void initPtr__BOSS(Pythia8::Abstract_Info*, Pythia8::Abstract_Settings*, Pythia8::Abstract_Rndm*, Pythia8::Abstract_Couplings*) =0;
@@ -313,21 +300,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual double resWidthChan__BOSS(int, double) =0;
     
                 virtual Pythia8::Abstract_ParticleDataEntry* particleDataEntryPtr__BOSS(int) =0;
-            private:
-    
-                virtual void initCommon() =0;
-    
-                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > toLower(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >&) =0;
-    
-                virtual bool boolString(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > attributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual bool boolAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual int intAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual double doubleAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_ParticleData*) =0;

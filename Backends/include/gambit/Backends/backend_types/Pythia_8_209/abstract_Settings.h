@@ -24,17 +24,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_Settings : virtual public AbstractBase
         {
-            private:
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _24737
-                // IGNORED: Field  -- Name: flags  -- XML id: _24738
-                // IGNORED: Field  -- Name: modes  -- XML id: _24739
-                // IGNORED: Field  -- Name: parms  -- XML id: _24740
-                // IGNORED: Field  -- Name: words  -- XML id: _24741
-                // IGNORED: Field  -- Name: fvecs  -- XML id: _24742
-                // IGNORED: Field  -- Name: mvecs  -- XML id: _24743
-                // IGNORED: Field  -- Name: pvecs  -- XML id: _24744
-                // IGNORED: Field  -- Name: isInit  -- XML id: _24745
-                // IGNORED: Field  -- Name: readingFailedSave  -- XML id: _24746
             public:
     
                 virtual void initPtr__BOSS(Pythia8::Abstract_Info*) =0;
@@ -182,39 +171,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual void resetMVec(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
     
                 virtual void resetPVec(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-            private:
-    
-                virtual void list(bool, bool, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_ostream<char,std::char_traits<char> >&) =0;
-    
-                virtual void list__BOSS(bool, bool, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual void printQuiet(bool) =0;
-    
-                virtual void resetTuneEE() =0;
-    
-                virtual void resetTunePP() =0;
-    
-                virtual void initTuneEE(int) =0;
-    
-                virtual void initTunePP(int) =0;
-    
-                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > toLower(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >&) =0;
-    
-                virtual bool boolString(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > attributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual bool boolAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual int intAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual double doubleAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual std::vector<bool,std::allocator<bool> > boolVectorAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual std::vector<int,std::allocator<int> > intVectorAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
-    
-                virtual std::vector<double,std::allocator<double> > doubleVectorAttributeValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_Settings*) =0;

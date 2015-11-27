@@ -194,22 +194,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_wrapper(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_me(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_wrapper(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_me(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_wrapper(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_me(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_wrapper(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_me(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_wrapper(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         inline Pythia8::Pythia::Pythia(std::basic_string<char,std::char_traits<char>,std::allocator<char> > xmlDir) :
@@ -225,22 +210,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_wrapper(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_me(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_wrapper(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_me(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_wrapper(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_me(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_wrapper(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_me(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_wrapper(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         inline Pythia8::Pythia::Pythia() :
@@ -256,22 +226,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_wrapper(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_me(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_wrapper(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_me(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_wrapper(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_me(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_wrapper(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_me(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_wrapper(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         // Special pointer-based constructor: 
@@ -288,22 +243,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_wrapper(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_me(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_wrapper(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_me(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_wrapper(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_me(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_wrapper(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_me(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_wrapper(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         inline Pythia8::Pythia::Pythia(Pythia8::Abstract_Pythia* const & in, bool) :
@@ -319,22 +259,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
-            (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
-            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_wrapper(false);
-            (settings).WrapperBase<Pythia8::Abstract_Settings>::BEptr->can_delete_me(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_wrapper(false);
-            (particleData).WrapperBase<Pythia8::Abstract_ParticleData>::BEptr->can_delete_me(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_wrapper(false);
-            (rndm).WrapperBase<Pythia8::Abstract_Rndm>::BEptr->can_delete_me(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_wrapper(false);
-            (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_me(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_wrapper(false);
-            (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         // Copy constructor: 
@@ -352,6 +277,26 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_me(true);
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            _memberVariablesInit();
+        }
+        
+        // Assignment operator: 
+        inline Pythia8::Pythia& Pythia::operator=(const Pythia& in)
+        {
+            WrapperBase<Pythia8::Abstract_Pythia>::operator=(in);
+            return *this;
+        }
+        
+        
+        // Destructor: 
+        inline Pythia8::Pythia::~Pythia()
+        {
+        }
+        
+        
+        // Member variable initialiser: 
+        inline void Pythia8::Pythia::_memberVariablesInit()
+        {
             (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
             (process).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_me(false);
             (event).WrapperBase<Pythia8::Abstract_Event>::BEptr->can_delete_wrapper(false);
@@ -368,19 +313,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             (couplings).WrapperBase<Pythia8::Abstract_Couplings>::BEptr->can_delete_me(false);
             (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_wrapper(false);
             (slhaInterface).WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr->can_delete_me(false);
-        }
-        
-        // Assignment operator: 
-        inline Pythia8::Pythia& Pythia::operator=(const Pythia& in)
-        {
-            WrapperBase<Pythia8::Abstract_Pythia>::operator=(in);
-            return *this;
-        }
-        
-        
-        // Destructor: 
-        inline Pythia8::Pythia::~Pythia()
-        {
         }
         
     }
