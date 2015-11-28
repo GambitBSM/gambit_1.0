@@ -42,6 +42,8 @@ static int gaussInt=1;
 aChannel* omegaCh=NULL;
 aChannel* vSigmaTCh=NULL;
 
+char * CDM=NULL;
+REAL *Qaddress=NULL;
 static int LSP;
 
 double M1=0,M2=0;
@@ -136,7 +138,7 @@ static  double sigma(double PcmIn)
     r=cs23(cc23,1,PcmIn,AUX[nsub22].i3)/brV1/3.8937966E8;
     l=AUX[nsub22].virt;
     l_=5-l;  
-    if(AUX[nsub22].w[l_-2])
+    if(r>0 && AUX[nsub22].w[l_-2])
     { double m1,m2,sqrtS;
       m1=pmass[0];
       m2=pmass[1];
@@ -360,7 +362,7 @@ static int testSubprocesses(void)
 {
  static int first=1;
  int err,k1,k2,i,j;
- double *Q;
+
  if(first)
  {
     first=0;
@@ -435,13 +437,13 @@ static int testSubprocesses(void)
        }
        j++;
     }
+    for(Qaddress=NULL,i=0;i<nModelVars;i++) if(strcmp(varNames[i],"Q")==0) Qaddress=varValues+i;
   }
 
-  for(Q=NULL,i=0;i<nModelVars;i++) if(strcmp(varNames[i],"Q")==0) Q=varValues+i;
-  
   
   if(Nodd==0) { printf("No odd particles in the model\n");}
-  if(Q) *Q=100;
+
+  if(Qaddress) *Qaddress=100;
  
    err=calcMainFunc();
 //  printf("err=%d\n",err);
@@ -457,9 +459,9 @@ static int testSubprocesses(void)
    if(Mcdm>inMass[i]) Mcdm=inMass[i];
  }
 
- if(Q) 
- { *Q=2*Mcdm;
-    assignVal("Q",2*Mcdm);
+ if(Qaddress) 
+ { *Qaddress=2*Mcdm;
+//    assignVal("Q",2*Mcdm);
     err=calcMainFunc();
     if(err>0) return err;
  }
@@ -547,13 +549,19 @@ int sortOddParticles(char * lsp)
   err=testSubprocesses();
 //  printf("err=%d\n",err);
   if(err)
-  { 
-    if(err>0) strcpy(lsp,varNames[err]);
-    else strcpy(lsp,"Nodd=0");
-    printf("sortOddparticles err=%d\n",err); 
+  { CDM=NULL;
+    if(err>0) 
+    { 
+      strcpy(lsp,varNames[err]); 
+      printf("sortOddparticles: can't calculate constrained parameter %s\n",varNames[err]);
+    }
+    else 
+    { strcpy(lsp,"Nodd=0");
+      printf("There are no odd particles in the models\n");
+    }     
     return err;
   }
-
+  CDM=inP[LSP];
   if(lsp) strcpy(lsp,inP[LSP]);
   return 0;
 }
@@ -767,6 +775,7 @@ static double aRate(double X, int average,int Fast, double * alpha, aChannel ** 
       if(wPrc) 
       { (*wPrc)[nPrc].weight=0;
         for(i=0;i<4;i++) (*wPrc)[nPrc].prtcl[i]=pname[i];
+        (*wPrc)[nPrc].prtcl[i]=NULL;
       }
       smin=pmass[2]+pmass[3];
       cc23=NULL;
@@ -1015,7 +1024,7 @@ static void checkSgridUpdate(void)
 }
 
 static double vSigmaI(double T, double Beps, int fast,double * alpha_)
-{ double XX,alpha;
+{ double XX,alpha,nx;
   int i,n;
   double X=Mcdm/T;
   if(vSigmaGrid.pow==0)
@@ -1029,7 +1038,8 @@ static double vSigmaI(double T, double Beps, int fast,double * alpha_)
     return vSigmaGrid.data[0];
   }
   
-  n=log(X/vSigmaGrid.xtop)/log(XSTEP); 
+  nx=log(X/vSigmaGrid.xtop)/log(XSTEP);
+  if(nx>0) n=nx; else n=nx-1; 
   while(n<0)
   { XX=vSigmaGrid.xtop/XSTEP;
     checkSgridUpdate();
@@ -1101,12 +1111,11 @@ static double dY(double s3, double Beps,double fast)
 { double d, dlnYds3,Yeq0X, sqrt_gStar, vSig,res;;
   double epsY,alpha;
   double T,heff,geff;
-  T=polint2(s3,Tdim,s3_,t_);   
+  T=polint2(s3,Tdim,s3_,t_);
   heff=polint2(s3,Tdim,s3_,heff_);
   geff=polint2(s3,Tdim,s3_,geff_);
   MassCut=2*Mcdm-T*log(Beps);
   d=0.001*s3;  dlnYds3=( log(Yeq(polint2(s3+d,Tdim,s3_,t_)))- log(Yeq(polint2(s3-d,Tdim,s3_,t_))) )/(2*d);
-
   epsY=deltaY/Yeq(T);
 
 //  sqrt_gStar=polint2(Mcdm/X,Tdim,t_,sqrt_gstar_);
@@ -1143,7 +1152,7 @@ static double darkOmega1(double * Xf,double Z1,double dZ1,int Fast,double Beps)
      X1=X2;
      dCC1=dCC2;
      X2=X2/XSTEP;
-     X=X2;
+     X=X2;    
      dCC2=-CCX+dY(polint2(Mcdm/X,Tdim,t_,s3_),Beps,Fast);
   }
              
@@ -1153,17 +1162,19 @@ static double darkOmega1(double * Xf,double Z1,double dZ1,int Fast,double Beps)
      dCC2=dCC1;
      X1=X1*XSTEP;
      X=X1;
+     if(Yeq(Mcdm/X) < fabs(deltaY)*1.E-15) {*Xf=X; return Yeq(Mcdm/X);}     
      dCC1=-CCX+dY(polint2(Mcdm/X,Tdim,t_,s3_),Beps,Fast); 
   }
   for(;;)
   { double dCC;
     if(fabs(dCC1)<dCCX) 
       {*Xf=X1; MassCut=Mcdm*(2-log(Beps)/X1); return Yeq(Mcdm/X1)*sqrt(1+CCX+dCC1);}
-    if(fabs(dCC2)<dCCX || fabs(X1-X2)<0.0001*X1) 
+    if(fabs(dCC2)<dCCX) 
       {*Xf=X2; MassCut=Mcdm*(2-log(Beps)/X2); return Yeq(Mcdm/X2)*sqrt(1+CCX+dCC2);}
-    X=0.5*(X1+X2); 
+    X=0.5*(X1+X2);
     dCC=-CCX+dY(polint2(Mcdm/X,Tdim,t_,s3_),Beps,Fast);
-    if(dCC>0) {dCC1=dCC;X1=X;}  else {dCC2=dCC;X2=X;} 
+    if(dCC>0) {dCC1=dCC;X1=X;}  else {dCC2=dCC;X2=X;}
+     
   }
 }
 
@@ -1244,14 +1255,16 @@ double darkOmega(double * Xf, int Fast, double Beps)
 
   Yt=  darkOmega1(&Xt, Z1, (Z1-1)/5,Fast, Beps);
 
+
   if(Yt<0||FError) { return -1;}
   Xf1=Xt;
 
-//printf("Yt=%E deltaY=%E\n", Yt,deltaY);
   
-  if(Yt<fabs(deltaY)*1.E-20)
-  {  dmAsymm = 2*log( fabs(deltaY)/Yt);
-     if(deltaY < 0 ) dmAsymm *= -1;   
+  if(Yt<fabs(deltaY)*1.E-15)
+  {
+     if(deltaY>0) dmAsymm=1;  else 
+     if(deltaY<0) dmAsymm=-1;
+     if(Xf) *Xf=Xt;   
      return 2.742E8*Mcdm*deltaY;
   }   
   for(i=0; ;i++)
@@ -1261,9 +1274,16 @@ double darkOmega(double * Xf, int Fast, double Beps)
     yeq=Yeq(Mcdm/Xt);
     alpha=vSigmaGrid.alpha[i];    
 
+
     if(Xt>X2*0.999999) continue; 
     
     if(Yt*Yt>=Z2*Z2*( alpha*Yt*yeq+(1-alpha)*yeq*yeq))  break;
+    if(Yt<fabs(deltaY*1E-15))
+    {  if(Xf) *Xf=Xt;
+       if(deltaY>0) dmAsymm=1; else 
+       if(deltaY<0) dmAsymm=-1; 
+       return 2.742E8*Mcdm*deltaY;
+    }
     y=Yt;
     s3_t=polint2(Mcdm/Xt,Tdim,t_,s3_);
     s3_2=polint2(Mcdm/X2,Tdim,t_,s3_); 
@@ -1288,9 +1308,7 @@ double darkOmega(double * Xf, int Fast, double Beps)
       f *= exp(-2*a/Yi);
       z0=sqrt(f)*2*a/(1-f);
       Y0=sqrt(z0*z0+a*a);
-      dmAsymm=2*log(z0/(Y0+a));
-      if(deltaY>0) dmAsymm*=-1;       
-//     dmAsymm=log((Y0+deltaY)/(Y0-deltaY));
+      dmAsymm=deltaY/Y0;
      return 2.742E8*Mcdm*Y0;
   }   
 }
@@ -1322,8 +1340,9 @@ double printChannels(double Xf ,double cut, double Beps, int prcn, FILE * f)
         {
            fprintf(f,"%s ",omegaCh[i].prtcl[j]);
            if(j==1) fprintf(f,"->");
-           if(j==3) fprintf(f,"\n");
         }
+        if(omegaCh[i].prtcl[j]) fprintf(f,"%s ",omegaCh[i].prtcl[j]);
+        fprintf(f,"\n");
      }
   }
   return 1/Sum;
