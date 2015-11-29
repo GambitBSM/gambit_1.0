@@ -2,7 +2,7 @@
 
 ################################################################
 # This script will:
-#   * Retrieve the micromegas 3.5.5 installation archive file
+#   * Retrieve the micromegas 3.6.9.2 installation archive file
 #   * Unpack micromegas
 #   * Copy necessary patches
 #   * Configure & build micromegas (right now only for the MSSM)
@@ -22,10 +22,10 @@
 
 # Base name of micromegas archive and directory.
 # Note some patch files have hardcoded names below.
-MOBASE="micromegas_3.5.5"
+MOBASE="micromegas_3.6.9.2"
 
 # Location of extracted micromegas files
-MOROOT="../../../../installed/micromegas/3.5.5/SingletDM"
+MOROOT="../../../../installed/micromegas/3.6.9.2/SingletDM"
 
 # Archive file name and remote location
 MOARCHIVE="../../../../downloaded/${MOBASE}.tgz"
@@ -89,7 +89,7 @@ else
   
   # Run make
   echo "Building micromegas...."
-  ./make_so_micromegas.3.5.5
+  ./make_so_micromegas.3.6.9.2
 fi
 
 echo ""
