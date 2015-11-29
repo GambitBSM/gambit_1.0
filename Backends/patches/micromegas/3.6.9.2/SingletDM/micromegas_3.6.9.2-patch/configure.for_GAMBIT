@@ -2,9 +2,18 @@
 
 ./newProject SingletDM
 cp -f *.mdl SingletDM/work/models
-patch sources/micromegas.h micromegas.h.dif
-patch sources/spectra.c spectra.c.dif
-patch sources/omega.c omega.c.dif
+if [ -f "sources/micromegas.h.orig" ]; then
+     mv sources/micromegas.h.orig sources/micromegas.h
+fi
+patch -b sources/micromegas.h micromegas.h.dif
+if [ -f "sources/spectra.c.orig" ]; then
+     mv sources/spectra.c.orig sources/spectra.c
+fi
+patch -b sources/spectra.c spectra.c.dif
+if [ -f "sources/omega.c.orig" ]; then
+     mv sources/omega.c.orig sources/omega.c
+fi
+patch -b sources/omega.c omega.c.dif
 
 # Hack to ensure -fPIC flag for fortran compilation.
 if [ ! -f "CalcHEP_src/getFlags.orig" ]; then
