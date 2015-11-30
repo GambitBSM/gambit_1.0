@@ -69,10 +69,14 @@ Parameters:
 
 
 
-    SingletDM_running:
-      mS2: 1000
+    SingletDM:
+      mS: 100
       lambda_hS: 0.1
-      lambda_S: 0.1
+
+   # SingletDM_running:  # use running mass model and able to choose lambda_S as well
+   #   mS2: 1000
+   #   lambda_hS: 0.1
+   #   lambda_S: 0.3
 
 
 
@@ -156,18 +160,26 @@ ObsLikes:
 
 # simple test vacuum stability function in SpecBit (observable only for now)
 
-    - capability: VS_age
+    - capability: vacuum_stability
       purpose: Observable
-      function: VS_age_func
+      function: find_min_lambda
+
 
     - capability: VS_likelihood
       purpose: Observable
-      function: VS_likelihood_func
+      function: get_likelihood
 
-      
+    - capability: SSDM_spectrum
+      purpose: Observable
+      function: check_perturb
+
 #    - capability: SSDM_spectrum
 #      purpose: Observable
 #      function: get_SSDM_spectrum
+
+    - capability: expected_lifetime
+      purpose: Observable
+      function: get_expected_lifetime
 
 
 
@@ -177,8 +189,13 @@ ObsLikes:
 
 Rules:
 
-#  - capability: SSDM_spectrum
-#    function: get_SSDM_spectrum
+  - capability: SSDM_spectrum
+    options:
+      set_high_scale: 10000
+
+  - capability: vacuum_stability
+    function: find_min_lambda
+
 
 
 

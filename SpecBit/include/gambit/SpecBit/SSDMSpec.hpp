@@ -221,12 +221,21 @@ namespace Gambit
             tmp_map["g2"]= &Model::get_g2;
             tmp_map["g3"]= &Model::get_g3;
             tmp_map["Lambda1"]= &Model::get_Lambda1;
+           
             tmp_map["Lambda2"]= &Model::get_Lambda2;
+            tmp_map["Lambda_hs"]= &Model::get_Lambda2; // same naming convention as SingletDM
             tmp_map["Lambda3"]= &Model::get_Lambda3;
-            tmp_map["v"] = &Model::get_v;
+            tmp_map["Lambda_s"]= &Model::get_Lambda3; // alternative naming convention
+
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
 
+
+         {
+            typename MTget::fmap0 tmp_map;
+            tmp_map["vev"] = &Model::get_v;
+            map_collection[Par::mass1].map0 = tmp_map;
+         }
 
          // Functions utilising the "extraM" function signature
          // (Zero index, model object as argument)
@@ -311,7 +320,7 @@ namespace Gambit
          // (Zero index member functions of model object)
          {
             typename MTset::fmap0 tmp_map;
-            tmp_map["v"] = &Model::set_v;
+            tmp_map["vev"] = &Model::set_v;
 
             map_collection[Par::mass1].map0 = tmp_map;
          }
@@ -479,7 +488,9 @@ namespace Gambit
             typename MTget::fmap0 tmp_map;
 
             tmp_map["S"] =  &Model::get_Mss_pole_slha;
+            tmp_map["Singlet"] =  &Model::get_Mss_pole_slha; // alternative naming convention as in SingletDM container
             tmp_map["h0"] = &Model::get_Mhh_pole_slha;
+            tmp_map["h0_1"] = &Model::get_Mhh_pole_slha; //added to match SM Higgs container naming
 
             tmp_map["A0"] = &Model::get_MAh_pole_slha;
 

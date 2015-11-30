@@ -201,9 +201,23 @@ namespace Gambit
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
       QedQcdWrapper qedqcdspec(oneset,sminputs);
+      
+      
+      
+      std::ostringstream warnings;
+      const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
+      const bool error = problems.have_problem();
+      problems.print_warnings(warnings);
+      if (error==1)
+      {
+      // check for errors
+      std::ostringstream problems_str;
+      problems.print_problems(problems_str);
+      cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
+      }
 
 
-// Need to fix the below
+// below is from MSSMSpec, I have done slightly different version above
 
 //      if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
 //      {
@@ -258,21 +272,68 @@ namespace Gambit
       namespace myPipe = Pipes::get_SSDM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       SSDM_input_parameters input;
-      cout<< "get spectrum started" << endl;
       fill_SSDM_input(input,myPipe::Param);
       input.Qin=173.15;
-      cout<< "Filled input parameters" << endl;
       result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }
 
 
 
+//
+    void check_perturb(bool &error)
+    {
+    using namespace flexiblesusy;
+    using namespace softsusy;
+    namespace myPipe = Pipes::check_perturb;
+    using namespace Gambit;
+    using namespace SpecBit;
+    const Options& runOptions=*myPipe::runOptions;
+    
 
-    void VS_age_func(std::pair<double, double>& age_pair)
+    const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
+
+    ddpair age = *myPipe::Dep::vacuum_stability;
+    SSDM_input_parameters input;
+    fill_SSDM_input(input,myPipe::Param);
+
+    SMInputs sminputs = fullspectrum->get_SMInputs();
+      
+    softsusy::QedQcd oneset;
+    setup_QedQcd(oneset,sminputs);
+    oneset.toMz();
+    
+    double default_scale=std::get<1>(age);
+    
+    double scale = runOptions.getValueOrDef<double>(default_scale,"set_high_scale");
+    cout<< "checking perturbative up to high scale = " << scale << endl;
+    
+    
+    typename SSDM_interface<Two_scale>::SpectrumGenerator spectrum_generator;
+    
+    input.Qin=scale;
+    spectrum_generator.run(oneset, input);
+    
+    std::ostringstream warnings;
+    const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
+    error = problems.have_problem();
+    problems.print_warnings(warnings);
+    if (error==1)
+    {
+    // check for errors
+    std::ostringstream problems_str;
+    problems.print_problems(problems_str);
+    cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
+    }
+    
+    
+    }
+
+
+    void find_min_lambda(std::pair<double, double>& age_pair)
     {
       using namespace flexiblesusy;
       using namespace softsusy;
-      namespace myPipe = Pipes::VS_age_func;//get_SingletDM_spectrum;
+      namespace myPipe = Pipes::find_min_lambda;//get_SingletDM_spectrum;
       using namespace Gambit;
       using namespace SpecBit;
       //const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
@@ -313,7 +374,6 @@ namespace Gambit
       u_1=min_u-2/(pow(float(i),0.01));
       u_2=min_u;
       u_3=min_u+2/(pow(float(i),0.01));
-      cout<< "here " << endl;
       SM = fullspectrum->clone_HE(); // clone the original spectrum incase the above calcuations have run into a non-perturbative scale and thus the spectrum is no longer reliable
       }
       // run downhill minimization routine to find exact minimum
@@ -426,89 +486,37 @@ namespace Gambit
         lifetime=1e99;
         stability=0; // stabe
       }
-     
-     //std::pair<double, double> age_pair;
-    
       age_pair = std::make_pair (lifetime,LB);
     
-      //result=liftime;
-     //high_energy_minimum=LB;
-     
      
     }
 
 
-
-
-
-
-//    void check_perturb(int &result)
-//    {
-//    input.Qin=scale;
-
-// my version of the problem checker used with FlexibleSUSY
-//spectrum_generator.run(oneset,input);
-//
-//std::ostringstream warnings;
-//const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
-//const bool error = problems.have_problem();
-//problems.print_warnings(warnings);
-//if (error==1)
-//{
-//  // check for errors
-//  std::ostringstream problems_str;
-//  problems.print_problems(problems_str);
-//  
-//  cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
-
-//
-
-
-// original problem checker from MSSM_Spec
-//  const typename MI::Problems& problems = spectrum_generator.get_problems();
-
-
-//      if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
-//      {
-//         ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
-//         // just die.
-//         std::ostringstream errmsg;
-//         errmsg << "A serious problem was encountered during spectrum generation!; ";
-//         errmsg << "Message from FlexibleSUSY below:" << std::endl;
-//         problems.print_problems(errmsg); 
-//         problems.print_warnings(errmsg); 
-//         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
-//      }
-
-
-
-//    }
-    
-
-
-    void VS_likelihood_func(double &result)
+    void get_expected_lifetime(double &lifetime)
     {
-      namespace myPipe = Pipes::VS_likelihood_func;//
-     // using namespace Gambit;
-      //ddpair age = *myPipe::Dep::VS_age;
-     // result=log10(  ( 1 / ( std::get<0>(age) ) ) * exp(140) * (1/ (1.2e19) )   );
+      namespace myPipe = Pipes::get_expected_lifetime;//
+      using namespace Gambit;
+      ddpair age = *myPipe::Dep::vacuum_stability;
+      lifetime=std::get<0>(age);
+    }
+    
+    void default_scale(std::pair<double, double>& age_pair)
+    {
+      namespace myPipe = Pipes::default_scale;//
+      using namespace Gambit;
+      age_pair = std::make_pair (0,1.22e19);
+    }
+
+
+    void get_likelihood(double &result)
+    {
+      namespace myPipe = Pipes::get_likelihood;//
+      using namespace Gambit;
+      ddpair age = *myPipe::Dep::vacuum_stability;
+      result=log10(  ( 1 / ( std::get<0>(age) ) ) * exp(140) * (1/ (1.2e19) )   );
      result=1;
     }
     
-    // use the below to create a simple function with output pole masses to use as observables
-    
-    
-      //    const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
-      //const SubSpectrum* spec = fullspectrum->get_HE(); // SSDMSpec SubSpectrum object
-     
-//      cout<<"Scalar pole mass:" << endl;
-//      cout<<spec->phys().get_Pole_Mass("S")  <<endl;
-//      cout<<"Higgs pole mass:" << endl;
-//      cout<<spec->phys().get_Pole_Mass("h0")  <<endl;
-    
-    
-    
-        /// @} End Gambit module functions
 
   } // end namespace SpecBit
 } // end namespace Gambit

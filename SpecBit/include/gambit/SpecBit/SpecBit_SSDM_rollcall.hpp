@@ -35,13 +35,24 @@
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
+    #define FUNCTION check_perturb
+    START_FUNCTION(bool)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    DEPENDENCY(SSDM_spectrum,const Spectrum*)
+    DEPENDENCY(vacuum_stability, ddpair)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDM_running))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+
   #undef CAPABILITY
 
 
-  #define CAPABILITY VS_age
+  #define CAPABILITY vacuum_stability
   START_CAPABILITY                          
 
-    #define FUNCTION VS_age_func
+    #define FUNCTION find_min_lambda
     START_FUNCTION(ddpair)
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(SSDM_spectrum,const Spectrum*)
@@ -51,15 +62,27 @@
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
+
+
+
+    #define FUNCTION default_scale  // use this as the dependency for check_perturb without having to calculate minimum lambda
+    START_FUNCTION(ddpair)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDM_running))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+
+
   #undef CAPABILITY
 
 
   #define CAPABILITY VS_likelihood
   START_CAPABILITY                          
 
-    #define FUNCTION VS_likelihood_func
+    #define FUNCTION get_likelihood
     START_FUNCTION(double)
-    DEPENDENCY(VS_age, ddpair)
+    DEPENDENCY(vacuum_stability, ddpair)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
     MODEL_GROUP(singlet, (SingletDM_running))
@@ -68,6 +91,18 @@
 
   #undef CAPABILITY
 
+
+  #define CAPABILITY expected_lifetime
+    START_CAPABILITY
+    #define FUNCTION get_expected_lifetime
+    START_FUNCTION(double)
+    DEPENDENCY(vacuum_stability, ddpair)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDM_running))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 
 
