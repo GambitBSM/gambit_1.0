@@ -16,6 +16,8 @@
 #ifndef __gambit_main_hpp__
 #define __gambit_main_hpp__
 
+#include "gambit/Utils/signal_helpers.hpp"
+#include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Utils/static_members.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"

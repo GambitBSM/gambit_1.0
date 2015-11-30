@@ -1035,9 +1035,9 @@ namespace Gambit
       int rc = pclose(fp);
       if(rc!=0)
       {
-        // Python error occurred
+         // Python error occurred
          std::ostringstream errmsg;
-         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered. Please see printer-tagged log files for the Python traceback.";
+         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call is below:" << std::endl << output.str();
          printer_error().raise(LOCAL_INFO, errmsg.str());              
       }
       // Otherwise everything should be ok!
@@ -1161,6 +1161,14 @@ namespace Gambit
       //std::cout << "rank "<<myRank<<": adding new RA PPID to list: (" << pointID << "," << mpirank << ")" << std::endl;
       print(pointID, "RA_pointID", -2000, mpirank, pointID);
       print(mpirank, "RA_MPIrank", -2001, mpirank, pointID);
+    }
+
+    /// Completely reset the PPIDlists
+    void HDF5Printer::reset_PPID_lists()
+    {
+       primary_printer->global_index_lookup.clear();
+       primary_printer->reverse_global_index_lookup.clear();    
+       primary_printer->RA_dset_offset = 0;
     }
 
     /// Check if PPIDpair exists in global index list
@@ -1366,6 +1374,12 @@ namespace Gambit
              it->second->reset(force);
            }
          }
+         // Also need to reset the PPID lists
+         // TODO: The HDF5Printer currently assumes that ALL the auxilliary printers are
+         // reset together. This is not really what we want, but to deal with it I would
+         // need to make e.g. a separate "RA" group in the hdf5 output for every aux
+         // stream, and then get the combine script to combine them all.
+         reset_PPID_lists();
       }
     }
 

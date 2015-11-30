@@ -494,6 +494,9 @@ namespace Gambit
                 }
                 
                 printer->finalise(true);
+                #ifdef WITH_MPI 
+                  std::cout << "rank " << printer->getRank() <<": ";
+                #endif
                 std::cout << "Gambit info dump, preparing to stop!" << std::endl;
             }
             
