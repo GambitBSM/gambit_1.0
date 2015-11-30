@@ -10,8 +10,8 @@
 #else
   #define BACKENDNAME MicrOmegas
 #endif
-#define VERSION 3.5.5
-#define SAFE_VERSION 3_5_5
+#define VERSION 3.6.9.2
+#define SAFE_VERSION 3_6_9_2
 
 LOAD_LIBRARY
 
