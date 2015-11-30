@@ -18,11 +18,24 @@ returns a spectrum object through an interface with FlexibleSUSY, see the new he
 for details, this is a cut down and modified version of MSSMSpec.hpp.  This spectrum object is intended to have
 the same available features as the existing SingletDM version which is just a simple container.
 
--check_perturb:
-this sets the FlexibleSUSY high scale to either a user defined value in the yaml file,
-the default (Planck scale), or to the scale of the high energy minimum determined
-from find_min_lambda (see below).  Once this is set the spectrum generator (FlexibleSUSY) is
+Capability: check_perturb:
+
+two choices here, if you are not interested in where the Higgs quartic coupling has a minimum and
+just want to check the spectrum for erros up to some scale then use the first function,
+if you want to combine it with the vacuum_stability calculations then use the second, which has
+a dependency on find_min_lambda
+
+-check_perturb_simple
+
+this sets the FlexibleSUSY high scale to either a user defined value in the yaml file or the default (Planck scale).
+Once this is set the spectrum generator (FlexibleSUSY) is
 run again and checked for errors.  The return type is a bool with 1 for errors found or 0 for none.
+
+-check_perturb_to_min_lambda
+
+same as above but this depends on the vacuum_stability capability below, and will check for errors
+up to the scale at which the Higgs quartic coupling has a minimum
+
 
 Capability: vacuum_stability
 
@@ -30,10 +43,6 @@ Capability: vacuum_stability
 coupling is a minimum, and returns a double pair containing the expected lifetime of
 the universe before a decay to a high energy vacuum and the scale at which this high
 energy minimum exists.
-
--default_scale: set this as the function to use in the rules section of the yaml file
-if you want to run the spectrum up and check for errors without finding the high energy
-minimum (so if you either want to choose a scale in the yaml options or let it go to the default scale).
 
 Capability: expected_lifetime
 

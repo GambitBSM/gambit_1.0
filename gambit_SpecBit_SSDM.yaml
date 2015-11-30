@@ -160,26 +160,23 @@ ObsLikes:
 
 # simple test vacuum stability function in SpecBit (observable only for now)
 
-    - capability: vacuum_stability
-      purpose: Observable
-      function: find_min_lambda
+#    - capability: vacuum_stability
+#      purpose: Observable
+#      function: find_min_lambda
 
 
     - capability: VS_likelihood
       purpose: Observable
-      function: get_likelihood
+
+    - capability: check_perturb
+      purpose: Observable
+
 
     - capability: SSDM_spectrum
       purpose: Observable
-      function: check_perturb
-
-#    - capability: SSDM_spectrum
-#      purpose: Observable
-#      function: get_SSDM_spectrum
 
     - capability: expected_lifetime
       purpose: Observable
-      function: get_expected_lifetime
 
 
 
@@ -188,15 +185,11 @@ ObsLikes:
 #########################
 
 Rules:
-
-  - capability: SSDM_spectrum
-    options:
-      set_high_scale: 10000
-
-  - capability: vacuum_stability
-    function: find_min_lambda
-
-
+    - capability: check_perturb
+      purpose: Observable
+      function: check_perturb_to_min_lambda #or check_perturb_simple
+     # options:
+     #   set_high_scale: 10000  #option can be used with check_perturb_simple only
 
 
 #########################

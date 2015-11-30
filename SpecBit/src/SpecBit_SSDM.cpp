@@ -280,33 +280,17 @@ namespace Gambit
 
 
 //
-    void check_perturb(bool &error)
+
+    bool check_perturb_func(double scale,SSDM_input_parameters input,const Spectrum* fullspectrum)
     {
     using namespace flexiblesusy;
     using namespace softsusy;
-    namespace myPipe = Pipes::check_perturb;
     using namespace Gambit;
     using namespace SpecBit;
-    const Options& runOptions=*myPipe::runOptions;
-    
-
-    const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
-
-    ddpair age = *myPipe::Dep::vacuum_stability;
-    SSDM_input_parameters input;
-    fill_SSDM_input(input,myPipe::Param);
-
     SMInputs sminputs = fullspectrum->get_SMInputs();
-      
     softsusy::QedQcd oneset;
     setup_QedQcd(oneset,sminputs);
     oneset.toMz();
-    
-    double default_scale=std::get<1>(age);
-    
-    double scale = runOptions.getValueOrDef<double>(default_scale,"set_high_scale");
-    cout<< "checking perturbative up to high scale = " << scale << endl;
-    
     
     typename SSDM_interface<Two_scale>::SpectrumGenerator spectrum_generator;
     
@@ -315,7 +299,7 @@ namespace Gambit
     
     std::ostringstream warnings;
     const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
-    error = problems.have_problem();
+    bool error = problems.have_problem();
     problems.print_warnings(warnings);
     if (error==1)
     {
@@ -324,9 +308,64 @@ namespace Gambit
     problems.print_problems(problems_str);
     cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
     }
-    
+    return error;
     
     }
+    
+
+
+    void check_perturb_simple(bool &error)
+    {
+    using namespace flexiblesusy;
+    using namespace softsusy;
+    namespace myPipe = Pipes::check_perturb_simple;
+    using namespace Gambit;
+    using namespace SpecBit;
+    const Options& runOptions=*myPipe::runOptions;
+    double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
+    cout<< "checking perturbative up to high scale = " << scale << endl;
+    
+    
+    const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
+
+
+    SSDM_input_parameters input;
+    fill_SSDM_input(input,myPipe::Param);
+    
+    
+    error=check_perturb_func(scale,input,fullspectrum);
+    }
+    
+    
+    
+    void check_perturb_to_min_lambda(bool &error)
+    {
+    using namespace flexiblesusy;
+    using namespace softsusy;
+    namespace myPipe = Pipes::check_perturb_to_min_lambda;
+    using namespace Gambit;
+    using namespace SpecBit;
+    ddpair age = *myPipe::Dep::vacuum_stability;
+    double scale=std::get<1>(age);
+    cout<< "checking perturbative up to high scale (of minimum lambda) = " << scale << endl;
+    
+    
+    const Spectrum* fullspectrum = *myPipe::Dep::SSDM_spectrum;
+
+
+    SSDM_input_parameters input;
+    fill_SSDM_input(input,myPipe::Param);
+
+    
+    
+    error=check_perturb_func(scale,input,fullspectrum);
+    }
+
+
+
+    
+    
+    
 
 
     void find_min_lambda(std::pair<double, double>& age_pair)
@@ -500,12 +539,12 @@ namespace Gambit
       lifetime=std::get<0>(age);
     }
     
-    void default_scale(std::pair<double, double>& age_pair)
-    {
-      namespace myPipe = Pipes::default_scale;//
-      using namespace Gambit;
-      age_pair = std::make_pair (0,1.22e19);
-    }
+//    void default_scale(std::pair<double, double>& age_pair)
+//    {
+//      namespace myPipe = Pipes::default_scale;//
+//      using namespace Gambit;
+//      age_pair = std::make_pair (0,1.22e19);
+//    }
 
 
     void get_likelihood(double &result)
