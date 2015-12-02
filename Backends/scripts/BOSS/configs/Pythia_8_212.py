@@ -5,9 +5,9 @@
 ###################################
 
 
-# ~~~~~ GCCXML options ~~~~~
+# ~~~~~ CASTXML options ~~~~~
 
-gccxml_compiler = 'g++'       # g++, gcc, icpc, icc, ... (use name of executable)
+castxml_compiler = 'g++'       # g++, gcc, icpc, icc, ... (use name of executable)
 
 
 # ~~~~~ GAMBIT-specific options ~~~~~

@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 from collections import OrderedDict
 from operator import itemgetter
 import os
+import sys
 import warnings
 import subprocess
 import copy
@@ -2178,111 +2179,62 @@ def constrEnumDeclHeader(enum_el_list, file_output_path):
 
 
 
-# ====== gccxmlRunner ========
+# ====== castxmlRunner ========
 
-# Calls gccxml from the shell (via modules.shelltimeout).
+# Calls castxml from the shell (via modules.shelltimeout).
 
-def gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=30., poll_interval=0.5):
+def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=30., poll_interval=0.5):
 
-    # Construct gccxml command to run
-    gccxml_cmd = 'castxml/linux/bin/castxml --castxml-gccxml -x c++ '
+    # Choose castxml executable according to platform (linux or darwin)
+    if sys.platform == 'darwin':
+        castxml_path = 'castxml/darwin/bin/castxml'
+    else:
+        castxml_path = 'castxml/linux/bin/castxml'
+
+    # Construct castxml command to run
+    castxml_cmd = castxml_path + ' --castxml-gccxml -x c++'
 
     # - Add include paths
     for incl_path in include_paths_list:
-        gccxml_cmd += '-I' + incl_path + ' '
+        castxml_cmd += ' -I' + incl_path
 
     # - Add the input file path (full path)
-    gccxml_cmd += input_file_path + ' '
+    castxml_cmd += ' ' + input_file_path
 
-    # - Add gccxml option that specifies the xml output file: input_file_short_name.xml
-    # gccxml_cmd +='--gccxml-compiler ' + cfg.gccxml_compiler + ' -fxml=' + xml_output_path
-    gccxml_cmd += ' -o ' + xml_output_path
+    # - Add castxml option that specifies the xml output file: input_file_short_name.xml
+    castxml_cmd += ' -o ' + xml_output_path
 
-    # Run gccxml
-    print '  Runing command: ' + gccxml_cmd
-    proc, output, timed_out = shelltimeout.shrun(gccxml_cmd, timeout_limit, use_exec=True, poll_interval=poll_interval)
+    # Run castxml
+    print '  Runing command: ' + castxml_cmd
+    proc, output, timed_out = shelltimeout.shrun(castxml_cmd, timeout_limit, use_exec=True, poll_interval=poll_interval)
 
     did_fail = False
 
     # Check for timeout or error
     if timed_out:
-        print '  ERROR: gccxml timed out.'
+        print '  ERROR: castxml timed out.'
         did_fail = True
     elif proc.returncode != 0:        
-        print '  ERROR: gccxml failed.'
+        print '  ERROR: castxml failed.'
         did_fail = True
 
     # Print error report
     if did_fail:
         print
-        print 'START GCCXML OUTPUT'
-        print '-------------------'
+        print 'START CASTXML OUTPUT'
+        print '--------------------'
         print
         print output
-        print 'END GCCXML OUTPUT'
-        print '-----------------'
+        print 'END CASTXML OUTPUT'
+        print '------------------'
         print
-        raise Exception('gccxml failed')
+        raise Exception('castxml failed')
     
     else:
         print '  Command finished successfully.'
     print
 
-# ====== END: gccxmlRunner ========
-
-
-
-# # ====== gccxmlRunner ========
-
-# # Calls gccxml from the shell (via modules.shelltimeout).
-
-# def gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=30., poll_interval=0.5):
-
-#     # Construct gccxml command to run
-#     gccxml_cmd = 'gccxml '
-
-#     # - Add include paths
-#     for incl_path in include_paths_list:
-#         gccxml_cmd += '-I' + incl_path + ' '
-
-#     # - Add the input file path (full path)
-#     gccxml_cmd += input_file_path + ' '
-
-#     # - Add gccxml option that specifies the xml output file: input_file_short_name.xml
-#     # gccxml_cmd += '-fxml=' + xml_output_path
-#     gccxml_cmd +='--gccxml-compiler ' + cfg.gccxml_compiler + ' -fxml=' + xml_output_path
-
-#     # Run gccxml
-#     print '  Runing command: ' + gccxml_cmd
-#     proc, output, timed_out = shelltimeout.shrun(gccxml_cmd, timeout_limit, use_exec=True, poll_interval=poll_interval)
-
-#     did_fail = False
-
-#     # Check for timeout or error
-#     if timed_out:
-#         print '  ERROR: gccxml timed out.'
-#         did_fail = True
-#     elif proc.returncode != 0:        
-#         print '  ERROR: gccxml failed.'
-#         did_fail = True
-
-#     # Print error report
-#     if did_fail:
-#         print
-#         print 'START GCCXML OUTPUT'
-#         print '-------------------'
-#         print
-#         print output
-#         print 'END GCCXML OUTPUT'
-#         print '-----------------'
-#         print
-#         raise Exception('gccxml failed')
-    
-#     else:
-#         print '  Command finished successfully.'
-#     print
-
-# # ====== END: gccxmlRunner ========
+# ====== END: castxmlRunner ========
 
 
 
@@ -2584,11 +2536,8 @@ def isProblematicType(el):
                     if isNative(type_el):
                         
                         is_problematic = True
-                        isProblematicType.prob_types.append(el)
                         return is_problematic
 
-    if not is_problematic:
-        isProblematicType.not_prob_types.append(el)
     return is_problematic
 
 # ====== END: isProblematicType ========

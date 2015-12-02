@@ -9,7 +9,7 @@
 #
 # This is a Python package for making the classes of a C++ library 
 # available for dynamic use through the 'dlopen' system.
-# BOSS relies on 'gccxml' being installed.
+# BOSS makes use of CastXML to parse the C++ source code.
 #
 # Default usage:
 # ./boss [list of class header files]
@@ -63,10 +63,10 @@ def main():
 
     parser = OptionParser(usage=usage_string,
                           version="%prog 0.1")
-    parser.add_option("-c", "--gccxml-compiler",
-                      dest="gccxml_compiler_in",
+    parser.add_option("-c", "--castxml-compiler",
+                      dest="castxml_compiler_in",
                       default="",
-                      help="Set gccxml to mimic COMPILER.",
+                      help="Set castxml to mimic COMPILER.",
                       metavar="COMPILER")
     parser.add_option("-l", "--list",
                       action="store_true",
@@ -116,6 +116,16 @@ def main():
         sys.exit()
 
 
+    # Check platform
+    if not (sys.platform.startswith('linux') or sys.platform == 'darwin'):
+
+        print 
+        print 'Platform "%s" is not supported.' % (sys.platform)
+        print 
+
+        sys.exit()
+
+
 
     # Get the config file name from command line. Import the correct config module.
     # If reset option is used, then skip this part and simply import configs.example_1_234.
@@ -151,9 +161,9 @@ def main():
 
 
 
-    # If gccxml compiler is given as command line input, update cfg.gccxml_compiler 
-    if options.gccxml_compiler_in != '':
-        cfg.gccxml_compiler = options.gccxml_compiler_in
+    # If castxml compiler is given as command line input, update cfg.castxml_compiler 
+    if options.castxml_compiler_in != '':
+        cfg.castxml_compiler = options.castxml_compiler_in
 
 
     #
@@ -220,7 +230,7 @@ def main():
 
 
     #
-    # Run gccxml for all input header/source files
+    # Run castxml for all input header/source files
     #
 
     print
@@ -241,7 +251,7 @@ def main():
         # Get path and filename for the input file
         input_file_dir, input_file_short_name = os.path.split(input_file_path)
 
-        # Construct file name for xml file produced by gccxml
+        # Construct file name for xml file produced by castxml
         xml_output_path = os.path.join(gb.boss_temp_dir, 'tempfile_' + str(i) + '_' + input_file_short_name.replace('.','_') + '.xml' )
 
         # List all include paths
@@ -251,10 +261,10 @@ def main():
         timeout = 20.
         poll = 0.2
 
-        # Run gccxml
+        # Run castxml
         try:
-            # utils.gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=timeout, poll_interval=poll)
-            utils.gccxmlRunner(input_file_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
+            # utils.castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=timeout, poll_interval=poll)
+            utils.castxmlRunner(input_file_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
         except:
             raise
 
@@ -262,7 +272,7 @@ def main():
         xml_files.append(xml_output_path)
 
     #
-    # END: Run gccxml on input files
+    # END: Run castxml on input files
     #
     print
 
@@ -429,15 +439,12 @@ def main():
 
     # sys.exit()
 
-    print 'DEBUG: start fillAcceptedTypesList()'
-
 
     #
     # Fill the gb.accepted_types list
     #
     utils.fillAcceptedTypesList()
     
-    print 'DEBUG: end fillAcceptedTypesList()'
 
     #
     # Remove from cfg.loaded_functions all functions that are not loadable
@@ -723,7 +730,7 @@ def main():
 
 
     #
-    # Parse all factory function source files using gccxml
+    # Parse all factory function source files using castxml
     #
 
     print 
@@ -750,7 +757,7 @@ def main():
 
 
     #
-    # Parse any source files for global functions using gccxml
+    # Parse any source files for global functions using castxml
     #
 
     print 
