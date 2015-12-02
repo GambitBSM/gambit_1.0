@@ -6,13 +6,12 @@
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_BeamParticle.h"
 #include "wrapper_Info_decl.h"
+#include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Rndm_decl.h"
 #include "wrapper_Vec4_decl.h"
-#include <vector>
-#include "wrapper_Settings_decl.h"
-#include <ostream>
 #include "wrapper_Event_decl.h"
+#include <vector>
 
 #include "identification.hpp"
 
@@ -100,7 +99,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int append(int iPos, int idIn, double x);
         
-                void list(std::basic_ostream<char,std::char_traits<char> >& os) const;
+                void list(std::basic_ostream<char, std::char_traits<char> >& os) const;
         
                 void list() const;
         
@@ -114,7 +113,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool remnantFlavours(WrapperBase< Pythia8::Abstract_Event >& event);
         
-                bool remnantColours(WrapperBase< Pythia8::Abstract_Event >& event, std::vector<int,std::allocator<int> >& colFrom, std::vector<int,std::allocator<int> >& colTo);
+                bool remnantColours(WrapperBase< Pythia8::Abstract_Event >& event, std::vector<int, std::allocator<int> >& colFrom, std::vector<int, std::allocator<int> >& colTo);
         
                 double xRemnant(int i);
         
@@ -142,9 +141,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void setInitialCol(WrapperBase< Pythia8::Abstract_Event >& event);
         
-                void updateCol(std::vector<std::pair<int, int>,std::allocator<std::pair<int, int> > > colourChanges);
+                void updateCol(std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > colourChanges);
         
-                std::vector<std::pair<int, int>,std::allocator<std::pair<int, int> > > getColUpdates();
+                std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > getColUpdates();
         
         
                 // Wrappers for original constructors: 

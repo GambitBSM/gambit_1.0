@@ -8,9 +8,8 @@
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_CoupSM_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
-#include "wrapper_Event_decl.h"
 #include "wrapper_SigmaProcess_decl.h"
-#include <string>
+#include "wrapper_Event_decl.h"
 #include <vector>
 #include "wrapper_Particle_decl.h"
 
@@ -193,12 +192,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->canEnhanceEmission();
         }
         
-        inline double UserHooks::enhanceFactor(std::basic_string<char,std::char_traits<char>,std::allocator<char> > arg_1)
+        inline double UserHooks::enhanceFactor(std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1)
         {
             return wrapperbase::BEptr->enhanceFactor(arg_1);
         }
         
-        inline double UserHooks::vetoProbability(std::basic_string<char,std::char_traits<char>,std::allocator<char> > arg_1)
+        inline double UserHooks::vetoProbability(std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1)
         {
             return wrapperbase::BEptr->vetoProbability(arg_1);
         }

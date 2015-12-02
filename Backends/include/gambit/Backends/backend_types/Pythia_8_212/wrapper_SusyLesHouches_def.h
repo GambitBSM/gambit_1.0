@@ -1,11 +1,9 @@
 #ifndef __wrapper_SusyLesHouches_def_Pythia_8_212_h__
 #define __wrapper_SusyLesHouches_def_Pythia_8_212_h__
 
-#include <string>
+#include "SLHAea/slhaea.h"
 #include <map>
 #include <vector>
-#include "SLHAea/slhaea.h"
-#include <istream>
 
 #include "identification.hpp"
 
@@ -16,17 +14,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline int SusyLesHouches::readFile(std::basic_string<char,std::char_traits<char>,std::allocator<char> > slhaFileIn, int verboseIn, bool useDecayIn)
+        inline int SusyLesHouches::readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> > slhaFileIn, int verboseIn, bool useDecayIn)
         {
             return wrapperbase::BEptr->readFile(slhaFileIn, verboseIn, useDecayIn);
         }
         
-        inline int SusyLesHouches::readFile(std::basic_string<char,std::char_traits<char>,std::allocator<char> > slhaFileIn, int verboseIn)
+        inline int SusyLesHouches::readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> > slhaFileIn, int verboseIn)
         {
             return wrapperbase::BEptr->readFile__BOSS(slhaFileIn, verboseIn);
         }
         
-        inline int SusyLesHouches::readFile(std::basic_string<char,std::char_traits<char>,std::allocator<char> > slhaFileIn)
+        inline int SusyLesHouches::readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> > slhaFileIn)
         {
             return wrapperbase::BEptr->readFile__BOSS(slhaFileIn);
         }
@@ -36,17 +34,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->readFile__BOSS();
         }
         
-        inline int SusyLesHouches::readFile(std::basic_istream<char,std::char_traits<char> >& arg_1, int verboseIn, bool useDecayIn)
+        inline int SusyLesHouches::readFile(std::basic_istream<char, std::char_traits<char> >& arg_1, int verboseIn, bool useDecayIn)
         {
             return wrapperbase::BEptr->readFile(arg_1, verboseIn, useDecayIn);
         }
         
-        inline int SusyLesHouches::readFile(std::basic_istream<char,std::char_traits<char> >& arg_1, int verboseIn)
+        inline int SusyLesHouches::readFile(std::basic_istream<char, std::char_traits<char> >& arg_1, int verboseIn)
         {
             return wrapperbase::BEptr->readFile__BOSS(arg_1, verboseIn);
         }
         
-        inline int SusyLesHouches::readFile(std::basic_istream<char,std::char_traits<char> >& arg_1)
+        inline int SusyLesHouches::readFile(std::basic_istream<char, std::char_traits<char> >& arg_1)
         {
             return wrapperbase::BEptr->readFile__BOSS(arg_1);
         }
@@ -106,17 +104,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->verbose(verboseIn);
         }
         
-        inline void SusyLesHouches::message(int arg_1, std::basic_string<char,std::char_traits<char>,std::allocator<char> > arg_2, std::basic_string<char,std::char_traits<char>,std::allocator<char> > arg_3, int line)
+        inline void SusyLesHouches::message(int arg_1, std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_2, std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_3, int line)
         {
             wrapperbase::BEptr->message(arg_1, arg_2, arg_3, line);
         }
         
-        inline void SusyLesHouches::message(int arg_1, std::basic_string<char,std::char_traits<char>,std::allocator<char> > arg_2, std::basic_string<char,std::char_traits<char>,std::allocator<char> > arg_3)
+        inline void SusyLesHouches::message(int arg_1, std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_2, std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_3)
         {
             wrapperbase::BEptr->message__BOSS(arg_1, arg_2, arg_3);
         }
         
-        inline void SusyLesHouches::toLower(std::basic_string<char,std::char_traits<char>,std::allocator<char> >& name)
+        inline void SusyLesHouches::toLower(std::basic_string<char, std::char_traits<char>, std::allocator<char> >& name)
         {
             wrapperbase::BEptr->toLower(name);
         }
@@ -145,7 +143,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::SusyLesHouches::SusyLesHouches(std::basic_string<char,std::char_traits<char>,std::allocator<char> > filename, int verboseIn) :
+        inline Pythia8::SusyLesHouches::SusyLesHouches(std::basic_string<char, std::char_traits<char>, std::allocator<char> > filename, int verboseIn) :
             WrapperBase<Pythia8::Abstract_SusyLesHouches>(__factory2(filename, verboseIn)),
             slhaFile(wrapperbase::BEptr->slhaFile_ref__BOSS()),
             decayIndices(wrapperbase::BEptr->decayIndices_ref__BOSS()),
@@ -156,7 +154,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::SusyLesHouches::SusyLesHouches(std::basic_string<char,std::char_traits<char>,std::allocator<char> > filename) :
+        inline Pythia8::SusyLesHouches::SusyLesHouches(std::basic_string<char, std::char_traits<char>, std::allocator<char> > filename) :
             WrapperBase<Pythia8::Abstract_SusyLesHouches>(__factory3(filename)),
             slhaFile(wrapperbase::BEptr->slhaFile_ref__BOSS()),
             decayIndices(wrapperbase::BEptr->decayIndices_ref__BOSS()),

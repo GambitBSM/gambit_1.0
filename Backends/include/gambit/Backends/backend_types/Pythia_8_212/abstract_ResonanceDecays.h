@@ -7,8 +7,8 @@
 #include "wrapper_Info_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Rndm_decl.h"
-#include <vector>
 #include "wrapper_Event_decl.h"
+#include <vector>
 #include <cstddef>
 
 #include "identification.hpp"

@@ -1,10 +1,9 @@
 #ifndef __wrapper_ParticleDataEntry_def_Pythia_8_212_h__
 #define __wrapper_ParticleDataEntry_def_Pythia_8_212_h__
 
-#include <string>
-#include "wrapper_ResonanceWidths_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_DecayChannel_decl.h"
+#include "wrapper_ResonanceWidths_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 #include "wrapper_Couplings_decl.h"
@@ -28,62 +27,62 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->initPtr__BOSS((*particleDataPtrIn).BEptr);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In)
         {
             wrapperbase::BEptr->setAll(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn)
         {
             wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn)
         {
             wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn)
         {
             wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In)
         {
             wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn)
         {
             wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn)
         {
             wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn, chargeTypeIn);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn)
         {
             wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn, spinTypeIn);
         }
         
-        inline void ParticleDataEntry::setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn)
+        inline void ParticleDataEntry::setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn)
         {
             wrapperbase::BEptr->setAll__BOSS(nameIn, antiNameIn);
         }
         
-        inline void ParticleDataEntry::setName(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn)
+        inline void ParticleDataEntry::setName(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn)
         {
             wrapperbase::BEptr->setName(nameIn);
         }
         
-        inline void ParticleDataEntry::setAntiName(std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn)
+        inline void ParticleDataEntry::setAntiName(std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn)
         {
             wrapperbase::BEptr->setAntiName(antiNameIn);
         }
         
-        inline void ParticleDataEntry::setNames(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn)
+        inline void ParticleDataEntry::setNames(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn)
         {
             wrapperbase::BEptr->setNames(nameIn, antiNameIn);
         }
@@ -188,12 +187,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->hasAnti();
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > ParticleDataEntry::name(int idIn) const
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > ParticleDataEntry::name(int idIn) const
         {
             return wrapperbase::BEptr->name(idIn);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > ParticleDataEntry::name() const
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > ParticleDataEntry::name() const
         {
             return wrapperbase::BEptr->name__BOSS();
         }
@@ -585,63 +584,63 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         
         // Wrappers for original constructors: 
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory0(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory1(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory2(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory3(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory4(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory5(idIn, nameIn, spinTypeIn, chargeTypeIn, colTypeIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory6(idIn, nameIn, spinTypeIn, chargeTypeIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory7(idIn, nameIn, spinTypeIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory8(idIn, nameIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
@@ -662,63 +661,63 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory11(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn, tau0In))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory12(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn, mMaxIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory13(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn, mMinIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory14(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In, mWidthIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory15(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn, m0In))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory16(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn, colTypeIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory17(idIn, nameIn, antiNameIn, spinTypeIn, chargeTypeIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory18(idIn, nameIn, antiNameIn, spinTypeIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn) :
+        inline Pythia8::ParticleDataEntry::ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn) :
             WrapperBase<Pythia8::Abstract_ParticleDataEntry>(__factory19(idIn, nameIn, antiNameIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);

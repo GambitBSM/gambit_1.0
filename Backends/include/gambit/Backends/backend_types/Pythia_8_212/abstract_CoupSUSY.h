@@ -4,11 +4,11 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
-#include <complex>
 #include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_Info_decl.h"
-#include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
+#include "wrapper_Settings_decl.h"
+#include <complex>
 #include "wrapper_Couplings_decl.h"
 #include <cstddef>
 
@@ -27,6 +27,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_CoupSUSY : virtual public AbstractBase, virtual public Pythia8::Abstract_Couplings
         {
             public:
+    
+                virtual void initSUSY__BOSS(Pythia8::Abstract_SusyLesHouches*, Pythia8::Abstract_Info*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Settings*) =0;
     
                 virtual bool& isInit_ref__BOSS() =0;
     
@@ -70,6 +72,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::complex<double> (&RsuuG_ref__BOSS())[7][4] =0;
     
+                virtual std::complex<double> getLsqqG(int, int) =0;
+    
+                virtual std::complex<double> getRsqqG(int, int) =0;
+    
                 virtual std::complex<double> (&OLpp_ref__BOSS())[6][6] =0;
     
                 virtual std::complex<double> (&ORpp_ref__BOSS())[6][6] =0;
@@ -94,6 +100,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::complex<double> (&RsusuZ_ref__BOSS())[7][7] =0;
     
+                virtual std::complex<double> getLsqsqZ(int, int) =0;
+    
+                virtual std::complex<double> getRsqsqZ(int, int) =0;
+    
                 virtual std::complex<double> (&LudW_ref__BOSS())[4][4] =0;
     
                 virtual std::complex<double> (&RudW_ref__BOSS())[4][4] =0;
@@ -109,6 +119,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual std::complex<double> (&LsuuX_ref__BOSS())[7][4][6] =0;
     
                 virtual std::complex<double> (&RsuuX_ref__BOSS())[7][4][6] =0;
+    
+                virtual std::complex<double> getLsqqX(int, int, int) =0;
+    
+                virtual std::complex<double> getRsqqX(int, int, int) =0;
     
                 virtual std::complex<double> (&LsduX_ref__BOSS())[7][4][3] =0;
     
@@ -173,20 +187,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual std::complex<double> (&Rsl_ref__BOSS())[7][7] =0;
     
                 virtual std::complex<double> (&Rsv_ref__BOSS())[7][7] =0;
-    
-                virtual void initSUSY__BOSS(Pythia8::Abstract_SusyLesHouches*, Pythia8::Abstract_Info*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Settings*) =0;
-    
-                virtual std::complex<double> getLsqqG(int, int) =0;
-    
-                virtual std::complex<double> getRsqqG(int, int) =0;
-    
-                virtual std::complex<double> getLsqsqZ(int, int) =0;
-    
-                virtual std::complex<double> getRsqsqZ(int, int) =0;
-    
-                virtual std::complex<double> getLsqqX(int, int, int) =0;
-    
-                virtual std::complex<double> getRsqqX(int, int, int) =0;
     
                 virtual int idNeut(int) =0;
     

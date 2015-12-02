@@ -6,7 +6,6 @@
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_Rndm.h"
 #include <vector>
-#include <string>
 
 #include "identification.hpp"
 
@@ -43,13 +42,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double gauss();
         
-                std::pair<double,double> gauss2();
+                std::pair<double, double> gauss2();
         
-                int pick(const std::vector<double,std::allocator<double> >& prob);
+                int pick(const std::vector<double, std::allocator<double> >& prob);
         
-                bool dumpState(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName);
+                bool dumpState(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName);
         
-                bool readState(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName);
+                bool readState(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName);
         
         
                 // Wrappers for original constructors: 

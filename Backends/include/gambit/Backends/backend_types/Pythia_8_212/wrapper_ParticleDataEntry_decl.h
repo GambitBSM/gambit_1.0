@@ -5,7 +5,6 @@
 #include "forward_decls_wrapper_classes.h"
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_ParticleDataEntry.h"
-#include <string>
 #include "wrapper_DecayChannel_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
@@ -27,26 +26,26 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory0)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double, double, double, double, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory1)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double, double, double, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory2)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double, double, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory3)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory4)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory5)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory6)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory7)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory8)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory0)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double, double, double, double, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory1)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double, double, double, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory2)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double, double, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory3)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory4)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory5)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory6)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory7)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory8)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
                 static Pythia8::Abstract_ParticleDataEntry* (*__factory9)(int);
                 static Pythia8::Abstract_ParticleDataEntry* (*__factory10)();
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory11)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double, double, double, double, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory12)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double, double, double, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory13)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double, double, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory14)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory15)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int, double);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory16)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, int);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory17)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory18)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int);
-                static Pythia8::Abstract_ParticleDataEntry* (*__factory19)(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory11)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double, double, double, double, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory12)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double, double, double, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory13)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double, double, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory14)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory15)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, double);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory16)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory17)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory18)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int);
+                static Pythia8::Abstract_ParticleDataEntry* (*__factory19)(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
         
                 // -- Other member variables: 
         
@@ -56,29 +55,29 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void initPtr(WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn);
         
-                void setAll(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn);
+                void setAll(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn);
         
-                void setName(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn);
+                void setName(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn);
         
-                void setAntiName(std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn);
+                void setAntiName(std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn);
         
-                void setNames(std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn);
+                void setNames(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn);
         
                 void setSpinType(int spinTypeIn);
         
@@ -120,9 +119,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool hasAnti() const;
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > name(int idIn) const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > name(int idIn) const;
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > name() const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > name() const;
         
                 int spinType() const;
         
@@ -281,26 +280,26 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Wrappers for original constructors: 
             public:
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, int spinTypeIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn, int chargeTypeIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, int spinTypeIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn);
                 ParticleDataEntry(int idIn);
                 ParticleDataEntry();
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn, int spinTypeIn);
-                ParticleDataEntry(int idIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > antiNameIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn);
+                ParticleDataEntry(int idIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn);
         
                 // Special pointer-based constructor: 
                 ParticleDataEntry(Pythia8::Abstract_ParticleDataEntry* in);

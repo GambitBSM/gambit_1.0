@@ -349,6 +349,7 @@ def main():
     utils.xmlFilesToDicts(xml_files)
 
 
+    print 'HERE: 1'
     #
     # Look up potential parent classes and add to cfg.loaded_classes
     #
@@ -356,7 +357,7 @@ def main():
     if cfg.load_parent_classes:
         utils.addParentClasses()
 
-
+    print 'HERE: 2'
 
     #
     # Remove from cfg.loaded_classes all classes that are not loadable (not found, incomplete, abstract, ...)
@@ -366,6 +367,8 @@ def main():
     cfg.loaded_classes = list(OrderedDict.fromkeys(cfg.loaded_classes))
 
     is_loadable = OrderedDict.fromkeys(cfg.loaded_classes, False)
+
+    print 'HERE: 3'
 
     # Determine which requested classes are actually loadable
     for xml_file in xml_files:
@@ -385,10 +388,12 @@ def main():
 
                 # If a requested class is loadable, set the entry in is_loadable to True
                 if full_name in cfg.loaded_classes:
-
+    
                     if utils.isLoadable(el, print_warning=False):
-
                         is_loadable[full_name] = True
+
+
+    print 'HERE: 4'
 
     # Remove from cfg.loaded_classes those that are not loadable
     for full_name in is_loadable.keys():
@@ -396,6 +401,8 @@ def main():
         if not is_loadable[full_name]:
 
             cfg.loaded_classes.remove(full_name)
+
+    print 'HERE: 5'
 
     # Output info on why classes are not loadable
     for xml_file in xml_files:
@@ -419,6 +426,8 @@ def main():
                     infomsg.ClassNotLoadable(full_name, reason).printMessage()
 
 
+    print 'HERE: 6'
+
     #
     # Fill the gb.parents_of_loaded_classes list
     #
@@ -429,13 +438,15 @@ def main():
 
     # sys.exit()
 
+    print 'HERE: 7'
+
 
     #
     # Fill the gb.accepted_types list
     #
     utils.fillAcceptedTypesList()
     
-
+    print 'HERE: 8'
 
     #
     # Remove from cfg.loaded_functions all functions that are not loadable
@@ -478,6 +489,8 @@ def main():
                         cfg.loaded_functions.remove(func_name_long_templ_args)
 
 
+    print 'HERE: 9'
+    
     #
     # Main loop over all xml files
     #

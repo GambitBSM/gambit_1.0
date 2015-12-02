@@ -5,13 +5,12 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include "wrapper_Info_decl.h"
+#include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Rndm_decl.h"
 #include "wrapper_Vec4_decl.h"
-#include <vector>
-#include "wrapper_Settings_decl.h"
-#include <ostream>
 #include "wrapper_Event_decl.h"
+#include <vector>
 #include <cstddef>
 
 #include "identification.hpp"
@@ -94,7 +93,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual int append__BOSS(int, int, double) =0;
     
-                virtual void list(std::basic_ostream<char,std::char_traits<char> >&) const =0;
+                virtual void list(std::basic_ostream<char, std::char_traits<char> >&) const =0;
     
                 virtual void list__BOSS() const =0;
     
@@ -108,7 +107,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool remnantFlavours__BOSS(Pythia8::Abstract_Event&) =0;
     
-                virtual bool remnantColours__BOSS(Pythia8::Abstract_Event&, std::vector<int,std::allocator<int> >&, std::vector<int,std::allocator<int> >&) =0;
+                virtual bool remnantColours__BOSS(Pythia8::Abstract_Event&, std::vector<int, std::allocator<int> >&, std::vector<int, std::allocator<int> >&) =0;
     
                 virtual double xRemnant(int) =0;
     
@@ -136,9 +135,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setInitialCol__BOSS(Pythia8::Abstract_Event&) =0;
     
-                virtual void updateCol(std::vector<std::pair<int, int>,std::allocator<std::pair<int, int> > >) =0;
+                virtual void updateCol(std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > >) =0;
     
-                virtual std::vector<std::pair<int, int>,std::allocator<std::pair<int, int> > > getColUpdates() =0;
+                virtual std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > getColUpdates() =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_BeamParticle*) =0;

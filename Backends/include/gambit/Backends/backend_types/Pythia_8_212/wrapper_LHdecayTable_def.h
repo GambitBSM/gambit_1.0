@@ -3,7 +3,6 @@
 
 #include "wrapper_LHdecayChannel_decl.h"
 #include <vector>
-#include <string>
 
 #include "identification.hpp"
 
@@ -49,12 +48,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->addChannel__BOSS(*channelIn.BEptr);
         }
         
-        inline void LHdecayTable::addChannel(double bratIn, int nDaIn, std::vector<int,std::allocator<int> > idDaIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > cIn)
+        inline void LHdecayTable::addChannel(double bratIn, int nDaIn, std::vector<int, std::allocator<int> > idDaIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > cIn)
         {
             wrapperbase::BEptr->addChannel(bratIn, nDaIn, idDaIn, cIn);
         }
         
-        inline void LHdecayTable::addChannel(double bratIn, int nDaIn, std::vector<int,std::allocator<int> > idDaIn)
+        inline void LHdecayTable::addChannel(double bratIn, int nDaIn, std::vector<int, std::allocator<int> > idDaIn)
         {
             wrapperbase::BEptr->addChannel__BOSS(bratIn, nDaIn, idDaIn);
         }
@@ -69,7 +68,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->getBrat(iChannel);
         }
         
-        inline std::vector<int,std::allocator<int> > LHdecayTable::getIdDa(int iChannel)
+        inline std::vector<int, std::allocator<int> > LHdecayTable::getIdDa(int iChannel)
         {
             return wrapperbase::BEptr->getIdDa(iChannel);
         }

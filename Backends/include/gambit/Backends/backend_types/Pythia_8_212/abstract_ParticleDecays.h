@@ -5,13 +5,13 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include "wrapper_Info_decl.h"
+#include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Rndm_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include <vector>
-#include "wrapper_ParticleDataEntry_decl.h"
-#include "wrapper_Settings_decl.h"
 #include "wrapper_Event_decl.h"
+#include "wrapper_ParticleDataEntry_decl.h"
 #include "wrapper_Particle_decl.h"
 #include <cstddef>
 

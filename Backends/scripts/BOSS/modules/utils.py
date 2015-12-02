@@ -202,6 +202,8 @@ def isNative(el):
                       'Field', 'File', 'Function', 'Method', 'OperatorFunction', 
                       'OperatorMethod', 'Struct', 'Typedef', 'Union', 'Variable']
 
+    cannot_check_tags = ['Unimplemented']
+
     if el.tag == 'FundamentalType':
         is_native = False
 
@@ -219,6 +221,9 @@ def isNative(el):
             if accepted_path in os.path.dirname(check_path):
                 is_native = True
                 break
+
+    elif el.tag in cannot_check_tags:
+        pass
 
     else:
         raise Exception('Cannot check whether XML element with id="%s" and tag "%s" is native.' % (el.get('id'), el.tag))
@@ -240,11 +245,11 @@ def isStdType(el):
 
     if el.tag in can_check_tags:
 
-        if 'demangled' in el.keys():
-            demangled_name = el.get('demangled')
-            if demangled_name[0:5] == 'std::':
+        if 'name' in el.keys():
+            namespaces_list = getNamespaces(el, include_self=True)
+            full_name = '::'.join(namespaces_list)
+            if full_name[0:5] == 'std::':
                 is_std = True
-
     else:
         is_std = False
 
@@ -348,7 +353,8 @@ def getSpecTemplateTypes(input_type, byname=False):
         if el.tag in ['Class', 'Struct']:
             input_name = el.get('name')
         elif el.tag in ['Function', 'Method', 'OperatorMethod', 'OperatorFunction']:
-            input_name = el.get('demangled')
+            namespaces_list = getNamespaces(el, include_self=True)
+            input_name = '::'.join(namespaces_list)
         else:
             raise Exception("Don't know how to get template types from XML element with tag: %s" % el.tag)
 
@@ -814,7 +820,7 @@ def addIndentation(content, indent):
 
 # ====== getNamespaces ========
 
-def getNamespaces(xml_el, include_self=False):
+def getNamespaces(xml_el, include_self=False, xml_file_name=''):
 
     namespaces = []
 
@@ -827,7 +833,10 @@ def getNamespaces(xml_el, include_self=False):
     current_xml_el = xml_el
     while 'context' in current_xml_el.keys():
         context_id = current_xml_el.get('context')
-        context_xml_el = gb.id_dict[context_id]
+        if xml_file_name == '':
+            context_xml_el = gb.id_dict[context_id]
+        else:
+            context_xml_el = gb.all_id_dict[xml_file_name][context_id]
 
         if 'name' in current_xml_el.keys():
             context_name = context_xml_el.get('name')
@@ -973,8 +982,9 @@ def isAcceptedType(input_el):
 
 
     if type_el.tag in ['Class', 'Struct']:
-        demangled_name = type_el.get('demangled')
-        if demangled_name in gb.accepted_types:
+        namespaces_list = getNamespaces(type_el, include_self=True)
+        full_name = '::'.join(namespaces_list)
+        if full_name in gb.accepted_types:
             is_accepted_type = True
 
     elif type_el.tag in ['FundamentalType', 'Enumeration']:
@@ -1017,8 +1027,9 @@ def isLoadedClass(input_type, byname=False):
         type_el = type_dict['el']
 
         if type_el.tag in ['Class', 'Struct']:
-            demangled_name = type_el.get('demangled')
-            if demangled_name in cfg.loaded_classes:
+            namespaces_list = getNamespaces(type_el, include_self=True)
+            full_name = '::'.join(namespaces_list)
+            if full_name in cfg.loaded_classes:
                 is_loaded_class = True
 
     return is_loaded_class
@@ -2174,7 +2185,7 @@ def constrEnumDeclHeader(enum_el_list, file_output_path):
 def gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=30., poll_interval=0.5):
 
     # Construct gccxml command to run
-    gccxml_cmd = 'gccxml '
+    gccxml_cmd = 'castxml/linux/bin/castxml --castxml-gccxml -x c++ '
 
     # - Add include paths
     for incl_path in include_paths_list:
@@ -2184,8 +2195,8 @@ def gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_l
     gccxml_cmd += input_file_path + ' '
 
     # - Add gccxml option that specifies the xml output file: input_file_short_name.xml
-    # gccxml_cmd += '-fxml=' + xml_output_path
-    gccxml_cmd +='--gccxml-compiler ' + cfg.gccxml_compiler + ' -fxml=' + xml_output_path
+    # gccxml_cmd +='--gccxml-compiler ' + cfg.gccxml_compiler + ' -fxml=' + xml_output_path
+    gccxml_cmd += ' -o ' + xml_output_path
 
     # Run gccxml
     print '  Runing command: ' + gccxml_cmd
@@ -2218,6 +2229,60 @@ def gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_l
     print
 
 # ====== END: gccxmlRunner ========
+
+
+
+# # ====== gccxmlRunner ========
+
+# # Calls gccxml from the shell (via modules.shelltimeout).
+
+# def gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=30., poll_interval=0.5):
+
+#     # Construct gccxml command to run
+#     gccxml_cmd = 'gccxml '
+
+#     # - Add include paths
+#     for incl_path in include_paths_list:
+#         gccxml_cmd += '-I' + incl_path + ' '
+
+#     # - Add the input file path (full path)
+#     gccxml_cmd += input_file_path + ' '
+
+#     # - Add gccxml option that specifies the xml output file: input_file_short_name.xml
+#     # gccxml_cmd += '-fxml=' + xml_output_path
+#     gccxml_cmd +='--gccxml-compiler ' + cfg.gccxml_compiler + ' -fxml=' + xml_output_path
+
+#     # Run gccxml
+#     print '  Runing command: ' + gccxml_cmd
+#     proc, output, timed_out = shelltimeout.shrun(gccxml_cmd, timeout_limit, use_exec=True, poll_interval=poll_interval)
+
+#     did_fail = False
+
+#     # Check for timeout or error
+#     if timed_out:
+#         print '  ERROR: gccxml timed out.'
+#         did_fail = True
+#     elif proc.returncode != 0:        
+#         print '  ERROR: gccxml failed.'
+#         did_fail = True
+
+#     # Print error report
+#     if did_fail:
+#         print
+#         print 'START GCCXML OUTPUT'
+#         print '-------------------'
+#         print
+#         print output
+#         print 'END GCCXML OUTPUT'
+#         print '-----------------'
+#         print
+#         raise Exception('gccxml failed')
+    
+#     else:
+#         print '  Command finished successfully.'
+#     print
+
+# # ====== END: gccxmlRunner ========
 
 
 
@@ -2485,12 +2550,19 @@ def isProblematicType(el):
 
     is_problematic = False
 
-    # Determine type name
-    if 'demangled' in el.keys():
-        full_name = el.get('demangled')
-    elif 'name' in el.keys():
-        full_name = el.get('name')
+    # Check if this type has been checked before
+    if el in isProblematicType.prob_types:
+        is_problematic = True
+        return is_problematic
+    elif el in isProblematicType.not_prob_types:
+        is_problematic = False
+        return is_problematic
 
+
+    # Determine type name
+    if 'name' in el.keys():
+        namespaces_list = getNamespaces(el, include_self=True)
+        full_name = '::'.join(namespaces_list)
 
     #
     # Check: types that use native types as template arguments
@@ -2521,10 +2593,16 @@ def isProblematicType(el):
                     if isNative(type_el):
                         
                         is_problematic = True
+                        isProblematicType.prob_types.append(el)
                         return is_problematic
 
-
+    if not is_problematic:
+        isProblematicType.not_prob_types.append(el)
     return is_problematic
+
+# Store problematic types as they are found
+isProblematicType.prob_types = []
+isProblematicType.not_prob_types = []
 
 # ====== END: isProblematicType ========
 
@@ -2604,7 +2682,7 @@ def fillParentsOfLoadedClassesList():
                         class_name = classutils.getClassNameDict(parent_el)
 
                         # Append to gb.parents_of_loaded_classes
-                        print '  %s is parent of %s.' % (class_name['long_templ'], el.get('demangled'))
+                        print '  %s is parent of %s.' % (class_name['long_templ'], full_name)
                         if class_name['long_templ'] not in gb.parents_of_loaded_classes:
                             gb.parents_of_loaded_classes.append(class_name['long_templ'])
 
@@ -2637,14 +2715,27 @@ def xmlFilesToDicts(xml_files):
             # Fill id-based dict
             gb.all_id_dict[xml_file][el.get('id')] = el
 
+        # TAG:castxml_in
+        for el in root.getchildren():
+
+            # TAG:castxml_in
             # Determine name
-            if 'demangled' in el.keys():
-                full_name = el.get('demangled')
-            elif 'name' in el.keys():
-                full_name = el.get('name')
+            if 'name' in el.keys():
+                namespaces_list = getNamespaces(el, include_self=True, xml_file_name=xml_file)
+                full_name = '::'.join(namespaces_list)
             else:
                 # Skip elements that don't have a name
                 continue
+
+            # TAG:castxml_out
+            # # Determine name
+            # if 'demangled' in el.keys():
+            #     full_name = el.get('demangled')
+            # elif 'name' in el.keys():
+            #     full_name = el.get('name')
+            # else:
+            #     # Skip elements that don't have a name
+            #     continue
             
             # Fill name-based dict
             gb.all_name_dict[xml_file][full_name] = el

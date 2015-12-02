@@ -2,7 +2,6 @@
 #define __wrapper_LHdecayChannel_def_Pythia_8_212_h__
 
 #include <vector>
-#include <string>
 
 #include "identification.hpp"
 
@@ -13,12 +12,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void LHdecayChannel::setChannel(double bratIn, int nDaIn, std::vector<int,std::allocator<int> > idDaIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > cIn)
+        inline void LHdecayChannel::setChannel(double bratIn, int nDaIn, std::vector<int, std::allocator<int> > idDaIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > cIn)
         {
             wrapperbase::BEptr->setChannel(bratIn, nDaIn, idDaIn, cIn);
         }
         
-        inline void LHdecayChannel::setChannel(double bratIn, int nDaIn, std::vector<int,std::allocator<int> > idDaIn)
+        inline void LHdecayChannel::setChannel(double bratIn, int nDaIn, std::vector<int, std::allocator<int> > idDaIn)
         {
             wrapperbase::BEptr->setChannel__BOSS(bratIn, nDaIn, idDaIn);
         }
@@ -28,7 +27,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->setBrat(bratIn);
         }
         
-        inline void LHdecayChannel::setIdDa(std::vector<int,std::allocator<int> > idDaIn)
+        inline void LHdecayChannel::setIdDa(std::vector<int, std::allocator<int> > idDaIn)
         {
             wrapperbase::BEptr->setIdDa(idDaIn);
         }
@@ -43,12 +42,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->getNDa();
         }
         
-        inline std::vector<int,std::allocator<int> > LHdecayChannel::getIdDa()
+        inline std::vector<int, std::allocator<int> > LHdecayChannel::getIdDa()
         {
             return wrapperbase::BEptr->getIdDa();
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > LHdecayChannel::getComment()
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > LHdecayChannel::getComment()
         {
             return wrapperbase::BEptr->getComment();
         }
@@ -62,14 +61,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::LHdecayChannel::LHdecayChannel(double bratIn, int nDaIn, std::vector<int,std::allocator<int> > idDaIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > cIn) :
+        inline Pythia8::LHdecayChannel::LHdecayChannel(double bratIn, int nDaIn, std::vector<int, std::allocator<int> > idDaIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > cIn) :
             WrapperBase<Pythia8::Abstract_LHdecayChannel>(__factory1(bratIn, nDaIn, idDaIn, cIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::LHdecayChannel::LHdecayChannel(double bratIn, int nDaIn, std::vector<int,std::allocator<int> > idDaIn) :
+        inline Pythia8::LHdecayChannel::LHdecayChannel(double bratIn, int nDaIn, std::vector<int, std::allocator<int> > idDaIn) :
             WrapperBase<Pythia8::Abstract_LHdecayChannel>(__factory2(bratIn, nDaIn, idDaIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);

@@ -1,11 +1,11 @@
 #ifndef __wrapper_ResonanceWidths_def_Pythia_8_212_h__
 #define __wrapper_ResonanceWidths_def_Pythia_8_212_h__
 
-#include "wrapper_ParticleDataEntry_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Couplings_decl.h"
+#include "wrapper_ParticleDataEntry_decl.h"
 
 #include "identification.hpp"
 

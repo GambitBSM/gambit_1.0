@@ -5,7 +5,6 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include <vector>
-#include <string>
 #include <cstddef>
 
 #include "identification.hpp"
@@ -36,13 +35,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual double gauss() =0;
     
-                virtual std::pair<double,double> gauss2() =0;
+                virtual std::pair<double, double> gauss2() =0;
     
-                virtual int pick(const std::vector<double,std::allocator<double> >&) =0;
+                virtual int pick(const std::vector<double, std::allocator<double> >&) =0;
     
-                virtual bool dumpState(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
+                virtual bool dumpState(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual bool readState(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
+                virtual bool readState(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_Rndm*) =0;

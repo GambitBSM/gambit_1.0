@@ -8,7 +8,6 @@
 #include "wrapper_Vec4_decl.h"
 #include "wrapper_ParticleDataEntry_decl.h"
 #include <vector>
-#include <string>
 
 #include "identification.hpp"
 
@@ -245,13 +244,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int iBotCopyId() const;
         
-                std::vector<int,std::allocator<int> > motherList() const;
+                std::vector<int, std::allocator<int> > motherList() const;
         
-                std::vector<int,std::allocator<int> > daughterList() const;
+                std::vector<int, std::allocator<int> > daughterList() const;
         
-                std::vector<int,std::allocator<int> > sisterList(bool traceTopBot) const;
+                std::vector<int, std::allocator<int> > sisterList(bool traceTopBot) const;
         
-                std::vector<int,std::allocator<int> > sisterList() const;
+                std::vector<int, std::allocator<int> > sisterList() const;
         
                 bool isAncestor(int iAncestor) const;
         
@@ -261,11 +260,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool undoDecay();
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > name() const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > name() const;
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameWithStatus(int maxLen) const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameWithStatus(int maxLen) const;
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameWithStatus() const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameWithStatus() const;
         
                 int spinType() const;
         

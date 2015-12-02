@@ -1,11 +1,9 @@
 #ifndef __wrapper_Event_def_Pythia_8_212_h__
 #define __wrapper_Event_def_Pythia_8_212_h__
 
-#include <string>
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Particle_decl.h"
 #include "wrapper_Vec4_decl.h"
-#include <ostream>
 #include <vector>
 
 #include "identification.hpp"
@@ -17,17 +15,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void Event::init(std::basic_string<char,std::char_traits<char>,std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, int startColTagIn)
+        inline void Event::init(std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, int startColTagIn)
         {
             wrapperbase::BEptr->init__BOSS(headerIn, (*particleDataPtrIn).BEptr, startColTagIn);
         }
         
-        inline void Event::init(std::basic_string<char,std::char_traits<char>,std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn)
+        inline void Event::init(std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn)
         {
             wrapperbase::BEptr->init__BOSS(headerIn, (*particleDataPtrIn).BEptr);
         }
         
-        inline void Event::init(std::basic_string<char,std::char_traits<char>,std::allocator<char> > headerIn)
+        inline void Event::init(std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn)
         {
             wrapperbase::BEptr->init__BOSS(headerIn);
         }
@@ -192,12 +190,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->list__BOSS();
         }
         
-        inline void Event::list(std::basic_ostream<char,std::char_traits<char> >& os, int precision) const
+        inline void Event::list(std::basic_ostream<char, std::char_traits<char> >& os, int precision) const
         {
             wrapperbase::BEptr->list(os, precision);
         }
         
-        inline void Event::list(std::basic_ostream<char,std::char_traits<char> >& os) const
+        inline void Event::list(std::basic_ostream<char, std::char_traits<char> >& os) const
         {
             wrapperbase::BEptr->list__BOSS(os);
         }
@@ -217,12 +215,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->list__BOSS(showScaleAndVertex);
         }
         
-        inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters, std::basic_ostream<char,std::char_traits<char> >& os, int precision) const
+        inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters, std::basic_ostream<char, std::char_traits<char> >& os, int precision) const
         {
             wrapperbase::BEptr->list(showScaleAndVertex, showMothersAndDaughters, os, precision);
         }
         
-        inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters, std::basic_ostream<char,std::char_traits<char> >& os) const
+        inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters, std::basic_ostream<char, std::char_traits<char> >& os) const
         {
             wrapperbase::BEptr->list__BOSS(showScaleAndVertex, showMothersAndDaughters, os);
         }
@@ -302,7 +300,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->scaleSecond();
         }
         
-        inline std::vector<int,std::allocator<int> > Event::daughterList(int i) const
+        inline std::vector<int, std::allocator<int> > Event::daughterList(int i) const
         {
             return wrapperbase::BEptr->daughterList(i);
         }
@@ -402,7 +400,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->restoreJunctionSize();
         }
         
-        inline void Event::listJunctions(std::basic_ostream<char,std::char_traits<char> >& os) const
+        inline void Event::listJunctions(std::basic_ostream<char, std::char_traits<char> >& os) const
         {
             wrapperbase::BEptr->listJunctions(os);
         }

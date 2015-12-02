@@ -6,10 +6,10 @@
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_CoupSUSY.h"
 #include "wrapper_Couplings_decl.h"
-#include <complex>
 #include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
+#include <complex>
 
 #include "identification.hpp"
 

@@ -3,8 +3,6 @@
 
 #include <vector>
 #include <map>
-#include <string>
-#include <ostream>
 
 #include "identification.hpp"
 
@@ -15,7 +13,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void Info::list(std::basic_ostream<char,std::char_traits<char> >& os) const
+        inline void Info::list(std::basic_ostream<char, std::char_traits<char> >& os) const
         {
             wrapperbase::BEptr->list(os);
         }
@@ -80,7 +78,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->tooLowPTmin();
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::name() const
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::name() const
         {
             return wrapperbase::BEptr->name();
         }
@@ -145,12 +143,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->hasSub__BOSS();
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::nameSub(int i) const
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::nameSub(int i) const
         {
             return wrapperbase::BEptr->nameSub(i);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::nameSub() const
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::nameSub() const
         {
             return wrapperbase::BEptr->nameSub__BOSS();
         }
@@ -570,17 +568,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->iBMPI(i);
         }
         
-        inline std::vector<int,std::allocator<int> > Info::codesHard()
+        inline std::vector<int, std::allocator<int> > Info::codesHard()
         {
             return wrapperbase::BEptr->codesHard();
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::nameProc(int i)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::nameProc(int i)
         {
             return wrapperbase::BEptr->nameProc(i);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::nameProc()
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::nameProc()
         {
             return wrapperbase::BEptr->nameProc__BOSS();
         }
@@ -665,22 +663,22 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->errorReset();
         }
         
-        inline void Info::errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn, bool showAlways, std::basic_ostream<char,std::char_traits<char> >& os)
+        inline void Info::errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn, bool showAlways, std::basic_ostream<char, std::char_traits<char> >& os)
         {
             wrapperbase::BEptr->errorMsg(messageIn, extraIn, showAlways, os);
         }
         
-        inline void Info::errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn, bool showAlways)
+        inline void Info::errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn, bool showAlways)
         {
             wrapperbase::BEptr->errorMsg__BOSS(messageIn, extraIn, showAlways);
         }
         
-        inline void Info::errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn)
+        inline void Info::errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn)
         {
             wrapperbase::BEptr->errorMsg__BOSS(messageIn, extraIn);
         }
         
-        inline void Info::errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn)
+        inline void Info::errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn)
         {
             wrapperbase::BEptr->errorMsg__BOSS(messageIn);
         }
@@ -690,7 +688,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->errorTotalNumber();
         }
         
-        inline void Info::errorStatistics(std::basic_ostream<char,std::char_traits<char> >& os)
+        inline void Info::errorStatistics(std::basic_ostream<char, std::char_traits<char> >& os)
         {
             wrapperbase::BEptr->errorStatistics(os);
         }
@@ -770,12 +768,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->setWeightFIRST(weightIn);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::header(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >& key)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::header(const std::basic_string<char, std::char_traits<char>, std::allocator<char> >& key)
         {
             return wrapperbase::BEptr->header(key);
         }
         
-        inline std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > Info::headerKeys()
+        inline std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > Info::headerKeys()
         {
             return wrapperbase::BEptr->headerKeys();
         }
@@ -800,12 +798,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->setLHEF3EventInfo();
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getEventAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key, bool doRemoveWhitespace)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getEventAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace)
         {
             return wrapperbase::BEptr->getEventAttribute(key, doRemoveWhitespace);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getEventAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getEventAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->getEventAttribute__BOSS(key);
         }
@@ -825,22 +823,22 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->getGeneratorSize();
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getGeneratorValue(unsigned int n)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getGeneratorValue(unsigned int n)
         {
             return wrapperbase::BEptr->getGeneratorValue(n);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getGeneratorValue()
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getGeneratorValue()
         {
             return wrapperbase::BEptr->getGeneratorValue__BOSS();
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getGeneratorAttribute(unsigned int n, std::basic_string<char,std::char_traits<char>,std::allocator<char> > key, bool doRemoveWhitespace)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getGeneratorAttribute(unsigned int n, std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace)
         {
             return wrapperbase::BEptr->getGeneratorAttribute(n, key, doRemoveWhitespace);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getGeneratorAttribute(unsigned int n, std::basic_string<char,std::char_traits<char>,std::allocator<char> > key)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getGeneratorAttribute(unsigned int n, std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->getGeneratorAttribute__BOSS(n, key);
         }
@@ -850,17 +848,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->getWeightsDetailedSize();
         }
         
-        inline double Info::getWeightsDetailedValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> > n)
+        inline double Info::getWeightsDetailedValue(std::basic_string<char, std::char_traits<char>, std::allocator<char> > n)
         {
             return wrapperbase::BEptr->getWeightsDetailedValue(n);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getWeightsDetailedAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > n, std::basic_string<char,std::char_traits<char>,std::allocator<char> > key, bool doRemoveWhitespace)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getWeightsDetailedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > n, std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace)
         {
             return wrapperbase::BEptr->getWeightsDetailedAttribute(n, key, doRemoveWhitespace);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getWeightsDetailedAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > n, std::basic_string<char,std::char_traits<char>,std::allocator<char> > key)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getWeightsDetailedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > n, std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->getWeightsDetailedAttribute__BOSS(n, key);
         }
@@ -875,32 +873,32 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->getWeightsCompressedValue(n);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getWeightsCompressedAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key, bool doRemoveWhitespace)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getWeightsCompressedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace)
         {
             return wrapperbase::BEptr->getWeightsCompressedAttribute(key, doRemoveWhitespace);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getWeightsCompressedAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getWeightsCompressedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->getWeightsCompressedAttribute__BOSS(key);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getScalesValue(bool doRemoveWhitespace)
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getScalesValue(bool doRemoveWhitespace)
         {
             return wrapperbase::BEptr->getScalesValue(doRemoveWhitespace);
         }
         
-        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::getScalesValue()
+        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getScalesValue()
         {
             return wrapperbase::BEptr->getScalesValue__BOSS();
         }
         
-        inline double Info::getScalesAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key)
+        inline double Info::getScalesAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->getScalesAttribute(key);
         }
         
-        inline void Info::setHeader(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >& key, const std::basic_string<char,std::char_traits<char>,std::allocator<char> >& val)
+        inline void Info::setHeader(const std::basic_string<char, std::char_traits<char>, std::allocator<char> >& key, const std::basic_string<char, std::char_traits<char>, std::allocator<char> >& val)
         {
             wrapperbase::BEptr->setHeader(key, val);
         }

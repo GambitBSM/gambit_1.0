@@ -5,10 +5,9 @@
 #include "forward_decls_wrapper_classes.h"
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_SlowJet.h"
-#include <vector>
 #include "wrapper_Event_decl.h"
 #include "wrapper_Vec4_decl.h"
-#include <ostream>
+#include <vector>
 
 #include "identification.hpp"
 
@@ -70,15 +69,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double dNext() const;
         
-                void list(bool listAll, std::basic_ostream<char,std::char_traits<char> >& os) const;
+                void list(bool listAll, std::basic_ostream<char, std::char_traits<char> >& os) const;
         
                 void list(bool listAll) const;
         
                 void list() const;
         
-                std::vector<int,std::allocator<int> > constituents(int j);
+                std::vector<int, std::allocator<int> > constituents(int j);
         
-                std::vector<int,std::allocator<int> > clusConstituents(int j);
+                std::vector<int, std::allocator<int> > clusConstituents(int j);
         
                 int jetAssignment(int i);
         

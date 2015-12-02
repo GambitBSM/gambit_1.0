@@ -6,13 +6,13 @@
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_ParticleDecays.h"
 #include "wrapper_Info_decl.h"
+#include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Rndm_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include <vector>
-#include "wrapper_ParticleDataEntry_decl.h"
-#include "wrapper_Settings_decl.h"
 #include "wrapper_Event_decl.h"
+#include "wrapper_ParticleDataEntry_decl.h"
 #include "wrapper_Particle_decl.h"
 
 #include "identification.hpp"

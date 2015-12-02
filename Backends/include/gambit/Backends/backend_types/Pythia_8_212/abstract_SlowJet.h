@@ -4,10 +4,9 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
-#include <vector>
 #include "wrapper_Event_decl.h"
 #include "wrapper_Vec4_decl.h"
-#include <ostream>
+#include <vector>
 #include <cstddef>
 
 #include "identification.hpp"
@@ -60,15 +59,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual double dNext() const =0;
     
-                virtual void list(bool, std::basic_ostream<char,std::char_traits<char> >&) const =0;
+                virtual void list(bool, std::basic_ostream<char, std::char_traits<char> >&) const =0;
     
                 virtual void list__BOSS(bool) const =0;
     
                 virtual void list__BOSS() const =0;
     
-                virtual std::vector<int,std::allocator<int> > constituents(int) =0;
+                virtual std::vector<int, std::allocator<int> > constituents(int) =0;
     
-                virtual std::vector<int,std::allocator<int> > clusConstituents(int) =0;
+                virtual std::vector<int, std::allocator<int> > clusConstituents(int) =0;
     
                 virtual int jetAssignment(int) =0;
     

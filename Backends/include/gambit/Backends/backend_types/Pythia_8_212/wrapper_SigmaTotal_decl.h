@@ -6,8 +6,8 @@
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_SigmaTotal.h"
 #include "wrapper_Info_decl.h"
-#include "wrapper_ParticleData_decl.h"
 #include "wrapper_Settings_decl.h"
+#include "wrapper_ParticleData_decl.h"
 
 #include "identification.hpp"
 

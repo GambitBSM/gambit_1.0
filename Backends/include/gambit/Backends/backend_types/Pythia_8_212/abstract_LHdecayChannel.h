@@ -5,7 +5,6 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include <vector>
-#include <string>
 #include <cstddef>
 
 #include "identification.hpp"
@@ -24,21 +23,21 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
     
-                virtual void setChannel(double, int, std::vector<int,std::allocator<int> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
+                virtual void setChannel(double, int, std::vector<int, std::allocator<int> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual void setChannel__BOSS(double, int, std::vector<int,std::allocator<int> >) =0;
+                virtual void setChannel__BOSS(double, int, std::vector<int, std::allocator<int> >) =0;
     
                 virtual void setBrat(double) =0;
     
-                virtual void setIdDa(std::vector<int,std::allocator<int> >) =0;
+                virtual void setIdDa(std::vector<int, std::allocator<int> >) =0;
     
                 virtual double getBrat() =0;
     
                 virtual int getNDa() =0;
     
-                virtual std::vector<int,std::allocator<int> > getIdDa() =0;
+                virtual std::vector<int, std::allocator<int> > getIdDa() =0;
     
-                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > getComment() =0;
+                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getComment() =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_LHdecayChannel*) =0;

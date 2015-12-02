@@ -7,7 +7,6 @@
 #include "abstract_LHdecayTable.h"
 #include "wrapper_LHdecayChannel_decl.h"
 #include <vector>
-#include <string>
 
 #include "identification.hpp"
 
@@ -47,15 +46,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void addChannel(WrapperBase< Pythia8::Abstract_LHdecayChannel > channelIn);
         
-                void addChannel(double bratIn, int nDaIn, std::vector<int,std::allocator<int> > idDaIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > cIn);
+                void addChannel(double bratIn, int nDaIn, std::vector<int, std::allocator<int> > idDaIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > cIn);
         
-                void addChannel(double bratIn, int nDaIn, std::vector<int,std::allocator<int> > idDaIn);
+                void addChannel(double bratIn, int nDaIn, std::vector<int, std::allocator<int> > idDaIn);
         
                 int size();
         
                 double getBrat(int iChannel);
         
-                std::vector<int,std::allocator<int> > getIdDa(int iChannel);
+                std::vector<int, std::allocator<int> > getIdDa(int iChannel);
         
                 Pythia8::LHdecayChannel getChannel(int iChannel);
         

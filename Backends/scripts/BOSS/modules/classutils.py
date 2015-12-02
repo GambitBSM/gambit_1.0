@@ -1015,12 +1015,18 @@ def getClassNameDict(class_el, abstract=False):
     if 'name' not in class_el.keys():
         raise KeyError('XML element %s does not contain the key "name".' % (xml_id))
 
-    if 'demangled' in class_el.keys():
-        class_name['long_templ']  = class_el.get('demangled')
-    elif 'name' in class_el.keys():
-        class_name['long_templ']  = class_el.get('name')
-    else:
-        raise KeyError('XML element %s contains neither "name" nor "demangled".' % (xml_id))
+
+    # TAG:castxml_in
+    namespaces_list = utils.getNamespaces(class_el, include_self=True)
+    class_name['long_templ'] = '::'.join(namespaces_list)
+
+    # TAG:castxml_out
+    # if 'demangled' in class_el.keys():
+    #     class_name['long_templ']  = class_el.get('demangled')
+    # elif 'name' in class_el.keys():
+    #     class_name['long_templ']  = class_el.get('name')
+    # else:
+    #     raise KeyError('XML element %s contains neither "name" nor "demangled".' % (xml_id))
 
     class_name['long']        = class_name['long_templ'].split('<',1)[0]
     class_name['short_templ'] = class_el.get('name')

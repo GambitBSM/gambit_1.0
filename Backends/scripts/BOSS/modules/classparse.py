@@ -322,7 +322,7 @@ def addAbsClassToInheritanceList(class_el, class_name, abstr_class_name, is_temp
 
 
     # If no previous parent classes:
-    if (class_el.get('bases') == "") and (class_name['long'] not in added_parent):
+    if ('bases' not in class_el.keys()) and (class_name['long'] not in added_parent):
 
         # - Calculate insert position
         insert_pos = class_name_pos + len(class_name['short'])

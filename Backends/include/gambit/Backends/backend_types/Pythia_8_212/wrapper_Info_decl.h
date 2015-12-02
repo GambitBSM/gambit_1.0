@@ -7,8 +7,6 @@
 #include "abstract_Info.h"
 #include <vector>
 #include <map>
-#include <string>
-#include <ostream>
 
 #include "identification.hpp"
 
@@ -31,14 +29,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // -- Other member variables: 
             public:
                 int& LHEFversionSave;
-                std::vector<double,std::allocator<double> >& sigmaLHEFSave;
-                std::map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::less<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >,std::allocator<std::pair<const std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >*& eventAttributes;
-                std::map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,double,std::less<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >,std::allocator<std::pair<const std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double> > >*& weights_detailed;
-                std::vector<double,std::allocator<double> >*& weights_compressed;
+                std::vector<double, std::allocator<double> >& sigmaLHEFSave;
+                std::map<std::basic_string<char>, std::basic_string<char>, std::less<std::basic_string<char> >, std::allocator<std::pair<const std::basic_string<char>, std::basic_string<char> > > >*& eventAttributes;
+                std::map<std::basic_string<char>, double, std::less<std::basic_string<char> >, std::allocator<std::pair<const std::basic_string<char>, double> > >*& weights_detailed;
+                std::vector<double, std::allocator<double> >*& weights_compressed;
         
                 // Member functions: 
             public:
-                void list(std::basic_ostream<char,std::char_traits<char> >& os) const;
+                void list(std::basic_ostream<char, std::char_traits<char> >& os) const;
         
                 void list() const;
         
@@ -64,7 +62,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool tooLowPTmin() const;
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > name() const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > name() const;
         
                 int code() const;
         
@@ -90,9 +88,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool hasSub() const;
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameSub(int i) const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameSub(int i) const;
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameSub() const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameSub() const;
         
                 int codeSub(int i) const;
         
@@ -260,11 +258,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int iBMPI(int i) const;
         
-                std::vector<int,std::allocator<int> > codesHard();
+                std::vector<int, std::allocator<int> > codesHard();
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameProc(int i);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameProc(int i);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameProc();
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameProc();
         
                 long int nTried(int i);
         
@@ -298,17 +296,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void errorReset();
         
-                void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn, bool showAlways, std::basic_ostream<char,std::char_traits<char> >& os);
+                void errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn, bool showAlways, std::basic_ostream<char, std::char_traits<char> >& os);
         
-                void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn, bool showAlways);
+                void errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn, bool showAlways);
         
-                void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn);
+                void errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn);
         
-                void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn);
+                void errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn);
         
                 int errorTotalNumber();
         
-                void errorStatistics(std::basic_ostream<char,std::char_traits<char> >& os);
+                void errorStatistics(std::basic_ostream<char, std::char_traits<char> >& os);
         
                 void errorStatistics();
         
@@ -340,9 +338,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void setWeightFIRST(double weightIn);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > header(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >& key);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > header(const std::basic_string<char, std::char_traits<char>, std::allocator<char> >& key);
         
-                std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > headerKeys();
+                std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > headerKeys();
         
                 int nProcessesLHEF();
         
@@ -352,9 +350,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void setLHEF3EventInfo();
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getEventAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key, bool doRemoveWhitespace);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getEventAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getEventAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getEventAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key);
         
                 int LHEFversion();
         
@@ -362,37 +360,37 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 unsigned int getGeneratorSize();
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getGeneratorValue(unsigned int n);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorValue(unsigned int n);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getGeneratorValue();
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorValue();
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getGeneratorAttribute(unsigned int n, std::basic_string<char,std::char_traits<char>,std::allocator<char> > key, bool doRemoveWhitespace);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorAttribute(unsigned int n, std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getGeneratorAttribute(unsigned int n, std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorAttribute(unsigned int n, std::basic_string<char, std::char_traits<char>, std::allocator<char> > key);
         
                 unsigned int getWeightsDetailedSize();
         
-                double getWeightsDetailedValue(std::basic_string<char,std::char_traits<char>,std::allocator<char> > n);
+                double getWeightsDetailedValue(std::basic_string<char, std::char_traits<char>, std::allocator<char> > n);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getWeightsDetailedAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > n, std::basic_string<char,std::char_traits<char>,std::allocator<char> > key, bool doRemoveWhitespace);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsDetailedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > n, std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getWeightsDetailedAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > n, std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsDetailedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > n, std::basic_string<char, std::char_traits<char>, std::allocator<char> > key);
         
                 unsigned int getWeightsCompressedSize();
         
                 double getWeightsCompressedValue(unsigned int n);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getWeightsCompressedAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key, bool doRemoveWhitespace);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsCompressedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getWeightsCompressedAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsCompressedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getScalesValue(bool doRemoveWhitespace);
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getScalesValue(bool doRemoveWhitespace);
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > getScalesValue();
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > getScalesValue();
         
-                double getScalesAttribute(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
+                double getScalesAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key);
         
-                void setHeader(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >& key, const std::basic_string<char,std::char_traits<char>,std::allocator<char> >& val);
+                void setHeader(const std::basic_string<char, std::char_traits<char>, std::allocator<char> >& key, const std::basic_string<char, std::char_traits<char>, std::allocator<char> >& val);
         
                 void setAbortPartonLevel(bool abortIn);
         

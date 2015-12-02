@@ -5,17 +5,17 @@
 #include "forward_decls_wrapper_classes.h"
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_PartonLevel.h"
-#include <vector>
 #include "wrapper_Info_decl.h"
+#include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Rndm_decl.h"
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_Couplings_decl.h"
-#include "wrapper_UserHooks_decl.h"
-#include "wrapper_ResonanceDecays_decl.h"
-#include "wrapper_Settings_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
+#include "wrapper_UserHooks_decl.h"
 #include "wrapper_Event_decl.h"
+#include <vector>
+#include "wrapper_ResonanceDecays_decl.h"
 
 #include "identification.hpp"
 

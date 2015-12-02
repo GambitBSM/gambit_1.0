@@ -12,12 +12,11 @@
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
-#include "wrapper_SusyLesHouches_decl.h"
-#include "wrapper_Particle_decl.h"
-#include "wrapper_Vec4_decl.h"
 #include "wrapper_SLHAinterface_decl.h"
+#include "wrapper_Vec4_decl.h"
 #include "wrapper_Event_decl.h"
-#include <string>
+#include "wrapper_Particle_decl.h"
+#include "wrapper_SusyLesHouches_decl.h"
 
 #include "identification.hpp"
 
@@ -98,13 +97,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void setScale();
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > name() const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > name() const;
         
                 int code() const;
         
                 int nFinal() const;
         
-                std::basic_string<char,std::char_traits<char>,std::allocator<char> > inFlux() const;
+                std::basic_string<char, std::char_traits<char>, std::allocator<char> > inFlux() const;
         
                 bool convert2mb() const;
         

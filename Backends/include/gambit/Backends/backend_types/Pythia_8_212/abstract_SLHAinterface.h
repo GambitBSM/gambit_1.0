@@ -4,13 +4,13 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
-#include "wrapper_SusyLesHouches_decl.h"
-#include "wrapper_CoupSUSY_decl.h"
-#include "wrapper_Couplings_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 #include "wrapper_Rndm_decl.h"
+#include "wrapper_Couplings_decl.h"
 #include "wrapper_ParticleData_decl.h"
+#include "wrapper_SusyLesHouches_decl.h"
+#include "wrapper_CoupSUSY_decl.h"
 #include <cstddef>
 
 #include "identification.hpp"
@@ -29,19 +29,19 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
     
+                virtual void setPtr__BOSS(Pythia8::Abstract_Info*) =0;
+    
+                virtual void init__BOSS(Pythia8::Abstract_Settings&, Pythia8::Abstract_Rndm*, Pythia8::Abstract_Couplings*, Pythia8::Abstract_ParticleData*, bool&, std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >&) =0;
+    
+                virtual bool initSLHA__BOSS(Pythia8::Abstract_Settings&, Pythia8::Abstract_ParticleData*) =0;
+    
+                virtual void pythia2slha__BOSS(Pythia8::Abstract_ParticleData*) =0;
+    
                 virtual Pythia8::Abstract_SusyLesHouches& slha_ref__BOSS() =0;
     
                 virtual Pythia8::Abstract_CoupSUSY& coupSUSY_ref__BOSS() =0;
     
                 virtual int& meMode_ref__BOSS() =0;
-    
-                virtual void setPtr__BOSS(Pythia8::Abstract_Info*) =0;
-    
-                virtual void init__BOSS(Pythia8::Abstract_Settings&, Pythia8::Abstract_Rndm*, Pythia8::Abstract_Couplings*, Pythia8::Abstract_ParticleData*, bool&, std::basic_stringstream<char,std::char_traits<char>,std::allocator<char> >&) =0;
-    
-                virtual bool initSLHA__BOSS(Pythia8::Abstract_Settings&, Pythia8::Abstract_ParticleData*) =0;
-    
-                virtual void pythia2slha__BOSS(Pythia8::Abstract_ParticleData*) =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_SLHAinterface*) =0;

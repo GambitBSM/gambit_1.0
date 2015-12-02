@@ -1,9 +1,7 @@
 #ifndef __wrapper_Hist_def_Pythia_8_212_h__
 #define __wrapper_Hist_def_Pythia_8_212_h__
 
-#include <string>
 #include <vector>
-#include <ostream>
 
 #include "identification.hpp"
 
@@ -14,22 +12,22 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void Hist::book(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn, int nBinIn, double xMinIn, double xMaxIn)
+        inline void Hist::book(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn, double xMinIn, double xMaxIn)
         {
             wrapperbase::BEptr->book(titleIn, nBinIn, xMinIn, xMaxIn);
         }
         
-        inline void Hist::book(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn, int nBinIn, double xMinIn)
+        inline void Hist::book(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn, double xMinIn)
         {
             wrapperbase::BEptr->book__BOSS(titleIn, nBinIn, xMinIn);
         }
         
-        inline void Hist::book(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn, int nBinIn)
+        inline void Hist::book(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn)
         {
             wrapperbase::BEptr->book__BOSS(titleIn, nBinIn);
         }
         
-        inline void Hist::book(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn)
+        inline void Hist::book(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn)
         {
             wrapperbase::BEptr->book__BOSS(titleIn);
         }
@@ -39,7 +37,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->book__BOSS();
         }
         
-        inline void Hist::name(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn)
+        inline void Hist::name(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn)
         {
             wrapperbase::BEptr->name(titleIn);
         }
@@ -64,17 +62,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->fill__BOSS(x);
         }
         
-        inline void Hist::table(std::basic_ostream<char,std::char_traits<char> >& os, bool printOverUnder, bool xMidBin) const
+        inline void Hist::table(std::basic_ostream<char, std::char_traits<char> >& os, bool printOverUnder, bool xMidBin) const
         {
             wrapperbase::BEptr->table(os, printOverUnder, xMidBin);
         }
         
-        inline void Hist::table(std::basic_ostream<char,std::char_traits<char> >& os, bool printOverUnder) const
+        inline void Hist::table(std::basic_ostream<char, std::char_traits<char> >& os, bool printOverUnder) const
         {
             wrapperbase::BEptr->table__BOSS(os, printOverUnder);
         }
         
-        inline void Hist::table(std::basic_ostream<char,std::char_traits<char> >& os) const
+        inline void Hist::table(std::basic_ostream<char, std::char_traits<char> >& os) const
         {
             wrapperbase::BEptr->table__BOSS(os);
         }
@@ -84,17 +82,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->table__BOSS();
         }
         
-        inline void Hist::table(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName, bool printOverUnder, bool xMidBin) const
+        inline void Hist::table(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool printOverUnder, bool xMidBin) const
         {
             wrapperbase::BEptr->table(fileName, printOverUnder, xMidBin);
         }
         
-        inline void Hist::table(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName, bool printOverUnder) const
+        inline void Hist::table(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool printOverUnder) const
         {
             wrapperbase::BEptr->table__BOSS(fileName, printOverUnder);
         }
         
-        inline void Hist::table(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName) const
+        inline void Hist::table(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName) const
         {
             wrapperbase::BEptr->table__BOSS(fileName);
         }
@@ -178,35 +176,35 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Hist::Hist(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn, int nBinIn, double xMinIn, double xMaxIn) :
+        inline Pythia8::Hist::Hist(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn, double xMinIn, double xMaxIn) :
             WrapperBase<Pythia8::Abstract_Hist>(__factory1(titleIn, nBinIn, xMinIn, xMaxIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Hist::Hist(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn, int nBinIn, double xMinIn) :
+        inline Pythia8::Hist::Hist(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn, double xMinIn) :
             WrapperBase<Pythia8::Abstract_Hist>(__factory2(titleIn, nBinIn, xMinIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Hist::Hist(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn, int nBinIn) :
+        inline Pythia8::Hist::Hist(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn) :
             WrapperBase<Pythia8::Abstract_Hist>(__factory3(titleIn, nBinIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Hist::Hist(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn) :
+        inline Pythia8::Hist::Hist(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn) :
             WrapperBase<Pythia8::Abstract_Hist>(__factory4(titleIn))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Hist::Hist(std::basic_string<char,std::char_traits<char>,std::allocator<char> > titleIn, const Pythia8::Hist& h) :
+        inline Pythia8::Hist::Hist(std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, const Pythia8::Hist& h) :
             WrapperBase<Pythia8::Abstract_Hist>(__factory5(titleIn, h))
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
