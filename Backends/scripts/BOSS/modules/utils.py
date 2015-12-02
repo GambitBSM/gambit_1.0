@@ -112,7 +112,7 @@ def isFundamental(el):
 
 # ====== isKnownClass ========
 
-def isKnownClass(el):
+def isKnownClass(el, class_name=None):
 
     import modules.classutils as classutils
     
@@ -126,7 +126,9 @@ def isKnownClass(el):
         is_known = False
         return is_known
 
-    class_name = classutils.getClassNameDict(type_el) 
+    # Get class_name dict if it is not passed in as an argument
+    if class_name is None:
+        class_name = classutils.getClassNameDict(type_el) 
 
     if class_name['long_templ'] in cfg.known_classes:
         is_known = True
@@ -237,7 +239,7 @@ def isNative(el):
 
 # ====== isStdType ========
 
-def isStdType(el):
+def isStdType(el, class_name=None):
 
     # Makes use of global variables:  accepted_paths
 
@@ -246,11 +248,17 @@ def isStdType(el):
 
     if el.tag in can_check_tags:
 
-        if 'name' in el.keys():
+        # Use the optional class_name dict?
+        if class_name is not None:
+            if len(class_name['long_templ']) >= 5:
+                if class_name['long_templ'][0:5] == 'std::':
+                    is_std = True
+
+        elif 'name' in el.keys():
             namespaces_list = getNamespaces(el, include_self=True)
-            full_name = '::'.join(namespaces_list)
-            if full_name[0:5] == 'std::':
+            if namespaces_list[0] == 'std':
                 is_std = True
+    
     else:
         is_std = False
 
@@ -1009,32 +1017,45 @@ def isAcceptedType(input_el):
 
 # ====== isLoadedClass ========
 
-def isLoadedClass(input_type, byname=False):
+def isLoadedClass(input_type, byname=False, class_name=None):
 
     is_loaded_class = False
 
-    if byname:
-        type_name = input_type
+    # If the class_name dict is passed as an argument, use it.
+    if class_name is not None:
 
-        # Remove '*' and '&'
-        type_name = type_name.replace('*','').replace('&','')
-
-        # Remove template bracket
-        type_name = type_name.split('<')[0]
-
-        # Check against cfg.loaded_classes
-        if type_name in cfg.loaded_classes:
+        if class_name['long_templ'] in cfg.loaded_classes:
             is_loaded_class = True
 
     else:
-        type_dict = findType(input_type)
-        type_el = type_dict['el']
 
-        if type_el.tag in ['Class', 'Struct']:
-            namespaces_list = getNamespaces(type_el, include_self=True)
-            full_name = '::'.join(namespaces_list)
-            if full_name in cfg.loaded_classes:
+        if byname:
+            type_name = input_type
+
+            # Remove '*' and '&'
+            type_name = type_name.replace('*','').replace('&','')
+
+            # Remove template bracket
+            type_name = type_name.split('<')[0]
+
+            # Check against cfg.loaded_classes
+            if type_name in cfg.loaded_classes:
                 is_loaded_class = True
+
+        else:
+            type_dict = findType(input_type)
+            type_el = type_dict['el']
+
+            if type_el.tag in ['Class', 'Struct']:
+
+                if type_dict['name'] in cfg.loaded_classes:
+                    is_loaded_class = True
+
+                # namespaces_list = getNamespaces(type_el, include_self=True)
+                # full_name = '::'.join(namespaces_list)
+                # if full_name in cfg.loaded_classes:
+                #     is_loaded_class = True
+
 
     return is_loaded_class
 
@@ -2279,6 +2300,8 @@ def pathSplitAll(path):
 
 def fillAcceptedTypesList():
 
+    import modules.classutils as classutils
+
     # Sets to store type names
     fundamental_types = set()
     std_types         = set()
@@ -2293,11 +2316,16 @@ def fillAcceptedTypesList():
     for xml_file in gb.all_id_dict.keys():
 
         # Reset some variables for each new xml file
-        new_fundamental_types   = set()
-        new_std_types           = set()
-        new_known_classes       = set()
-        # new_enumeration_types   = set()
-        new_loaded_classes      = set()
+        # new_fundamental_types   = set()
+        # new_std_types           = set()
+        # new_known_classes       = set()
+        # # new_enumeration_types   = set()
+        # new_loaded_classes      = set()
+        new_fundamental_types   = []
+        new_std_types           = []
+        new_known_classes       = []
+        # new_enumeration_types   = []
+        new_loaded_classes      = []
 
 
         initGlobalXMLdicts(xml_file)
@@ -2310,7 +2338,7 @@ def fillAcceptedTypesList():
             
             i += 1
             if i%100 == 0:
-                print "HERE: Done with %i of %i.  -  %.2f" % (i, n_elements, float(i)/float(n_elements))            
+                print "HERE: Done with %i of %i.  -  %.1f%%" % (i, n_elements, 100.*float(i)/float(n_elements))            
 
             # Only consider types
             if el.tag not in ['Class', 'Struct', 'FundamentalType', 'Enumeration']:
@@ -2329,21 +2357,26 @@ def fillAcceptedTypesList():
             #
             is_fundamental = isFundamental(el)
             if is_fundamental:
-                new_fundamental_types.add(full_name)
+                new_fundamental_types.append(full_name)
+
+
+            # To save a bit of time, construct class name dict once and pass to remaining checks
+            class_name = classutils.getClassNameDict(el)
+
 
             #
             # Std type?
             #
-            is_std_type = isStdType(el)
+            is_std_type = isStdType(el, class_name=class_name)
             if is_std_type:
-                new_std_types.add(full_name)
+                new_std_types.append(full_name)
 
             #
             # Known class?
             #
-            is_known_class = isKnownClass(el)
+            is_known_class = isKnownClass(el, class_name=class_name)
             if is_known_class:
-                new_known_classes.add(full_name)
+                new_known_classes.append(full_name)
 
 
             # #
@@ -2351,24 +2384,25 @@ def fillAcceptedTypesList():
             # #
             # is_enumeration = isEnumeration(el)
             # if is_enumeration:
-            #     new_enumeration_types.add( '::'.join( getNamespaces(el, include_self=True) ) )
+            #     new_enumeration_types.append( '::'.join( getNamespaces(el, include_self=True) ) )
 
             #
             # Loaded type?
             #
-            is_loaded_class = isLoadedClass(el)
+            is_loaded_class = isLoadedClass(el, byname=False, class_name=class_name)
             if is_loaded_class:
-                new_loaded_classes.add(full_name)
+                new_loaded_classes.append(full_name)
 
 
-            #
-            # Update sets of types
-            #
-            fundamental_types = fundamental_types.union(new_fundamental_types)
-            std_types         = std_types.union(new_std_types)
-            known_classes     = known_classes.union(new_known_classes)
-            # enumeration_types = enumeration_types.union(new_enumeration_types)
-            loaded_classes    = loaded_classes.union(new_loaded_classes)
+
+        #
+        # Update sets of types
+        #
+        fundamental_types = fundamental_types.union(set(new_fundamental_types))
+        std_types         = std_types.union(set(new_std_types))
+        known_classes     = known_classes.union(set(new_known_classes))
+        # enumeration_types = enumeration_types.union(set(new_enumeration_types))
+        loaded_classes    = loaded_classes.union(set(new_loaded_classes))
 
 
     # Fill global list

@@ -349,7 +349,8 @@ def main():
     print 'Analysing types and functions:'
     print '------------------------------'
     print
-
+    print '  (This may take a little while.)'
+    print
     #
     # Read all xml elements of all files and store in two dict of dicts: 
     #
@@ -434,11 +435,6 @@ def main():
     #
     utils.fillParentsOfLoadedClassesList()
 
-    # for p in gb.parents_of_loaded_classes:
-    #     print 'HERE:', p
-
-    # sys.exit()
-
 
     #
     # Fill the gb.accepted_types list
@@ -487,8 +483,6 @@ def main():
                         cfg.loaded_functions.remove(func_name_long_templ_args)
 
 
-    print 'HERE: 9'
-    
     #
     # Main loop over all xml files
     #
