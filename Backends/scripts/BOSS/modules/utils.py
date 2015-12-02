@@ -451,7 +451,7 @@ def getBasicTypeName(type_name):
     # If type name contains a template brackets
     if '<' in type_name:
         type_name_notempl, templ_bracket = removeTemplateBracket(type_name, return_bracket=True)
-        before_bracket, after_bracket = type_name.split(templ_bracket)
+        before_bracket, after_bracket = type_name.rsplit(templ_bracket,1)
 
         if (len(after_bracket) > 0) and (after_bracket[0] == ' '):
             space_after_bracket = True
@@ -2332,17 +2332,17 @@ def fillAcceptedTypesList():
 
 
         # Loop over all named elements in the xml file
-        n_elements = len(gb.name_dict)
-        i = 0
+        type_counter = 0
         for full_name, el in gb.name_dict.items():
             
-            i += 1
-            if i%100 == 0:
-                print "HERE: Done with %i of %i.  -  %.1f%%" % (i, n_elements, 100.*float(i)/float(n_elements))            
-
             # Only consider types
             if el.tag not in ['Class', 'Struct', 'FundamentalType', 'Enumeration']:
                 continue
+
+            type_counter += 1
+            if type_counter%500 == 0:
+                print '  %i types classified...' % (type_counter)    
+
 
             # Skip incomplete types
             if ('incomplete' in el.keys()) and (el.get('incomplete') == '1'):
