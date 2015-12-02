@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:27:24
+// File generated at Wed 28 Oct 2015 11:32:31
 
 #ifndef CMSSM_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 #define CMSSM_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
@@ -38,7 +38,7 @@ template<>
 class CMSSM_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    CMSSM_low_scale_constraint();
-   CMSSM_low_scale_constraint(CMSSM<Two_scale>*, const QedQcd&);
+   CMSSM_low_scale_constraint(CMSSM<Two_scale>*, const softsusy::QedQcd&);
    virtual ~CMSSM_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -49,15 +49,15 @@ public:
    const Eigen::Matrix<std::complex<double>,3,3>& get_pmns();
    double get_initial_scale_guess() const;
    void initialize();
-   const QedQcd& get_sm_parameters() const;
-   void set_sm_parameters(const QedQcd&);
+   const softsusy::QedQcd& get_sm_parameters() const;
+   void set_sm_parameters(const softsusy::QedQcd&);
    void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
 private:
    double scale;
    double initial_scale_guess;
    CMSSM<Two_scale>* model;
-   QedQcd oneset;
+   softsusy::QedQcd oneset;
    Eigen::Matrix<std::complex<double>,3,3> ckm;
    Eigen::Matrix<std::complex<double>,3,3> pmns;
    Eigen::Matrix<double,3,3> neutrinoDRbar;

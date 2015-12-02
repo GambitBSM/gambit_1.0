@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:47:48
+// File generated at Wed 28 Oct 2015 11:46:36
 
 #include "MSSMNoFVatMGUT_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -97,6 +97,25 @@ Eigen::Matrix<double,3,3> MSSMNoFVatMGUT_soft_parameters::calc_beta_me2_two_loop
       Tr2U111 + 3.872983346207417*Tr31)*UNITMATRIX(3) + 6*Conj(MassB)*Sqr(g1)*(
       5*(-2*MassB*(Ye*Ye.adjoint()) + TYe*Ye.adjoint()) + 234*MassB*Sqr(g1)*
       UNITMATRIX(3)))).real();
+
+
+   return beta_me2;
+}
+
+/**
+ * Calculates the three-loop beta function of me2.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> MSSMNoFVatMGUT_soft_parameters::calc_beta_me2_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_me2;
+
+   beta_me2 = ZEROMATRIX(3,3);
 
 
    return beta_me2;

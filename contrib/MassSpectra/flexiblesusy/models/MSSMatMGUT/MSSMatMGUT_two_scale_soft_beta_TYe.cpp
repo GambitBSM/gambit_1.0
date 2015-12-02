@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:21:50
+// File generated at Wed 28 Oct 2015 11:32:02
 
 #include "MSSMatMGUT_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -89,6 +89,25 @@ Eigen::Matrix<double,3,3> MSSMatMGUT_soft_parameters::calc_beta_TYe_two_loop(con
       Ye) + 12*Sqr(g2)*(TYe*Ye.adjoint()*Ye) - 6*(Ye*Ye.adjoint()*Ye*Ye.adjoint
       ()*TYe) - 8*(Ye*Ye.adjoint()*TYe*Ye.adjoint()*Ye) - 6*(TYe*Ye.adjoint()*
       Ye*Ye.adjoint()*Ye))).real();
+
+
+   return beta_TYe;
+}
+
+/**
+ * Calculates the three-loop beta function of TYe.
+ *
+ * @return three-loop beta function
+ */
+Eigen::Matrix<double,3,3> MSSMatMGUT_soft_parameters::calc_beta_TYe_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   Eigen::Matrix<double,3,3> beta_TYe;
+
+   beta_TYe = ZEROMATRIX(3,3);
 
 
    return beta_TYe;

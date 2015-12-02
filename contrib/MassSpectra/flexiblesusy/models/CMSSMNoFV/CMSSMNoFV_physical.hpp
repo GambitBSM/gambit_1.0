@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:00:15
+// File generated at Wed 28 Oct 2015 11:53:54
 
 #ifndef CMSSMNoFV_PHYSICAL_H
 #define CMSSMNoFV_PHYSICAL_H
@@ -36,9 +36,7 @@ struct CMSSMNoFV_physical {
    void convert_to_slha(); ///< converts pole masses to SLHA convention
    void print(std::ostream&) const;
 
-   double MVG;
    double MGlu;
-   double MVP;
    double MVZ;
    double MFd;
    double MFs;
@@ -69,6 +67,8 @@ struct CMSSMNoFV_physical {
    Eigen::Array<double,2,1> MHpm;
    Eigen::Array<double,4,1> MChi;
    Eigen::Array<double,2,1> MCha;
+   double MVG;
+   double MVP;
    double MVWm;
 
    Eigen::Matrix<double,2,2> ZD;

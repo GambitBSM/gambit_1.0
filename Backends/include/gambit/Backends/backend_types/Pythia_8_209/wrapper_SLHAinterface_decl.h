@@ -65,6 +65,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~SLHAinterface();
         
+            private:
+                // Member variable initialiser: 
+                void _memberVariablesInit();
+        
         };
     }
     

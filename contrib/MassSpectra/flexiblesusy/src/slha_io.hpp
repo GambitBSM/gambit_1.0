@@ -40,6 +40,8 @@ namespace softsusy {
 
 namespace flexiblesusy {
 
+   class Spectrum_generator_settings;
+
    namespace {
       /// SLHA line formatter for the MASS block entries
       const boost::format mass_formatter(" %9d   %16.8E   # %s\n");
@@ -58,17 +60,17 @@ namespace flexiblesusy {
    }
 
 #define FORMAT_MASS(pdg,mass,name)                                      \
-   boost::format(mass_formatter) % pdg % mass % name
+   boost::format(mass_formatter) % (pdg) % (mass) % (name)
 #define FORMAT_MIXING_MATRIX(i,k,entry,name)                            \
-   boost::format(mixing_matrix_formatter) % i % k % entry % name
+   boost::format(mixing_matrix_formatter) % (i) % (k) % (entry) % (name)
 #define FORMAT_ELEMENT(pdg,value,name)                                  \
-   boost::format(single_element_formatter) % pdg % value % name
+   boost::format(single_element_formatter) % (pdg) % (value) % (name)
 #define FORMAT_SCALE(n)                                                 \
-   boost::format(scale_formatter) % n
+   boost::format(scale_formatter) % (n)
 #define FORMAT_NUMBER(n,str)                                            \
-   boost::format(number_formatter) % n % str
+   boost::format(number_formatter) % (n) % (str)
 #define FORMAT_SPINFO(n,str)                                            \
-   boost::format(spinfo_formatter) % n % str
+   boost::format(spinfo_formatter) % (n) % (str)
 
 /**
  * @class SLHA_io
@@ -161,9 +163,12 @@ public:
    // reading functions
    bool block_exists(const std::string&) const;
    void fill(softsusy::QedQcd&) const;
+   void fill(Spectrum_generator_settings&) const;
    const Modsel& get_modsel() const { return modsel; }
    const SLHAea::Coll& get_data() const { return data; }
    void read_from_file(const std::string&);
+   void read_from_source(const std::string&);
+   void read_from_stream(std::istream&);
    double read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
    double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
@@ -214,6 +219,7 @@ private:
    static void process_modsel_tuple(Modsel&, int, double);
    static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
    static void process_upmnsin_tuple(PMNS_parameters&, int, double);
+   static void process_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 };
 
 template <class Scalar>

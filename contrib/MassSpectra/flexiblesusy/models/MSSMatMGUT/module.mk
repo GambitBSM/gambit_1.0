@@ -65,6 +65,7 @@ LIBMSSMatMGUT_HDR += \
 		$(DIR)/MSSMatMGUT_model_slha.hpp \
 		$(DIR)/MSSMatMGUT_physical.hpp \
 		$(DIR)/MSSMatMGUT_slha_io.hpp \
+		$(DIR)/MSSMatMGUT_spectrum_generator_interface.hpp \
 		$(DIR)/MSSMatMGUT_spectrum_generator.hpp \
 		$(DIR)/MSSMatMGUT_susy_scale_constraint.hpp \
 		$(DIR)/MSSMatMGUT_utilities.hpp \
@@ -119,6 +120,10 @@ EXEMSSMatMGUT_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXEMSSMatMGUT_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(EXEMSSMatMGUT_SRC)))
 
+EXEMSSMatMGUT_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXEMSSMatMGUT_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXEMSSMatMGUT_SRC)))
+
 LIBMSSMatMGUT_DEP := \
 		$(LIBMSSMatMGUT_OBJ:.o=.d)
 
@@ -126,15 +131,6 @@ EXEMSSMatMGUT_DEP := \
 		$(EXEMSSMatMGUT_OBJ:.o=.d)
 
 LIBMSSMatMGUT     := $(DIR)/lib$(MODNAME)$(LIBEXT)
-
-RUN_MSSMatMGUT_OBJ := $(DIR)/run_MSSMatMGUT.o
-RUN_MSSMatMGUT_EXE := $(DIR)/run_MSSMatMGUT.x
-
-RUN_CMD_LINE_MSSMatMGUT_OBJ := $(DIR)/run_cmd_line_MSSMatMGUT.o
-RUN_CMD_LINE_MSSMatMGUT_EXE := $(DIR)/run_cmd_line_MSSMatMGUT.x
-
-SCAN_MSSMatMGUT_OBJ := $(DIR)/scan_MSSMatMGUT.o
-SCAN_MSSMatMGUT_EXE := $(DIR)/scan_MSSMatMGUT.x
 
 METACODE_STAMP_MSSMatMGUT := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
@@ -175,9 +171,7 @@ clean-$(MODNAME)-obj:
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBMSSMatMGUT)
-		-rm -f $(RUN_MSSMatMGUT_EXE)
-		-rm -f $(RUN_CMD_LINE_MSSMatMGUT_EXE)
-		-rm -f $(SCAN_MSSMatMGUT_EXE)
+		-rm -f $(EXEMSSMatMGUT_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
@@ -221,16 +215,10 @@ endif
 $(LIBMSSMatMGUT): $(LIBMSSMatMGUT_OBJ)
 		$(MAKELIB) $@ $^
 
-$(RUN_MSSMatMGUT_EXE): $(RUN_MSSMatMGUT_OBJ) $(LIBMSSMatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(RUN_CMD_LINE_MSSMatMGUT_EXE): $(RUN_CMD_LINE_MSSMatMGUT_OBJ) $(LIBMSSMatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(SCAN_MSSMatMGUT_EXE): $(SCAN_MSSMatMGUT_OBJ) $(LIBMSSMatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+$(DIR)/%.x: $(DIR)/%.o $(LIBMSSMatMGUT) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
 
 ALLDEP += $(LIBMSSMatMGUT_DEP) $(EXEMSSMatMGUT_DEP)
 ALLSRC += $(LIBMSSMatMGUT_SRC) $(EXEMSSMatMGUT_SRC)
 ALLLIB += $(LIBMSSMatMGUT)
-ALLEXE += $(RUN_MSSMatMGUT_EXE) $(RUN_CMD_LINE_MSSMatMGUT_EXE) $(SCAN_MSSMatMGUT_EXE)
+ALLEXE += $(EXEMSSMatMGUT_EXE)

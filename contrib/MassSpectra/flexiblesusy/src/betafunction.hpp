@@ -57,7 +57,7 @@ public:
 
    void reset();
 
-   virtual const Eigen::ArrayXd get() const = 0;
+   virtual Eigen::ArrayXd get() const = 0;
    virtual void set(const Eigen::ArrayXd&) = 0;
    virtual Eigen::ArrayXd beta() const = 0;
 

@@ -21,27 +21,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         class Abstract_ResonanceGmZ : virtual public AbstractBase, virtual public Pythia8::Abstract_ResonanceWidths
         {
-            private:
-                // IGNORED: Field  -- Name: gmZmode  -- XML id: _28390
-                // IGNORED: Field  -- Name: thetaWRat  -- XML id: _28391
-                // IGNORED: Field  -- Name: ei2  -- XML id: _28392
-                // IGNORED: Field  -- Name: eivi  -- XML id: _28393
-                // IGNORED: Field  -- Name: vi2ai2  -- XML id: _28394
-                // IGNORED: Field  -- Name: gamNorm  -- XML id: _28395
-                // IGNORED: Field  -- Name: intNorm  -- XML id: _28396
-                // IGNORED: Field  -- Name: resNorm  -- XML id: _28397
             public:
-            private:
-    
-                virtual void initConstants() =0;
-    
-                virtual void calcPreFac(bool) =0;
-    
-                virtual void calcPreFac__BOSS() =0;
-    
-                virtual void calcWidth(bool) =0;
-    
-                virtual void calcWidth__BOSS() =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_ResonanceGmZ*) =0;

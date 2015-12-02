@@ -40,7 +40,7 @@ namespace Gambit
     //  Gambit module functions.
 
     /// Initialise QedQcd object from SMInputs data
-    void setup_QedQcd(QedQcd& oneset /*output*/, const SMInputs& sminputs /*input*/);
+    void setup_QedQcd(softsusy::QedQcd& oneset /*output*/, const SMInputs& sminputs /*input*/);
 
   }
 }
