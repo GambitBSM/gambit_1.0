@@ -349,7 +349,6 @@ def main():
     utils.xmlFilesToDicts(xml_files)
 
 
-    print 'HERE: 1'
     #
     # Look up potential parent classes and add to cfg.loaded_classes
     #
@@ -357,7 +356,6 @@ def main():
     if cfg.load_parent_classes:
         utils.addParentClasses()
 
-    print 'HERE: 2'
 
     #
     # Remove from cfg.loaded_classes all classes that are not loadable (not found, incomplete, abstract, ...)
@@ -367,8 +365,6 @@ def main():
     cfg.loaded_classes = list(OrderedDict.fromkeys(cfg.loaded_classes))
 
     is_loadable = OrderedDict.fromkeys(cfg.loaded_classes, False)
-
-    print 'HERE: 3'
 
     # Determine which requested classes are actually loadable
     for xml_file in xml_files:
@@ -393,8 +389,6 @@ def main():
                         is_loadable[full_name] = True
 
 
-    print 'HERE: 4'
-
     # Remove from cfg.loaded_classes those that are not loadable
     for full_name in is_loadable.keys():
 
@@ -402,7 +396,6 @@ def main():
 
             cfg.loaded_classes.remove(full_name)
 
-    print 'HERE: 5'
 
     # Output info on why classes are not loadable
     for xml_file in xml_files:
@@ -426,8 +419,6 @@ def main():
                     infomsg.ClassNotLoadable(full_name, reason).printMessage()
 
 
-    print 'HERE: 6'
-
     #
     # Fill the gb.parents_of_loaded_classes list
     #
@@ -438,7 +429,7 @@ def main():
 
     # sys.exit()
 
-    print 'HERE: 7'
+    print 'DEBUG: start fillAcceptedTypesList()'
 
 
     #
@@ -446,7 +437,7 @@ def main():
     #
     utils.fillAcceptedTypesList()
     
-    print 'HERE: 8'
+    print 'DEBUG: end fillAcceptedTypesList()'
 
     #
     # Remove from cfg.loaded_functions all functions that are not loadable

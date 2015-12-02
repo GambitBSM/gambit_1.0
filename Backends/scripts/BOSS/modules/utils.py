@@ -2550,15 +2550,6 @@ def isProblematicType(el):
 
     is_problematic = False
 
-    # Check if this type has been checked before
-    if el in isProblematicType.prob_types:
-        is_problematic = True
-        return is_problematic
-    elif el in isProblematicType.not_prob_types:
-        is_problematic = False
-        return is_problematic
-
-
     # Determine type name
     if 'name' in el.keys():
         namespaces_list = getNamespaces(el, include_self=True)
@@ -2599,10 +2590,6 @@ def isProblematicType(el):
     if not is_problematic:
         isProblematicType.not_prob_types.append(el)
     return is_problematic
-
-# Store problematic types as they are found
-isProblematicType.prob_types = []
-isProblematicType.not_prob_types = []
 
 # ====== END: isProblematicType ========
 
