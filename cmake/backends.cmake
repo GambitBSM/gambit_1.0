@@ -183,7 +183,7 @@ add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -g")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
 endif()
