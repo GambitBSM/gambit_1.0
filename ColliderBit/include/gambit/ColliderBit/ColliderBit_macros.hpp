@@ -39,7 +39,7 @@
 
 // My TIME_THAT_SHIT macros usually require some extra curly braces. Example:
 // { TIME_THAT_SHIT(two_times_timer) { double f = 5.*9.; f = 7.*-3.; } }   
-#define TIME_THAT_SHIT(TIMER_NAME)                                         \
+/*#define TIME_THAT_SHIT(TIMER_NAME)					\
 ms __delta_##TIMER_NAME;                                                   \
 const int me = omp_get_thread_num();                                       \
 double TIMER_NAME = -1.;                                                   \
@@ -59,6 +59,6 @@ for(tp __start_##TIMER_NAME = steady_clock::now(); TIMER_NAME < 0;         \
     __delta_##TIMER_NAME = std::chrono::duration_cast<ms> (                \
             steady_clock::now() - __start_##TIMER_NAME),                   \
     TIMER_NAME = __delta_##TIMER_NAME.count(),                             \
-    global_timers[#TIMER_NAME] += TIMER_NAME)
+    global_timers[#TIMER_NAME] += TIMER_NAME)*/
 
 #endif /* defined __ColliderBit_macros_hpp__ */

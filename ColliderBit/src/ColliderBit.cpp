@@ -104,10 +104,10 @@ namespace Gambit
     HEPUtilsAnalysisContainer* globalSubprocessAnalyses = new HEPUtilsAnalysisContainer();
     HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
     /// Timing stuff
-    timer_map_type timers[THREADS];
+    /*timer_map_type timers[THREADS];
     timer_map_type timer_maxima[THREADS];
     timer_map_type global_timers;
-    timer_map_type global_timer_maxima;
+    timer_map_type global_timer_maxima;*/
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -121,8 +121,8 @@ namespace Gambit
     {
       using namespace Pipes::operateLHCLoop;
       static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
-      global_timers.clear();
-      global_timer_maxima.clear();
+      //global_timers.clear();
+      //global_timer_maxima.clear();
       nEvents = 0;
       int currentEvent;
       eventsGenerated = false;
@@ -155,22 +155,22 @@ namespace Gambit
           #pragma omp parallel
           {
             const int me = omp_get_thread_num();
-            timers[me].clear();
-            timer_maxima[me].clear();
+            //timers[me].clear();
+            //timer_maxima[me].clear();
             Loop::executeIteration(START_SUBPROCESS);
             // main event loop
             while(currentEvent<nEvents) {
               if(not *Loop::done) Loop::executeIteration(currentEvent++);
             }
             Loop::executeIteration(END_SUBPROCESS);
-            #pragma omp critical (end_timing)
+            /*#pragma omp critical (end_timing)
             {
               for(timer_map_type::iterator it=timers[me].begin(); it!=timers[me].end(); ++it)
                 global_timers[it->first] += it->second;
               for(timer_map_type::iterator it=timer_maxima[me].begin(); it!=timer_maxima[me].end(); ++it)
                 if(it->second > global_timer_maxima[it->first])
                   global_timer_maxima[it->first] = it->second;
-            }
+		  }*/
           }
         }
       }
@@ -178,7 +178,7 @@ namespace Gambit
       std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
 
-      std::cout<<"\n$$$$ ColliderBit loop timing";
+      /*std::cout<<"\n$$$$ ColliderBit loop timing";
       std::cout<<"\n============================";
       std::cout<<"\n$$$$ Totals, in milliseconds, per thread where parallel:\n\n";
       for(timer_map_type::iterator it=global_timers.begin(); it!=global_timers.end(); ++it)
@@ -187,7 +187,7 @@ namespace Gambit
       std::cout<<"\n$$$$ Maxima for each function call, in milliseconds:\n\n";
       for(timer_map_type::iterator it=global_timer_maxima.begin(); it!=global_timer_maxima.end(); ++it)
         std::cout << "    " << it->first << ":    " << it->second << std::endl;
-      std::cout << "\n\n\n";
+	std::cout << "\n\n\n";*/
     }
 
 
@@ -211,7 +211,7 @@ namespace Gambit
 
       if (*Loop::iteration == BASE_INIT)
       {
-        TIME_THAT_SHIT_GLOBALLY(getPythia_BASE_INIT)
+        //TIME_THAT_SHIT_GLOBALLY(getPythia_BASE_INIT)
         {
           // Get Pythia to print its banner.
           if (print_pythia_banner)
@@ -247,7 +247,7 @@ namespace Gambit
 
       if (*Loop::iteration == INIT)
       {
-        TIME_THAT_SHIT_GLOBALLY(getPythia_INIT)
+        //TIME_THAT_SHIT_GLOBALLY(getPythia_INIT)
         {
           std::string pythiaConfigName;
           // Setup new Pythia
@@ -279,7 +279,7 @@ namespace Gambit
 
         try
         {
-          TIME_THAT_SHIT(getPythia_initialize_Pythia)
+          //TIME_THAT_SHIT(getPythia_initialize_Pythia)
           {
             if (omp_get_thread_num() == 0)
               result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
@@ -468,7 +468,7 @@ namespace Gambit
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
-        TIME_THAT_SHIT_GLOBALLY(getAnalysisContainer_BASE_INIT)
+        //TIME_THAT_SHIT_GLOBALLY(getAnalysisContainer_BASE_INIT)
         {
           GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
           globalAnalyses->clear();
@@ -479,7 +479,7 @@ namespace Gambit
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
-        TIME_THAT_SHIT(getAnalysisContainer_START_SUBPROCESS)
+        //TIME_THAT_SHIT(getAnalysisContainer_START_SUBPROCESS)
         {
           // Each thread gets its own Analysis container.
           // Thus, their initialization is *after* INIT, within omp parallel.
@@ -495,11 +495,13 @@ namespace Gambit
 
       if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
       {
-        TIME_THAT_SHIT(getAnalysisContainer_END_SUBPROCESS)
+        //TIME_THAT_SHIT(getAnalysisContainer_END_SUBPROCESS)
         {
           const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
           const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
           result.add_xsec(xs_fb, xserr_fb);
+
+	  // Abram version
           // Combine results from this subprocess together
           #pragma omp critical (access_globalAnalyses)
           {
@@ -509,19 +511,32 @@ namespace Gambit
           }
           // Add total results from this subprocess to the main globalAnalyses container
           // (Synchronize threads first to ensure all results are totalled)
-          #pragma omp barrier
+#pragma omp barrier
           if (omp_get_thread_num() == 0) {
             globalAnalyses->add(globalSubprocessAnalyses);
             // Use add_xsec to combine results from the different process types
             globalAnalyses->add_xsec(globalSubprocessAnalyses);
-          }
-        } // end TIME_THAT_SHIT
-        return;
+	  }
+	  
+	  // Martin version
+	  
+          // Combine results from this subprocess together
+	  /*#pragma omp critical (access_globalAnalyses)
+          {
+	    globalAnalyses->add(result);
+	    // Use add_xsec to combine results from the different process types
+	    globalAnalyses->improve_xsec(result);
+	    
+	    } */
+	  
+	}
+	
+	return;
       }
-
+      
     }
-
-
+    
+    
 
     /// *** Hard Scattering Event Generators ***
 
@@ -533,7 +548,7 @@ namespace Gambit
 
       /// Get the next event from Pythia8
       try {
-        TIME_THAT_SHIT(generatePythia8Event_nextEvent)
+        //TIME_THAT_SHIT(generatePythia8Event_nextEvent)
         {
           (*Dep::HardScatteringSim).nextEvent(result);
         } // end TIME_THAT_SHIT
