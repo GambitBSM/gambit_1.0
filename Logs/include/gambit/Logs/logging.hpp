@@ -25,7 +25,7 @@
 #include <set>
 #include <map>
 #include <vector>
-#include <stack>
+#include <deque>
 #include <fstream>
 #include <stdexcept>
 #include <chrono> 
@@ -287,7 +287,7 @@ namespace Gambit
 
         /// Messages sent before logger objects are created will be buffered
         /// Same for messages sent while inside omp parallel blocks
-        std::stack<Message>* backlog;
+        std::deque<Message>* backlog;
 
         /// @}
     };

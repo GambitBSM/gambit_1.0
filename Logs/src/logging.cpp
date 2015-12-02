@@ -234,7 +234,7 @@ namespace Gambit
       {
         #pragma omp critical(logmaster_common_init_memory_backlog)
         {
-          if(backlog==NULL) backlog = new std::stack<Message>[n];
+          if(backlog==NULL) backlog = new std::deque<Message>[n];
         }
       }
       if(current_module==NULL)
@@ -295,11 +295,10 @@ namespace Gambit
                deftag.insert(def);
                loggers[deftag] = deflogger;
                loggers_readyQ = true;
+               std::cout<<"Log messages will be delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
              }
-             std::cout<<"Delivering messages..."<<std::endl;
              // Dump buffered messages
              empty_backlog();
-             std::cout<<"Messages delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
            }
          }
 
@@ -444,15 +443,20 @@ namespace Gambit
     {
        if(omp_get_level()!=0)
        {
-          logging_error().raise(LOCAL_INFO, "Tried to run empty_backlog() (in LogMaster) from inside an omp parallel block! This should not be possible, please file a bug report.");
+          // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
+          #pragma omp critical(logmaster_empty_backlog)
+          {
+            std::cout << LOCAL_INFO << "Tried to run empty_backlog() (in LogMaster) from inside an omp parallel block! This should not be possible, please file a bug report." << std::endl;
+            exit(EXIT_FAILURE);
+          }
        }
 
        for(int i=0; i<globlMaxThreads; i++)
        {
          for(size_t j=0; j<backlog[i].size(); j++)
          {
-            finalsend(backlog[i].top());
-            backlog[i].pop();
+            finalsend(backlog[i].front());
+            backlog[i].pop_front();
          }
        }
     }
@@ -616,7 +620,7 @@ namespace Gambit
        // If the loggers have not yet been initialised, buffer the message
        if(omp_get_level()!=0 or not loggers_readyQ)
        {
-         backlog[i].emplace(message,tags); //time stamp automatically added NOW
+         backlog[i].emplace_back(message,tags); //time stamp automatically added NOW
        }
        else
        {

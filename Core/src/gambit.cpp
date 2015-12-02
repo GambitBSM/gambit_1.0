@@ -33,6 +33,11 @@ int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
 
+  // FIXME this is to be shifted to ScannerBit
+  #ifdef WITH_MPI
+    GMPI::Init();
+  #endif
+
   // Set default signal handling in case they are received before initialisation occurs properly
   signal(SIGTERM, sighandler_hard);
   signal(SIGINT,  sighandler_hard);
@@ -46,11 +51,6 @@ int main(int argc, char* argv[])
   sigaddset(signal_mask(), SIGINT);
   sigaddset(signal_mask(), SIGUSR1);
   sigaddset(signal_mask(), SIGUSR2);
-
-  // FIXME this is to be shifted to ScannerBit
-  #ifdef WITH_MPI
-    GMPI::Init();
-  #endif
  
   /// Create an MPI communicator group for use by error handlers
   #ifdef WITH_MPI
@@ -185,10 +185,12 @@ int main(int argc, char* argv[])
 
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      scan.Run(); 
+      block_signals();
+      scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
+      unblock_signals();    
 
       //Scan is done; inform signal handlers 
-      signaldata().shutdown_begun = true;
+      signaldata().set_shutdown_begun();
 
       cout << "GAMBIT has finished successfully!" << endl;
       cout << endl;
@@ -203,14 +205,16 @@ int main(int argc, char* argv[])
   {
     if (not logger().disabled())
     {
-      cout << e.what() << endl;
+      std::ostringstream ss;
+      ss << e.what() << endl;
       #ifdef WITH_MPI
-      cout << "rank "<<rank<<": ";
+      ss << "rank "<<rank<<": ";
       #endif
-      cout << "GAMBIT has performed a controlled early shutdown." << endl;
-      signaldata().display_received_signals();
-      cout << endl;
-   }
+      ss << "GAMBIT has performed a controlled early shutdown." << endl;
+      ss << signaldata().display_received_signals() << endl;
+      cout     << ss.str();
+      logger() << ss.str() << EOM;
+  }
     // Let program shutdown normally from here
   }
 
@@ -221,13 +225,15 @@ int main(int argc, char* argv[])
   {
     if (not logger().disabled())
     {
-      cout << e.what() << endl;
+      std::ostringstream ss;
+      ss << e.what() << endl;
       #ifdef WITH_MPI
-      cout << "rank "<<rank<<": ";
+      ss << "rank "<<rank<<": ";
       #endif
-      cout << "GAMBIT has shutdown (but could not finalise or abort MPI)." << endl;
-      signaldata().display_received_signals();
-      cout << endl;
+      ss << "GAMBIT has shutdown (but could not finalise or abort MPI)." << endl;
+      ss << signaldata().display_received_signals() << endl;
+      cout     << ss.str();    
+      logger() << ss.str() << EOM;
     }
     // Free the memory held by the RNG
     Random::delete_rng_engine();

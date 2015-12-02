@@ -234,6 +234,8 @@ namespace Gambit
       //  Loop::executeIteration(it);    // This is a (member) function pointer, so *Loop::executeIteration(it) works fine too.
       //}
 
+      logger() << "Running eventLoopManager" << EOM;
+
       //A simple loop example using OpenMP
       int it = 0;
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
@@ -245,6 +247,7 @@ namespace Gambit
       // Start over again, just to demonstrate the reset function.  This just sets the Loop::done flag
       // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves 
       // by re-running iteration zero again, unless you want them to just set Loop::done true again straight away.
+      std::cout << "Resetting loop!" << std::endl;
       it = 0;
       Loop::reset();
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
@@ -269,11 +272,7 @@ namespace Gambit
       //}
 
       // testing loggers during parallel block...
-      logger() << "thread "<<omp_get_thread_num()<<": Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
-      #pragma omp critical (print)
-      {
-        logger() << EOM;
-      }
+      logger() << "thread "<<omp_get_thread_num()<<": Running exampleEventGen in iteration "<<*Loop::iteration<<EOM;
       //if (result > 2.0) invalid_point().raise("This point is annoying.");
     }
 
@@ -282,10 +281,7 @@ namespace Gambit
     {
       using namespace Pipes::exampleCut;
       result = (int) *Dep::event;
-      #pragma omp critical (print)
-      {
-        cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
-      }
+      logger()<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
     }
 
     /// Adds an integral event count to a total number of accumulated events.
@@ -326,7 +322,7 @@ namespace Gambit
       {
         cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
         cout<<"  Retrieved event count: "<<*Dep::event<<endl;
-        cout<<"  I have thread index: "<<omp_get_thread_num();
+        cout<<"  I have thread index: "<<omp_get_thread_num()<<endl;
         cout<<"  Current total counts is: "<<result<<endl;
       }
 
