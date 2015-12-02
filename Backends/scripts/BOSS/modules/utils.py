@@ -839,11 +839,14 @@ def getNamespaces(xml_el, include_self=False, xml_file_name=''):
         else:
             context_xml_el = gb.all_id_dict[xml_file_name][context_id]
 
-        if 'name' in current_xml_el.keys():
+        # if 'name' in current_xml_el.keys():
+        if 'name' in context_xml_el.keys():
             context_name = context_xml_el.get('name')
             namespaces.append(context_name)
+            # print "HERE2: Appended name: ", context_name, context_xml_el.get("id") 
         else:
             break
+            #continue
 
         current_xml_el = context_xml_el
 
@@ -2301,7 +2304,13 @@ def fillAcceptedTypesList():
 
 
         # Loop over all named elements in the xml file
+        n_elements = len(gb.name_dict)
+        i = 0
         for full_name, el in gb.name_dict.items():
+            
+            i += 1
+            if i%100 == 0:
+                print "HERE: Done with %i of %i.  -  %.2f" % (i, n_elements, float(i)/float(n_elements))            
 
             # Only consider types
             if el.tag not in ['Class', 'Struct', 'FundamentalType', 'Enumeration']:
@@ -2507,10 +2516,6 @@ def isProblematicType(el):
 
     is_problematic = False
 
-    # Determine type name
-    if 'name' in el.keys():
-        namespaces_list = getNamespaces(el, include_self=True)
-        full_name = '::'.join(namespaces_list)
 
     #
     # Check: types that use native types as template arguments
@@ -2519,7 +2524,7 @@ def isProblematicType(el):
     if el.tag in ['Class', 'Struct', 'FundamentalType']:
 
         # Get list of all template arguments (unpack any nested template arguments)
-        unpacked_template_args = getAllTemplateTypes(full_name)
+        unpacked_template_args = getAllTemplateTypes(el.get('name'))
 
         # If no template arguments, continue
         if unpacked_template_args == []:
@@ -2663,6 +2668,7 @@ def xmlFilesToDicts(xml_files):
             # Determine name
             if 'name' in el.keys():
                 namespaces_list = getNamespaces(el, include_self=True, xml_file_name=xml_file)
+                # print "HERE: ", el.get("id"), el.tag, namespaces_list
                 full_name = '::'.join(namespaces_list)
             else:
                 # Skip elements that don't have a name
