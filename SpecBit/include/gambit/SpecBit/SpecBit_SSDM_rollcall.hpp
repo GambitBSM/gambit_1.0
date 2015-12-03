@@ -3,19 +3,16 @@
 ///  \file
 ///
 ///  Rollcall declarations for module functions
-///  contained in SpecBit_MSSM.cpp
+///  contained in SpecBit_SSDM.cpp
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
 ///
-///  \author Ben Farmer
-///          (benjamin.farmer@fysik.su.se)
-///    \date 2014 Sep - Dec, 2015 Jan - Mar
-///  
-///  \author Christopher Rogan
-///          (christophersrogan@gmail.com)
-///  \date 2015 Apr
+///  \author James McKay
+///          (j.mckay14@imperial.ac.uk)
+///    \date Nov 2015
+///
 ///
 ///  *********************************************
 

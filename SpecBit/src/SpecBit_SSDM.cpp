@@ -365,7 +365,12 @@ namespace Gambit
 
     
     
-    
+    void shift(double &a, double &b, double &c, const double d)
+    {
+        a=b;
+        b=c;
+        c=d;
+    }
 
 
     void find_min_lambda(std::pair<double, double>& age_pair)
@@ -509,12 +514,12 @@ namespace Gambit
         if (p>1)
         {
             cout<< "vacuum is unstable" << endl;
-            stability=2; // unstable
+            //stability=2; // unstable
         }
         else
         {
             cout<< "vacuum is metastable" << endl;
-            stability=1; // metastable
+            //stability=1; // metastable
         }
        
         lifetime=1/(exp(3*140-2600/(abs(lambda_min)/0.01))*pow(1/(1.2e19),3)*pow(LB,4));
@@ -523,7 +528,7 @@ namespace Gambit
       {
         LB=1.22e19;
         lifetime=1e99;
-        stability=0; // stabe
+        //stability=0; // stabe
       }
       age_pair = std::make_pair (lifetime,LB);
     

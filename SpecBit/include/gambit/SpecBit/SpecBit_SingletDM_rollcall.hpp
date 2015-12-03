@@ -33,6 +33,15 @@
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
+    #define FUNCTION get_SSDM_spectrum2
+    START_FUNCTION(const Spectrum*)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDM_running))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+
 
 
 
