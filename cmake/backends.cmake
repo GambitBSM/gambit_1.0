@@ -178,9 +178,7 @@ enable_auto_rebuild(micromegasSingletDM)
 add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
-# - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it.
-# - Pythia will also screw up if trying to use -O3 with CMAKE_BUILD_TYPE=Release, so replace this with -O2
-string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
+set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -g")
@@ -219,6 +217,8 @@ ExternalProject_Add_Step(pythia apply_hacks
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ParticleData.h ${pythia_dir}/include/Pythia8/ParticleData.h
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.h ${pythia_dir}/include/Pythia8/SusyLesHouches.h
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Settings.h ${pythia_dir}/include/Pythia8/Settings.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/PartonDistributions.h ${pythia_dir}/include/Pythia8/PartonDistributions.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/PartonDistributions.cc ${pythia_dir}/src/PartonDistributions.cc
   DEPENDEES download
   DEPENDERS patch
 )
