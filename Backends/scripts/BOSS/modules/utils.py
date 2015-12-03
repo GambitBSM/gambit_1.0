@@ -2309,6 +2309,9 @@ def fillAcceptedTypesList():
     # enumeration_types = set()
     loaded_classes    = set()
 
+    # Keep track of how many types have been checked
+    type_counter = 0
+    print
 
     #
     # Collect names of all fundamental, std, enumeration, known and loaded types that are acceptable
@@ -2331,8 +2334,10 @@ def fillAcceptedTypesList():
         initGlobalXMLdicts(xml_file)
 
 
+        #
         # Loop over all named elements in the xml file
-        type_counter = 0
+        #
+
         for full_name, el in gb.name_dict.items():
             
             # Only consider types
@@ -2405,139 +2410,15 @@ def fillAcceptedTypesList():
         loaded_classes    = loaded_classes.union(set(new_loaded_classes))
 
 
+    # Print final number of types classified
+    print '  %i types classified.' % (type_counter)    
+
     # Fill global list
     gb.accepted_types = list(loaded_classes) + list(known_classes) + list(fundamental_types) + list(std_types)
     # gb.accepted_types = list(loaded_classes) + list(fundamental_types) + list(std_types) + list(enumeration_types)
 
 # ====== END: fillAcceptedTypesList ========
 
-
-
-# # ====== fillAcceptedTypesList ========
-
-# def fillAcceptedTypesList(xml_files):
-
-#     # Sets to store type names
-#     fundamental_types = set()
-#     enumeration_types = set()
-#     std_types         = set()
-#     loaded_classes    = set()
-
-#     problematic_types = set()
-
-#     # Dict: type name --> xml element
-#     elements_dict = {}
-
-
-#     #
-#     # Get names of all fundamental, std and enumeration types
-#     #
-#     for xml_file in xml_files:
-
-#         # Reset some variables for each new xml file
-#         new_std_types           = set()
-#         new_fundamental_types   = set()
-#         new_enumeration_types   = set()
-
-#         new_problematic_types   = set()
-
-
-#         # Parse xml file using ElementTree
-#         tree = ET.parse(xml_file)
-#         root = tree.getroot()
-
-#         # Set the global xml id dict. (Needed by the functions called in this loop.)
-#         gb.id_dict = OrderedDict([ (el.get('id'), el) for el in root.getchildren() ]) 
-
-
-#         # Loop over all types in current xml file
-#         for el in (   root.findall('Class') 
-#                     + root.findall('Struct') 
-#                     + root.findall('FundamentalType')
-#                     + root.findall('Enumeration') ):
-
-#             # Determine name
-#             if 'demangled' in el.keys():
-#                 full_name = el.get('demangled')
-#             elif 'name' in el.keys():
-#                 full_name = el.get('name')
-
-#             if ('incomplete' in el.keys()) and (el.get('incomplete') == '1'):
-#                 continue
-
-#             #
-#             # Update elements dict: type name --> xml element (all types)
-#             #
-#             elements_dict[full_name] = el
-
-
-#             #
-#             # Get name of all fundamental types
-#             #
-#             is_fundamental = isFundamental(el)
-#             if is_fundamental:
-#                 new_fundamental_types.add(full_name + '__fundamental')
-
-#             #
-#             # Get name of all std types
-#             #
-#             is_std_type = isStdType(el)
-#             if is_std_type:
-#                 new_std_types.add(full_name + '__std_type')
-
-#             #
-#             # Get name of all enumeration types
-#             #
-#             is_enumeration = isEnumeration(el)
-#             if is_enumeration:
-#                 new_enumeration_types.add( '::'.join( getNamespaces(el, include_self=True) )  + '__enumeration' )
-
-#             #
-#             # Update sets of types
-#             #
-#             fundamental_types = fundamental_types.union(new_fundamental_types)
-#             std_types         = std_types.union(new_std_types)
-#             enumeration_types = enumeration_types.union(new_enumeration_types)
-
-
-#     # Fill global list
-#     gb.accepted_types = list(fundamental_types) + list(std_types) + list(enumeration_types) + cfg.loaded_classes
-
-
-#     # Remove from gb.accepted_types all classes that use of native types as template arguments
-#     # (BOSS cannot deal with this yet...)
-#     for i in range(len(gb.accepted_types))[::-1]:
-
-#         type_name = gb.accepted_types[i]
-
-#         # Get list of all template arguments (unpack any nested template arguments)
-#         unpacked_template_args = getAllTemplateTypes(type_name)
-
-#         # If no template arguments, continue
-#         if unpacked_template_args == []:
-#             continue
-
-#         else:
-#             for templ_arg in unpacked_template_args:
-
-#                 # Remove asterix and/or ampersand
-#                 base_templ_arg = getBasicTypeName(templ_arg)
-
-#                 # Check that this type is listed in elements_dict (all native types should be)
-#                 if base_templ_arg in elements_dict.keys():
-
-#                     # Get xml entry for the type
-#                     type_el = elements_dict[base_templ_arg]
-
-#                     # If this is a native type, remove the current entry (i) in gb.accepted_types
-#                     if isNative(type_el):
-                        
-#                         # Remove entry i from gb.accepted_types
-#                         gb.accepted_types.pop(i)
-#                         break
-
-
-# # ====== END: fillAcceptedTypesList ========
 
 
 

@@ -428,11 +428,14 @@ def main():
             if not is_loadable[full_name]:
 
                 # If the class exists, print reason why it is not loadable.
-                if full_name in gb.name_dict.keys():
+                # If the class is not found, say so.
+                try:
                     el = gb.name_dict[full_name]
-                    utils.isLoadable(el, print_warning=True)            
+                except KeyError:
+                    el = None
 
-                # If the class simply does not exist
+                if el is not None:
+                    utils.isLoadable(el, print_warning=True)            
                 else:
                     reason = "Class not found."
                     infomsg.ClassNotLoadable(full_name, reason).printMessage()
@@ -646,9 +649,9 @@ def main():
 
             short_new_src_file_name = os.path.basename(new_src_file_name)
 
-            if 'include_guard_prefix' in code_dict.keys():
+            try:
                 prefix = code_dict['include_guard_prefix']
-            else:
+            except KeyError:
                 prefix = ''
 
             new_file_content = utils.addIncludeGuard(new_file_content, short_new_src_file_name, prefix=prefix ,suffix=gb.gambit_backend_name_full)
