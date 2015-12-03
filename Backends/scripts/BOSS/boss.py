@@ -63,10 +63,15 @@ def main():
 
     parser = OptionParser(usage=usage_string,
                           version="%prog 0.1")
-    parser.add_option("-c", "--castxml-compiler",
-                      dest="castxml_compiler_in",
+    parser.add_option("-i", "--castxml-cc-id",
+                      dest="castxml_cc_id",
                       default="",
-                      help="Set castxml to mimic COMPILER.",
+                      help="Set castxml-cc-id to ID.",
+                      metavar="ID")
+    parser.add_option("-c", "--castxml-cc",
+                      dest="castxml_cc",
+                      default="",
+                      help="Set castxml-cc to COMPILER.",
                       metavar="COMPILER")
     parser.add_option("-l", "--list",
                       action="store_true",
@@ -161,9 +166,12 @@ def main():
 
 
 
-    # If castxml compiler is given as command line input, update cfg.castxml_compiler 
-    if options.castxml_compiler_in != '':
-        cfg.castxml_compiler = options.castxml_compiler_in
+    # If castxml compiler setting are given as command line input, 
+    # update the variables in cfg
+    if options.castxml_cc_id != '':
+        cfg.castxml_cc_id = options.castxml_cc_id
+    if options.castxml_cc != '':
+        cfg.castxml_cc = options.castxml_cc
 
 
     #

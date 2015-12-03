@@ -2571,10 +2571,12 @@ def isProblematicType(el):
                 base_templ_arg = getBasicTypeName(templ_arg)
 
                 # Check that this type name is listed in gb.name_dict
-                if base_templ_arg in gb.name_dict.keys():
-
-                    # Get xml entry for the type
+                try:
                     type_el = gb.name_dict[base_templ_arg]
+                except KeyError:
+                    type_el = None
+
+                if type_el is not None:
 
                     # If this is a native type, the input type is problematic for BOSS
                     if isNative(type_el):
