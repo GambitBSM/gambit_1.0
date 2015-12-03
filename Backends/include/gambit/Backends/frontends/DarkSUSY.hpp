@@ -37,11 +37,7 @@
 ///  \date 2015 May
 ///  *********************************************
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME DarkSUSY
-#endif
+#define BACKENDNAME DarkSUSY
 #define VERSION 5.1.1
 #define SAFE_VERSION 5_1_1
 

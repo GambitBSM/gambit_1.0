@@ -5,11 +5,7 @@
  *
  */
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME MicrOmegas
-#endif
+#define BACKENDNAME MicrOmegas
 #define VERSION 3.5.5
 #define SAFE_VERSION 3_5_5
 
