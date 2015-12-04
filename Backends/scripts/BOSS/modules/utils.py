@@ -2222,7 +2222,6 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
         for var_name in ['CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH']:
             try:
                 if 'intel' in os.environ[var_name].lower():
-                    print 'DEBUG: Found "intel" in ' + var_name + ' : ' + os.environ[var_name]
                     temp_env_vars[var_name] = str(os.environ[var_name])
                     os.environ[var_name] = ''
             except KeyError:
@@ -2255,7 +2254,6 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     if cfg.castxml_cc_id  == 'gnu':
         for var_name, value in temp_env_vars.items():
             os.environ[var_name] = value
-            print 'DEBUG: variable ' + var_name + ' reset to ' + os.environ[var_name]
 
     # Check for timeout or error
     did_fail = False
