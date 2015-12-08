@@ -130,7 +130,8 @@ def isKnownClass(el, class_name=None):
     if class_name is None:
         class_name = classutils.getClassNameDict(type_el) 
 
-    if class_name['long_templ'] in cfg.known_classes:
+    full_name = class_name['long_templ']
+    if (full_name in cfg.known_classes) or (full_name.replace(' ','') in cfg.known_classes):
         is_known = True
 
     return is_known
@@ -996,7 +997,7 @@ def isAcceptedType(input_el):
     if type_el.tag in ['Class', 'Struct']:
         namespaces_list = getNamespaces(type_el, include_self=True)
         full_name = '::'.join(namespaces_list)
-        if full_name in gb.accepted_types:
+        if (full_name in gb.accepted_types) or (full_name.replace(' ','') in gb.accepted_types):
             is_accepted_type = True
 
     elif type_el.tag in ['FundamentalType', 'Enumeration']:
@@ -1858,9 +1859,8 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                         include_statements.append('#include "' + gb.new_header_files[type_name['long']][header_key] + '"')
 
             elif isStdType(type_el):
-
                 if type_name['long'] in cfg.known_class_headers:
-                    header_name = cfg.known_class_headers[type_name['long']]
+                    header_name = cfg.known_class_headers[type_name['long']].strip()
                     if (header_name[0] == '<') and (header_name[-1] == '>'):
                         include_statements.append('#include ' + cfg.known_class_headers[type_name['long']])
                     else:
@@ -1871,7 +1871,11 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
 
             else:
                 if type_name['long'] in cfg.known_class_headers:
-                    include_statements.append('#include "' + cfg.known_class_headers[type_name['long']] + '"')
+                    header_name = cfg.known_class_headers[type_name['long']].strip()
+                    if (header_name[0] == '<') and (header_name[-1] == '>'):
+                        include_statements.append('#include ' + cfg.known_class_headers[type_name['long']])
+                    else:
+                        include_statements.append('#include "' + cfg.known_class_headers[type_name['long']] + '"')
                 else:
                     reason = "The type '%s' has no specified header file. Please update modules/cfg.py." % type_name['long_templ']
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
@@ -2398,6 +2402,7 @@ def fillAcceptedTypesList():
             #
             is_known_class = isKnownClass(el, class_name=class_name)
             if is_known_class:
+                # print 'DEBUG: Appending ' + full_name + ' to new_known_classes'
                 new_known_classes.append(full_name)
 
 
@@ -2430,6 +2435,9 @@ def fillAcceptedTypesList():
     # Print final number of types classified
     print '  %i types classified.' % (type_counter)    
 
+    # print
+    # print 'DEBUG: Known classes: ', list(known_classes)
+    # print
     # Fill global list
     gb.accepted_types = list(loaded_classes) + list(known_classes) + list(fundamental_types) + list(std_types)
     # gb.accepted_types = list(loaded_classes) + list(fundamental_types) + list(std_types) + list(enumeration_types)
