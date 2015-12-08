@@ -2211,7 +2211,7 @@ def constrEnumDeclHeader(enum_el_list, file_output_path):
 
 # Calls castxml from the shell (via modules.shelltimeout).
 
-def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=30., poll_interval=0.5):
+def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=300., poll_interval=0.5):
 
     # Choose castxml executable according to platform (linux or darwin)
     if sys.platform == 'darwin':
