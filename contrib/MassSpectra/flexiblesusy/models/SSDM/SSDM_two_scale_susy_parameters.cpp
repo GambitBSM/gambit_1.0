@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:27
+// File generated at Wed 25 Nov 2015 11:56:12
 
 #include "SSDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -32,7 +32,7 @@ namespace flexiblesusy {
 
 SSDM_susy_parameters::SSDM_susy_parameters(const SSDM_input_parameters& input_)
    : Beta_function()
-   , g1(0), g2(0), g3(0), LamS(0), LamSH(0), Lambda1(0), Yu(Eigen::Matrix<
+   , g1(0), g2(0), g3(0), Lambda3(0), Lambda2(0), Lambda1(0), Yu(Eigen::Matrix<
    double,3,3>::Zero()), Yd(Eigen::Matrix<double,3,3>::Zero()), Ye(
    Eigen::Matrix<double,3,3>::Zero())
 
@@ -44,14 +44,14 @@ SSDM_susy_parameters::SSDM_susy_parameters(const SSDM_input_parameters& input_)
 SSDM_susy_parameters::SSDM_susy_parameters(
    double scale_, double loops_, double thresholds_,
    const SSDM_input_parameters& input_
-   , double g1_, double g2_, double g3_, double LamS_, double LamSH_, double
-   Lambda1_, const Eigen::Matrix<double,3,3>& Yu_, const Eigen::Matrix<double,3
-   ,3>& Yd_, const Eigen::Matrix<double,3,3>& Ye_
+   , double g1_, double g2_, double g3_, double Lambda3_, double Lambda2_,
+   double Lambda1_, const Eigen::Matrix<double,3,3>& Yu_, const Eigen::Matrix<
+   double,3,3>& Yd_, const Eigen::Matrix<double,3,3>& Ye_
 
 )
    : Beta_function()
-   , g1(g1_), g2(g2_), g3(g3_), LamS(LamS_), LamSH(LamSH_), Lambda1(Lambda1_),
-   Yu(Yu_), Yd(Yd_), Ye(Ye_)
+   , g1(g1_), g2(g2_), g3(g3_), Lambda3(Lambda3_), Lambda2(Lambda2_), Lambda1(
+   Lambda1_), Yu(Yu_), Yd(Yd_), Ye(Ye_)
 
    , input(input_)
 {
@@ -74,8 +74,8 @@ SSDM_susy_parameters SSDM_susy_parameters::calc_beta() const
    double beta_g1(calc_beta_g1_one_loop(TRACE_STRUCT));
    double beta_g2(calc_beta_g2_one_loop(TRACE_STRUCT));
    double beta_g3(calc_beta_g3_one_loop(TRACE_STRUCT));
-   double beta_LamS(calc_beta_LamS_one_loop(TRACE_STRUCT));
-   double beta_LamSH(calc_beta_LamSH_one_loop(TRACE_STRUCT));
+   double beta_Lambda3(calc_beta_Lambda3_one_loop(TRACE_STRUCT));
+   double beta_Lambda2(calc_beta_Lambda2_one_loop(TRACE_STRUCT));
    double beta_Lambda1(calc_beta_Lambda1_one_loop(TRACE_STRUCT));
    Eigen::Matrix<double,3,3> beta_Yu(calc_beta_Yu_one_loop(TRACE_STRUCT));
    Eigen::Matrix<double,3,3> beta_Yd(calc_beta_Yd_one_loop(TRACE_STRUCT));
@@ -85,8 +85,8 @@ SSDM_susy_parameters SSDM_susy_parameters::calc_beta() const
       beta_g1 += calc_beta_g1_two_loop(TRACE_STRUCT);
       beta_g2 += calc_beta_g2_two_loop(TRACE_STRUCT);
       beta_g3 += calc_beta_g3_two_loop(TRACE_STRUCT);
-      beta_LamS += calc_beta_LamS_two_loop(TRACE_STRUCT);
-      beta_LamSH += calc_beta_LamSH_two_loop(TRACE_STRUCT);
+      beta_Lambda3 += calc_beta_Lambda3_two_loop(TRACE_STRUCT);
+      beta_Lambda2 += calc_beta_Lambda2_two_loop(TRACE_STRUCT);
       beta_Lambda1 += calc_beta_Lambda1_two_loop(TRACE_STRUCT);
       beta_Yu += calc_beta_Yu_two_loop(TRACE_STRUCT);
       beta_Yd += calc_beta_Yd_two_loop(TRACE_STRUCT);
@@ -99,7 +99,7 @@ SSDM_susy_parameters SSDM_susy_parameters::calc_beta() const
 
 
    return SSDM_susy_parameters(get_scale(), get_loops(), get_thresholds(), input,
-                    beta_g1, beta_g2, beta_g3, beta_LamS, beta_LamSH, beta_Lambda1, beta_Yu, beta_Yd, beta_Ye);
+                    beta_g1, beta_g2, beta_g3, beta_Lambda3, beta_Lambda2, beta_Lambda1, beta_Yu, beta_Yd, beta_Ye);
 }
 
 void SSDM_susy_parameters::clear()
@@ -108,8 +108,8 @@ void SSDM_susy_parameters::clear()
    g1 = 0.;
    g2 = 0.;
    g3 = 0.;
-   LamS = 0.;
-   LamSH = 0.;
+   Lambda3 = 0.;
+   Lambda2 = 0.;
    Lambda1 = 0.;
    Yu = Eigen::Matrix<double,3,3>::Zero();
    Yd = Eigen::Matrix<double,3,3>::Zero();
@@ -126,8 +126,8 @@ Eigen::ArrayXd SSDM_susy_parameters::get() const
    pars(0) = g1;
    pars(1) = g2;
    pars(2) = g3;
-   pars(3) = LamS;
-   pars(4) = LamSH;
+   pars(3) = Lambda3;
+   pars(4) = Lambda2;
    pars(5) = Lambda1;
    pars(6) = Yu(0,0);
    pars(7) = Yu(0,1);
@@ -167,8 +167,8 @@ void SSDM_susy_parameters::print(std::ostream& ostr) const
    ostr << "g1 = " << g1 << '\n';
    ostr << "g2 = " << g2 << '\n';
    ostr << "g3 = " << g3 << '\n';
-   ostr << "LamS = " << LamS << '\n';
-   ostr << "LamSH = " << LamSH << '\n';
+   ostr << "Lambda3 = " << Lambda3 << '\n';
+   ostr << "Lambda2 = " << Lambda2 << '\n';
    ostr << "Lambda1 = " << Lambda1 << '\n';
    ostr << "Yu = " << Yu << '\n';
    ostr << "Yd = " << Yd << '\n';
@@ -181,8 +181,8 @@ void SSDM_susy_parameters::set(const Eigen::ArrayXd& pars)
    g1 = pars(0);
    g2 = pars(1);
    g3 = pars(2);
-   LamS = pars(3);
-   LamSH = pars(4);
+   Lambda3 = pars(3);
+   Lambda2 = pars(4);
    Lambda1 = pars(5);
    Yu(0,0) = pars(6);
    Yu(0,1) = pars(7);

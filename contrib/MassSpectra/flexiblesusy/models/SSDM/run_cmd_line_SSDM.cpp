@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:35:12
+// File generated at Wed 25 Nov 2015 11:56:54
 
 #include "SSDM_input_parameters.hpp"
 #include "SSDM_spectrum_generator.hpp"
@@ -40,6 +40,7 @@ void print_usage()
       "  --Lambda2Input=<value>\n"
       "  --Lambda3Input=<value>\n"
       "  --mS2Input=<value>\n"
+      "  --QEWSB=<value>\n"
       "  --Qin=<value>\n"
 
       "  --help,-h                         print this help message"
@@ -62,6 +63,9 @@ void set_command_line_parameters(int argc, char* argv[],
          continue;
 
       if(Command_line_options::get_parameter_value(option, "--mS2Input=", input.mS2Input))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--QEWSB=", input.QEWSB))
          continue;
 
       if(Command_line_options::get_parameter_value(option, "--Qin=", input.Qin))

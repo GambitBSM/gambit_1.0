@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:31
+// File generated at Wed 25 Nov 2015 11:56:17
 
 #include "SSDM_slha_io.hpp"
 #include "SSDM_input_parameters.hpp"
@@ -69,7 +69,8 @@ void SSDM_slha_io::set_extpar(const SSDM_input_parameters& input)
    std::ostringstream extpar;
 
    extpar << "Block EXTPAR\n";
-   extpar << FORMAT_ELEMENT(0, input.Qin, "Qin");
+   extpar << FORMAT_ELEMENT(0, input.QEWSB, "QEWSB");
+   extpar << FORMAT_ELEMENT(1, input.Qin, "Qin");
    slha_io.set_block(extpar);
 
 }
@@ -311,10 +312,10 @@ void SSDM_slha_io::fill_drbar_parameters(SSDM_mass_eigenstates& model) const
    }
    model.set_v(slha_io.read_entry("HMIX", 3));
    model.set_mu2(slha_io.read_entry("SM", 1));
-   model.set_MS2(slha_io.read_entry("MSOFT", 22));
+   model.set_ms2(slha_io.read_entry("MSOFT", 22));
    model.set_Lambda1(slha_io.read_entry("SM", 2));
-   model.set_LamSH(slha_io.read_entry("HDM", 2));
-   model.set_LamS(slha_io.read_entry("HDM", 3));
+   model.set_Lambda2(slha_io.read_entry("HDM", 2));
+   model.set_Lambda3(slha_io.read_entry("HDM", 3));
 
 
    model.set_scale(read_scale());
@@ -362,7 +363,8 @@ void SSDM_slha_io::fill_extpar_tuple(SSDM_input_parameters& input,
                                                 int key, double value)
 {
    switch (key) {
-   case 0: input.Qin = value; break;
+   case 0: input.QEWSB = value; break;
+   case 1: input.Qin = value; break;
    default: WARNING("Unrecognized entry in block EXTPAR: " << key); break;
    }
 
