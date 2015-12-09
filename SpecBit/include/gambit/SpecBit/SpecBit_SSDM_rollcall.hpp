@@ -42,7 +42,7 @@
     #define FUNCTION check_perturb_simple
     START_FUNCTION(bool)
     DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
     MODEL_GROUP(singlet, (SingletDM_running))
@@ -52,7 +52,7 @@
     #define FUNCTION check_perturb_to_min_lambda
     START_FUNCTION(bool)
     DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
     DEPENDENCY(vacuum_stability, ddpair)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
