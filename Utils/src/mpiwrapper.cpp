@@ -19,7 +19,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <time.h> // For short sleeps in master_wait_for_tag function
+#include <time.h> // For nanosleep (posix only)
+#include <chrono>
 
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/new_mpi_datatypes.hpp"
@@ -36,11 +37,19 @@ namespace Gambit
       /// Default (attaches to MPI_COMM_WORLD):
       Comm::Comm() : boundcomm(MPI_COMM_WORLD)
       {
+         if(not Is_initialized())
+         {
+            utils_error().raise(LOCAL_INFO, "Error creating Comm object (wrapper for MPI communicator)! MPI has not been initialised!");
+         }
       }
 
       /// Copy existing communicator
       Comm::Comm(const MPI_Comm& comm) : boundcomm(comm)
       {
+         if(not Is_initialized())
+         {
+            utils_error().raise(LOCAL_INFO, "Error creating Comm object (wrapper for MPI communicator)! MPI has not been initialised!");
+         }
       }
 
       /// Duplicate input communicator into boundcomm
@@ -192,6 +201,74 @@ namespace Gambit
          }
          //std::cout<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
       }
+
+      bool Comm::BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag, std::ostream& errorlog)
+      {
+         std::size_t mpiSize = Get_size(); 
+         std::size_t myRank  = Get_rank();
+         bool timedout = false;
+
+         std::vector<bool> entered(mpiSize); // should init to "false"
+         entered[myRank] = true; // we know that we have entered the barrier
+         //std::cout<<"rank "<<myRank<<": Entered BarrierWithTimeout (with tag "<<tag<<")"<<std::endl;
+         if(mpiSize>1)
+         {
+            int recv_buffer = 0; // To receive the null messages
+            MPI_Status status;
+
+            // First, tell all other processes that we have entered the barrier.
+            IsendToAll(&null_send_buffer, 1, tag, &req_null);
+
+            // Setup timeout interval and sleep time             
+            unsigned int Nchecks = 100; // Check for messages 100 times evenly spaced over the timeout interval
+            std::chrono::time_point<std::chrono::system_clock> start;
+
+            struct timespec sleeptime;
+            sleeptime.tv_sec = 0;
+            sleeptime.tv_nsec = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count() / Nchecks;
+
+            // Now, loop and wait for all other processes to send their own entering signals
+            while( not timedout and std::find(entered.begin(), entered.end(), false) != entered.end() ) // Pass when 'false' cannot be found
+            {
+               // Check whether other processes have entered the barrier
+               for(std::size_t source=0;source<mpiSize;source++)
+               {
+                  //std::cout<<"rank "<<myRank<<": has process "<<source<<" entered BarrierWithTimeout? "<<entered[source]<<std::endl;
+                  if(not entered[source])
+                  {
+                     if( Iprobe(source, tag, &status) )
+                     {
+                        // Ok the source has now reached this barrier.
+                        entered[source] = true;
+                        Recv(&recv_buffer, 1, source, tag);
+                     } 
+                  }
+               }
+
+               // While waiting, could do work here.
+  
+               // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
+               nanosleep(&sleeptime,NULL);
+
+               // Check if timeout interval has been exceeded
+               std::chrono::time_point<std::chrono::system_clock> current;
+               std::chrono::duration<double> time_waited = current - start;
+               if(time_waited >= timeout) timedout = true;
+            }
+         }
+
+         // if we timed out, spit out some errors
+         if(timedout)
+         {
+            errorlog << "rank " << myRank << ": timed out in BarrierWithTimeout (tag="<<tag<<") waiting for the following process(es): ";
+            for(std::size_t source=0;source<mpiSize;source++)
+            {
+               if(not entered[source]) errorlog << source << ", ";
+            }
+         }
+         return timedout;
+      }
+
 
       /// @}
 

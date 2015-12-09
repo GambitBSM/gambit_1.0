@@ -30,6 +30,7 @@
 
 // Gambit
 #include "gambit/Logs/logging.hpp"
+#include "gambit/Utils/signal_helpers.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
@@ -124,7 +125,6 @@ namespace Gambit
     // Function to return the next unused tag index
     int getfreetag()
     {
-      // Could make this search more efficient, since probably there are no free tags below the last tag used, but I think the loop will be so fast that this isn't worth doing, and it only runs during initialisation anyway.
       for(int i=0; i<std::numeric_limits<int>::max(); ++i)
       {
         if( tag2str().count(i) == 0 ) { return i; }
@@ -176,15 +176,30 @@ namespace Gambit
     /// Keeps track of the individual logging objects.
 
     LogMaster::LogMaster()
-      : loggers_readyQ(false), silenced(false), current_module(-1), current_backend(-1)
+      : loggers_readyQ (false)
+      , silenced       (false)
+      , current_module (-1)
+      , current_backend(-1)
+      , separate_file_per_process(true)
+      , MPIrank        (0)
+      , MPIsize        (1)
     {
+      // Note! MPIrank and MPIsize will not be correct until initialisation occurs!
     }
 
     /// Alternate constructor
     // Mainly for testing; lets you pass in pre-built loggers and their tags
     LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN)
-      : loggers(loggersIN), loggers_readyQ(true), silenced(false), current_module(-1), current_backend(-1)
+      : loggers        (loggersIN)
+      , loggers_readyQ (true)
+      , silenced       (false)
+      , current_module (-1)
+      , current_backend(-1)
+      , separate_file_per_process(true)
+      , MPIrank        (0)
+      , MPIsize        (1)
     {
+      // Note! MPIrank and MPIsize will not be correct until initialisation occurs!
     }
 
     // Destructor
@@ -233,6 +248,16 @@ namespace Gambit
     // This is the function that yaml_parser.hpp uses. You provide tags as a set of strings, and the filename as a string. We then construct the logger objects in here.
     void LogMaster::initialise(std::vector<std::pair< std::set<std::string>, std::string >>& loggerinfo)
     {
+       // Fix up the MPI variables
+       #ifdef WITH_MPI
+       if(GMPI::Is_initialized())
+       {
+         GMPI::Comm COMM_WORLD;
+         MPIsize = COMM_WORLD.Get_size();
+         MPIrank = COMM_WORLD.Get_rank();
+       }
+       #endif
+
        // Iterate through map and build the logger objects
        for(std::vector<std::pair< std::set<std::string>, std::string >>::iterator infopair = loggerinfo.begin();
             infopair != loggerinfo.end(); ++infopair)
@@ -241,6 +266,13 @@ namespace Gambit
           std::string filename = infopair->second;
           std::set<int> tags;
 
+          if(separate_file_per_process and MPIsize>1)
+          {
+            std::ostringstream unique_filename;
+            unique_filename << filename << "_" << MPIrank;
+            filename = unique_filename.str();
+          }
+ 
           // Log the loggers being created :)
           // (will be put into a preliminary buffer until loggers are all constructed)
           *this << LogTag::logs << LogTag::debug << std::endl << "Creating logger for tags [";
@@ -257,8 +289,8 @@ namespace Gambit
               // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
               std::ostringstream errormsg;
               errormsg << "Tag name received in Logging::str2tag function could not be found in str2tag map!";
-              errormsg << "Probably this is because you specified an invalid LogTag name in the logging redirection";
-              errormsg << "part of your YAML input file. Tag string was: "<<*stag<<".";
+              errormsg << "This is probably because you specified an invalid LogTag name in the logging redirection ";
+              errormsg << "section of your YAML input file. Tag string was: "<<*stag<<".";
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
             *this << *stag <<", ";
@@ -555,14 +587,19 @@ namespace Gambit
     /// Handle LogTag input
     LogMaster& LogMaster::operator<< (const LogTag& tag)
     {
+       block_signals();
        #pragma omp critical
-       streamtags.insert(tag);
+       {
+          streamtags.insert(tag);
+       }
+       unblock_signals();
        return *this;
     }
 
     /// Handle end of message character
     LogMaster& LogMaster::operator<< (const endofmessage&)
     {
+       block_signals();
        #pragma omp critical (LogMaster_steram_EOM)
        {
          // Collect the stream and tags, then send the message
@@ -571,50 +608,68 @@ namespace Gambit
          stream.str(std::string()); //TODO: check that this works properly on all compilers...
          streamtags.clear();
        }
+       unblock_signals();
        return *this;
     }
 
     /// Handle various stream manipulators
     LogMaster& LogMaster::operator<< (const manip1 fp)
     {
+       block_signals();
        #pragma omp critical
-       stream << fp;
+       {
+         stream << fp;
+       }
+       unblock_signals();
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip2 fp)
     {
+       block_signals();
        #pragma omp critical
-       stream << fp;
+       {
+         stream << fp;
+       }
+       unblock_signals();
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip3 fp)
     {
+       block_signals();
        #pragma omp critical
-       stream << fp;
+       {
+         stream << fp;
+       }
+       unblock_signals();
        return *this;
     }
 
     void LogMaster::entering_module(int i)
     {
+       block_signals();
        #pragma omp critical (current_module)
        {
          current_module = i;
        }
+       unblock_signals();
     }
 
     void LogMaster::leaving_module()
     {
+       block_signals();
        #pragma omp critical (current_module)
        {
          current_module = -1;
        }
+       unblock_signals();
        leaving_backend();
     }
 
     void LogMaster::entering_backend(int i)
     {
+       block_signals();
        #pragma omp critical (current_backend)
        {
          current_backend = i;
@@ -625,9 +680,11 @@ namespace Gambit
           *this<<logs<<debug<<EOM;
        }
        // TODO: Activate std::out and std::err redirection, if requested in inifile
-    }
+       unblock_signals();
+   }
     void LogMaster::leaving_backend()
-    {
+    { 
+       block_signals();
        int cb_test;
        #pragma omp critical (current_backend)
        {
@@ -644,6 +701,7 @@ namespace Gambit
           *this<<logs<<debug<<EOM;
        }
        // TODO: Restore std::out and std::err to normal
+       unblock_signals();
     }
 
     /// Constructor for SortedMessage struct
@@ -714,8 +772,19 @@ namespace Gambit
 
     /// Constructor
     /// Attach logger object to an existing stream
-    StdLogger::StdLogger(std::ostream& logstream) : my_stream(logstream)
+    StdLogger::StdLogger(std::ostream& logstream) 
+      : my_stream(logstream)
+      , MPIrank(0)
+      , MPIsize(1)
     {
+      #ifdef WITH_MPI
+      if(GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        MPIsize = COMM_WORLD.Get_size();
+        MPIrank = COMM_WORLD.Get_rank();
+      }
+      #endif
       // Check error bits on stream and throw exception in anything is bad
       if( my_stream.fail() | my_stream.bad() )
       {
@@ -727,8 +796,19 @@ namespace Gambit
 
     /// Open new file stream and manage it internally
     StdLogger::StdLogger(const std::string& filename)
-     : my_own_fstream(filename, std::ofstream::out), my_stream(my_own_fstream)
+      : my_own_fstream(filename, std::ofstream::out)
+      , my_stream(my_own_fstream)
+      , MPIrank(0)
+      , MPIsize(1)
     {
+      #ifdef WITH_MPI
+      if(GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        MPIsize = COMM_WORLD.Get_size();
+        MPIrank = COMM_WORLD.Get_rank();
+      }
+      #endif
       // Check error bits on stream and throw exception in anything is bad
       if( my_stream.fail() | my_stream.bad() )
       {
@@ -749,10 +829,11 @@ namespace Gambit
       std::chrono::duration<double> diff = mail.received_at - start_time;
       my_stream<<"("<<diff.count()<<" [s])";
       // MPI rank
-      #ifdef WITH_MPI
-        GMPI::Comm COMM_WORLD;
-        my_stream << "(Rank " << COMM_WORLD.Get_rank() << ")";
-      #endif
+      // Might as well add this even if different ranks output to different
+      // files, since people might like to cat together the different files
+      // later on or something.
+      if(MPIsize>1) my_stream << "(Rank " << MPIrank << ")";
+
       // Message tags
       writetags(mail.component_tags);
       writetags(mail.type_tags);

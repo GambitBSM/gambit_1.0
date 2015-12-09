@@ -103,6 +103,8 @@ KeyValues:
 
   default_output_path: "run/MSSM25_test"
 
+  print_timing_data: true
+
   dependency_resolution:
     prefer_model_specific_functions: true
     use_old_routines: true

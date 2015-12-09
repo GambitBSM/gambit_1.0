@@ -67,7 +67,7 @@ namespace Gambit
     /// Inform the user of the ways to invoke GAMBIT, then die.
     void gambit_core::bail(int mpirank)
     {
-      if (mpirank < 0) mpirank = launch_diagnostic_MPI();
+      if (mpirank < 0) mpirank = GMPI::Comm().Get_rank();
       if (mpirank == 0)
       { 
         cout << "\nusage: gambit [options] [<command>]                                        "
@@ -102,8 +102,7 @@ namespace Gambit
                 "\n" << endl << endl; 
       }
       logger().disable();
-      quit_diagnostic_MPI();
-      core_error().silent_forced_throw();
+      throw SilentShutdownException();
     } 
 
     /// Process default mode command line options and return filename
@@ -139,11 +138,10 @@ namespace Gambit
           case 10:
           {
             // Display version number and shutdown.
-            int mpirank = launch_diagnostic_MPI();
+            int mpirank = GMPI::Comm().Get_rank();
             if (mpirank == 0) cout << "\nThis is GAMBIT v" + gambit_version << endl;
             logger().disable();
-            quit_diagnostic_MPI();
-            core_error().silent_forced_throw();
+            throw SilentShutdownException();
           }
           case 'v':
             // Turn on verbose mode
@@ -601,7 +599,7 @@ namespace Gambit
             // Check if we indeed received a valid filename (needs the -f option)
             if (found_inifile) return filename;
             // Ok then, report an unrecognised command and bail
-            int mpirank = launch_diagnostic_MPI();
+            int mpirank = GMPI::Comm().Get_rank();
             if (mpirank == 0) cout << "Unrecognised command received!" << endl;
             // Give a list of valid commands that user might have mistyped
             for (std::vector<str>::iterator it = valid_commands.begin(); it != valid_commands.end(); ++it)
@@ -621,8 +619,7 @@ namespace Gambit
                 cout<<"Run \"gambit --help\" for a full list of options and usage instructions"<<endl;  
               }
               logger().disable();
-              quit_diagnostic_MPI();
-              core_error().silent_forced_throw();
+              throw SilentShutdownException();
             }
             else
             {
@@ -632,21 +629,20 @@ namespace Gambit
           }
           else 
           {
-            int mpirank = launch_diagnostic_MPI();
+            int mpirank = GMPI::Comm().Get_rank();
             if (mpirank == 0) cout << "Command line options have already been "
              "processed in a special run mode... GAMBIT should not reach this "
              "point. Quitting..." << endl;
             logger().disable();
-            quit_diagnostic_MPI();
-            core_error().silent_forced_throw();
+            throw SilentShutdownException();
           }    
         }
       }
 
       // Guaranteed from this point that no scans (nor scanners) will be invoked. 
 
-      // Initialise MPI just to get the rank
-      int mpirank = launch_diagnostic_MPI();
+      // Get MPI rank (assume MPI already initialised)
+      int mpirank = GMPI::Comm().Get_rank();
       
       // Disable all but the master MPI node
       if (mpirank == 0) 
@@ -670,31 +666,9 @@ namespace Gambit
    
       // Split.
       logger().disable();
-      quit_diagnostic_MPI();
-      core_error().silent_forced_throw();
+      throw SilentShutdownException();
       return "";
     
-    }
-    
-    /// Launch MPI and return the rank, for limiting diagnostic output to master node.
-    int gambit_core::launch_diagnostic_MPI()
-    {
-      int mpirank = 0;
-      #ifdef WITH_MPI
-        int dummy_argc = 0;
-        char** dummy_argv = NULL;
-        MPI_Init(&dummy_argc,&dummy_argv); 
-        MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
-      #endif
-      return mpirank;
-    }
-
-    /// Quit MPI used for diagnostic mode.
-    void gambit_core::quit_diagnostic_MPI()
-    {
-      #ifdef WITH_MPI
-        MPI_Finalize();
-      #endif
     }
 
 }

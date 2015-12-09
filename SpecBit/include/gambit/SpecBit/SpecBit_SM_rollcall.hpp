@@ -12,7 +12,7 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///    \date 2014 Sep - Dec, 2015 Jan - Mar
-///  
+///
 ///  *********************************************
 
 #ifndef __SpecBit_SM_hpp__
@@ -23,15 +23,15 @@
   #define CAPABILITY SMINPUTS
   START_CAPABILITY
 
-    #define FUNCTION get_SMINPUTS            
-    START_FUNCTION(SMInputs)                  
+    #define FUNCTION get_SMINPUTS
+    START_FUNCTION(SMInputs)
     ALLOW_MODELS(StandardModel_SLHA2)
     #undef FUNCTION
 
   #undef CAPABILITY
 
   #define CAPABILITY qedqcd_subspectrum
-  START_CAPABILITY                          
+  START_CAPABILITY
 
     // Create QedQcdWrapper version of Spectrum* from SMInputs structs
     #define FUNCTION get_QedQcd_spectrum
@@ -45,10 +45,10 @@
   #define CAPABILITY SM_spectrum
   START_CAPABILITY
 
-    // Create Spectrum object from SMInputs structs and SM Higgs parameters, 
+    // Create Spectrum object from SMInputs structs and SM Higgs parameters,
     #define FUNCTION get_SM_spectrum
     START_FUNCTION(const Spectrum*)
-    ALLOW_MODELS(StandardModel_HiggsSector)
+    ALLOW_MODELS(StandardModel_Higgs)
     DEPENDENCY(SMINPUTS, SMInputs)
     #undef FUNCTION
 

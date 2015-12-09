@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:31
+// File generated at Wed 25 Nov 2015 11:56:17
 
 #ifndef SSDM_SLHA_IO_H
 #define SSDM_SLHA_IO_H
@@ -197,15 +197,15 @@ void SSDM_slha_io::set_model_parameters(const SSDM_slha<T>& model)
    {
       std::ostringstream block;
       block << "Block MSOFT Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
-            << FORMAT_ELEMENT(22, (MODELPARAMETER(MS2)), "MS2")
+            << FORMAT_ELEMENT(22, (MODELPARAMETER(ms2)), "ms2")
       ;
       slha_io.set_block(block);
    }
    {
       std::ostringstream block;
       block << "Block HDM Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
-            << FORMAT_ELEMENT(2, (MODELPARAMETER(LamSH)), "LamSH")
-            << FORMAT_ELEMENT(3, (MODELPARAMETER(LamS)), "LamS")
+            << FORMAT_ELEMENT(2, (MODELPARAMETER(Lambda2)), "Lambda2")
+            << FORMAT_ELEMENT(3, (MODELPARAMETER(Lambda3)), "Lambda3")
       ;
       slha_io.set_block(block);
    }

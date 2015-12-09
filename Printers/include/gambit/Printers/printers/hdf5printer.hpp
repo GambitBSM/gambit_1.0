@@ -163,6 +163,9 @@ namespace Gambit
         /// Add PPIDpair to global index list
         void add_PPID_to_list(const PPIDpair&);
 
+        /// Completely reset the PPIDlists (e.g. used when printer is reset)
+        void reset_PPID_lists();
+
         /// Ask the printer for the highest ID number known for a given rank
         /// process (needed for resuming, so the scanner can resume assigning
         /// point ID from this value. 
