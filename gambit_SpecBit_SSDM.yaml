@@ -172,8 +172,9 @@ ObsLikes:
       purpose: Observable
 
 
-    - capability: SSDM_spectrum
+    - capability: SingletDM_spectrum
       purpose: Observable
+      function: get_SSDM_spectrum
 
     - capability: expected_lifetime
       purpose: Observable
@@ -190,6 +191,9 @@ Rules:
       function: check_perturb_to_min_lambda #or check_perturb_simple
      # options:
      #   set_high_scale: 10000  #option can be used with check_perturb_simple only
+
+    - capability: SingletDM_spectrum
+      function: get_SSDM_spectrum
 
 
 #########################

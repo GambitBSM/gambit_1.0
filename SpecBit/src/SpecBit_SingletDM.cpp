@@ -235,36 +235,6 @@ namespace Gambit
       problems.print_problems(problems_str);
       cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
       }
-
-
-// below is from MSSMSpec, I have done slightly different version above
-
-//      if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
-//      {
-//         ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
-//         // just die.
-//         std::ostringstream errmsg;
-//         errmsg << "A serious problem was encountered during spectrum generation!; ";
-//         errmsg << "Message from FlexibleSUSY below:" << std::endl;
-//         problems.print_problems(errmsg); 
-//         problems.print_warnings(errmsg); 
-//         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
-//      }  
-//
-//      // Write SLHA file (for debugging purposes...)
-//      #ifdef SpecBit_DBUG
-//         typename MI::SlhaIo slha_io;
-//         slha_io.set_spinfo(problems);
-//         slha_io.set_sminputs(oneset);
-//         slha_io.set_minpar(input);
-//         slha_io.set_extpar(input);
-//         slha_io.set_spectrum(ssdmspec.model_interface.model);
-//         slha_io.write_to_file("SpecBit/initial_SSDM_spectrum.slha");
-//      #endif
-
-      // Package pointer to QedQcd SubSpectrum object along with pointer to SSDM SubSpectrum object,
-      // and SMInputs struct.
-      // Return pointer to this package.
       static Spectrum matched_spectra;
       matched_spectra = Spectrum(qedqcdspec,ssdmspec,sminputs,&input_Param);
       return &matched_spectra;
@@ -286,10 +256,10 @@ namespace Gambit
       input.QEWSB=173.15;  // scale where EWSB conditions are applied
     }
 
-    void get_SSDM_spectrum2(const Spectrum* &result)
+    void get_SSDM_spectrum(const Spectrum* &result)
     {
       using namespace softsusy;
-      namespace myPipe = Pipes::get_SSDM_spectrum2;
+      namespace myPipe = Pipes::get_SSDM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       SSDM_input_parameters input;
       fill_SSDM_input(input,myPipe::Param);
