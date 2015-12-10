@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:28
+// File generated at Wed 25 Nov 2015 11:56:13
 
 #include "SSDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -27,33 +27,33 @@ namespace flexiblesusy {
 #define TRACE_STRUCT susy_traces
 
 /**
- * Calculates the one-loop beta function of LamSH.
+ * Calculates the one-loop beta function of Lambda2.
  *
  * @return one-loop beta function
  */
-double SSDM_susy_parameters::calc_beta_LamSH_one_loop(const Susy_traces& susy_traces) const
+double SSDM_susy_parameters::calc_beta_Lambda2_one_loop(const Susy_traces& susy_traces) const
 {
    const double traceYdAdjYd = TRACE_STRUCT.traceYdAdjYd;
    const double traceYeAdjYe = TRACE_STRUCT.traceYeAdjYe;
    const double traceYuAdjYu = TRACE_STRUCT.traceYuAdjYu;
 
 
-   double beta_LamSH;
+   double beta_Lambda2;
 
-   beta_LamSH = Re(0.1*LamSH*oneOver16PiSqr*(60*Lambda1 + 120*LamS + 80*
-      LamSH + 60*traceYdAdjYd + 20*traceYeAdjYe + 60*traceYuAdjYu - 9*Sqr(g1) -
-      45*Sqr(g2)));
+   beta_Lambda2 = Re(0.1*Lambda2*oneOver16PiSqr*(60*Lambda1 + 80*Lambda2
+      + 240*Lambda3 + 60*traceYdAdjYd + 20*traceYeAdjYe + 60*traceYuAdjYu - 9*
+      Sqr(g1) - 45*Sqr(g2)));
 
 
-   return beta_LamSH;
+   return beta_Lambda2;
 }
 
 /**
- * Calculates the two-loop beta function of LamSH.
+ * Calculates the two-loop beta function of Lambda2.
  *
  * @return two-loop beta function
  */
-double SSDM_susy_parameters::calc_beta_LamSH_two_loop(const Susy_traces& susy_traces) const
+double SSDM_susy_parameters::calc_beta_Lambda2_two_loop(const Susy_traces& susy_traces) const
 {
    const double traceYdAdjYd = TRACE_STRUCT.traceYdAdjYd;
    const double traceYeAdjYe = TRACE_STRUCT.traceYeAdjYe;
@@ -64,42 +64,42 @@ double SSDM_susy_parameters::calc_beta_LamSH_two_loop(const Susy_traces& susy_tr
    const double traceYuAdjYuYuAdjYu = TRACE_STRUCT.traceYuAdjYuYuAdjYu;
 
 
-   double beta_LamSH;
+   double beta_Lambda2;
 
-   beta_LamSH = Re(twoLoop*(4.1775*Power(g1,4)*LamSH - 9.0625*Power(g2,4)
-      *LamSH - 42*Power(LamSH,3) - 13.5*LamSH*traceYdAdjYdYdAdjYd - 21*LamSH*
-      traceYdAdjYuYuAdjYd - 4.5*LamSH*traceYeAdjYeYeAdjYe - 36*Lambda1*LamSH*
-      traceYuAdjYu - 13.5*LamSH*traceYuAdjYuYuAdjYu + 7.2*Lambda1*LamSH*Sqr(g1)
-      + 4.25*LamSH*traceYuAdjYu*Sqr(g1) + 36*Lambda1*LamSH*Sqr(g2) + 11.25*
-      LamSH*traceYuAdjYu*Sqr(g2) + 1.125*LamSH*Sqr(g1)*Sqr(g2) + 0.25*LamSH*
-      traceYeAdjYe*(-48*Lambda1 - 32*LamSH + 15*Sqr(g1) + 15*Sqr(g2)) + 40*
-      LamSH*traceYuAdjYu*Sqr(g3) + 0.25*LamSH*traceYdAdjYd*(-144*Lambda1 - 96*
-      LamSH + 5*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3)) - 15*LamSH*Sqr(Lambda1) -
-      120*LamSH*Sqr(LamS) - 72*Lambda1*Sqr(LamSH) - 144*LamS*Sqr(LamSH) - 24*
-      traceYuAdjYu*Sqr(LamSH) + 1.2*Sqr(g1)*Sqr(LamSH) + 6*Sqr(g2)*Sqr(LamSH)))
-      ;
+   beta_Lambda2 = Re(twoLoop*(4.1775*Power(g1,4)*Lambda2 - 9.0625*Power(
+      g2,4)*Lambda2 - 42*Power(Lambda2,3) - 13.5*Lambda2*traceYdAdjYdYdAdjYd -
+      21*Lambda2*traceYdAdjYuYuAdjYd - 4.5*Lambda2*traceYeAdjYeYeAdjYe - 36*
+      Lambda1*Lambda2*traceYuAdjYu - 13.5*Lambda2*traceYuAdjYuYuAdjYu + 7.2*
+      Lambda1*Lambda2*Sqr(g1) + 4.25*Lambda2*traceYuAdjYu*Sqr(g1) + 36*Lambda1*
+      Lambda2*Sqr(g2) + 11.25*Lambda2*traceYuAdjYu*Sqr(g2) + 1.125*Lambda2*Sqr(
+      g1)*Sqr(g2) + 0.25*Lambda2*traceYeAdjYe*(-48*Lambda1 - 32*Lambda2 + 15*
+      Sqr(g1) + 15*Sqr(g2)) + 40*Lambda2*traceYuAdjYu*Sqr(g3) + 0.25*Lambda2*
+      traceYdAdjYd*(-144*Lambda1 - 96*Lambda2 + 5*Sqr(g1) + 45*Sqr(g2) + 160*
+      Sqr(g3)) - 15*Lambda2*Sqr(Lambda1) - 72*Lambda1*Sqr(Lambda2) - 288*
+      Lambda3*Sqr(Lambda2) - 24*traceYuAdjYu*Sqr(Lambda2) + 1.2*Sqr(g1)*Sqr(
+      Lambda2) + 6*Sqr(g2)*Sqr(Lambda2) - 480*Lambda2*Sqr(Lambda3)));
 
 
-   return beta_LamSH;
+   return beta_Lambda2;
 }
 
 /**
- * Calculates the three-loop beta function of LamSH.
+ * Calculates the three-loop beta function of Lambda2.
  *
  * @return three-loop beta function
  */
-double SSDM_susy_parameters::calc_beta_LamSH_three_loop(const Susy_traces& susy_traces) const
+double SSDM_susy_parameters::calc_beta_Lambda2_three_loop(const Susy_traces& susy_traces) const
 {
    DEFINE_PROJECTOR(3,3,3,3)
 
 
 
-   double beta_LamSH;
+   double beta_Lambda2;
 
-   beta_LamSH = 0;
+   beta_Lambda2 = 0;
 
 
-   return beta_LamSH;
+   return beta_Lambda2;
 }
 
 } // namespace flexiblesusy

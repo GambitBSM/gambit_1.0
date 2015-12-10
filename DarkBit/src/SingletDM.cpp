@@ -76,6 +76,7 @@ namespace Gambit
          */
         double sv(std::string channel, double lambda, double mass, double v)
         {
+          // Note: Valid for mass > 45 GeV
           // FIXME: Comment this in to get a segfault... Sigh
           //f_vs_mass["Gamma"]->bind("mass");
           // FIXME: Comment this in to get not a segfault... Sigh-sigh
@@ -106,6 +107,9 @@ namespace Gambit
             double br = virtual_SMHiggs_widths(channel,sqrt_s);
             double Gamma_s = virtual_SMHiggs_widths("Gamma",sqrt_s);
             double GeV2tocm3s1 = gev2cm2*s2cm;
+
+            // Explicitely close channel for off-shell top quarks
+            if ( channel == "tt" and sqrt_s < mt*2) return 0;
 
             double res = 2*lambda*lambda*v0*v0/
               sqrt_s*Dh2(s)*Gamma_s*GeV2tocm3s1*br;

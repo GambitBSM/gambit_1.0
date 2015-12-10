@@ -18,7 +18,7 @@ SSDM_TWO_SCALE_MK := \
 		$(SSDM_TWO_SCALE_SOFT_MK)
 
 SSDM_SLHA_INPUT := \
-
+LesHouches.in.SSDM
 
 SSDM_GNUPLOT := \
 		$(DIR)/SSDM_plot_rgflow.gnuplot \

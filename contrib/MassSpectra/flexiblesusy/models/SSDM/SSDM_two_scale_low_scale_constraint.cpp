@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:33
+// File generated at Wed 25 Nov 2015 11:56:18
 
 #include "SSDM_two_scale_low_scale_constraint.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -115,13 +115,14 @@ void SSDM_low_scale_constraint<Two_scale>::apply()
    const auto g1 = MODELPARAMETER(g1);
    const auto g2 = MODELPARAMETER(g2);
 
+   MODEL->set_v(Re((2*MZDRbar)/Sqrt(0.6*Sqr(g1) + Sqr(g2))));
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
    MODEL->set_mu2(Re(HiggsIN));
-   MODEL->set_LamSH(Re(Lambda2Input));
-   MODEL->set_LamS(Re(Lambda3Input));
-   MODEL->set_MS2(Re(mS2Input));
+   MODEL->set_Lambda2(Re(Lambda2Input));
+   MODEL->set_Lambda3(Re(Lambda3Input));
+   MODEL->set_ms2(Re(mS2Input));
 
 
    model->set_g1(new_g1);
