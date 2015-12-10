@@ -24,7 +24,6 @@
 Parameters: 
 
 
-
 ##############################
 # Prior setup
 ##############################
@@ -68,7 +67,7 @@ Scanner:
 
   use_objectives: gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: square_grid
+  use_scanner: grid
   #find_shift
   #find_kernel
   #object_detection
@@ -126,7 +125,7 @@ Scanner:
       version: ">=1.0"
       options:
         purpose: Likelihood
-        grid_pts: [4, 2]
+        grid_pts: [3, 3]
         
     multinest:
       plugin: MultiNest
@@ -402,13 +401,13 @@ Scanner:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
       parameters:
-        #same:
-        #  same_as: "gaussian::param_0"
-        #  scale: -2
-        #  shift: -1
+        ##same:
+        ##  same_as: "gaussian::param_0"
+        ##  scale: -2
+        ##  shift: -1
         param...2:
           range: [-5, 5]
-        param_x: 0
+        #param_x: 0
       
     test:
       plugin: test_plug
