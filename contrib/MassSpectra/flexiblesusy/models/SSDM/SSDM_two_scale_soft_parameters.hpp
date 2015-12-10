@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:30
+// File generated at Wed 25 Nov 2015 11:56:15
 
 #ifndef SSDM_TWO_SCALE_soft_parameters_H
 #define SSDM_TWO_SCALE_soft_parameters_H
@@ -35,7 +35,7 @@ namespace flexiblesusy {
 class SSDM_soft_parameters : public SSDM_susy_parameters {
 public:
    explicit SSDM_soft_parameters(const SSDM_input_parameters& input_ = SSDM_input_parameters());
-   SSDM_soft_parameters(const SSDM_susy_parameters& , double MS2_, double mu2_, double v_
+   SSDM_soft_parameters(const SSDM_susy_parameters& , double ms2_, double mu2_, double v_
 );
    virtual ~SSDM_soft_parameters() {}
    virtual Eigen::ArrayXd beta() const;
@@ -46,17 +46,17 @@ public:
    SSDM_soft_parameters calc_beta() const;
    virtual void clear();
 
-   void set_MS2(double MS2_) { MS2 = MS2_; }
+   void set_ms2(double ms2_) { ms2 = ms2_; }
    void set_mu2(double mu2_) { mu2 = mu2_; }
    void set_v(double v_) { v = v_; }
 
-   double get_MS2() const { return MS2; }
+   double get_ms2() const { return ms2; }
    double get_mu2() const { return mu2; }
    double get_v() const { return v; }
 
 
 protected:
-   double MS2;
+   double ms2;
    double mu2;
    double v;
 
@@ -76,9 +76,9 @@ private:
    };
    void calc_soft_traces(Soft_traces&) const;
 
-   double calc_beta_MS2_one_loop(const TRACE_STRUCT_TYPE&) const;
-   double calc_beta_MS2_two_loop(const TRACE_STRUCT_TYPE&) const;
-   double calc_beta_MS2_three_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_ms2_one_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_ms2_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_ms2_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_mu2_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_mu2_two_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_mu2_three_loop(const TRACE_STRUCT_TYPE&) const;

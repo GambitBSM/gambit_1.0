@@ -50,10 +50,10 @@ gamLike:
   1.0.0:       ./Backends/installed/gamLike/1.0.0/lib/gamLike.so
 
 MicrOmegas:
-  3.5.5:       ./Backends/installed/micromegas/3.5.5/MSSM/MSSM/libmicromegas.so
+  3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/MSSM/MSSM/libmicromegas.so
 
 MicrOmegasSingletDM:
-  3.5.5:       ./Backends/installed/micromegas/3.5.5/SingletDM/SingletDM/libmicromegas.so
+  3.6.9.2:     ./Backends/installed/micromegas/3.6.9.2/SingletDM/SingletDM/libmicromegas.so
 
 nulike:
   1.0.0:       ./Backends/installed/nulike/1.0.0/lib/libnulike.so

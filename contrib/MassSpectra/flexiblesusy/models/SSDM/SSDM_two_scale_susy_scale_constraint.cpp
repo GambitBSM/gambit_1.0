@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:32
+// File generated at Wed 25 Nov 2015 11:56:17
 
 #include "SSDM_two_scale_susy_scale_constraint.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -120,9 +120,9 @@ void SSDM_susy_scale_constraint<Two_scale>::initialize()
    assert(model && "SSDM_susy_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   const auto Qin = INPUTPARAMETER(Qin);
+   const auto QEWSB = INPUTPARAMETER(QEWSB);
 
-   initial_scale_guess = Qin;
+   initial_scale_guess = QEWSB;
 
    scale = initial_scale_guess;
 }
@@ -132,9 +132,9 @@ void SSDM_susy_scale_constraint<Two_scale>::update_scale()
    assert(model && "SSDM_susy_scale_constraint<Two_scale>::"
           "update_scale(): model pointer is zero.");
 
-   const auto Qin = INPUTPARAMETER(Qin);
+   const auto QEWSB = INPUTPARAMETER(QEWSB);
 
-   scale = Qin;
+   scale = QEWSB;
 
 
 }

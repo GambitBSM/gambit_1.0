@@ -198,6 +198,13 @@ int main(int argc, char* argv[])
   
   }
 
+  /// Special catch block for silent shutdown
+  /// This exception is designed to be thrown during diagnostic mode
+  catch (const SilentShutdownException& e)
+  {
+    // No need to do anything, just let program shut down normally from here
+  }
+
   /// Special catch block for controlled shutdown
   /// This exception should only be thrown if it is safe to call MPI_Finalise,
   /// as this will occur once we leave the catch block.
