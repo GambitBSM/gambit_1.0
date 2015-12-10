@@ -874,7 +874,7 @@ namespace Gambit
 
           // A contribution to the predicted number of events that is not known exactly
           const double n_predicted_uncertain_b = srData.n_background;
-          const double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
+          const double n_predicted_uncertain_sb = srData.n_signal_at_lumi + srData.n_background;
 
           // Relative error for n_predicted_uncertain
           const double uncertainty_b = srData.background_sys/srData.n_background;
