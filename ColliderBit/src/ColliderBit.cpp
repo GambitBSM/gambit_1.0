@@ -97,7 +97,6 @@ namespace Gambit
     int pythiaConfigurations, pythiaNumber, nEvents;
     /// Analysis stuff
     std::vector<std::string> analysisNames;
-    HEPUtilsAnalysisContainer* globalSubprocessAnalyses = new HEPUtilsAnalysisContainer();
     HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
 
     /// *************************************************
@@ -437,10 +436,6 @@ namespace Gambit
       {
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* INIT, within omp parallel.
-        if (omp_get_thread_num() == 0) {
-          globalSubprocessAnalyses->clear();
-          globalSubprocessAnalyses->init(analysisNames);
-        }
         result.clear();
         result.init(analysisNames);
         return;
@@ -452,33 +447,13 @@ namespace Gambit
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
 
-        // Abram version
-        // Combine results from this subprocess together
+        // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
         {
-          globalSubprocessAnalyses->add(result);
-          // Use improve_xsec to combine results from the same process type
-          globalSubprocessAnalyses->improve_xsec(result);
-        }
-        // Add total results from this subprocess to the main globalAnalyses container
-        // (Synchronize threads first to ensure all results are totalled)
-#pragma omp barrier
-        if (omp_get_thread_num() == 0) {
-          globalAnalyses->add(globalSubprocessAnalyses);
-          // Use add_xsec to combine results from the different process types
-          globalAnalyses->add_xsec(globalSubprocessAnalyses);
-        }
-        
-        // Martin version
-        
-        // Combine results from this subprocess together
-        /*#pragma omp critical (access_globalAnalyses)
-        {
           globalAnalyses->add(result);
-          // Use add_xsec to combine results from the different process types
+          // Use improve_xsec to combine results from the same process type
           globalAnalyses->improve_xsec(result);
-          
-        } */
+        }
 	return;
       }
       
