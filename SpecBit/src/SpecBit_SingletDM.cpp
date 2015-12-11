@@ -26,6 +26,8 @@
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
 #include "gambit/SpecBit/SMHiggsContainer.hpp"
 #include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
+#include "gambit/SpecBit/model_files_and_boxes.hpp"
+
 
 // Switch for debug mode
 #define SpecBit_DBUG
@@ -87,7 +89,9 @@ namespace Gambit
 
       result = &full_spectrum;
     }
-
+    
+          
+   
 
   } // end namespace SpecBit
 } // end namespace Gambit

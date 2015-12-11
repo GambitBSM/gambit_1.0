@@ -27,7 +27,7 @@
 ///  \date 2013 July, Sep
 ///  \date 2014 Jan
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Jan
 ///
@@ -47,7 +47,7 @@
 namespace Gambit
 {
   using namespace LogTags;
-  
+
   // Functor class methods
 
     /// Constructor
@@ -62,8 +62,10 @@ namespace Gambit
      myOrigin        (origin_name),
      myClaw          (&claw),
      myLabel         ("#"+func_capability+" @"+origin_name+"::"+func_name),
+     myTimingLabel   ("Runtime(ns) for "+myLabel),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
+     myTimingVertexID(-1),       // Not actually a graph vertex; ID assigned by "get_main_param_id" function.
      verbose         (false)     // For debugging.
     {}
 
@@ -88,7 +90,10 @@ namespace Gambit
     void functor::setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
 
     /// Setter for vertex ID (used in printer system)
-    void functor::setVertexID(int vertexID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = vertexID; }
+    void functor::setVertexID(int ID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = ID; }
+
+    /// Acquire ID for timing 'vertex' (used in printer system)
+    void functor::setTimingVertexID(int ID) { if (this == NULL) failBigTime("setTimingVertexID"); myTimingVertexID = ID; }
 
     /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
     void functor::setStatus(int stat)
@@ -118,10 +123,17 @@ namespace Gambit
     str functor::purpose()     const { if (this == NULL) failBigTime("purpose"); return myPurpose; }
     /// Getter for vertex ID
     int functor::vertexID()    const { if (this == NULL) failBigTime("vertexID"); return myVertexID; }
+    /// Getter for timing vertex ID
+    int functor::timingVertexID() const { if (this == NULL) failBigTime("timingVertexID"); return myTimingVertexID; }
     /// Getter indicating if the wrapped function's result should to be printed
     bool functor::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return false; }
+    /// Getter indicating if the timing data for this function's execution should be printed
+    /// (Note; might be good to activate this for ALL functors)
+    bool functor::requiresTimingPrinting() const { if (this == NULL) failBigTime("requiresTimingPrinting"); return false; }
     /// Getter for the printer label
     str functor::label()       const { if (this == NULL) failBigTime("label"); return myLabel; }
+    /// Getter for the printer timing label
+    str functor::timingLabel() const { if (this == NULL) failBigTime("timingLabel"); return myTimingLabel; }
 
     /// Setter for indicating if the wrapped function's result should to be printed
     void functor::setPrintRequirement(bool flag)
@@ -129,6 +141,15 @@ namespace Gambit
       if (flag)
       {
         utils_error().raise(LOCAL_INFO,"The setPrintRequirement method has not been defined in this class.");
+      }
+    }
+
+    /// Setter for indicating if the timing data for this functor should be printed
+    void functor::setTimingPrintRequirement(bool flag)
+    {
+      if (flag)
+      {
+        utils_error().raise(LOCAL_INFO,"The setTimingPrintRequirement method has not been defined in this class.");
       }
     }
 
@@ -523,8 +544,9 @@ namespace Gambit
       runtime_average          (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
       fadeRate                 (FUNCTORS_FADE_RATE),              // can be set individually for each functor
       pInvalidation            (FUNCTORS_BASE_INVALIDATION_RATE),
-      needs_recalculating      (NULL), 
+      needs_recalculating      (NULL),
       already_printed          (NULL),
+      already_printed_timing   (NULL),
       iCanManageLoops          (false),
       iRunNested               (false),
       myLoopManagerCapability  ("none"),
@@ -556,11 +578,12 @@ namespace Gambit
     /// Destructor
     module_functor_common::~module_functor_common()
     {
-      if (start != NULL)               delete [] start;
-      if (end != NULL)                 delete [] end;
-      if (needs_recalculating != NULL) delete [] needs_recalculating;      
-      if (already_printed != NULL)     delete [] already_printed;
-      if (myCurrentIteration != NULL)  delete [] myCurrentIteration;
+      if (start != NULL)                  delete [] start;
+      if (end != NULL)                    delete [] end;
+      if (needs_recalculating != NULL)    delete [] needs_recalculating;
+      if (already_printed != NULL)        delete [] already_printed;
+      if (already_printed_timing != NULL) delete [] already_printed_timing;
+      if (myCurrentIteration != NULL)     delete [] myCurrentIteration;
     }
 
     /// Getter for averaged runtime
@@ -576,6 +599,7 @@ namespace Gambit
       int n = (iRunNested ? globlMaxThreads : 1);
       std::fill(needs_recalculating, needs_recalculating+n, true);
       std::fill(already_printed, already_printed+n, false);
+      std::fill(already_printed_timing, already_printed_timing+n, false);
       if (iCanManageLoops) resetLoop();
       point_exception_raised = false;
     }
@@ -586,6 +610,7 @@ namespace Gambit
       init_memory();
       needs_recalculating[thread_num] = true;
       already_printed[thread_num] = false;
+      already_printed_timing[thread_num] = false;
       if (iCanManageLoops) resetLoop();
     }
 
@@ -601,7 +626,7 @@ namespace Gambit
     {
       #pragma omp atomic
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
-      if (f==NULL) f = this; 
+      if (f==NULL) f = this;
       #pragma omp critical (raised_point_exception)
       {
         e.set_thrower(f);
@@ -672,13 +697,13 @@ namespace Gambit
           (*it)->setIteration(iteration);     // Tell the nested functor what iteration this is.
           try
           {
-            (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off       
+            (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off
           }
           catch (invalid_point_exception& e)
           {
             acknowledgeInvalidation(e,*it);
             if (omp_get_level()==0) throw(e); // If not in an OpenMP parallel block, inform of invalidation and throw onwards
-          }  
+          }
         }
       }
     }
@@ -693,9 +718,9 @@ namespace Gambit
           if(myCurrentIteration==NULL)  // Check again in case two threads managed to get this far in sequence.
           {
             // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
-            int nslots = (iRunNested ? globlMaxThreads : 1); 
+            int nslots = (iRunNested ? globlMaxThreads : 1);
             // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
-            myCurrentIteration = new int[nslots];            
+            myCurrentIteration = new int[nslots];
             // Zero them to start off
             std::fill(myCurrentIteration, myCurrentIteration+nslots, 0);
           }
@@ -1153,7 +1178,7 @@ namespace Gambit
     {
       // Add the rule.
       required_classloading_backends[be].insert(ver);
-      // Add a dependency on the backend's initialisation function. 
+      // Add a dependency on the backend's initialisation function.
       sspair be_ini_quantity(be + "_" + safe_ver + "_init", "void");
       if (std::find(myDependencies.begin(), myDependencies.end(), be_ini_quantity) == myDependencies.end())
       {
@@ -1414,6 +1439,17 @@ namespace Gambit
           }
         }
       }
+      if(already_printed_timing==NULL)
+      {
+        #pragma omp critical(module_functor_common_init_memory_already_printed_timing)
+        {
+          if(already_printed_timing==NULL)
+          {
+            already_printed_timing = new bool[n];
+            std::fill(already_printed_timing, already_printed_timing+n, false);
+          }
+        }
+      }
     }
 
     /// Do pre-calculate timing things
@@ -1446,9 +1482,10 @@ namespace Gambit
                                    str origin_name,
                                    Models::ModelFunctorClaw &claw)
     : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
-      myFunction  (inputFunction),
-      myValue     (NULL),
-      myPrintFlag (false)
+      myFunction        (inputFunction),
+      myValue           (NULL),
+      myPrintFlag       (false),
+      myTimingPrintFlag (false)
     {}
 
     /// Destructor
@@ -1461,10 +1498,17 @@ namespace Gambit
     /// Setter for indicating if the wrapped function's result should be printed
     template <typename TYPE>
     void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag;}
+    /// Setter for indicating if the timing data for this function's execution should be printed
+    template <typename TYPE>
+    void module_functor<TYPE>::setTimingPrintRequirement(bool flag) { if (this == NULL) failBigTime("setTimingPrintRequirement"); myTimingPrintFlag = flag;}
 
     /// Getter indicating if the wrapped function's result should be printed
     template <typename TYPE>
     bool module_functor<TYPE>::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
+
+    /// Getter indicating if the timing data for this function's execution should be printed
+    template <typename TYPE>
+    bool module_functor<TYPE>::requiresTimingPrinting() const { if (this == NULL) failBigTime("requiresTimingPrinting"); return myTimingPrintFlag; }
 
     /// Calculate method
     template <typename TYPE>
@@ -1487,7 +1531,7 @@ namespace Gambit
           {
             this->finishTiming(thread_num);        //Stop timing function evaluation
             throw(e);
-          } 
+          }
         }
         this->finishTiming(thread_num);            //Stop timing function evaluation
         logger().leaving_module();
@@ -1499,7 +1543,7 @@ namespace Gambit
     void module_functor<TYPE>::init_memory()
     {
       this->module_functor_common::init_memory();
-      if(myValue==NULL) 
+      if(myValue==NULL)
       {
         #pragma omp critical(module_functor_init_memory)
         {
@@ -1529,28 +1573,38 @@ namespace Gambit
 
     /// Printer function
     template <typename TYPE>
-    void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int index)
+    void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int thread_num)
     {
       // Only try to print if print flag set to true, and if this functor(+thread) hasn't already been printed
       // TODO: though actually the printer system will probably cark it if printing from multiple threads is
       // attempted, because it uses the VertexID to different print streams, and this is shared among threads.
       // Can fix by requiring a VertexID+thread_num pair, but I am leaving this for later.
       init_memory();                 // Init memory if this is the first run through.
-      if(myPrintFlag and not already_printed[index])
+      if(myPrintFlag and not already_printed[thread_num] and type()!="void") // myPrintFlag should anyway not be true for void result types
       {
-        if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested.
-        int rank = printer->getRank(); // This is "first pass" printing, so use the actual rank of this process.
-                                       // In the auxilliary printing system we may tell the printer to overwrite
-                                       // the output of other ranks.
-        printer->print(myValue[index],myLabel,myVertexID,rank,pointID);
-        already_printed[index] = true;
+        if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
+        int rank = printer->getRank();      // This is "first pass" printing, so use the actual rank of this process.
+                                            // In the auxilliary printing system we may tell the printer to overwrite
+                                            // the output of other ranks.
+        printer->print(myValue[thread_num],myLabel,myVertexID,rank,pointID);
+        already_printed[thread_num] = true;
       }
+
+      // Print timing info if requested (independent of whether printing actual result)
+      if(myTimingPrintFlag and not already_printed_timing[thread_num])
+      {
+        if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
+        int rank = printer->getRank();
+        std::chrono::duration<double> runtime = end[thread_num] - start[thread_num];
+        printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
+        already_printed_timing[thread_num] = true;
+      }
+
     }
 
     /// Printer function (no-thread-index short-circuit)
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID) { print(printer,pointID,0); }
-
 
   /// Class methods for actual module functors for TYPE=void
 
@@ -1584,7 +1638,7 @@ namespace Gambit
           {
             this->finishTiming(thread_num);
             throw(e);
-          } 
+          }
         }
         this->finishTiming(thread_num);
         logger().leaving_module();
@@ -1651,22 +1705,22 @@ namespace Gambit
 
   // Backend_functor_common class method definitions
 
-    /// Constructor 
+    /// Constructor
     template <typename PTR_TYPE, typename TYPE, typename... ARGS>
-    backend_functor_common<PTR_TYPE, TYPE, ARGS...>::backend_functor_common (funcPtrType inputFunction, 
+    backend_functor_common<PTR_TYPE, TYPE, ARGS...>::backend_functor_common (funcPtrType inputFunction,
                                                                              str func_name,
-                                                                             str func_capability, 
+                                                                             str func_capability,
                                                                              str result_type,
                                                                              str origin_name,
                                                                              str origin_version,
                                                                              str origin_safe_version,
-                                                                             Models::ModelFunctorClaw &claw) 
+                                                                             Models::ModelFunctorClaw &claw)
     : functor (func_name, func_capability, result_type, origin_name, claw),
       myFunction (inputFunction),
       myLogTag(-1),
       inUse(false)
     {
-      myVersion = origin_version; 
+      myVersion = origin_version;
       mySafeVersion = origin_safe_version;
       // Determine LogTag number
       myLogTag = Logging::str2tag(myOrigin);
@@ -1693,7 +1747,7 @@ namespace Gambit
 
     /// Hand out the internal function pointer wrapped by the functor
     template <typename PTR_TYPE, typename TYPE, typename... ARGS>
-    typename backend_functor_common<PTR_TYPE, TYPE, ARGS...>::funcPtrType backend_functor_common<PTR_TYPE, TYPE, ARGS...>::handoutFunctionPointer() 
+    typename backend_functor_common<PTR_TYPE, TYPE, ARGS...>::funcPtrType backend_functor_common<PTR_TYPE, TYPE, ARGS...>::handoutFunctionPointer()
     {
       return myFunction;
     }
@@ -1704,24 +1758,24 @@ namespace Gambit
 
     /// Set the inUse flag.
     template <typename PTR_TYPE, typename TYPE, typename... ARGS>
-    void backend_functor_common<PTR_TYPE, TYPE, ARGS...>::setInUse(bool flag) { inUse = flag; } 
+    void backend_functor_common<PTR_TYPE, TYPE, ARGS...>::setInUse(bool flag) { inUse = flag; }
 
     /// Hand out a safe pointer to this backend functor's inUse flag.
     template <typename PTR_TYPE, typename TYPE, typename... ARGS>
     safe_ptr<bool> backend_functor_common<PTR_TYPE, TYPE, ARGS...>::inUsePtr()
-    { 
+    {
       if (this == NULL) functor::failBigTime("inUsePtr");
       return safe_ptr<bool>(&inUse);
-    }       
+    }
 
 
     // Actual non-variadic backend functor class method definitions for TYPE != void
 
-    /// Constructor 
+    /// Constructor
     template <typename TYPE, typename... ARGS>
-    backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::backend_functor (TYPE (*inputFunction)(ARGS...), 
+    backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::backend_functor (TYPE (*inputFunction)(ARGS...),
                                                                        str func_name,
-                                                                       str func_capability, 
+                                                                       str func_capability,
                                                                        str result_type,
                                                                        str origin_name,
                                                                        str origin_version,
@@ -1730,9 +1784,9 @@ namespace Gambit
     : backend_functor_common<TYPE(*)(ARGS...), TYPE, ARGS...>(inputFunction, func_name,
       func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
 
-    /// Operation (execute function and return value) 
+    /// Operation (execute function and return value)
     template <typename TYPE, typename... ARGS>
-    TYPE backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::operator()(ARGS&&... args) 
+    TYPE backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::operator()(ARGS&&... args)
     {
       if (this == NULL) functor::failBigTime("operator()");
       logger().entering_backend(this->myLogTag);
@@ -1744,22 +1798,22 @@ namespace Gambit
 
     // Actual non-variadic backend functor class method definitions for TYPE=void
 
-    /// Constructor 
+    /// Constructor
     template <typename... ARGS>
-    backend_functor<void(*)(ARGS...), void, ARGS...>::backend_functor (void (*inputFunction)(ARGS...), 
+    backend_functor<void(*)(ARGS...), void, ARGS...>::backend_functor (void (*inputFunction)(ARGS...),
                                                                        str func_name,
-                                                                       str func_capability, 
+                                                                       str func_capability,
                                                                        str result_type,
                                                                        str origin_name,
                                                                        str origin_version,
-                                                                       str safe_version, 
+                                                                       str safe_version,
                                                                        Models::ModelFunctorClaw &claw)
     : backend_functor_common<void(*)(ARGS...), void, ARGS...>(inputFunction, func_name,
       func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
-    
-    /// Operation (execute function and return value) 
+
+    /// Operation (execute function and return value)
     template <typename... ARGS>
-    void backend_functor<void(*)(ARGS...), void, ARGS...>::operator()(ARGS&&... args) 
+    void backend_functor<void(*)(ARGS...), void, ARGS...>::operator()(ARGS&&... args)
     {
       if (this == NULL) functor::functor::failBigTime("operator()");
       logger().entering_backend(this->myLogTag);
@@ -1769,7 +1823,7 @@ namespace Gambit
 
     // Actual variadic backend functor class method definitions for TYPE != void
 
-    /// Constructor 
+    /// Constructor
     template <typename TYPE, typename... ARGS>
     backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::backend_functor
      (typename variadic_ptr<TYPE,ARGS...>::type inputFunction, str func_name, str func_capability, str result_type,
@@ -1779,7 +1833,7 @@ namespace Gambit
 
     // Actual variadic backend functor class method definitions for TYPE=void
 
-    /// Constructor 
+    /// Constructor
     template <typename... ARGS>
     backend_functor<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>::backend_functor
      (typename variadic_ptr<void,ARGS...>::type inputFunction, str func_name, str func_capability, str result_type,
@@ -1793,7 +1847,7 @@ namespace Gambit
 #define INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(r,x,TYPE)             \
 namespace Gambit { template class module_functor<TYPE>; }
 
-/// Instantiate a backend functor template for a specific type 
+/// Instantiate a backend functor template for a specific type
 #define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(r,x,TYPE_PACK)       \
 namespace Gambit                                                  \
 {                                                                 \

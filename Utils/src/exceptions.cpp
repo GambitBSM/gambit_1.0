@@ -306,7 +306,6 @@ namespace Gambit
       myLogTags.insert(err);
     }
 
-
   /// GAMBIT warning class constructors
 
     /// Constructor without log tags
@@ -453,6 +452,22 @@ namespace Gambit
         invalid_point().raise(this->message);  // ...and throw.
       }
     }
+
+    /// @{ SilentShutdownException member functions 
+    SilentShutdownException::SilentShutdownException() {}
+    SilentShutdownException::SilentShutdownException(const std::string& message) : myWhat(message) {}
+    const char* SilentShutdownException::what() const throw() { return myWhat.c_str(); }
+    /// @}
+
+    /// @{ SoftShutdownException member functions 
+    SoftShutdownException::SoftShutdownException(const std::string& message) : myWhat(message) {}
+    const char* SoftShutdownException::what() const throw() { return myWhat.c_str(); }
+    /// @}
+
+    /// @{ HardShutdownException member functions 
+    HardShutdownException::HardShutdownException(const std::string& message) : myWhat(message) {}
+    const char* HardShutdownException::what() const throw() { return myWhat.c_str(); }
+    /// @}
 
     /// Global instance of piped invalid point class.
     Piped_invalid_point piped_invalid_point;

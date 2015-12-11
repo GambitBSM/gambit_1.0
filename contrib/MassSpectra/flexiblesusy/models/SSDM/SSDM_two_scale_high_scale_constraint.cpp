@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:32
+// File generated at Wed 25 Nov 2015 11:56:17
 
 #include "SSDM_two_scale_high_scale_constraint.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -111,8 +111,8 @@ bool SSDM_high_scale_constraint<Two_scale>::check_non_perturbative()
    const auto g1 = MODELPARAMETER(g1);
    const auto g2 = MODELPARAMETER(g2);
    const auto g3 = MODELPARAMETER(g3);
-   const auto LamS = MODELPARAMETER(LamS);
-   const auto LamSH = MODELPARAMETER(LamSH);
+   const auto Lambda3 = MODELPARAMETER(Lambda3);
+   const auto Lambda2 = MODELPARAMETER(Lambda2);
    const auto Lambda1 = MODELPARAMETER(Lambda1);
    const auto Yu = MODELPARAMETER(Yu);
    const auto Yd = MODELPARAMETER(Yd);
@@ -136,17 +136,17 @@ bool SSDM_high_scale_constraint<Two_scale>::check_non_perturbative()
    } else {
       model->get_problems().unflag_non_perturbative_parameter("g3");
    }
-   if (MaxAbsValue(LamS) > 3.5449077018110318) {
+   if (MaxAbsValue(Lambda3) > 3.5449077018110318) {
       problem = true;
-      model->get_problems().flag_non_perturbative_parameter("LamS", MaxAbsValue(LamS), model->get_scale(), 3.5449077018110318);
+      model->get_problems().flag_non_perturbative_parameter("Lambda3", MaxAbsValue(Lambda3), model->get_scale(), 3.5449077018110318);
    } else {
-      model->get_problems().unflag_non_perturbative_parameter("LamS");
+      model->get_problems().unflag_non_perturbative_parameter("Lambda3");
    }
-   if (MaxAbsValue(LamSH) > 3.5449077018110318) {
+   if (MaxAbsValue(Lambda2) > 3.5449077018110318) {
       problem = true;
-      model->get_problems().flag_non_perturbative_parameter("LamSH", MaxAbsValue(LamSH), model->get_scale(), 3.5449077018110318);
+      model->get_problems().flag_non_perturbative_parameter("Lambda2", MaxAbsValue(Lambda2), model->get_scale(), 3.5449077018110318);
    } else {
-      model->get_problems().unflag_non_perturbative_parameter("LamSH");
+      model->get_problems().unflag_non_perturbative_parameter("Lambda2");
    }
    if (MaxAbsValue(Lambda1) > 3.5449077018110318) {
       problem = true;
@@ -219,7 +219,9 @@ void SSDM_high_scale_constraint<Two_scale>::initialize()
    assert(model && "SSDM_high_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   initial_scale_guess = 2.6532977051444203e20;
+   const auto Qin = INPUTPARAMETER(Qin);
+
+   initial_scale_guess = Qin;
 
    scale = initial_scale_guess;
 }
@@ -232,7 +234,9 @@ void SSDM_high_scale_constraint<Two_scale>::update_scale()
    const double currentScale = model->get_scale();
    const SSDM_soft_parameters beta_functions(model->calc_beta());
 
-   scale = 2.6532977051444203e20;
+   const auto Qin = INPUTPARAMETER(Qin);
+
+   scale = Qin;
 
 
    if (errno == ERANGE) {

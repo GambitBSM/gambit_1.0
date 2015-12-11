@@ -130,6 +130,9 @@ namespace Gambit
         /// Calculate a single target vertex.
         void calcObsLike(VertexID, const int);
 
+        /// Getter for print_timing flag (used by LikelihoodContainer)
+        bool printTiming();
+
         /// Get the functor corresponding to a single VertexID
         functor* get_functor(VertexID);
 
@@ -253,7 +256,11 @@ namespace Gambit
 
         /// Output filename for graph of active functors.
         const str activeFunctorGraphFile;
-    };
+
+        /// Global flag for triggering printing of timing data
+        bool print_timing = false;
+ 
+  };
   }
 }
 #endif /* defined(__depresolver_hpp__) */

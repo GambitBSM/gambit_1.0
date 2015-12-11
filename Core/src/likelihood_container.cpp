@@ -35,13 +35,30 @@ namespace Gambit
   // Methods for Likelihood_Container class.
 
   /// Constructor
-  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap,
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile,
-   Priors::CompositePrior &prior, const str &purpose)
-  : dependencyResolver (dependencyResolver),
+  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
+   Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+  #ifdef WITH_MPI
+    , GMPI::Comm& comm
+  #endif
+  ) 
+  : dependencyResolver (dependencyResolver), 
     prior              (prior),
+    printer            (printer),
     functorMap         (functorMap),
+    #ifdef WITH_MPI
+    errorComm          (comm), 
+    #endif
     min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
+    intralooptime_label("Runtime(ns) intraloop"),
+    interlooptime_label("Runtime(ns) interloop"),
+    totallooptime_label("Runtime(ns) totalloop"),
+    /* Note, likelihood container should be constructed after dependency 
+       resolution, so that new printer IDs can be safely acquired without
+       risk of collision with graph vertex IDs */
+    intraloopID(Printers::get_main_param_id(intralooptime_label)),
+    interloopID(Printers::get_main_param_id(interlooptime_label)),
+    totalloopID(Printers::get_main_param_id(totallooptime_label)),
     #ifdef CORE_DEBUG
       debug            (true)
     #else
@@ -117,6 +134,12 @@ namespace Gambit
 
     logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
 
+    // Begin timing of total likelihood evaluation
+    std::chrono::time_point<std::chrono::system_clock> startL = std::chrono::system_clock::now();
+  
+    // Compute time since the previous likelihood evaluation ended
+    std::chrono::duration<double> interloop_time = startL - previous_endL;
+
     // First work through the target functors, i.e. the ones contributing to the likelihood.
     for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
     {
@@ -186,6 +209,27 @@ namespace Gambit
         compute_aux = false;
         if (debug) cout << "Point invalid." << endl;
         break;
+      }
+
+      // End timing of total likelihood evaluation
+      std::chrono::time_point<std::chrono::system_clock> endL = std::chrono::system_clock::now();
+ 
+      // Compute time since the previous likelihood evaluation ended
+      // I.e. computing time of this likelihood, plus overhead from previous inter-loop time.
+      std::chrono::duration<double> true_total_loop_time = endL - previous_endL;
+
+      // Update stored timing information for use in next loop
+      previous_startL = startL;
+      previous_endL   = endL;
+
+      // Print timing data
+      if(dependencyResolver.printTiming())
+      {
+        int rank = printer.getRank();
+        std::chrono::duration<double> runtimeL = endL - startL;
+        printer.print(runtimeL.count(),            intralooptime_label,intraloopID,rank,getPtID());
+        printer.print(interloop_time.count(),      interlooptime_label,interloopID,rank,getPtID());
+        printer.print(true_total_loop_time.count(),totallooptime_label,totalloopID,rank,getPtID());
       }
     }
 

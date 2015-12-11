@@ -18,7 +18,7 @@
 #ifndef __SpecBit_SingletDM_hpp__
 #define __SpecBit_SingletDM_hpp__
 
-  // Spectrum object for SingletDM model
+  // Spectrum object for SingletDM model  (tree-level masses)
   #define CAPABILITY SingletDM_spectrum
   START_CAPABILITY
 
@@ -33,7 +33,14 @@
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
+
+
+
   #undef CAPABILITY
+
+
+
+
 
 #endif
 
