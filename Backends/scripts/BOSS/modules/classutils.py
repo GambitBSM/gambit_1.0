@@ -1075,9 +1075,10 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
     decl_code += '{\n'
 
 
-    # Add typedef for the wrapper base class
+    # Add typedef for the wrapper base class, and a 'using' statement for BEptr (to avoid ambiguity).
     decl_code += indent + 'public:\n'
     decl_code += 2*indent + 'typedef '+ wrapper_base_class_name + ' wrapperbase;\n'
+    decl_code += 2*indent + 'using ' + wrapper_base_class_name + '::BEptr;\n'
     decl_code += '\n'    
 
     #

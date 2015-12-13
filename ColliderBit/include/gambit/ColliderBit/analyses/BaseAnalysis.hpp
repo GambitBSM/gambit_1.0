@@ -16,7 +16,8 @@ namespace Gambit {
     /// @brief A simple container for the result of one analysis signal region.
     struct SignalRegionData {
       std::string analysis_name, sr_label;
-      double n_observed, n_signal, n_background, signal_sys, background_sys;
+      double n_observed, n_signal, n_signal_at_lumi;
+      double n_background, signal_sys, background_sys;
 
       SignalRegionData() {}
 
@@ -24,6 +25,7 @@ namespace Gambit {
       void set_sr_label(std::string a) {sr_label=a;}
       void set_observation(double a) {n_observed=a;}
       void set_signal(double a) {n_signal=a;}
+      void set_signal_at_lumi(double a) {n_signal_at_lumi=a;}
       void set_background(double a) {n_background=a;}
       void set_signalsys(double a) {signal_sys=a;}
       void set_backgroundsys(double a) {background_sys=a;}
@@ -104,7 +106,7 @@ namespace Gambit {
             factor = _luminosity * _xsec / _ntot;
           auto myIter = _results.begin();
           while (myIter != _results.end()) {
-            (*myIter).n_signal *= factor;
+            (*myIter).n_signal_at_lumi = factor * (*myIter).n_signal;
             myIter++;
           }
         }

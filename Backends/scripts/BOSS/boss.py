@@ -453,11 +453,6 @@ def main():
     utils.fillAcceptedTypesList()
     
 
-    # # DEBUG
-    # for c in gb.accepted_types:
-    #     if 'Matrix' in c:
-    #         print 'HERE: ' + c + ' is accepted'
-
     #
     # Remove from cfg.loaded_functions all functions that are not loadable
     #
