@@ -34,47 +34,45 @@ source_path   = '../../../Backends/installed/Pythia/8.212/src'
 accepted_paths = ['../../../Backends/installed/Pythia/8.212/']
 
 loaded_classes = [
-                    'Pythia8::AlphaEM',
-                    'Pythia8::AlphaStrong',
-                    'Pythia8::BeamParticle',
-                    'Pythia8::Couplings',
-                    'Pythia8::CoupSM',
-                    'Pythia8::CoupSUSY',
-                    'Pythia8::DecayChannel',
-                    'Pythia8::Event',
-                    'Pythia8::Hist',
-                    'Pythia8::Info',
-                    'Pythia8::LHdecayChannel',
-                    'Pythia8::LHdecayTable',
-                    'Pythia8::Parm',
-                    'Pythia8::ParticleDataEntry',
-                    'Pythia8::ParticleData',
-                    'Pythia8::ParticleDecays',
-                    'Pythia8::Particle',
-                    'Pythia8::PartonLevel',
-                    'Pythia8::Pythia',
-                    'Pythia8::ResonanceDecays',
-                    'Pythia8::ResonanceGmZ',
-                    'Pythia8::ResonanceWidths',
-                    'Pythia8::Rndm',
-                    'Pythia8::Settings',
-                    'Pythia8::SigmaProcess',
-                    'Pythia8::SigmaTotal',
-                    'Pythia8::SLHAinterface',
-                    'Pythia8::SlowJet',
-                    'Pythia8::SusyLesHouches',
-                    'Pythia8::UserHooks',
-                    'Pythia8::Vec4'
-                 ]
+    'Pythia8::AlphaEM',
+    'Pythia8::AlphaStrong',
+    'Pythia8::BeamParticle',
+    'Pythia8::Couplings',
+    'Pythia8::CoupSM',
+    'Pythia8::CoupSUSY',
+    'Pythia8::DecayChannel',
+    'Pythia8::Event',
+    'Pythia8::Hist',
+    'Pythia8::Info',
+    'Pythia8::LHdecayChannel',
+    'Pythia8::LHdecayTable',
+    'Pythia8::Parm',
+    'Pythia8::ParticleDataEntry',
+    'Pythia8::ParticleData',
+    'Pythia8::ParticleDecays',
+    'Pythia8::Particle',
+    'Pythia8::PartonLevel',
+    'Pythia8::Pythia',
+    'Pythia8::ResonanceDecays',
+    'Pythia8::ResonanceGmZ',
+    'Pythia8::ResonanceWidths',
+    'Pythia8::Rndm',
+    'Pythia8::Settings',
+    'Pythia8::SigmaProcess',
+    'Pythia8::SigmaTotal',
+    'Pythia8::SLHAinterface',
+    'Pythia8::SlowJet',
+    'Pythia8::SusyLesHouches',
+    'Pythia8::UserHooks',
+    'Pythia8::Vec4',
+]
 
 loaded_functions = [
-                      # 'Pythia8::m2(Pythia8::Wave4, Pythia8::Wave4)',
-                      # 'Pythia8::m2(Pythia8::Particle const&, Pythia8::Particle const&)',
-                   ]
+    # 'Pythia8::m2(Pythia8::Wave4, Pythia8::Wave4)',
+    # 'Pythia8::m2(const Pythia8::Particle&, const Pythia8::Particle&)',
+]
 
-ditch = [
-          'Pythia8::Pythia::initSLHA',
-        ]
+ditch = ['Pythia8::Pythia::initSLHA']
 
 
 load_parent_classes    = False
@@ -95,34 +93,6 @@ function_files_prefix  = 'function_'
 
 # ~~~~~ Information about other known types ~~~~~
 
-std_include_paths  = ['/usr/include/']
+known_classes = ['SLHAea::Coll']
 
-known_classes = [
-                   'SLHAea::Coll',
-                ]
-
-known_class_headers = {
-    "SLHAea::Coll"           : "SLHAea/slhaea.h",
-    "std::array"             : "<array>", 
-    "std::vector"            : "<vector>", 
-    "std::deque"             : "<deque>", 
-    "std::complex"           : "<complex>", 
-    "std::list"              : "<list>", 
-    "std::forward_list"      : "<forward_list>", 
-    "std::set"               : "<set>",  
-    "std::multiset"          : "<set>", 
-    "std::map"               : "<map>", 
-    "std::multimap"          : "<map>", 
-    "std::unordered_set"     : "<unordered_set>", 
-    "std::unordered_multiset": "<unordered_set>", 
-    "std::unordered_map"     : "<unordered_map>", 
-    "std::unordered_multimap": "<unordered_map>", 
-    "std::stack"             : "<stack>", 
-    "std::queue"             : "<queue>",
-    "std::priority_queue"    : "<queue>",
-    "std::string"            : "<string>",
-    "std::istream"           : "<istream>",
-    "std::ostream"           : "<ostream>",
-    "std::iostream"          : "<iostream>"
-}
-
+known_class_headers = {"SLHAea::Coll" : "SLHAea/slhaea.h"}

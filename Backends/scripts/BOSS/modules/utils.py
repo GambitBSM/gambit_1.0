@@ -130,6 +130,12 @@ def isKnownClass(el, class_name=None):
     if class_name is None:
         class_name = classutils.getClassNameDict(type_el) 
 
+    # Check if standard library class
+    if isStdType(el, class_name=class_name):
+        is_known = True
+        return is_known
+
+    # Check if listed among the user-specified known types
     full_name = class_name['long_templ']
     if (full_name in cfg.known_classes) or (full_name.replace(' ','') in cfg.known_classes):
         is_known = True
@@ -1819,8 +1825,16 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                 # found in the current file (above current class/function) or among the included headers. If no such class 
                 # definition is found, it must be a case of simply using forward declaration.
 
+                # TODO: Why isn't it enough just to check for the 'incomplete' key in the type_el? 
+                #       Need to check this again...
+
                 type_file_id = type_el.get('file')
                 type_line_number = int(type_el.get('line'))
+
+                if ('incomplete' in type_el.keys() and type_el.get('incomplete')=='1'):
+                    is_incomplete = True
+                else:
+                    is_incomplete = False
 
                 if (type_file_id in included_headers_dict.values()) :
                     type_definition_found = True
@@ -1834,13 +1848,30 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                     continue
 
                 elif (type_definition_found) and (forward_declared=='only'):
-                    # This must be a case of a type that *is* fully declared, so we ignore it if only_forward:declared=True.
+                    # This must be a case of a type that *is* fully declared, so we ignore it if forward_declared=='only'.
                     continue
                 else:
                     if convert_loaded_to == 'none':
 
                         type_file_el = gb.id_dict[type_file_id]
                         type_file_full_path = type_file_el.get('name')
+
+                        # If the xml element we have for the type is only for a forward declaration
+                        # we must search all other xml files for the complete type declaration.
+                        if is_incomplete:
+                            for xml_file_name in gb.all_name_dict.keys():
+                                try:
+                                    new_type_el = gb.all_name_dict[xml_file_name][type_name['long_templ']]
+                                except KeyError:
+                                    new_type_el = None
+
+                                if new_type_el is not None:
+                                    if 'incomplete' not in new_type_el.keys():
+                                        new_type_file_id = new_type_el.get('file')
+                                        new_type_file_el = gb.all_id_dict[xml_file_name][new_type_file_id]
+                                        # Set new header path and break the loop
+                                        type_file_full_path = new_type_file_el.get('name')
+                                        break
 
                         if isHeader(type_file_el):
                             use_path = shortenHeaderPath(type_file_full_path)
@@ -1859,14 +1890,14 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                         include_statements.append('#include "' + gb.new_header_files[type_name['long']][header_key] + '"')
 
             elif isStdType(type_el):
-                if type_name['long'] in cfg.known_class_headers:
-                    header_name = cfg.known_class_headers[type_name['long']].strip()
+                if type_name['long'] in gb.std_headers:
+                    header_name = gb.std_headers[type_name['long']].strip()
                     if (header_name[0] == '<') and (header_name[-1] == '>'):
-                        include_statements.append('#include ' + cfg.known_class_headers[type_name['long']])
+                        include_statements.append('#include ' + gb.std_headers[type_name['long']])
                     else:
-                        include_statements.append('#include "' + cfg.known_class_headers[type_name['long']] + '"')
+                        include_statements.append('#include "' + gb.std_headers[type_name['long']] + '"')
                 else:
-                    reason = "The standard type '%s' has no specified header file. Please update modules/cfg.py." % type_name['long_templ']
+                    reason = "The standard type '%s' has no specified header file. Please update modules/gb.py." % type_name['long_templ']
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
 
             else:
@@ -1877,7 +1908,7 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                     else:
                         include_statements.append('#include "' + cfg.known_class_headers[type_name['long']] + '"')
                 else:
-                    reason = "The type '%s' has no specified header file. Please update modules/cfg.py." % type_name['long_templ']
+                    reason = "The type '%s' has no specified header file. Please update config file." % type_name['long_templ']
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
         else:
             infomsg.NoIncludeStatementGenerated( type_name['long_templ'] ).printMessage()
@@ -2361,6 +2392,7 @@ def fillAcceptedTypesList():
 
         for full_name, el in gb.name_dict.items():
             
+
             # Only consider types
             if el.tag not in ['Class', 'Struct', 'FundamentalType', 'Enumeration']:
                 continue
@@ -2370,12 +2402,24 @@ def fillAcceptedTypesList():
                 print '  %i types classified...' % (type_counter)    
 
 
-            # Skip incomplete types
-            if ('incomplete' in el.keys()) and (el.get('incomplete') == '1'):
-                continue
+            # To save a bit of time, construct class name dict once and pass to remaining checks
+            class_name = classutils.getClassNameDict(el)
+
 
             # Skip problematic types
             if isProblematicType(el):
+                continue
+
+            #
+            # Known class?
+            #
+            is_known_class = isKnownClass(el, class_name=class_name)
+            if is_known_class:
+                new_known_classes.append(full_name)
+
+
+            # Skip incomplete types
+            if ('incomplete' in el.keys()) and (el.get('incomplete') == '1'):
                 continue
 
             #
@@ -2386,24 +2430,12 @@ def fillAcceptedTypesList():
                 new_fundamental_types.append(full_name)
 
 
-            # To save a bit of time, construct class name dict once and pass to remaining checks
-            class_name = classutils.getClassNameDict(el)
-
-
             #
             # Std type?
             #
             is_std_type = isStdType(el, class_name=class_name)
             if is_std_type:
                 new_std_types.append(full_name)
-
-            #
-            # Known class?
-            #
-            is_known_class = isKnownClass(el, class_name=class_name)
-            if is_known_class:
-                # print 'DEBUG: Appending ' + full_name + ' to new_known_classes'
-                new_known_classes.append(full_name)
 
 
             # #
@@ -2412,6 +2444,7 @@ def fillAcceptedTypesList():
             # is_enumeration = isEnumeration(el)
             # if is_enumeration:
             #     new_enumeration_types.append( '::'.join( getNamespaces(el, include_self=True) ) )
+
 
             #
             # Loaded type?
@@ -2435,9 +2468,6 @@ def fillAcceptedTypesList():
     # Print final number of types classified
     print '  %i types classified.' % (type_counter)    
 
-    # print
-    # print 'DEBUG: Known classes: ', list(known_classes)
-    # print
     # Fill global list
     gb.accepted_types = list(loaded_classes) + list(known_classes) + list(fundamental_types) + list(std_types)
     # gb.accepted_types = list(loaded_classes) + list(fundamental_types) + list(std_types) + list(enumeration_types)
