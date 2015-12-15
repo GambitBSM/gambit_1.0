@@ -461,10 +461,10 @@ add_external_clean(higgssignals ${higgssignals_dir} hyperclean)
 set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim
                       higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends DEPENDS darksusy micromegas micromegasSingletDM superiso
-                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit)
+add_custom_target(backends DEPENDS micromegas darksusy pythia superiso higgssignals
+                      higgsbounds feynhiggs susyhit micromegasSingletDM)
 
-add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike pythia) #fastsim
+add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike) #fastsim
 
 add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso
                       clean-higgssignals clean-higgsbounds clean-feynhiggs clean-susyhit clean-delphes clean-flexiblesusy
