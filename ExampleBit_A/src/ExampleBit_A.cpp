@@ -221,13 +221,13 @@ namespace Gambit
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
-      //unsigned int nEvents = 20;         // Number of times to run the loop  //bjf> unused variable warning
 
       //There is basically just one thing available from the Loops namespace in loop managers like this one:
       //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered
       //                                                  set of nested functions, passing them the iteration_number.
 
       //A simple loop example without OpenMP.  Commented out for now.
+      //unsigned int nEvents = 20;       // Number of times to run the loop
       //for(unsigned long it = 0; it < nEvents; it++)
       //{
       //  cout << "This is iteration " << it+1 << " of " << nEvents << " being run by eventLoopManager." << endl;
