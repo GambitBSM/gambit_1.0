@@ -148,8 +148,8 @@ enable_auto_rebuild(gamlike)
 add_external_clean(gamlike ${gamlike_dir} clean)
 
 # MicrOmegas for MSSM
-set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/MSSM")
-set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/MSSM")
+set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.6.9.2/MSSM")
+set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.6.9.2/MSSM")
 ExternalProject_Add(micromegas
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${micromegas_dir}
@@ -163,8 +163,8 @@ enable_auto_rebuild(micromegas)
 add_external_clean(micromegas ${micromegas_dir} clean)
 
 # MicrOmegas for SingletDM
-set(micromegasSingletDM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/SingletDM")
-set(micromegasSingletDM_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/SingletDM")
+set(micromegasSingletDM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.6.9.2/SingletDM")
+set(micromegasSingletDM_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.6.9.2/SingletDM")
 ExternalProject_Add(micromegasSingletDM
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${micromegasSingletDM_dir}

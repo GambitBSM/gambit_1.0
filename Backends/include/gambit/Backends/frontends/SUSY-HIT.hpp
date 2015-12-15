@@ -15,11 +15,7 @@
 ///
 ///  *********************************************
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME SUSY_HIT
-#endif
+#define BACKENDNAME SUSY_HIT
 #define VERSION 1.5
 #define SAFE_VERSION 1_5
 

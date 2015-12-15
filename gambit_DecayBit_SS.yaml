@@ -34,7 +34,7 @@ Scanner:
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
-      point_number: 2
+      point_number: 200
       output_file:  output
       like:  Likelihood
             
@@ -50,8 +50,11 @@ Rules:
   - capability: decay_rates
     function: all_decays
 
-      
-            
+  - capability: SingletDM_spectrum
+    function: get_SingletDM_spectrum
+
+
+
 ##############################
 # Printer setup
 ##############################
@@ -107,4 +110,16 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
+
+
+###############################
+## Printer (output) setup
+###############################
+
+Printer:
+printer: ascii
+options:
+output_file: "runs/DecayBit_test/samples/gambit_output.data"
+buffer_length: 10
+
 

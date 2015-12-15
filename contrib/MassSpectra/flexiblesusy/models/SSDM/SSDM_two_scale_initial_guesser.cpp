@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:33
+// File generated at Wed 25 Nov 2015 11:56:18
 
 #include "SSDM_two_scale_initial_guesser.hpp"
 #include "SSDM_two_scale_model.hpp"
@@ -86,18 +86,19 @@ void SSDM_initial_guesser<Two_scale>::guess()
  * (InitialGuessAtLowScale) is applied here:
  *
  * \code{.cpp}
-   const auto HiggsIN = INPUTPARAMETER(HiggsIN);
    const auto Lambda2Input = INPUTPARAMETER(Lambda2Input);
    const auto Lambda3Input = INPUTPARAMETER(Lambda3Input);
    const auto mS2Input = INPUTPARAMETER(mS2Input);
+   const auto HiggsIN = INPUTPARAMETER(HiggsIN);
 
+   MODEL->set_v(Re(LowEnergyConstant(vev)));
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
+   MODEL->set_Lambda2(Re(Lambda2Input));
+   MODEL->set_Lambda3(Re(Lambda3Input));
+   MODEL->set_ms2(Re(mS2Input));
    MODEL->set_mu2(Re(HiggsIN));
-   MODEL->set_LamSH(Re(Lambda2Input));
-   MODEL->set_LamS(Re(Lambda3Input));
-   MODEL->set_MS2(Re(mS2Input));
 
  * \endcode
  */
@@ -130,18 +131,19 @@ void SSDM_initial_guesser<Two_scale>::guess_susy_parameters()
    model->set_scale(mtpole);
 
    // apply user-defined initial guess at the low scale
-   const auto HiggsIN = INPUTPARAMETER(HiggsIN);
    const auto Lambda2Input = INPUTPARAMETER(Lambda2Input);
    const auto Lambda3Input = INPUTPARAMETER(Lambda3Input);
    const auto mS2Input = INPUTPARAMETER(mS2Input);
+   const auto HiggsIN = INPUTPARAMETER(HiggsIN);
 
+   MODEL->set_v(Re(LowEnergyConstant(vev)));
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
+   MODEL->set_Lambda2(Re(Lambda2Input));
+   MODEL->set_Lambda3(Re(Lambda3Input));
+   MODEL->set_ms2(Re(mS2Input));
    MODEL->set_mu2(Re(HiggsIN));
-   MODEL->set_LamSH(Re(Lambda2Input));
-   MODEL->set_LamS(Re(Lambda3Input));
-   MODEL->set_MS2(Re(mS2Input));
 
 }
 

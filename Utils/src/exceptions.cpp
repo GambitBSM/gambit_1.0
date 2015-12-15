@@ -453,6 +453,12 @@ namespace Gambit
       }
     }
 
+    /// @{ SilentShutdownException member functions 
+    SilentShutdownException::SilentShutdownException() {}
+    SilentShutdownException::SilentShutdownException(const std::string& message) : myWhat(message) {}
+    const char* SilentShutdownException::what() const throw() { return myWhat.c_str(); }
+    /// @}
+
     /// @{ SoftShutdownException member functions 
     SoftShutdownException::SoftShutdownException(const std::string& message) : myWhat(message) {}
     const char* SoftShutdownException::what() const throw() { return myWhat.c_str(); }
