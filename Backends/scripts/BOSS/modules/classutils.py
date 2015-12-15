@@ -514,7 +514,7 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
             info_dict = OrderedDict()
             info_dict['name']         = factory_name
             info_dict['args_bracket'] = args_bracket_nonames
-            info_dict['symbol']       = ''  # Will be filled when the factory function source files are parsed by gccxml
+            info_dict['symbol']       = ''  # Will be filled when the factory function source files are parsed by castxml
 
             if class_name['long'] not in gb.factory_info.keys():
                 gb.factory_info[class_name['long']] = []
@@ -1015,12 +1015,18 @@ def getClassNameDict(class_el, abstract=False):
     if 'name' not in class_el.keys():
         raise KeyError('XML element %s does not contain the key "name".' % (xml_id))
 
-    if 'demangled' in class_el.keys():
-        class_name['long_templ']  = class_el.get('demangled')
-    elif 'name' in class_el.keys():
-        class_name['long_templ']  = class_el.get('name')
-    else:
-        raise KeyError('XML element %s contains neither "name" nor "demangled".' % (xml_id))
+
+    # TAG:castxml_in
+    namespaces_list = utils.getNamespaces(class_el, include_self=True)
+    class_name['long_templ'] = '::'.join(namespaces_list)
+
+    # TAG:castxml_out
+    # if 'demangled' in class_el.keys():
+    #     class_name['long_templ']  = class_el.get('demangled')
+    # elif 'name' in class_el.keys():
+    #     class_name['long_templ']  = class_el.get('name')
+    # else:
+    #     raise KeyError('XML element %s contains neither "name" nor "demangled".' % (xml_id))
 
     class_name['long']        = class_name['long_templ'].split('<',1)[0]
     class_name['short_templ'] = class_el.get('name')
@@ -1069,9 +1075,10 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
     decl_code += '{\n'
 
 
-    # Add typedef for the wrapper base class
+    # Add typedef for the wrapper base class, and a 'using' statement for BEptr (to avoid ambiguity).
     decl_code += indent + 'public:\n'
     decl_code += 2*indent + 'typedef '+ wrapper_base_class_name + ' wrapperbase;\n'
+    decl_code += 2*indent + 'using ' + wrapper_base_class_name + '::BEptr;\n'
     decl_code += '\n'    
 
     #

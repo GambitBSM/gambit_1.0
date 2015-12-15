@@ -178,12 +178,10 @@ enable_auto_rebuild(micromegasSingletDM)
 add_external_clean(micromegasSingletDM ${micromegasSingletDM_dir} clean)
 
 # Pythia
-# - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it.
-# - Pythia will also screw up if trying to use -O3 with CMAKE_BUILD_TYPE=Release, so replace this with -O2
-string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
+set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -g")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
 endif()
@@ -197,11 +195,11 @@ endif()
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 # - Set local paths
 set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
-set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.209")
+set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212")
 # - Actual configure and compile commands
 ExternalProject_Add(pythia
-  URL http://home.thep.lu.se/~torbjorn/pythia8/pythia8209.tgz
-  URL_MD5 1b9e9dc2f8a2c2db63bce739242fbc12
+  URL http://home.thep.lu.se/~torbjorn/pythia8/pythia8212.tgz
+  URL_MD5 0886d1b2827d8f0cd2ae69b925045f40
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${pythia_dir}
   BUILD_IN_SOURCE 1
@@ -212,14 +210,19 @@ ExternalProject_Add(pythia
 )
 ExternalProject_Add_Step(pythia apply_hacks
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.cc ${pythia_dir}/src/Pythia.cc
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ParticleData.cc ${pythia_dir}/src/ParticleData.cc
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.cc ${pythia_dir}/src/SusyLesHouches.cc
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ResonanceDecays.cc ${pythia_dir}/src/ResonanceDecays.cc
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Pythia.h ${pythia_dir}/include/Pythia8/Pythia.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/ParticleData.h ${pythia_dir}/include/Pythia8/ParticleData.h
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/SusyLesHouches.h ${pythia_dir}/include/Pythia8/SusyLesHouches.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/Settings.h ${pythia_dir}/include/Pythia8/Settings.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/PartonDistributions.h ${pythia_dir}/include/Pythia8/PartonDistributions.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/ColliderBit/PythiaHacks/PartonDistributions.cc ${pythia_dir}/src/PartonDistributions.cc
   DEPENDEES download
   DEPENDERS patch
 )
-BOSS_backend(pythia Pythia 8.209)
+BOSS_backend(pythia Pythia 8.212)
 enable_auto_rebuild(pythia)
 add_external_clean(pythia ${pythia_dir} distclean)
 

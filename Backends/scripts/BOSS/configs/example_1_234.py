@@ -5,9 +5,16 @@
 ###################################
 
 
-# ~~~~~ GCCXML options ~~~~~
+# ~~~~~ CASTXML options ~~~~~
 
-gccxml_compiler = 'g++'       # g++, gcc, icpc, icc, ... (use name of executable)
+# See CastXML documentation for details on these options: 
+#
+#   https://github.com/CastXML/CastXML/blob/master/doc/manual/castxml.1.rst 
+#
+
+castxml_cc_id  = 'gnu'      # Reference compiler: 'gnu', 'gnu-c', 'msvc', 'msvc-c'
+castxml_cc     = 'g++'      # Name a specific compiler: 'g++', 'cl', ...
+castxml_cc_opt = ''         # Additional option string passed to the compiler in castxml_cc (e.g. '-m32')
 
 
 # ~~~~~ GAMBIT-specific options ~~~~~

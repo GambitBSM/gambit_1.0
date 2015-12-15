@@ -45,7 +45,6 @@ START_MODULE
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(decay_rates, DecayTable)
-    // FIXME this should not be needed once the dep resolver orders things correctly.
     MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, const Spectrum*, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION
   #undef CAPABILITY
@@ -60,6 +59,12 @@ START_MODULE
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(decay_rates, DecayTable)
     MODEL_CONDITIONAL_DEPENDENCY(MSSM_spectrum, const Spectrum*, MSSM78atQ, MSSM78atMGUT) 
+    #undef FUNCTION
+
+    #define FUNCTION getPythiaFileReader
+    START_FUNCTION(Gambit::ColliderBit::SpecializablePythia)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
 
