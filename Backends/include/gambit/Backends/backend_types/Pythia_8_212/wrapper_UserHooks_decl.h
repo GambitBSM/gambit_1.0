@@ -14,6 +14,7 @@
 #include "wrapper_SigmaTotal_decl.h"
 #include "wrapper_SigmaProcess_decl.h"
 #include "wrapper_Event_decl.h"
+#include <string>
 #include <vector>
 #include "wrapper_Particle_decl.h"
 
@@ -29,6 +30,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
                 typedef WrapperBase<Pythia8::Abstract_UserHooks> wrapperbase;
+                using WrapperBase<Pythia8::Abstract_UserHooks>::BEptr;
         
                 // Member variables: 
             public:
@@ -106,9 +108,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool canEnhanceEmission();
         
-                double enhanceFactor(std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1);
+                double enhanceFactor(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1);
         
-                double vetoProbability(std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1);
+                double vetoProbability(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1);
         
                 void setEnhancedEventWeight(double wt);
         

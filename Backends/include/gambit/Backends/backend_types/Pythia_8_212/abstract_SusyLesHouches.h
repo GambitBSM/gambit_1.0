@@ -4,6 +4,8 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
+#include <string>
+#include <istream>
 #include "SLHAea/slhaea.h"
 #include <map>
 #include <vector>
@@ -25,19 +27,19 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
     
-                virtual int readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, bool) =0;
+                virtual int readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, bool) =0;
     
-                virtual int readFile__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) =0;
+                virtual int readFile__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) =0;
     
-                virtual int readFile__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual int readFile__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
                 virtual int readFile__BOSS() =0;
     
-                virtual int readFile(std::basic_istream<char, std::char_traits<char> >&, int, bool) =0;
+                virtual int readFile(::std::basic_istream<char, std::char_traits<char> >&, int, bool) =0;
     
-                virtual int readFile__BOSS(std::basic_istream<char, std::char_traits<char> >&, int) =0;
+                virtual int readFile__BOSS(::std::basic_istream<char, std::char_traits<char> >&, int) =0;
     
-                virtual int readFile__BOSS(std::basic_istream<char, std::char_traits<char> >&) =0;
+                virtual int readFile__BOSS(::std::basic_istream<char, std::char_traits<char> >&) =0;
     
                 virtual int readSLHAea(int, bool) =0;
     
@@ -69,11 +71,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void verbose(int) =0;
     
-                virtual void message(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) =0;
+                virtual void message(int, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) =0;
     
-                virtual void message__BOSS(int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual void message__BOSS(int, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual void toLower(std::basic_string<char, std::char_traits<char>, std::allocator<char> >&) =0;
+                virtual void toLower(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >&) =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_SusyLesHouches*) =0;

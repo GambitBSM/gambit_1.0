@@ -5,6 +5,7 @@
 #include "wrapper_Event_decl.h"
 #include "wrapper_ParticleDataEntry_decl.h"
 #include <vector>
+#include <string>
 
 #include "identification.hpp"
 
@@ -500,22 +501,22 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->iBotCopyId__BOSS();
         }
         
-        inline std::vector<int, std::allocator<int> > Particle::motherList() const
+        inline ::std::vector<int, std::allocator<int> > Particle::motherList() const
         {
             return wrapperbase::BEptr->motherList();
         }
         
-        inline std::vector<int, std::allocator<int> > Particle::daughterList() const
+        inline ::std::vector<int, std::allocator<int> > Particle::daughterList() const
         {
             return wrapperbase::BEptr->daughterList();
         }
         
-        inline std::vector<int, std::allocator<int> > Particle::sisterList(bool traceTopBot) const
+        inline ::std::vector<int, std::allocator<int> > Particle::sisterList(bool traceTopBot) const
         {
             return wrapperbase::BEptr->sisterList(traceTopBot);
         }
         
-        inline std::vector<int, std::allocator<int> > Particle::sisterList() const
+        inline ::std::vector<int, std::allocator<int> > Particle::sisterList() const
         {
             return wrapperbase::BEptr->sisterList__BOSS();
         }
@@ -540,17 +541,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->undoDecay();
         }
         
-        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Particle::name() const
+        inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Particle::name() const
         {
             return wrapperbase::BEptr->name();
         }
         
-        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Particle::nameWithStatus(int maxLen) const
+        inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Particle::nameWithStatus(int maxLen) const
         {
             return wrapperbase::BEptr->nameWithStatus(maxLen);
         }
         
-        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Particle::nameWithStatus() const
+        inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Particle::nameWithStatus() const
         {
             return wrapperbase::BEptr->nameWithStatus__BOSS();
         }

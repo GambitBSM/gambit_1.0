@@ -6,8 +6,10 @@
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Rndm_decl.h"
 #include "wrapper_Vec4_decl.h"
+#include <ostream>
 #include "wrapper_Event_decl.h"
 #include <vector>
+#include <utility>
 
 #include "identification.hpp"
 
@@ -178,7 +180,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->append__BOSS(iPos, idIn, x);
         }
         
-        inline void BeamParticle::list(std::basic_ostream<char, std::char_traits<char> >& os) const
+        inline void BeamParticle::list(::std::basic_ostream<char, std::char_traits<char> >& os) const
         {
             wrapperbase::BEptr->list(os);
         }
@@ -213,7 +215,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->remnantFlavours__BOSS(*event.BEptr);
         }
         
-        inline bool BeamParticle::remnantColours(WrapperBase< Pythia8::Abstract_Event >& event, std::vector<int, std::allocator<int> >& colFrom, std::vector<int, std::allocator<int> >& colTo)
+        inline bool BeamParticle::remnantColours(WrapperBase< Pythia8::Abstract_Event >& event, ::std::vector<int, std::allocator<int> >& colFrom, ::std::vector<int, std::allocator<int> >& colTo)
         {
             return wrapperbase::BEptr->remnantColours__BOSS(*event.BEptr, colFrom, colTo);
         }
@@ -283,12 +285,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->setInitialCol__BOSS(*event.BEptr);
         }
         
-        inline void BeamParticle::updateCol(std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > colourChanges)
+        inline void BeamParticle::updateCol(::std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > colourChanges)
         {
             wrapperbase::BEptr->updateCol(colourChanges);
         }
         
-        inline std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > BeamParticle::getColUpdates()
+        inline ::std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > BeamParticle::getColUpdates()
         {
             return wrapperbase::BEptr->getColUpdates();
         }

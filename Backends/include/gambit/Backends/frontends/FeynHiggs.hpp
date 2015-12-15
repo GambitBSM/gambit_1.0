@@ -5,11 +5,7 @@
  * Christopher Rogan Sept 2015
  */
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME FeynHiggs
-#endif
+#define BACKENDNAME FeynHiggs
 #define VERSION 2.11
 #define SAFE_VERSION 2_11
 

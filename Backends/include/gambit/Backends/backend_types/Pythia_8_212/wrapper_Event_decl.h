@@ -5,9 +5,11 @@
 #include "forward_decls_wrapper_classes.h"
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_Event.h"
+#include <string>
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Particle_decl.h"
 #include "wrapper_Vec4_decl.h"
+#include <ostream>
 #include <vector>
 
 #include "identification.hpp"
@@ -22,6 +24,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
                 typedef WrapperBase<Pythia8::Abstract_Event> wrapperbase;
+                using WrapperBase<Pythia8::Abstract_Event>::BEptr;
         
                 // Member variables: 
             public:
@@ -33,11 +36,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void init(std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, int startColTagIn);
+                void init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, int startColTagIn);
         
-                void init(std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn);
+                void init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn);
         
-                void init(std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn);
+                void init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn);
         
                 void init();
         
@@ -103,9 +106,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void list() const;
         
-                void list(std::basic_ostream<char, std::char_traits<char> >& os, int precision) const;
+                void list(::std::basic_ostream<char, std::char_traits<char> >& os, int precision) const;
         
-                void list(std::basic_ostream<char, std::char_traits<char> >& os) const;
+                void list(::std::basic_ostream<char, std::char_traits<char> >& os) const;
         
                 void list(bool showScaleAndVertex, bool showMothersAndDaughters, int precision) const;
         
@@ -113,9 +116,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void list(bool showScaleAndVertex) const;
         
-                void list(bool showScaleAndVertex, bool showMothersAndDaughters, std::basic_ostream<char, std::char_traits<char> >& os, int precision) const;
+                void list(bool showScaleAndVertex, bool showMothersAndDaughters, ::std::basic_ostream<char, std::char_traits<char> >& os, int precision) const;
         
-                void list(bool showScaleAndVertex, bool showMothersAndDaughters, std::basic_ostream<char, std::char_traits<char> >& os) const;
+                void list(bool showScaleAndVertex, bool showMothersAndDaughters, ::std::basic_ostream<char, std::char_traits<char> >& os) const;
         
                 void popBack(int nRemove);
         
@@ -147,7 +150,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double scaleSecond() const;
         
-                std::vector<int, std::allocator<int> > daughterList(int i) const;
+                ::std::vector<int, std::allocator<int> > daughterList(int i) const;
         
                 void rot(double theta, double phi);
         
@@ -187,7 +190,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void restoreJunctionSize();
         
-                void listJunctions(std::basic_ostream<char, std::char_traits<char> >& os) const;
+                void listJunctions(::std::basic_ostream<char, std::char_traits<char> >& os) const;
         
                 void listJunctions() const;
         

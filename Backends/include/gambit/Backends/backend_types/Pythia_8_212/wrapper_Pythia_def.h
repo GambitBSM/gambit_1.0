@@ -1,12 +1,15 @@
 #ifndef __wrapper_Pythia_def_Pythia_8_212_h__
 #define __wrapper_Pythia_def_Pythia_8_212_h__
 
+#include <string>
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Settings_decl.h"
+#include <istream>
 #include <vector>
 #include "wrapper_UserHooks_decl.h"
 #include "wrapper_SigmaProcess_decl.h"
 #include "wrapper_ResonanceWidths_decl.h"
+#include <ostream>
 #include "wrapper_Event_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Rndm_decl.h"
@@ -16,6 +19,7 @@
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_PartonLevel_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
+#include <sstream>
 
 #include "identification.hpp"
 
@@ -26,47 +30,47 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline bool Pythia::readString(std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1, bool warn)
+        inline bool Pythia::readString(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1, bool warn)
         {
             return wrapperbase::BEptr->readString(arg_1, warn);
         }
         
-        inline bool Pythia::readString(std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1)
+        inline bool Pythia::readString(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > arg_1)
         {
             return wrapperbase::BEptr->readString__BOSS(arg_1);
         }
         
-        inline bool Pythia::readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool warn, int subrun)
+        inline bool Pythia::readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool warn, int subrun)
         {
             return wrapperbase::BEptr->readFile(fileName, warn, subrun);
         }
         
-        inline bool Pythia::readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool warn)
+        inline bool Pythia::readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool warn)
         {
             return wrapperbase::BEptr->readFile__BOSS(fileName, warn);
         }
         
-        inline bool Pythia::readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
+        inline bool Pythia::readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
         {
             return wrapperbase::BEptr->readFile__BOSS(fileName);
         }
         
-        inline bool Pythia::readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, int subrun)
+        inline bool Pythia::readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, int subrun)
         {
             return wrapperbase::BEptr->readFile(fileName, subrun);
         }
         
-        inline bool Pythia::readFile(std::basic_istream<char, std::char_traits<char> >& is, bool warn, int subrun)
+        inline bool Pythia::readFile(::std::basic_istream<char, std::char_traits<char> >& is, bool warn, int subrun)
         {
             return wrapperbase::BEptr->readFile(is, warn, subrun);
         }
         
-        inline bool Pythia::readFile(std::basic_istream<char, std::char_traits<char> >& is, bool warn)
+        inline bool Pythia::readFile(::std::basic_istream<char, std::char_traits<char> >& is, bool warn)
         {
             return wrapperbase::BEptr->readFile__BOSS(is, warn);
         }
         
-        inline bool Pythia::readFile(std::basic_istream<char, std::char_traits<char> >& is)
+        inline bool Pythia::readFile(::std::basic_istream<char, std::char_traits<char> >& is)
         {
             return wrapperbase::BEptr->readFile__BOSS(is);
         }
@@ -76,7 +80,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->readFile__BOSS();
         }
         
-        inline bool Pythia::readFile(std::basic_istream<char, std::char_traits<char> >& is, int subrun)
+        inline bool Pythia::readFile(::std::basic_istream<char, std::char_traits<char> >& is, int subrun)
         {
             return wrapperbase::BEptr->readFile(is, subrun);
         }
@@ -91,7 +95,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->setResonancePtr__BOSS((*resonancePtrIn).BEptr);
         }
         
-        inline bool Pythia::init(std::basic_ostream<char, std::char_traits<char> >& os)
+        inline bool Pythia::init(::std::basic_ostream<char, std::char_traits<char> >& os)
         {
             return wrapperbase::BEptr->init(os);
         }
@@ -136,7 +140,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->forceRHadronDecays();
         }
         
-        inline void Pythia::LHAeventList(std::basic_ostream<char, std::char_traits<char> >& os)
+        inline void Pythia::LHAeventList(::std::basic_ostream<char, std::char_traits<char> >& os)
         {
             wrapperbase::BEptr->LHAeventList(os);
         }
@@ -156,29 +160,29 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->stat();
         }
         
-        inline bool Pythia::flag(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
+        inline bool Pythia::flag(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->flag(key);
         }
         
-        inline int Pythia::mode(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
+        inline int Pythia::mode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->mode(key);
         }
         
-        inline double Pythia::parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
+        inline double Pythia::parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->parm(key);
         }
         
-        inline std::basic_string<char, std::char_traits<char>, std::allocator<char> > Pythia::word(std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
+        inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Pythia::word(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
             return wrapperbase::BEptr->word(key);
         }
         
         
         // Wrappers for original constructors: 
-        inline Pythia8::Pythia::Pythia(std::basic_string<char, std::char_traits<char>, std::allocator<char> > xmlDir, bool printBanner) :
+        inline Pythia8::Pythia::Pythia(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > xmlDir, bool printBanner) :
             WrapperBase<Pythia8::Abstract_Pythia>(__factory0(xmlDir, printBanner)),
             process(&(wrapperbase::BEptr->process_ref__BOSS())),
             event(&(wrapperbase::BEptr->event_ref__BOSS())),
@@ -194,7 +198,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             _memberVariablesInit();
         }
         
-        inline Pythia8::Pythia::Pythia(std::basic_string<char, std::char_traits<char>, std::allocator<char> > xmlDir) :
+        inline Pythia8::Pythia::Pythia(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > xmlDir) :
             WrapperBase<Pythia8::Abstract_Pythia>(__factory1(xmlDir)),
             process(&(wrapperbase::BEptr->process_ref__BOSS())),
             event(&(wrapperbase::BEptr->event_ref__BOSS())),

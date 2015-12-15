@@ -21,32 +21,32 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->initSUSY__BOSS((*slhaPtrIn).BEptr, (*infoPtrIn).BEptr, (*particleDataPtrIn).BEptr, (*settingsPtrIn).BEptr);
         }
         
-        inline std::complex<double> CoupSUSY::getLsqqG(int iGenSq, int idQ)
+        inline ::std::complex<double> CoupSUSY::getLsqqG(int iGenSq, int idQ)
         {
             return wrapperbase::BEptr->getLsqqG(iGenSq, idQ);
         }
         
-        inline std::complex<double> CoupSUSY::getRsqqG(int iGenSq, int idQ)
+        inline ::std::complex<double> CoupSUSY::getRsqqG(int iGenSq, int idQ)
         {
             return wrapperbase::BEptr->getRsqqG(iGenSq, idQ);
         }
         
-        inline std::complex<double> CoupSUSY::getLsqsqZ(int idSq1, int idSq2)
+        inline ::std::complex<double> CoupSUSY::getLsqsqZ(int idSq1, int idSq2)
         {
             return wrapperbase::BEptr->getLsqsqZ(idSq1, idSq2);
         }
         
-        inline std::complex<double> CoupSUSY::getRsqsqZ(int idSq1, int idSq2)
+        inline ::std::complex<double> CoupSUSY::getRsqsqZ(int idSq1, int idSq2)
         {
             return wrapperbase::BEptr->getRsqsqZ(idSq1, idSq2);
         }
         
-        inline std::complex<double> CoupSUSY::getLsqqX(int iSq, int idQ, int iNeut)
+        inline ::std::complex<double> CoupSUSY::getLsqqX(int iSq, int idQ, int iNeut)
         {
             return wrapperbase::BEptr->getLsqqX(iSq, idQ, iNeut);
         }
         
-        inline std::complex<double> CoupSUSY::getRsqqX(int iSq, int idQ, int iNeut)
+        inline ::std::complex<double> CoupSUSY::getRsqqX(int iSq, int idQ, int iNeut)
         {
             return wrapperbase::BEptr->getRsqqX(iSq, idQ, iNeut);
         }

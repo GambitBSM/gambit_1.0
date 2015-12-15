@@ -815,9 +815,11 @@ namespace Gambit
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
+      /* The use of the following requires ALLOW_MODEL(CMSSM) in the rollcall.
       logger() << "This model:";
       logger() << "\nm0: " << *Param["M0"];
       logger() << "\nm1/2: " << *Param["M12"] << EOM;
+      */
 
       // xsec veto
       if (not eventsGenerated) {
@@ -880,6 +882,7 @@ namespace Gambit
             bestexp_dll_obs = llb_obs - llsb_obs;
           }
 
+          /* The following was used for some final tests of ColliderBit:
           logger() << endl;
           logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
           logger() << "  LLikes (b_ex sb_ex b_obs sb_obs):" << endl;
@@ -890,6 +893,7 @@ namespace Gambit
           logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
           logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
                    << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+          */
         } // end SR loop
 
         // Update the total obs dll

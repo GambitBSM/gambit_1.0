@@ -13,6 +13,7 @@
 #include "wrapper_SigmaTotal_decl.h"
 #include "wrapper_SigmaProcess_decl.h"
 #include "wrapper_Event_decl.h"
+#include <string>
 #include <vector>
 #include "wrapper_Particle_decl.h"
 #include <cstddef>
@@ -101,9 +102,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool canEnhanceEmission() =0;
     
-                virtual double enhanceFactor(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual double enhanceFactor(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual double vetoProbability(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual double vetoProbability(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
                 virtual void setEnhancedEventWeight(double) =0;
     

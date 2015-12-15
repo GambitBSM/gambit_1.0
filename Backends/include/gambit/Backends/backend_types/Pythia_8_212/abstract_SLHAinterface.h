@@ -9,6 +9,7 @@
 #include "wrapper_Rndm_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_ParticleData_decl.h"
+#include <sstream>
 #include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_CoupSUSY_decl.h"
 #include <cstddef>
@@ -31,7 +32,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setPtr__BOSS(Pythia8::Abstract_Info*) =0;
     
-                virtual void init__BOSS(Pythia8::Abstract_Settings&, Pythia8::Abstract_Rndm*, Pythia8::Abstract_Couplings*, Pythia8::Abstract_ParticleData*, bool&, std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >&) =0;
+                virtual void init__BOSS(Pythia8::Abstract_Settings&, Pythia8::Abstract_Rndm*, Pythia8::Abstract_Couplings*, Pythia8::Abstract_ParticleData*, bool&, ::std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >&) =0;
     
                 virtual bool initSLHA__BOSS(Pythia8::Abstract_Settings&, Pythia8::Abstract_ParticleData*) =0;
     

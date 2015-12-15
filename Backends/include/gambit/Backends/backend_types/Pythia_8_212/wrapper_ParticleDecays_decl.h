@@ -27,6 +27,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
                 typedef WrapperBase<Pythia8::Abstract_ParticleDecays> wrapperbase;
+                using WrapperBase<Pythia8::Abstract_ParticleDecays>::BEptr;
         
                 // Member variables: 
             public:

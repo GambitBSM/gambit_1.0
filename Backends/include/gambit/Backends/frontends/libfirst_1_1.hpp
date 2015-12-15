@@ -21,11 +21,7 @@
 ///
 ///  *********************************************
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME LibFirst
-#endif
+#define BACKENDNAME LibFirst
 #define VERSION 1.1
 #define SAFE_VERSION 1_1
 
