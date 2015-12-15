@@ -8,6 +8,7 @@
 #include "wrapper_Event_decl.h"
 #include "wrapper_ParticleDataEntry_decl.h"
 #include <vector>
+#include <string>
 #include <cstddef>
 
 #include "identification.hpp"
@@ -222,13 +223,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual int iBotCopyId__BOSS() const =0;
     
-                virtual std::vector<int, std::allocator<int> > motherList() const =0;
+                virtual ::std::vector<int, std::allocator<int> > motherList() const =0;
     
-                virtual std::vector<int, std::allocator<int> > daughterList() const =0;
+                virtual ::std::vector<int, std::allocator<int> > daughterList() const =0;
     
-                virtual std::vector<int, std::allocator<int> > sisterList(bool) const =0;
+                virtual ::std::vector<int, std::allocator<int> > sisterList(bool) const =0;
     
-                virtual std::vector<int, std::allocator<int> > sisterList__BOSS() const =0;
+                virtual ::std::vector<int, std::allocator<int> > sisterList__BOSS() const =0;
     
                 virtual bool isAncestor(int) const =0;
     
@@ -238,11 +239,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool undoDecay() =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > name() const =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > name() const =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameWithStatus(int) const =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameWithStatus(int) const =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameWithStatus__BOSS() const =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameWithStatus__BOSS() const =0;
     
                 virtual int spinType() const =0;
     

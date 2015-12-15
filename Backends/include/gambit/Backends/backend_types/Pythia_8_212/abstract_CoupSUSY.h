@@ -72,9 +72,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::complex<double> (&RsuuG_ref__BOSS())[7][4] =0;
     
-                virtual std::complex<double> getLsqqG(int, int) =0;
+                virtual ::std::complex<double> getLsqqG(int, int) =0;
     
-                virtual std::complex<double> getRsqqG(int, int) =0;
+                virtual ::std::complex<double> getRsqqG(int, int) =0;
     
                 virtual std::complex<double> (&OLpp_ref__BOSS())[6][6] =0;
     
@@ -100,9 +100,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::complex<double> (&RsusuZ_ref__BOSS())[7][7] =0;
     
-                virtual std::complex<double> getLsqsqZ(int, int) =0;
+                virtual ::std::complex<double> getLsqsqZ(int, int) =0;
     
-                virtual std::complex<double> getRsqsqZ(int, int) =0;
+                virtual ::std::complex<double> getRsqsqZ(int, int) =0;
     
                 virtual std::complex<double> (&LudW_ref__BOSS())[4][4] =0;
     
@@ -120,9 +120,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual std::complex<double> (&RsuuX_ref__BOSS())[7][4][6] =0;
     
-                virtual std::complex<double> getLsqqX(int, int, int) =0;
+                virtual ::std::complex<double> getLsqqX(int, int, int) =0;
     
-                virtual std::complex<double> getRsqqX(int, int, int) =0;
+                virtual ::std::complex<double> getRsqqX(int, int, int) =0;
     
                 virtual std::complex<double> (&LsduX_ref__BOSS())[7][4][3] =0;
     

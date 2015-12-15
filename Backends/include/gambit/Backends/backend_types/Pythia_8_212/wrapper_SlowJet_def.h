@@ -3,6 +3,7 @@
 
 #include "wrapper_Event_decl.h"
 #include "wrapper_Vec4_decl.h"
+#include <ostream>
 #include <vector>
 
 #include "identification.hpp"
@@ -99,7 +100,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->dNext();
         }
         
-        inline void SlowJet::list(bool listAll, std::basic_ostream<char, std::char_traits<char> >& os) const
+        inline void SlowJet::list(bool listAll, ::std::basic_ostream<char, std::char_traits<char> >& os) const
         {
             wrapperbase::BEptr->list(listAll, os);
         }
@@ -114,12 +115,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->list__BOSS();
         }
         
-        inline std::vector<int, std::allocator<int> > SlowJet::constituents(int j)
+        inline ::std::vector<int, std::allocator<int> > SlowJet::constituents(int j)
         {
             return wrapperbase::BEptr->constituents(j);
         }
         
-        inline std::vector<int, std::allocator<int> > SlowJet::clusConstituents(int j)
+        inline ::std::vector<int, std::allocator<int> > SlowJet::clusConstituents(int j)
         {
             return wrapperbase::BEptr->clusConstituents(j);
         }

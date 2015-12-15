@@ -1,7 +1,7 @@
 #ifndef __wrapper_Parm_def_Pythia_8_212_h__
 #define __wrapper_Parm_def_Pythia_8_212_h__
 
-
+#include <string>
 
 #include "identification.hpp"
 
@@ -14,7 +14,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Member functions: 
         
         // Wrappers for original constructors: 
-        inline Pythia8::Parm::Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn, double maxIn) :
+        inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn, double maxIn) :
             WrapperBase<Pythia8::Abstract_Parm>(__factory0(nameIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn)),
             name(wrapperbase::BEptr->name_ref__BOSS()),
             valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
@@ -28,7 +28,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Parm::Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn) :
+        inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn) :
             WrapperBase<Pythia8::Abstract_Parm>(__factory1(nameIn, defaultIn, hasMinIn, hasMaxIn, minIn)),
             name(wrapperbase::BEptr->name_ref__BOSS()),
             valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
@@ -42,7 +42,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Parm::Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn) :
+        inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn) :
             WrapperBase<Pythia8::Abstract_Parm>(__factory2(nameIn, defaultIn, hasMinIn, hasMaxIn)),
             name(wrapperbase::BEptr->name_ref__BOSS()),
             valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
@@ -56,7 +56,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Parm::Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn) :
+        inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn) :
             WrapperBase<Pythia8::Abstract_Parm>(__factory3(nameIn, defaultIn, hasMinIn)),
             name(wrapperbase::BEptr->name_ref__BOSS()),
             valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
@@ -70,7 +70,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Parm::Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn) :
+        inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn) :
             WrapperBase<Pythia8::Abstract_Parm>(__factory4(nameIn, defaultIn)),
             name(wrapperbase::BEptr->name_ref__BOSS()),
             valNow(wrapperbase::BEptr->valNow_ref__BOSS()),
@@ -84,7 +84,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
-        inline Pythia8::Parm::Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn) :
+        inline Pythia8::Parm::Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn) :
             WrapperBase<Pythia8::Abstract_Parm>(__factory5(nameIn)),
             name(wrapperbase::BEptr->name_ref__BOSS()),
             valNow(wrapperbase::BEptr->valNow_ref__BOSS()),

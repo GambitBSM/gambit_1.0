@@ -21,6 +21,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
                 typedef WrapperBase<Pythia8::Abstract_SigmaTotal> wrapperbase;
+                using WrapperBase<Pythia8::Abstract_SigmaTotal>::BEptr;
         
                 // Member variables: 
             public:

@@ -23,6 +23,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
                 typedef WrapperBase<Pythia8::Abstract_CoupSUSY> wrapperbase;
+                using WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr;
         
                 // Member variables: 
             public:
@@ -109,17 +110,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
                 void initSUSY(WrapperBase< Pythia8::Abstract_SusyLesHouches >* slhaPtrIn, WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn);
         
-                std::complex<double> getLsqqG(int iGenSq, int idQ);
+                ::std::complex<double> getLsqqG(int iGenSq, int idQ);
         
-                std::complex<double> getRsqqG(int iGenSq, int idQ);
+                ::std::complex<double> getRsqqG(int iGenSq, int idQ);
         
-                std::complex<double> getLsqsqZ(int idSq1, int idSq2);
+                ::std::complex<double> getLsqsqZ(int idSq1, int idSq2);
         
-                std::complex<double> getRsqsqZ(int idSq1, int idSq2);
+                ::std::complex<double> getRsqsqZ(int idSq1, int idSq2);
         
-                std::complex<double> getLsqqX(int iSq, int idQ, int iNeut);
+                ::std::complex<double> getLsqqX(int iSq, int idQ, int iNeut);
         
-                std::complex<double> getRsqqX(int iSq, int idQ, int iNeut);
+                ::std::complex<double> getRsqqX(int iSq, int idQ, int iNeut);
         
                 int idNeut(int idChi);
         

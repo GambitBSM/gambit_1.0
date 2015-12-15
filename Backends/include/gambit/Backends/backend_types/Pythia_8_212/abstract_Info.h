@@ -4,6 +4,8 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
+#include <ostream>
+#include <string>
 #include <vector>
 #include <map>
 #include <cstddef>
@@ -24,7 +26,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
     
-                virtual void list(std::basic_ostream<char, std::char_traits<char> >&) const =0;
+                virtual void list(::std::basic_ostream<char, std::char_traits<char> >&) const =0;
     
                 virtual void list__BOSS() const =0;
     
@@ -50,7 +52,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool tooLowPTmin() const =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > name() const =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > name() const =0;
     
                 virtual int code() const =0;
     
@@ -76,9 +78,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool hasSub__BOSS() const =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameSub(int) const =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameSub(int) const =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameSub__BOSS() const =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameSub__BOSS() const =0;
     
                 virtual int codeSub(int) const =0;
     
@@ -246,11 +248,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual int iBMPI(int) const =0;
     
-                virtual std::vector<int, std::allocator<int> > codesHard() =0;
+                virtual ::std::vector<int, std::allocator<int> > codesHard() =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameProc(int) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameProc(int) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameProc__BOSS() =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameProc__BOSS() =0;
     
                 virtual long int nTried(int) =0;
     
@@ -284,17 +286,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void errorReset() =0;
     
-                virtual void errorMsg(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, std::basic_ostream<char, std::char_traits<char> >&) =0;
+                virtual void errorMsg(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, ::std::basic_ostream<char, std::char_traits<char> >&) =0;
     
-                virtual void errorMsg__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
+                virtual void errorMsg__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
     
-                virtual void errorMsg__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual void errorMsg__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual void errorMsg__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual void errorMsg__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
                 virtual int errorTotalNumber() =0;
     
-                virtual void errorStatistics(std::basic_ostream<char, std::char_traits<char> >&) =0;
+                virtual void errorStatistics(::std::basic_ostream<char, std::char_traits<char> >&) =0;
     
                 virtual void errorStatistics__BOSS() =0;
     
@@ -326,9 +328,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setWeightFIRST(double) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > header(const std::basic_string<char, std::char_traits<char>, std::allocator<char> >&) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > header(const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >&) =0;
     
-                virtual std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > headerKeys() =0;
+                virtual ::std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > headerKeys() =0;
     
                 virtual int nProcessesLHEF() =0;
     
@@ -348,9 +350,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setLHEF3EventInfo() =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getEventAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getEventAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getEventAttribute__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getEventAttribute__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
                 virtual int LHEFversion() =0;
     
@@ -358,37 +360,37 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual unsigned int getGeneratorSize() =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorValue(unsigned int) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorValue(unsigned int) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorValue__BOSS() =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorValue__BOSS() =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorAttribute(unsigned int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorAttribute(unsigned int, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorAttribute__BOSS(unsigned int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getGeneratorAttribute__BOSS(unsigned int, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
                 virtual unsigned int getWeightsDetailedSize() =0;
     
-                virtual double getWeightsDetailedValue(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual double getWeightsDetailedValue(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsDetailedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsDetailedAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsDetailedAttribute__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsDetailedAttribute__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
                 virtual unsigned int getWeightsCompressedSize() =0;
     
                 virtual double getWeightsCompressedValue(unsigned int) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsCompressedAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsCompressedAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsCompressedAttribute__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getWeightsCompressedAttribute__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getScalesValue(bool) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getScalesValue(bool) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > getScalesValue__BOSS() =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > getScalesValue__BOSS() =0;
     
-                virtual double getScalesAttribute(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual double getScalesAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual void setHeader(const std::basic_string<char, std::char_traits<char>, std::allocator<char> >&, const std::basic_string<char, std::char_traits<char>, std::allocator<char> >&) =0;
+                virtual void setHeader(const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >&, const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >&) =0;
     
                 virtual void setAbortPartonLevel(bool) =0;
     

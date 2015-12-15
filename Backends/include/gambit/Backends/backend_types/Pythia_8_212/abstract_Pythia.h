@@ -4,12 +4,15 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
+#include <string>
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_Settings_decl.h"
+#include <istream>
 #include <vector>
 #include "wrapper_UserHooks_decl.h"
 #include "wrapper_SigmaProcess_decl.h"
 #include "wrapper_ResonanceWidths_decl.h"
+#include <ostream>
 #include "wrapper_Event_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Rndm_decl.h"
@@ -19,6 +22,7 @@
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_PartonLevel_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
+#include <sstream>
 #include <cstddef>
 
 #include "identification.hpp"
@@ -37,33 +41,33 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
     
-                virtual bool readString(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
+                virtual bool readString(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
     
-                virtual bool readString__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual bool readString__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual bool readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, int) =0;
+                virtual bool readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, int) =0;
     
-                virtual bool readFile__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
+                virtual bool readFile__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool) =0;
     
-                virtual bool readFile__BOSS(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual bool readFile__BOSS(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual bool readFile(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) =0;
+                virtual bool readFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) =0;
     
-                virtual bool readFile(std::basic_istream<char, std::char_traits<char> >&, bool, int) =0;
+                virtual bool readFile(::std::basic_istream<char, std::char_traits<char> >&, bool, int) =0;
     
-                virtual bool readFile__BOSS(std::basic_istream<char, std::char_traits<char> >&, bool) =0;
+                virtual bool readFile__BOSS(::std::basic_istream<char, std::char_traits<char> >&, bool) =0;
     
-                virtual bool readFile__BOSS(std::basic_istream<char, std::char_traits<char> >&) =0;
+                virtual bool readFile__BOSS(::std::basic_istream<char, std::char_traits<char> >&) =0;
     
                 virtual bool readFile__BOSS() =0;
     
-                virtual bool readFile(std::basic_istream<char, std::char_traits<char> >&, int) =0;
+                virtual bool readFile(::std::basic_istream<char, std::char_traits<char> >&, int) =0;
     
                 virtual bool setUserHooksPtr__BOSS(Pythia8::Abstract_UserHooks*) =0;
     
                 virtual bool setResonancePtr__BOSS(Pythia8::Abstract_ResonanceWidths*) =0;
     
-                virtual bool init(std::basic_ostream<char, std::char_traits<char> >&) =0;
+                virtual bool init(::std::basic_ostream<char, std::char_traits<char> >&) =0;
     
                 virtual bool init__BOSS() =0;
     
@@ -81,7 +85,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool forceRHadronDecays() =0;
     
-                virtual void LHAeventList(std::basic_ostream<char, std::char_traits<char> >&) =0;
+                virtual void LHAeventList(::std::basic_ostream<char, std::char_traits<char> >&) =0;
     
                 virtual void LHAeventList__BOSS() =0;
     
@@ -89,13 +93,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void stat() =0;
     
-                virtual bool flag(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual bool flag(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual int mode(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual int mode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual double parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual double parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
-                virtual std::basic_string<char, std::char_traits<char>, std::allocator<char> > word(std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
+                virtual ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > word(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >) =0;
     
                 virtual Pythia8::Abstract_Event& process_ref__BOSS() =0;
     

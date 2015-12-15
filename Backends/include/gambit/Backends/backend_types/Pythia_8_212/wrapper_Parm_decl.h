@@ -5,6 +5,7 @@
 #include "forward_decls_wrapper_classes.h"
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_Parm.h"
+#include <string>
 
 #include "identification.hpp"
 
@@ -18,16 +19,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
                 typedef WrapperBase<Pythia8::Abstract_Parm> wrapperbase;
+                using WrapperBase<Pythia8::Abstract_Parm>::BEptr;
         
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
-                static Pythia8::Abstract_Parm* (*__factory0)(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, bool, bool, double, double);
-                static Pythia8::Abstract_Parm* (*__factory1)(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, bool, bool, double);
-                static Pythia8::Abstract_Parm* (*__factory2)(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, bool, bool);
-                static Pythia8::Abstract_Parm* (*__factory3)(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, bool);
-                static Pythia8::Abstract_Parm* (*__factory4)(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double);
-                static Pythia8::Abstract_Parm* (*__factory5)(std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
+                static Pythia8::Abstract_Parm* (*__factory0)(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, bool, bool, double, double);
+                static Pythia8::Abstract_Parm* (*__factory1)(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, bool, bool, double);
+                static Pythia8::Abstract_Parm* (*__factory2)(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, bool, bool);
+                static Pythia8::Abstract_Parm* (*__factory3)(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, bool);
+                static Pythia8::Abstract_Parm* (*__factory4)(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double);
+                static Pythia8::Abstract_Parm* (*__factory5)(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
                 static Pythia8::Abstract_Parm* (*__factory6)();
         
                 // -- Other member variables: 
@@ -44,12 +46,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Wrappers for original constructors: 
             public:
-                Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn, double maxIn);
-                Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn);
-                Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn);
-                Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn);
-                Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn);
-                Parm(std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn);
+                Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn, double maxIn);
+                Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn);
+                Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn, bool hasMaxIn);
+                Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn, bool hasMinIn);
+                Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, double defaultIn);
+                Parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn);
                 Parm();
         
                 // Special pointer-based constructor: 

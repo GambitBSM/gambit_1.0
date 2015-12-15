@@ -18,6 +18,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
                 typedef WrapperBase<Pythia8::Abstract_Vec4> wrapperbase;
+                using WrapperBase<Pythia8::Abstract_Vec4>::BEptr;
         
                 // Member variables: 
             public:

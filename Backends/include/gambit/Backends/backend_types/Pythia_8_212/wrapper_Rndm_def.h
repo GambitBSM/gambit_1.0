@@ -1,7 +1,9 @@
 #ifndef __wrapper_Rndm_def_Pythia_8_212_h__
 #define __wrapper_Rndm_def_Pythia_8_212_h__
 
+#include <utility>
 #include <vector>
+#include <string>
 
 #include "identification.hpp"
 
@@ -42,22 +44,22 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->gauss();
         }
         
-        inline std::pair<double, double> Rndm::gauss2()
+        inline ::std::pair<double, double> Rndm::gauss2()
         {
             return wrapperbase::BEptr->gauss2();
         }
         
-        inline int Rndm::pick(const std::vector<double, std::allocator<double> >& prob)
+        inline int Rndm::pick(const ::std::vector<double, std::allocator<double> >& prob)
         {
             return wrapperbase::BEptr->pick(prob);
         }
         
-        inline bool Rndm::dumpState(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
+        inline bool Rndm::dumpState(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
         {
             return wrapperbase::BEptr->dumpState(fileName);
         }
         
-        inline bool Rndm::readState(std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
+        inline bool Rndm::readState(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName)
         {
             return wrapperbase::BEptr->readState(fileName);
         }

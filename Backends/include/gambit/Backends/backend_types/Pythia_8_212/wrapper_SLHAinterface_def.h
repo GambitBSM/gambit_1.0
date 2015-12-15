@@ -6,6 +6,7 @@
 #include "wrapper_Rndm_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_ParticleData_decl.h"
+#include <sstream>
 #include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_CoupSUSY_decl.h"
 
@@ -23,7 +24,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->setPtr__BOSS((*infoPtrIn).BEptr);
         }
         
-        inline void SLHAinterface::init(WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_Rndm >* rndmPtr, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtr, bool& useSHLAcouplings, std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >& ParticleDataBuffer)
+        inline void SLHAinterface::init(WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_Rndm >* rndmPtr, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtr, bool& useSHLAcouplings, ::std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >& ParticleDataBuffer)
         {
             wrapperbase::BEptr->init__BOSS(*settings.BEptr, (*rndmPtr).BEptr, (*couplingsPtrIn).BEptr, (*particleDataPtr).BEptr, useSHLAcouplings, ParticleDataBuffer);
         }

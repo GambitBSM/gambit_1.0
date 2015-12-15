@@ -22,6 +22,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             public:
                 typedef WrapperBase<Pythia8::Abstract_CoupSM> wrapperbase;
+                using WrapperBase<Pythia8::Abstract_CoupSM>::BEptr;
         
                 // Member variables: 
             public:
