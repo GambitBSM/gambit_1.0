@@ -63,6 +63,7 @@ namespace Gambit
    /// Add signal to record
    void SignalData::add_signal(int sig)
    {
+     std::cerr << " Adding signal " << sig << std::endl; // debugging
      if(N_signals<MAX_SIGNALS) {
         received_signals[N_signals] = sig;
         N_signals+=1;
@@ -171,6 +172,17 @@ namespace Gambit
    /// (to be called by Gambit once it is safe to trigger termination)
    void SignalData::check_for_shutdown_signal()
    {
+     // Uncomment for debugging
+     if(omp_get_level()!=0)
+     {
+        // Should never be checking for shutdown signals this way inside a multithreaded region
+        #pragma omp critical(check_for_shutdown_signal)
+        {
+          std::cerr << LOCAL_INFO << ": Performed signal check which may result in shutdown from inside an omp parallel block! This should not be allowed to happen, please file a bug report." << std::endl;
+          exit(EXIT_FAILURE);
+        }
+     }
+
      if(shutdownBegun)
      {
        #pragma omp critical (check_for_shutdown_signal)
@@ -200,6 +212,15 @@ namespace Gambit
        msg << "rank "<<rank<<": ";
        #endif
        msg << "Emergency shutdown signal detected! Attempting to performing cleanup (but data loss is possible)" << std::endl;
+       if(omp_get_level()!=0)
+       {
+          // Should never get to here from a multithreaded region.
+          #pragma omp critical(check_for_emergency_shutdown_signal)
+          {
+            std::cerr << LOCAL_INFO << ": Tried to perform cleanup following emergency shutdown signal from inside an omp parallel block! This should not be allowed to happen, please file a bug report." << std::endl;
+            exit(EXIT_FAILURE);
+          }
+       }
        call_cleanup();
        throw HardShutdownException(msg.str()); 
      }
@@ -235,9 +256,23 @@ namespace Gambit
        #endif
        std::cerr << "Warning, caught signal "<<signal_name(sig)<<" ("<<sig<<")"<<" to trigger emergency shutdown, but shutdown is already in progress! Initiating hard shutdown." << std::endl;
        sighandler_hard(sig); // calls exit(sig)
-     } 
+     }
      signaldata().set_shutdown_begun(1);
      signaldata().add_signal(sig);
+     if(omp_get_level()!=0)
+     {
+       std::cerr << signaldata().display_received_signals();
+       #ifdef WITH_MPI
+       std::cerr << "rank "<<signaldata().rank<<": ";
+       #endif
+       std::cerr << LOCAL_INFO <<": ERROR from sub_sighandler_emergency! This handler has been triggered from within an omp parallel block, which is not allowed. Please file a bug report." << std::endl;
+       std::cerr << "  variable dump: " << std::endl;
+       std::cerr << "  signaldata().shutdown_begun() = " << signaldata().shutdown_begun() << std::endl;
+       std::cerr << "  signaldata().ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << std::endl;
+       std::cerr << "  signaldata().inside_omp_block = " << signaldata().inside_omp_block << std::endl;
+       std::cerr << std::endl;
+       exit(EXIT_FAILURE);
+     }
      signaldata().call_cleanup(); // Try to cleanup, though behaviour may be undefined.
      #ifdef WITH_MPI
      std::cerr << "rank "<<signaldata().rank<<": ";
@@ -288,7 +323,12 @@ namespace Gambit
        #ifdef WITH_MPI
        std::cerr << "rank "<<signaldata().rank<<": ";
        #endif
-       std::cerr << LOCAL_INFO <<": ERROR from sighandler_emergency_longjmp! This handler has been triggered from within an omp parallel block, which is not allowed. Gambit 'managed loops' should " << std::endl;
+       std::cerr << LOCAL_INFO <<": ERROR from sub_sighandler_emergency_longjmp! This handler has been triggered from within an omp parallel block, which is not allowed. Please file a bug report." << std::endl;
+       std::cerr << "  variable dump: " << std::endl;
+       std::cerr << "  signaldata().shutdown_begun() = " << signaldata().shutdown_begun() << std::endl;
+       std::cerr << "  signaldata().ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << std::endl;
+       std::cerr << "  signaldata().inside_omp_block = " << signaldata().inside_omp_block << std::endl;
+       std::cerr << "  signaldata().havejumped = " << signaldata().havejumped << std::endl;
        std::cerr << std::endl;
        exit(EXIT_FAILURE);
      }
@@ -330,6 +370,7 @@ namespace Gambit
    /// Sets a flag to be checked upon leaving the omp block, to trigger shutdown
    void sighandler_emergency_longjmp(int sig)
    {
+      std::cerr << " Saw signal " << sig << std::endl; // debugging
       if(signaldata().inside_omp_block) {
          sub_sighandler_emergency_omp(sig);
       } else {
@@ -342,6 +383,7 @@ namespace Gambit
    /// Sets a flag to be checked upon leaving the omp block, to trigger shutdown
    void sighandler_emergency(int sig)
    {
+      std::cerr << " Saw signal " << sig << std::endl; // debugging
       if(signaldata().inside_omp_block) {
          sub_sighandler_emergency_omp(sig);
       } else {
@@ -353,6 +395,7 @@ namespace Gambit
    /// after which MPI synchronisation followed by clean shutdown is attempted.
    void sighandler_soft(int sig)
    {
+     std::cerr << " Saw signal " << sig << std::endl; // debugging
      std::ostringstream msg;
      #ifdef WITH_MPI
      msg << "rank "<<signaldata().rank<<": ";
@@ -375,6 +418,7 @@ namespace Gambit
    
    void sighandler_hard(int sig)
    {
+     std::cerr << " Saw signal " << sig << std::endl; // debugging
      signaldata().set_shutdown_begun();
      #ifdef WITH_MPI
      std::cerr << "rank "<<signaldata().rank<<": ";

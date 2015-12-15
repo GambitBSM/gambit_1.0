@@ -100,14 +100,14 @@ int main(int argc, char* argv[])
 
     // Check if user wants to disable automatic triggering of emergency 
     // shutdown on signals received while shutdown is already in progress
+    signaldata().ignore_signals_during_shutdown = true;
     if(keyvalnode["signal_handling"]) {
        YAML::Node signal_options = keyvalnode["signal_handling"];
        if(signal_options["ignore_signals_during_shutdown"]) {
           signaldata().ignore_signals_during_shutdown = signal_options["ignore_signals_during_shutdown"].as<bool>();
-          logger() << "ignore_signals_during_shutdown = "<<signaldata().ignore_signals_during_shutdown<< std::endl;
        }
     } // else use default value (true)
-    logger() << EOM;
+    logger() << "ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << EOM;
 
     // Check if user wants to disable use of MPI_Abort (since it does not work correctly in all MPI implementations)
     use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");

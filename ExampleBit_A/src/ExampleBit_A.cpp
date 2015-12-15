@@ -38,6 +38,8 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
 
+#include "gambit/Utils/signal_handling.hpp" // temp
+
 namespace Gambit
 {
 
@@ -217,6 +219,7 @@ namespace Gambit
     /// Some example functions for using loops within the dependency structure
     /// @{
 
+
     /// Run a fake 'event loop'
     void eventLoopManager()
     {
@@ -235,6 +238,12 @@ namespace Gambit
       //}
 
       logger() << "Running eventLoopManager" << EOM;
+
+      if(signaldata().inside_omp_block!=1); 
+      {
+        std::cerr << "Inside eventLoopManager, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
 
       //A simple loop example using OpenMP
       int it = 0;
@@ -270,9 +279,15 @@ namespace Gambit
       //{
       //  cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       //}
-
+      if(signaldata().inside_omp_block!=1); 
+      {
+        std::cerr << "Inside exampleEventGen, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
+ 
       // testing loggers during parallel block...
       logger() << "thread "<<omp_get_thread_num()<<": Running exampleEventGen in iteration "<<*Loop::iteration<<EOM;
+
       //if (result > 2.0) invalid_point().raise("This point is annoying.");
     }
 
@@ -298,6 +313,12 @@ namespace Gambit
       // Do the actual computations in each thread seperately
       int increment = *Dep::event + 1;
 
+      if(signaldata().inside_omp_block!=1); 
+      {
+        std::cerr << "Inside eventAccumulator, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
+
       // Only let one thread at a time mess with the accumulator.
       #pragma omp critical (eventAccumulator_update)
       {
@@ -318,13 +339,13 @@ namespace Gambit
       }
 
       // Print some diagnostic info
-      #pragma omp critical (print)
-      {
-        cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
-        cout<<"  Retrieved event count: "<<*Dep::event<<endl;
-        cout<<"  I have thread index: "<<omp_get_thread_num()<<endl;
-        cout<<"  Current total counts is: "<<result<<endl;
-      }
+      //#pragma omp critical (print)
+      //{
+      //  cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
+      //  cout<<"  Retrieved event count: "<<*Dep::event<<endl;
+      //  cout<<"  I have thread index: "<<omp_get_thread_num()<<endl;
+      //  cout<<"  Current total counts is: "<<result<<endl;
+      //}
 
       // If we have reached 50 counts, quit the loop.
       if (result >= 50) { Loop::wrapup(); }

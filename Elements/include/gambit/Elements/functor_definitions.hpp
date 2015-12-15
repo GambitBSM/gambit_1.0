@@ -92,6 +92,7 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
+      std::cerr << "rank " << signaldata().rank <<": Running " << myName << std::endl;
       if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
       {
         int thread_num = omp_get_thread_num();
@@ -116,6 +117,7 @@ namespace Gambit
           this->finishTiming(thread_num);            //Stop timing function evaluation
           logger().leaving_module();
         }
+        std::cerr << "rank " << signaldata().rank <<": Finished " << myName << std::endl;
       }
 
       /// Check if shutdown signal received, and either throw Shutdown exception or break out of loop
@@ -123,7 +125,7 @@ namespace Gambit
       {
         #pragma omp critical (module_functor_calculate)
         {
-          std::cout << "Shutdown signal detected! (omp_gel_level()==" << omp_get_level() << ")" << std::endl;
+          std::cout << "Shutdown signal detected! (omp_get_level()==" << omp_get_level() << ", thread="<<omp_get_thread_num()<<")"<< std::endl;
         }
         if(omp_get_level()==0)                               // If shutdown signal received and we are not in an   
         {                                                    // OpenMP parallel block, perform the shutdown.       
@@ -135,7 +137,7 @@ namespace Gambit
         {
           breakLoopFromManagedFunctor();
           breakLoop(); // Set this as well anyway in case I didn't understand the logic correctly.
-          std::cout << "breakLoop triggered" << std::endl;
+          std::cout << "breakLoop triggered (thread="<<omp_get_thread_num()<<")" << std::endl;
         }
       }
     }
@@ -222,28 +224,54 @@ namespace Gambit
     : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
       myFunction (inputFunction) {}
 
+    /// @{ A couple of simple macros to streamline the signal handling behaviour switches in
+    ///    the 'calculate' member function
+#define ENTERING_MULTITHREADED_REGION \
+    bool locked = true; /* prevent this function switching off threadsafe signal handling. */ \
+    if(iCanManageLoops and not signaldata().inside_omp_block) \
+    { \
+       /* Debugging */ \
+       if(omp_get_level()!=0) \
+       { \
+         std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=1 (in "<<myName<<"), but we are already in a parellel region! Please file a bug report." << std::endl;\
+         exit(EXIT_FAILURE);\
+       } \
+       /* end debugging */ \
+       signaldata().inside_omp_block=1; /* Switch signal handler to threadsafe mode */\
+       locked = false;                  /* We are allowed to switch off sighandler threadsafe mode */\
+       std::cerr << "rank " << signaldata().rank <<": signaldata().inside_omp_block=1 " << std::endl;\
+    }
+
+#define LEAVING_MULTITHREADED_REGION \
+    if(iCanManageLoops and not locked) \
+    { \
+       /* Debugging */ \
+       if(omp_get_level()!=0) \
+       { \
+         std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=0 (in "<<myName<<"), but we are still inside a parellel region! Please file a bug report." << std::endl;\
+         exit(EXIT_FAILURE);\
+       } \
+       /* end debugging */ \
+       signaldata().inside_omp_block=0; /* Switch signal handler back to normal mode */\
+       std::cerr << "rank " << signaldata().rank <<": signaldata().inside_omp_block=0 " << std::endl;\
+    }
+    /// @}
+
     /// Calculate method
     /// The "void" specialisation can potentially manage loops,
     /// so there are some extra switches in here to let the signal
     /// handler know that it needs to run in threadsafe mode during
-    /// execute of this functor.
+    /// execution of this functor.
     void module_functor<void>::calculate()
     {
+      std::cerr << "rank " << signaldata().rank <<": Running " << myName << std::endl;
       if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
       {
         int thread_num = omp_get_thread_num();
         init_memory();                               // Init memory if this is the first run through.
         if (needs_recalculating[thread_num])
         {
-          bool locked = true; // prevent this function switching off threadsafe signal handling.
-          if(iCanManageLoops and not signaldata().inside_omp_block) 
-          {
-             signaldata().inside_omp_block=1; // Switch signal handler to threadsafe mode
-             locked = false;                  // We are allowed to switch off sighandler threadsafe mode
-             logger() << "Switched to threadsafe signal handling mode" << std::endl;
-          }
-
-          logger() << "Loop manager? "<< iCanManageLoops << " in omp? "<< signaldata().inside_omp_block << " name? " << name() << EOM;
+          ENTERING_MULTITHREADED_REGION
 
           logger().entering_module(myLogTag);
           this->startTiming(thread_num);
@@ -257,17 +285,14 @@ namespace Gambit
             if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
             {
               this->finishTiming(thread_num);
+              LEAVING_MULTITHREADED_REGION 
               throw(e);
             } 
           }
           this->finishTiming(thread_num);
           logger().leaving_module();
- 
-          if(iCanManageLoops and not locked) 
-          {
-            signaldata().inside_omp_block=0; // Switch signal handler back to normal mode
-            logger() << "Switched OFF threadsafe signal handling mode" << std::endl;
-          }
+         
+          LEAVING_MULTITHREADED_REGION 
         }
       }
 
@@ -296,7 +321,11 @@ namespace Gambit
           std::cout << "breakLoop triggered <void>" << std::endl;
         }
       }
+      std::cerr << "rank " << signaldata().rank <<": Finished " << myName << std::endl;
     }
+
+#undef ENTERING_MULTITHREADED_REGION
+#undef LEAVING_MULTITHREADED_REGION
 
     /// Blank print methods
     void module_functor<void>::print(Printers::BasePrinter*, const int, int) {}

@@ -258,6 +258,18 @@ namespace Gambit
     // Destructor
     LogMaster::~LogMaster()
     {
+       // LogMaster should not be destructed from within a parallel block. This check helps detect such a bug.
+       if(omp_get_level()!=0)
+       {
+          // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
+          #pragma omp critical(logmaster_empty_backlog)
+          {
+            std::cout << LOCAL_INFO << ": Tried to destruct LogMaster from inside an omp parallel block! This should not be allowed to happen, please file a bug report." << std::endl;
+            exit(EXIT_FAILURE);
+          }
+       }
+
+
        if(not silenced)
        {
          // Check if there is anything in the output stream that has not been sent, and send it if there is
@@ -446,7 +458,7 @@ namespace Gambit
           // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
           #pragma omp critical(logmaster_empty_backlog)
           {
-            std::cout << LOCAL_INFO << "Tried to run empty_backlog() (in LogMaster) from inside an omp parallel block! This should not be possible, please file a bug report." << std::endl;
+            std::cout << LOCAL_INFO << ": Tried to run empty_backlog() (in LogMaster) from inside an omp parallel block! This should not be possible, please file a bug report." << std::endl;
             exit(EXIT_FAILURE);
           }
        }
