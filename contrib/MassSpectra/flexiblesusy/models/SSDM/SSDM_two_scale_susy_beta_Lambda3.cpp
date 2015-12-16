@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:28
+// File generated at Wed 25 Nov 2015 11:56:12
 
 #include "SSDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -27,62 +27,62 @@ namespace flexiblesusy {
 #define TRACE_STRUCT susy_traces
 
 /**
- * Calculates the one-loop beta function of LamS.
+ * Calculates the one-loop beta function of Lambda3.
  *
  * @return one-loop beta function
  */
-double SSDM_susy_parameters::calc_beta_LamS_one_loop(const Susy_traces& susy_traces) const
+double SSDM_susy_parameters::calc_beta_Lambda3_one_loop(const Susy_traces& susy_traces) const
 {
 
 
-   double beta_LamS;
+   double beta_Lambda3;
 
-   beta_LamS = Re(4*oneOver16PiSqr*(9*Sqr(LamS) + Sqr(LamSH)));
+   beta_Lambda3 = Re(2*oneOver16PiSqr*(Sqr(Lambda2) + 36*Sqr(Lambda3)));
 
 
-   return beta_LamS;
+   return beta_Lambda3;
 }
 
 /**
- * Calculates the two-loop beta function of LamS.
+ * Calculates the two-loop beta function of Lambda3.
  *
  * @return two-loop beta function
  */
-double SSDM_susy_parameters::calc_beta_LamS_two_loop(const Susy_traces& susy_traces) const
+double SSDM_susy_parameters::calc_beta_Lambda3_two_loop(const Susy_traces& susy_traces) const
 {
    const double traceYdAdjYd = TRACE_STRUCT.traceYdAdjYd;
    const double traceYeAdjYe = TRACE_STRUCT.traceYeAdjYe;
    const double traceYuAdjYu = TRACE_STRUCT.traceYuAdjYu;
 
 
-   double beta_LamS;
+   double beta_Lambda3;
 
-   beta_LamS = Re(-1.6*twoLoop*(510*Power(LamS,3) + 20*Power(LamSH,3) +
-      50*LamS*Sqr(LamSH) + 15*traceYdAdjYd*Sqr(LamSH) + 5*traceYeAdjYe*Sqr(
-      LamSH) + 15*traceYuAdjYu*Sqr(LamSH) - 3*Sqr(g1)*Sqr(LamSH) - 15*Sqr(g2)*
-      Sqr(LamSH)));
+   beta_Lambda3 = Re(twoLoop*(-16*Power(Lambda2,3) - 3264*Power(Lambda3,3
+      ) - 80*Lambda3*Sqr(Lambda2) - 12*traceYdAdjYd*Sqr(Lambda2) - 4*
+      traceYeAdjYe*Sqr(Lambda2) - 12*traceYuAdjYu*Sqr(Lambda2) + 2.4*Sqr(g1)*
+      Sqr(Lambda2) + 12*Sqr(g2)*Sqr(Lambda2)));
 
 
-   return beta_LamS;
+   return beta_Lambda3;
 }
 
 /**
- * Calculates the three-loop beta function of LamS.
+ * Calculates the three-loop beta function of Lambda3.
  *
  * @return three-loop beta function
  */
-double SSDM_susy_parameters::calc_beta_LamS_three_loop(const Susy_traces& susy_traces) const
+double SSDM_susy_parameters::calc_beta_Lambda3_three_loop(const Susy_traces& susy_traces) const
 {
    DEFINE_PROJECTOR(3,3,3,3)
 
 
 
-   double beta_LamS;
+   double beta_Lambda3;
 
-   beta_LamS = 0;
+   beta_Lambda3 = 0;
 
 
-   return beta_LamS;
+   return beta_Lambda3;
 }
 
 } // namespace flexiblesusy

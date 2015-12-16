@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:31
+// File generated at Wed 25 Nov 2015 11:56:16
 
 #ifndef SSDM_INPUT_PARAMETERS_H
 #define SSDM_INPUT_PARAMETERS_H
@@ -31,10 +31,12 @@ struct SSDM_input_parameters {
    double Lambda2Input;
    double Lambda3Input;
    double mS2Input;
+   double QEWSB;
    double Qin;
 
    SSDM_input_parameters()
-      : HiggsIN(0), Lambda2Input(0), Lambda3Input(0), mS2Input(0), Qin(0)
+      : HiggsIN(0), Lambda2Input(0), Lambda3Input(0), mS2Input(0), QEWSB(0), Qin(0
+   )
 
    {}
 };

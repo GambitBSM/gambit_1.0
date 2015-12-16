@@ -112,7 +112,7 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner: multinest
+  use_scanner: square_grid
 
   scanners:
     square_grid:
@@ -120,7 +120,7 @@ Scanner:
       verion: ">=1.0"
       options:
         purpose: Likelihood
-        grid_pts: 3 #NxN grid
+        grid_pts: 1 #NxN grid
 
     multinest:
       plugin: MultiNest

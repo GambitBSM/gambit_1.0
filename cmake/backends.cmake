@@ -69,8 +69,8 @@ ExternalProject_Add(darksusy
  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
-        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy}
-        COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
+        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} || true
+        COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet} || true
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
 )
 enable_auto_rebuild(darksusy)
@@ -148,8 +148,8 @@ enable_auto_rebuild(gamlike)
 add_external_clean(gamlike ${gamlike_dir} clean)
 
 # MicrOmegas for MSSM
-set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/MSSM")
-set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/MSSM")
+set(micromegas_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.6.9.2/MSSM")
+set(micromegas_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.6.9.2/MSSM")
 ExternalProject_Add(micromegas
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${micromegas_dir}
@@ -163,8 +163,8 @@ enable_auto_rebuild(micromegas)
 add_external_clean(micromegas ${micromegas_dir} clean)
 
 # MicrOmegas for SingletDM
-set(micromegasSingletDM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.5.5/SingletDM")
-set(micromegasSingletDM_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.5.5/SingletDM")
+set(micromegasSingletDM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/micromegas/3.6.9.2/SingletDM")
+set(micromegasSingletDM_patch_dir "${PROJECT_SOURCE_DIR}/Backends/patches/micromegas/3.6.9.2/SingletDM")
 ExternalProject_Add(micromegasSingletDM
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${micromegasSingletDM_dir}

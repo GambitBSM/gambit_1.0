@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:30
+// File generated at Wed 25 Nov 2015 11:56:15
 
 #include "SSDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -40,7 +40,7 @@ double SSDM_soft_parameters::calc_beta_mu2_one_loop(const Soft_traces& soft_trac
 
    double beta_mu2;
 
-   beta_mu2 = Re(oneOver16PiSqr*(2*LamSH*MS2 + 6*Lambda1*mu2 + 6*mu2*
+   beta_mu2 = Re(oneOver16PiSqr*(4*Lambda2*ms2 + 6*Lambda1*mu2 + 6*mu2*
       traceYdAdjYd + 2*mu2*traceYeAdjYe + 6*mu2*traceYuAdjYu - 0.9*mu2*Sqr(g1)
       - 4.5*mu2*Sqr(g2)));
 
@@ -73,8 +73,8 @@ double SSDM_soft_parameters::calc_beta_mu2_two_loop(const Soft_traces& soft_trac
       (g1) + 36*Lambda1*mu2*Sqr(g2) + 11.25*mu2*traceYuAdjYu*Sqr(g2) + 1.125*
       mu2*Sqr(g1)*Sqr(g2) + 0.75*mu2*traceYeAdjYe*(-16*Lambda1 + 5*Sqr(g1) + 5*
       Sqr(g2)) + 40*mu2*traceYuAdjYu*Sqr(g3) + 0.25*mu2*traceYdAdjYd*(-144*
-      Lambda1 + 5*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3)) - 15*mu2*Sqr(Lambda1) - 8
-      *MS2*Sqr(LamSH) - 2*mu2*Sqr(LamSH)));
+      Lambda1 + 5*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3)) - 15*mu2*Sqr(Lambda1) -
+      16*ms2*Sqr(Lambda2) - 2*mu2*Sqr(Lambda2)));
 
 
    return beta_mu2;

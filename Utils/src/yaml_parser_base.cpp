@@ -216,6 +216,8 @@ namespace Gambit
           }
       }
       // Initialise global LogMaster object
+      if(logNode["separate_file_per_process"])
+         logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>());
       logger().initialise(loggerinfo);
 
       // Parse the Parameters node and expand out some shorthand syntax

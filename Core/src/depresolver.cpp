@@ -609,8 +609,12 @@ namespace Gambit
         //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
         if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter,pointID);
+        //masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
       }
     }
+
+    /// Getter for print_timing flag (used by LikelihoodContainer)
+    bool DependencyResolver::printTiming() { return print_timing; }
 
     // Get the functor corresponding to a single VertexID
     functor* DependencyResolver::get_functor(VertexID id)
@@ -809,8 +813,11 @@ namespace Gambit
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
-        // (so that later on they can pass this to the printer object to identify themselves)
-        masterGraph[*vi]->setVertexID(index[*vi]);
+        // (so that later on they can pass this to the printer object to identify themselves)  
+        masterGraph[*vi]->setVertexID(index[*vi]);  
+        // Same for timing output ID, but get ID number from printer system
+        std::string timing_label = masterGraph[*vi]->timingLabel();
+        masterGraph[*vi]->setTimingVertexID(Printers::get_main_param_id(timing_label));  
 
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
         // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is
@@ -910,8 +917,11 @@ namespace Gambit
               }
               else if ( zlevels[jt->first.as<std::string>()].as<int>() == getEntryLevelForOptions(*it) )
               {
-                cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
-                exit(-1);
+                //cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
+                //exit(-1);
+                std::ostringstream errmsg;
+                errmsg << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>();
+                dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
               }
             }
           }
@@ -1341,10 +1351,11 @@ namespace Gambit
       logger() << "################################################" << endl;
       logger() << EOM;
 
-      // Read ini entry
-      use_regex = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
-      if ( use_regex )
-        logger() << "Using regex for string comparison." << endl;
+      // Read ini entries
+      use_regex    = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
+      print_timing = boundIniFile->getValueOrDef<bool>(false, "print_timing_data");
+      if ( use_regex )    logger() << "Using regex for string comparison." << endl;
+      if ( print_timing ) logger() << "Will output timing information for all functors (via printer system)" << endl;
 
       //
       // Main loop: repeat until dependency queue is empty
@@ -1390,7 +1401,9 @@ namespace Gambit
 
         // Check if we wanted to output this observable to the printer system.
         //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        if(printme) masterGraph[fromVertex]->setPrintRequirement(true);
+        if(printme)      masterGraph[fromVertex]->setPrintRequirement(true);
+        // Check if the flag to output timing data is set
+        if(print_timing) masterGraph[fromVertex]->setTimingPrintRequirement(true);
 
         // Apply resolved dependency to masterGraph and functors
         if ( toVertex != OBSLIKE_VERTEXID )

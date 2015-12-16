@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 28 Oct 2015 11:34:31
+// File generated at Wed 25 Nov 2015 11:56:16
 
 #include "SSDM_input_parameters.hpp"
 
@@ -30,6 +30,7 @@ std::ostream& operator<<(std::ostream& ostr, const SSDM_input_parameters& input)
    ostr << "Lambda2Input = " << INPUT(Lambda2Input) << ", ";
    ostr << "Lambda3Input = " << INPUT(Lambda3Input) << ", ";
    ostr << "mS2Input = " << INPUT(mS2Input) << ", ";
+   ostr << "QEWSB = " << INPUT(QEWSB) << ", ";
    ostr << "Qin = " << INPUT(Qin) << ", ";
 
    return ostr;
