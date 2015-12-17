@@ -90,8 +90,8 @@ Scanner:
       options:
         point_number: 20
         output_file:  output
+        like: LogLike
         files:
-          like: LogLike
           output_file: "weights ..."
 
     square_grid:
