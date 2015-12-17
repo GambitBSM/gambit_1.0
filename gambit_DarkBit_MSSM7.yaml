@@ -6,7 +6,7 @@ Parameters:
   #Nuclear matrix parameters fixed for now.
   #  nuclear_params_sigmas_sigmal:
   #    sigmas:
-  #      fixed_value:  43.0 
+  #      fixed_value:  43.0
   #    sigmal:
   #      fixed_value:  58.0
   #    deltau:
@@ -17,7 +17,7 @@ Parameters:
   #      fixed_value: -0.085
 
   MSSM7atQ:
-    Qin: 
+    Qin:
       fixed_value: 1000.0
     SignMu:
       fixed_value: 1
@@ -53,7 +53,7 @@ Parameters:
 Priors:
 
   # All priors simple, so specified in Parameters section
-    
+
 Printer:
 
   printer: hdf5
@@ -71,7 +71,7 @@ Scanner:
     multinest:
       plugin: MultiNest
       options:
-        like:  Likelihood
+        like:  LogLike
         nlive: 2000
         tol: 0.1
         mmodal: 1
@@ -84,58 +84,58 @@ Scanner:
         # No options to set, but still need the nodes at the moment...
         aux_printer_txt_options:
         aux_printer_stats_options:
-        aux_printer_live_options:  
+        aux_printer_live_options:
 
 ObsLikes:
 
       - capability: lnL_oh2
-        purpose: Likelihood 
+        purpose: LogLike
   #
   #    - capability: RD_oh2
   #      purpose: Observable
 
   #    - capability: lnL_FermiLATdwarfs
-  #      purpose:  Likelihood
+  #      purpose:  LogLike
   #
   #    - capability: lnL_XENON100_2012
-  #      purpose:  Likelihood
+  #      purpose:  LogLike
 
   #    - capability: lnL_LUX_2013
-  #      purpose:  Likelihood
-  #      
+  #      purpose:  LogLike
+  #
   #    - capability: IC79_loglike
-  #      purpose:  Likelihood
+  #      purpose:  LogLike
   #
   #    - capability: lnL_t_mass
-  #      purpose:  Likelihood
+  #      purpose:  LogLike
   #
   #    - capability: lnL_mbmb
-  #      purpose:  Likelihood
+  #      purpose:  LogLike
   #
   #    - capability: lnL_alpha_em
-  #      purpose:  Likelihood
+  #      purpose:  LogLike
   #
   #    - capability: lnL_alpha_s
-  #      purpose:  Likelihood
+  #      purpose:  LogLike
   #
   #    - capability: lnL_W_mass
-  #      purpose:  Likelihood
-  #    
+  #      purpose:  LogLike
+  #
   #    - capability: lnL_sinW2_eff
-  #      purpose:  Likelihood
+  #      purpose:  LogLike
   #
-  #    - capability: lnL_deltarho  
-  #      purpose:  Likelihood
+  #    - capability: lnL_deltarho
+  #      purpose:  LogLike
   #
-  #    - purpose:      Likelihood
+  #    - purpose:      LogLike
   #      capability:   b2ll_LL
   #
-  #    - purpose:      Likelihood
+  #    - purpose:      LogLike
   #      capability:   SL_LL
   #
-  #    - purpose:      Likelihood                                                                                       
+  #    - purpose:      LogLike
   #      capability:   b2sll_LL
-  #        
+  #
   #    # Missing:
   #    # LHC combined likelihood
   #    # LEP Likelihood
@@ -146,7 +146,7 @@ ObsLikes:
 Rules:
     #function: RD_oh2_general   # general routines (DS backend)
     #function: RD_oh2_DarkSUSY   # darksusy backend
-    #function: RD_oh2_MicrOmegas  # micromegas backend     
+    #function: RD_oh2_MicrOmegas  # micromegas backend
 
   - capability: DarkSUSY_PointInit
     options:
@@ -181,17 +181,17 @@ Rules:
   # Choose to use DarkSUSY yield tables for indirect detection
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
-    
+
   # Choose to use function that calls DarkSUSY for calculating direct detection couplings
   - capability: DD_couplings
     function: DD_couplings_DarkSUSY
-  
+
   # Choose to get decays from DecayBit proper, not from an SLHA file.
   - capability: decay_rates
     function: all_decays
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
-  - capability: unimproved_MSSM_spectrum 
+  - capability: unimproved_MSSM_spectrum
     function: get_MSSMatQ_spectrum
     options:
       precision_goal:        1.0e-2
@@ -240,5 +240,5 @@ KeyValues:
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
- 
+
   default_output_path: "runs/MSSM7/"
