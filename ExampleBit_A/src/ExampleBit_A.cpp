@@ -224,7 +224,7 @@ namespace Gambit
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
-      //unsigned int nEvents = 20;         // Number of times to run the loop  //bjf> unused variable warning
+      unsigned int nEvents = 200;         // Number of times to run the loop
 
       //There is basically just one thing available from the Loops namespace in loop managers like this one:
       //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered
@@ -239,7 +239,7 @@ namespace Gambit
 
       logger() << "Running eventLoopManager" << EOM;
 
-      if(signaldata().inside_omp_block!=1); 
+      if(not signaldata().inside_multithreaded_region())
       {
         std::cerr << "Inside eventLoopManager, but inside_omp_block flag is not set to 1!" << std::endl;
         exit(EXIT_FAILURE);
@@ -250,7 +250,7 @@ namespace Gambit
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done) { Loop::executeIteration(it++); }
+        while(not *Loop::done and it<nEvents) { Loop::executeIteration(it++); }
       }
 
       // Start over again, just to demonstrate the reset function.  This just sets the Loop::done flag
@@ -262,7 +262,7 @@ namespace Gambit
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done) { Loop::executeIteration(it++); }
+        while(not *Loop::done and it<nEvents) { Loop::executeIteration(it++); }
       }
 
       //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
@@ -279,7 +279,7 @@ namespace Gambit
       //{
       //  cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       //}
-      if(signaldata().inside_omp_block!=1); 
+      if(not signaldata().inside_multithreaded_region())
       {
         std::cerr << "Inside exampleEventGen, but inside_omp_block flag is not set to 1!" << std::endl;
         exit(EXIT_FAILURE);
@@ -313,7 +313,7 @@ namespace Gambit
       // Do the actual computations in each thread seperately
       int increment = *Dep::event + 1;
 
-      if(signaldata().inside_omp_block!=1); 
+      if(not signaldata().inside_multithreaded_region())
       {
         std::cerr << "Inside eventAccumulator, but inside_omp_block flag is not set to 1!" << std::endl;
         exit(EXIT_FAILURE);

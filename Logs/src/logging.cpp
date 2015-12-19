@@ -258,17 +258,17 @@ namespace Gambit
     // Destructor
     LogMaster::~LogMaster()
     {
-       // LogMaster should not be destructed from within a parallel block. This check helps detect such a bug.
-       if(omp_get_level()!=0)
-       {
-          // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
-          #pragma omp critical(logmaster_empty_backlog)
-          {
-            std::cout << LOCAL_INFO << ": Tried to destruct LogMaster from inside an omp parallel block! This should not be allowed to happen, please file a bug report." << std::endl;
-            exit(EXIT_FAILURE);
-          }
-       }
-
+       // See signal_handling.cpp for why we should not bail out in this situation
+       // // LogMaster should not be destructed from within a parallel block. This check helps detect such a bug.
+       // if(omp_get_level()!=0)
+       // {
+       //    // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
+       //    #pragma omp critical(logmaster_destructor)
+       //    {
+       //      std::cout << "rank "<<MPIrank<<": "<< LOCAL_INFO << ": Tried to destruct LogMaster from inside an omp parallel block! This should not be allowed to happen, please file a bug report." << std::endl;
+       //      exit(EXIT_FAILURE);
+       //    }
+       // }
 
        if(not silenced)
        {
@@ -453,15 +453,16 @@ namespace Gambit
     // Dump the backlog buffer to the 'finalsend' function
     void LogMaster::empty_backlog()
     {
-       if(omp_get_level()!=0)
-       {
-          // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
-          #pragma omp critical(logmaster_empty_backlog)
-          {
-            std::cout << LOCAL_INFO << ": Tried to run empty_backlog() (in LogMaster) from inside an omp parallel block! This should not be possible, please file a bug report." << std::endl;
-            exit(EXIT_FAILURE);
-          }
-       }
+       // See signal_handling.cpp for why we should not bail out in this situation
+       //if(omp_get_level()!=0)
+       //{
+       //   // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
+       //   #pragma omp critical(logmaster_empty_backlog)
+       //   {
+       //     std::cout << LOCAL_INFO << ": (rank "<<MPIrank<<") Tried to run empty_backlog() (in LogMaster) from inside an omp parallel block! This should not be possible, please file a bug report." << std::endl;
+       //     exit(EXIT_FAILURE);
+       //   }
+       //}
 
        for(int i=0; i<globlMaxThreads; i++)
        {
@@ -870,6 +871,9 @@ namespace Gambit
       if( my_stream.fail() | my_stream.bad() )
       {
          std::ostringstream ss;
+         #ifdef WITH_MPI
+         ss << "rank "<<MPIrank<<": ";
+         #endif
          ss << "IO error while constructing StdLogger! Tried to open ofstream to file \""<<filename<<"\", but encountered error bit in the created ostream.";
          throw std::runtime_error( ss.str() );
       }

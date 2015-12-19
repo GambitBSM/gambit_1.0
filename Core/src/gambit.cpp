@@ -185,9 +185,9 @@ int main(int argc, char* argv[])
 
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      block_signals();
+      //block_signals();
       scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
-      unblock_signals();    
+      //unblock_signals();    
 
       //Scan is done; inform signal handlers 
       signaldata().set_shutdown_begun();

@@ -85,14 +85,19 @@ namespace Gambit
        /// Only check for emergency shutdown signals (i.e. do not attempt synchronisation) 
        void check_for_emergency_shutdown_signal();
 
-       /// Gambit should set this when entering/leaving omp parallel blocks (or code which contains
-       /// such blocks) to switch to threadsafe emergency shutdown behaviour.
-       volatile sig_atomic_t inside_omp_block = 0;
-
        // Disable shutdown signals after the first one
        // Override via inifile value
        volatile sig_atomic_t ignore_signals_during_shutdown = 1; 
-     
+
+       /// Switch to threadsafe signal handling mode
+       void entering_multithreaded_region();
+
+       /// Exit threadsafe signal handling mode
+       void leaving_multithreaded_region();
+
+       /// Report 'true' if inside a multithreaded region (according to our own flag)
+       bool inside_multithreaded_region();
+
      private:
        /// Flag to warn if early shutdown is already in process
        volatile sig_atomic_t shutdownBegun = 0;
@@ -102,6 +107,10 @@ namespace Gambit
 
        /// Number of times synchronisation for soft shutdown has been attempted;
        int shutdown_attempts = 0;
+
+       /// Flag to switch signal handling behavior to multithreaded mode
+       /// (i.e. triggers switch to threadsafe emergency shutdown behaviour)
+       bool inside_omp_block = 0;
 
        /// Array to record received signals (up to max_signals)
        static const int MAX_SIGNALS = 10;

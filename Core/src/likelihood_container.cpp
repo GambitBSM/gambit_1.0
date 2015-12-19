@@ -134,7 +134,7 @@ namespace Gambit
     /// codes from getting interrupted while they are performing sensitive
     /// tasks, like writing to disk; i.e. we do not trust them to have 
     /// protected themselves properly.
-    unblock_signals();    
+    //unblock_signals();    
 
     /// Check for signals to abort run
     signaldata().check_for_shutdown_signal();
@@ -272,7 +272,7 @@ namespace Gambit
     signaldata().check_for_shutdown_signal();
 
     /// Re-block signals 
-    block_signals();    
+    //block_signals();    
 
     return lnlike;
   }

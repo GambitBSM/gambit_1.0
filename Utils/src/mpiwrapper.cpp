@@ -247,14 +247,14 @@ namespace Gambit
 
                // While waiting, could do work here.
   
-               std::cerr << "rank " << myRank <<": sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl;
+               //std::cerr << "rank " << myRank <<": sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl;
                // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
                nanosleep(&sleeptime,NULL);
 
                // Check if timeout interval has been exceeded
                std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
                std::chrono::duration<double> time_waited = current - start;
-               std::cerr << "rank " << myRank <<": time_waited = "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() << std::endl;
+               //std::cerr << "rank " << myRank <<": time_waited = "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() << std::endl;
                
                if(time_waited >= timeout) timedout = true;
             }
