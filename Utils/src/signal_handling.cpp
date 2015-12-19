@@ -127,7 +127,7 @@ namespace Gambit
      if( shutdownComm.BarrierWithTimeout(timeout, 9999, std::cerr) )
               timedout = true; // Barrier timed out waiting for some process to enter
      // else the barrier succeed in synchronising all processes
-     logger() << "Synchronised? " << !timedout << std::endl;
+     logger() << "Synchronised? " << !timedout << EOM;
      return !timedout; 
      #else
      return true; // Always ready if no MPI
@@ -184,18 +184,14 @@ namespace Gambit
      {
        std::ostringstream ss;
        ss << "Shutdown signal detected! (in SignalData); emergency="<< emergency << std::endl;
+       ss << display_received_signals();
        std::cerr << ss.str();
-       logger() << ss.str();
-       if(emergency)
-       {
-          check_for_emergency_shutdown_signal();
-       }
-       else
-       {
-          // Attempt to synchronise all processes at a timed barrier,
-          // and then shut down.
-          attempt_soft_shutdown();
-       }
+       logger() << ss.str() << EOM;
+       check_for_emergency_shutdown_signal();
+       // If no exception thrown due to emergency shutdown signal,
+       // attempt to synchronise all processes at a timed barrier,
+       // and then shut down.
+       attempt_soft_shutdown();
      }
    }
 
@@ -371,7 +367,7 @@ namespace Gambit
        ss << LOCAL_INFO <<": ERROR from sighandler_emergency_longjmp! No jump point has been set, or jump has already occurred once! (Either is a bug; should not be able to reach this point if jump occurred already)" << std::endl;
        ss << signaldata().display_received_signals();
        std::cerr << ss.str();
-       logger() << ss.str();
+       logger() << ss.str() << EOM;
        exit(EXIT_FAILURE);
      }
      // See sub_sighandler_emergency for why we should not do this check
@@ -506,7 +502,7 @@ namespace Gambit
        }else{
           shutdown_mode = def_mode;
        }
-       logger()<< "Setting action on "<<signal_name(sig)<<" to '"<<shutdown_mode<<"'"<<std::endl;
+       logger()<< "Setting action on "<<signal_name(sig)<<" to '"<<shutdown_mode<<"'"<<EOM;
        if      (shutdown_mode=="hard_shutdown"){      signal(sig, sighandler_hard);      }
        else if (shutdown_mode=="emergency_shutdown"){ signal(sig, sighandler_emergency); }
        else if (shutdown_mode=="emergency_shutdown_longjmp"){ signal(sig, sighandler_emergency_longjmp); }
