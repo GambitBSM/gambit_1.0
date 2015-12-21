@@ -354,7 +354,8 @@ namespace Gambit
           std::string filename = infopair->second;
           std::set<int> tags;
 
-          if(separate_file_per_process and MPIsize>1)
+          if(separate_file_per_process and MPIsize>1 
+             and filename!="stdout" and filename!="stderr")
           {
             std::ostringstream unique_filename;
             unique_filename << filename << "_" << MPIrank;
