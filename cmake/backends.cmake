@@ -370,7 +370,7 @@ enable_auto_rebuild(susyhit)
 add_external_clean(susyhit ${susyhit_dir} clean)
 
 # FeynHiggs
-set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.11.2")
+set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.11.3")
 #set(FH_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
 #set(FH_C_FLAGS "${GAMBIT_C_FLAGS}")
 #set(FH_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
@@ -379,12 +379,39 @@ set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}") #For skipping -O2, which seems to
 set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to cause issues
 set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
 ExternalProject_Add(feynhiggs
+  URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.11.3.tar.gz
+  URL_MD5 8912a4ba060e404ba206e47bfdf338d3
+  DOWNLOAD_DIR ${backend_download}
+  SOURCE_DIR ${feynhiggs_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  # Fix bug preventing the use of array bounds checking.
+  CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, LEGS)#g" <SOURCE_DIR>/src/Decays/VecSet.F
+            COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND ""
+)
+set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+enable_auto_rebuild(feynhiggs)
+add_external_clean(feynhiggs ${feynhiggs_dir} clean)
+
+# FeynHiggs 2.11.2
+set(feynhiggs_dir "${PROJECT_SOURCE_DIR}/Backends/installed/FeynHiggs/2.11.2")
+#set(FH_Fortran_FLAGS "${GAMBIT_Fortran_FLAGS}")
+#set(FH_C_FLAGS "${GAMBIT_C_FLAGS}")
+#set(FH_CXX_FLAGS "${GAMBIT_CXX_FLAGS}")
+#set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -fcheck=all ") #For debugging FH issues with gfortran
+set(FH_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}") #For skipping -O2, which seems to cause issues
+set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to cause issues
+set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
+ExternalProject_Add(feynhiggs_2_11_2
   URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.11.2.tar.gz
   URL_MD5 edb73eafa6dab291bd8827242c16ac0a
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
+  # Fix bug preventing the use of array bounds checking.
   CONFIGURE_COMMAND sed ${dashi} -e "s#ComplexType spi_(2, 6:7, nvec, 1)#ComplexType spi_(2, 6:7, nvec, LEGS)#g" <SOURCE_DIR>/src/Decays/VecSet.F
             COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${FH_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${FH_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${FH_CXX_FLAGS}
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
