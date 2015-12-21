@@ -28,6 +28,34 @@ using namespace LogTags;
 /// Cleanup function
 void do_cleanup() { Gambit::Scanner::Plugins::plugin_info.dump(); }
 
+#ifdef WITH_MPI
+bool use_mpi_abort = true; // Set later via inifile value
+void do_emergency_MPI_shutdown(GMPI::Comm& errorComm)
+{
+  if(GMPI::Is_initialized())
+  {
+    // Broadcast emergency shutdown signal to all processes (desperate 
+    // attempt to stop everything; no guarantee of success)
+    MPI_Request req_null = MPI_REQUEST_NULL;
+    int tmp_buf;
+    errorComm.IsendToAll(&tmp_buf, 1, errorComm.mytag, &req_null);
+    logger() << LogTags::core << LogTags::info << "Emergency shutdown signal broadcast to all processes" << EOM;
+    if(use_mpi_abort)      
+    {
+      // Another desperate attempt to kill all process, also not guaranteed
+      // to succeed
+      logger() << LogTags::core << LogTags::info << "Calling MPI_Abort..." << EOM;
+      errorComm.Abort();
+    }
+    // debugging; delay shutdown of process to prevent OpenMPI from automatically killing other processes
+    // struct timespec sleep_time;
+    // sleep_time.tv_sec  = 1;
+    // sleep_time.tv_nsec = 0;
+    // nanosleep(&sleep_time,NULL);
+  }
+}
+#endif
+
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
@@ -61,8 +89,6 @@ int main(int argc, char* argv[])
     const int ERROR_TAG=1;         // Tag for error messages
     errorComm.mytag = ERROR_TAG;
   #endif
-
-  bool use_mpi_abort = true; // Set later via inifile value
 
   try
   {
@@ -185,9 +211,9 @@ int main(int argc, char* argv[])
 
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      //block_signals();
+      block_signals();
       scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
-      //unblock_signals();    
+      unblock_signals();    
 
       //Scan is done; inform signal handlers 
       signaldata().set_shutdown_begun();
@@ -255,11 +281,7 @@ int main(int argc, char* argv[])
       cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
     }
     #ifdef WITH_MPI
-      if (GMPI::Is_initialized() and use_mpi_abort)
-      {
-        GMPI::Comm COMM_WORLD;
-        COMM_WORLD.Abort();
-      }
+    do_emergency_MPI_shutdown(errorComm);
     #endif     
     return EXIT_FAILURE;  
   }
@@ -274,11 +296,7 @@ int main(int argc, char* argv[])
     cout << "exceptions that inherit from std::exception.  Error string: " << endl;
     cout << e << endl;
     #ifdef WITH_MPI
-      if (GMPI::Is_initialized() and use_mpi_abort)
-      {
-        GMPI::Comm COMM_WORLD;
-        COMM_WORLD.Abort();
-      }
+    do_emergency_MPI_shutdown(errorComm);
     #endif     
     return EXIT_FAILURE;  
   }
@@ -286,11 +304,11 @@ int main(int argc, char* argv[])
   // FIXME to be done in ScannerBit
   // Finalise MPI
   #ifdef WITH_MPI
-    if (GMPI::Is_initialized())
-    {
-      cout << "rank " << rank << ": Shutting down MPI..." << endl;
-      MPI_Finalize();
-    }
+  if (GMPI::Is_initialized())
+  {
+    cout << "rank " << rank << ": Shutting down MPI..." << endl;
+    MPI_Finalize();
+  }
   #endif
 
   // Free the memory held by the RNG

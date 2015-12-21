@@ -250,8 +250,12 @@ namespace Gambit
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done and it<nEvents) { Loop::executeIteration(it++); }
+        while(not *Loop::done and it<nEvents and not piped_errors.inquire()) 
+        { Loop::executeIteration(it++); }
       }
+      // Raise any piped exceptions that occurred in the loop functors
+      piped_warnings.check(ExampleBit_A_warning());
+      piped_errors.check(ExampleBit_A_error());
 
       // Start over again, just to demonstrate the reset function.  This just sets the Loop::done flag
       // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves 
@@ -285,6 +289,15 @@ namespace Gambit
         exit(EXIT_FAILURE);
       }
  
+      // Testing MPI shutdown on random failure
+      // if(result<0.0001*5.0) // shut down with 0.01% probability
+      // {
+      //   // Don't raise errors like this when inside a looped region:
+      //   //   ExampleBit_A_error().raise(LOCAL_INFO,"Error triggered for testing purposes.");  
+      //   // Must raise them like this instead:
+      //   piped_errors.request(LOCAL_INFO, "Error triggered for testing purposes.");
+      // }
+
       // testing loggers during parallel block...
       logger() << "thread "<<omp_get_thread_num()<<": Running exampleEventGen in iteration "<<*Loop::iteration<<EOM;
 

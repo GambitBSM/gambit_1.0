@@ -134,7 +134,7 @@ namespace Gambit
     /// codes from getting interrupted while they are performing sensitive
     /// tasks, like writing to disk; i.e. we do not trust them to have 
     /// protected themselves properly.
-    //unblock_signals();    
+    unblock_signals();    
 
     /// Check for signals to abort run
     signaldata().check_for_shutdown_signal();
@@ -268,11 +268,24 @@ namespace Gambit
     if (debug) cout << "log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
 
+    #ifdef WITH_MPI
+    /// Check for shutdown signals from other processes
+    if(errorComm.Iprobe(MPI_ANY_SOURCE, errorComm.mytag))
+    {
+      int tmp_buf;
+      MPI_Status msg_status;
+      errorComm.Recv(&tmp_buf, 1, MPI_ANY_SOURCE, errorComm.mytag, &msg_status);
+      // Set flag to begin emergency shutdown
+      signaldata().set_shutdown_begun(1);
+      logger() << LogTags::core << LogTags::info << "Received emergency shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
+    }
+    #endif
+
     /// Check once more for signals to abort run
     signaldata().check_for_shutdown_signal();
 
     /// Re-block signals 
-    //block_signals();    
+    block_signals();    
 
     return lnlike;
   }

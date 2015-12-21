@@ -270,6 +270,8 @@ namespace Gambit
       {
         cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
         cout << "GAMBIT has exited with fatal exception: " << what() << endl;
+        cout << "Please note: this error occurred inside an OpenMP parallel region and so caused a hard stop. If you are running in MPI mode, other processes were not informed of this error and may have to be killed manually (though your MPI implementation may automatically kill them)." << endl;
+        cout << "For more 'gentle' handling of errors in OpenMP loops, please raise errors using the Piped_exceptions system." << endl;
         abort();
       }
     }

@@ -200,11 +200,7 @@ namespace Gambit
    {
      if(shutdownBegun and emergency)
      {
-       std::ostringstream msg;
-       #ifdef WITH_MPI
-       msg << "rank "<<rank<<": ";
-       #endif
-       msg << "Emergency shutdown signal detected! Attempting to performing cleanup (but data loss is possible)" << std::endl;
+       logger() << "Emergency shutdown signal detected! Attempting to performing cleanup (but data loss is possible)" << std::endl;
        if(omp_get_level()!=0)
        {
           // Should never get to here from a multithreaded region.
@@ -215,7 +211,7 @@ namespace Gambit
           }
        }
        call_cleanup();
-       throw HardShutdownException(msg.str()); 
+       throw HardShutdownException("Emergency shutdown signal detected"); 
      }
    }
 
