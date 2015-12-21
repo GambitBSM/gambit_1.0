@@ -86,7 +86,7 @@ else()
   foreach(DICT ${DELPHES_DICTS})
     set(clean_files ${clean_files} ${DICT})
   endforeach()
-  add_external_clean(delphes ${DELPHES_DIR} distclean)
+  add_external_clean(delphes ${DELPHES_DIR} null distclean)
   add_dependencies(distclean clean-delphes)
 endif()
 
@@ -199,7 +199,7 @@ else()
 
 endif()
 # Add clean info
-add_external_clean(flexiblesusy ${FS_DIR} clean)
+add_external_clean(flexiblesusy ${FS_DIR} null clean)
 add_custom_target(distclean-flexiblesusy COMMAND cd ${FS_DIR} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} distclean &&
                                                  ${CMAKE_COMMAND} -E cmake_echo_color --red --bold "To get flexiblesusy to rebuild now, you must call make configure-flexiblesusy or rerun cmake.") || true)
 add_dependencies(distclean-flexiblesusy clean-flexiblesusy)
