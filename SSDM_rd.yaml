@@ -168,8 +168,8 @@ ObsLikes:
 #    - capability: VS_likelihood
 #      purpose: Observable
 
-#    - capability: check_perturb
-#      purpose: Observable
+    - capability: check_perturb
+      purpose: Observable
 
 
  #   - capability: SSDM_spectrum
@@ -189,9 +189,9 @@ ObsLikes:
 #########################
 
 Rules:
-#    - capability: check_perturb
-#      purpose: Observable
-#      function: check_perturb_to_min_lambda #or check_perturb_simple
+    - capability: check_perturb
+      purpose: Observable
+      function: check_perturb_to_min_lambda #or check_perturb_simple
      # options:
      #   set_high_scale: 10000  #option can be used with check_perturb_simple only
 
@@ -206,7 +206,7 @@ Rules:
       function: all_decays
 
     - capability: SingletDM_spectrum
-      function: get_SSDM_spectrum
+      function: get_SingletDM_spectrum_pole
 
 #########################
 # Logging setup

@@ -39,7 +39,7 @@
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
 #include "gambit/SpecBit/SMskeleton.hpp"
 //#include "gambit/SpecBit/SSDMskeleton.hpp" does not exist
-#include "gambit/SpecBit/SSDMSpec.hpp"
+//#include "gambit/SpecBit/SSDMSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
@@ -58,28 +58,28 @@ namespace Gambit
 
   namespace SpecBit
   {
-//    using namespace LogTags;
-//    using namespace flexiblesusy;
-//
-//    // To check if a model is currently being scanned:
-//    // bool Pipes::<fname>::ModelInUse(str model_name)
-//
-//    /// @{ Non-Gambit convenience functions
-//    //  =======================================================================
-//    //  These are not known to Gambit, but they do basically all the real work.
-//    //  The Gambit module functions merely wrap the functions here and hook 
-//    //  them up to their dependencies, and input parameters.
-//
-//    /// Compute an MSSM spectrum using flexiblesusy
-//    // In GAMBIT there are THREE flexiblesusy MSSM spectrum generators currently in
-//    // use, for each of three possible boundary condition types:
-//    //   - GUT scale input
-//    //   - Electroweak symmetry breaking scale input
-//    //   - Intermediate scale Q input
-//    // These each require slightly different setup, but once that is done the rest
-//    // of the code required to run them is the same; this is what is contained in
-//    // the below template function.
-//    // MI for Model Interface, as defined in model_files_and_boxes.hpp 
+    using namespace LogTags;
+    using namespace flexiblesusy;
+
+    // To check if a model is currently being scanned:
+    // bool Pipes::<fname>::ModelInUse(str model_name)
+
+    /// @{ Non-Gambit convenience functions
+    //  =======================================================================
+    //  These are not known to Gambit, but they do basically all the real work.
+    //  The Gambit module functions merely wrap the functions here and hook 
+    //  them up to their dependencies, and input parameters.
+
+    /// Compute an MSSM spectrum using flexiblesusy
+    // In GAMBIT there are THREE flexiblesusy MSSM spectrum generators currently in
+    // use, for each of three possible boundary condition types:
+    //   - GUT scale input
+    //   - Electroweak symmetry breaking scale input
+    //   - Intermediate scale Q input
+    // These each require slightly different setup, but once that is done the rest
+    // of the code required to run them is the same; this is what is contained in
+    // the below template function.
+    // MI for Model Interface, as defined in model_files_and_boxes.hpp 
 //    template <class MI> 
 //    const Spectrum* run_FS_spectrum_generator
 //        ( const typename MI::InputParameters& input
@@ -249,20 +249,24 @@ namespace Gambit
 //      matched_spectra = Spectrum(qedqcdspec,ssdmspec,sminputs,&input_Param);
 //      return &matched_spectra;
 //    }
-//
-//
-//
+
+
+
     template <class T>
     void fill_SSDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
       double mH2 = *Param.at("mH2");
       double mS2 = *Param.at("mS2");
       double lambda_hs = *Param.at("lambda_hS");
+      
+      
       double lambda_s= *Param.at("lambda_S");
+      
+      input.Lambda3Input=lambda_s;
       input.HiggsIN=-mH2;//-pow(mH,2)/2;
       input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
       input.Lambda2Input=lambda_hs;
-      input.Lambda3Input=lambda_s;
+
       input.QEWSB=173.15;  // scale where EWSB conditions are applied
     }
 //
@@ -276,8 +280,8 @@ namespace Gambit
 //      input.Qin=173.15;
 //      result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 //    }
-//
-//
+
+
 //
 //
 
@@ -293,7 +297,6 @@ namespace Gambit
     oneset.toMz();
     
     typename SSDM_interface<Two_scale>::SpectrumGenerator spectrum_generator;
-    
     input.Qin=scale;
     spectrum_generator.run(oneset, input);
     
@@ -349,14 +352,9 @@ namespace Gambit
     double scale=std::get<1>(age);
     cout<< "checking perturbative up to high scale (of minimum lambda) = " << scale << endl;
     
-    
     const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-
-
     SSDM_input_parameters input;
     fill_SSDM_input(input,myPipe::Param);
-
-    
     
     error=check_perturb_func(scale,input,fullspectrum);
     }

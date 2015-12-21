@@ -139,7 +139,12 @@ MAKE_INTERFACE
 #undef MODELNAME
 
 #define MODELNAME SSDM
-#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary NSM model headers etc.
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary SSDM model headers etc.
+MAKE_INTERFACE
+#undef MODELNAME
+
+#define MODELNAME SingletDM
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary SingletDM model headers etc.
 MAKE_INTERFACE
 #undef MODELNAME
 

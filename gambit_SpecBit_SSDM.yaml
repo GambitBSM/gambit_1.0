@@ -73,10 +73,10 @@ Parameters:
       mS: 100
       lambda_hS: 0.1
 
-   # SingletDM_running:  # use running mass model and able to choose lambda_S as well
-   #   mS2: 1000
-   #   lambda_hS: 0.1
-   #   lambda_S: 0.3
+  #  SSDM:  # use running mass model and able to choose lambda_S as well
+  #    mS2: 1000
+  #    lambda_hS: 0.1
+  #    lambda_S: 0.01
 
 
 
@@ -165,19 +165,18 @@ ObsLikes:
 #      function: find_min_lambda
 
 
-    - capability: VS_likelihood
-      purpose: Observable
+#    - capability: VS_likelihood
+#      purpose: Observable
 
-    - capability: check_perturb
-      purpose: Observable
+#    - capability: check_perturb
+#      purpose: Observable
 
 
     - capability: SingletDM_spectrum
       purpose: Observable
-      function: get_SSDM_spectrum
 
-    - capability: expected_lifetime
-      purpose: Observable
+#    - capability: expected_lifetime
+#      purpose: Observable
 
 
 
@@ -186,14 +185,14 @@ ObsLikes:
 #########################
 
 Rules:
-    - capability: check_perturb
-      purpose: Observable
-      function: check_perturb_to_min_lambda #or check_perturb_simple
+ #   - capability: check_perturb
+ #     purpose: Observable
+ #     function: check_perturb_to_min_lambda #or check_perturb_simple
      # options:
      #   set_high_scale: 10000  #option can be used with check_perturb_simple only
 
     - capability: SingletDM_spectrum
-      function: get_SSDM_spectrum
+      function: get_SingletDM_spectrum_pole
 
 
 #########################

@@ -21,6 +21,11 @@
 #include <sstream>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
+
+#include "gambit/Elements/spectrum.hpp"
+#include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
+#include "gambit/Utils/util_macros.hpp"
+
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
@@ -28,8 +33,10 @@
 #include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 
-
 #include "gambit/SpecBit/SSDMSpec.hpp"
+#include "gambit/SpecBit/SingletDMSpec.hpp"
+
+
 #include "gambit/SpecBit/SMskeleton.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
@@ -100,7 +107,8 @@ namespace Gambit
     }
     
     
-    template <class MI> 
+  //  template <class MI,class SI,class SIinfo>
+    template<class MI,class SI>
     const Spectrum* run_FS_spectrum_generator
         ( const typename MI::InputParameters& input
         , const SMInputs& sminputs
@@ -186,7 +194,8 @@ namespace Gambit
 
       // Generate spectrum
       spectrum_generator.run(oneset, input);
-   
+      const typename MI::Problems& problems = spectrum_generator.get_problems();
+
       // Extract report on problems...
    //  const typename MI::Problems& problems = spectrum_generator.get_problems();
      
@@ -207,15 +216,18 @@ namespace Gambit
       //
       // This object will COPY the interface data members into itself, so it is now the 
       // one-stop-shop for all spectrum information, including the model interface object.
-      SSDMSpec<MI> ssdmspec(model_interface, "FlexibleSUSY", "1.1.0");
+      
+      
+      SI singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // new templated spectrum class name
+      //SingletDMSpec<MI> singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // should be 1.2.4?
 
       // Add extra information about the scales used to the wrapper object
       // (last parameter turns the 'safety' check for the override setter off, which allows
       //  us to set parameters that don't previously exist)
       
-      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+      singletdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+      singletdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+      singletdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
@@ -223,48 +235,110 @@ namespace Gambit
       QedQcdWrapper qedqcdspec(oneset,sminputs);
       
       
-      
-      std::ostringstream warnings;
-      const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
-      const bool error = problems.have_problem();
-      problems.print_warnings(warnings);
-      if (error==1)
+            // Deal with points where spectrum generator encountered a problem
+      #ifdef SPECBIT_DEBUG
+        std::cout<<"Problem? "<<problems.have_problem()<<std::endl;
+      #endif
+      if( problems.have_problem() )
       {
-      // check for errors
-      std::ostringstream problems_str;
-      problems.print_problems(problems_str);
-      cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
+         if( runOptions.getValue<bool>("invalid_point_fatal") )
+         {
+            ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
+            // just die.
+            std::ostringstream errmsg;
+            errmsg << "A serious problem was encountered during spectrum generation!; ";
+            errmsg << "Message from FlexibleSUSY below:" << std::endl;
+            problems.print_problems(errmsg);
+            problems.print_warnings(errmsg);
+            SpecBit_error().raise(LOCAL_INFO,errmsg.str());
+         }
+         else
+         {
+            /// Check what the problem was
+            /// see: contrib/MassSpectra/flexiblesusy/src/problems.hpp
+            std::ostringstream msg;
+            //msg << "";
+            //if( have_bad_mass()      ) msg << "bad mass " << std::endl; // TODO: check which one
+            //if( have_tachyon()       ) msg << "tachyon" << std::endl;
+            //if( have_thrown()        ) msg << "error" << std::endl;
+            //if( have_non_perturbative_parameter()   ) msg << "non-perturb. param" << std::endl; // TODO: check which
+            //if( have_failed_pole_mass_convergence() ) msg << "fail pole mass converg." << std::endl; // TODO: check which
+            //if( no_ewsb()            ) msg << "no ewsb" << std::endl;
+            //if( no_convergence()     ) msg << "no converg." << std::endl;
+            //if( no_perturbative()    ) msg << "no pertub." << std::endl;
+            //if( no_rho_convergence() ) msg << "no rho converg." << std::endl;
+            //if( msg.str()=="" ) msg << " Unrecognised problem! ";
+
+            /// Fast way for now:
+            problems.print_problems(msg);
+            invalid_point().raise(msg.str()); //TODO: This message isn't ending up in the logs.
+         }
       }
+
+//      std::ostringstream warnings;
+//      const SIinfo& problems= spectrum_generator.get_problems();
+//      //const Problems<SingletDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
+//      const bool error = problems.have_problem();
+//      problems.print_warnings(warnings);
+//      if (error==1)
+//      {
+//      // check for errors
+//      std::ostringstream problems_str;
+//      problems.print_problems(problems_str);
+//      cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
+//      }
       static Spectrum matched_spectra;
-      matched_spectra = Spectrum(qedqcdspec,ssdmspec,sminputs,&input_Param);
+      matched_spectra = Spectrum(qedqcdspec,singletdmspec,sminputs,&input_Param);
       return &matched_spectra;
     }
 
 
 
     template <class T>
-    void fill_SSDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    void fill_SingletDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
       double mH2 = *Param.at("mH2");
       double mS2 = *Param.at("mS2");
       double lambda_hs = *Param.at("lambda_hS");
-      double lambda_s= *Param.at("lambda_S");
-      input.HiggsIN=-mH2;//-pow(mH,2)/2;
-      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
+      input.HiggsIN=-mH2;
+      input.mS2Input=mS2;
       input.Lambda2Input=lambda_hs;
-      input.Lambda3Input=lambda_s;
       input.QEWSB=173.15;  // scale where EWSB conditions are applied
     }
 
+
+    
+    template <class T>
+    void fill_extra_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    {
+      double lambda_s= *Param.at("lambda_S");
+      input.Lambda3Input=lambda_s;
+    }
+
+    void get_SingletDM_spectrum_pole(const Spectrum* &result)
+    {
+      using namespace softsusy;
+      namespace myPipe = Pipes::get_SingletDM_spectrum_pole;
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+      SingletDM_input_parameters input;
+      fill_SingletDM_input(input,myPipe::Param);
+      input.Qin=173.15;
+     // result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SSDMSpec<SingletDM_interface<ALGORITHM1>>,Problems<SingletDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+      result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SingletDMSpec<SingletDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+    }
+    
     void get_SSDM_spectrum(const Spectrum* &result)
     {
       using namespace softsusy;
       namespace myPipe = Pipes::get_SSDM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       SSDM_input_parameters input;
-      fill_SSDM_input(input,myPipe::Param);
+      fill_SingletDM_input(input,myPipe::Param);
+      fill_extra_input(input,myPipe::Param);
       input.Qin=173.15;
-      result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+     // result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>,SSDMSpec<SSDM_interface<ALGORITHM1>>,Problems<SSDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+     result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>,SSDMSpec<SSDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+
     }
 
           

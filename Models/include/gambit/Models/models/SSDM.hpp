@@ -17,19 +17,12 @@
 //
 //  *********************************************
 
-#ifndef __SingletDM_running_hpp__
-#define __SingletDM_running_hpp__
+#ifndef __SSDM_hpp__
+#define __SSDM_hpp__
 
-#include "gambit/Models/models/SSDM.hpp"
-
-
-#define MODEL SingletDM_running
-#define PARENT SSDM
+#define MODEL SSDM
   START_MODEL
-  INTERPRET_AS_PARENT__FUNCTION(SingletDM_running_to_SSDM)
-  DEFINEPARS(mS2, lambda_hS)
-#undef PARENT
-
+  DEFINEPARS(mS2, lambda_hS,lambda_S)
 #undef MODEL
 
 #endif

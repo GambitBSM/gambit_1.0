@@ -17,6 +17,9 @@
 ///          (ben.farmer@gmail.com)
 ///  \date 2015 Aug
 ///
+///  \author James McKay
+///          (j.mckay14@imperial.ac.uk)
+//   \date 2015 Dec
 ///  *********************************************
 
 #include <string>
@@ -28,6 +31,7 @@
 #include "gambit/Utils/util_functions.hpp"
 
 #include "gambit/Models/models/SingletDM.hpp"
+#include "gambit/Models/models/SingletDM_running.hpp"
 #include "gambit/Elements/spectrum.hpp"
 
 // Activate debug output
@@ -54,7 +58,7 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
   
   targetP.setValue("lambda_hS",Lambda_hS);
   
-  targetP.setValue("lambda_S", 0 );
+  //targetP.setValue("lambda_S", 0 );
 
   targetP.setValue("mS2", ms2 );
 
@@ -64,6 +68,38 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
    #ifdef SingletDM_DBUG
      std::cout << "SingletDM parameters:" << myP << std::endl;
      std::cout << "SingletDM_running parameters   :" << targetP << std::endl;
+   #endif
+}
+
+#undef PARENT
+#undef MODEL
+
+
+#define MODEL  SingletDM_running
+#define PARENT SSDM
+
+// Translation function definition
+void MODEL_NAMESPACE::SingletDM_running_to_SSDM (const ModelParameters &myP, ModelParameters &targetP)
+{
+   USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
+   logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_running..."<<LogTags::info<<EOM;
+  
+
+  double Lambda_hS,ms2;
+  ms2=myP.getValue("mS2");
+  Lambda_hS=myP.getValue("lambda_hS");
+  
+  
+  targetP.setValue("lambda_hS",Lambda_hS);
+  
+  targetP.setValue("lambda_S", 0 );
+
+  targetP.setValue("mS2", ms2 );
+
+   // Done! Check that everything is ok if desired.
+   #ifdef SingletDM_DBUG
+     std::cout << "SingletDM_running parameters:" << myP << std::endl;
+     std::cout << "SSDM parameters   :" << targetP << std::endl;
    #endif
 }
 

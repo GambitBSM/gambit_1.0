@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  SSDM derived version of SubSpectrum class. Designed
+///  SingletDM derived version of SubSpectrum class. Designed
 ///  for easy interface to FlexibleSUSY, but also
 ///  works with SoftSUSY as the backend with an
 ///  appropriately designed intermediate later.
@@ -26,8 +26,8 @@
 ///
 ///  *********************************************
 
-#ifndef SSDMSPEC_H
-#define SSDMSPEC_H
+#ifndef SINGLETDMSPEC_H
+#define SINGLETDMSPEC_H
 
 #include <memory>
 
@@ -35,7 +35,7 @@
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/SpecBit/SSDMSpec_head.hpp"   // "Header" declarations for SSDMSpec class
+#include "gambit/SpecBit/SingletDMSpec_head.hpp"   // "Header" declarations for SingletDMSpec class
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
@@ -56,9 +56,9 @@ namespace Gambit
      // double high_energy_minimum;  // scale at which high energy minimum occurs (or if no second minimum then default is Planck scale)
      
       //
-      // IMPLEMENTATION OF SSDMSpec MEMBER FUNCTIONS FOLLOWS  // edited for use with SSDM with most functions removed (JM)
+      // IMPLEMENTATION OF SingletDMSpec MEMBER FUNCTIONS FOLLOWS  // edited for use with SingletDM with most functions removed (JM)
       // 
-      // SSDMSpec this is a template class, we need these definition in the header
+      // SingletDMSpec this is a template class, we need these definition in the header
       // file. It is nice to keep them seperate from the class declaration though.
       //
  
@@ -67,7 +67,7 @@ namespace Gambit
       // the object. So also need to make sure 'model_interface' is initialised first
       // (i.e. it should be declared first)
       template <class MI>
-      SSDMSpec<MI>::SSDMSpec(MI mi, str be_name, str be_version, bool switch_index_convention)
+      SingletDMSpec<MI>::SingletDMSpec(MI mi, str be_name, str be_version, bool switch_index_convention)
          : backend_name(be_name)
          , backend_version(be_version)
          , index_offset(-1)
@@ -78,34 +78,34 @@ namespace Gambit
       
       // Default constructor
       template <class MI>
-      SSDMSpec<MI>::SSDMSpec(bool switch_index_convention)
+      SingletDMSpec<MI>::SingletDMSpec(bool switch_index_convention)
          : index_offset(switch_index_convention ? 0 : -1)
       {}
   
       template <class MI>
-      SSDMSpec<MI>::~SSDMSpec()
+      SingletDMSpec<MI>::~SingletDMSpec()
       {}
      
      
      
       template <class MI>
-      void SSDMSpec<MI>::RunToScale(double scale)
+      void SingletDMSpec<MI>::RunToScale(double scale)
       {
         model_interface.model.run_to(scale);
       }
       template <class MI>
-      double SSDMSpec<MI>::GetScale() const
+      double SingletDMSpec<MI>::GetScale() const
       {
         return model_interface.model.get_scale();
       }
       template <class MI>
-      void SSDMSpec<MI>::SetScale(double scale)
+      void SingletDMSpec<MI>::SetScale(double scale)
       {
         model_interface.model.set_scale(scale);
       }
       
       template <class MI>
-      std::string SSDMSpec<MI>::AccessError(std::string state) const
+      std::string SingletDMSpec<MI>::AccessError(std::string state) const
       {
         std::string errormsg;
         errormsg = "Error accessing "+ state + " element is out of bounds";
@@ -114,77 +114,92 @@ namespace Gambit
      
      
 
-    
-      template <class Model>
-      double get_sinthW2_DRbar(const Model& model)
-      {
-       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
-                      (0.6 * Utils::sqr(model.get_g1()) + 
-                      Utils::sqr(model.get_g2()));
-       return sthW2;
-      }
-      
+//    
+//      template <class Model>
+//      double get_sinthW2_DRbar(const Model& model)
+//      {
+//       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
+//                      (0.6 * Utils::sqr(model.get_g1()) + 
+//                      Utils::sqr(model.get_g2()));
+//       return sthW2;
+//      }
+//      
+//
+//      
+//      template <class Model>
+//      void set_Mhh_pole_slha(Model& model,double mass)
+//      {
+//        model.get_physical_slha().Mhh = mass;
+//      }
+//
+//
+//      template <class Model>
+//      void set_Mss_pole_slha(Model& model, double mass)
+//      {
+//        model.get_physical_slha().Mss = mass;
+//      }
+//
+//      
+//
+//      template <class Model>
+//      void set_neutral_goldstone_pole_slha(Model& model, double mass)
+//      {
+//        model.get_physical_slha().MAh = mass;
+//      }
+//     
+//           template <class Model>
+//      void set_MAh_pole_slha(Model& model, double mass)
+//      {
+//        model.get_physical_slha().MAh = mass;
+//      }
+//     
+//     
+//
+//     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
+//     template <class Model>
+//     void set_MZ_pole_slha(Model& model, double mass)
+//     {
+//        model.get_physical_slha().MVZ = mass;
+//     }
+//
+//     template <class Model>
+//     void set_MW_pole_slha(Model& model, double mass)
+//     {
+//        model.get_physical_slha().MVWp = mass;
+//     }
+//
+//     
+//     template <class Model>
+//     void set_MGluon(Model& model, double mass)
+//     {
+//        model.get_physical().MVG = mass;
+//     }
+//     
+//     template <class Model>
+//     void set_MPhoton(Model& model, double mass)
+//     {
+//        model.get_physical().MVP = mass;
+//     }
+//
+//
+//      template <class Model>
+//      double get_MAh_pole_slha(const Model& model)
+//      {
+//        return model.get_MAh_pole_slha();
+//      }
+//     
+//      template <class Model>
+//      double get_Mss_pole_slha(const Model& model)
+//      {
+//        return model.get_Mss_pole_slha();
+//      }
 
-      
-      template <class Model>
-      void set_Mhh_pole_slha(Model& model,double mass)
-      {
-        model.get_physical_slha().Mhh = mass;
-      }
 
-
-      template <class Model>
-      void set_Mss_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().Mss = mass;
-      }
-
-      
-
-      template <class Model>
-      void set_neutral_goldstone_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MAh = mass;
-      }
-     
-           template <class Model>
-      void set_MAh_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MAh = mass;
-      }
-     
-     
-
-     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
-     template <class Model>
-     void set_MZ_pole_slha(Model& model, double mass)
-     {
-        model.get_physical_slha().MVZ = mass;
-     }
-
-     template <class Model>
-     void set_MW_pole_slha(Model& model, double mass)
-     {
-        model.get_physical_slha().MVWp = mass;
-     }
-
-     
-     template <class Model>
-     void set_MGluon(Model& model, double mass)
-     {
-        model.get_physical().MVG = mass;
-     }
-     
-     template <class Model>
-     void set_MPhoton(Model& model, double mass)
-     {
-        model.get_physical().MVP = mass;
-     }
 
       template <class MI>
-      typename SSDMSpec<MI>::RunningGetterMaps SSDMSpec<MI>::runningpars_fill_getter_maps()
+      typename SingletDMSpec<MI>::RunningGetterMaps SingletDMSpec<MI>::runningpars_fill_getter_maps()
       {
-         typename SSDMSpec<MI>::RunningGetterMaps map_collection; 
+         typename SingletDMSpec<MI>::RunningGetterMaps map_collection; 
          typedef typename MI::Model Model;
 
          typedef typename MTget::FInfo1 FInfo1;
@@ -224,8 +239,8 @@ namespace Gambit
            
             tmp_map["Lambda2"]= &Model::get_Lambda2;
             tmp_map["lambda_hS"]= &Model::get_Lambda2; // same naming convention as SingletDM
-            tmp_map["Lambda3"]= &Model::get_Lambda3;
-            tmp_map["Lambda_s"]= &Model::get_Lambda3; // alternative naming convention
+            //tmp_map["Lambda3"]= &Model::get_Lambda3;
+         //   tmp_map["Lambda_s"]= &Model::get_Lambda3; // alternative naming convention
 
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
@@ -282,9 +297,9 @@ namespace Gambit
 
       // Filler function for setter function pointer maps extractable from "runningpars" container
       template <class MI>
-      typename SSDMSpec<MI>::RunningSetterMaps SSDMSpec<MI>::runningpars_fill_setter_maps()
+      typename SingletDMSpec<MI>::RunningSetterMaps SingletDMSpec<MI>::runningpars_fill_setter_maps()
       {
-         typename SSDMSpec<MI>::RunningSetterMaps map_collection; 
+         typename SingletDMSpec<MI>::RunningSetterMaps map_collection; 
          typedef typename MI::Model Model;
 
          typedef typename MTset::FInfo1 FInfo1;
@@ -336,7 +351,7 @@ namespace Gambit
             tmp_map["g3"]= &Model::set_g3;
             tmp_map["Lambda1"]= &Model::set_Lambda1;
             tmp_map["Lambda2"]= &Model::set_Lambda2;
-            tmp_map["Lambda3"]= &Model::set_Lambda3;
+          //  tmp_map["Lambda3"]= &Model::set_Lambda3;
 
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
@@ -362,26 +377,15 @@ namespace Gambit
       // Need wrapper functios for A0 and H+ getters, to retrieve only the 
       // non-Goldstone entries. 
       // Need to pass in the model object, since we won't have the 'this' pointer
-      template <class Model>
-      double get_MAh_pole_slha(const Model& model)
-      {
-        return model.get_MAh_pole_slha();
-      }
-     
-      template <class Model>
-      double get_Mss_pole_slha(const Model& model)
-      {
-        return model.get_Mss_pole_slha();
-      }
 
 
 
    
       // Filler function for getter function pointer maps extractable from "phys" container
       template <class MI>
-      typename SSDMSpec<MI>::PhysSetterMaps SSDMSpec<MI>::phys_fill_setter_maps()
+      typename SingletDMSpec<MI>::PhysSetterMaps SingletDMSpec<MI>::phys_fill_setter_maps()
       {
-        typename SSDMSpec<MI>::PhysSetterMaps map_collection; 
+        typename SingletDMSpec<MI>::PhysSetterMaps map_collection; 
         typedef typename MI::Model Model;
 
         typedef typename MTset::FInfo1M FInfo1M;
@@ -432,9 +436,9 @@ namespace Gambit
 
       // Filler function for getter function pointer maps extractable from "phys" container
       template <class MI>
-      typename SSDMSpec<MI>::PhysGetterMaps SSDMSpec<MI>::phys_fill_getter_maps()
+      typename SingletDMSpec<MI>::PhysGetterMaps SingletDMSpec<MI>::phys_fill_getter_maps()
       {
-         typename SSDMSpec<MI>::PhysGetterMaps map_collection; 
+         typename SingletDMSpec<MI>::PhysGetterMaps map_collection; 
          typedef typename MI::Model Model;
 
          typedef typename MTget::FInfo1 FInfo1;
@@ -502,7 +506,6 @@ namespace Gambit
 
          return map_collection;
       }
-
 
   
    } // end SpecBit namespace 
