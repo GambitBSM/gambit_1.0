@@ -417,9 +417,9 @@ ExternalProject_Add(feynhiggs_2_11_2
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND ""
 )
-set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-enable_auto_rebuild(feynhiggs)
-add_external_clean(feynhiggs ${feynhiggs_dir} clean)
+set_property(TARGET feynhiggs_2_11_2 PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+enable_auto_rebuild(feynhiggs_2_11_2)
+add_external_clean(feynhiggs_2_11_2 ${feynhiggs_dir} clean)
 
 # HiggsBounds
 set(higgsbounds_tables_loc "${PROJECT_SOURCE_DIR}/Backends/installed/")
@@ -485,17 +485,56 @@ enable_auto_rebuild(higgssignals)
 add_external_clean(higgssignals ${higgssignals_dir} hyperclean)
 
 
-set_target_properties(ddcalc gamlike darksusy micromegas micromegasSingletDM superiso nulike pythia fastsim
-                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(ddcalc
+                      gamlike
+                      darksusy
+                      micromegas
+                      micromegasSingletDM
+                      superiso
+                      nulike
+                      pythia
+                      fastsim
+                      higgssignals
+                      higgsbounds
+                      higgsbounds_tables
+                      feynhiggs
+                      feynhiggs_2_11_2
+                      susyhit
+                      PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends DEPENDS micromegas darksusy pythia superiso higgssignals
-                      higgsbounds feynhiggs susyhit micromegasSingletDM)
+add_custom_target(backends
+                  DEPENDS
+                  micromegas
+                  micromegasSingletDM
+                  darksusy
+                  superiso
+                  higgssignals
+                  higgsbounds
+                  feynhiggs
+                  susyhit
+                  pythia
+                 )
 
 add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike) #fastsim
 
-add_custom_target(clean-backends DEPENDS clean-darksusy clean-micromegas clean-micromegasSingletDM clean-superiso
-                      clean-higgssignals clean-higgsbounds clean-feynhiggs clean-susyhit clean-delphes clean-flexiblesusy
-                      clean-ddcalc clean-gamlike clean-nulike clean-pythia)
+add_custom_target(clean-backends
+                  DEPENDS
+                  clean-darksusy
+                  clean-micromegas
+                  clean-micromegasSingletDM
+                  clean-superiso
+                  clean-higgssignals
+                  clean-higgsbounds
+                  clean-feynhiggs
+                  clean-feynhiggs_2_11_2
+                  clean-susyhit
+                  clean-delphes
+                  clean-flexiblesusy
+                  clean-pythia
+                  clean-ddcalc
+                  clean-gamlike
+                  clean-nulike
+                 )
 
 
 # Print the list of backends that require BOSSing
