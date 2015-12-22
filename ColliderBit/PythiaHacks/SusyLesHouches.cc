@@ -7,6 +7,7 @@
 #include "Pythia8/SusyLesHouches.h"
 #include "Pythia8/Streams.h"
 
+// NOTE: Many macros for the Gambit slhaea hack
 #define FILL_LHBLOCK(LHBLOCK, FILL_TYPE)   \
       for(SLHAea::Block::const_iterator lineIter = blockIter->begin(); lineIter != blockIter->end(); lineIter++) {  \
         /* Add line to generic block (carbon copy of input structure) */  \
@@ -71,6 +72,7 @@ namespace Pythia8 {
 int SusyLesHouches::readFile(string slhaFileIn, int verboseIn,
   bool useDecayIn) {
 
+// NOTE: Gambit hack for slhaea support
   // If the slhaeaCollPtr is set, use readSLHAea instead.
   if (slhaeaCollPtr) return readSLHAea(verboseIn, useDecayIn);
   slhaFile = slhaFileIn;
@@ -693,6 +695,7 @@ int SusyLesHouches::readFile(istream& is, int verboseIn,
 
 //--------------------------------------------------------------------------
 
+// NOTE: Gambit hack for slhaea support
 // Main routine to read in SLHA data from a SLHAea::Coll object
 
 int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
@@ -1387,7 +1390,6 @@ int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
 
 }
 
-
 //--------------------------------------------------------------------------
 
 // Print a header with information on version, last date of change, etc.
@@ -1429,6 +1431,7 @@ void SusyLesHouches::printFooter() {
 
 void SusyLesHouches::printSpectrum(int ifail) {
 
+// NOTE: Gambit hack for debugging
   // Print a debugging message
   if (ifail == 999) {
     std::cout<<"\n\n!! SusyLesHouches within libpythia has been touched. !!\n\n";
@@ -2597,9 +2600,11 @@ int SusyLesHouches::checkSpectrum() {
 void SusyLesHouches::message(int level, string place,string themessage,
   int line) {
   if (verboseSav == 0) return;
+  // By default all output to cout, but lines below allow finer control.
+  ostream* outstream = &cout;
   //Send normal messages and warnings to stdout, errors to stderr.
-  ostream* outstream = &cerr;
-  if (level <= 1) outstream = &cout;
+  //ostream* outstream = &cerr;
+  //if (level <= 1) outstream = &cout;
   // if (level == 2) { *outstream << endl; }
   if (place != "") *outstream  <<  " | (SLHA::"+place+") ";
   else *outstream  <<  " | ";

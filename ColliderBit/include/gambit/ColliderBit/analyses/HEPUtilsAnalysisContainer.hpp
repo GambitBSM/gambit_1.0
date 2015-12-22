@@ -13,17 +13,15 @@ namespace Gambit {
     HEPUtilsAnalysis* mkAnalysis(const std::string& name);
 
     /// @brief More sophisticated than just std::vector<HEPUtilsAnalysis*>
-    class HEPUtilsAnalysisContainer {
+    struct HEPUtilsAnalysisContainer {
       /// @name Member variables
       //@{
-      public:
         std::vector<HEPUtilsAnalysis*> analyses;
         bool ready;
       //@}
 
       /// @name Construction, Destruction, and Recycling
       //@{
-      public:
         HEPUtilsAnalysisContainer() : ready(false) { }
         ~HEPUtilsAnalysisContainer() { clear(); }
         /// @brief Reset the analyses contained within this instance.
@@ -32,14 +30,12 @@ namespace Gambit {
 
       /// @name (Re-)Initialization functions
       //@{
-      public:
         /// @brief Initialize analyses by their names.
         void init(const std::vector<std::string>& analysisNames);
       //@}
 
       /// @name Event analysis and analysis finalization functions
       //@{
-      public:
         /// @brief Analyze an event.
         void analyze(const HEPUtils::Event&) const;
         /// @brief Add cross-sections and errors for two different process types

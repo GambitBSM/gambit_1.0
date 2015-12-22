@@ -91,17 +91,13 @@ namespace Gambit
     /// Event labels
     enum specialEvents {BASE_INIT=-1, INIT = -2, START_SUBPROCESS = -3, END_SUBPROCESS = -4, FINALIZE = -5};
     /// Pythia stuff
-    std::vector<std::string> pythiaNames;
+    std::vector<std::string> pythiaNames, pythiaCommonOptions;
     std::vector<std::string>::const_iterator iter;
-    bool allProcessesVetoed;
+    bool eventsGenerated;
     int pythiaConfigurations, pythiaNumber, nEvents;
     /// Analysis stuff
     std::vector<std::string> analysisNames;
-    HEPUtilsAnalysisContainer* globalSubprocessAnalyses = new HEPUtilsAnalysisContainer();
     HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
-    /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,allProcessesVetoed,analysisNames,globalSubprocessAnalyses,globalAnalyses
-
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -114,18 +110,21 @@ namespace Gambit
     void operateLHCLoop()
     {
       using namespace Pipes::operateLHCLoop;
+      static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
       int currentEvent;
       nEvents = 0;
-      // Set allProcessesVetoed to false once some events are generated.
-      allProcessesVetoed = true;
+      // Set eventsGenerated to true once some events are generated.
+      eventsGenerated = false;
 
       // Do the base-level initialisation
       Loop::executeIteration(BASE_INIT);
-
       // Retrieve runOptions from the YAML file safely...
       GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
       // @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, int);
+
+      // Nicely ask the entire loop to stfu
+      std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -138,41 +137,23 @@ namespace Gambit
         while (pythiaNumber < pythiaConfigurations)
         {
           piped_invalid_point.check();
-          currentEvent = 0;
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
-          #pragma omp parallel shared(SHARED_OVER_OMP,currentEvent)
+          currentEvent = 0;
+          #pragma omp parallel
           {
             Loop::executeIteration(START_SUBPROCESS);
-            // post init / xsec veto synchronization
-            #pragma omp barrier
             // main event loop
-            while(not *Loop::done and currentEvent < nEvents) {
-              allProcessesVetoed = false;
-              // race conditions may push currentEvent past nEvents. But that
-              // is okay, since the Analyses will count their own events.
-              #pragma omp atomic
-              currentEvent++;
-              Loop::executeIteration(currentEvent);
-            }
-            // @todo Remove testing couts
-            if (omp_get_thread_num() == 0) {
-              std::cout << "\n$$$ Loop manager claims to have generated "
-                        << currentEvent << " events.";
+            while(currentEvent<nEvents) {
+              if(not *Loop::done) Loop::executeIteration(currentEvent++);
             }
             Loop::executeIteration(END_SUBPROCESS);
           }
-          // @todo Remove testing couts
-          std::cout << "\n\n\n\n Operation of Pythia named " << *iter
-                    << " number " << std::to_string(pythiaNumber)
-                    << " has finished." << std::endl;
-          #ifdef HESITATE
-          std::cout<<"\n\n [Press Enter]";
-          std::getchar();
-          #endif
         }
       }
+      // Nicely thank the loop for stfu, and restore everyone's vocal cords
+      std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
     }
 
@@ -184,11 +165,10 @@ namespace Gambit
     {
       using namespace Pipes::getPythia;
 
-      static bool SLHA_debug_mode = false;
-      static std::vector<std::string> filenames;
       static std::string pythia_doc_path;
       static bool print_pythia_banner = true;
-      static unsigned int counter = -1;
+      static SLHAstruct slha;
+      static SLHAstruct spectrum;
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, line;
@@ -201,29 +181,44 @@ namespace Gambit
         // Get Pythia to print its banner.
         if (print_pythia_banner)
         {
-          #pragma omp_critical (runOptions)
-          {
-            pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
-          }
+          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
           result.clear();
           print_pythia_banner = false;
         }
-        // If there are no debug filenames set, look for them.
-        if (filenames.empty())
+
+        // SLHAea object constructed from dependencies on the spectrum and decays.
+        slha.clear();
+        spectrum.clear();
+        slha = Dep::decay_rates->as_slhaea();
+        if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
         {
-          #pragma omp_critical (runOptions)
-          {
-            SLHA_debug_mode = runOptions->hasKey("debug_SLHA_filenames");
-            if (SLHA_debug_mode) filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
-          }
+          // MSSM-specific
+          spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+          SLHAea::Block block("MODSEL");
+          block.push_back("BLOCK MODSEL              # Model selection");
+          SLHAea::Line line;
+          line << 1 << 0 << "# General MSSM";
+          block.push_back(line);
+          slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
+          slha.push_front(block);
         }
-        // Increment the counter if there are debug SLHA files and this is the first thread.
-        if (SLHA_debug_mode)
+        else
         {
-          if (omp_get_thread_num() == 0) counter++;
-          if (filenames.size() <= counter) invalid_point().raise("No more SLHA files. My work is done.");
+          ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
         }
+      }
+
+      if (*Loop::iteration == INIT)
+      {
+        std::string pythiaConfigName;
+        // Setup new Pythia
+        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+        // Get pythia options
+        // If the SpecializablePythia specialization is hard-coded, okay with no options.
+        pythiaCommonOptions.clear();
+        if (runOptions->hasKey(*iter, pythiaConfigName))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -232,18 +227,7 @@ namespace Gambit
         // Each thread gets its own Pythia instance.
         // Thus, the actual Pythia initialization is
         // *after* INIT, within omp parallel.
-        std::vector<std::string> pythiaOptions;
-        std::string pythiaConfigName;
-
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
-
-        // If the SpecializablePythia specialization is hard-coded, okay with no options.
-        #pragma omp critical (runOptions)
-        {
-          if (runOptions->hasKey(*iter, pythiaConfigName))
-            pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-        }
+        std::vector<std::string> pythiaOptions = pythiaCommonOptions;
         pythiaOptions.push_back("Print:quiet = on");
         pythiaOptions.push_back("SLHA:verbose = 0");
         if (omp_get_thread_num() == 0)
@@ -252,62 +236,20 @@ namespace Gambit
 
         result.resetSpecialization(*iter);
 
-        if (SLHA_debug_mode)
-        {
-          // Run Pythia reading an SLHA file.
-          if (omp_get_thread_num() == 0)
-            logger() << "Reading SLHA file: " << filenames.at(counter) << EOM;
-          pythiaOptions.push_back("SLHA:file = " + filenames.at(counter));
-          try {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions);
-          } catch (SpecializablePythia::InitializationError &e) {
-            piped_invalid_point.request("Bad point: Pythia can't initialize");
-            Loop::wrapup();
-            return;
-          }
-        }
-        else
-        {
-          // Run Pythia using an SLHAea object constructed from dependencies on the spectrum and decays.
-          SLHAstruct slha = Dep::decay_rates->as_slhaea();
-          if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
-          {
-            // MSSM-specific
-            SLHAstruct spectrum;
-            #pragma omp critical (spectrum_as_slhaea)
-            {
-              spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
-            }
-            SLHAea::Block block("MODSEL");
-            block.push_back("BLOCK MODSEL              # Model selection");
-            SLHAea::Line line;
-            line << 1 << 0 << "# General MSSM";
-            block.push_back(line);
-            slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
-            slha.push_front(block);
-          }
-          else
-          {
-            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
-          }
-          pythiaOptions.push_back("SLHA:file = slhaea");
+        pythiaOptions.push_back("SLHA:file = slhaea");
 
-          try
-          {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions, &slha);
-          }
-          catch (SpecializablePythia::InitializationError &e)
-          {
-            piped_invalid_point.request("Bad point: Pythia can't initialize");
-            Loop::wrapup();
-            return;
-          }
+        try
+        {
+          if (omp_get_thread_num() == 0)
+            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+          else
+            result.init(pythia_doc_path, pythiaOptions, &slha);
+        }
+        catch (SpecializablePythia::InitializationError &e)
+        {
+          piped_invalid_point.request("Bad point: Pythia can't initialize");
+          Loop::wrapup();
+          return;
         }
 
         // xsec veto
@@ -327,6 +269,105 @@ namespace Gambit
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
           if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
+          else eventsGenerated = true;
+        }
+
+      }
+    }
+
+
+    void getPythiaFileReader(Gambit::ColliderBit::SpecializablePythia &result)
+    {
+      using namespace Pipes::getPythiaFileReader;
+
+      static std::vector<std::string> filenames;
+      static std::string pythia_doc_path;
+      static bool print_pythia_banner = true;
+      static unsigned int fileCounter = -1;
+      // variables for xsec veto
+      std::stringstream processLevelOutput;
+      std::string _junk, line;
+      std::istringstream* issPtr;
+      int code;
+      double xsec, totalxsec;
+
+      if (*Loop::iteration == BASE_INIT)
+      {
+        // Get Pythia to print its banner.
+        if (print_pythia_banner)
+        {
+          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
+          result.banner(pythia_doc_path);
+          result.clear();
+          print_pythia_banner = false;
+        }
+        // If there are no debug filenames set, look for them.
+        if (filenames.empty())
+          filenames = runOptions->getValue<std::vector<str> >("SLHA_filenames");
+        fileCounter++;
+        if (filenames.size() <= fileCounter) invalid_point().raise("No more SLHA files. My work is done.");
+      }
+
+      if (*Loop::iteration == INIT)
+      {
+        std::string pythiaConfigName;
+        // Setup new Pythia
+        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+        // Get pythia options
+        // If the SpecializablePythia specialization is hard-coded, okay with no options.
+        pythiaCommonOptions.clear();
+        if (runOptions->hasKey(*iter, pythiaConfigName))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+      }
+
+      else if (*Loop::iteration == START_SUBPROCESS)
+      {
+        result.clear();
+        // Each thread gets its own Pythia instance.
+        // Thus, the actual Pythia initialization is
+        // *after* INIT, within omp parallel.
+        std::vector<std::string> pythiaOptions = pythiaCommonOptions;
+        pythiaOptions.push_back("Print:quiet = on");
+        pythiaOptions.push_back("SLHA:verbose = 0");
+        if (omp_get_thread_num() == 0)
+          pythiaOptions.push_back("Init:showProcesses = on");
+        pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
+
+        result.resetSpecialization(*iter);
+
+        // Run Pythia reading an SLHA file.
+        if (omp_get_thread_num() == 0)
+          logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
+        pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
+        try {
+          if (omp_get_thread_num() == 0)
+            result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
+          else
+            result.init(pythia_doc_path, pythiaOptions);
+        } catch (SpecializablePythia::InitializationError &e) {
+          piped_invalid_point.request("Bad point: Pythia can't initialize");
+          Loop::wrapup();
+          return;
+        }
+
+        // xsec veto
+        if (omp_get_thread_num() == 0) {
+          code = -1;
+          totalxsec = 0.;
+          while(true) {
+            std::getline(processLevelOutput, line);
+            issPtr = new std::istringstream(line);
+            issPtr->seekg(47, issPtr->beg);
+            (*issPtr) >> code;
+            if (!issPtr->good() && totalxsec > 0.) break;
+            (*issPtr) >> _junk >> xsec;
+            if (issPtr->good()) totalxsec += xsec;
+            delete issPtr;
+          }
+
+          /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
+          if (totalxsec * 1e12 * 20.7 < 1.) Loop::wrapup();
+          else eventsGenerated = true;
         }
 
       }
@@ -343,12 +384,9 @@ namespace Gambit
       if (*Loop::iteration == INIT)
       {
         result.clear();
-        #pragma omp critical (Delphes)
-        {
-          /// Setup new Delphes
-          GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
-          result.init(delphesOptions);
-        }
+        // Setup new Delphes
+        GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
+        result.init(delphesOptions);
       }
     }
 #endif // not defined EXCLUDE_DELPHES
@@ -361,12 +399,9 @@ namespace Gambit
       if (*Loop::iteration == INIT)
       {
         result.clear();
-        #pragma omp critical (BuckFast)
-        {
-          /// Setup new BuckFast
-          /// @note There's really nothing to do. BuckFast doesn't even have class variables.
-          result.init();
-        }
+        // Setup new BuckFast
+        // @note There's really nothing to do. BuckFast doesn't even have class variables.
+        result.init();
       }
     }
 
@@ -378,12 +413,9 @@ namespace Gambit
       if (*Loop::iteration == INIT)
       {
         result.clear();
-        #pragma omp critical (BuckFast)
-        {
-          /// Setup new BuckFast
-          /// @note There's really nothing to do. BuckFast doesn't even have class variables.
-          result.init();
-        }
+        // Setup new BuckFast
+        // @note There's really nothing to do. BuckFast doesn't even have class variables.
+        result.init();
       }
     }
 
@@ -404,41 +436,30 @@ namespace Gambit
       {
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* INIT, within omp parallel.
-        if (omp_get_thread_num() == 0) {
-          globalSubprocessAnalyses->clear();
-          globalSubprocessAnalyses->init(analysisNames);
-        }
         result.clear();
         result.init(analysisNames);
         return;
       }
 
-      if (*Loop::iteration == END_SUBPROCESS)
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
       {
         const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
         const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
         result.add_xsec(xs_fb, xserr_fb);
-        // Combine results from this subprocess together
+
+        // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
         {
-          globalSubprocessAnalyses->add(result);
+          globalAnalyses->add(result);
           // Use improve_xsec to combine results from the same process type
-          globalSubprocessAnalyses->improve_xsec(result);
+          globalAnalyses->improve_xsec(result);
         }
-        // Add total results from this subprocess to the main globalAnalyses container
-        // (Synchronize threads first to ensure all results are totalled)
-        #pragma omp barrier
-        if (omp_get_thread_num() == 0) {
-          globalAnalyses->add(globalSubprocessAnalyses);
-          // Use add_xsec to combine results from the different process types
-          globalAnalyses->add_xsec(globalSubprocessAnalyses);
-        }
-        return;
+	return;
       }
-
+      
     }
-
-
+    
+    
 
     /// *** Hard Scattering Event Generators ***
 
@@ -564,7 +585,7 @@ namespace Gambit
         /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
         bool isB = false;
 
-        HEPUtils::P4 jetMom=HEPUtils::mk_p4(pj);
+        HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
         for (auto& pb : bpartons) {
           if (jetMom.deltaR_eta(pb->mom()) < 0.4) {
             isB = true;
@@ -572,16 +593,16 @@ namespace Gambit
           }
         }
 
-        bool isTau=false;
-        for(auto& ptau : tauCandidates){
-          if(jetMom.deltaR_eta(ptau->mom()) < 0.5){
-            isTau=true;
+        bool isTau = false;
+        for (auto& ptau : tauCandidates){
+          if (jetMom.deltaR_eta(ptau->mom()) < 0.5){
+            isTau = true;
             break;
           }
         }
 
         // Add to the event (use jet momentum for tau)
-        if(isTau){
+        if (isTau) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
           gp->set_prompt();
           result.add_particle(gp);
@@ -774,7 +795,7 @@ namespace Gambit
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-      if (*Loop::iteration == FINALIZE) {
+      if (*Loop::iteration == FINALIZE && eventsGenerated) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         globalAnalyses->scale();
@@ -794,8 +815,14 @@ namespace Gambit
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
+      /* The use of the following requires ALLOW_MODEL(CMSSM) in the rollcall.
+      logger() << "This model:";
+      logger() << "\nm0: " << *Param["M0"];
+      logger() << "\nm1/2: " << *Param["M12"] << EOM;
+      */
+
       // xsec veto
-      if (allProcessesVetoed) {
+      if (not eventsGenerated) {
         logger() << "This point was xsec vetoed." << EOM;
         result = 0.;
         return;
@@ -816,7 +843,7 @@ namespace Gambit
           SignalRegionData srData = analysisResults[analysis][SR];
 
           // Actual observed number of events
-          const int n_obs = (int) srData.n_observed;
+          const int n_obs = (int) round(srData.n_observed);
 
           // A contribution to the predicted number of events that is known exactly
           // (e.g. from data-driven background estimate)
@@ -824,19 +851,15 @@ namespace Gambit
 
           // A contribution to the predicted number of events that is not known exactly
           const double n_predicted_uncertain_b = srData.n_background;
-          const double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
+          const double n_predicted_uncertain_sb = srData.n_signal_at_lumi + srData.n_background;
 
-          // A fractional uncertainty on n_predicted_uncertain e.g. 0.2 from 20% uncertainty on efficencty wrt signal events
-          const double bkg_ratio = srData.background_sys/srData.n_background;
-          const double uncertainty_b = bkg_ratio;
+          // Relative error for n_predicted_uncertain
+          const double uncertainty_b = srData.background_sys/srData.n_background;
           const double uncertainty_sb = sqrt(srData.background_sys*srData.background_sys + srData.signal_sys*srData.signal_sys) / n_predicted_uncertain_sb;
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
-          // cout << "OBS " << n_obs << " EXACT " << n_predicted_exact
-          //      << " UNCERTAIN_B "   << n_predicted_uncertain_b  << " UNCERTAINTY_B "   << uncertainty_b
-          //      << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             llb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
@@ -851,7 +874,6 @@ namespace Gambit
             llb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
             llsb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          //cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
           // Calculate the expected dll and set the bestexp values for exp and obs dll if this one is the best so far
           const double dll_exp = llb_exp - llsb_exp; //< note positive dll convention -> more exclusion here
@@ -860,6 +882,18 @@ namespace Gambit
             bestexp_dll_obs = llb_obs - llsb_obs;
           }
 
+          /* The following was used for some final tests of ColliderBit:
+          logger() << endl;
+          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
+          logger() << "  LLikes (b_ex sb_ex b_obs sb_obs):" << endl;
+          logger() << "    " << llb_exp << " " << llsb_exp << " "
+                   << llb_obs << " " << llsb_obs << endl;
+          logger() << "  NEvents, not scaled to luminosity :" << endl;
+          logger() << "    " << srData.n_signal << endl;
+          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
+          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+          */
         } // end SR loop
 
         // Update the total obs dll
@@ -1782,9 +1816,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0); 
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1845,9 +1879,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0); 
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1908,9 +1942,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0); 
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1971,9 +2005,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0); 
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2034,9 +2068,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0); 
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2097,9 +2131,9 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0); 
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2164,10 +2198,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
@@ -2288,10 +2322,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
@@ -2403,7 +2437,7 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2483,7 +2517,7 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2569,7 +2603,7 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2654,7 +2688,7 @@ namespace Gambit
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2781,7 +2815,7 @@ namespace Gambit
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2886,7 +2920,7 @@ namespace Gambit
       const str snue = slhahelp::mass_es_from_gauge_es("~nu_e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snumu = slhahelp::mass_es_from_gauge_es("~nu_mu_L", mssm, tol, LOCAL_INFO, pt_error);
       const str snutau = slhahelp::mass_es_from_gauge_es("~nu_tau_L", mssm, tol, LOCAL_INFO, pt_error);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
       const double mass_char1 = spec->get(Par::Pole_Mass,1000024, 0);
       const double mass_char2 = spec->get(Par::Pole_Mass,1000037, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
@@ -2978,10 +3012,10 @@ namespace Gambit
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
       const DecayTable *decays = &(*Dep::decay_rates);
-      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0); 
-      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0); 
-      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0); 
-      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0); 
+      const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
+      const double mass_neut2 = spec->get(Par::Pole_Mass,1000023, 0);
+      const double mass_neut3 = spec->get(Par::Pole_Mass,1000025, 0);
+      const double mass_neut4 = spec->get(Par::Pole_Mass,1000035, 0);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit, totalBR;
@@ -3101,7 +3135,7 @@ namespace Gambit
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHHiggsProd raised error flag for LHC7: " << error << "."; 
+        err << "BEreq::FHHiggsProd raised error flag for LHC7: " << error << ".";
         invalid_point().raise(err.str());
       }
       for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC7[i] = prodxs(i+1);
@@ -3112,7 +3146,7 @@ namespace Gambit
       if (error != 0)
       {
         std::ostringstream err;
-        err << "BEreq::FHHiggsProd raised error flag for LHC8: " << error << "."; 
+        err << "BEreq::FHHiggsProd raised error flag for LHC8: " << error << ".";
         invalid_point().raise(err.str());
       }
       for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC8[i] = prodxs(i+1);

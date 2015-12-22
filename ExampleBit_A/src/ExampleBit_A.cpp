@@ -80,8 +80,9 @@ namespace Gambit
     void nevents_int(int &result)
     {
       result = (int) (*Pipes::nevents_int::Dep::nevents);
-      // Randomly raise some ficticious alarms about this point, with probability x.
-      double x = 0.5;
+      // Randomly raise some ficticious alarms about this point, with probability x,
+      // where x is given by the input yaml option or a default of 0.5.
+      double x = 1.0-Pipes::nevents_int::runOptions->getValueOrDef<double>(0.5, "probability_of_validity");
       if (Random::draw() < x)
       {
         //Example of how to raise an error from a module function.
@@ -220,13 +221,13 @@ namespace Gambit
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
-      //unsigned int nEvents = 20;         // Number of times to run the loop  //bjf> unused variable warning
 
       //There is basically just one thing available from the Loops namespace in loop managers like this one:
       //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered
       //                                                  set of nested functions, passing them the iteration_number.
 
       //A simple loop example without OpenMP.  Commented out for now.
+      //unsigned int nEvents = 20;       // Number of times to run the loop
       //for(unsigned long it = 0; it < nEvents; it++)
       //{
       //  cout << "This is iteration " << it+1 << " of " << nEvents << " being run by eventLoopManager." << endl;
@@ -242,7 +243,7 @@ namespace Gambit
       }
 
       // Start over again, just to demonstrate the reset function.  This just sets the Loop::done flag
-      // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves 
+      // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves
       // by re-running iteration zero again, unless you want them to just set Loop::done true again straight away.
       it = 0;
       Loop::reset();
@@ -253,7 +254,7 @@ namespace Gambit
       }
 
       //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
-      Loop::executeIteration(it++); 
+      Loop::executeIteration(it++);
 
     }
 
@@ -307,10 +308,10 @@ namespace Gambit
         else
         {
           // Add the latest event count to the total
-          accumulatedCounts += increment;              
+          accumulatedCounts += increment;
         }
         // Return the current total
-        result = accumulatedCounts;                    
+        result = accumulatedCounts;
       }
 
       // Print some diagnostic info
@@ -355,16 +356,16 @@ namespace Gambit
       // Passing farray to Fortran function
       double tmp = function_pointer(commonBlock->b);
       cout << "Returned value: " << tmp << endl;
-      
+
       // Example on how to pass an farray to a Fortran function that is declared to take Fdouble* instead of Farray< Fdouble,1,3>&
       // This should only be necessary in very special cases, where you need to pass arrays with different index ranges than those specified in the function.
       cout << "Calling doubleFuncArray2 with commonblock element b as argument..." << endl;
       tmp = BEreq::libFarrayTest_doubleFuncArray2(&(commonBlock->b.array[0]));
       cout << "Returned value: " << tmp << endl;
-      
+
       cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
       BEreq::libFarrayTest_fptrRoutine(commonBlock->b,commonBlock->c,byVal(function_pointer));
-      // Note: byVal is necessary to convert lvalue to rvalue      
+      // Note: byVal is necessary to convert lvalue to rvalue
       // If we instead pass BEreq::libFarrayTest_doubleFuncArray2.pointer() directly, byVal is not necessary
       //cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
       //BEreq::libFarrayTest_fptrRoutine(commonBlock->b.array,commonBlock->c,BEreq::libFarrayTest_doubleFuncArray2.pointer());
@@ -374,35 +375,35 @@ namespace Gambit
       arr(1,2) = 12;
       arr(1,3) = 13;
       arr(2,2) = 22;
-      arr(2,3) = 23;       
+      arr(2,3) = 23;
       tmp = BEreq::libFarrayTest_doubleFuncArray3(arr);
       cout << "Return value: " << tmp << endl << endl;
 
       cout << "Playing around with commmonBlock2:" << endl;
-      
-      cout << "Reading charb(3) with and without trailing spaces. Result:" << endl;
-      std::string trail   = commonBlock2->charb(3).str();    
-      std::string noTrail = commonBlock2->charb(3).trimmed_str();
-      cout << trail   << "<-- string ends here" << endl;        
-      cout << noTrail << "<-- string ends here" << endl << endl; 
 
-      cout << "Reading the elements of charc from c++:" << endl;   
-      cout << "(1,-1):" << commonBlock2->charc(1,-1).trimmed_str() << "  (1,0):" << commonBlock2->charc(1,0).trimmed_str() << endl;  
+      cout << "Reading charb(3) with and without trailing spaces. Result:" << endl;
+      std::string trail   = commonBlock2->charb(3).str();
+      std::string noTrail = commonBlock2->charb(3).trimmed_str();
+      cout << trail   << "<-- string ends here" << endl;
+      cout << noTrail << "<-- string ends here" << endl << endl;
+
+      cout << "Reading the elements of charc from c++:" << endl;
+      cout << "(1,-1):" << commonBlock2->charc(1,-1).trimmed_str() << "  (1,0):" << commonBlock2->charc(1,0).trimmed_str() << endl;
       cout << "(2,-1):" << commonBlock2->charc(2,-1).trimmed_str() << "  (2,0):" << commonBlock2->charc(2,0).trimmed_str() << endl << endl;
-       
+
       cout << "Setting charc(2,0) = chara." << endl;
       commonBlock2->charc(2,0)=commonBlock2->chara;
       cout << "Setting charc(1,-1) = \"WIN!567\", which will be truncated." << endl;
-      commonBlock2->charc(1,-1) = "WIN!567";      
-      cout << "Setting charb(1) = \"ha!\"." << endl;      
+      commonBlock2->charc(1,-1) = "WIN!567";
+      cout << "Setting charb(1) = \"ha!\"." << endl;
       commonBlock2->charb(1) = "ha!";
-      cout << "Setting charb(2) = chara." << endl;      
+      cout << "Setting charb(2) = chara." << endl;
       commonBlock2->charb(2) = commonBlock2->chara;
-            
-      cout << "Calling printStuff..." << endl;
-      BEreq::libFarrayTest_printStuff();      
 
-      cout << "Getting value of e:" << endl;      
+      cout << "Calling printStuff..." << endl;
+      BEreq::libFarrayTest_printStuff();
+
+      cout << "Getting value of e:" << endl;
       cout << commonBlock2->e << endl << endl;
 
       cout << "Reading complex numbers from Fortran: " << commonBlock3->cpa.re << " + " << commonBlock3->cpa.im << "i" << endl;
@@ -504,7 +505,7 @@ namespace Gambit
       double test3 = BEreq::example_be_array_3D(&arr3D[0]);
       cout << "TEST 3 in array_test: " << test3 << endl;
       result = test3;
-    } 
+    }
 
 
     /// @}

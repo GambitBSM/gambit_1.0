@@ -430,7 +430,7 @@ def copyFilesToSourceTree(verbose=False):
 
 # ====== parseFactoryFunctionFiles ========
 
-# Parse the factory function source files using gccxml.
+# Parse the factory function source files using castxml.
 # The harvested information will later be used to 
 # generate the file loaded_types.hpp
 
@@ -446,7 +446,7 @@ def parseFactoryFunctionFiles():
         factory_source_dir, factory_source_fname = os.path.split( gb.class_factory_file_dict[class_name['long_templ']] )
         factory_source_path = os.path.join(cfg.source_path, factory_source_fname)
 
-        # Construct file name for xml file produced by gccxml
+        # Construct file name for xml file produced by castxml
         xml_output_path = os.path.join(gb.boss_temp_dir, 'tempfile_' + str(i) + '_' + factory_source_fname.replace('.','_') + '.xml' )
 
         # List all include paths
@@ -456,9 +456,9 @@ def parseFactoryFunctionFiles():
         timeout = 20.
         poll = 0.2
 
-        # Run gccxml
+        # Run castxml
         try:
-            utils.gccxmlRunner(factory_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
+            utils.castxmlRunner(factory_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
         except:
             raise
 
@@ -518,7 +518,7 @@ def createLoadedTypesHeader(factory_xml_files_dict):
 
 # ====== parseFunctionSourceFiles ========
 
-# Parse the global function source files using gccxml.
+# Parse the global function source files using castxml.
 # The harvested information will later be used to 
 # generate the GAMBIT frontend header file.
 
@@ -535,7 +535,7 @@ def parseFunctionSourceFiles():
         function_source_path = os.path.join(cfg.source_path, function_source_fname)
 
 
-        # Construct file name for xml file produced by gccxml
+        # Construct file name for xml file produced by castxml
         xml_output_path = os.path.join(gb.boss_temp_dir, function_source_path.replace('/','_').replace('.','_') + '.xml' )
 
         # List all include paths
@@ -545,9 +545,9 @@ def parseFunctionSourceFiles():
         timeout = 20.
         poll = 0.2
 
-        # Run gccxml
+        # Run castxml
         try:
-            utils.gccxmlRunner(function_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
+            utils.castxmlRunner(function_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
         except:
             raise
 
