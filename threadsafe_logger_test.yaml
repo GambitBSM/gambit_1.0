@@ -71,6 +71,8 @@ Logger:
 KeyValues:
 
   signal_handling:
+    SIGINT : "emergency_shutdown_longjmp"    # default: emergency_shutdown
+    SIGTERM: "emergency_shutdown_longjmp"    # default: emergency_shutdown
     ignore_signals_during_shutdown: true #default: true
 
   #default_output_path: "runs/threadsafe_logger_test/"

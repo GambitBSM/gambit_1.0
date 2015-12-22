@@ -119,8 +119,8 @@ int main(int argc, char* argv[])
     logger() << core << "Setting up signal handling" << std::endl;
     YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
     signaldata().set_cleanup(&do_cleanup); // Call this function during emergency shutdown
-    set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown");
-    set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown");
+    set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown_longjmp");
+    set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown_longjmp");
     set_signal_handler(keyvalnode, SIGUSR1, "soft_shutdown");
     set_signal_handler(keyvalnode, SIGUSR2, "soft_shutdown");
 
