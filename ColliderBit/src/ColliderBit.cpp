@@ -123,7 +123,7 @@ namespace Gambit
       // @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
-      // Nicely ask the entire loop to stfu
+      // Nicely ask the entire loop to be quiet
       std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
@@ -145,14 +145,14 @@ namespace Gambit
           {
             Loop::executeIteration(START_SUBPROCESS);
             // main event loop
-            while(currentEvent<nEvents) {
-              if(not *Loop::done) Loop::executeIteration(currentEvent++);
+            while(currentEvent<nEvents and not *Loop::done) {
+              Loop::executeIteration(currentEvent++);
             }
             Loop::executeIteration(END_SUBPROCESS);
           }
         }
       }
-      // Nicely thank the loop for stfu, and restore everyone's vocal cords
+      // Nicely thank the loop for being quiet, and restore everyone's vocal cords
       std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
     }
@@ -171,7 +171,7 @@ namespace Gambit
       static SLHAstruct spectrum;
       // variables for xsec veto
       std::stringstream processLevelOutput;
-      std::string _junk, line;
+      std::string _junk, readline;
       std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
@@ -257,8 +257,8 @@ namespace Gambit
           code = -1;
           totalxsec = 0.;
           while(true) {
-            std::getline(processLevelOutput, line);
-            issPtr = new std::istringstream(line);
+            std::getline(processLevelOutput, readline);
+            issPtr = new std::istringstream(readline);
             issPtr->seekg(47, issPtr->beg);
             (*issPtr) >> code;
             if (!issPtr->good() && totalxsec > 0.) break;
@@ -286,7 +286,7 @@ namespace Gambit
       static unsigned int fileCounter = -1;
       // variables for xsec veto
       std::stringstream processLevelOutput;
-      std::string _junk, line;
+      std::string _junk, readline;
       std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
@@ -355,8 +355,8 @@ namespace Gambit
           code = -1;
           totalxsec = 0.;
           while(true) {
-            std::getline(processLevelOutput, line);
-            issPtr = new std::istringstream(line);
+            std::getline(processLevelOutput, readline);
+            issPtr = new std::istringstream(readline);
             issPtr->seekg(47, issPtr->beg);
             (*issPtr) >> code;
             if (!issPtr->good() && totalxsec > 0.) break;

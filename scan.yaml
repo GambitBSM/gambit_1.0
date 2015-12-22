@@ -2,26 +2,26 @@
 # Only needs example modules ExampleBit_A and ExampleBit_B,
 # plus example backends libfirst and libFortran.
 #
-# To use this you'll need to 
+# To use this you'll need to
 # make
 # make libfirst
 # make libfortran
 #
 # Don't commit modified versions of this file!
-# If you want to change it in order to test 
-# your own modifications to the code, copy 
-# it to spartan_personal.yaml, which will be 
+# If you want to change it in order to test
+# your own modifications to the code, copy
+# it to spartan_personal.yaml, which will be
 # ignored by git.
 #
 # Pat Scott <p.scott@imperial.ac.uk>
 # Oct 2014
 #
- 
+
 ###################################
 # Input parameter declarations
 ###################################
 
-Parameters: 
+Parameters:
 
 
 
@@ -32,8 +32,8 @@ Parameters:
 Priors:
 
   # Here specify the priors, the parameters they work with, and any options as needed for that prior
-  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
-  # and then they are combined into a "composite" prior 
+  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above),
+  # and then they are combined into a "composite" prior
 
 ##############################
 # Printer setup
@@ -49,7 +49,7 @@ Printer:
   # This options node is passed on wholesale to
   # the printer object; required options may
   # therefore vary according to the selected
-  # printer. 
+  # printer.
   options:
     # name of output file
     #output_file: "runs/spartan/samples/gambit_output2.txt"
@@ -77,64 +77,64 @@ Scanner:
   #gnest, bin_grid_greg
 
   scanners:
-  
+
     twalk:
       plugin: twalk
       options:
         tolerance: 1.001
         #chain_number: 20
         projection_dimension: 4
-        
+
     de:
       plugin: Diver
-      like: Likelihood
+      like: LogLike
       NP: 1000
       path: "runs"
       verbosity: 1
       aux_printer_txt_options:
-      
+
     random:
       plugin: random_sampler
       options:
         point_number: 100000000
-        like: Likelihood
-          
+        like: LogLike
+
     toy:
-      purpose: Likelihood
+      like: LogLike
       plugin: toy_mcmc
       #plugin_path: /home/gmartine/libsample.so
-          
+
     square_grid:
       plugin: square_grid
       version: ">=1.0"
       options:
-        purpose: Likelihood
+        like: LogLike
         grid_pts: 3 #NxN grid
-        
+
     grid:
       plugin: grid
       version: ">=1.0"
       options:
-        purpose: Likelihood
+        like: LogLike
         grid_pts: [4, 2]
-        
+
     multinest:
       plugin: MultiNest
       options:
-        like:  Likelihood
+        like:  LogLike
         nlive: 2000
         tol: 0.1
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
-          
+
     gnest:
       plugin: gnest
       options:
         file_name: "output_file"
-        like_purpose: Likelihood
+        like: LogLike
         live_number: 2000
-          
+
     bin_grid:
       plugin: bin_grid
       options:
@@ -146,7 +146,7 @@ Scanner:
         selected_pts: [2, 3]
         mult: 5
         flags: ["linear"]
-        
+
     bin_grid_greg:
       plugin: bin_grid
       options:
@@ -158,9 +158,9 @@ Scanner:
         selected_pts: [0, 1]
         mult: 0
         flags: ["linear"]
-        
+
 ##########################################
-    
+
     hdf5:
       plugin: bin_grid
       options:
@@ -174,17 +174,17 @@ Scanner:
         #xrange: [-5, 5]
         #yrange: [-5, 5]
         grid: [50, 50]
-        selected_pts: 
+        selected_pts:
           - "EggBox::param_0"
           - "EggBox::param_1"
-        #selected_pts: 
+        #selected_pts:
         #  - "gaussian::param_0"
         #  - "gaussian::param_1"
         mult: ["mult"]
         #loglike: 1
         flags: ["linear"]
         #flags: ["linear", "noadjx", "logx"]
-        
+
     gal_0:
       plugin: bin_grid
       options:
@@ -199,7 +199,7 @@ Scanner:
         loglike: 1
         flags: ["linear"]
         #flags: ["linear", "noadjx", "logx"]
-        
+
     gal_1:
       plugin: bin_grid
       options:
@@ -298,7 +298,7 @@ Scanner:
         loglike: 1
         flags: ["linear"]
         #flags: ["linear", "noadjx", "logx"]
-        
+
     find_shift:
       plugin: find_shift
       options:
@@ -319,7 +319,7 @@ Scanner:
         opt: "median"
         labels: [M, x0, y0, vx, vy, vz, R0, Omega, omega, i, P, T0, e]
         joints: [[0, 6], [1, 2], [3, 4], [0, 3], [0, 4], [0, 1], [0, 2], [6, 3], [6, 4], [6, 1], [6, 2]]
-        
+
     find_kernel:
       plugin: find_kernel
       options:
@@ -334,12 +334,12 @@ Scanner:
         #output_file: "average_output.txt"
         main_file: "outputm.z"
         output_file: "combined_output.z"
-    
+
   objectives:
-  
+
     object_detection:
       plugin: object_detection
-      purpose: Likelihood
+      purpose: LogLike
       options:
         psf_file: "/home/gmartine/fits/c0052_psf_grid.fits"
         image_file: "/home/gmartine/fits/c0052.fits"
@@ -352,9 +352,9 @@ Scanner:
           range: [200, 800]
         #intensity:
         #  range: [0, 10000]
-  
+
     uniform:
-      purpose: Likelihood
+      purpose: LogLike
       plugin: uniform
       version: ">=1.0 & <2.0"
       options:
@@ -362,19 +362,19 @@ Scanner:
       parameters:
         param...2:
           range: [1, 2]
-        
+
     uniform_prior:
       plugin: flat_prior
-      purpose: Likelihood
+      purpose: LogLike
       options:
         range: [2, 1]
       parameters:
         param...2:
           range: [1, 2]
-          
+
     EggBox:
       plugin: EggBox
-      purpose: Likelihood
+      purpose: LogLike
       options:
         Printer:
           printer: ascii
@@ -383,10 +383,10 @@ Scanner:
       parameters:
         param...2:
           range: [0, 1]
-          
+
     gaussian:
       plugin: gaussian
-      purpose: Likelihood
+      purpose: LogLike
       #options:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
@@ -397,27 +397,27 @@ Scanner:
         #  shift: -1
         param...10:
           range: [-5, 5]
-      
+
     test:
       plugin: test_plug
       #plugin_path: /home/gmartine/test.so
-        
+
   #parameters:
     #uniform:
       #param...2:
         #range: [1, 2]
-        
+
   #priors:
     #flat_prior:
       #parameters: [uniform::param...2]
       #prior_type: plugin
       #options:
         #plugin: uniform_prior
-    #m12_prior: 
+    #m12_prior:
       #parameters: [uniform::param...2]
       #prior_type: composite
-      #options: 
-        #new_prior: 
+      #options:
+        #new_prior:
           #parameters: [uniform::param_0]
           #prior_type: flat
           #range: [10,20]
@@ -425,7 +425,7 @@ Scanner:
           #parameters: [uniform::param_1]
           #prior_type: flat
           #range: [10,20]
-            
+
 ###############################
 # Observables of interest
 ###############################
@@ -434,7 +434,7 @@ ObsLikes:
 
 
   ## Test CMSSM_I, ExampleBit_A and ExampleBit_B
-  #- purpose:      Likelihood
+  #- purpose:      LogLike
     #capability:   lnL_ExampleBitB
     #type:         double
     #function:     ""
@@ -445,7 +445,7 @@ ObsLikes:
     #capability:   ptrmeth_arr_tester
 
   ## Test loop manager
-  #- purpose:      Likelihood
+  #- purpose:      LogLike
     #capability:   nevents_like
     #type:         double
 
@@ -463,7 +463,7 @@ Rules:
 
   - capability:   "LibFirst_1_1_init"
     dependencies:
-    - {capability: "nevents", module: "ExampleBit_A"}  
+    - {capability: "nevents", module: "ExampleBit_A"}
 
   - capability:    "nevents_postcuts"
     dependencies:
@@ -489,7 +489,7 @@ Rules:
 Logger:
 
   # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Can redirect to stdout or stderr by specifying these as the "filenames".
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
