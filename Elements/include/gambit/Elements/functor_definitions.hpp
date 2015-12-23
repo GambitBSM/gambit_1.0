@@ -102,7 +102,6 @@ namespace Gambit
           this->startTiming(thread_num);             //Begin timing function evaluation
           try
           {
-<<<<<<< HEAD
             this->myFunction(myValue[thread_num]);   //Run and place result in the appropriate slot in myValue
           }
           catch (invalid_point_exception& e)
@@ -116,11 +115,6 @@ namespace Gambit
           }
           this->finishTiming(thread_num);            //Stop timing function evaluation
           logger().leaving_module();
-=======
-            this->finishTiming(thread_num);        //Stop timing function evaluation
-            throw(e);
-          }
->>>>>>> master
         }
         check_for_shutdown_signal();
       }
@@ -130,7 +124,7 @@ namespace Gambit
       }
     }
 
-    // Initialise the memory of this functor.
+    /// Initialise the memory of this functor.
     template <typename TYPE>
     void module_functor<TYPE>::init_memory()
     {
