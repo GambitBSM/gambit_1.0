@@ -250,7 +250,7 @@ namespace Gambit
       }
 
       //A simple loop example using OpenMP
-      int it = 0;
+      unsigned int it = 0;
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
