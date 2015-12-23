@@ -225,11 +225,13 @@ namespace Gambit
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
+      unsigned int nEvents = 200;         // Number of times to run the loop
 
-      //unsigned int nEvents = 200;         // Number of times to run the loop
-      //There is basically just one thing available from the Loops namespace in loop managers like this one:
+      //There are three things available from the Loops namespace in loop managers like this one:
       //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered
       //                                                  set of nested functions, passing them the iteration_number.
+      //  Loop::done -- boolean flag indicating if the loop should terminate or not
+      //  Loop::reset() -- reset the 'done' flag
 
       //A simple loop example without OpenMP.  Commented out for now.
       //unsigned int nEvents = 20;       // Number of times to run the loop
@@ -268,7 +270,8 @@ namespace Gambit
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done and it<nEvents) { Loop::executeIteration(it++); }
+        while(not *Loop::done and it<nEvents and not piped_errors.inquire())
+        { Loop::executeIteration(it++); }
       }
 
       //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
