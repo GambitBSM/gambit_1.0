@@ -546,7 +546,7 @@ namespace Gambit
       runtime_average          (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
       fadeRate                 (FUNCTORS_FADE_RATE),              // can be set individually for each functor
       pInvalidation            (FUNCTORS_BASE_INVALIDATION_RATE),
-      needs_recalculating      (NULL), 
+      needs_recalculating      (NULL),
       already_printed          (NULL),
       already_printed_timing   (NULL),
       iCanManageLoops          (false),
@@ -582,7 +582,7 @@ namespace Gambit
     {
       if (start != NULL)                  delete [] start;
       if (end != NULL)                    delete [] end;
-      if (needs_recalculating != NULL)    delete [] needs_recalculating;      
+      if (needs_recalculating != NULL)    delete [] needs_recalculating;
       if (already_printed != NULL)        delete [] already_printed;
       if (already_printed_timing != NULL) delete [] already_printed_timing;
       if (myCurrentIteration != NULL)     delete [] myCurrentIteration;
@@ -628,7 +628,7 @@ namespace Gambit
     {
       #pragma omp atomic
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
-      if (f==NULL) f = this; 
+      if (f==NULL) f = this;
       #pragma omp critical (raised_point_exception)
       {
         e.set_thrower(f);
@@ -699,13 +699,13 @@ namespace Gambit
           (*it)->setIteration(iteration);     // Tell the nested functor what iteration this is.
           try
           {
-            (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off       
+            (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off
           }
           catch (invalid_point_exception& e)
           {
             acknowledgeInvalidation(e,*it);
             if (omp_get_level()==0) throw(e); // If not in an OpenMP parallel block, inform of invalidation and throw onwards
-          }  
+          }
         }
       }
     }
@@ -720,9 +720,9 @@ namespace Gambit
           if(myCurrentIteration==NULL)  // Check again in case two threads managed to get this far in sequence.
           {
             // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
-            int nslots = (iRunNested ? globlMaxThreads : 1); 
+            int nslots = (iRunNested ? globlMaxThreads : 1);
             // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
-            myCurrentIteration = new int[nslots];            
+            myCurrentIteration = new int[nslots];
             // Zero them to start off
             std::fill(myCurrentIteration, myCurrentIteration+nslots, 0);
           }
@@ -1180,7 +1180,7 @@ namespace Gambit
     {
       // Add the rule.
       required_classloading_backends[be].insert(ver);
-      // Add a dependency on the backend's initialisation function. 
+      // Add a dependency on the backend's initialisation function.
       sspair be_ini_quantity(be + "_" + safe_ver + "_init", "void");
       if (std::find(myDependencies.begin(), myDependencies.end(), be_ini_quantity) == myDependencies.end())
       {

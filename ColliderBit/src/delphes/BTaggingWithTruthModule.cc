@@ -104,12 +104,14 @@ void BTaggingWithTruth::Init()
   param = GetParam("EfficiencyFormula");
   size = param.GetSize();
 
+  // for(i = 0; i < size; ++i)
+  //   std::cout << "BTAG: i=" << i << " => param = " << param[i].GetString() << std::endl;
+
   fEfficiencyMap.clear();
   for(i = 0; i < size/2; ++i)
     {
       formula = new DelphesFormula;
       formula->Compile(param[i*2 + 1].GetString());
-
       fEfficiencyMap[param[i*2].GetInt()] = formula;
     }
 
@@ -119,7 +121,6 @@ void BTaggingWithTruth::Init()
     {
       formula = new DelphesFormula;
       formula->Compile("0.0");
-
       fEfficiencyMap[0] = formula;
     }
 
@@ -185,13 +186,14 @@ void BTaggingWithTruth::Process()
     //UNUSED: bool foundB = false;
     while ((parton = static_cast<Candidate*>(itPartonArray.Next()))) {
       pdgCode = abs(parton->PID);
+       /// @note Do a silly dance with gluons because we're using the "highest" PID to define the tagging eff, and 21 is inconveniently large!
       if (pdgCode == 21) pdgCode = 0;
       if (jetMomentum.DeltaR(parton->Momentum) <= fDeltaR) {
         if (pdgCodeMax < pdgCode) pdgCodeMax = pdgCode;
         //UNUSED: if (abs(pdgCode) == 5) foundB = true;
       }
     }
-    if (pdgCodeMax == 0) pdgCodeMax = 21;
+    if (pdgCodeMax == 0) pdgCodeMax = 21; ///< The max-|PID| dance is over; we can relax
     if (pdgCodeMax == -1) pdgCodeMax = 0;
     // debugging:
     //if(foundB)cout << "FOUNDB" << endl;
@@ -203,7 +205,7 @@ void BTaggingWithTruth::Process()
     formula = itEfficiencyMap->second;
     //cout << "pdg id code max" << pdgCodeMax << endl;
     // apply an efficency formula
-    jet->BTag |= (gRandom->Uniform() <= formula->Eval(pt, eta)) << fBitNumber;
+    jet->BTag |= (gRandom->Uniform() <= formula->Eval(pt, eta)) << fBitNumber; /// @todo WTF?!
     // remember the PID of "pdgCodeMax" used to choose the efficiency formula
     jet->PID = pdgCodeMax;
   }

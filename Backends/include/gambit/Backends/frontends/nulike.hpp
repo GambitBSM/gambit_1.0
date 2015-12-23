@@ -19,11 +19,7 @@
 ///
 ///  *********************************************
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME nulike
-#endif
+#define BACKENDNAME nulike
 #define VERSION 1.0.0
 #define SAFE_VERSION 1_0_0
 

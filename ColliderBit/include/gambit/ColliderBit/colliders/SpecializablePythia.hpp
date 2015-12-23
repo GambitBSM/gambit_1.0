@@ -12,6 +12,7 @@ namespace Gambit {
       //@{
       protected:
         Pythia8::Pythia* _pythiaInstance;
+        Pythia8::Pythia* _pythiaBase;
       public:
         const Pythia8::Pythia* pythia() const { return _pythiaInstance; }
       //@}
@@ -41,7 +42,7 @@ namespace Gambit {
       /// @name Construction, Destruction, and Recycling
       //@{
       public:
-        SpecializablePythia() : _pythiaInstance(nullptr) { }
+        SpecializablePythia() : _pythiaInstance(nullptr), _pythiaBase(nullptr) { }
         ~SpecializablePythia() { _pythiaSettings.clear(); delete _pythiaInstance; }
         void clear() { _pythiaSettings.clear(); delete _pythiaInstance; _pythiaInstance=nullptr; }
       //@}

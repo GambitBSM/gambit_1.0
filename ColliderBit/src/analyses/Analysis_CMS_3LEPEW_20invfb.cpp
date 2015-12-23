@@ -2,6 +2,7 @@
 #include <cmath>
 #include <memory>
 #include <iomanip>
+#include <sstream>
 
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
@@ -365,6 +366,7 @@ namespace Gambit {
 
       void collect_results() {
 
+        std::ostringstream *convert;
         // TODO: Need to add all of the signal region results here
 
 	//First do the 3l with OSSF pair results (no tau)
@@ -391,6 +393,12 @@ namespace Gambit {
 
 	for(int region=0; region<12;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_highmt[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_highmt[region]);
 	  results_tmp.set_background(background_highmt[region]);
 	  results_tmp.set_backgroundsys(err_highmt[region]);
@@ -421,6 +429,12 @@ namespace Gambit {
 
 	for(int region=0; region<12;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_medmt[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_medmt[region]);
 	  results_tmp.set_background(background_medmt[region]);
 	  results_tmp.set_backgroundsys(err_medmt[region]);
@@ -450,6 +464,12 @@ namespace Gambit {
 
 	for(int region=0; region<12;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_lowmt[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_lowmt[region]);
 	  results_tmp.set_background(background_lowmt[region]);
 	  results_tmp.set_backgroundsys(err_lowmt[region]);
@@ -477,6 +497,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_highmt_osof[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_highmt_osof[region]);
 	  results_tmp.set_background(background_highmt_osof[region]);
 	  results_tmp.set_backgroundsys(err_highmt_osof[region]);
@@ -502,6 +528,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_medmt_osof[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_medmt_osof[region]);
 	  results_tmp.set_background(background_medmt_osof[region]);
 	  results_tmp.set_backgroundsys(err_medmt_osof[region]);
@@ -527,6 +559,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_lowmt_osof[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_lowmt_osof[region]);
 	  results_tmp.set_background(background_lowmt_osof[region]);
 	  results_tmp.set_backgroundsys(err_lowmt_osof[region]);
@@ -553,6 +591,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_highmt_ss1tau[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_highmt_ss1tau[region]);
 	  results_tmp.set_background(background_highmt_ss1tau[region]);
 	  results_tmp.set_backgroundsys(err_highmt_ss1tau[region]);
@@ -578,6 +622,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_medmt_ss1tau[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_medmt_ss1tau[region]);
 	  results_tmp.set_background(background_medmt_ss1tau[region]);
 	  results_tmp.set_backgroundsys(err_medmt_ss1tau[region]);
@@ -604,6 +654,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_lowmt_ss1tau[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_lowmt_ss1tau[region]);
 	  results_tmp.set_background(background_lowmt_ss1tau[region]);
 	  results_tmp.set_backgroundsys(err_lowmt_ss1tau[region]);
@@ -631,6 +687,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_highmt_osof1tau[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_highmt_osof1tau[region]);
 	  results_tmp.set_background(background_highmt_osof1tau[region]);
 	  results_tmp.set_backgroundsys(err_highmt_osof1tau[region]);
@@ -656,6 +718,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_medmt_osof1tau[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_medmt_osof1tau[region]);
 	  results_tmp.set_background(background_medmt_osof1tau[region]);
 	  results_tmp.set_backgroundsys(err_medmt_osof1tau[region]);
@@ -682,6 +750,12 @@ namespace Gambit {
 
 	for(int region=0; region<8;region++){
 	  SignalRegionData results_tmp;
+          convert = new std::ostringstream();
+
+	  results_tmp.set_analysis_name("Analysis_CMS_3LEPEW_20invfb");
+          (*convert) << regions_lowmt_osof1tau[region];
+	  results_tmp.set_sr_label(convert->str());
+          delete convert;
 	  results_tmp.set_observation(observed_lowmt_osof1tau[region]);
 	  results_tmp.set_background(background_lowmt_osof1tau[region]);
 	  results_tmp.set_backgroundsys(err_lowmt_osof1tau[region]);

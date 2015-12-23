@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 from collections import OrderedDict
 from operator import itemgetter
 import os
+import sys
 import warnings
 import subprocess
 import copy
@@ -111,7 +112,7 @@ def isFundamental(el):
 
 # ====== isKnownClass ========
 
-def isKnownClass(el):
+def isKnownClass(el, class_name=None):
 
     import modules.classutils as classutils
     
@@ -125,9 +126,18 @@ def isKnownClass(el):
         is_known = False
         return is_known
 
-    class_name = classutils.getClassNameDict(type_el) 
+    # Get class_name dict if it is not passed in as an argument
+    if class_name is None:
+        class_name = classutils.getClassNameDict(type_el) 
 
-    if class_name['long_templ'] in cfg.known_classes:
+    # Check if standard library class
+    if isStdType(el, class_name=class_name):
+        is_known = True
+        return is_known
+
+    # Check if listed among the user-specified known types
+    full_name = class_name['long_templ']
+    if (full_name in cfg.known_classes) or (full_name.replace(' ','') in cfg.known_classes):
         is_known = True
 
     return is_known
@@ -202,6 +212,8 @@ def isNative(el):
                       'Field', 'File', 'Function', 'Method', 'OperatorFunction', 
                       'OperatorMethod', 'Struct', 'Typedef', 'Union', 'Variable']
 
+    cannot_check_tags = ['Unimplemented']
+
     if el.tag == 'FundamentalType':
         is_native = False
 
@@ -220,6 +232,9 @@ def isNative(el):
                 is_native = True
                 break
 
+    elif el.tag in cannot_check_tags:
+        pass
+
     else:
         raise Exception('Cannot check whether XML element with id="%s" and tag "%s" is native.' % (el.get('id'), el.tag))
 
@@ -231,7 +246,7 @@ def isNative(el):
 
 # ====== isStdType ========
 
-def isStdType(el):
+def isStdType(el, class_name=None):
 
     # Makes use of global variables:  accepted_paths
 
@@ -240,11 +255,17 @@ def isStdType(el):
 
     if el.tag in can_check_tags:
 
-        if 'demangled' in el.keys():
-            demangled_name = el.get('demangled')
-            if demangled_name[0:5] == 'std::':
-                is_std = True
+        # Use the optional class_name dict?
+        if class_name is not None:
+            if len(class_name['long_templ']) >= 5:
+                if class_name['long_templ'][0:5] == 'std::':
+                    is_std = True
 
+        elif 'name' in el.keys():
+            namespaces_list = getNamespaces(el, include_self=True)
+            if namespaces_list[0] == 'std':
+                is_std = True
+    
     else:
         is_std = False
 
@@ -348,7 +369,8 @@ def getSpecTemplateTypes(input_type, byname=False):
         if el.tag in ['Class', 'Struct']:
             input_name = el.get('name')
         elif el.tag in ['Function', 'Method', 'OperatorMethod', 'OperatorFunction']:
-            input_name = el.get('demangled')
+            namespaces_list = getNamespaces(el, include_self=True)
+            input_name = '::'.join(namespaces_list)
         else:
             raise Exception("Don't know how to get template types from XML element with tag: %s" % el.tag)
 
@@ -436,7 +458,7 @@ def getBasicTypeName(type_name):
     # If type name contains a template brackets
     if '<' in type_name:
         type_name_notempl, templ_bracket = removeTemplateBracket(type_name, return_bracket=True)
-        before_bracket, after_bracket = type_name.split(templ_bracket)
+        before_bracket, after_bracket = type_name.rsplit(templ_bracket,1)
 
         if (len(after_bracket) > 0) and (after_bracket[0] == ' '):
             space_after_bracket = True
@@ -814,7 +836,7 @@ def addIndentation(content, indent):
 
 # ====== getNamespaces ========
 
-def getNamespaces(xml_el, include_self=False):
+def getNamespaces(xml_el, include_self=False, xml_file_name=''):
 
     namespaces = []
 
@@ -827,13 +849,19 @@ def getNamespaces(xml_el, include_self=False):
     current_xml_el = xml_el
     while 'context' in current_xml_el.keys():
         context_id = current_xml_el.get('context')
-        context_xml_el = gb.id_dict[context_id]
+        if xml_file_name == '':
+            context_xml_el = gb.id_dict[context_id]
+        else:
+            context_xml_el = gb.all_id_dict[xml_file_name][context_id]
 
-        if 'name' in current_xml_el.keys():
+        # if 'name' in current_xml_el.keys():
+        if 'name' in context_xml_el.keys():
             context_name = context_xml_el.get('name')
             namespaces.append(context_name)
+            # print "HERE2: Appended name: ", context_name, context_xml_el.get("id") 
         else:
             break
+            #continue
 
         current_xml_el = context_xml_el
 
@@ -973,8 +1001,9 @@ def isAcceptedType(input_el):
 
 
     if type_el.tag in ['Class', 'Struct']:
-        demangled_name = type_el.get('demangled')
-        if demangled_name in gb.accepted_types:
+        namespaces_list = getNamespaces(type_el, include_self=True)
+        full_name = '::'.join(namespaces_list)
+        if (full_name in gb.accepted_types) or (full_name.replace(' ','') in gb.accepted_types):
             is_accepted_type = True
 
     elif type_el.tag in ['FundamentalType', 'Enumeration']:
@@ -995,31 +1024,45 @@ def isAcceptedType(input_el):
 
 # ====== isLoadedClass ========
 
-def isLoadedClass(input_type, byname=False):
+def isLoadedClass(input_type, byname=False, class_name=None):
 
     is_loaded_class = False
 
-    if byname:
-        type_name = input_type
+    # If the class_name dict is passed as an argument, use it.
+    if class_name is not None:
 
-        # Remove '*' and '&'
-        type_name = type_name.replace('*','').replace('&','')
-
-        # Remove template bracket
-        type_name = type_name.split('<')[0]
-
-        # Check against cfg.loaded_classes
-        if type_name in cfg.loaded_classes:
+        if class_name['long_templ'] in cfg.loaded_classes:
             is_loaded_class = True
 
     else:
-        type_dict = findType(input_type)
-        type_el = type_dict['el']
 
-        if type_el.tag in ['Class', 'Struct']:
-            demangled_name = type_el.get('demangled')
-            if demangled_name in cfg.loaded_classes:
+        if byname:
+            type_name = input_type
+
+            # Remove '*' and '&'
+            type_name = type_name.replace('*','').replace('&','')
+
+            # Remove template bracket
+            type_name = type_name.split('<')[0]
+
+            # Check against cfg.loaded_classes
+            if type_name in cfg.loaded_classes:
                 is_loaded_class = True
+
+        else:
+            type_dict = findType(input_type)
+            type_el = type_dict['el']
+
+            if type_el.tag in ['Class', 'Struct']:
+
+                if type_dict['name'] in cfg.loaded_classes:
+                    is_loaded_class = True
+
+                # namespaces_list = getNamespaces(type_el, include_self=True)
+                # full_name = '::'.join(namespaces_list)
+                # if full_name in cfg.loaded_classes:
+                #     is_loaded_class = True
+
 
     return is_loaded_class
 
@@ -1782,8 +1825,16 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                 # found in the current file (above current class/function) or among the included headers. If no such class 
                 # definition is found, it must be a case of simply using forward declaration.
 
+                # TODO: Why isn't it enough just to check for the 'incomplete' key in the type_el? 
+                #       Need to check this again...
+
                 type_file_id = type_el.get('file')
                 type_line_number = int(type_el.get('line'))
+
+                if ('incomplete' in type_el.keys() and type_el.get('incomplete')=='1'):
+                    is_incomplete = True
+                else:
+                    is_incomplete = False
 
                 if (type_file_id in included_headers_dict.values()) :
                     type_definition_found = True
@@ -1797,13 +1848,30 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                     continue
 
                 elif (type_definition_found) and (forward_declared=='only'):
-                    # This must be a case of a type that *is* fully declared, so we ignore it if only_forward:declared=True.
+                    # This must be a case of a type that *is* fully declared, so we ignore it if forward_declared=='only'.
                     continue
                 else:
                     if convert_loaded_to == 'none':
 
                         type_file_el = gb.id_dict[type_file_id]
                         type_file_full_path = type_file_el.get('name')
+
+                        # If the xml element we have for the type is only for a forward declaration
+                        # we must search all other xml files for the complete type declaration.
+                        if is_incomplete:
+                            for xml_file_name in gb.all_name_dict.keys():
+                                try:
+                                    new_type_el = gb.all_name_dict[xml_file_name][type_name['long_templ']]
+                                except KeyError:
+                                    new_type_el = None
+
+                                if new_type_el is not None:
+                                    if 'incomplete' not in new_type_el.keys():
+                                        new_type_file_id = new_type_el.get('file')
+                                        new_type_file_el = gb.all_id_dict[xml_file_name][new_type_file_id]
+                                        # Set new header path and break the loop
+                                        type_file_full_path = new_type_file_el.get('name')
+                                        break
 
                         if isHeader(type_file_el):
                             use_path = shortenHeaderPath(type_file_full_path)
@@ -1822,22 +1890,25 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                         include_statements.append('#include "' + gb.new_header_files[type_name['long']][header_key] + '"')
 
             elif isStdType(type_el):
+                if type_name['long'] in gb.std_headers:
+                    header_name = gb.std_headers[type_name['long']].strip()
+                    if (header_name[0] == '<') and (header_name[-1] == '>'):
+                        include_statements.append('#include ' + gb.std_headers[type_name['long']])
+                    else:
+                        include_statements.append('#include "' + gb.std_headers[type_name['long']] + '"')
+                else:
+                    reason = "The standard type '%s' has no specified header file. Please update modules/gb.py." % type_name['long_templ']
+                    infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
 
+            else:
                 if type_name['long'] in cfg.known_class_headers:
-                    header_name = cfg.known_class_headers[type_name['long']]
+                    header_name = cfg.known_class_headers[type_name['long']].strip()
                     if (header_name[0] == '<') and (header_name[-1] == '>'):
                         include_statements.append('#include ' + cfg.known_class_headers[type_name['long']])
                     else:
                         include_statements.append('#include "' + cfg.known_class_headers[type_name['long']] + '"')
                 else:
-                    reason = "The standard type '%s' has no specified header file. Please update modules/cfg.py." % type_name['long_templ']
-                    infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
-
-            else:
-                if type_name['long'] in cfg.known_class_headers:
-                    include_statements.append('#include "' + cfg.known_class_headers[type_name['long']] + '"')
-                else:
-                    reason = "The type '%s' has no specified header file. Please update modules/cfg.py." % type_name['long_templ']
+                    reason = "The type '%s' has no specified header file. Please update config file." % type_name['long_templ']
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
         else:
             infomsg.NoIncludeStatementGenerated( type_name['long_templ'] ).printMessage()
@@ -2167,57 +2238,84 @@ def constrEnumDeclHeader(enum_el_list, file_output_path):
 
 
 
-# ====== gccxmlRunner ========
+# ====== castxmlRunner ========
 
-# Calls gccxml from the shell (via modules.shelltimeout).
+# Calls castxml from the shell (via modules.shelltimeout).
 
-def gccxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=30., poll_interval=0.5):
+def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=300., poll_interval=0.5):
 
-    # Construct gccxml command to run
-    gccxml_cmd = 'gccxml '
+    # Choose castxml executable according to platform (linux or darwin)
+    if sys.platform == 'darwin':
+        castxml_path = 'castxml/darwin/bin/castxml'
+    else:
+        castxml_path = 'castxml/linux/bin/castxml'
+
+    # Avoid including intel headers when in "gnu mode" by
+    # temporarily unsetting some environment variables
+    if cfg.castxml_cc_id  == 'gnu':
+        temp_env_vars = {}
+        for var_name in ['CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH']:
+            try:
+                if 'intel' in os.environ[var_name].lower():
+                    temp_env_vars[var_name] = str(os.environ[var_name])
+                    os.environ[var_name] = ''
+            except KeyError:
+                pass
+
+
+    # Construct castxml command to run
+    castxml_cmd = castxml_path + ' --castxml-gccxml -x c++'
+
+    # Add castxml settings from cfg file
+    castxml_cmd += ' --castxml-cc-' + cfg.castxml_cc_id + ' ' + cfg.castxml_cc
+    if cfg.castxml_cc_opt != '':
+        castxml_cmd += ' ' + cfg.castxml_cc_opt
 
     # - Add include paths
     for incl_path in include_paths_list:
-        gccxml_cmd += '-I' + incl_path + ' '
+        castxml_cmd += ' -I' + incl_path
 
     # - Add the input file path (full path)
-    gccxml_cmd += input_file_path + ' '
+    castxml_cmd += ' ' + input_file_path
 
-    # - Add gccxml option that specifies the xml output file: input_file_short_name.xml
-    # gccxml_cmd += '-fxml=' + xml_output_path
-    gccxml_cmd +='--gccxml-compiler ' + cfg.gccxml_compiler + ' -fxml=' + xml_output_path
+    # - Add castxml option that specifies the xml output file: input_file_short_name.xml
+    castxml_cmd += ' -o ' + xml_output_path
 
-    # Run gccxml
-    print '  Runing command: ' + gccxml_cmd
-    proc, output, timed_out = shelltimeout.shrun(gccxml_cmd, timeout_limit, use_exec=True, poll_interval=poll_interval)
+    # Run castxml
+    print '  Runing command: ' + castxml_cmd
+    proc, output, timed_out = shelltimeout.shrun(castxml_cmd, timeout_limit, use_exec=True, poll_interval=poll_interval)
 
-    did_fail = False
+    # Reset environment variables
+    if cfg.castxml_cc_id  == 'gnu':
+        for var_name, value in temp_env_vars.items():
+            os.environ[var_name] = value
 
     # Check for timeout or error
+    did_fail = False
     if timed_out:
-        print '  ERROR: gccxml timed out.'
+        print '  ERROR: castxml timed out.'
         did_fail = True
     elif proc.returncode != 0:        
-        print '  ERROR: gccxml failed.'
+        print '  ERROR: castxml failed.'
         did_fail = True
 
     # Print error report
     if did_fail:
         print
-        print 'START GCCXML OUTPUT'
-        print '-------------------'
+        print 'START CASTXML OUTPUT'
+        print '--------------------'
         print
         print output
-        print 'END GCCXML OUTPUT'
-        print '-----------------'
+        print 'END CASTXML OUTPUT'
+        print '------------------'
         print
-        raise Exception('gccxml failed')
+        raise Exception('castxml failed')
     
     else:
         print '  Command finished successfully.'
     print
 
-# ====== END: gccxmlRunner ========
+# ====== END: castxmlRunner ========
 
 
 
@@ -2254,6 +2352,8 @@ def pathSplitAll(path):
 
 def fillAcceptedTypesList():
 
+    import modules.classutils as classutils
+
     # Sets to store type names
     fundamental_types = set()
     std_types         = set()
@@ -2261,6 +2361,9 @@ def fillAcceptedTypesList():
     # enumeration_types = set()
     loaded_classes    = set()
 
+    # Keep track of how many types have been checked
+    type_counter = 0
+    print
 
     #
     # Collect names of all fundamental, std, enumeration, known and loaded types that are acceptable
@@ -2268,29 +2371,55 @@ def fillAcceptedTypesList():
     for xml_file in gb.all_id_dict.keys():
 
         # Reset some variables for each new xml file
-        new_fundamental_types   = set()
-        new_std_types           = set()
-        new_known_classes       = set()
-        # new_enumeration_types   = set()
-        new_loaded_classes      = set()
+        # new_fundamental_types   = set()
+        # new_std_types           = set()
+        # new_known_classes       = set()
+        # # new_enumeration_types   = set()
+        # new_loaded_classes      = set()
+        new_fundamental_types   = []
+        new_std_types           = []
+        new_known_classes       = []
+        # new_enumeration_types   = []
+        new_loaded_classes      = []
 
 
         initGlobalXMLdicts(xml_file)
 
 
+        #
         # Loop over all named elements in the xml file
+        #
+
         for full_name, el in gb.name_dict.items():
+            
 
             # Only consider types
             if el.tag not in ['Class', 'Struct', 'FundamentalType', 'Enumeration']:
                 continue
 
-            # Skip incomplete types
-            if ('incomplete' in el.keys()) and (el.get('incomplete') == '1'):
-                continue
+            type_counter += 1
+            if type_counter%500 == 0:
+                print '  %i types classified...' % (type_counter)    
+
+
+            # To save a bit of time, construct class name dict once and pass to remaining checks
+            class_name = classutils.getClassNameDict(el)
+
 
             # Skip problematic types
             if isProblematicType(el):
+                continue
+
+            #
+            # Known class?
+            #
+            is_known_class = isKnownClass(el, class_name=class_name)
+            if is_known_class:
+                new_known_classes.append(full_name)
+
+
+            # Skip incomplete types
+            if ('incomplete' in el.keys()) and (el.get('incomplete') == '1'):
                 continue
 
             #
@@ -2298,21 +2427,15 @@ def fillAcceptedTypesList():
             #
             is_fundamental = isFundamental(el)
             if is_fundamental:
-                new_fundamental_types.add(full_name)
+                new_fundamental_types.append(full_name)
+
 
             #
             # Std type?
             #
-            is_std_type = isStdType(el)
+            is_std_type = isStdType(el, class_name=class_name)
             if is_std_type:
-                new_std_types.add(full_name)
-
-            #
-            # Known class?
-            #
-            is_known_class = isKnownClass(el)
-            if is_known_class:
-                new_known_classes.add(full_name)
+                new_std_types.append(full_name)
 
 
             # #
@@ -2320,25 +2443,30 @@ def fillAcceptedTypesList():
             # #
             # is_enumeration = isEnumeration(el)
             # if is_enumeration:
-            #     new_enumeration_types.add( '::'.join( getNamespaces(el, include_self=True) ) )
+            #     new_enumeration_types.append( '::'.join( getNamespaces(el, include_self=True) ) )
+
 
             #
             # Loaded type?
             #
-            is_loaded_class = isLoadedClass(el)
+            is_loaded_class = isLoadedClass(el, byname=False, class_name=class_name)
             if is_loaded_class:
-                new_loaded_classes.add(full_name)
+                new_loaded_classes.append(full_name)
 
 
-            #
-            # Update sets of types
-            #
-            fundamental_types = fundamental_types.union(new_fundamental_types)
-            std_types         = std_types.union(new_std_types)
-            known_classes     = known_classes.union(new_known_classes)
-            # enumeration_types = enumeration_types.union(new_enumeration_types)
-            loaded_classes    = loaded_classes.union(new_loaded_classes)
 
+        #
+        # Update sets of types
+        #
+        fundamental_types = fundamental_types.union(set(new_fundamental_types))
+        std_types         = std_types.union(set(new_std_types))
+        known_classes     = known_classes.union(set(new_known_classes))
+        # enumeration_types = enumeration_types.union(set(new_enumeration_types))
+        loaded_classes    = loaded_classes.union(set(new_loaded_classes))
+
+
+    # Print final number of types classified
+    print '  %i types classified.' % (type_counter)    
 
     # Fill global list
     gb.accepted_types = list(loaded_classes) + list(known_classes) + list(fundamental_types) + list(std_types)
@@ -2346,133 +2474,6 @@ def fillAcceptedTypesList():
 
 # ====== END: fillAcceptedTypesList ========
 
-
-
-# # ====== fillAcceptedTypesList ========
-
-# def fillAcceptedTypesList(xml_files):
-
-#     # Sets to store type names
-#     fundamental_types = set()
-#     enumeration_types = set()
-#     std_types         = set()
-#     loaded_classes    = set()
-
-#     problematic_types = set()
-
-#     # Dict: type name --> xml element
-#     elements_dict = {}
-
-
-#     #
-#     # Get names of all fundamental, std and enumeration types
-#     #
-#     for xml_file in xml_files:
-
-#         # Reset some variables for each new xml file
-#         new_std_types           = set()
-#         new_fundamental_types   = set()
-#         new_enumeration_types   = set()
-
-#         new_problematic_types   = set()
-
-
-#         # Parse xml file using ElementTree
-#         tree = ET.parse(xml_file)
-#         root = tree.getroot()
-
-#         # Set the global xml id dict. (Needed by the functions called in this loop.)
-#         gb.id_dict = OrderedDict([ (el.get('id'), el) for el in root.getchildren() ]) 
-
-
-#         # Loop over all types in current xml file
-#         for el in (   root.findall('Class') 
-#                     + root.findall('Struct') 
-#                     + root.findall('FundamentalType')
-#                     + root.findall('Enumeration') ):
-
-#             # Determine name
-#             if 'demangled' in el.keys():
-#                 full_name = el.get('demangled')
-#             elif 'name' in el.keys():
-#                 full_name = el.get('name')
-
-#             if ('incomplete' in el.keys()) and (el.get('incomplete') == '1'):
-#                 continue
-
-#             #
-#             # Update elements dict: type name --> xml element (all types)
-#             #
-#             elements_dict[full_name] = el
-
-
-#             #
-#             # Get name of all fundamental types
-#             #
-#             is_fundamental = isFundamental(el)
-#             if is_fundamental:
-#                 new_fundamental_types.add(full_name + '__fundamental')
-
-#             #
-#             # Get name of all std types
-#             #
-#             is_std_type = isStdType(el)
-#             if is_std_type:
-#                 new_std_types.add(full_name + '__std_type')
-
-#             #
-#             # Get name of all enumeration types
-#             #
-#             is_enumeration = isEnumeration(el)
-#             if is_enumeration:
-#                 new_enumeration_types.add( '::'.join( getNamespaces(el, include_self=True) )  + '__enumeration' )
-
-#             #
-#             # Update sets of types
-#             #
-#             fundamental_types = fundamental_types.union(new_fundamental_types)
-#             std_types         = std_types.union(new_std_types)
-#             enumeration_types = enumeration_types.union(new_enumeration_types)
-
-
-#     # Fill global list
-#     gb.accepted_types = list(fundamental_types) + list(std_types) + list(enumeration_types) + cfg.loaded_classes
-
-
-#     # Remove from gb.accepted_types all classes that use of native types as template arguments
-#     # (BOSS cannot deal with this yet...)
-#     for i in range(len(gb.accepted_types))[::-1]:
-
-#         type_name = gb.accepted_types[i]
-
-#         # Get list of all template arguments (unpack any nested template arguments)
-#         unpacked_template_args = getAllTemplateTypes(type_name)
-
-#         # If no template arguments, continue
-#         if unpacked_template_args == []:
-#             continue
-
-#         else:
-#             for templ_arg in unpacked_template_args:
-
-#                 # Remove asterix and/or ampersand
-#                 base_templ_arg = getBasicTypeName(templ_arg)
-
-#                 # Check that this type is listed in elements_dict (all native types should be)
-#                 if base_templ_arg in elements_dict.keys():
-
-#                     # Get xml entry for the type
-#                     type_el = elements_dict[base_templ_arg]
-
-#                     # If this is a native type, remove the current entry (i) in gb.accepted_types
-#                     if isNative(type_el):
-                        
-#                         # Remove entry i from gb.accepted_types
-#                         gb.accepted_types.pop(i)
-#                         break
-
-
-# # ====== END: fillAcceptedTypesList ========
 
 
 
@@ -2485,12 +2486,6 @@ def isProblematicType(el):
 
     is_problematic = False
 
-    # Determine type name
-    if 'demangled' in el.keys():
-        full_name = el.get('demangled')
-    elif 'name' in el.keys():
-        full_name = el.get('name')
-
 
     #
     # Check: types that use native types as template arguments
@@ -2499,7 +2494,7 @@ def isProblematicType(el):
     if el.tag in ['Class', 'Struct', 'FundamentalType']:
 
         # Get list of all template arguments (unpack any nested template arguments)
-        unpacked_template_args = getAllTemplateTypes(full_name)
+        unpacked_template_args = getAllTemplateTypes(el.get('name'))
 
         # If no template arguments, continue
         if unpacked_template_args == []:
@@ -2512,17 +2507,18 @@ def isProblematicType(el):
                 base_templ_arg = getBasicTypeName(templ_arg)
 
                 # Check that this type name is listed in gb.name_dict
-                if base_templ_arg in gb.name_dict.keys():
-
-                    # Get xml entry for the type
+                try:
                     type_el = gb.name_dict[base_templ_arg]
+                except KeyError:
+                    type_el = None
+
+                if type_el is not None:
 
                     # If this is a native type, the input type is problematic for BOSS
                     if isNative(type_el):
                         
                         is_problematic = True
                         return is_problematic
-
 
     return is_problematic
 
@@ -2604,7 +2600,7 @@ def fillParentsOfLoadedClassesList():
                         class_name = classutils.getClassNameDict(parent_el)
 
                         # Append to gb.parents_of_loaded_classes
-                        print '  %s is parent of %s.' % (class_name['long_templ'], el.get('demangled'))
+                        print '  %s is parent of %s.' % (class_name['long_templ'], full_name)
                         if class_name['long_templ'] not in gb.parents_of_loaded_classes:
                             gb.parents_of_loaded_classes.append(class_name['long_templ'])
 
@@ -2637,14 +2633,28 @@ def xmlFilesToDicts(xml_files):
             # Fill id-based dict
             gb.all_id_dict[xml_file][el.get('id')] = el
 
+        # TAG:castxml_in
+        for el in root.getchildren():
+
+            # TAG:castxml_in
             # Determine name
-            if 'demangled' in el.keys():
-                full_name = el.get('demangled')
-            elif 'name' in el.keys():
-                full_name = el.get('name')
+            if 'name' in el.keys():
+                namespaces_list = getNamespaces(el, include_self=True, xml_file_name=xml_file)
+                # print "HERE: ", el.get("id"), el.tag, namespaces_list
+                full_name = '::'.join(namespaces_list)
             else:
                 # Skip elements that don't have a name
                 continue
+
+            # TAG:castxml_out
+            # # Determine name
+            # if 'demangled' in el.keys():
+            #     full_name = el.get('demangled')
+            # elif 'name' in el.keys():
+            #     full_name = el.get('name')
+            # else:
+            #     # Skip elements that don't have a name
+            #     continue
             
             # Fill name-based dict
             gb.all_name_dict[xml_file][full_name] = el

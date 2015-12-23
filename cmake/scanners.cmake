@@ -50,8 +50,7 @@ ExternalProject_Add(diver
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
   INSTALL_COMMAND "" 
 )
-enable_auto_rebuild(diver)
-add_external_clean(diver ${diver_dir} cleanall)
+add_extra_targets(diver ${diver_dir} null cleanall)
 
 # MultiNest
 set(mn_location "${GAMBIT_INTERNAL}/MultiNest_v3.9")
@@ -84,8 +83,7 @@ ExternalProject_Add(multinest
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LIBS=${mn_dir}/
   INSTALL_COMMAND "" 
 )
-enable_auto_rebuild(multinest)
-add_external_clean(multinest ${mn_dir} clean)
+add_extra_targets(multinest ${mn_dir} null clean)
 
 # All other scanners are implemented natively in ScannerBit.
 

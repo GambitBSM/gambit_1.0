@@ -7,15 +7,15 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott 
+///
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
 ///  \date 2014 Jan, Mar-May, Sep
 ///  \date 2015 Jan
 ///
 ///  \author Anders Kvellestad
-///          (anders.kvellestad@fys.uio.no) 
+///          (anders.kvellestad@fys.uio.no)
 ///   \date 2013 Apr, Nov
 ///
 ///  \author Christoph Weniger
@@ -27,7 +27,7 @@
 ///  \date 2013 July, Sep
 ///  \date 2014 Jan
 ///
-///  \author Lars A. Dal  
+///  \author Lars A. Dal
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2015 Jan
 ///
@@ -40,7 +40,7 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <chrono>    
+#include <chrono>
 #include <sstream>
 #include <algorithm>
 #include <omp.h>
@@ -70,7 +70,7 @@ namespace Gambit
   /// Type redefinition to get around icc compiler bugs.
   template <typename TYPE, typename... ARGS>
   struct variadic_ptr { typedef TYPE(*type)(ARGS..., ...); };
-  
+
 
   // ======================== Base Functor =====================================
 
@@ -82,13 +82,13 @@ namespace Gambit
 
       /// Constructor
       functor (str, str, str, str, Models::ModelFunctorClaw&);
-      
-      /// Virtual calculate(); needs to be redefined in daughters.
-      virtual void calculate();      
-      
 
-      // It may be safer to have some of the following things accessible 
-      // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
+      /// Virtual calculate(); needs to be redefined in daughters.
+      virtual void calculate();
+
+
+      // It may be safer to have some of the following things accessible
+      // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used
       // from within module functions
 
       /// Interfaces for runtime optimization
@@ -107,10 +107,10 @@ namespace Gambit
       /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
       void setStatus(int);
       /// Set the inUse flag (must be overridden in derived class to have any effect).
-      virtual void setInUse(bool){}; 
+      virtual void setInUse(bool){};
       /// Setter for purpose (relevant only for next-to-output functors)
       void setPurpose(str);
-      /// Setter for vertex ID (used in printer system)     
+      /// Setter for vertex ID (used in printer system)
       void setVertexID(int);
       /// Set ID for timing 'vertex' (used in printer system)
       void setTimingVertexID(int);
@@ -170,7 +170,7 @@ namespace Gambit
       /// Getter for listing currently activated dependencies
       virtual std::set<sspair> dependencies();
       /// Getter for listing backend requirement groups
-      virtual std::set<str> backendgroups();                   
+      virtual std::set<str> backendgroups();
       /// Getter for listing all backend requirements
       virtual std::set<sspair> backendreqs();
       /// Getter for listing backend requirements from a specific group
@@ -184,10 +184,10 @@ namespace Gambit
 
       /// Getter for listing backend-specific conditional dependencies (4-string version)
       virtual std::set<sspair> backend_conditional_dependencies (str, str, str, str);
-      
+
       /// Getter for backend-specific conditional dependencies (3-string version)
       virtual std::set<sspair> backend_conditional_dependencies (str req, str type, str be);
-      
+
       /// Getter for backend-specific conditional dependencies (backend functor pointer version)
       virtual std::set<sspair> backend_conditional_dependencies (functor*);
 
@@ -226,6 +226,13 @@ namespace Gambit
       /// observables section.
       void notifyOfIniOptions(const Options&);
 
+      /// Set an option for the functor directly (for use in standalone executables).
+      template<typename TYPE>
+      void setOption(const str& key, const TYPE val)
+      {
+        myOptions.setValue<str,TYPE>(key, val);
+      }
+
       /// Return a safe pointer to the options that this functor is supposed to run with (e.g. from the ini file).
       safe_ptr<Options> getOptions();
 
@@ -235,7 +242,7 @@ namespace Gambit
       /// Test whether the functor is always allowed (either explicitly or implicitly) to be used with a given model
       bool modelAllowed(str model);
 
-      /// Test whether the functor is explictly always allowed to be used with a given model 
+      /// Test whether the functor is explictly always allowed to be used with a given model
       bool modelExplicitlyAllowed(str model);
 
       /// Add a model to the internal list of models for which this functor is allowed to be used.
@@ -244,7 +251,7 @@ namespace Gambit
       /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given combination of models
       bool modelComboAllowed(std::set<str> combo);
 
-      /// Test whether the functor has been explictly allowed to be used with a given combination of models 
+      /// Test whether the functor has been explictly allowed to be used with a given combination of models
       bool modelComboExplicitlyAllowed(std::set<str> combo);
 
       /// Add a model group definition to the internal list of model groups.
@@ -254,17 +261,17 @@ namespace Gambit
       void setAllowedModelGroupCombo(str groups);
 
     protected:
-          
+
       /// Internal storage of the function name.
-      str myName;       
+      str myName;
       /// Internal storage of exactly what the function calculates.
-      str myCapability; 
+      str myCapability;
       /// Internal storage of the type of what the function calculates.
-      str myType;       
+      str myType;
       /// Internal storage of the name of the module or backend to which the function belongs.
-      str myOrigin;     
+      str myOrigin;
       /// Internal storage of the version of the module or backend to which the function belongs.
-      str myVersion;    
+      str myVersion;
       /// Purpose of the function (relevant for output and next-to-output functors)
       str myPurpose;
       /// Bound model functor claw, for checking relationships between models
@@ -321,7 +328,7 @@ namespace Gambit
 
   // ======================== Module Functors =====================================
 
-  /// Functor derived class for module functions  
+  /// Functor derived class for module functions
   class module_functor_common : public functor
   {
 
@@ -345,7 +352,7 @@ namespace Gambit
       /// Getter for invalidation rate
       double getInvalidationRate();
 
-      /// Setter for the fade rate 
+      /// Setter for the fade rate
       void setFadeRate(double);
 
       /// Indicate whether or not a known model is activated or not.
@@ -381,16 +388,16 @@ namespace Gambit
       /// Tell the manager of the loop in which this functor runs that it is time to break the loop.
       virtual void breakLoopFromManagedFunctor();
       /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
-      virtual safe_ptr<bool> loopIsDone();    
+      virtual safe_ptr<bool> loopIsDone();
       /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
-      virtual void resetLoop(); 
+      virtual void resetLoop();
       /// Tell the functor that the loop it manages should break now.
       virtual void breakLoop();
 
       /// Getter for listing currently activated dependencies
       virtual std::set<sspair> dependencies();
       /// Getter for listing backend requirement groups
-      virtual std::set<str> backendgroups();                   
+      virtual std::set<str> backendgroups();
       /// Getter for listing all backend requirements
       virtual std::set<sspair> backendreqs();
       /// Getter for listing backend requirements from a specific group
@@ -404,10 +411,10 @@ namespace Gambit
 
       /// Getter for listing backend-specific conditional dependencies (4-string version)
       virtual std::set<sspair> backend_conditional_dependencies (str req, str type, str be, str ver);
-      
+
       /// Getter for backend-specific conditional dependencies (3-string version)
       virtual std::set<sspair> backend_conditional_dependencies (str req, str type, str be);
-      
+
       /// Getter for backend-specific conditional dependencies (backend functor pointer version)
       virtual std::set<sspair> backend_conditional_dependencies (functor* be_functor);
 
@@ -436,7 +443,7 @@ namespace Gambit
       void makeBackendRuleForModel(str, str);
 
       /// Add an unconditional backend requirement
-      /// The info gets updated later if this turns out to be contitional on a model. 
+      /// The info gets updated later if this turns out to be contitional on a model.
       void setBackendReq(str, str, str, str, void(*)(functor*));
 
       /// Add a model conditional backend requirement for multiple models
@@ -555,13 +562,13 @@ namespace Gambit
       /// Set of all backend requirement-type string pairs.
       std::set<sspair> myBackendReqs;
 
-      /// Set of all backend requirement-type string pairs currently available for resolution.        
+      /// Set of all backend requirement-type string pairs currently available for resolution.
       std::set<sspair> myResolvableBackendReqs;
 
-      /// Set of backend requirement-type string pairs for specific backend groups       
+      /// Set of backend requirement-type string pairs for specific backend groups
       std::map<str,std::set<sspair> > myGroupedBackendReqs;
 
-      /// Vector of dependency-type string pairs 
+      /// Vector of dependency-type string pairs
       std::set<sspair> myDependencies;
 
       /// Map from (vector with 4 strings: backend req, type, backend, version) to (set of {conditional dependency-type} pairs)
@@ -576,7 +583,7 @@ namespace Gambit
       /// Map from known models to flags indicating if they are activated or not (known = allowed, in allowed groups or conditions for conditional dependencies)
       std::map<str, bool> activeModelFlags;
 
-      /// Map from (dependency-type pairs) to (pointers to templated void functions 
+      /// Map from (dependency-type pairs) to (pointers to templated void functions
       /// that set dependency functor pointers)
       std::map<sspair, void(*)(functor*, module_functor_common*)> dependency_map;
 
@@ -587,9 +594,9 @@ namespace Gambit
       std::map<sspair, str> backendreq_groups;
 
       /// Map from backend requirements to their rule tags
-      std::map<sspair, std::set<str> > backendreq_tagmap; 
+      std::map<sspair, std::set<str> > backendreq_tagmap;
 
-      /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
+      /// Map from (backend requirement-type pairs) to (pointers to templated void functions
       /// that set backend requirement functor pointers)
       std::map<sspair, void(*)(functor*)> backendreq_map;
 
@@ -606,7 +613,7 @@ namespace Gambit
       timespec tp;
 
       /// Integer LogTag, for tagging log messages
-      int myLogTag; 
+      int myLogTag;
 
       /// @{ Some helper functions for interacting with signals in the calculate() routine
       void check_for_shutdown_signal();
@@ -712,7 +719,7 @@ namespace Gambit
 
   // ======================== Backend Functors =====================================
 
-  /// Backend functor class for functions with result type TYPE and argumentlist ARGS 
+  /// Backend functor class for functions with result type TYPE and argumentlist ARGS
   template <typename PTR_TYPE, typename TYPE, typename... ARGS>
   class backend_functor_common : public functor
   {
@@ -720,7 +727,7 @@ namespace Gambit
     protected:
 
       /// Set the inUse flag.
-      virtual void setInUse(bool); 
+      virtual void setInUse(bool);
 
       /// Type of the function pointer being encapsulated
       typedef PTR_TYPE funcPtrType;
@@ -729,17 +736,17 @@ namespace Gambit
       funcPtrType myFunction;
 
       /// Integer LogTag, for tagging log messages
-      int myLogTag; 
+      int myLogTag;
 
       /// Internal storage of the 'safe' version of the version (for use in namespaces, variable names, etc).
-      str mySafeVersion;    
+      str mySafeVersion;
 
       /// Flag indicating if this backend functor is actually in use in a given scan
       bool inUse;
 
     public:
 
-      /// Constructor 
+      /// Constructor
       backend_functor_common (funcPtrType, str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Update the internal function pointer wrapped by the functor
@@ -749,7 +756,7 @@ namespace Gambit
       funcPtrType handoutFunctionPointer();
 
       /// Hand out a safe pointer to this backend functor's inUse flag.
-      safe_ptr<bool> inUsePtr(); 
+      safe_ptr<bool> inUsePtr();
 
       /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
       virtual str safe_version() const;
@@ -767,10 +774,10 @@ namespace Gambit
 
     public:
 
-      /// Constructor 
+      /// Constructor
       backend_functor (TYPE(*)(ARGS...), str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
-      /// Operation (execute function and return value) 
+      /// Operation (execute function and return value)
       TYPE operator()(ARGS&&... args);
 
   };
@@ -783,26 +790,26 @@ namespace Gambit
 
     public:
 
-      /// Constructor 
+      /// Constructor
       backend_functor (void (*)(ARGS...), str, str, str, str, str, str, Models::ModelFunctorClaw&);
-    
-      /// Operation (execute function) 
+
+      /// Operation (execute function)
       void operator()(ARGS&&... args);
 
   };
 
   /// Template specialisation for variadic, non-void backend functions
   template <typename TYPE, typename... ARGS>
-  class backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...> 
+  class backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>
    : public backend_functor_common<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>
   {
 
     public:
 
-      /// Constructor 
+      /// Constructor
       backend_functor(typename variadic_ptr<TYPE,ARGS...>::type, str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
-      /// Operation (execute function and return value) 
+      /// Operation (execute function and return value)
       template <typename... VARARGS>
       TYPE operator()(VARARGS&&... varargs)
       {
@@ -823,10 +830,10 @@ namespace Gambit
 
     public:
 
-      /// Constructor 
+      /// Constructor
       backend_functor(typename variadic_ptr<void,ARGS...>::type, str, str, str, str, str, str, Models::ModelFunctorClaw&);
-    
-      /// Operation (execute function) 
+
+      /// Operation (execute function)
       template <typename... VARARGS>
       void operator()(VARARGS&&... varargs)
       {
@@ -844,40 +851,40 @@ namespace Gambit
   /// Functors specific to ModelParameters objects
   class model_functor : public module_functor<ModelParameters>
   {
-  
+
     public:
-    
+
       /// Constructor
       model_functor(void (*)(ModelParameters &), str, str, str, str, Models::ModelFunctorClaw&);
-      
+
       /// Function for adding a new parameter to the map inside the ModelParameters object
       void addParameter(str parname);
 
       /// Function for handing over parameter identities to another model_functor
       void donateParameters(model_functor &receiver);
 
-  };    
+  };
 
 
   /// Functors specific to primary ModelParameters objects
   ///
-  /// These allow direct access to the functor contents via a raw pointer, so 
+  /// These allow direct access to the functor contents via a raw pointer, so
   /// that the parameter values can be set (not allowed via safe pointers).
   class primary_model_functor : public model_functor
   {
-  
+
     public:
-    
+
       /// Constructor
       primary_model_functor(void (*)(ModelParameters &), str, str, str, str, Models::ModelFunctorClaw&);
-      
+
       /// Functor contents raw pointer "get" function
-      /// Returns a raw pointer to myValue, so that the contents may be 
-      /// modified (intended for setting parameter values in primary 
+      /// Returns a raw pointer to myValue, so that the contents may be
+      /// modified (intended for setting parameter values in primary
       /// ModelParameters objects)
       ModelParameters* getcontentsPtr();
 
-  };    
+  };
 
 }
 

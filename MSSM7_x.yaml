@@ -360,7 +360,7 @@ Rules:
     function:  getPythia
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "../gambit_internal/extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/"
+      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV:
         pythiaOptions_1: ["Print:quiet = on",
                           "PartonLevel:MPI = off",

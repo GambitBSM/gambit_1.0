@@ -10,11 +10,7 @@
  * Anders Kvellestad 2013, Nov
  */
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME LibFirst
-#endif
+#define BACKENDNAME LibFirst
 #define VERSION 1.0
 #define SAFE_VERSION 1_0
 
