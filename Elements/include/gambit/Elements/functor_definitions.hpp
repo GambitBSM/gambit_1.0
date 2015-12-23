@@ -178,7 +178,6 @@ namespace Gambit
           already_printed[thread_num] = true;
         }
 
-<<<<<<< HEAD
         // Print timing info if requested (independent of whether printing actual result)
         if(myTimingPrintFlag and not already_printed_timing[thread_num])
         {
@@ -188,16 +187,7 @@ namespace Gambit
           printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
           already_printed_timing[thread_num] = true;
         }
-=======
-      // Print timing info if requested (independent of whether printing actual result)
-      if(myTimingPrintFlag and not already_printed_timing[thread_num])
-      {
-        if (not iRunNested) thread_num = 0; // Force printing of thread_num=0 if this functor cannot run nested.
-        int rank = printer->getRank();
-        std::chrono::duration<double> runtime = end[thread_num] - start[thread_num];
-        printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
-        already_printed_timing[thread_num] = true;
->>>>>>> master
+
       }
     }
 
@@ -236,7 +226,6 @@ namespace Gambit
           this->startTiming(thread_num);
           try
           {
-<<<<<<< HEAD
             this->myFunction();
           }
           catch (invalid_point_exception& e)
@@ -250,14 +239,8 @@ namespace Gambit
             } 
           }
           this->finishTiming(thread_num);
-          logger().leaving_module();
-         
+          logger().leaving_module();         
           leaving_multithreaded_region();
-=======
-            this->finishTiming(thread_num);
-            throw(e);
-          }
->>>>>>> master
         }
         check_for_shutdown_signal();
       }
