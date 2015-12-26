@@ -932,13 +932,13 @@ namespace Gambit {
         results_WWb_SF.set_signal(_num_WWb_SF);
 
         SignalRegionData results_WWb_DF;
-        results_WWb_SF.set_analysis_name("Analysis_ATLAS_2LEPEW_20invfb");
-        results_WWb_SF.set_sr_label("WWb_SF");
-        results_WWb_SF.set_observation(17.);
-        results_WWb_SF.set_background(18.1);
-        results_WWb_SF.set_backgroundsys(2.6);
-        results_WWb_SF.set_signalsys(0.);
-        results_WWb_SF.set_signal(_num_WWb_DF);
+        results_WWb_DF.set_analysis_name("Analysis_ATLAS_2LEPEW_20invfb");
+        results_WWb_DF.set_sr_label("WWb_DF");
+        results_WWb_DF.set_observation(17.);
+        results_WWb_DF.set_background(18.1);
+        results_WWb_DF.set_backgroundsys(2.6);
+        results_WWb_DF.set_signalsys(0.);
+        results_WWb_DF.set_signal(_num_WWb_DF);
 
         SignalRegionData results_WWc_SF;
         results_WWc_SF.set_analysis_name("Analysis_ATLAS_2LEPEW_20invfb");
@@ -950,13 +950,13 @@ namespace Gambit {
         results_WWc_SF.set_signal(_num_WWc_SF);
 
         SignalRegionData results_WWc_DF;
-        results_WWc_SF.set_analysis_name("Analysis_ATLAS_2LEPEW_20invfb");
-        results_WWc_SF.set_sr_label("WWc_SF");
-        results_WWc_SF.set_observation(11.);
-        results_WWc_SF.set_background(9.0);
-        results_WWc_SF.set_backgroundsys(2.2);
-        results_WWc_SF.set_signalsys(0.);
-        results_WWc_SF.set_signal(_num_WWc_DF);
+        results_WWc_DF.set_analysis_name("Analysis_ATLAS_2LEPEW_20invfb");
+        results_WWc_DF.set_sr_label("WWc_DF");
+        results_WWc_DF.set_observation(11.);
+        results_WWc_DF.set_background(9.0);
+        results_WWc_DF.set_backgroundsys(2.2);
+        results_WWc_DF.set_signalsys(0.);
+        results_WWc_DF.set_signal(_num_WWc_DF);
 
         SignalRegionData results_Zjets;
         results_Zjets.set_analysis_name("Analysis_ATLAS_2LEPEW_20invfb");

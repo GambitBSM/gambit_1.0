@@ -859,6 +859,18 @@ namespace Gambit
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
 
+	  logger() << endl;                                                                                                                                                                                  
+          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;                                                                                                          
+          logger() << "  NEvents, not scaled to luminosity :" << endl;                                                                                                                                       
+          logger() << "    " << srData.n_signal << endl;                                                                                                                                                     
+	  logger() << "  NEvents, scaled  to luminosity :  " << endl;
+
+	  logger() << "    " << srData.n_signal_at_lumi << endl;
+
+          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;                                                                                                                                      
+          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "                                                                                                                     
+                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;  
+
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
