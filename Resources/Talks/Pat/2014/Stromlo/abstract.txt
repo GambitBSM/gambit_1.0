@@ -1,7 +1,0 @@
-Combining astrophysics with particle physics to get past the Standard Model
-
-Searches for particle physics beyond the Standard Model come in many forms, from searches for particle dark matter to accelerators like the Large Hadron Collider.  Understanding the status of any given particle theory requires combining all these searches in a physically and statistically-consistent way.  In this talk I will give a very brief update on recent progress in achieving such 'global fits', and provide a preview of some of the future developments and challenges on the near horizon.
-
-
-
-

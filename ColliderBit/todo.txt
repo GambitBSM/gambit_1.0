@@ -1,0 +1,6 @@
+OMP paralellization update: Try to remove shared variables, atomic statements, critical blocks, etc. 
+
+How to valgrind to find ColliderBit memory issues:
+valgrind --tool=memcheck --memcheck:leak-check=full --show-reachable=yes --suppressions=valgrindColliderBit.supp ./gambit -f gambit_Collider.yaml
+
+
