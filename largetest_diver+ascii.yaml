@@ -46,10 +46,11 @@ Scanner:
         aux_printer_live_options:
     de:
       plugin: Diver
-      like: LogLike
       NP: 1000000
       #path: "diver_native"
-      verbosity: 1
+      verbosity: 2
+      like: LogLike
+      removeDuplicates: false
                     
 #======== Observables of interest ========
 ObsLikes:
