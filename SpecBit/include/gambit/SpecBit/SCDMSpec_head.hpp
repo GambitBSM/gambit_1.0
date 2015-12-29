@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  "Header" declarations for SSDMSpec class
+///  "Header" declarations for SCDMSpec class
 ///  (definitions in another header file due to
 ///  this being a template class)
 ///
@@ -21,8 +21,8 @@
 ///
 ///  *********************************************
 
-#ifndef SSDMSPEC_HEAD_H
-#define SSDMSPEC_HEAD_H
+#ifndef SCDMSPEC_HEAD_H
+#define SCDMSPEC_HEAD_H
 
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Utils/util_functions.hpp"
@@ -35,7 +35,7 @@ namespace Gambit {
    namespace SpecBit {
 
       template <class MI>  // "MI" for "Model_interface"
-      class SSDMSpec;
+      class SCDMSpec;
  
       // For example of what kind of class MI needs to be, see
       // SpecBit/include/model_files_and_boxes.hpp, 
@@ -44,21 +44,21 @@ namespace Gambit {
       /// Specialisation of "traits" class used to inform Spec<T> class of what
       /// "Model" and "Input" are for this derived class
       template <class MI>
-      struct SSDMSpecTraits
+      struct SCDMSpecTraits
       {
          typedef typename MI::Model Model;
          typedef DummyInput Input;
       };
 
       template <class MI>
-      class SSDMSpec : public Spec<SSDMSpec<MI>,SSDMSpecTraits<MI>>
+      class SCDMSpec : public Spec<SCDMSpec<MI>,SCDMSpecTraits<MI>>
       {
-         friend class RunparDer<SSDMSpec<MI>,SSDMSpecTraits<MI>>;
-         friend class PhysDer  <SSDMSpec<MI>,SSDMSpecTraits<MI>>;
+         friend class RunparDer<SCDMSpec<MI>,SCDMSpecTraits<MI>>;
+         friend class PhysDer  <SCDMSpec<MI>,SCDMSpecTraits<MI>>;
         
          public:
-            typedef MapTypes<SSDMSpecTraits<MI>,MapTag::Get> MTget;
-            typedef MapTypes<SSDMSpecTraits<MI>,MapTag::Set> MTset;
+            typedef MapTypes<SCDMSpecTraits<MI>,MapTag::Get> MTget;
+            typedef MapTypes<SCDMSpecTraits<MI>,MapTag::Set> MTset;
 
             typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
             typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
@@ -81,8 +81,8 @@ namespace Gambit {
 
 
             //constructors
-            SSDMSpec(bool switch_index_convention=false);
-            SSDMSpec(MI, str backend_name, str backend_version, bool switch_index_convention=false);
+            SCDMSpec(bool switch_index_convention=false);
+            SCDMSpec(MI, str backend_name, str backend_version, bool switch_index_convention=false);
 
             //Could more constructors to interface with other generators   
              
@@ -93,11 +93,11 @@ namespace Gambit {
             DummyInput dummyinput;
 
             //Destructor
-            virtual ~SSDMSpec();
+            virtual ~SCDMSpec();
 
             // Functions to interface Model and Input objects with the base 'Spec' class
-            typename SSDMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
-            typename SSDMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            typename SCDMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
+            typename SCDMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
 
             //may use something like this to pass error to Gambit
@@ -107,9 +107,9 @@ namespace Gambit {
 
             /// TODO: Need to implement this properly...
             /// Copy low energy spectrum information from another model object
-            // Should work from any flexiblesusy model object with the same particle content as the SSDM
-            template<class SSDMlike>
-            void get_lowe_data_from(SSDMlike &othermodel)
+            // Should work from any flexiblesusy model object with the same particle content as the SCDM
+            template<class SCDMlike>
+            void get_lowe_data_from(SCDMlike &othermodel)
             {
               // Maybe we can copy the pole masses etc directly, but since I am not sure how to do that, for now I am just copying the soft parameters and recomputing the pole masses. Will have to chat to Peter about this.
               // Update: Yeah Peter says we definitely should copy the pole and drbar masses directly :).

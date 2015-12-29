@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:49
+// File generated at Tue 29 Dec 2015 17:22:29
 
 /**
  * @file SingletDM_mass_eigenstates.hpp
@@ -25,7 +25,7 @@
  *        value problem using the two_scale solver by solving EWSB
  *        and determine the pole masses and mixings
  *
- * This file was generated at Thu 17 Dec 2015 12:53:49 with FlexibleSUSY
+ * This file was generated at Tue 29 Dec 2015 17:22:29 with FlexibleSUSY
  * 1.2.4 (git commit: unknown) and SARAH 4.5.8 .
  */
 
@@ -191,6 +191,7 @@ public:
    double Cpsssshh() const;
    double CpssssAhAh() const;
    double Cpsssshhhh() const;
+   double Cpssssssss() const;
    double CpssssconjHpHp() const;
    double CpAhhhAh() const;
    std::complex<double> CpAhbargWpgWp() const;

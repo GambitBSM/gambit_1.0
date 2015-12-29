@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:17
+// File generated at Tue 29 Dec 2015 17:22:03
 
 #include "SingletDM_two_scale_high_scale_constraint.hpp"
 #include "SingletDM_two_scale_model.hpp"
@@ -111,7 +111,8 @@ bool SingletDM_high_scale_constraint<Two_scale>::check_non_perturbative()
    const auto g1 = MODELPARAMETER(g1);
    const auto g2 = MODELPARAMETER(g2);
    const auto g3 = MODELPARAMETER(g3);
-   const auto Lambda2 = MODELPARAMETER(Lambda2);
+   const auto LamS = MODELPARAMETER(LamS);
+   const auto LamSH = MODELPARAMETER(LamSH);
    const auto Lambda1 = MODELPARAMETER(Lambda1);
    const auto Yu = MODELPARAMETER(Yu);
    const auto Yd = MODELPARAMETER(Yd);
@@ -135,11 +136,17 @@ bool SingletDM_high_scale_constraint<Two_scale>::check_non_perturbative()
    } else {
       model->get_problems().unflag_non_perturbative_parameter("g3");
    }
-   if (MaxAbsValue(Lambda2) > 3.5449077018110318) {
+   if (MaxAbsValue(LamS) > 3.5449077018110318) {
       problem = true;
-      model->get_problems().flag_non_perturbative_parameter("Lambda2", MaxAbsValue(Lambda2), model->get_scale(), 3.5449077018110318);
+      model->get_problems().flag_non_perturbative_parameter("LamS", MaxAbsValue(LamS), model->get_scale(), 3.5449077018110318);
    } else {
-      model->get_problems().unflag_non_perturbative_parameter("Lambda2");
+      model->get_problems().unflag_non_perturbative_parameter("LamS");
+   }
+   if (MaxAbsValue(LamSH) > 3.5449077018110318) {
+      problem = true;
+      model->get_problems().flag_non_perturbative_parameter("LamSH", MaxAbsValue(LamSH), model->get_scale(), 3.5449077018110318);
+   } else {
+      model->get_problems().unflag_non_perturbative_parameter("LamSH");
    }
    if (MaxAbsValue(Lambda1) > 3.5449077018110318) {
       problem = true;

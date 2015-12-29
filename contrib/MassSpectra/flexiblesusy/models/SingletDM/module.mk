@@ -18,7 +18,7 @@ SingletDM_TWO_SCALE_MK := \
 		$(SingletDM_TWO_SCALE_SOFT_MK)
 
 SingletDM_SLHA_INPUT := \
-LesHouches.in.SSDM
+LesHouches.in.SingletDM
 
 SingletDM_GNUPLOT := \
 		$(DIR)/SingletDM_plot_rgflow.gnuplot \
@@ -167,6 +167,7 @@ clean-$(MODNAME)-dep:
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBSingletDM_OBJ)
 		-rm -f $(EXESingletDM_OBJ)
+
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBSingletDM)

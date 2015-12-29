@@ -17,12 +17,12 @@
 //
 //  *********************************************
 
-#ifndef __SSDM_hpp__
-#define __SSDM_hpp__
+#ifndef __SCDM_hpp__
+#define __SCDM_hpp__
 
-#define MODEL SSDM
+#define MODEL SCDM
   START_MODEL
-  DEFINEPARS(mS2, lambda_hS,lambda_S)
+  DEFINEPARS(mS2, lambda_hS,lambda_S,mu3)
 #undef MODEL
 
 #endif

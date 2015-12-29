@@ -221,8 +221,8 @@ namespace Gambit
 
         {
             typename MTget::fmap0 tmp_map;
-            tmp_map["mS2"]  = &Model::get_ms2;
-            tmp_map["mu2"] = &Model::get_mu2;
+            tmp_map["mS2"]  = &Model::get_muS;
+            tmp_map["mu2"] = &Model::get_muH;
             map_collection[Par::mass2].map0 = tmp_map;
          }
         
@@ -237,10 +237,10 @@ namespace Gambit
             tmp_map["g3"]= &Model::get_g3;
             tmp_map["Lambda1"]= &Model::get_Lambda1;
            
-            tmp_map["Lambda2"]= &Model::get_Lambda2;
-            tmp_map["lambda_hS"]= &Model::get_Lambda2; // same naming convention as SingletDM
-            //tmp_map["Lambda3"]= &Model::get_Lambda3;
-         //   tmp_map["Lambda_s"]= &Model::get_Lambda3; // alternative naming convention
+            tmp_map["Lambda2"]= &Model::get_LamSH;
+            tmp_map["lambda_hS"]= &Model::get_LamSH; // same naming convention as SingletDM
+            tmp_map["Lambda3"]= &Model::get_LamS;
+            tmp_map["Lambda_s"]= &Model::get_LamS; // alternative naming convention
 
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
@@ -249,7 +249,7 @@ namespace Gambit
          {
             typename MTget::fmap0 tmp_map;
             tmp_map["vev"] = &Model::get_v;
-            tmp_map["lambda_hS"]= &Model::get_Lambda2;  // ??? not sure why it wants it here
+            tmp_map["lambda_hS"]= &Model::get_LamSH;  // ??? not sure why it wants it here
             map_collection[Par::mass1].map0 = tmp_map;
          }
 
@@ -325,8 +325,8 @@ namespace Gambit
          {
             typename MTset::fmap0 tmp_map;
 
-            tmp_map["mS2"] = &Model::set_ms2;
-            tmp_map["mu2"] = &Model::set_mu2;
+            tmp_map["mS2"] = &Model::set_muS;
+            tmp_map["mu2"] = &Model::set_muH;
 
             map_collection[Par::mass2].map0 = tmp_map;
          }
@@ -350,8 +350,8 @@ namespace Gambit
             tmp_map["g2"]= &Model::set_g2;
             tmp_map["g3"]= &Model::set_g3;
             tmp_map["Lambda1"]= &Model::set_Lambda1;
-            tmp_map["Lambda2"]= &Model::set_Lambda2;
-          //  tmp_map["Lambda3"]= &Model::set_Lambda3;
+            tmp_map["Lambda2"]= &Model::set_LamSH;
+            tmp_map["Lambda3"]= &Model::set_LamS;
 
             map_collection[Par::dimensionless].map0 = tmp_map;
          }

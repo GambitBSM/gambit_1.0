@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:18
+// File generated at Tue 29 Dec 2015 17:22:03
 
 #include "SingletDM_two_scale_low_scale_constraint.hpp"
 #include "SingletDM_two_scale_model.hpp"
@@ -109,7 +109,8 @@ void SingletDM_low_scale_constraint<Two_scale>::apply()
    calculate_DRbar_gauge_couplings();
 
    const auto HiggsIN = INPUTPARAMETER(HiggsIN);
-   const auto Lambda2Input = INPUTPARAMETER(Lambda2Input);
+   const auto LamSHInput = INPUTPARAMETER(LamSHInput);
+   const auto LamSInput = INPUTPARAMETER(LamSInput);
    const auto mS2Input = INPUTPARAMETER(mS2Input);
    const auto g1 = MODELPARAMETER(g1);
    const auto g2 = MODELPARAMETER(g2);
@@ -118,9 +119,10 @@ void SingletDM_low_scale_constraint<Two_scale>::apply()
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
-   MODEL->set_mu2(Re(HiggsIN));
-   MODEL->set_Lambda2(Re(Lambda2Input));
-   MODEL->set_ms2(Re(mS2Input));
+   MODEL->set_muH(Re(HiggsIN));
+   MODEL->set_LamSH(Re(LamSHInput));
+   MODEL->set_LamS(Re(LamSInput));
+   MODEL->set_muS(Re(mS2Input));
 
 
    model->set_g1(new_g1);

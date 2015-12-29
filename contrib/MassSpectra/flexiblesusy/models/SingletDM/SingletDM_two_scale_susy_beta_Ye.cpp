@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:15
+// File generated at Tue 29 Dec 2015 17:22:01
 
 #include "SingletDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -71,10 +71,10 @@ Eigen::Matrix<double,3,3> SingletDM_susy_parameters::calc_beta_Ye_two_loop(const
       traceYeAdjYeYeAdjYe - 1350*traceYuAdjYuYuAdjYu + 425*traceYuAdjYu*Sqr(g1)
       + 1125*traceYuAdjYu*Sqr(g2) + 270*Sqr(g1)*Sqr(g2) + 375*traceYeAdjYe*(
       Sqr(g1) + Sqr(g2)) + 4000*traceYuAdjYu*Sqr(g3) + 125*traceYdAdjYd*(Sqr(g1
-      ) + 9*Sqr(g2) + 32*Sqr(g3)) + 300*Sqr(Lambda1) + 200*Sqr(Lambda2)) +
-      0.0375*((-160*Lambda1 - 180*traceYdAdjYd - 60*traceYeAdjYe - 180*
-      traceYuAdjYu + 129*Sqr(g1) + 225*Sqr(g2))*(Ye*Ye.adjoint()*Ye) + 40*(Ye*
-      Ye.adjoint()*Ye*Ye.adjoint()*Ye)))).real();
+      ) + 9*Sqr(g2) + 32*Sqr(g3)) + 300*Sqr(Lambda1) + 200*Sqr(LamSH)) + 0.0375
+      *((-160*Lambda1 - 180*traceYdAdjYd - 60*traceYeAdjYe - 180*traceYuAdjYu +
+      129*Sqr(g1) + 225*Sqr(g2))*(Ye*Ye.adjoint()*Ye) + 40*(Ye*Ye.adjoint()*Ye
+      *Ye.adjoint()*Ye)))).real();
 
 
    return beta_Ye;

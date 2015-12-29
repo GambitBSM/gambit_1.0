@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:15
+// File generated at Tue 29 Dec 2015 17:22:00
 
 #include "SingletDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -73,7 +73,7 @@ Eigen::Matrix<double,3,3> SingletDM_susy_parameters::calc_beta_Yd_two_loop(const
       *Sqr(g2) + 1.875*traceYeAdjYe*(Sqr(g1) + Sqr(g2)) + 20*traceYuAdjYu*Sqr(
       g3) + 2.066666666666667*Sqr(g1)*Sqr(g3) + 9*Sqr(g2)*Sqr(g3) + 0.625*
       traceYdAdjYd*(Sqr(g1) + 9*Sqr(g2) + 32*Sqr(g3)) + 1.5*Sqr(Lambda1) + Sqr(
-      Lambda2)) + 0.0125*((-480*Lambda1 - 540*traceYdAdjYd - 180*traceYeAdjYe -
+      LamSH)) + 0.0125*((-480*Lambda1 - 540*traceYdAdjYd - 180*traceYeAdjYe -
       540*traceYuAdjYu + 187*Sqr(g1) + 675*Sqr(g2) + 1280*Sqr(g3))*(Yd*
       Yd.adjoint()*Yd) + (300*traceYdAdjYd + 100*traceYeAdjYe + 300*
       traceYuAdjYu - 79*Sqr(g1) + 45*Sqr(g2) - 1280*Sqr(g3))*(Yd*Yu.adjoint()*

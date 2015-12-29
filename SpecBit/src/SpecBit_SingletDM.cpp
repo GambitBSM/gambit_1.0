@@ -33,7 +33,7 @@
 #include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 
-#include "gambit/SpecBit/SSDMSpec.hpp"
+#include "gambit/SpecBit/SCDMSpec.hpp"
 #include "gambit/SpecBit/SingletDMSpec.hpp"
 
 
@@ -300,9 +300,25 @@ namespace Gambit
       double mH2 = *Param.at("mH2");
       double mS2 = *Param.at("mS2");
       double lambda_hs = *Param.at("lambda_hS");
+      double lambda_s  = *Param.at("lambda_S");
+      input.HiggsIN=-mH2;
+      input.mS2Input=mS2;
+      input.LamSHInput=lambda_hs;
+      input.LamSInput=lambda_s;
+      input.QEWSB=173.15;  // scale where EWSB conditions are applied
+    }
+    
+    template <class T>
+    void fill_SCDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    {
+      double mH2 = *Param.at("mH2");
+      double mS2 = *Param.at("mS2");
+      double lambda_hs = *Param.at("lambda_hS");
+      double lambda_s  = *Param.at("lambda_S");
       input.HiggsIN=-mH2;
       input.mS2Input=mS2;
       input.Lambda2Input=lambda_hs;
+      input.Lambda3Input=lambda_s;
       input.QEWSB=173.15;  // scale where EWSB conditions are applied
     }
 
@@ -323,21 +339,21 @@ namespace Gambit
       SingletDM_input_parameters input;
       fill_SingletDM_input(input,myPipe::Param);
       input.Qin=173.15;
-     // result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SSDMSpec<SingletDM_interface<ALGORITHM1>>,Problems<SingletDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+     // result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SCDMSpec<SingletDM_interface<ALGORITHM1>>,Problems<SingletDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SingletDMSpec<SingletDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }
     
-    void get_SSDM_spectrum(const Spectrum* &result)
+    void get_SCDM_spectrum(const Spectrum* &result)
     {
       using namespace softsusy;
-      namespace myPipe = Pipes::get_SSDM_spectrum;
+      namespace myPipe = Pipes::get_SCDM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-      SSDM_input_parameters input;
-      fill_SingletDM_input(input,myPipe::Param);
+      SCDM_input_parameters input;
+      fill_SCDM_input(input,myPipe::Param);
       fill_extra_input(input,myPipe::Param);
       input.Qin=173.15;
-     // result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>,SSDMSpec<SSDM_interface<ALGORITHM1>>,Problems<SSDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
-     result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>,SSDMSpec<SSDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+     // result = run_FS_spectrum_generator<SCDM_interface<ALGORITHM1>,SCDMSpec<SCDM_interface<ALGORITHM1>>,Problems<SCDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+     result = run_FS_spectrum_generator<SCDM_interface<ALGORITHM1>,SCDMSpec<SCDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 
     }
 

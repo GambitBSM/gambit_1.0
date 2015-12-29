@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:16
+// File generated at Tue 29 Dec 2015 17:22:02
 
 #ifndef SingletDM_INPUT_PARAMETERS_H
 #define SingletDM_INPUT_PARAMETERS_H
@@ -28,13 +28,14 @@ namespace flexiblesusy {
 
 struct SingletDM_input_parameters {
    double HiggsIN;
-   double Lambda2Input;
+   double LamSHInput;
+   double LamSInput;
    double mS2Input;
    double QEWSB;
    double Qin;
 
    SingletDM_input_parameters()
-      : HiggsIN(0), Lambda2Input(0), mS2Input(0), QEWSB(0), Qin(0)
+      : HiggsIN(0), LamSHInput(0), LamSInput(0), mS2Input(0), QEWSB(0), Qin(0)
 
    {}
 };

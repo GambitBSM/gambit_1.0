@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:17
+// File generated at Tue 29 Dec 2015 17:22:02
 
 #include "SingletDM_slha_io.hpp"
 #include "SingletDM_input_parameters.hpp"
@@ -86,8 +86,9 @@ void SingletDM_slha_io::set_minpar(const SingletDM_input_parameters& input)
 
    minpar << "Block MINPAR\n";
    minpar << FORMAT_ELEMENT(1, input.HiggsIN, "HiggsIN");
-   minpar << FORMAT_ELEMENT(2, input.Lambda2Input, "Lambda2Input");
-   minpar << FORMAT_ELEMENT(3, input.mS2Input, "mS2Input");
+   minpar << FORMAT_ELEMENT(2, input.LamSHInput, "LamSHInput");
+   minpar << FORMAT_ELEMENT(3, input.LamSInput, "LamSInput");
+   minpar << FORMAT_ELEMENT(4, input.mS2Input, "mS2Input");
    slha_io.set_block(minpar);
 
 }
@@ -310,10 +311,11 @@ void SingletDM_slha_io::fill_drbar_parameters(SingletDM_mass_eigenstates& model)
       model.set_Ye(Ye);
    }
    model.set_v(slha_io.read_entry("HMIX", 3));
-   model.set_mu2(slha_io.read_entry("SM", 1));
-   model.set_ms2(slha_io.read_entry("MSOFT", 22));
+   model.set_muH(slha_io.read_entry("SM", 1));
+   model.set_muS(slha_io.read_entry("MSOFT", 22));
    model.set_Lambda1(slha_io.read_entry("SM", 2));
-   model.set_Lambda2(slha_io.read_entry("HDM", 2));
+   model.set_LamSH(slha_io.read_entry("HDM", 2));
+   model.set_LamS(slha_io.read_entry("HDM", 3));
 
 
    model.set_scale(read_scale());
@@ -349,8 +351,9 @@ void SingletDM_slha_io::fill_minpar_tuple(SingletDM_input_parameters& input,
 {
    switch (key) {
    case 1: input.HiggsIN = value; break;
-   case 2: input.Lambda2Input = value; break;
-   case 3: input.mS2Input = value; break;
+   case 2: input.LamSHInput = value; break;
+   case 3: input.LamSInput = value; break;
+   case 4: input.mS2Input = value; break;
    default: WARNING("Unrecognized entry in block MINPAR: " << key); break;
    }
 

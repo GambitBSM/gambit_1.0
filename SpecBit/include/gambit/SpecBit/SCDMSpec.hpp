@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  SSDM derived version of SubSpectrum class. Designed
+///  SCDM derived version of SubSpectrum class. Designed
 ///  for easy interface to FlexibleSUSY, but also
 ///  works with SoftSUSY as the backend with an
 ///  appropriately designed intermediate later.
@@ -26,8 +26,8 @@
 ///
 ///  *********************************************
 
-#ifndef SSDMSPEC_H
-#define SSDMSPEC_H
+#ifndef SCDMSPEC_H
+#define SCDMSPEC_H
 
 #include <memory>
 
@@ -35,7 +35,7 @@
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/SpecBit/SSDMSpec_head.hpp"   // "Header" declarations for SSDMSpec class
+#include "gambit/SpecBit/SCDMSpec_head.hpp"   // "Header" declarations for SCDMSpec class
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
@@ -56,9 +56,9 @@ namespace Gambit
      // double high_energy_minimum;  // scale at which high energy minimum occurs (or if no second minimum then default is Planck scale)
      
       //
-      // IMPLEMENTATION OF SSDMSpec MEMBER FUNCTIONS FOLLOWS  // edited for use with SSDM with most functions removed (JM)
+      // IMPLEMENTATION OF SCDMSpec MEMBER FUNCTIONS FOLLOWS  // edited for use with SCDM with most functions removed (JM)
       // 
-      // SSDMSpec this is a template class, we need these definition in the header
+      // SCDMSpec this is a template class, we need these definition in the header
       // file. It is nice to keep them seperate from the class declaration though.
       //
  
@@ -67,7 +67,7 @@ namespace Gambit
       // the object. So also need to make sure 'model_interface' is initialised first
       // (i.e. it should be declared first)
       template <class MI>
-      SSDMSpec<MI>::SSDMSpec(MI mi, str be_name, str be_version, bool switch_index_convention)
+      SCDMSpec<MI>::SCDMSpec(MI mi, str be_name, str be_version, bool switch_index_convention)
          : backend_name(be_name)
          , backend_version(be_version)
          , index_offset(-1)
@@ -78,34 +78,34 @@ namespace Gambit
       
       // Default constructor
       template <class MI>
-      SSDMSpec<MI>::SSDMSpec(bool switch_index_convention)
+      SCDMSpec<MI>::SCDMSpec(bool switch_index_convention)
          : index_offset(switch_index_convention ? 0 : -1)
       {}
   
       template <class MI>
-      SSDMSpec<MI>::~SSDMSpec()
+      SCDMSpec<MI>::~SCDMSpec()
       {}
      
      
      
       template <class MI>
-      void SSDMSpec<MI>::RunToScale(double scale)
+      void SCDMSpec<MI>::RunToScale(double scale)
       {
         model_interface.model.run_to(scale);
       }
       template <class MI>
-      double SSDMSpec<MI>::GetScale() const
+      double SCDMSpec<MI>::GetScale() const
       {
         return model_interface.model.get_scale();
       }
       template <class MI>
-      void SSDMSpec<MI>::SetScale(double scale)
+      void SCDMSpec<MI>::SetScale(double scale)
       {
         model_interface.model.set_scale(scale);
       }
       
       template <class MI>
-      std::string SSDMSpec<MI>::AccessError(std::string state) const
+      std::string SCDMSpec<MI>::AccessError(std::string state) const
       {
         std::string errormsg;
         errormsg = "Error accessing "+ state + " element is out of bounds";
@@ -182,9 +182,9 @@ namespace Gambit
      }
 
       template <class MI>
-      typename SSDMSpec<MI>::RunningGetterMaps SSDMSpec<MI>::runningpars_fill_getter_maps()
+      typename SCDMSpec<MI>::RunningGetterMaps SCDMSpec<MI>::runningpars_fill_getter_maps()
       {
-         typename SSDMSpec<MI>::RunningGetterMaps map_collection; 
+         typename SCDMSpec<MI>::RunningGetterMaps map_collection; 
          typedef typename MI::Model Model;
 
          typedef typename MTget::FInfo1 FInfo1;
@@ -206,8 +206,8 @@ namespace Gambit
 
         {
             typename MTget::fmap0 tmp_map;
-            tmp_map["mS2"]  = &Model::get_ms2;
-            tmp_map["mu2"] = &Model::get_mu2;
+            tmp_map["mS2"]  = &Model::get_muS;
+            tmp_map["mu2"] = &Model::get_muH;
             map_collection[Par::mass2].map0 = tmp_map;
          }
         
@@ -222,10 +222,10 @@ namespace Gambit
             tmp_map["g3"]= &Model::get_g3;
             tmp_map["Lambda1"]= &Model::get_Lambda1;
            
-            tmp_map["Lambda2"]= &Model::get_Lambda2;
-            tmp_map["lambda_hS"]= &Model::get_Lambda2; // same naming convention as SingletDM
-            tmp_map["Lambda3"]= &Model::get_Lambda3;
-            tmp_map["Lambda_s"]= &Model::get_Lambda3; // alternative naming convention
+            tmp_map["Lambda2"]= &Model::get_LamSH;
+            tmp_map["lambda_hS"]= &Model::get_LamSH; // same naming convention as SingletDM
+            tmp_map["Lambda3"]= &Model::get_LamS;
+            tmp_map["Lambda_s"]= &Model::get_LamS; // alternative naming convention
 
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
@@ -234,7 +234,7 @@ namespace Gambit
          {
             typename MTget::fmap0 tmp_map;
             tmp_map["vev"] = &Model::get_v;
-            tmp_map["lambda_hS"]= &Model::get_Lambda2;  // ??? not sure why it wants it here
+            tmp_map["lambda_hS"]= &Model::get_LamSH;  // ??? not sure why it wants it here
             map_collection[Par::mass1].map0 = tmp_map;
          }
 
@@ -282,9 +282,9 @@ namespace Gambit
 
       // Filler function for setter function pointer maps extractable from "runningpars" container
       template <class MI>
-      typename SSDMSpec<MI>::RunningSetterMaps SSDMSpec<MI>::runningpars_fill_setter_maps()
+      typename SCDMSpec<MI>::RunningSetterMaps SCDMSpec<MI>::runningpars_fill_setter_maps()
       {
-         typename SSDMSpec<MI>::RunningSetterMaps map_collection; 
+         typename SCDMSpec<MI>::RunningSetterMaps map_collection; 
          typedef typename MI::Model Model;
 
          typedef typename MTset::FInfo1 FInfo1;
@@ -310,8 +310,8 @@ namespace Gambit
          {
             typename MTset::fmap0 tmp_map;
 
-            tmp_map["mS2"] = &Model::set_ms2;
-            tmp_map["mu2"] = &Model::set_mu2;
+            tmp_map["mS2"] = &Model::set_muS;
+            tmp_map["mu2"] = &Model::set_muH;
 
             map_collection[Par::mass2].map0 = tmp_map;
          }
@@ -335,8 +335,8 @@ namespace Gambit
             tmp_map["g2"]= &Model::set_g2;
             tmp_map["g3"]= &Model::set_g3;
             tmp_map["Lambda1"]= &Model::set_Lambda1;
-            tmp_map["Lambda2"]= &Model::set_Lambda2;
-            tmp_map["Lambda3"]= &Model::set_Lambda3;
+            tmp_map["Lambda2"]= &Model::set_LamSH;
+            tmp_map["Lambda3"]= &Model::set_LamS;
 
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
@@ -379,9 +379,9 @@ namespace Gambit
    
       // Filler function for getter function pointer maps extractable from "phys" container
       template <class MI>
-      typename SSDMSpec<MI>::PhysSetterMaps SSDMSpec<MI>::phys_fill_setter_maps()
+      typename SCDMSpec<MI>::PhysSetterMaps SCDMSpec<MI>::phys_fill_setter_maps()
       {
-        typename SSDMSpec<MI>::PhysSetterMaps map_collection; 
+        typename SCDMSpec<MI>::PhysSetterMaps map_collection; 
         typedef typename MI::Model Model;
 
         typedef typename MTset::FInfo1M FInfo1M;
@@ -432,9 +432,9 @@ namespace Gambit
 
       // Filler function for getter function pointer maps extractable from "phys" container
       template <class MI>
-      typename SSDMSpec<MI>::PhysGetterMaps SSDMSpec<MI>::phys_fill_getter_maps()
+      typename SCDMSpec<MI>::PhysGetterMaps SCDMSpec<MI>::phys_fill_getter_maps()
       {
-         typename SSDMSpec<MI>::PhysGetterMaps map_collection; 
+         typename SCDMSpec<MI>::PhysGetterMaps map_collection; 
          typedef typename MI::Model Model;
 
          typedef typename MTget::FInfo1 FInfo1;

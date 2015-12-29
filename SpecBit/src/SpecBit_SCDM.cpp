@@ -38,8 +38,8 @@
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
 #include "gambit/SpecBit/SMskeleton.hpp"
-//#include "gambit/SpecBit/SSDMskeleton.hpp" does not exist
-//#include "gambit/SpecBit/SSDMSpec.hpp"
+//#include "gambit/SpecBit/SCDMskeleton.hpp" does not exist
+//#include "gambit/SpecBit/SCDMSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
@@ -187,15 +187,15 @@ namespace Gambit
 //      //
 //      // This object will COPY the interface data members into itself, so it is now the 
 //      // one-stop-shop for all spectrum information, including the model interface object.
-//      SSDMSpec<MI> ssdmspec(model_interface, "FlexibleSUSY", "1.1.0");
+//      SCDMSpec<MI> SCDMspec(model_interface, "FlexibleSUSY", "1.1.0");
 //
 //      // Add extra information about the scales used to the wrapper object
 //      // (last parameter turns the 'safety' check for the override setter off, which allows
 //      //  us to set parameters that don't previously exist)
 //      
-//      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-//      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-//      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+//      SCDMspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+//      SCDMspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+//      SCDMspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 //
 //      // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
 //      // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
@@ -205,7 +205,7 @@ namespace Gambit
 //      
 //      
 //      std::ostringstream warnings;
-//      const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
+//      const Problems<SCDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
 //      const bool error = problems.have_problem();
 //      problems.print_warnings(warnings);
 //      if (error==1)
@@ -238,22 +238,22 @@ namespace Gambit
 ////         slha_io.set_sminputs(oneset);
 ////         slha_io.set_minpar(input);
 ////         slha_io.set_extpar(input);
-////         slha_io.set_spectrum(ssdmspec.model_interface.model);
-////         slha_io.write_to_file("SpecBit/initial_SSDM_spectrum.slha");
+////         slha_io.set_spectrum(SCDMspec.model_interface.model);
+////         slha_io.write_to_file("SpecBit/initial_SCDM_spectrum.slha");
 ////      #endif
 //
-//      // Package pointer to QedQcd SubSpectrum object along with pointer to SSDM SubSpectrum object,
+//      // Package pointer to QedQcd SubSpectrum object along with pointer to SCDM SubSpectrum object,
 //      // and SMInputs struct.
 //      // Return pointer to this package.
 //      static Spectrum matched_spectra;
-//      matched_spectra = Spectrum(qedqcdspec,ssdmspec,sminputs,&input_Param);
+//      matched_spectra = Spectrum(qedqcdspec,SCDMspec,sminputs,&input_Param);
 //      return &matched_spectra;
 //    }
 
 
 
     template <class T>
-    void fill_SSDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    void fill_SCDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
       double mH2 = *Param.at("mH2");
       double mS2 = *Param.at("mS2");
@@ -266,26 +266,27 @@ namespace Gambit
       input.HiggsIN=-mH2;//-pow(mH,2)/2;
       input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
       input.Lambda2Input=lambda_hs;
+      input.Lambda3Input=lambda_s;
 
       input.QEWSB=173.15;  // scale where EWSB conditions are applied
     }
 //
-//    void get_SSDM_spectrum(const Spectrum* &result)
+//    void get_SCDM_spectrum(const Spectrum* &result)
 //    {
 //      using namespace softsusy;
-//      namespace myPipe = Pipes::get_SSDM_spectrum;
+//      namespace myPipe = Pipes::get_SCDM_spectrum;
 //      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-//      SSDM_input_parameters input;
-//      fill_SSDM_input(input,myPipe::Param);
+//      SCDM_input_parameters input;
+//      fill_SCDM_input(input,myPipe::Param);
 //      input.Qin=173.15;
-//      result = run_FS_spectrum_generator<SSDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+//      result = run_FS_spectrum_generator<SCDM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 //    }
 
 
 //
 //
 
-    bool check_perturb_func(double scale,SSDM_input_parameters input,const Spectrum* fullspectrum)
+    bool check_perturb_func(double scale,SCDM_input_parameters input,const Spectrum* fullspectrum)
     {
     using namespace flexiblesusy;
     using namespace softsusy;
@@ -296,12 +297,12 @@ namespace Gambit
     setup_QedQcd(oneset,sminputs);
     oneset.toMz();
     
-    typename SSDM_interface<Two_scale>::SpectrumGenerator spectrum_generator;
+    typename SCDM_interface<Two_scale>::SpectrumGenerator spectrum_generator;
     input.Qin=scale;
     spectrum_generator.run(oneset, input);
     
     std::ostringstream warnings;
-    const Problems<SSDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
+    const Problems<SCDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
     bool error = problems.have_problem();
     problems.print_warnings(warnings);
     if (error==1)
@@ -332,8 +333,8 @@ namespace Gambit
     const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
 
 
-    SSDM_input_parameters input;
-    fill_SSDM_input(input,myPipe::Param);
+    SCDM_input_parameters input;
+    fill_SCDM_input(input,myPipe::Param);
     
     
     error=check_perturb_func(scale,input,fullspectrum);
@@ -353,8 +354,8 @@ namespace Gambit
     cout<< "checking perturbative up to high scale (of minimum lambda) = " << scale << endl;
     
     const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-    SSDM_input_parameters input;
-    fill_SSDM_input(input,myPipe::Param);
+    SCDM_input_parameters input;
+    fill_SCDM_input(input,myPipe::Param);
     
     error=check_perturb_func(scale,input,fullspectrum);
     }
@@ -381,7 +382,7 @@ namespace Gambit
       //const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
 
       const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); // SSDMSpec SubSpectrum object
+      const SubSpectrum* spec = fullspectrum->get_HE(); // SCDMSpec SubSpectrum object
      
       cout<<"Scalar pole mass:" << endl;
       cout<<spec->phys().get(Par::Pole_Mass,"S")  <<endl;

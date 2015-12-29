@@ -18,6 +18,6 @@
 
 
 LIBSingletDM_SRC += \
-	models/SingletDM/SingletDM_two_scale_soft_beta_ms2.cpp \
-	models/SingletDM/SingletDM_two_scale_soft_beta_mu2.cpp \
+	models/SingletDM/SingletDM_two_scale_soft_beta_muS.cpp \
+	models/SingletDM/SingletDM_two_scale_soft_beta_muH.cpp \
 	models/SingletDM/SingletDM_two_scale_soft_beta_v.cpp

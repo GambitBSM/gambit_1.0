@@ -3,7 +3,7 @@
 ///  \file
 ///
 ///  Rollcall declarations for module functions
-///  contained in SpecBit_SSDM.cpp
+///  contained in SpecBit_SCDM.cpp
 ///
 ///  *********************************************
 ///
@@ -16,19 +16,19 @@
 ///
 ///  *********************************************
 
-#ifndef __SpecBit_SSDM_hpp__
-#define __SpecBit_SSDM_hpp__
+#ifndef __SpecBit_SCDM_hpp__
+#define __SpecBit_SCDM_hpp__
 
 
-//  #define CAPABILITY SSDM_spectrum
+//  #define CAPABILITY SCDM_spectrum
 //  START_CAPABILITY
 //
-//    #define FUNCTION get_SSDM_spectrum
+//    #define FUNCTION get_SCDM_spectrum
 //    START_FUNCTION(const Spectrum*)
 //    DEPENDENCY(SMINPUTS, SMInputs)
-//    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SSDM)
+//    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SCDM)
 //    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-//    MODEL_GROUP(singlet, (SSDM))
+//    MODEL_GROUP(singlet, (SCDM))
 //    ALLOW_MODEL_COMBINATION(higgs, singlet)
 //    #undef FUNCTION
 //  #undef CAPABILITY
@@ -43,9 +43,9 @@
     START_FUNCTION(bool)
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(SingletDM_spectrum,const Spectrum*)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SSDM)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SCDM)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SingletDM_running,SSDM))
+    MODEL_GROUP(singlet, (SingletDM_running,SCDM))
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
@@ -54,9 +54,9 @@
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(SingletDM_spectrum,const Spectrum*)
     DEPENDENCY(vacuum_stability, ddpair)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SSDM)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SCDM)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SingletDM_running,SSDM))
+    MODEL_GROUP(singlet, (SingletDM_running,SCDM))
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 
@@ -73,9 +73,9 @@
     START_FUNCTION(ddpair)
     DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(SingletDM_spectrum,const Spectrum*)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SSDM)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running,SCDM)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SingletDM_running,SSDM))
+    MODEL_GROUP(singlet, (SingletDM_running,SCDM))
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
 

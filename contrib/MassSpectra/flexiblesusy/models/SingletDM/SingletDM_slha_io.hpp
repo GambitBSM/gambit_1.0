@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:17
+// File generated at Tue 29 Dec 2015 17:22:02
 
 #ifndef SingletDM_SLHA_IO_H
 #define SingletDM_SLHA_IO_H
@@ -189,7 +189,7 @@ void SingletDM_slha_io::set_model_parameters(const SingletDM_slha<T>& model)
    {
       std::ostringstream block;
       block << "Block SM Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
-            << FORMAT_ELEMENT(1, (MODELPARAMETER(mu2)), "mu2")
+            << FORMAT_ELEMENT(1, (MODELPARAMETER(muH)), "muH")
             << FORMAT_ELEMENT(2, (MODELPARAMETER(Lambda1)), "Lambda1")
       ;
       slha_io.set_block(block);
@@ -197,14 +197,15 @@ void SingletDM_slha_io::set_model_parameters(const SingletDM_slha<T>& model)
    {
       std::ostringstream block;
       block << "Block MSOFT Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
-            << FORMAT_ELEMENT(22, (MODELPARAMETER(ms2)), "ms2")
+            << FORMAT_ELEMENT(22, (MODELPARAMETER(muS)), "muS")
       ;
       slha_io.set_block(block);
    }
    {
       std::ostringstream block;
       block << "Block HDM Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
-            << FORMAT_ELEMENT(2, (MODELPARAMETER(Lambda2)), "Lambda2")
+            << FORMAT_ELEMENT(2, (MODELPARAMETER(LamSH)), "LamSH")
+            << FORMAT_ELEMENT(3, (MODELPARAMETER(LamS)), "LamS")
       ;
       slha_io.set_block(block);
    }

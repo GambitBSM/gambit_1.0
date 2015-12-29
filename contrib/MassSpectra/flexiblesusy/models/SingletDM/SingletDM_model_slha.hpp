@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:39
+// File generated at Tue 29 Dec 2015 17:22:21
 
 #ifndef SingletDM_SLHA_H
 #define SingletDM_SLHA_H

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:15
+// File generated at Tue 29 Dec 2015 16:59:53
 
 #include "SingletDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,7 +37,7 @@ double SingletDM_soft_parameters::calc_beta_ms2_one_loop(const Soft_traces& soft
 
    double beta_ms2;
 
-   beta_ms2 = Re(4*Lambda2*mu2*oneOver16PiSqr);
+   beta_ms2 = Re(4*(6*Lambda3*ms2 + Lambda2*mu2)*oneOver16PiSqr);
 
 
    return beta_ms2;
@@ -57,9 +57,10 @@ double SingletDM_soft_parameters::calc_beta_ms2_two_loop(const Soft_traces& soft
 
    double beta_ms2;
 
-   beta_ms2 = Re(-1.6*Lambda2*twoLoop*(5*Lambda2*ms2 + 10*Lambda2*mu2 +
-      15*mu2*traceYdAdjYd + 5*mu2*traceYeAdjYe + 15*mu2*traceYuAdjYu - 3*mu2*
-      Sqr(g1) - 15*mu2*Sqr(g2)));
+   beta_ms2 = Re(-1.6*twoLoop*(15*Lambda2*mu2*traceYdAdjYd + 5*Lambda2*
+      mu2*traceYeAdjYe + 15*Lambda2*mu2*traceYuAdjYu - 3*Lambda2*mu2*Sqr(g1) -
+      15*Lambda2*mu2*Sqr(g2) + 5*ms2*Sqr(Lambda2) + 10*mu2*Sqr(Lambda2) + 300*
+      ms2*Sqr(Lambda3)));
 
 
    return beta_ms2;

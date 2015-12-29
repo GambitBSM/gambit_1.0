@@ -58,7 +58,7 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
   
   targetP.setValue("lambda_hS",Lambda_hS);
   
-  //targetP.setValue("lambda_S", 0 );
+  targetP.setValue("lambda_S", 0 );
 
   targetP.setValue("mS2", ms2 );
 
@@ -76,30 +76,32 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
 
 
 #define MODEL  SingletDM_running
-#define PARENT SSDM
+#define PARENT SCDM
 
 // Translation function definition
-void MODEL_NAMESPACE::SingletDM_running_to_SSDM (const ModelParameters &myP, ModelParameters &targetP)
+void MODEL_NAMESPACE::SingletDM_running_to_SCDM (const ModelParameters &myP, ModelParameters &targetP)
 {
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
    logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_running..."<<LogTags::info<<EOM;
   
 
-  double Lambda_hS,ms2;
-  ms2=myP.getValue("mS2");
-  Lambda_hS=myP.getValue("lambda_hS");
+  double ms2=myP.getValue("mS2");
+  double Lambda_hS=myP.getValue("lambda_hS");
+  double Lambda_S=myP.getValue("lambda_S");
   
   
   targetP.setValue("lambda_hS",Lambda_hS);
   
-  targetP.setValue("lambda_S", 0 );
+  targetP.setValue("lambda_S", Lambda_S );
 
   targetP.setValue("mS2", ms2 );
+  
+  targetP.setValue("mu3", 0 );
 
    // Done! Check that everything is ok if desired.
    #ifdef SingletDM_DBUG
      std::cout << "SingletDM_running parameters:" << myP << std::endl;
-     std::cout << "SSDM parameters   :" << targetP << std::endl;
+     std::cout << "SCDM parameters   :" << targetP << std::endl;
    #endif
 }
 

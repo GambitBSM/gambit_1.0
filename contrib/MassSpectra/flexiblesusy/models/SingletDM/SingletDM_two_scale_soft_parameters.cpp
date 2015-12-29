@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:15
+// File generated at Tue 29 Dec 2015 17:22:01
 
 #include "SingletDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -31,7 +31,7 @@ namespace flexiblesusy {
 
 SingletDM_soft_parameters::SingletDM_soft_parameters(const SingletDM_input_parameters& input_)
    : SingletDM_susy_parameters(input_)
-   , ms2(0), mu2(0), v(0)
+   , muS(0), muH(0), v(0)
 
 {
    set_number_of_parameters(numberOfParameters);
@@ -39,11 +39,11 @@ SingletDM_soft_parameters::SingletDM_soft_parameters(const SingletDM_input_param
 
 SingletDM_soft_parameters::SingletDM_soft_parameters(
    const SingletDM_susy_parameters& susy_model
-   , double ms2_, double mu2_, double v_
+   , double muS_, double muH_, double v_
 
 )
    : SingletDM_susy_parameters(susy_model)
-   , ms2(ms2_), mu2(mu2_), v(v_)
+   , muS(muS_), muH(muH_), v(v_)
 
 {
    set_number_of_parameters(numberOfParameters);
@@ -59,13 +59,13 @@ SingletDM_soft_parameters SingletDM_soft_parameters::calc_beta() const
    Soft_traces soft_traces;
    calc_soft_traces(soft_traces);
 
-   double beta_ms2(calc_beta_ms2_one_loop(TRACE_STRUCT));
-   double beta_mu2(calc_beta_mu2_one_loop(TRACE_STRUCT));
+   double beta_muS(calc_beta_muS_one_loop(TRACE_STRUCT));
+   double beta_muH(calc_beta_muH_one_loop(TRACE_STRUCT));
    double beta_v(calc_beta_v_one_loop(TRACE_STRUCT));
 
    if (get_loops() > 1) {
-      beta_ms2 += calc_beta_ms2_two_loop(TRACE_STRUCT);
-      beta_mu2 += calc_beta_mu2_two_loop(TRACE_STRUCT);
+      beta_muS += calc_beta_muS_two_loop(TRACE_STRUCT);
+      beta_muH += calc_beta_muH_two_loop(TRACE_STRUCT);
       beta_v += calc_beta_v_two_loop(TRACE_STRUCT);
 
       if (get_loops() > 2) {
@@ -76,15 +76,15 @@ SingletDM_soft_parameters SingletDM_soft_parameters::calc_beta() const
 
    const SingletDM_susy_parameters susy_betas(SingletDM_susy_parameters::calc_beta());
 
-   return SingletDM_soft_parameters(susy_betas, beta_ms2, beta_mu2, beta_v);
+   return SingletDM_soft_parameters(susy_betas, beta_muS, beta_muH, beta_v);
 }
 
 void SingletDM_soft_parameters::clear()
 {
    SingletDM_susy_parameters::clear();
 
-   ms2 = 0.;
-   mu2 = 0.;
+   muS = 0.;
+   muH = 0.;
    v = 0.;
 
 }
@@ -94,9 +94,9 @@ Eigen::ArrayXd SingletDM_soft_parameters::get() const
    Eigen::ArrayXd pars(SingletDM_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);
 
-   pars(32) = ms2;
-   pars(33) = mu2;
-   pars(34) = v;
+   pars(33) = muS;
+   pars(34) = muH;
+   pars(35) = v;
 
 
    return pars;
@@ -106,8 +106,8 @@ void SingletDM_soft_parameters::print(std::ostream& ostr) const
 {
    SingletDM_susy_parameters::print(ostr);
    ostr << "soft parameters:\n";
-   ostr << "ms2 = " << ms2 << '\n';
-   ostr << "mu2 = " << mu2 << '\n';
+   ostr << "muS = " << muS << '\n';
+   ostr << "muH = " << muH << '\n';
    ostr << "v = " << v << '\n';
 
 }
@@ -116,9 +116,9 @@ void SingletDM_soft_parameters::set(const Eigen::ArrayXd& pars)
 {
    SingletDM_susy_parameters::set(pars);
 
-   ms2 = pars(32);
-   mu2 = pars(33);
-   v = pars(34);
+   muS = pars(33);
+   muH = pars(34);
+   v = pars(35);
 
 }
 

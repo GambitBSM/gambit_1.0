@@ -144,7 +144,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   # Set the models (spectrum generators) existing in flexiblesusy (could autogen this, but that would build some things we don't need)
 
 
-  set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM SSDM SingletDM)
+  set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM SCDM SingletDM)
  
 
   # Explain how to build each of the flexiblesusy spectrum generators we need.  Configure now, serially, to prevent parallel build issues.

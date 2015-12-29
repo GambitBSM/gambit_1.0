@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:16
+// File generated at Tue 29 Dec 2015 17:22:02
 
 #include "SingletDM_input_parameters.hpp"
 
@@ -27,7 +27,8 @@ namespace flexiblesusy {
 std::ostream& operator<<(std::ostream& ostr, const SingletDM_input_parameters& input)
 {
    ostr << "HiggsIN = " << INPUT(HiggsIN) << ", ";
-   ostr << "Lambda2Input = " << INPUT(Lambda2Input) << ", ";
+   ostr << "LamSHInput = " << INPUT(LamSHInput) << ", ";
+   ostr << "LamSInput = " << INPUT(LamSInput) << ", ";
    ostr << "mS2Input = " << INPUT(mS2Input) << ", ";
    ostr << "QEWSB = " << INPUT(QEWSB) << ", ";
    ostr << "Qin = " << INPUT(Qin) << ", ";

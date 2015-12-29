@@ -42,26 +42,28 @@
     ALLOW_MODEL_COMBINATION(higgs_running, singlet_running)
     #undef FUNCTION
 
-
-
-  #undef CAPABILITY
-
-  #define CAPABILITY SSDM_spectrum
-  START_CAPABILITY
-//
-//    // Create Spectrum object from SMInputs structs, SM Higgs parameters,
-//    // and the SingletDM parameters
-    #define FUNCTION get_SSDM_spectrum
+    #define FUNCTION get_SCDM_spectrum
     START_FUNCTION(const Spectrum*)
     DEPENDENCY(SMINPUTS, SMInputs)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SSDM)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SCDM)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SSDM))
+    MODEL_GROUP(singlet, (SCDM))
     ALLOW_MODEL_COMBINATION(higgs, singlet)
     #undef FUNCTION
-//
-//
+
+
+
   #undef CAPABILITY
+
+//  #define CAPABILITY SCDM_spectrum
+//  START_CAPABILITY
+////
+////    // Create Spectrum object from SMInputs structs, SM Higgs parameters,
+////    // and the SingletDM parameters
+//
+////
+////
+//  #undef CAPABILITY
 
 
 

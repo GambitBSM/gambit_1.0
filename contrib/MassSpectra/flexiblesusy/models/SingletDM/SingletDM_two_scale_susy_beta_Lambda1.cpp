@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:14
+// File generated at Tue 29 Dec 2015 17:22:00
 
 #include "SingletDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -47,7 +47,7 @@ double SingletDM_susy_parameters::calc_beta_Lambda1_one_loop(const Susy_traces& 
       + 12*Lambda1*traceYdAdjYd - 12*traceYdAdjYdYdAdjYd + 4*Lambda1*
       traceYeAdjYe - 4*traceYeAdjYeYeAdjYe + 12*Lambda1*traceYuAdjYu - 12*
       traceYuAdjYuYuAdjYu - 1.8*Lambda1*Sqr(g1) - 9*Lambda1*Sqr(g2) + 0.9*Sqr(
-      g1)*Sqr(g2) + 12*Sqr(Lambda1) + 4*Sqr(Lambda2)));
+      g1)*Sqr(g2) + 12*Sqr(Lambda1) + 4*Sqr(LamSH)));
 
 
    return beta_Lambda1;
@@ -85,7 +85,7 @@ double SingletDM_susy_parameters::calc_beta_Lambda1_two_loop(const Susy_traces& 
 
    beta_Lambda1 = Re(twoLoop*(-3.411*Power(g1,6) + 38.125*Power(g2,6) +
       9.435*Power(g1,4)*Lambda1 - 9.125*Power(g2,4)*Lambda1 - 78*Power(Lambda1,
-      3) - 32*Power(Lambda2,3) - 3*Lambda1*traceYdAdjYdYdAdjYd + 60*
+      3) - 32*Power(LamSH,3) - 3*Lambda1*traceYdAdjYdYdAdjYd + 60*
       traceYdAdjYdYdAdjYdYdAdjYd + 12*traceYdAdjYdYdAdjYuYuAdjYd - 42*Lambda1*
       traceYdAdjYuYuAdjYd - 24*traceYdAdjYuYuAdjYdYdAdjYd - 12*
       traceYdAdjYuYuAdjYuYuAdjYd - Lambda1*traceYeAdjYeYeAdjYe + 20*
@@ -102,7 +102,7 @@ double SingletDM_susy_parameters::calc_beta_Lambda1_two_loop(const Susy_traces& 
       Lambda1*(-9*Lambda1 + 10*Sqr(g3))) - 72*traceYuAdjYu*Sqr(Lambda1) + 10.8*
       Sqr(g1)*Sqr(Lambda1) + 54*Sqr(g2)*Sqr(Lambda1) - 0.3*traceYeAdjYe*(15*
       Power(g1,4) - Sqr(g1)*(25*Lambda1 + 22*Sqr(g2)) + 5*(Power(g2,4) - 5*
-      Lambda1*Sqr(g2) + 16*Sqr(Lambda1))) - 20*Lambda1*Sqr(Lambda2)));
+      Lambda1*Sqr(g2) + 16*Sqr(Lambda1))) - 20*Lambda1*Sqr(LamSH)));
 
 
    return beta_Lambda1;

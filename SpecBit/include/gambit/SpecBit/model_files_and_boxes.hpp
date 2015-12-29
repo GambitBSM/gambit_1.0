@@ -138,7 +138,7 @@ MAKE_INTERFACE  // Creates CMSSM_interface class
 MAKE_INTERFACE
 #undef MODELNAME
 
-#define MODELNAME SSDM
+#define MODELNAME SCDM
 #include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary SSDM model headers etc.
 MAKE_INTERFACE
 #undef MODELNAME

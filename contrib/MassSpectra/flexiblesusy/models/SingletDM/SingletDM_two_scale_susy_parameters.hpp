@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 17 Dec 2015 12:53:13
+// File generated at Tue 29 Dec 2015 17:21:59
 
 #ifndef SingletDM_TWO_SCALE_susy_parameters_H
 #define SingletDM_TWO_SCALE_susy_parameters_H
@@ -39,9 +39,9 @@ namespace flexiblesusy {
 class SingletDM_susy_parameters : public Beta_function {
 public:
    explicit SingletDM_susy_parameters(const SingletDM_input_parameters& input_ = SingletDM_input_parameters());
-   SingletDM_susy_parameters(double scale_, double loops_, double thresholds_, const SingletDM_input_parameters& input_, double g1_, double g2_, double g3_, double Lambda2_, double Lambda1_,
-   const Eigen::Matrix<double,3,3>& Yu_, const Eigen::Matrix<double,3,3>& Yd_,
-   const Eigen::Matrix<double,3,3>& Ye_
+   SingletDM_susy_parameters(double scale_, double loops_, double thresholds_, const SingletDM_input_parameters& input_, double g1_, double g2_, double g3_, double LamS_, double LamSH_, double
+   Lambda1_, const Eigen::Matrix<double,3,3>& Yu_, const Eigen::Matrix<double,3
+   ,3>& Yd_, const Eigen::Matrix<double,3,3>& Ye_
 );
    virtual ~SingletDM_susy_parameters() {}
    virtual Eigen::ArrayXd beta() const;
@@ -58,7 +58,8 @@ public:
    void set_g1(double g1_) { g1 = g1_; }
    void set_g2(double g2_) { g2 = g2_; }
    void set_g3(double g3_) { g3 = g3_; }
-   void set_Lambda2(double Lambda2_) { Lambda2 = Lambda2_; }
+   void set_LamS(double LamS_) { LamS = LamS_; }
+   void set_LamSH(double LamSH_) { LamSH = LamSH_; }
    void set_Lambda1(double Lambda1_) { Lambda1 = Lambda1_; }
    void set_Yu(const Eigen::Matrix<double,3,3>& Yu_) { Yu = Yu_; }
    void set_Yu(int i, int k, double value) { Yu(i,k) = value; }
@@ -70,7 +71,8 @@ public:
    double get_g1() const { return g1; }
    double get_g2() const { return g2; }
    double get_g3() const { return g3; }
-   double get_Lambda2() const { return Lambda2; }
+   double get_LamS() const { return LamS; }
+   double get_LamSH() const { return LamSH; }
    double get_Lambda1() const { return Lambda1; }
    const Eigen::Matrix<double,3,3>& get_Yu() const { return Yu; }
    double get_Yu(int i, int k) const { return Yu(i,k); }
@@ -85,7 +87,8 @@ protected:
    double g1;
    double g2;
    double g3;
-   double Lambda2;
+   double LamS;
+   double LamSH;
    double Lambda1;
    Eigen::Matrix<double,3,3> Yu;
    Eigen::Matrix<double,3,3> Yd;
@@ -94,7 +97,7 @@ protected:
    SingletDM_input_parameters input;
 
 private:
-   static const int numberOfParameters = 32;
+   static const int numberOfParameters = 33;
 
    struct Susy_traces {
       double traceYdAdjYd;
@@ -123,9 +126,12 @@ private:
    double calc_beta_g3_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_g3_two_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_g3_three_loop(const TRACE_STRUCT_TYPE&) const;
-   double calc_beta_Lambda2_one_loop(const TRACE_STRUCT_TYPE&) const;
-   double calc_beta_Lambda2_two_loop(const TRACE_STRUCT_TYPE&) const;
-   double calc_beta_Lambda2_three_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamS_one_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamS_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamS_three_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamSH_one_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamSH_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamSH_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda1_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda1_two_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda1_three_loop(const TRACE_STRUCT_TYPE&) const;
