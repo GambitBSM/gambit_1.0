@@ -118,33 +118,6 @@ namespace Gambit
       else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from external_funcs BEgroup.");
     }
 
-
-    /*
-    void Aldo_test(int &nevents) {
-
-      using namespace Pipes::Aldo_test;
-
-      cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
-        BEreq::Read_Aldo_Sim.name() << " from " <<
-        BEreq::Read_Aldo_Sim.backend() << ", v" <<
-        BEreq::Read_Aldo_Sim.version() << "." << endl;
-
-      cout << " calling function " << BEreq::Read_Aldo_Sim(nevents) << endl;
-
-      nevents = 42;
-
-    }
-    */
-
-
-    void Aldos_evgen(HEPUtils::Event &how_many) {
-
-      HEPUtils::Particle* chosen = new HEPUtils::Particle(40.5, -32.6, 0.5, 51.992884131, 13);
-      how_many.add_particle(chosen);
-
-      cout << " we created a particle " << endl;
-    }
-
     // FastSim
     void fast_sim_init(double &which) {
 
