@@ -155,6 +155,9 @@ BE_INI_FUNCTION
     // Initialize yield tables for use in cascade decays
     readSpectra();
 
+    // Delete the heap filename
+    delete filename_c;
+
 }
 END_BE_INI_FUNCTION
 

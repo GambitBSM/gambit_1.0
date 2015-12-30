@@ -327,9 +327,11 @@ namespace Gambit
        }
 
        // Delete the thread variables
-       if (stream != NULL)     delete [] stream;
-       if (streamtags != NULL) delete [] streamtags;
-       if (backlog != NULL)    delete [] backlog;
+       if (stream != NULL)         delete [] stream;
+       if (streamtags != NULL)     delete [] streamtags;
+       if (backlog != NULL)        delete [] backlog;
+       if (current_module !=NULL)  delete [] current_module;
+       if (current_backend !=NULL) delete [] current_backend;
     }
 
     /// Function to construct loggers according to blueprint
