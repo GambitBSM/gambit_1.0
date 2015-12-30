@@ -268,8 +268,6 @@ int main(int argc, char* argv[])
       cout     << ss.str();    
       logger() << ss.str() << EOM;
     }
-    // Free the memory held by the RNG
-    Random::delete_rng_engine();
     return EXIT_SUCCESS;
   }
 
@@ -310,9 +308,6 @@ int main(int argc, char* argv[])
     MPI_Finalize();
   }
   #endif
-
-  // Free the memory held by the RNG
-  Random::delete_rng_engine();
 
   return EXIT_SUCCESS;
 
