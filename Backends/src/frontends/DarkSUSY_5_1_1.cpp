@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend for DarkSUSY 5.1.3 backend
+///  Frontend for DarkSUSY 5.1.1 backend
 ///
 ///  *********************************************
 ///
@@ -35,7 +35,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/DarkSUSY.hpp"
+#include "gambit/Backends/frontends/DarkSUSY_5_1_1.hpp"
 
 #define square(x) ((x) * (x))  // square a number
 

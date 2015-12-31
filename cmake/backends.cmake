@@ -44,9 +44,9 @@
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
 set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
-set(darksusy_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.1")
-set(darksusy_dl "darksusy-5.1.1.tar.gz")
-set(DS_PATCH_DIR "${PROJECT_SOURCE_DIR}/Backends/patches/DarkSUSY/5.1.1")
+set(darksusy_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.3")
+set(darksusy_dl "darksusy-5.1.3.tar.gz")
+set(DS_PATCH_DIR "${PROJECT_SOURCE_DIR}/Backends/patches/DarkSUSY/5.1.3")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(_ld_prefix "-Wl,-all_load")
   set(_ld_suffix "")
@@ -75,6 +75,41 @@ ExternalProject_Add(darksusy
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
 )
 add_extra_targets(darksusy ${darksusy_dir} ${backend_download}/${darksusy_dl} distclean)
+
+# DarkSUSY 5.1.1
+set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
+set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
+set(darksusy_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.1")
+set(darksusy_dl "darksusy-5.1.1.tar.gz")
+set(DS_PATCH_DIR "${PROJECT_SOURCE_DIR}/Backends/patches/DarkSUSY/5.1.1")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(_ld_prefix "-Wl,-all_load")
+  set(_ld_suffix "")
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  set(_ld_prefix "-Wl,--whole-archive")
+  set(_ld_suffix "-Wl,--no-whole-archive")
+endif()
+set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE_DIR>/lib/libdarksusy.a <SOURCE_DIR>/lib/libisajet.a ${_ld_suffix})
+ExternalProject_Add(darksusy_5_1_1
+  URL http://www.fysik.su.se/~edsjo/darksusy/tars/${darksusy_dl}
+  URL_MD5 ebeb0e1cfb4d834858e120190e423f62
+  DOWNLOAD_DIR ${backend_download}
+  SOURCE_DIR ${darksusy_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
+        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
+        #COMMAND patch -b -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
+        #COMMAND patch -b -p2 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif
+ # FIXME DarkSUSY segfaults with -O2 setting
+ #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy}
+        COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
+  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
+)
+add_extra_targets(darksusy_5_1_1 ${darksusy_dir} ${backend_download}/${darksusy_dl} distclean)
 
 # SuperIso
 set(superiso_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SuperIso/3.4")
@@ -490,28 +525,29 @@ ExternalProject_Add(higgssignals
 add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssignals_dl} hyperclean)
 
 
-set_target_properties(ddcalc
-                      gamlike
-                      darksusy
+set_target_properties(darksusy
+                      darksusy_5_1_1
                       micromegas
                       micromegasSingletDM
                       superiso
-                      nulike
-                      pythia
-                      fastsim
                       higgssignals
                       higgsbounds
                       higgsbounds_tables
                       feynhiggs
                       feynhiggs_2_11_2
                       susyhit
+                      pythia
+                      ddcalc
+                      gamlike
+                      nulike
+                      fastsim
                       PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends
                   DEPENDS
+                  darksusy
                   micromegas
                   micromegasSingletDM
-                  darksusy
                   superiso
                   higgssignals
                   higgsbounds
@@ -525,6 +561,7 @@ add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike) #fastsim
 add_custom_target(clean-backends
                   DEPENDS
                   clean-darksusy
+                  clean-darksusy_5_1_1
                   clean-micromegas
                   clean-micromegasSingletDM
                   clean-superiso
@@ -533,10 +570,10 @@ add_custom_target(clean-backends
                   clean-feynhiggs
                   clean-feynhiggs_2_11_2
                   clean-susyhit
-                  clean-delphes
-                  clean-flexiblesusy
                   clean-pythia
                   clean-ddcalc
                   clean-gamlike
                   clean-nulike
+                  clean-delphes
+                  clean-flexiblesusy
                  )
