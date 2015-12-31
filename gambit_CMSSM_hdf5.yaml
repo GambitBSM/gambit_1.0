@@ -57,21 +57,19 @@ Scanner:
     square_grid:
       plugin: square_grid
       verion: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 30 #NxN grid
+      purpose: Likelihood
+      grid_pts: 30 #NxN grid
 
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 1000
-        tol: 0.1
-        outfile: 0
-        root: "runs/CMSSM_multinest_hdf5/samples/native-"
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
+      like:  Likelihood
+      nlive: 1000
+      tol: 0.1
+      outfile: 0
+      root: "runs/CMSSM_multinest_hdf5/samples/native-"
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
 
 ###############################

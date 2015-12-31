@@ -70,21 +70,20 @@ Scanner:
   scanners:
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 2000
-        tol: 0.1
-        mmodal: 1
-        # write native MultiNest ascii output files?
-        outfile: 0
-        # this needs to default to the prinnter output location
-        root: "runs/MSSM7/samples/native-"
-        # resuming doesn't work yet
-        resume: 0
-        # No options to set, but still need the nodes at the moment...
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:  
+      like:  Likelihood
+      nlive: 2000
+      tol: 0.1
+      mmodal: 1
+      # write native MultiNest ascii output files?
+      outfile: 0
+      # this needs to default to the prinnter output location
+      root: "runs/MSSM7/samples/native-"
+      # resuming doesn't work yet
+      resume: 0
+      # No options to set, but still need the nodes at the moment...
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:  
 
 ObsLikes:
 

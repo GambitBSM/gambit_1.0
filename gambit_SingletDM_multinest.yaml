@@ -79,22 +79,20 @@ Scanner:
     square_grid:
       plugin: square_grid
       verion: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 3 #NxN grid
+      purpose: Likelihood
+      grid_pts: 3 #NxN grid
 
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 1000
-        tol: 0.1
-        aux_printer_txt_options:
-          output_file: "runs/singletDM_multinest/samples/gambit_output.txt"
-        aux_printer_stats_options:
-          output_file: "runs/singletDM_multinest/samples/gambit_output.stats"
-        aux_printer_live_options:
-          output_file: "runs/singletDM_multinest/samples/gambit_output.live"
+      like:  Likelihood
+      nlive: 1000
+      tol: 0.1
+      aux_printer_txt_options:
+        output_file: "runs/singletDM_multinest/samples/gambit_output.txt"
+      aux_printer_stats_options:
+        output_file: "runs/singletDM_multinest/samples/gambit_output.stats"
+      aux_printer_live_options:
+        output_file: "runs/singletDM_multinest/samples/gambit_output.live"
 
 ###############################
 # Observables of interest

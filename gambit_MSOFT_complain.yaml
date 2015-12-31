@@ -136,10 +136,9 @@ Scanner:
   scanners:
     mcmc:
       plugin: toy_mcmc
-      options:
-        point_number: 2
-        output_file:  output
-        like:  Likelihood
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
 
     random:
       plugin: random_sampler
@@ -170,17 +169,15 @@ Scanner:
                 
     square_grid:
       plugin: square_grid
-      verion: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 3 #NxN grid
+      version: ">=1.0"
+      purpose: Likelihood
+      grid_pts: 3 #NxN grid
         
     grid:
       plugin: grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: [4, 2]
+      purpose: Likelihood
+      grid_pts: [4, 2]
     
   objectives:
 

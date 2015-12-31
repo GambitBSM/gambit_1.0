@@ -54,23 +54,20 @@ Scanner:
 
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 200
-        tol: 0.01
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
-
+      like:  Likelihood
+      nlive: 200
+      tol: 0.01
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
     random:
       plugin: random_sampler
-      options:
-        point_number: 100
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
+      point_number: 100
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
 
 ###############################
 # Observables of interest

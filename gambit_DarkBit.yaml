@@ -224,17 +224,15 @@ Scanner:
   scanners:
     mcmc:
       plugin: toy_mcmc
-      options:
-        point_number: 2
-        output_file:  output
-        like:  Likelihood
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
 
     square_grid:
       plugin: square_grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 2 #NxN grid
+      purpose: Likelihood
+      grid_pts: 2 #NxN grid
 
 ###############################
 # Observables of interest

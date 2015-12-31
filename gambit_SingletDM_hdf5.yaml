@@ -117,21 +117,19 @@ Scanner:
   scanners:
     square_grid:
       plugin: square_grid
-      verion: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 1 #NxN grid
+      version: ">=1.0"
+      purpose: Likelihood
+      grid_pts: 1 #NxN grid
 
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 1000
-        tol: 0.1
-        # No options to set, but still need the nodes at the moment...
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
+      like:  Likelihood
+      nlive: 1000
+      tol: 0.1
+      # No options to set, but still need the nodes at the moment...
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
 
 ###############################

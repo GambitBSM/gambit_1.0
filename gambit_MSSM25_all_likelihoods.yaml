@@ -101,10 +101,9 @@ Scanner:
   scanners:
     square_grid:
       plugin: square_grid
-      verion: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 30 #NxN grid
+      version: ">=1.0"
+      purpose: Likelihood
+      grid_pts: 30 #NxN grid
 
 ###############################
 # Observables of interest

@@ -80,10 +80,9 @@ Scanner:
   
     twalk:
       plugin: twalk
-      options:
-        tolerance: 1.001
-        #chain_number: 20
-        projection_dimension: 4
+      tolerance: 1.001
+      #chain_number: 20
+      projection_dimension: 4
         
     de:
       plugin: Diver
@@ -95,9 +94,8 @@ Scanner:
       
     random:
       plugin: random_sampler
-      options:
-        point_number: 100000000
-        like: Likelihood
+      point_number: 100000000
+      like: Likelihood
           
     toy:
       purpose: Likelihood
@@ -107,57 +105,51 @@ Scanner:
     square_grid:
       plugin: square_grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 3 #NxN grid
+      purpose: Likelihood
+      grid_pts: 3 #NxN grid
         
     grid:
       plugin: grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: [4, 2]
+      purpose: Likelihood
+      grid_pts: [4, 2]
         
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 2000
-        tol: 0.1
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
+      like:  Likelihood
+      nlive: 2000
+      tol: 0.1
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
           
     gnest:
       plugin: gnest
-      options:
-        file_name: "output_file"
-        like_purpose: Likelihood
-        live_number: 2000
+      file_name: "output_file"
+      like_purpose: Likelihood
+      live_number: 2000
           
     bin_grid:
       plugin: bin_grid
-      options:
-        input_files: ["runs/spartan_multinest/samples/gambit_output.txt"]
-        output_file: "output"
-        xrange: [0, 1]
-        yrange: [0, 1]
-        grid: [100, 100]
-        selected_pts: [2, 3]
-        mult: 5
-        flags: ["linear"]
+      input_files: ["runs/spartan_multinest/samples/gambit_output.txt"]
+      output_file: "output"
+      xrange: [0, 1]
+      yrange: [0, 1]
+      grid: [100, 100]
+      selected_pts: [2, 3]
+      mult: 5
+      flags: ["linear"]
         
     bin_grid_greg:
       plugin: bin_grid
-      options:
-        input_files: ["output_file"]
-        output_file: "output"
-        xrange: [0.0, 1.0]
-        yrange: [0.0, 1.0]
-        grid: [100, 100]
-        selected_pts: [0, 1]
-        mult: 0
-        flags: ["linear"]
+      input_files: ["output_file"]
+      output_file: "output"
+      xrange: [0.0, 1.0]
+      yrange: [0.0, 1.0]
+      grid: [100, 100]
+      selected_pts: [0, 1]
+      mult: 0
+      flags: ["linear"]
         
 ##########################################
     
