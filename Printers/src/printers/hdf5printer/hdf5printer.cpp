@@ -779,7 +779,7 @@ namespace Gambit
          }
 
          // Gather the IDs for previous points
-         bool allvalid = true;
+         //bool allvalid = true;
          unsigned long lastvalid = 0;
          for(size_t i=0; i<dsetdata.pointIDs.size(); i++)
          {

@@ -81,9 +81,10 @@ namespace Gambit
     /// pointID / process number pair
     /// Used to identify a single parameter space point
     //typedef std::pair<unsigned long int, unsigned int> PPIDpair;
-    struct PPIDpair {
+    struct PPIDpair
+    {
       long int pointID;
-      int  rank;
+      unsigned int rank;
       PPIDpair() 
         : pointID(0)
         , rank(0)
