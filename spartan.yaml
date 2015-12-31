@@ -87,34 +87,30 @@ Scanner:
   
     random:
       plugin: random_sampler
-      options:
-        point_number: 20
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
+      output_file:  output
+      like:  LogLike
+      point_number: 20
+      files:
+        output_file: "weights ..."
         
     square_grid:
       plugin: square_grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 3 #NxN grid
+      like: LogLike
+      grid_pts: 3 #NxN grid
             
     grid:
       plugin: grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: [2, 2]
+      like: LogLike
+      grid_pts: [2, 2]
 
   objectives:
 
     uniform:
       plugin: uniform
       version: ">=1.0 & <2.0"
-      options:
-        some_param: 10
+      some_param: 10
       parameters:
         param...2:
           range: [-10, 10]          
@@ -128,7 +124,7 @@ ObsLikes:
 
 
   # Test CMSSM_I, ExampleBit_A and ExampleBit_B
-  - purpose:      Likelihood
+  - purpose:      LogLike
     capability:   lnL_ExampleBitB
     type:         double
     function:     ""
@@ -139,7 +135,7 @@ ObsLikes:
     capability:   ptrmeth_arr_tester
 
   # Test loop manager
-  - purpose:      Likelihood
+  - purpose:      LogLike
     capability:   nevents_like
     type:         double
 
