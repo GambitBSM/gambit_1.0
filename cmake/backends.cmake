@@ -57,7 +57,7 @@ endif()
 set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE_DIR>/lib/libdarksusy.a <SOURCE_DIR>/lib/libisajet.a ${_ld_suffix})
 ExternalProject_Add(darksusy
   URL http://www.fysik.su.se/~edsjo/darksusy/tars/${darksusy_dl}
-  URL_MD5 ebeb0e1cfb4d834858e120190e423f62
+  URL_MD5 ca95ffa083941a469469710fab2f3c97
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${darksusy_dir}
   BUILD_IN_SOURCE 1
