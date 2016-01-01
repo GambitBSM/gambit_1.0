@@ -276,19 +276,16 @@ ExternalProject_Add(fastsim
 add_extra_targets(fastsim ${fastsim_dir} null distclean)
 
 # Nulike
-set(nulike_location "${GAMBIT_INTERNAL}/nulike")
-set(nulike_ver "1\\.0\\.0")
+set(nulike_ver "1.0.0")
+set(nulike_location "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
 set(nulike_lib "libnulike")
-set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/1.0.0")
-set(nulike_short_dir "./Backends/installed/nulike/1.0.0")
+set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/${nulike_ver}")
+set(nulike_short_dir "./Backends/installed/nulike/${nulike_ver}")
 set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
-  #URL
-  #URL_MD5
-  #DOWNLOAD_DIR ${backend_download}
-  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-           COMMAND ${CMAKE_COMMAND} -E copy_directory ${nulike_location} ${nulike_dir}
+  URL ${nulike_location}
+  URL_MD5 c2a3abec8e9a20ec7e113d9600ef8118
+  DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
@@ -556,7 +553,7 @@ add_custom_target(backends
                   pythia
                  )
 
-add_custom_target(backends-nonfree DEPENDS ddcalc gamlike nulike) #fastsim
+add_custom_target(backends-nonfree DEPENDS ddcalc gamlike) #fastsim
 
 add_custom_target(clean-backends
                   DEPENDS
