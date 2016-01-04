@@ -560,6 +560,7 @@ namespace Gambit
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
       // Determine LogTag number
       myLogTag = Logging::str2tag(myOrigin);
+      if (not claw.model_exists(origin_name)) check_missing_LogTag();
     }
             
     /// Destructor

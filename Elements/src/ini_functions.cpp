@@ -170,26 +170,17 @@ namespace Gambit
   }
      
   /// Load a backend library
-  int loadLibrary(str be, str ver, str sv, void*& pHandle, bool& present, bool with_BOSS)
+  int loadLibrary(str be, str ver, str sv, void*& pHandle, bool with_BOSS)
   {
     try
     {
       const str path = Backends::backendInfo().corrected_path(be,ver);
       Backends::backendInfo().link_versions(be, ver, sv);
+      Backends::backendInfo().classloader[be+ver] = with_BOSS;
+      if (with_BOSS) Backends::backendInfo().classes_OK[be+ver] = true;
       pHandle = dlopen(path.c_str(), RTLD_LAZY);
-      if (not pHandle)
+      if (pHandle)
       {
-        std::ostringstream err;
-        str error = dlerror();
-        Backends::backendInfo().dlerrors[be+ver] = error;
-        err << "Failed loading library from " << path << " due to error: " << endl
-            << error << endl
-            << "All functions in this backend library will be disabled (i.e. given status = -1).";
-        backend_warning().raise(LOCAL_INFO,err.str());
-        present = false;
-      }
-      else
-      {       
         // If dlinfo is available, use it to verify the path of the backend that was just loaded.
         #ifdef HAVE_LINK_H
           link_map *map;
@@ -210,11 +201,19 @@ namespace Gambit
         #endif
         logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) 
                  << LogTags::backends << LogTags::info << EOM;
-        present = true;
+        Backends::backendInfo().works[be+ver] = true;
       }
-      Backends::backendInfo().works[be+ver] = present;
-      Backends::backendInfo().classloader[be+ver] = with_BOSS;
-      if (with_BOSS) Backends::backendInfo().classes_OK[be+ver] = true;
+      else
+      {       
+        std::ostringstream err;
+        str error = dlerror();
+        Backends::backendInfo().dlerrors[be+ver] = error;
+        err << "Failed loading library from " << path << " due to error: " << endl
+            << error << endl
+            << "All functions in this backend library will be disabled (i.e. given status = -1).";
+        backend_warning().raise(LOCAL_INFO,err.str());
+        Backends::backendInfo().works[be+ver] = false;
+      }
     }                                                                    
     catch (std::exception& e) { ini_catch(e); }
     return 0;
@@ -264,15 +263,16 @@ namespace Gambit
   }
 
   /// Disable a backend functor if its library is missing or the symbol cannot be found. 
-  int set_backend_functor_status(bool present, functor& be_functor, str symbol_name)
+  int set_backend_functor_status(functor& be_functor, str symbol_name)
   {
+    bool present = Backends::backendInfo().works.at(be_functor.origin() + be_functor.version());
     try
     {  
       if (not present)
       {
         be_functor.setStatus(-1);
       }
-      else if(dlerror() != NULL)
+      else if(dlerror() != NULL and symbol_name != "no_symbol")
       {
         std::ostringstream err;
         err << "Library symbol " << symbol_name << " not found."  << std::endl
@@ -286,8 +286,9 @@ namespace Gambit
   }
 
   /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.        
-  int get_ctor_status(str be, str ver, str name, str barename, str args, str symbol_name, bool present)
+  int get_ctor_status(str be, str ver, str name, str barename, str args, str symbol_name)
   {
+    bool present = Backends::backendInfo().works.at(be+ver);
     try
     {  
       const str path = Backends::backendInfo().corrected_path(be,ver);

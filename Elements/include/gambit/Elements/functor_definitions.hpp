@@ -63,9 +63,7 @@ namespace Gambit
       myValue           (NULL),
       myPrintFlag       (false),
       myTimingPrintFlag (false)
-    {
-      check_missing_LogTag();
-    }
+    {}
 
     /// Destructor
     template <typename TYPE>
@@ -207,10 +205,7 @@ namespace Gambit
                                          str origin_name,
                                          Models::ModelFunctorClaw &claw)
     : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
-      myFunction (inputFunction)
-    {
-      check_missing_LogTag();
-    }
+      myFunction (inputFunction) {}
 
     /// Calculate method
     /// The "void" specialisation can potentially manage loops,

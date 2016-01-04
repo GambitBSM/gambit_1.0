@@ -104,12 +104,12 @@ int main(int argc, char* argv[])
     logger() << core << "Command invoked: ";
     for(int i=0;i<argc;i++){ logger() << arguments[i] << " "; }
     logger() << endl;
-    logger() << core << "Starting GAMBIT" << endl << EOM;
-    if( Core().resume ) logger() << core << "Attempting to resume scan..." << endl << EOM;
+    logger() << core << "Starting GAMBIT" << EOM;
+    if( Core().resume ) logger() << core << "Attempting to resume scan..." << EOM;
     logger() << core << "Registered module functors [Core().getModuleFunctors().size()]: ";
     logger() << Core().getModuleFunctors().size() << endl;
     logger() << "Registered backend functors [Core().getBackendFunctors().size()]: ";
-    logger() << Core().getBackendFunctors().size() << endl << EOM;
+    logger() << Core().getBackendFunctors().size() << EOM;
  
     // Read YAML file, which also initialises the logger. 
     IniParser::IniFile iniFile;
