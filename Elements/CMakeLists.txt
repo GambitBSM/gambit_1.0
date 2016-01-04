@@ -15,6 +15,7 @@
 #************************************************
 
 set(source_files src/decay_table.cpp
+                 src/functors.cpp
                  src/ini_functions.cpp
                  src/slhaea_helpers.cpp
                  src/sminputs.cpp

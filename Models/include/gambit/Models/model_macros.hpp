@@ -47,7 +47,7 @@
   #define DEFINEPARS(...)                                         CORE_DEFINEPARS(__VA_ARGS__)
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
   #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
+  #define INTERPRET_AS_PARENT_FUNCTION(FUNC)                     CORE_INTERPRET_AS_PARENT_FUNCTION(FUNC)
   #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #else
   #include "gambit/Elements/module_macros_inmodule.hpp"
@@ -55,7 +55,7 @@
   #define DEFINEPARS(...)                                         /* Do nothing */
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 /* Do nothing */
   #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
+  #define INTERPRET_AS_PARENT_FUNCTION(FUNC)                     MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
   #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #endif
 
@@ -377,9 +377,9 @@
 
 /// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 /// @{
-#define INTERPRET_AS_PARENT__DEPENDENCY(DEP, TYPE)                             \
+#define INTERPRET_AS_PARENT_DEPENDENCY(DEP, TYPE)                             \
   INTERPRET_AS_X__DEPENDENCY(PARENT, DEP, TYPE)                                
-#define CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)                               \
+#define CORE_INTERPRET_AS_PARENT_FUNCTION(FUNC)                               \
   INTERPRET_AS_X__FUNCTION_FULL(PARENT,FUNC,0)                                        
 /// @}
 

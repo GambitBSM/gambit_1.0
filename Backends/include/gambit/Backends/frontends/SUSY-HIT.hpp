@@ -7,7 +7,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///  
+///
 /// \author Peter Athron
 /// \author Csaba Balazs
 /// \author Pat Scott
@@ -22,12 +22,12 @@
 // Let's go.
 LOAD_LIBRARY
 
-// Can't do anything non-MSSM with SUSY-HIT
-BE_ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+// Can't do anything non-MSSM or non-diagonal with SUSY-HIT
+BE_ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
 
 // Functions
 BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")               // Converted SUSY-HIT main routine
-BE_FUNCTION(unlikely, double, (), "s_hit_unlikely_", "unlikely") // Wrapper for 'unlikely' double 
+BE_FUNCTION(unlikely, double, (), "s_hit_unlikely_", "unlikely") // Wrapper for 'unlikely' double
 
 // Variables
 BE_VARIABLE(checkfavvio_type, checkfavvio, "checkfavvio_", "cb_checkfavvio")

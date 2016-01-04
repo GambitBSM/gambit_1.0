@@ -28,10 +28,43 @@ using namespace LogTags;
 /// Cleanup function
 void do_cleanup() { Gambit::Scanner::Plugins::plugin_info.dump(); }
 
+#ifdef WITH_MPI
+bool use_mpi_abort = true; // Set later via inifile value
+void do_emergency_MPI_shutdown(GMPI::Comm& errorComm)
+{
+  if(GMPI::Is_initialized())
+  {
+    // Broadcast emergency shutdown signal to all processes (desperate 
+    // attempt to stop everything; no guarantee of success)
+    MPI_Request req_null = MPI_REQUEST_NULL;
+    int tmp_buf;
+    errorComm.IsendToAll(&tmp_buf, 1, errorComm.mytag, &req_null);
+    logger() << LogTags::core << LogTags::info << "Emergency shutdown signal broadcast to all processes" << EOM;
+    if(use_mpi_abort)      
+    {
+      // Another desperate attempt to kill all process, also not guaranteed
+      // to succeed
+      logger() << LogTags::core << LogTags::info << "Calling MPI_Abort..." << EOM;
+      errorComm.Abort();
+    }
+    // debugging; delay shutdown of process to prevent OpenMPI from automatically killing other processes
+    // struct timespec sleep_time;
+    // sleep_time.tv_sec  = 1;
+    // sleep_time.tv_nsec = 0;
+    // nanosleep(&sleep_time,NULL);
+  }
+}
+#endif
+
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
+
+  // FIXME this is to be shifted to ScannerBit
+  #ifdef WITH_MPI
+    GMPI::Init();
+  #endif
 
   // Set default signal handling in case they are received before initialisation occurs properly
   signal(SIGTERM, sighandler_hard);
@@ -46,11 +79,6 @@ int main(int argc, char* argv[])
   sigaddset(signal_mask(), SIGINT);
   sigaddset(signal_mask(), SIGUSR1);
   sigaddset(signal_mask(), SIGUSR2);
-
-  // FIXME this is to be shifted to ScannerBit
-  #ifdef WITH_MPI
-    GMPI::Init();
-  #endif
  
   /// Create an MPI communicator group for use by error handlers
   #ifdef WITH_MPI
@@ -61,8 +89,6 @@ int main(int argc, char* argv[])
     const int ERROR_TAG=1;         // Tag for error messages
     errorComm.mytag = ERROR_TAG;
   #endif
-
-  bool use_mpi_abort = true; // Set later via inifile value
 
   try
   {
@@ -93,21 +119,21 @@ int main(int argc, char* argv[])
     logger() << core << "Setting up signal handling" << std::endl;
     YAML::Node keyvalnode = iniFile.getKeyValuePairNode();
     signaldata().set_cleanup(&do_cleanup); // Call this function during emergency shutdown
-    set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown");
-    set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown");
+    set_signal_handler(keyvalnode, SIGINT,  "emergency_shutdown_longjmp");
+    set_signal_handler(keyvalnode, SIGTERM, "emergency_shutdown_longjmp");
     set_signal_handler(keyvalnode, SIGUSR1, "soft_shutdown");
     set_signal_handler(keyvalnode, SIGUSR2, "soft_shutdown");
 
     // Check if user wants to disable automatic triggering of emergency 
     // shutdown on signals received while shutdown is already in progress
+    signaldata().ignore_signals_during_shutdown = true;
     if(keyvalnode["signal_handling"]) {
        YAML::Node signal_options = keyvalnode["signal_handling"];
        if(signal_options["ignore_signals_during_shutdown"]) {
           signaldata().ignore_signals_during_shutdown = signal_options["ignore_signals_during_shutdown"].as<bool>();
-          logger() << "ignore_signals_during_shutdown = "<<signaldata().ignore_signals_during_shutdown<< std::endl;
        }
     } // else use default value (true)
-    logger() << EOM;
+    logger() << "ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << EOM;
 
     // Check if user wants to disable use of MPI_Abort (since it does not work correctly in all MPI implementations)
     use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");
@@ -185,10 +211,12 @@ int main(int argc, char* argv[])
 
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      scan.Run(); 
+      block_signals();
+      scan.Run(); // Note: the likelihood container will unblock signals when it is safe to receive them.
+      unblock_signals();    
 
       //Scan is done; inform signal handlers 
-      signaldata().shutdown_begun = true;
+      signaldata().set_shutdown_begun();
 
       cout << "GAMBIT has finished successfully!" << endl;
       cout << endl;
@@ -210,14 +238,16 @@ int main(int argc, char* argv[])
   {
     if (not logger().disabled())
     {
-      cout << e.what() << endl;
+      std::ostringstream ss;
+      ss << e.what() << endl;
       #ifdef WITH_MPI
-      cout << "rank "<<rank<<": ";
+      ss << "rank "<<rank<<": ";
       #endif
-      cout << "GAMBIT has performed a controlled early shutdown." << endl;
-      signaldata().display_received_signals();
-      cout << endl;
-   }
+      ss << "GAMBIT has performed a controlled early shutdown." << endl;
+      ss << signaldata().display_received_signals() << endl;
+      cout     << ss.str();
+      logger() << ss.str() << EOM;
+  }
     // Let program shutdown normally from here
   }
 
@@ -228,13 +258,15 @@ int main(int argc, char* argv[])
   {
     if (not logger().disabled())
     {
-      cout << e.what() << endl;
+      std::ostringstream ss;
+      ss << e.what() << endl;
       #ifdef WITH_MPI
-      cout << "rank "<<rank<<": ";
+      ss << "rank "<<rank<<": ";
       #endif
-      cout << "GAMBIT has shutdown (but could not finalise or abort MPI)." << endl;
-      signaldata().display_received_signals();
-      cout << endl;
+      ss << "GAMBIT has shutdown (but could not finalise or abort MPI)." << endl;
+      ss << signaldata().display_received_signals() << endl;
+      cout     << ss.str();    
+      logger() << ss.str() << EOM;
     }
     // Free the memory held by the RNG
     Random::delete_rng_engine();
@@ -249,11 +281,7 @@ int main(int argc, char* argv[])
       cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
     }
     #ifdef WITH_MPI
-      if (GMPI::Is_initialized() and use_mpi_abort)
-      {
-        GMPI::Comm COMM_WORLD;
-        COMM_WORLD.Abort();
-      }
+    do_emergency_MPI_shutdown(errorComm);
     #endif     
     return EXIT_FAILURE;  
   }
@@ -268,11 +296,7 @@ int main(int argc, char* argv[])
     cout << "exceptions that inherit from std::exception.  Error string: " << endl;
     cout << e << endl;
     #ifdef WITH_MPI
-      if (GMPI::Is_initialized() and use_mpi_abort)
-      {
-        GMPI::Comm COMM_WORLD;
-        COMM_WORLD.Abort();
-      }
+    do_emergency_MPI_shutdown(errorComm);
     #endif     
     return EXIT_FAILURE;  
   }
@@ -280,11 +304,11 @@ int main(int argc, char* argv[])
   // FIXME to be done in ScannerBit
   // Finalise MPI
   #ifdef WITH_MPI
-    if (GMPI::Is_initialized())
-    {
-      cout << "rank " << rank << ": Shutting down MPI..." << endl;
-      MPI_Finalize();
-    }
+  if (GMPI::Is_initialized())
+  {
+    cout << "rank " << rank << ": Shutting down MPI..." << endl;
+    MPI_Finalize();
+  }
   #endif
 
   // Free the memory held by the RNG

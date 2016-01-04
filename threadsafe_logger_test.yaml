@@ -1,10 +1,8 @@
-## MultiNest version of ultra-minimal GAMBIT Initialization file (in YAML)
-# Only needs example modules ExampleBit_A, plus MultiNest
-# Currently you have to tell GAMBIT where the MultiNest shared library you
-# want to use is located (write this in config/scanner_locations.yaml)
+# Test yaml setup for running nevents_like in ExampleBit_A, for purposes of
+# testing loggers during multithreaded blocks.
 #
 # Ben Farmer <benjamin.farmer@fysik.su.se>
-# Feb 2015
+# Nov 2015
 #
  
 #======== Input parameter declarations =======
@@ -22,20 +20,22 @@ Priors:
 
 #======== Output setup ========
 Printer:
-  printer: ascii
+  printer: hdf5
   options:
-    output_file: "results.txt"
+    output_file: "results.hdf5"
+    group: "/gambit_data"
+    delete_file_if_exists: true
 
 #======== Scanner setup ========
 Scanner:
-  use_scanner: de
+  use_scanner: multinest
 
   scanners:
     multinest:
       plugin: MultiNest
       options:
         like:  LogLike
-        nlive: 20000
+        nlive: 1000
         tol: 0.01
         mmodal: 0
         # write native MultiNest ascii output files?
@@ -44,18 +44,11 @@ Scanner:
         aux_printer_txt_options:
         aux_printer_stats_options:
         aux_printer_live_options:
-    de:
-      plugin: Diver
-      NP: 1000000
-      #path: "diver_native"
-      verbosity: 2
-      like: LogLike
-      removeDuplicates: false
                     
 #======== Observables of interest ========
 ObsLikes:
   - purpose:      LogLike
-    capability:   normaldist_loglike
+    capability:   nevents_like
     module:       ExampleBit_A
     type:         double
 
@@ -72,13 +65,19 @@ Logger:
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
     [Printers]     : "Printers.log"
+  separate_file_per_process: true  # Default is "true"
 
 #======== Generic Name/Value Section ========
 KeyValues:
 
-  default_output_path: "runs/largetest_diver+ascii/"
+  signal_handling:
+    SIGINT : "emergency_shutdown_longjmp"    # default: emergency_shutdown
+    SIGTERM: "emergency_shutdown_longjmp"    # default: emergency_shutdown
+    ignore_signals_during_shutdown: true #default: true
 
-  print_timing_data: true
+  #default_output_path: "runs/threadsafe_logger_test/"
+
+  use_mpi_abort: false
 
   rng: ranlux48
 
