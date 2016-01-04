@@ -123,7 +123,7 @@ namespace Gambit
       // @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
-      // Nicely ask the entire loop to stfu
+      // Nicely ask the entire loop to be quiet
       std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
@@ -145,14 +145,14 @@ namespace Gambit
           {
             Loop::executeIteration(START_SUBPROCESS);
             // main event loop
-            while(currentEvent<nEvents) {
-              if(not *Loop::done) Loop::executeIteration(currentEvent++);
+            while(currentEvent<nEvents and not *Loop::done) {
+              Loop::executeIteration(currentEvent++);
             }
             Loop::executeIteration(END_SUBPROCESS);
           }
         }
       }
-      // Nicely thank the loop for stfu, and restore everyone's vocal cords
+      // Nicely thank the loop for being quiet, and restore everyone's vocal cords
       std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
     }
@@ -171,7 +171,7 @@ namespace Gambit
       static SLHAstruct spectrum;
       // variables for xsec veto
       std::stringstream processLevelOutput;
-      std::string _junk, line;
+      std::string _junk, readline;
       std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
@@ -257,8 +257,8 @@ namespace Gambit
           code = -1;
           totalxsec = 0.;
           while(true) {
-            std::getline(processLevelOutput, line);
-            issPtr = new std::istringstream(line);
+            std::getline(processLevelOutput, readline);
+            issPtr = new std::istringstream(readline);
             issPtr->seekg(47, issPtr->beg);
             (*issPtr) >> code;
             if (!issPtr->good() && totalxsec > 0.) break;
@@ -286,7 +286,7 @@ namespace Gambit
       static unsigned int fileCounter = -1;
       // variables for xsec veto
       std::stringstream processLevelOutput;
-      std::string _junk, line;
+      std::string _junk, readline;
       std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
@@ -355,8 +355,8 @@ namespace Gambit
           code = -1;
           totalxsec = 0.;
           while(true) {
-            std::getline(processLevelOutput, line);
-            issPtr = new std::istringstream(line);
+            std::getline(processLevelOutput, readline);
+            issPtr = new std::istringstream(readline);
             issPtr->seekg(47, issPtr->beg);
             (*issPtr) >> code;
             if (!issPtr->good() && totalxsec > 0.) break;
@@ -858,6 +858,18 @@ namespace Gambit
           const double uncertainty_sb = sqrt(srData.background_sys*srData.background_sys + srData.signal_sys*srData.signal_sys) / n_predicted_uncertain_sb;
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
+
+	  logger() << endl;                                                                                                                                                                                  
+          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;                                                                                                          
+          logger() << "  NEvents, not scaled to luminosity :" << endl;                                                                                                                                       
+          logger() << "    " << srData.n_signal << endl;                                                                                                                                                     
+	  logger() << "  NEvents, scaled  to luminosity :  " << endl;
+
+	  logger() << "    " << srData.n_signal_at_lumi << endl;
+
+          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;                                                                                                                                      
+          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "                                                                                                                     
+                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;  
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
           // Use a log-normal distribution for the nuisance parameter (more correct)

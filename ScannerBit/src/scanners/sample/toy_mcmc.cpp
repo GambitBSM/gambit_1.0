@@ -24,34 +24,34 @@
 #include "gambit/Utils/threadsafe_rng.hpp"
 
 scanner_plugin(toy_mcmc, version(1, 0, 0))
-{      
+{
         void hiFunc(){std::cout << "This is the GAMBIT toy MCMC.  Don't run serious scans with this." << std::endl;}
         plugin_constructor
         {
                 hiFunc();
         }
-        
+
         /*Define main module function.  Can input and return any types or type (exp. cannot return void).*/
         int plugin_main (void)
         {
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10)-1;
-                scan_ptr<double (const std::vector<double> &)> LogLike = get_purpose("Likelihood");
+                scan_ptr<double (const std::vector<double> &)> LogLike = get_purpose(get_inifile_value<std::string>("like"));
                 int ma                             = get_dimension();
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;
                 std::vector<double> a(ma);
                 std::vector<double> aNext(ma);
-                
+
                 if (N <= 0)
                         scan_err << "You need to choose at least 2 points" << scan_end;
-                
+
                 for (int i = 0; i < ma; i++) a[i] = Gambit::Random::draw();
-                
+
                 std::cout << "Metropolis Hastings Algorthm Started" << std::endl; // << "tpoints = " << "\n\taccept ratio = " << std::endl;
-                
+
                 chisq = -LogLike(a);
-                
+
                 do
                 {
                         total++;
@@ -68,7 +68,7 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
                         {
                                 a = aNext;
                                 //out << "   " << 2.0*chisq << std::endl;
-                                
+
                                 chisq = chisqnext;
                                 mult = 1;
                                 count++;
@@ -81,7 +81,7 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
                         }
                 }
                 while(count < N);
-                
+
                 return 0;
         }
 }

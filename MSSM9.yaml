@@ -17,7 +17,7 @@ Parameters:
       fixed_value: -0.085
 
   MSSM9atQ:
-    Qin: 
+    Qin:
       fixed_value: 1000.0
     SignMu:
       fixed_value: 1
