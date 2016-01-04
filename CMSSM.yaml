@@ -105,6 +105,10 @@ ObsLikes:
     - capability: lnL_light_quark_masses
       purpose:    LogLike
 
+    # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
+    - capability: lnL_SI_nuclear_parameters
+      purpose:    LogLike
+
     # FlavBit likelihoods
     - purpose:    LogLike
       capability: b2ll_LL
@@ -115,12 +119,8 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
-    - capability: lnL_SI_nuclear_parameters
-      purpose:    LogLike
-
-    #- purpose:    LogLike
-    #  capability: LHC_Combined_LogLike
+    - purpose:    LogLike
+      capability: LHC_Combined_LogLike
 
     - purpose:    Observable
       capability: SLHA1_violation
