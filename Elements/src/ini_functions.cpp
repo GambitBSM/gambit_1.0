@@ -182,10 +182,9 @@ namespace Gambit
         std::ostringstream err;
         str error = dlerror();
         Backends::backendInfo().dlerrors[be+ver] = error;
-        err << "Failed loading library from " << path
-            << " due to error: " << error << std::endl
-            << "All functors generated from this library will get "
-               "status=-1.";
+        err << "Failed loading library from " << path << " due to error: " << endl
+            << error << endl
+            << "All functions in this backend library will be disabled (i.e. given status = -1).";
         backend_warning().raise(LOCAL_INFO,err.str());
         present = false;
       }
@@ -209,7 +208,7 @@ namespace Gambit
         #else
           Backends::backendInfo().override_path(be, ver, ".so loaded but path unverified (system lacks dlinfo)");
         #endif
-        logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) << std::endl 
+        logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) 
                  << LogTags::backends << LogTags::info << EOM;
         present = true;
       }
@@ -277,7 +276,7 @@ namespace Gambit
       {
         std::ostringstream err;
         err << "Library symbol " << symbol_name << " not found."  << std::endl
-            << "The functor generated for this symbol will get status=-2" << std::endl;
+            << "The backend function from this symbol will be disabled (i.e. get status = -2)" << std::endl;
         backend_warning().raise(LOCAL_INFO, err.str());
         be_functor.setStatus(-2);
       }

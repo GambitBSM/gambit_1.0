@@ -231,15 +231,16 @@ namespace Gambit
     /// Log the details of the exception
     void exception::log_exception(const std::string& origin, const std::string& specific_message)
     {
-      std::ostringstream msg1, msg2;
-      msg1 << myKind << ": " << myMessage << std::endl << specific_message << std::endl;
-      msg2 << "\nRaised at: " << origin << "." << std::endl;
+      std::ostringstream msg;
+      msg << myKind << ": " << myMessage << std::endl
+          << specific_message << std::endl
+          << "Raised at: " << origin << ".";
       if (isFatal)
       {
         logger() << fatal;
-        std::ostringstream msg3;
-        msg3 << myShortWhat << std::endl << msg1.str() << msg2.str();
-        myWhat = msg3.str(); 
+        std::ostringstream myLongWhat;
+        myLongWhat << myShortWhat << std::endl << msg.str();
+        myWhat = myLongWhat.str(); 
       }
       else
       {
@@ -247,7 +248,7 @@ namespace Gambit
         myWhat = myShortWhat; 
       }
       for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; } 
-      logger() << msg1.str() << msg1.str() << EOM;
+      logger() << msg.str() << EOM;
     }
 
     /// Throw the exception onward if running serially, abort if not.
