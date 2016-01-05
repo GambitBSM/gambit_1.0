@@ -551,6 +551,7 @@ add_custom_target(backends
                   feynhiggs
                   susyhit
                   pythia
+                  nulike
                  )
 
 add_custom_target(backends-nonfree DEPENDS ddcalc gamlike) #fastsim
