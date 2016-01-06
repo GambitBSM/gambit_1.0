@@ -17,7 +17,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
-#define DARKBIT_DEBUG
+//#define DARKBIT_DEBUG
 
 namespace Gambit
 {
@@ -334,6 +334,10 @@ namespace Gambit
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
           theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      piped_invalid_point.check();
+      piped_errors.check(DarkBit_error());
+      piped_warnings.check(DarkBit_warning());
+
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -361,6 +365,10 @@ namespace Gambit
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
           theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      piped_invalid_point.check();
+      piped_errors.check(DarkBit_error());
+      piped_warnings.check(DarkBit_warning());
+
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -388,6 +396,10 @@ namespace Gambit
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
           theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      piped_invalid_point.check();
+      piped_errors.check(DarkBit_error());
+      piped_warnings.check(DarkBit_warning());
+
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -415,6 +427,9 @@ namespace Gambit
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
           theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      piped_invalid_point.check();
+      piped_errors.check(DarkBit_error());
+      piped_warnings.check(DarkBit_warning());
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;

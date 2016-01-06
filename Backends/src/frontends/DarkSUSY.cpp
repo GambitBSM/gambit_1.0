@@ -178,10 +178,19 @@ BE_NAMESPACE
   ///   --> context  void pointer (ignored)
   double neutrino_yield(const double& log10E, const int& ptype, void*&)
   {
-    int istat;
+    int istat = 0;
     const char object[3] = "su";
-    return 1e-30 * dsntmuonyield(pow(10.0,log10E),10.0,object[0],3,1,ptype,istat);
-    if (istat != 0) invalid_point().raise("Model point failed neutrino flux calculation.");
+    double result = 1e-30 * dsntmuonyield(pow(10.0,log10E),10.0,object[0],3,1,ptype,istat);
+    if (istat == 1)
+    {
+      if (not piped_warnings.inquire()) // Don't bother re-raising this warning if it's already been done since the last .check().
+        piped_warnings.request(LOCAL_INFO, "Neutrino yield from Sun is lower bound; likelihood will be conservative.");
+    }
+    else if (istat > 1)
+    {
+      piped_errors.request(LOCAL_INFO, "Inaccessible final state requested in neutrino flux calculation.");
+    }
+    return result;
   }
 
   /// Translates GAMBIT string identifiers to the SUSY
