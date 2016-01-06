@@ -77,8 +77,8 @@ ObsLikes:
     - capability: lnL_LUX_2013
       purpose:    LogLike
 
-    #- capability: IC79_loglike
-    #  purpose:    LogLike
+    - capability: IC79_loglike
+      purpose:    LogLike
 
     - capability: lnL_t_mass
       purpose:    LogLike

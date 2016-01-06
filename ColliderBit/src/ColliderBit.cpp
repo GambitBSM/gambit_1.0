@@ -97,8 +97,8 @@ namespace Gambit
     int pythiaConfigurations, pythiaNumber, nEvents;
     /// Analysis stuff
     std::vector<std::string> analysisNames;
-    HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
-
+    HEPUtilsAnalysisContainer globalAnalyses;
+    
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
@@ -427,8 +427,8 @@ namespace Gambit
       using namespace Pipes::getAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
         GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-        globalAnalyses->clear();
-        globalAnalyses->init(analysisNames);
+        globalAnalyses.clear();
+        globalAnalyses.init(analysisNames);
         return;
       }
 
@@ -450,9 +450,9 @@ namespace Gambit
         // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
         {
-          globalAnalyses->add(result);
+          globalAnalyses.add(result);
           // Use improve_xsec to combine results from the same process type
-          globalAnalyses->improve_xsec(result);
+          globalAnalyses.improve_xsec(result);
         }
 	return;
       }
@@ -798,8 +798,8 @@ namespace Gambit
       if (*Loop::iteration == FINALIZE && eventsGenerated) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        globalAnalyses->scale();
-        for (auto anaPtr = globalAnalyses->analyses.begin(); anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
+        globalAnalyses.scale();
+        for (auto anaPtr = globalAnalyses.analyses.begin(); anaPtr != globalAnalyses.analyses.end(); ++anaPtr)
           result.push_back((*anaPtr)->get_results());
         return;
       }
@@ -1814,11 +1814,11 @@ namespace Gambit
     /// @{
     void ALEPH_Selectron_Conservative_LLike(double& result)
     {
-      static ALEPHSelectronLimitAt208GeV *limitContainer = new ALEPHSelectronLimitAt208GeV();
+      static const ALEPHSelectronLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/ALEPHSelectronLimitAt208GeV.dump");
         dumped=true;
       }
@@ -1840,7 +1840,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // se_L, se_L
-      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_seL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1857,7 +1857,7 @@ namespace Gambit
       }
 
       // se_R, se_R
-      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_seR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_serserbar;
       xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1877,11 +1877,11 @@ namespace Gambit
 
     void ALEPH_Smuon_Conservative_LLike(double& result)
     {
-      static ALEPHSmuonLimitAt208GeV *limitContainer = new ALEPHSmuonLimitAt208GeV();
+      static const ALEPHSmuonLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/ALEPHSmuonLimitAt208GeV.dump");
         dumped=true;
       }
@@ -1903,7 +1903,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // smu_L, smu_L
-      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_smuL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1920,7 +1920,7 @@ namespace Gambit
       }
 
       // smu_R, smu_R
-      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_smuR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_smursmurbar;
       xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1940,11 +1940,11 @@ namespace Gambit
 
     void ALEPH_Stau_Conservative_LLike(double& result)
     {
-      static ALEPHStauLimitAt208GeV *limitContainer = new ALEPHStauLimitAt208GeV();
+      static const ALEPHStauLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/ALEPHStauLimitAt208GeV.dump");
         dumped=true;
       }
@@ -1966,7 +1966,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // stau_1, stau_1
-      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_stau1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_stau1stau1bar;
       xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -1983,7 +1983,7 @@ namespace Gambit
       }
 
       // stau_2, stau_2
-      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_stau2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_stau2stau2bar;
       xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2003,11 +2003,11 @@ namespace Gambit
 
     void L3_Selectron_Conservative_LLike(double& result)
     {
-      static L3SelectronLimitAt205GeV *limitContainer = new L3SelectronLimitAt205GeV();
+      static const L3SelectronLimitAt205GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/L3SelectronLimitAt205GeV.dump");
         dumped=true;
       }
@@ -2029,7 +2029,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // se_L, se_L
-      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_seL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -2046,7 +2046,7 @@ namespace Gambit
       }
 
       // se_R, se_R
-      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_seR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_serserbar;
       xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -2066,11 +2066,11 @@ namespace Gambit
 
     void L3_Smuon_Conservative_LLike(double& result)
     {
-      static L3SmuonLimitAt205GeV *limitContainer = new L3SmuonLimitAt205GeV();
+      static const L3SmuonLimitAt205GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/L3SmuonLimitAt205GeV.dump");
         dumped=true;
       }
@@ -2092,7 +2092,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // smu_L, smu_L
-      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_smuL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -2109,7 +2109,7 @@ namespace Gambit
       }
 
       // smu_R, smu_R
-      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_smuR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_smursmurbar;
       xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -2129,11 +2129,11 @@ namespace Gambit
 
     void L3_Stau_Conservative_LLike(double& result)
     {
-      static L3StauLimitAt205GeV *limitContainer = new L3StauLimitAt205GeV();
+      static const L3StauLimitAt205GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/L3StauLimitAt205GeV.dump");
         dumped=true;
       }
@@ -2155,7 +2155,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // stau_1, stau_1
-      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_stau1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_stau1stau1bar;
       xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2172,7 +2172,7 @@ namespace Gambit
       }
 
       // stau_2, stau_2
-      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_stau2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_stau2stau2bar;
       xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2195,11 +2195,11 @@ namespace Gambit
     /// @{
     void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
     {
-      static L3NeutralinoAllChannelsLimitAt188pt6GeV *limitContainer = new L3NeutralinoAllChannelsLimitAt188pt6GeV();
+      static const L3NeutralinoAllChannelsLimitAt188pt6GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(0., 200., 0., 100.,
+        limitContainer.dumpPlotData(0., 200., 0., 100.,
                                      "lepLimitPlanev2/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
         dumped=true;
       }
@@ -2223,7 +2223,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like Z* decays
@@ -2254,7 +2254,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like Z* decays
@@ -2285,7 +2285,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like Z* decays
@@ -2319,11 +2319,11 @@ namespace Gambit
 
     void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
     {
-      static L3NeutralinoLeptonicLimitAt188pt6GeV *limitContainer = new L3NeutralinoLeptonicLimitAt188pt6GeV();
+      static const L3NeutralinoLeptonicLimitAt188pt6GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(0., 200., 0., 100.,
+        limitContainer.dumpPlotData(0., 200., 0., 100.,
                                      "lepLimitPlanev2/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
         dumped=true;
       }
@@ -2347,7 +2347,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like leptonic Z* decays
@@ -2375,7 +2375,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like leptonic Z* decays
@@ -2403,7 +2403,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like leptonic Z* decays
@@ -2434,11 +2434,11 @@ namespace Gambit
 
     void L3_Chargino_All_Channels_Conservative_LLike(double& result)
     {
-      static L3CharginoAllChannelsLimitAt188pt6GeV *limitContainer = new L3CharginoAllChannelsLimitAt188pt6GeV();
+      static const L3CharginoAllChannelsLimitAt188pt6GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 100., 0., 100.,
+        limitContainer.dumpPlotData(45., 100., 0., 100.,
                                      "lepLimitPlanev2/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
         dumped=true;
       }
@@ -2461,7 +2461,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like W* decays
@@ -2486,7 +2486,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like W* decays
@@ -2514,11 +2514,11 @@ namespace Gambit
 
     void L3_Chargino_Leptonic_Conservative_LLike(double& result)
     {
-      static L3CharginoLeptonicLimitAt188pt6GeV *limitContainer = new L3CharginoLeptonicLimitAt188pt6GeV();
+      static const L3CharginoLeptonicLimitAt188pt6GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 100., 0., 100.,
+        limitContainer.dumpPlotData(45., 100., 0., 100.,
                                      "lepLimitPlanev2/L3CharginoLeptonicLimitAt188pt6GeV.dump");
         dumped=true;
       }
@@ -2541,7 +2541,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2569,7 +2569,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2600,11 +2600,11 @@ namespace Gambit
 
     void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
     {
-      static OPALCharginoHadronicLimitAt208GeV *limitContainer = new OPALCharginoHadronicLimitAt208GeV();
+      static const OPALCharginoHadronicLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(75., 105., 0., 105.,
+        limitContainer.dumpPlotData(75., 105., 0., 105.,
                                      "lepLimitPlanev2/OPALCharginoHadronicLimitAt208GeV.dump");
         dumped=true;
       }
@@ -2627,7 +2627,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like hadronic W* decays
@@ -2651,7 +2651,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like hadronic W* decays
@@ -2678,11 +2678,11 @@ namespace Gambit
 
     void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
     {
-      static OPALCharginoSemiLeptonicLimitAt208GeV *limitContainer = new OPALCharginoSemiLeptonicLimitAt208GeV();
+      static const OPALCharginoSemiLeptonicLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(75., 105., 0., 105.,
+        limitContainer.dumpPlotData(75., 105., 0., 105.,
                                      "lepLimitPlanev2/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
         dumped=true;
       }
@@ -2712,7 +2712,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2757,7 +2757,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2805,11 +2805,11 @@ namespace Gambit
 
     void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
     {
-      static OPALCharginoLeptonicLimitAt208GeV *limitContainer = new OPALCharginoLeptonicLimitAt208GeV();
+      static const OPALCharginoLeptonicLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(75., 105., 0., 105.,
+        limitContainer.dumpPlotData(75., 105., 0., 105.,
                                      "lepLimitPlanev2/OPALCharginoLeptonicLimitAt208GeV.dump");
         dumped=true;
       }
@@ -2839,7 +2839,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2873,7 +2873,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2910,11 +2910,11 @@ namespace Gambit
 
     void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
     {
-      static OPALCharginoAllChannelsLimitAt208GeV *limitContainer = new OPALCharginoAllChannelsLimitAt208GeV();
+      static const OPALCharginoAllChannelsLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(75., 105., 0., 105.,
+        limitContainer.dumpPlotData(75., 105., 0., 105.,
                                      "lepLimitPlanev2/OPALCharginoAllChannelsLimitAt208GeV.dump");
         dumped=true;
       }
@@ -2944,7 +2944,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like W* decays
@@ -2975,7 +2975,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like W* decays
@@ -3009,11 +3009,11 @@ namespace Gambit
 
     void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
     {
-      static OPALNeutralinoHadronicLimitAt208GeV *limitContainer = new OPALNeutralinoHadronicLimitAt208GeV();
+      static const OPALNeutralinoHadronicLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(0., 200., 0., 100.,
+        limitContainer.dumpPlotData(0., 200., 0., 100.,
                                      "lepLimitPlanev2/OPALNeutralinoHadronicLimitAt208GeV.dump");
         dumped=true;
       }
@@ -3037,7 +3037,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_12;
       // Total up all channels which look like Z* decays
@@ -3062,7 +3062,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_13;
       // Total up all channels which look like Z* decays
@@ -3087,7 +3087,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_14;
       // Total up all channels which look like Z* decays
