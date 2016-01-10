@@ -540,6 +540,9 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
     func_def_in_ns += utils.addIndentation(func_def, n_indents*cfg.indent)
     func_def_in_ns += utils.constrNamespace(namespaces, 'close')
 
+    # Encapsulate code in 'extern "C" {...}'
+    func_def_in_ns = 'extern "C"\n{\n' + func_def_in_ns + '\n}\n' 
+
     return_code = func_def_in_ns
 
     if add_include_statements:
