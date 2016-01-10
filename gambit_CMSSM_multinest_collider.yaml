@@ -211,9 +211,9 @@ Rules:
       #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
 
   - options:
-      #gauge_mixing_tolerance: 0.5
-      #family_mixing_tolerance: 0.5
-      #off_diagonal_tolerance: 0.5
+      gauge_mixing_tolerance: 0.5
+      family_mixing_tolerance: 0.5
+      off_diagonal_tolerance: 0.5
       #gauge_mixing_tolerance_invalidates_point_only: false
       #family_mixing_tolerance_invalidates_point_only: false
       #off_diagonal_tolerance_invalidates_point_only: false
