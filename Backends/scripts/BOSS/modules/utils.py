@@ -2081,6 +2081,7 @@ def constrLoadedTypesHeaderContent():
     #
     class_lines = []
 
+    # Loop over all classes
     for class_name in gb.classes_done:
 
         if not class_name['long'] in gb.factory_info.keys():
@@ -2110,7 +2111,8 @@ def constrLoadedTypesHeaderContent():
             #     class_line += '(("' + symbol + '",' + args_bracket + ')) '
 
             for info_dict in gb.factory_info[ class_name['long'] ]:
-                class_line += '(("' + info_dict['symbol'] + '",' + info_dict['args_bracket'] + ')) '
+                # class_line += '(("' + info_dict['symbol'] + '",' + info_dict['args_bracket'] + ')) '
+                class_line += '(("' + info_dict['name'] + '",' + info_dict['args_bracket'] + ')) '
 
             class_line += ')) \\'
             class_lines.append(class_line)
