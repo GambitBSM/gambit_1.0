@@ -96,6 +96,11 @@ function_files_prefix  = 'function_'
 
 # ~~~~~ Information about other known types ~~~~~
 
-known_classes = ['SLHAea::Coll']
+# Dictionary key: type name
+# Dictionary value: header file with containing type declaration.
+#
+# Example:
+#   known_classes = {"SomeNamespace::KnownClassOne" : "path_to_header/KnownClassOne.hpp", 
+#                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
 
-known_class_headers = {"SLHAea::Coll" : "SLHAea/slhaea.h"}
+known_classes = {"SLHAea::Coll" : "SLHAea/slhaea.h"}

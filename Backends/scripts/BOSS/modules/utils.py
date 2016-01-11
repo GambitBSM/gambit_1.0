@@ -137,7 +137,7 @@ def isKnownClass(el, class_name=None):
 
     # Check if listed among the user-specified known types
     full_name = class_name['long_templ']
-    if (full_name in cfg.known_classes) or (full_name.replace(' ','') in cfg.known_classes):
+    if (full_name in cfg.known_classes.keys()) or (full_name.replace(' ','') in cfg.known_classes.keys()):
         is_known = True
 
     return is_known
@@ -1901,14 +1901,14 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
 
             else:
-                if type_name['long'] in cfg.known_class_headers:
-                    header_name = cfg.known_class_headers[type_name['long']].strip()
+                if type_name['long'] in cfg.known_classes.keys():
+                    header_name = cfg.known_classes[type_name['long']].strip()
                     if (header_name[0] == '<') and (header_name[-1] == '>'):
-                        include_statements.append('#include ' + cfg.known_class_headers[type_name['long']])
+                        include_statements.append('#include ' + cfg.known_classes[type_name['long']])
                     else:
-                        include_statements.append('#include "' + cfg.known_class_headers[type_name['long']] + '"')
+                        include_statements.append('#include "' + cfg.known_classes[type_name['long']] + '"')
                 else:
-                    reason = "The type '%s' has no specified header file. Please update config file." % type_name['long_templ']
+                    reason = "The type '%s' has no specified header file. Please update the 'known_classes' dictionary in the config file." % type_name['long_templ']
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
         else:
             infomsg.NoIncludeStatementGenerated( type_name['long_templ'] ).printMessage()
