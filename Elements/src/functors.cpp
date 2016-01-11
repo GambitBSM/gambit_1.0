@@ -558,25 +558,11 @@ namespace Gambit
       myLogTag                 (-1)
     {
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
-
       // Determine LogTag number
       myLogTag = Logging::str2tag(myOrigin);
-      // Check for failure
-      if(myLogTag==-1)
-      {
-        std::ostringstream ss;
-        ss << "Error retrieving LogTag number (in functors.cpp, constructor for module_functor_common)! No match for module name "
-           << "in tag2str map! Probably this is just a model functor, so this is no problem. (myOrigin="
-           << myOrigin << ", myName=" << myName << ")";
-        utils_warning().raise(LOCAL_INFO,ss.str());
-      }
-
-      if(myLogTag==-1)
-      {
-        logger() <<warn<<debug<<EOM;
-      }
+      if (not claw.model_exists(origin_name)) check_missing_LogTag();
     }
-
+            
     /// Destructor
     module_functor_common::~module_functor_common()
     {
@@ -586,6 +572,20 @@ namespace Gambit
       if (already_printed != NULL)        delete [] already_printed;
       if (already_printed_timing != NULL) delete [] already_printed_timing;
       if (myCurrentIteration != NULL)     delete [] myCurrentIteration;
+    }
+
+    /// Check if an appropriate LogTag for this functor is missing from the logging system.
+    void module_functor_common::check_missing_LogTag()
+    {
+      if(myLogTag==-1)
+      {
+        std::ostringstream ss;
+        ss << "Cannot retrieve LogTag number; no match for module name in tag2str map." << endl
+           << "Module: " << myOrigin << endl
+           << "Function:   " << myName << endl
+           << "This is probably because there is no log specified for " << myOrigin << " in your yaml file.";
+        utils_warning().raise(LOCAL_INFO,ss.str());
+      }
     }
 
     /// Getter for averaged runtime

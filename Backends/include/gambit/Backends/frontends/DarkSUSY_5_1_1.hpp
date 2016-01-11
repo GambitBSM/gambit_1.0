@@ -38,8 +38,8 @@
 ///  *********************************************
 
 #define BACKENDNAME DarkSUSY
-#define VERSION 5.1.3
-#define SAFE_VERSION 5_1_3
+#define VERSION 5.1.1
+#define SAFE_VERSION 5_1_1
 
 #include "gambit/DarkBit/ProcessCatalogue.hpp"
 #include "gambit/Elements/funktions.hpp"

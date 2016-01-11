@@ -478,6 +478,8 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
             factory_name = 'Factory_' + class_name['short'] + '_' + str(counter)
             if len(template_types) > 0:
                 factory_name += '_' + '_'.join(template_types)
+            factory_name += gb.code_suffix + str(gb.symbol_name_counter)
+            gb.symbol_name_counter += 1
 
             if remove_n_args == 0:
                 use_args   = args
@@ -539,6 +541,9 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
     func_def_in_ns += utils.constrNamespace(namespaces, 'open')
     func_def_in_ns += utils.addIndentation(func_def, n_indents*cfg.indent)
     func_def_in_ns += utils.constrNamespace(namespaces, 'close')
+
+    # Encapsulate code in 'extern "C" {...}'
+    func_def_in_ns = 'extern "C"\n{\n' + func_def_in_ns + '}\n' 
 
     return_code = func_def_in_ns
 

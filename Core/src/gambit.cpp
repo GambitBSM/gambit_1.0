@@ -104,12 +104,12 @@ int main(int argc, char* argv[])
     logger() << core << "Command invoked: ";
     for(int i=0;i<argc;i++){ logger() << arguments[i] << " "; }
     logger() << endl;
-    logger() << core << "Starting GAMBIT" << endl << EOM;
-    if( Core().resume ) logger() << core << "Attempting to resume scan..." << endl << EOM;
+    logger() << core << "Starting GAMBIT" << EOM;
+    if( Core().resume ) logger() << core << "Attempting to resume scan..." << EOM;
     logger() << core << "Registered module functors [Core().getModuleFunctors().size()]: ";
     logger() << Core().getModuleFunctors().size() << endl;
     logger() << "Registered backend functors [Core().getBackendFunctors().size()]: ";
-    logger() << Core().getBackendFunctors().size() << endl << EOM;
+    logger() << Core().getBackendFunctors().size() << EOM;
  
     // Read YAML file, which also initialises the logger. 
     IniParser::IniFile iniFile;
@@ -136,7 +136,9 @@ int main(int argc, char* argv[])
     logger() << "ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << EOM;
 
     // Check if user wants to disable use of MPI_Abort (since it does not work correctly in all MPI implementations)
+    #ifdef WITH_MPI
     use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");
+    #endif
 
     // Initialise the random number generator, letting the RNG class choose its own default.
     Random::create_rng_engine(iniFile.getValueOrDef<str>("default", "rng"));
@@ -268,8 +270,6 @@ int main(int argc, char* argv[])
       cout     << ss.str();    
       logger() << ss.str() << EOM;
     }
-    // Free the memory held by the RNG
-    Random::delete_rng_engine();
     return EXIT_SUCCESS;
   }
 
@@ -310,9 +310,6 @@ int main(int argc, char* argv[])
     MPI_Finalize();
   }
   #endif
-
-  // Free the memory held by the RNG
-  Random::delete_rng_engine();
 
   return EXIT_SUCCESS;
 

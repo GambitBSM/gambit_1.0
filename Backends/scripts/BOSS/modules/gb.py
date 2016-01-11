@@ -49,6 +49,8 @@ class_factory_file_dict = OrderedDict()
 function_file_dict      = OrderedDict()
 wr_func_names           = OrderedDict()
 
+symbol_name_counter     = 1
+
 
 gambit_backend_namespace    = 'CAT_3(BACKENDNAME,_,SAFE_VERSION)'
 gambit_backend_safeversion  = cfg.gambit_backend_version.replace('.','_')

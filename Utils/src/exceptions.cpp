@@ -231,15 +231,16 @@ namespace Gambit
     /// Log the details of the exception
     void exception::log_exception(const std::string& origin, const std::string& specific_message)
     {
-      std::ostringstream msg1, msg2;
-      msg1 << myKind << ": " << myMessage << std::endl << specific_message << std::endl;
-      msg2 << "\nRaised at: " << origin << "." << std::endl;
+      std::ostringstream msg;
+      msg << myKind << ": " << myMessage << std::endl
+          << specific_message << std::endl
+          << "Raised at: " << origin << ".";
       if (isFatal)
       {
         logger() << fatal;
-        std::ostringstream msg3;
-        msg3 << myShortWhat << std::endl << msg1.str() << msg2.str();
-        myWhat = msg3.str(); 
+        std::ostringstream myLongWhat;
+        myLongWhat << myShortWhat << std::endl << msg.str();
+        myWhat = myLongWhat.str(); 
       }
       else
       {
@@ -247,7 +248,7 @@ namespace Gambit
         myWhat = myShortWhat; 
       }
       for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; } 
-      logger() << msg1.str() << msg1.str() << EOM;
+      logger() << msg.str() << EOM;
     }
 
     /// Throw the exception onward if running serially, abort if not.
@@ -441,17 +442,36 @@ namespace Gambit
     /// Request a piped invalid point exception.
     void Piped_invalid_point::request(std::string message)
     {
-      this->message = message;
-      this->flag = true;
+      #pragma omp critical (GAMBIT_piped_invalid_point)
+      {
+        this->message = message;
+        this->flag = true;
+      }
     }
 
     /// Check whether a piped invalid point exception was requested, and throw if necessary.
     void Piped_invalid_point::check()
     {
-      if (this->flag == true)
+      if (omp_get_level()==0) // If not in an OpenMP parallel block, throw onwards
+      {    
+        if (this->flag)
+        {
+          this->flag = false;  // Reset...
+          invalid_point().raise(this->message);  // ...and throw.
+        }
+      }
+      else
       {
-        this->flag = false;  // Reset...
-        invalid_point().raise(this->message);  // ...and throw.
+        #pragma omp critical (GABMIT_invalid_point)
+        {        
+          cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;          
+          cout << "GAMBIT has exited with fatal exception: Piped_invalid_point::check() called inside an OpenMP block." << endl
+              << "Piped exceptions may be requested inside OpenMP blocks, but should only be checked outside the block." << endl;
+          if (this->flag)
+            cout << "Invalid point message requested: " << endl << this->message;
+          else cout << "No invalid point requested." << endl;
+          abort();
+        }     
       }
     }
 
@@ -496,7 +516,7 @@ namespace Gambit
     {
       if (omp_get_level()==0) // If not in an OpenMP parallel block, throw onwards
       {    
-        if (this->flag == true)
+        if (this->flag)
         {
           // Raise all exceptions (only the first if they are fatal)
           for(size_t i= 0; i < std::min(exceptions.size(),maxExceptions); i++)
@@ -514,13 +534,17 @@ namespace Gambit
         {        
           cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;          
           cout << "GAMBIT has exited with fatal exception: Piped_exceptions::check() called inside an OpenMP block." << endl
-              << "Piped exceptions may be requested inside OpenMP blocks, but should only be checked outside the block." << endl
-              << "Exceptions stored: " << endl << endl;
-          for(size_t i= 0; i < std::min(exceptions.size(),maxExceptions); i++)
+              << "Piped exceptions may be requested inside OpenMP blocks, but should only be checked outside the block." << endl;
+          if (this->flag)
           {
-            cout << exceptions.at(i).second << endl
-                 << "\nRaised at: " << exceptions.at(i).first << "." << endl << endl;
+            cout << "Exceptions stored: " << endl << endl;
+            for(size_t i= 0; i < std::min(exceptions.size(),maxExceptions); i++)
+            {
+              cout << exceptions.at(i).second << endl
+                   << "\nRaised at: " << exceptions.at(i).first << "." << endl << endl;
+            }
           }
+          else cout << "No exceptions stored." << endl;
           abort();
         }     
       }

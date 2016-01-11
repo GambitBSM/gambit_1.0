@@ -6,13 +6,13 @@ namespace Gambit {
     /// @name ALEPHSelectronLimitAt208GeV methods
     /// @{
 
-    P2 ALEPHSelectronLimitAt208GeV::convertPt(double x, double y)
+    P2 ALEPHSelectronLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(50. + (x - 243.00) / (886.00 - 243.00) * (100. - 50.),
                 100. + (y - 67.00) / (806.00 - 67.00) * (0. - 100.));
     }
 
-    bool ALEPHSelectronLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool ALEPHSelectronLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x <= 208. / 2. and x > mZ / 2.);
     }
@@ -3023,12 +3023,12 @@ namespace Gambit {
     /// @name ALEPHSmuonLimitAt208GeV methods
     /// @{
     
-    P2 ALEPHSmuonLimitAt208GeV::convertPt(double x, double y)
+    P2 ALEPHSmuonLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(50. + (x - 240.00) / (883.00 - 240.00) * (100. - 50.),
                 100. + (y - 63.00) / (803.00 - 63.00) * (0. - 100.));
     }
-    bool ALEPHSmuonLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool ALEPHSmuonLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x <= 208. / 2. and x > mZ / 2.);
     }
@@ -6186,13 +6186,13 @@ namespace Gambit {
     /// @name ALEPHStauLimitAt208GeV methods
     /// @{
 
-    P2 ALEPHStauLimitAt208GeV::convertPt(double x, double y)
+    P2 ALEPHStauLimitAt208GeV::convertPt(double x, double y) const
     {
       return P2(50. + (x - 232.00) / (875.00 - 232.00) * (100. - 50.),
                 100. + (y - 66.00) / (805.00 - 66.00) * (0. - 100.));
     }
     
-    bool ALEPHStauLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool ALEPHStauLimitAt208GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x <= 208. / 2. and x > mZ / 2.);
     }

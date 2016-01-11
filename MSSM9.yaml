@@ -17,7 +17,7 @@ Parameters:
       fixed_value: -0.085
 
   MSSM9atQ:
-    Qin: 
+    Qin:
       fixed_value: 1000.0
     SignMu:
       fixed_value: 1
@@ -69,17 +69,16 @@ Scanner:
   scanners:
     multinest:
       plugin: MultiNest
-      options:
-        like:  LogLike
-        nlive: 4000
-        tol: 0.5
-        mmodal: 1
-        # write native MultiNest ascii output files?
-        outfile: 1
-        # No options to set, but still need the nodes at the moment...
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
+      like:  LogLike
+      nlive: 4000
+      tol: 0.5
+      mmodal: 1
+      # write native MultiNest ascii output files?
+      outfile: 1
+      # No options to set, but still need the nodes at the moment...
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
 ObsLikes:
 

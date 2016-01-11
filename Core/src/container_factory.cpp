@@ -82,7 +82,7 @@ namespace Gambit
     
   void * Likelihood_Container_Factory::operator() (const std::string &purpose) const
   {
-    return __scanner_factories__["Scanner_Function"](functorMap, dependencyResolver, iniFile, prior, purpose, printer
+    return __scanner_factories__["GAMBIT_Scanner_Target_Function"](functorMap, dependencyResolver, iniFile, prior, purpose, printer
       #ifdef WITH_MPI
        , myComm
       #endif

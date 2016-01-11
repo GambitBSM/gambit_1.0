@@ -47,7 +47,7 @@
   #define DEFINEPARS(...)                                         CORE_DEFINEPARS(__VA_ARGS__)
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
   #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT_FUNCTION(FUNC)                     CORE_INTERPRET_AS_PARENT_FUNCTION(FUNC)
+  #define INTERPRET_AS_PARENT_FUNCTION(FUNC)                      CORE_INTERPRET_AS_PARENT_FUNCTION(FUNC)
   #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #else
   #include "gambit/Elements/module_macros_inmodule.hpp"
@@ -55,7 +55,7 @@
   #define DEFINEPARS(...)                                         /* Do nothing */
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 /* Do nothing */
   #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT_FUNCTION(FUNC)                     MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
+  #define INTERPRET_AS_PARENT_FUNCTION(FUNC)                      MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
   #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #endif
 
@@ -201,9 +201,9 @@
           bool provides<Gambit::Tags::CAPABILITY>() { return true; }           \
         }                                                                      \
                                                                                \
-        /* The wrapper function which extracts the value of PARAMETER from
-           the parameter object. This is the analogue of a module function, 
-           and is what will be wrapped in a functor for processing by the 
+        /* The wrapper function which extracts the value of PARAMETER from     \
+           the parameter object. This is the analogue of a module function,    \
+           and is what will be wrapped in a functor for processing by the      \
            core */                                                             \
         /* Just the prototype here: defined a bit later on */                  \
         void PARAMETER (double &);                                             \

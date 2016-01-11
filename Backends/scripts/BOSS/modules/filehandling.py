@@ -618,7 +618,8 @@ def createFrontendHeader(function_xml_files_dict):
         args_bracket = funcutils.constrArgsBracket(args, include_arg_name=False, include_arg_type=True, include_namespace=True)
 
         # Get mangled symbol
-        symbol = wr_func_el.get('mangled')
+        # symbol = wr_func_el.get('mangled')
+        symbol = wr_func_el.get('name')
 
         be_function_macro_code += 'BE_FUNCTION(' 
         be_function_macro_code += func_name['short'] + ', ' 

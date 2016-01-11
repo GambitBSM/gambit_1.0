@@ -81,12 +81,12 @@ namespace Gambit
     /// Provide the factory pointer to a BOSSed type's wrapper constructor.
     template <typename T>
     T handover_factory_pointer(str be, str ver, str name, str barename, 
-                               str args, str symbol_name, bool present,
-                               T factory, T missing_backend, T missing_factory)
+                               str args, str symbol_name, T factory,
+                               T missing_backend, T missing_factory)
     {
       try
       {
-        int status = get_ctor_status(be, ver, name, barename, args, symbol_name, present);
+        int status = get_ctor_status(be, ver, name, barename, args, symbol_name);
         switch(status)
         {
           case  0: return factory;         

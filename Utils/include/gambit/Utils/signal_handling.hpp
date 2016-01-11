@@ -46,9 +46,7 @@ namespace Gambit
    {
      public:  
        /// MPI rank
-       #ifdef WITH_MPI
-       int rank;
-       #endif
+       int rank = 0;
 
        /// Saved information on calling environment for longjmp
        jmp_buf env;
