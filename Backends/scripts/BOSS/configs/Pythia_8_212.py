@@ -29,11 +29,14 @@ gambit_base_namespace  = ''
 # Use either absolute paths or paths relative to the main BOSS directory.
 input_files   = ['../../../Backends/installed/Pythia/8.212/include/Pythia8/Pythia.h']
 include_paths = ['../../../Backends/installed/Pythia/8.212/include', '../../../contrib/slhaea/include']
-source_path   = '../../../Backends/installed/Pythia/8.212/src'
+base_paths    = ['../../../Backends/installed/Pythia/8.212/']
 
-accepted_paths = ['../../../Backends/installed/Pythia/8.212/']
+header_files_to = '../../../Backends/installed/Pythia/8.212/include'
+src_files_to    = '../../../Backends/installed/Pythia/8.212/src'
 
-loaded_classes = [
+
+
+load_classes = [
     'Pythia8::AlphaEM',
     'Pythia8::AlphaStrong',
     'Pythia8::BeamParticle',
@@ -67,7 +70,7 @@ loaded_classes = [
     'Pythia8::Vec4',
 ]
 
-loaded_functions = [
+load_functions = [
     # 'Pythia8::m2(Pythia8::Wave4, Pythia8::Wave4)',
     # 'Pythia8::m2(const Pythia8::Particle&, const Pythia8::Particle&)',
 ]

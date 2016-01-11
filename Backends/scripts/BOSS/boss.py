@@ -369,7 +369,7 @@ def main():
 
 
     #
-    # Look up potential parent classes and add to cfg.loaded_classes
+    # Look up potential parent classes and add to cfg.load_classes
     #
 
     if cfg.load_parent_classes:
@@ -377,13 +377,13 @@ def main():
 
 
     #
-    # Remove from cfg.loaded_classes all classes that are not loadable (not found, incomplete, abstract, ...)
+    # Remove from cfg.load_classes all classes that are not loadable (not found, incomplete, abstract, ...)
     #
 
-    # Remove duplicates from cfg.loaded_classes
-    cfg.loaded_classes = list(OrderedDict.fromkeys(cfg.loaded_classes))
+    # Remove duplicates from cfg.load_classes
+    cfg.load_classes = list(OrderedDict.fromkeys(cfg.load_classes))
 
-    is_loadable = OrderedDict.fromkeys(cfg.loaded_classes, False)
+    is_loadable = OrderedDict.fromkeys(cfg.load_classes, False)
 
     # Determine which requested classes are actually loadable
     for xml_file in xml_files:
@@ -402,18 +402,18 @@ def main():
             if el.tag in ['Class', 'Struct']:
 
                 # If a requested class is loadable, set the entry in is_loadable to True
-                if full_name in cfg.loaded_classes:
+                if full_name in cfg.load_classes:
     
                     if utils.isLoadable(el, print_warning=False):
                         is_loadable[full_name] = True
 
 
-    # Remove from cfg.loaded_classes those that are not loadable
+    # Remove from cfg.load_classes those that are not loadable
     for full_name in is_loadable.keys():
 
         if not is_loadable[full_name]:
 
-            cfg.loaded_classes.remove(full_name)
+            cfg.load_classes.remove(full_name)
 
 
     # Output info on why classes are not loadable
@@ -454,11 +454,11 @@ def main():
     
 
     #
-    # Remove from cfg.loaded_functions all functions that are not loadable
+    # Remove from cfg.load_functions all functions that are not loadable
     #
 
-    # Remove duplicates from cfg.loaded_functions
-    cfg.loaded_functions = list(OrderedDict.fromkeys(cfg.loaded_functions))
+    # Remove duplicates from cfg.load_functions
+    cfg.load_functions = list(OrderedDict.fromkeys(cfg.load_functions))
 
     for xml_file in xml_files:
 
@@ -485,13 +485,13 @@ def main():
                     print '  ERROR: Unexpected error!'
                     raise
 
-                if func_name_long_templ_args in cfg.loaded_functions:
+                if func_name_long_templ_args in cfg.load_functions:
 
                     is_loadable = not funcutils.ignoreFunction(el, limit_pointerness=True, print_warning=True)
 
                     if not is_loadable:
 
-                        cfg.loaded_functions.remove(func_name_long_templ_args)
+                        cfg.load_functions.remove(func_name_long_templ_args)
 
 
     #
@@ -499,7 +499,7 @@ def main():
     #
 
     # Check that we have something to do...
-    if (len(cfg.loaded_classes) == 0) and (len(cfg.loaded_functions) == 0):
+    if (len(cfg.load_classes) == 0) and (len(cfg.load_functions) == 0):
         print
         print
         print '  - No classes or functions to load!'
@@ -797,7 +797,8 @@ def main():
     print
     print "  To prepare this backend for use with GAMBIT, do the following:"
     print 
-    print "    1. BOSS has generated new source files in '%s'. Make sure that these are included when building '%s'." % (cfg.source_path, cfg.gambit_backend_name)
+    print "    1. BOSS has added new source files to '%s' and new header files to '%s'." % (cfg.src_files_to, cfg.header_files_to)
+    print "       Make sure that these are included when building '%s'." % (cfg.gambit_backend_name)
     print "    2. Build a shared library (.so) from the '%s' source code that BOSS has edited." % (cfg.gambit_backend_name)
     print "    3. Set the correct path to this library in the 'backends_locations.yaml' file in GAMBIT."
     print "    4. Copy the '%s' directory from '%s' to the 'backend_types' directory within GAMBIT." % (gb.gambit_backend_name_full, gb.gambit_backend_dir_complete)

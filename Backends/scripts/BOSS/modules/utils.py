@@ -205,7 +205,7 @@ def isEnumeration(el):
 
 def isNative(el):
 
-    # Makes use of global variables:  accepted_paths
+    # Makes use of global variables:  base_paths
 
     is_native = False
     can_check_tags = ['Class', 'Constructor', 'Converter', 'Destructor', 'Enumeration', 
@@ -227,7 +227,7 @@ def isNative(el):
         check_path = file_el.get('name')
 
         is_native = False
-        for accepted_path in cfg.accepted_paths:
+        for accepted_path in cfg.base_paths:
             if accepted_path in os.path.dirname(check_path):
                 is_native = True
                 break
@@ -248,7 +248,7 @@ def isNative(el):
 
 def isStdType(el, class_name=None):
 
-    # Makes use of global variables:  accepted_paths
+    # Makes use of global variables:  base_paths
 
     is_std = False
     can_check_tags = ['Class', 'Struct', 'Union', 'Enumeration']
@@ -1031,7 +1031,7 @@ def isLoadedClass(input_type, byname=False, class_name=None):
     # If the class_name dict is passed as an argument, use it.
     if class_name is not None:
 
-        if class_name['long_templ'] in cfg.loaded_classes:
+        if class_name['long_templ'] in cfg.load_classes:
             is_loaded_class = True
 
     else:
@@ -1045,8 +1045,8 @@ def isLoadedClass(input_type, byname=False, class_name=None):
             # Remove template bracket
             type_name = type_name.split('<')[0]
 
-            # Check against cfg.loaded_classes
-            if type_name in cfg.loaded_classes:
+            # Check against cfg.load_classes
+            if type_name in cfg.load_classes:
                 is_loaded_class = True
 
         else:
@@ -1055,12 +1055,12 @@ def isLoadedClass(input_type, byname=False, class_name=None):
 
             if type_el.tag in ['Class', 'Struct']:
 
-                if type_dict['name'] in cfg.loaded_classes:
+                if type_dict['name'] in cfg.load_classes:
                     is_loaded_class = True
 
                 # namespaces_list = getNamespaces(type_el, include_self=True)
                 # full_name = '::'.join(namespaces_list)
-                # if full_name in cfg.loaded_classes:
+                # if full_name in cfg.load_classes:
                 #     is_loaded_class = True
 
 
@@ -1225,7 +1225,7 @@ def constrWrpForwardDeclHeader(file_output_path):
 #     code = ''
 #     insert_pos = 0
 
-#     for class_name in cfg.loaded_classes:
+#     for class_name in cfg.load_classes:
 
 #         namespace, class_name_short = removeNamespace(class_name, return_namespace=True)
 
@@ -1689,10 +1689,10 @@ def identifyIncludedHeaders(content, only_native=True):
     # Connect with XML elements
     for check_file_path, file_el in gb.file_dict.items():
 
-        # - If only_native=True, check for match with cfg.accepted_paths
+        # - If only_native=True, check for match with cfg.base_paths
         if only_native:
             is_native_file = False
-            for accepted_path in cfg.accepted_paths:
+            for accepted_path in cfg.base_paths:
                 if accepted_path in os.path.dirname(check_file_path):
                     is_native_file = True
                     break
@@ -2530,7 +2530,7 @@ def isProblematicType(el):
 
 # ====== addParentClasses ========
 
-# Adds parent classes to cfg.loaded_classes.
+# Adds parent classes to cfg.load_classes.
 
 def addParentClasses():
 
@@ -2560,9 +2560,9 @@ def addParentClasses():
 
                         class_name = classutils.getClassNameDict(parent_el)
 
-                        # - Update cfg.loaded_classes
-                        if class_name['long_templ'] not in cfg.loaded_classes:
-                            cfg.loaded_classes.append(class_name['long_templ'])
+                        # - Update cfg.load_classes
+                        if class_name['long_templ'] not in cfg.load_classes:
+                            cfg.load_classes.append(class_name['long_templ'])
 
 # ====== END: addParentClasses ========
 
@@ -2571,7 +2571,7 @@ def addParentClasses():
 
 # ====== fillParentsOfLoadedClassesList ========
 
-# Adds parent classes to cfg.loaded_classes.
+# Adds parent classes to cfg.load_classes.
 
 def fillParentsOfLoadedClassesList():
 
@@ -2736,7 +2736,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
                 continue
 
             # Check that class is requested
-            if (class_name['long_templ'] in cfg.loaded_classes):
+            if (class_name['long_templ'] in cfg.load_classes):
 
                 # Check that class is complete
                 if isComplete(el):
@@ -2765,7 +2765,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
                     
                     type_name = classutils.getClassNameDict(type_el)
 
-                    if type_name['long_templ'] in cfg.loaded_classes:
+                    if type_name['long_templ'] in cfg.load_classes:
                         gb.typedef_dict[typedef_name] = el
                 
                 # If neither fundamental or class/struct, ignore it.
@@ -2781,7 +2781,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
             except KeyError:
                 continue
 
-            if func_name['long_templ_args'] in cfg.loaded_functions:
+            if func_name['long_templ_args'] in cfg.load_functions:
                 gb.func_dict[func_name['long_templ_args']] = el
 
 
@@ -2830,7 +2830,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
 # def fillNewHeaderFilesDict():
 
 #     # Update global dict: new header files
-#     for class_name_long_templ in cfg.loaded_classes:
+#     for class_name_long_templ in cfg.load_classes:
         
 #         class_name_short = class_name.split('<',1)[0].split('::')[-1]
 #         class_name_long  = class_name.split('<',1)[0]
