@@ -175,11 +175,17 @@ else()
 endif()
 
 # Check for yaml-cpp
-find_package(yaml-cpp REQUIRED)
-if (YAMLCPP_FOUND)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${YamlCpp_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${YamlCpp_CXX_FLAGS}")
-endif()
+# Ben: Commented out for now because we are using a contrib yaml-cpp, but perhaps
+# we want to modify this so that users can use a custom yaml-cpp install instead
+# if they desire (with some restriction; version must be greater than 0.5.3 due
+# to memory leak bug in earlier versions.)
+# Actually might not need the set C_FLAGS etc, I didn't check what happens if
+# you remove them.
+#find_package(yaml-cpp REQUIRED)
+#if (YAMLCPP_FOUND)
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${YamlCpp_C_FLAGS}")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${YamlCpp_CXX_FLAGS}")
+#endif()
 
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)

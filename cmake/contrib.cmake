@@ -38,10 +38,10 @@ add_gambit_library(mkpath OPTION OBJECT
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/mkpath/include/mkpath/mkpath.h)
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:mkpath>)
 
-#contrib/yaml-cpp-0.5.1
-#set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
-#include_directories("${yaml_INCLUDE_DIR}")
-#add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
+#contrib/yaml-cpp-0.5.3
+set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.3/include)
+include_directories("${yaml_INCLUDE_DIR}")
+add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.3 EXCLUDE_FROM_ALL)
 
 #contrib/Delphes-3.1.2; include only if ColliderBit is in use and Delphes is not intentionally ditched.
 set (DELPHES_DIR "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
