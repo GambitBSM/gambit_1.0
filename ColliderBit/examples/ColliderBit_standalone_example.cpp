@@ -54,8 +54,7 @@ int main()
   logger().initialise(loggerinfo);
 
   logger()<<"Running ColliderBit standalone example"<<LogTags::info<<EOM;
-
-
+  
   std::cout << std::endl << "My name is " << name() << std::endl;
   std::cout << " I can calculate: " << endl << iCanDo << std::endl;
   std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;
@@ -127,38 +126,34 @@ int main()
   std::cout << std::endl << "My function generatePythia8Event has had its dependency on HardScatteringSim filled by:" << endl;
   std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.origin() << "::";
   std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.name() << std::endl;
-  
-  // Set loop manager for nested functions
-  /*exampleEventGen.resolveLoopManager(&eventLoopManager);
-  exampleCut.resolveLoopManager(&eventLoopManager);
-  eventAccumulator.resolveLoopManager(&eventLoopManager);
-  
-  // Set up the mini dependency tree to be run by EventLoopManager
-  std::vector<functor*> nested_functions = initVector<functor*>(&exampleEventGen, &exampleCut, &eventAccumulator);
-  
-  // Notify the loop manager of that tree
-  eventLoopManager.setNestedList(nested_functions);
-
-  */
-    
+       
   // Set some module function options
-  //nevents_int.setOption<double>("probability_of_validity", 0.1);
-
+  // TO DO: Need a way of handling pythia options (they are not currently being used).
+  // This requires handling nested yaml options 
+  
   std::vector<std::string> runTheseAnalyses;
   runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");
   getAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
-
-  getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/");
+  
   std::vector<std::string> inputFileName;
   inputFileName.push_back("ColliderBit/data/sps1aWithDecays.spc");
-  getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFileName);
+  std::vector<std::string> pythiaOptions;
+  pythiaOptions.push_back("PartonLevel:MPI = off");
+  pythiaOptions.push_back("PartonLevel:ISR = on");
+  pythiaOptions.push_back("PartonLevel:FSR = on");
+  pythiaOptions.push_back("HadronLevel:all = on");
+  pythiaOptions.push_back("TauDecays:mode = 0");
 
+  getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/");
+  //getPythiaFileReader.setOption<std::vector<std::string>>("Pythia_Standalone, pythiaOptions_1",pythiaOptions);
+  getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFileName);
+  
   std::vector<std::string> pythiaNames;
   pythiaNames.push_back("Pythia_SUSY_LHC_8TeV");
   operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
-  operateLHCLoop.setOption<int>("nEvents",5000.);
+  operateLHCLoop.setOption<int>("nEvents",10000.);
 
-  //Start processing some points here (eventually this will become a scan)
+  // Start running here
 
   {
         
@@ -167,6 +162,11 @@ int main()
     
     operateLHCLoop.reset_and_calculate();
     calc_LHC_LogLike.reset_and_calculate();
+
+    // Retrieve and print the log likelihood
+
+    double loglike = calc_LHC_LogLike(0);
+    std::cout << "Finished. Log likelihood is " << loglike << std::endl;
     
   }
     
