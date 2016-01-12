@@ -143,7 +143,9 @@ namespace Gambit
     bool compute_aux = true;
     setParameters(in);
 
-    logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
+    //// TODO: Ben - I have commented out these logger entries for now because they make my log files enormous. Should make
+    //// some yaml switch to put log messages into 'debug' mode, or some such.
+    //// logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
 
     // Begin timing of total likelihood evaluation
     std::chrono::time_point<std::chrono::system_clock> startL = std::chrono::system_clock::now();
@@ -154,7 +156,7 @@ namespace Gambit
     // First work through the target functors, i.e. the ones contributing to the likelihood.
     for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
     {
-      logger() << LogTags::core << "Calculating likelihood vertex " << *it << "." << EOM;
+      //// logger() << LogTags::core << "Calculating likelihood vertex " << *it << "." << EOM;
       try
       {
         dependencyResolver.calcObsLike(*it,getPtID()); //pointID is passed through to the printer call for each functor
@@ -208,7 +210,7 @@ namespace Gambit
         // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
         if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
 
-        logger() << LogTags::core << "Computed likelihood vertex " << *it << "." << EOM;
+        //// logger() << LogTags::core << "Computed likelihood vertex " << *it << "." << EOM;
       }
 
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
@@ -249,11 +251,11 @@ namespace Gambit
     {
       for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
       {
-        logger() << LogTags::core << "Calculating auxiliary vertex " << *it << EOM;
+        //// logger() << LogTags::core << "Calculating auxiliary vertex " << *it << EOM;
         try
         {
           dependencyResolver.calcObsLike(*it,getPtID());
-          logger() << LogTags::core << "done with auxiliary vertex " << *it << EOM;;
+          //// logger() << LogTags::core << "done with auxiliary vertex " << *it << EOM;;
         }
         catch(Gambit::invalid_point_exception& e)
         {
