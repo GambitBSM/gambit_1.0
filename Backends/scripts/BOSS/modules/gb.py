@@ -66,8 +66,9 @@ gambit_frontend_dir_complete = os.path.join(cfg.extra_output_dir, gambit_fronten
 gambit_backend_incl_dir = 'gambit/Backends/'
 gambit_utils_incl_dir   = 'gambit/Utils/'
 
-code_suffix         = '__BOSS'
-abstr_class_prefix  = 'Abstract_'
+code_suffix          = '__BOSS'
+abstr_class_prefix   = 'Abstract_'
+wrapper_class_prefix = 'Wrapper_'
 
 
 func_return_utils_fname = 'function_return_utils'

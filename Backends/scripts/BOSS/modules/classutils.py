@@ -937,12 +937,15 @@ def toWrapperType(input_type_name, remove_reference=False, remove_pointers=False
         short_type_name = 'WrapperBase< ' + abstr_type_name + ' >'
 
     else:
-        # Insert wrapper class suffix
-        if '<' in type_name:
-            short_type_name_part_one, short_type_name_part_two = short_type_name.split('<',1)
-            short_type_name = short_type_name_part_one + gb.code_suffix + '<' + short_type_name_part_two
-        else:
-            short_type_name = short_type_name + gb.code_suffix
+        # Insert wrapper class prefix
+        short_type_name = gb.wrapper_class_prefix + short_type_name
+
+        # # Insert wrapper class suffix
+        # if '<' in type_name:
+        #     short_type_name_part_one, short_type_name_part_two = short_type_name.split('<',1)
+        #     short_type_name = short_type_name_part_one + gb.code_suffix + '<' + short_type_name_part_two
+        # else:
+        #     short_type_name = short_type_name + gb.code_suffix
 
     # Add '*' and '&'
     if remove_pointers:
