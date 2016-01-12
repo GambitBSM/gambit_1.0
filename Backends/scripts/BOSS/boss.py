@@ -235,6 +235,16 @@ def main():
 
 
 
+    #
+    # Identify standard include paths
+    #
+    print
+    print 'Identifying standard include paths:'
+    print '-----------------------------------'
+    print 
+
+    utils.identifyStdIncludePaths()
+
 
 
     #

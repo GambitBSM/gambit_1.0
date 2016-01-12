@@ -2277,6 +2277,10 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     for incl_path in include_paths_list:
         castxml_cmd += ' -I' + incl_path
 
+    # - Add standard include paths
+    for std_incl_path in gb.std_include_paths:
+        castxml_cmd += ' -I' + std_incl_path        
+
     # - Add the input file path (full path)
     castxml_cmd += ' ' + input_file_path
 
@@ -2821,6 +2825,85 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
 
 
 # ====== END: initGlobalXMLdicts ========
+
+
+
+
+# ====== identifyStdIncludePaths ========
+
+def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
+
+    # Shell command: Pipe an include statement to the compiler and use 
+    # verbose mode to print the header search paths.
+    command = 'echo "#include <iostream>" | ' + cfg.castxml_cc + ' -v -x c++ -c -'
+
+    # Avoid including intel headers when in "gnu mode" by
+    # temporarily unsetting some environment variables
+    if cfg.castxml_cc_id  == 'gnu':
+        temp_env_vars = {}
+        for var_name in ['CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH']:
+            try:
+                if 'intel' in os.environ[var_name].lower():
+                    temp_env_vars[var_name] = str(os.environ[var_name])
+                    os.environ[var_name] = ''
+            except KeyError:
+                pass
+
+    # Run command
+    print '  Runing command: ' + command
+    proc, output, timed_out = shelltimeout.shrun(command, timeout_limit, use_exec=True, poll_interval=poll_interval)
+
+    # Reset environment variables
+    if cfg.castxml_cc_id  == 'gnu':
+        for var_name, value in temp_env_vars.items():
+            os.environ[var_name] = value
+
+    # Check for timeout or error
+    did_fail = False
+    if timed_out:
+        print '  ERROR: Shell command timed out.'
+        did_fail = True
+    elif proc.returncode != 0:        
+        print '  ERROR: Shell command failed.'
+        did_fail = True
+
+    # Print error report
+    if did_fail:
+        print
+        print 'START SHELL COMMAND OUTPUT'
+        print '--------------------------'
+        print
+        print output
+        print 'END SHELL COMMAND OUTPUT'
+        print '------------------------'
+        print
+        raise Exception('Shell command failed')
+    
+    else:
+        print '  Command finished successfully.'
+    print
+
+
+    std_include_paths = []
+    output_lines = output.split('\n')
+
+    try:
+        start_i = output_lines.index("#include <...> search starts here:")
+        end_i   = output_lines.index("End of search list.")
+    except ValueError:
+        print '  WARNING: Could not identify standard include paths.'
+        print '  Add them manually in the config file if necessary.'
+        print
+    else:
+        for line in output_lines[start_i+1:end_i]:
+            std_include_paths.append( line.strip().split()[0] )
+        print '  Identified %i standard include paths.' % len(std_include_paths)
+        print
+
+    # Set global list 
+    gb.std_include_paths = std_include_paths
+
+# ====== END: identifyStdIncludePaths ========
 
 
 

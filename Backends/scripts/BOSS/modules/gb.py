@@ -39,6 +39,7 @@ new_header_files        = OrderedDict()
 accepted_types          = [] 
 std_headers_used        = []
 original_file_paths     = OrderedDict()
+std_include_paths       = []
 
 functions_done          = []
 classes_done            = []
