@@ -174,6 +174,13 @@ else()
   message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
 endif()
 
+# Check for yaml-cpp
+find_package(yaml-cpp REQUIRED)
+if (YAMLCPP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${YamlCpp_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${YamlCpp_CXX_FLAGS}")
+endif()
+
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
 
