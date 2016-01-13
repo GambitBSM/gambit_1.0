@@ -112,7 +112,7 @@ namespace Gambit
   // Register the Likelihood Container as an available target function for ScannerBit.  The first argument
   // is a tag that gets used later by the Likelihood_Container_Factory to create a new Likelihood_Container 
   // and return a pointer to it. 
-  LOAD_SCANNER_FUNCTION(Scanner_Function, Likelihood_Container)
+  LOAD_SCANNER_FUNCTION(GAMBIT_Scanner_Target_Function, Likelihood_Container)
 
 }
 

@@ -7,13 +7,13 @@ namespace Gambit {
     /// @name L3CharginoAllChannelsLimitAt188pt6GeV methods
     /// @{
 
-    P2 L3CharginoAllChannelsLimitAt188pt6GeV::convertPt(double x, double y)
+    P2 L3CharginoAllChannelsLimitAt188pt6GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 1171.00) / (1792.00 - 1171.00) * (100. - 45.),
                 100. + (y - 23.00) / (622.00 - 23.00) * (0. - 100.));
     }
 
-    bool L3CharginoAllChannelsLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool L3CharginoAllChannelsLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x <= 188.6 / 2. and x > mZ / 2.);
     }
@@ -219,13 +219,13 @@ namespace Gambit {
     /// @name L3CharginoLeptonicLimitAt188pt6GeV methods
     /// @{
 
-    P2 L3CharginoLeptonicLimitAt188pt6GeV::convertPt(double x, double y)
+    P2 L3CharginoLeptonicLimitAt188pt6GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 1172.00) / (1793.00 - 1172.00) * (100. - 45.),
                 100. + (y - 853.00) / (1447.00 - 853.00) * (0. - 100.));
     }
 
-    bool L3CharginoLeptonicLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool L3CharginoLeptonicLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x <= 188.6 / 2. and x > mZ / 2.);
     }
@@ -366,13 +366,13 @@ namespace Gambit {
     /// @name L3NeutralinoAllChannelsLimitAt188pt6GeV methods
     /// @{
 
-    P2 L3NeutralinoAllChannelsLimitAt188pt6GeV::convertPt(double x, double y)
+    P2 L3NeutralinoAllChannelsLimitAt188pt6GeV::convertPt(double x, double y) const
     {
       return P2(0. + (x - 248.00) / (868.00 - 248.00) * (200. - 0.),
                 100. + (y - 36.00) / (637.00 - 36.00) * (0. - 100.));
     }
 
-    bool L3NeutralinoAllChannelsLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool L3NeutralinoAllChannelsLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x + y <= 188.6 and x + y > mZ);
     }
@@ -556,13 +556,13 @@ namespace Gambit {
     /// @name L3NeutralinoLeptonicLimitAt188pt6GeV methods
     /// @{
     
-    P2 L3NeutralinoLeptonicLimitAt188pt6GeV::convertPt(double x, double y)
+    P2 L3NeutralinoLeptonicLimitAt188pt6GeV::convertPt(double x, double y) const
     {
       return P2(0. + (x - 251.00) / (870.00 - 251.00) * (200. - 0.),
                 100. + (y - 867.00) / (1466.00 - 867.00) * (0. - 100.));
     }
     
-    bool L3NeutralinoLeptonicLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool L3NeutralinoLeptonicLimitAt188pt6GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x + y <= 188.6 and x + y > mZ);
     }

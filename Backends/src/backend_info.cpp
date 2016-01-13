@@ -56,7 +56,7 @@ namespace Gambit
       msg << "Could not read default backend locations file \""<<filename<<"\"!" << endl;
       msg << "Please check that file exists and contains valid YAML." << endl;
       msg << "("<<e.what()<<")";
-      utils_error().raise(LOCAL_INFO,msg.str());
+      backend_error().raise(LOCAL_INFO,msg.str());
     }
   }
 
@@ -114,14 +114,19 @@ namespace Gambit
         }
         else
         {
-        p = default_path;
-        std::ostringstream msg;
-        msg << "Could not find path for backend "<< be <<" v" << ver << endl;
-        msg << "in " << default_filename;
-        if (custom_bepathfile_exists) msg << " nor in " << filename;
-        msg << "." << endl;
-        msg << "Setting path to \"" << default_path << "\".";
-        utils_warning().raise(LOCAL_INFO,msg.str());
+          p = default_path;
+          static bool warning_raised = false;
+          if (not warning_raised)
+          {
+            std::ostringstream msg;
+            msg << "Could not find path for backend "<< be <<" v" << ver << endl;
+            msg << "in " << default_filename;
+            if (custom_bepathfile_exists) msg << " nor in " << filename;
+            msg << "." << endl;
+            msg << "Setting path to \"" << default_path << "\".";
+            backend_warning().raise(LOCAL_INFO,msg.str());
+            warning_raised = true;
+          }
         }
       }
     }

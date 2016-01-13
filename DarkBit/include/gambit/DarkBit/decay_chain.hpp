@@ -324,7 +324,7 @@ namespace Gambit
             struct ChainContainer
             {
                 ChainContainer(){}
-                ChainContainer(ChainParticle* ch){chain = shared_ptr<const ChainParticle>(ch);}
+                ChainContainer(shared_ptr<ChainParticle> ch) : chain(ch) {}
                 shared_ptr<const ChainParticle> chain;
             };
             

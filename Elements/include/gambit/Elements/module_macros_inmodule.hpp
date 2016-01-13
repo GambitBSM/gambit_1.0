@@ -61,7 +61,6 @@
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODULE,FUNCTION,MODEL)              MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)
 #define ALLOWED_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL) 
-#define LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)            LITTLEGUY_ALLOWED_MODEL(PARAMETER,MODEL)
 #define ALLOW_MODEL_COMBINATION(...)                      DUMMYARG(__VA_ARGS__)
 #define MODEL_GROUP(GROUPNAME, GROUP)                     DUMMYARG(GROUPNAME, GROUP)
 
@@ -234,31 +233,6 @@
                                                                                \
     }                                                                          \
                                                                                \
-  }                                                                            \
-
-//"Littleguys" version of allowed_model
-#define LITTLEGUY_ALLOWED_MODEL(FUNCTION,MODEL)                                \
-                                                                               \
-  namespace Gambit                                                             \
-  {                                                                            \
-   namespace Models                                                            \
-   {                                                                           \
-    namespace MODEL                                                            \
-    {                                                                          \
-                                                                               \
-      /* Create a safe pointer to the model parameters result. To be filled    \
-      automatically at runtime when the dependency is resolved. */             \
-      namespace Pipes                                                          \
-      {                                                                        \
-        namespace FUNCTION                                                     \
-        {                                                                      \
-          namespace Dep {extern dep_bucket<ModelParameters>                    \
-           CAT(MODEL,_parameters); }                                           \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-   }                                                                           \
   }                                                                            \
 
 

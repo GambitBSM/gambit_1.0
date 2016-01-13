@@ -21,15 +21,15 @@
 #include <sstream>
 
 #include "gambit/ScannerBit/scanner_plugin.hpp"
-  
+
 scanner_plugin(grid, version(1, 0, 0))
 {
         reqd_inifile_entries("grid_pts");
-        
+
         int plugin_main()
         {
                 int ma = get_dimension();
-                
+
                 std::vector<int> N = get_inifile_value<std::vector<int>>("grid_pts");
                 int NTot = 1;
 
@@ -37,19 +37,19 @@ scanner_plugin(grid, version(1, 0, 0))
                 {
                         if (*it < 0)
                                 *it = -*it;
-                        else if (*it == 0) 
+                        else if (*it == 0)
                                 *it= 1;
                         NTot *= *it;
                 }
-                
+
                 if (N.size() != (unsigned int)ma)
-                        scan_err << "Grid Plugin:  The dimension of gambit (" << ma 
+                        scan_err << "Grid Plugin:  The dimension of gambit (" << ma
                         << ") does not match the dimension of the inputed grid_pts (" << N.size() << ")" << scan_end;
-                
+
                 scan_ptr<double (const std::vector<double>&)> LogLike;
-                LogLike = get_purpose(get_inifile_value<std::string>("purpose", "Likelihood"));
+                LogLike = get_purpose(get_inifile_value<std::string>("like"));
                 std::vector<double> vec(ma, 0.0);
-                
+
                 for (int i = 0, end = NTot; i < end; i++)
                 {
                         int n = i;
@@ -59,13 +59,13 @@ scanner_plugin(grid, version(1, 0, 0))
                                         vec[j] = 0.5;
                                 else
                                         vec[j] = double(n%N[j])/double(N[j]-1);
-                                
+
                                 n /= N[j];
                         }
-                        
+
                         LogLike(vec);
                 }
-                
+
                 return 0;
         }
 }

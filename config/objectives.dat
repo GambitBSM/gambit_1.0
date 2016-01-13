@@ -1,0 +1,30 @@
+#############################################################################
+# GAMBIT central test function  description database                        #
+#                                                                           #
+# GAMBIT will parse this file and try to match the entries                  #
+# to the objective test functions it has registered.                        #
+#                                                                           #
+# Note: Yaml syntax for multi-line strings is this:                         #
+#                                                                           #
+#body: |                                                                    #
+#  This is a multi-line string.                                             #
+#  "special" metacharacters may                                             #
+#  appear here. The extent of this string is                                #
+#  indicated by indentation.                                                #
+#                                                                           #
+# You may tell gambit to ignore any new lines with                          #
+# #remove_newlines                                                          #
+# text                                                                      #
+# #dont_remove_newlines                                                     #
+#                                                                           #
+# Or you can end the ignore scope the a blank line                          #
+# #remove_newlines                                                          #
+# text                                                                      #
+#                                                                           #
+# unaffected_text                                                           #
+#############################################################################
+
+uniform: |
+  #remove_newlines
+  this is a test
+  

@@ -29,11 +29,14 @@ gambit_base_namespace  = ''
 # Use either absolute paths or paths relative to the main BOSS directory.
 input_files   = ['../../../Backends/installed/Pythia/8.212/include/Pythia8/Pythia.h']
 include_paths = ['../../../Backends/installed/Pythia/8.212/include', '../../../contrib/slhaea/include']
-source_path   = '../../../Backends/installed/Pythia/8.212/src'
+base_paths    = ['../../../Backends/installed/Pythia/8.212/']
 
-accepted_paths = ['../../../Backends/installed/Pythia/8.212/']
+header_files_to = '../../../Backends/installed/Pythia/8.212/include'
+src_files_to    = '../../../Backends/installed/Pythia/8.212/src'
 
-loaded_classes = [
+
+
+load_classes = [
     'Pythia8::AlphaEM',
     'Pythia8::AlphaStrong',
     'Pythia8::BeamParticle',
@@ -67,7 +70,7 @@ loaded_classes = [
     'Pythia8::Vec4',
 ]
 
-loaded_functions = [
+load_functions = [
     # 'Pythia8::m2(Pythia8::Wave4, Pythia8::Wave4)',
     # 'Pythia8::m2(const Pythia8::Particle&, const Pythia8::Particle&)',
 ]
@@ -93,6 +96,11 @@ function_files_prefix  = 'function_'
 
 # ~~~~~ Information about other known types ~~~~~
 
-known_classes = ['SLHAea::Coll']
+# Dictionary key: type name
+# Dictionary value: header file with containing type declaration.
+#
+# Example:
+#   known_classes = {"SomeNamespace::KnownClassOne" : "path_to_header/KnownClassOne.hpp", 
+#                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
 
-known_class_headers = {"SLHAea::Coll" : "SLHAea/slhaea.h"}
+known_classes = {"SLHAea::Coll" : "SLHAea/slhaea.h"}

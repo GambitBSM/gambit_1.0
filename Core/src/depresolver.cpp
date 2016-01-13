@@ -387,8 +387,8 @@ namespace Gambit
          (*masterGraph[*vi]).dependencies().size()%
          (*masterGraph[*vi]).backendreqs().size();
       }
-      logger() << endl << "Registered Backend vertices" << endl;
-      logger() <<         "---------------------------" << endl;
+      logger() <<  "Registered Backend vertices" << endl;
+      logger() <<  "---------------------------" << endl;
       logger() << printGenericFunctorList(boundCore->getBackendFunctors());
       logger() << EOM;
     }
@@ -1374,7 +1374,7 @@ namespace Gambit
 
         // Print information about required quantity and dependent vertex
         logger() << LogTags::dependency_resolver;
-        logger() << endl << "Resolving ";
+        logger() << "Resolving ";
         logger() << printQuantityToBeResolved(quantity, toVertex) << endl << endl;;
 
         // Check that ObsLike vertices have non-empty capability
@@ -1598,7 +1598,7 @@ namespace Gambit
       if ((*masterGraph[vertex]).backendreqs().size() == 0) return;
 
       // Get started.
-      logger() << LogTags::dependency_resolver << "Backend function resolution: " << endl << EOM;
+      logger() << LogTags::dependency_resolver << "Doing backend function resolution..." << EOM;
 
       // Check whether this vertex is mentioned in the inifile.
       const IniParser::ObservableType * auxEntry = findIniEntry(vertex, boundIniFile->getRules(), "Rules");
@@ -1624,7 +1624,7 @@ namespace Gambit
             {
               logger() << LogTags::dependency_resolver;
               logger() << "Resolving ungrouped requirement " << req->first;
-              logger() << " (" << req->second << ")..." << endl << EOM;
+              logger() << " (" << req->second << ")..." << EOM;
 
               // Find a backend function that fulfills the backend requirement.
               std::set<sspair> reqsubset;
@@ -1643,7 +1643,7 @@ namespace Gambit
                 remaining_reqs.insert(*req);
                 logger() << LogTags::dependency_resolver;
                 logger() << "Resolution of ungrouped requirement " << req->first;
-                logger() << " (" << req->second << ") deferred until later." << endl << EOM;
+                logger() << " (" << req->second << ") deferred until later." << EOM;
               }
             }
             if (not remaining_reqs.empty()) remaining_groups.insert(*it);
@@ -1651,8 +1651,7 @@ namespace Gambit
           else
           {
             logger() << LogTags::dependency_resolver;
-            logger() << "Resolving from group " << *it;
-            logger() << "..." << endl << EOM;
+            logger() << "Resolving from group " << *it << "..." << EOM;
 
             // Collect the list of backend requirements in this group.
             std::set<sspair> reqs = (*masterGraph[vertex]).backendreqs(*it);
@@ -1672,7 +1671,7 @@ namespace Gambit
               remaining_groups.insert(*it);
               logger() << LogTags::dependency_resolver;
               logger() << "Resolution from group " << *it;
-              logger() << "deferred until later." << endl << EOM;
+              logger() << "deferred until later." << EOM;
             }
           }
         }
@@ -1925,7 +1924,7 @@ namespace Gambit
       logger() << LogTags::dependency_resolver;
       logger() << "Resolved by: [" << func->name() << ", ";
       logger() << func->origin() << " (" << func->version() << ")]";
-      logger() << endl << EOM;
+      logger() << EOM;
     }
 
 

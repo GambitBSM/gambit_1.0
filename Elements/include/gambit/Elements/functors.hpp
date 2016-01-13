@@ -615,6 +615,20 @@ namespace Gambit
       /// Integer LogTag, for tagging log messages
       int myLogTag;
 
+      /// Check if an appropriate LogTag for this functor is missing from the logging system.
+      void check_missing_LogTag();
+
+      /// @{ Some helper functions for interacting with signals in the calculate() routine
+      void check_for_shutdown_signal();
+      void entering_multithreaded_region();
+      void leaving_multithreaded_region();
+      /// While locked, prevent this function switching off threadsafe* emergency signal handling.
+      /// *The emergency signal handling cannot be made completely threadsafe; it can still cause
+      /// lockups and memory corruption if it occurs at an inopportune time. "soft" shutdown is
+      /// always preferable.
+      bool signal_mode_locked = true; 
+      /// @}
+
   };
 
 
