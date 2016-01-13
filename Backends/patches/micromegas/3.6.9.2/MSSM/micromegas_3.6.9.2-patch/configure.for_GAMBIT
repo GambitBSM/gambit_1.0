@@ -14,7 +14,6 @@ if [ -f "sources/omega.c.orig" ]; then
 fi
 patch -b sources/omega.c omega.c.dif
 
-
 # Hack to ensure -fPIC flag for fortran compilation.
 if [ ! -f "CalcHEP_src/getFlags.orig" ]; then
   cp -p "CalcHEP_src/getFlags" "CalcHEP_src/getFlags.orig"
