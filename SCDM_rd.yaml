@@ -71,7 +71,7 @@ Parameters:
 
     SingletDM:
       mS: 100
-      lambda_hS: 0.1
+      lambda_hS: 0.2
 
    # SingletDM_running:  # use running mass model and able to choose lambda_S as well
    #   mS2: 1000
@@ -179,9 +179,13 @@ ObsLikes:
  #   - capability: expected_lifetime
  #     purpose: Observable
 
- #   - capability: lnL_oh2
- #     purpose: Likelihood
- #     function: lnL_oh2_Simple
+    - capability: lnL_oh2
+      purpose: Likelihood
+      function: lnL_oh2_Simple
+
+    - capability: RD_fraction
+      purpose: Observable
+      fuction: RD_fraction_from_oh2
 
 
 
@@ -200,14 +204,17 @@ Rules:
       #function: get_QedQcd_spectrum
       #function: get_SM_SubSpectrum_from_MSSM_Spectrum
 
-#    - capability: RD_oh2
-#      function: RD_oh2_general
+    - capability: RD_oh2
+      function: RD_oh2_general
 
- #   - capability: decay_rates
- #     function: all_decays
+    - capability: decay_rates
+      function: all_decays
 
     - capability: SingletDM_spectrum
       function: get_SingletDM_spectrum_pole
+
+    - capability: RD_fraction
+      function: RD_fraction_from_oh2
 
 
 #########################
