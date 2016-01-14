@@ -14,19 +14,14 @@
 ///
 ///  *********************************************
 
-/// @{ Need these just so I can use SpecBit_error() etc.
-///    Is there no more "lightweight" way to do this?
-#include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/SpecBit/SpecBit_rollcall.hpp"
-/// @}
 
-#include "gambit/SpecBit/MSSMskeleton.hpp" 
+#include "gambit/Elements/MSSMskeleton.hpp" 
 
 
 using namespace SLHAea;
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
 
       /// Simplify access to map types in this file
       typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MTget; 
@@ -87,7 +82,7 @@ namespace Gambit {
       double MSSMea::get_Mhh_pole_slha(int i) const { 
          if      (i==1){ return getdata("MASS",25); } // Neutral Higgs(1)
          else if (i==2){ return getdata("MASS",35); } // Neutral Higgs(2)
-         else { SpecBit_error().raise(LOCAL_INFO,"Invalid index input to get_Mhh_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
+         else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_Mhh_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       } 
       double MSSMea::get_MAh_pole () const { return getdata("MASS",36); }  
       double MSSMea::get_MHpm_pole() const { return getdata("MASS",37); }   
@@ -95,7 +90,7 @@ namespace Gambit {
       double MSSMea::get_MCha_pole_slha(int i) const {
          if      (i==1){ return getdata("MASS",1000024); } // Chargino(1)
          else if (i==2){ return getdata("MASS",1000037); } // Chargino(2)
-         else { SpecBit_error().raise(LOCAL_INFO,"Invalid index input to get_MCha_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
+         else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MCha_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
       double MSSMea::get_MSd_pole_slha(int i) const {
          static std::map<int,int> match;
@@ -106,7 +101,7 @@ namespace Gambit {
          else if (i==4){ return getdata("MASS",2000001); } // d-type squark(4)
          else if (i==5){ return getdata("MASS",2000003); } // d-type squark(5)
          else if (i==6){ return getdata("MASS",2000005); } // d-type squark(6)
-         else { SpecBit_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
+         else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
       double MSSMea::get_MSu_pole_slha(int i) const {
          if      (i==1){ return getdata("MASS",1000002); } // u-type squark(1)
@@ -115,7 +110,7 @@ namespace Gambit {
          else if (i==4){ return getdata("MASS",2000002); } // u-type squark(4)
          else if (i==5){ return getdata("MASS",2000004); } // u-type squark(5)
          else if (i==6){ return getdata("MASS",2000006); } // u-type squark(6)
-         else { SpecBit_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
+         else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
       double MSSMea::get_MSe_pole_slha(int i) const {
          if      (i==1){ return getdata("MASS",1000011); } // charged slepton(1)
@@ -124,20 +119,20 @@ namespace Gambit {
          else if (i==4){ return getdata("MASS",2000011); } // charged slepton(4)
          else if (i==5){ return getdata("MASS",2000013); } // charged slepton(5)
          else if (i==6){ return getdata("MASS",2000015); } // charged slepton(6)
-         else { SpecBit_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
+         else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
       double MSSMea::get_MSv_pole_slha(int i) const {
          if      (i==1){ return getdata("MASS",1000012); } // Sneutrino(1)
          else if (i==2){ return getdata("MASS",1000014); } // Sneutrino(2)
          else if (i==3){ return getdata("MASS",1000016); } // Sneutrino(3)
-         else { SpecBit_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
+         else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
       double MSSMea::get_MChi_pole_slha(int i) const {
          if      (i==1){ return getdata("MASS",1000022); } // Neutralino(1)
          else if (i==2){ return getdata("MASS",1000023); } // Neutralino(2)
          else if (i==3){ return getdata("MASS",1000025); } // Neutralino(3)
          else if (i==4){ return getdata("MASS",1000035); } // Neutralino(4)
-         else { SpecBit_error().raise(LOCAL_INFO,"Invalid index input to get_MChi_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
+         else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MChi_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
       
       // Pole Mixings
@@ -315,7 +310,6 @@ namespace Gambit {
          return map_collection;
       }
       
-   } // end SpecBit namespace
 } // end Gambit namespace
 
 
