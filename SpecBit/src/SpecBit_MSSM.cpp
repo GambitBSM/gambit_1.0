@@ -26,14 +26,13 @@
 #include <sstream>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/spectrum.hpp"
+#include "gambit/Elements/spectrum_factories.hpp"
+#include "gambit/Elements/MSSMskeleton.hpp"
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-#include "gambit/SpecBit/SMskeleton.hpp"
-#include "gambit/SpecBit/MSSMskeleton.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 

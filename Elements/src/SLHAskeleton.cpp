@@ -14,13 +14,7 @@
 ///
 ///  *********************************************
 
-/// @{ Need these just so I can use SpecBit_error() etc.
-///    Is there no more "lightweight" way to do this?
-#include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/SpecBit/SpecBit_rollcall.hpp"
-/// @}
-
-#include "gambit/SpecBit/SLHAskeleton.hpp" 
+#include "gambit/Elements/SLHAskeleton.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
@@ -39,8 +33,8 @@
 
 using namespace SLHAea;
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
 
       /// @{ Member functions for SLHAeaModel class
            
@@ -73,7 +67,7 @@ namespace Gambit {
            std::ostringstream errmsg;
            errmsg << "Error accessing data at index "<<index<<" of block "<<block<<". Please check that the SLHAea object was properly filled." << std::endl;
            errmsg  << "(Received out_of_range error from SLHAea class with message: " << e.what() << ")";
-           SpecBit_error().raise(LOCAL_INFO,errmsg.str());    
+           utils_error().raise(LOCAL_INFO,errmsg.str());    
          }
          return output;
       }
@@ -89,13 +83,11 @@ namespace Gambit {
            std::ostringstream errmsg;
            errmsg << "Error accessing data at index "<<i<<","<<j<<" of block "<<block<<". Please check that the SLHAea object was properly filled." << std::endl;
            errmsg  << "(Received out_of_range error from SLHAea class with message: " << e.what() << ")";
-           SpecBit_error().raise(LOCAL_INFO,errmsg.str());    
+           utils_error().raise(LOCAL_INFO,errmsg.str());    
          }
          return output;
       }
 
-
-   } // end SpecBit namespace
 } // end Gambit namespace
 
 

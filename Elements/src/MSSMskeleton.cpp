@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-
+#include "gambit/Utils/util_functions.hpp" 
 #include "gambit/Elements/MSSMskeleton.hpp" 
 
 

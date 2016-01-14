@@ -20,7 +20,7 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 /// @}
 
-#include "gambit/SpecBit/SMskeleton.hpp" 
+#include "gambit/Elements/SMskeleton.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
@@ -41,8 +41,6 @@ using namespace SLHAea;
 
 namespace Gambit
 {
-   namespace SpecBit
-   {
 
       /// Simplify access to map types in this file
       typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
@@ -178,7 +176,6 @@ namespace Gambit
          return map_collection;
       }
 
-   } // end SpecBit namespace
 } // end Gambit namespace
 
 
