@@ -16,10 +16,29 @@
 // Always required in any standalone module main file
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
+#include "gambit/Elements/spectrum_factories.hpp"
+#include "gambit/Elements/MSSMskeleton.hpp"
 
 using namespace ColliderBit::Accessors;     // Helper functions that provide some info about the module
 using namespace ColliderBit::Functown;      // Functors wrapping the module's actual module functions
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
+
+QUICK_FUNCTION(ColliderBit, MSSMspectrum, NEW_CAPABILITY, createSpectrum, const Spectrum*, (MSSM30atQ,MSSM30atMGUT))
+
+const std::string inputFileName = "ColliderBit/data/sps1aWithDecays.spc";
+
+namespace Gambit
+{
+  namespace ColliderBit {
+    
+    void createSpectrum(const Spectrum *& outSpec){
+      static Spectrum mySpec;
+      mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);
+      
+      outSpec = &mySpec;
+    }
+  }
+}
 
 int main()
 {
@@ -44,18 +63,11 @@ int main()
 
   logger()<<"Running ColliderBit standalone example"<<LogTags::info<<EOM;
 
-
-
   /*std::cout << std::endl << "My name is " << name() << std::endl;
   std::cout << " I can calculate: " << endl << iCanDo << std::endl;
   std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;*/
   //std::cout << "I can do nevents: " << provides("nevents") << std::endl;
 
-  // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
-  // In our case, this means nulike (for likelihood calculations)
-  calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_1::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
-  // calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_1::Functown::nulike_lnpin); // treat systematics with a Gaussian distribution
-  
   std::cout << std::endl << "My name is " << name() << std::endl;
   std::cout << " I can calculate: " << endl << iCanDo << std::endl;
   std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;
@@ -63,7 +75,7 @@ int main()
   // Set up the LHC likelihood calculations
   // WARNING: DO NOT EDIT UNLESS YOU ARE AN EXPERT
   calc_LHC_LogLike.resolveDependency(&runAnalyses);
-  calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
+  calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_1::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
   runAnalyses.resolveDependency(&getAnalysisContainer);
   runAnalyses.resolveDependency(&getPythiaFileReader);
   runAnalyses.resolveDependency(&reconstructBuckFastEvent);
@@ -89,8 +101,9 @@ int main()
   // QUICK_FUNCTION(ColliderBit, ALEPH_Selectron_LLike, NEW_CAPABILITY, ALEPH_Selectron_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_selselbar, triplet<double>), (LEP208_xsec_serserbar, triplet<double>), (selectron_l_decay_rates, DecayTable::Entry), (selectron_r_decay_rates, DecayTable::Entry))
   
   // ALEPH_Selectron_Conservative_LLike depends on the model
-  // It also depends on an MSSM_spectrum
-  ALEPH_Selectron_Conservative_LLike.resolveDependency(&SpecBit::Functown::get_MSSM_spectrum_from_SLHAfile);
+  // It also depends on an MSSM_spectrum  
+  std::cout << "About to resolve LEP " << std::endl;
+  ALEPH_Selectron_Conservative_LLike.resolveDependency(&createSpectrum);
   
   // Double-check which backend requirements have been filled with what
   std::cout << std::endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << std::endl;
@@ -138,8 +151,8 @@ int main()
   runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which LHC analyses to run
   getAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
   
-  std::vector<std::string> inputFileName;
-  inputFileName.push_back("ColliderBit/data/sps1aWithDecays.spc"); // specify the input SLHA filename(s)
+  std::vector<std::string> inputFiles;
+  inputFiles.push_back(inputFileName); // specify the input SLHA filename(s)
   std::vector<std::string> pythiaOptions; // use this vector to store Pythia options
   pythiaOptions.push_back("PartonLevel:MPI = off");
   pythiaOptions.push_back("PartonLevel:ISR = on");
@@ -147,7 +160,7 @@ int main()
   pythiaOptions.push_back("HadronLevel:all = on");
   pythiaOptions.push_back("TauDecays:mode = 0");
   getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
-  getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFileName);
+  getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
   
   std::vector<std::string> pythiaNames;
   pythiaNames.push_back("Pythia_SUSY_LHC_8TeV");
