@@ -1,7 +1,6 @@
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
-///  \file
-///
+///  
 ///  Example of GAMBIT ColliderBit standalone
 ///  main program.
 ///
@@ -9,6 +8,8 @@
 ///
 ///  Authors (add name and date if you modify):
 ///   
+///  Martin White (martin.white@adelaide.edu.au)
+///  January 2016
 ///
 ///  *********************************************
 
@@ -19,18 +20,6 @@
 using namespace ColliderBit::Accessors;     // Helper functions that provide some info about the module
 using namespace ColliderBit::Functown;      // Functors wrapping the module's actual module functions
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
-
-QUICK_FUNCTION(ColliderBit, id, OLD_CAPABILITY, id_dummy, std::string)
-
-// Ad-hoc functions for filling dependencies that cannot or should not otherwise be filled from inside ColliderBit.
-namespace Gambit 
-{
-  namespace ColliderBit
-  {
-    void id_dummy(std::string &result) { result = "identity_example"; }
-  }
-}
-
 
 int main()
 {
@@ -58,29 +47,19 @@ int main()
   std::cout << std::endl << "My name is " << name() << std::endl;
   std::cout << " I can calculate: " << endl << iCanDo << std::endl;
   std::cout << " ...but I may need: " << endl << iMayNeed << std::endl << std::endl;
-  //std::cout << "I can do nevents: " << provides("nevents") << std::endl;
   
-  // Resolve dependencies of nested functions on each other
-  // calc_LHC_loglike needs AnalysisNumbers (provided by runAnalyses)
-  // It also has a backend requirement of lnlike_marg_poisson
+  // Set up the LHC likelihood calculations
+  // WARNING: DO NOT EDIT UNLESS YOU ARE AN EXPERT
   calc_LHC_LogLike.resolveDependency(&runAnalyses);
   calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
-  // calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpin); // treat systematics with a Gaussian distribution
-  // runAnalyses needs a ReconstructedEvent, a HardScatteringSim and an AnalysisContainer  
   runAnalyses.resolveDependency(&getAnalysisContainer);
   runAnalyses.resolveDependency(&getPythiaFileReader);
   runAnalyses.resolveDependency(&reconstructBuckFastEvent);
-  // getAnalysisContainer needs a HardScatteringSim (MJW- why?)
   getAnalysisContainer.resolveDependency(&getPythiaFileReader);
-  // reconstructBuckFastEvent needs a ConvertedScatteringEvent and a SimpleSmearingSim
   reconstructBuckFastEvent.resolveDependency(&convertPythia8ParticleEvent);
   reconstructBuckFastEvent.resolveDependency(&getBuckFast);
-  // convertPythia8ParticleEvent needs a HardScatteringEvent
   convertPythia8ParticleEvent.resolveDependency(&generatePythia8Event);
-  // generatePythia8Event needs a HardScatteringSim
   generatePythia8Event.resolveDependency(&getPythiaFileReader);
-
-  // Now set the loop manager for nested functions
   getPythiaFileReader.resolveLoopManager(&operateLHCLoop);
   getBuckFast.resolveLoopManager(&operateLHCLoop);
   getAnalysisContainer.resolveLoopManager(&operateLHCLoop);
@@ -88,11 +67,19 @@ int main()
   convertPythia8ParticleEvent.resolveLoopManager(&operateLHCLoop);
   reconstructBuckFastEvent.resolveLoopManager(&operateLHCLoop);
   runAnalyses.resolveLoopManager(&operateLHCLoop);
-
   std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFast, &getAnalysisContainer,&generatePythia8Event,&convertPythia8ParticleEvent,&reconstructBuckFastEvent,&runAnalyses);
-
   operateLHCLoop.setNestedList(nested_functions);
 
+  // Set up an example LEP calculation
+  // Note that the LEP functions need a spectrum
+  // Use SpecBit::Pipes::get_MSSM_spectrum_from_SLHAfile
+
+  // QUICK_FUNCTION(ColliderBit, ALEPH_Selectron_LLike, NEW_CAPABILITY, ALEPH_Selectron_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_selselbar, triplet<double>), (LEP208_xsec_serserbar, triplet<double>), (selectron_l_decay_rates, DecayTable::Entry), (selectron_r_decay_rates, DecayTable::Entry))
+  
+  // ALEPH_Selectron_Conservative_LLike depends on the model
+  // It also depends on an MSSM_spectrum
+  ALEPH_Selectron_Conservative_LLike.resolveDependency(&SpecBit::Functown::get_MSSM_spectrum_from_SLHAfile);
+  
   // Double-check which backend requirements have been filled with what
   std::cout << std::endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << std::endl;
   std::cout << ColliderBit::Pipes::calc_LHC_LogLike::BEreq::lnlike_marg_poisson_lognormal_error.origin() << "::";
@@ -127,39 +114,42 @@ int main()
   std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.origin() << "::";
   std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.name() << std::endl;
        
-  // Set some module function options
+  // Set Module function options here
+  // User can edit this section to configure ColliderBit
+  // See the ColiderBit manual for available options
+  
   // TO DO: Need a way of handling pythia options (they are not currently being used).
   // This requires handling nested yaml options 
-  
+
+  // First we have the LHC options
   std::vector<std::string> runTheseAnalyses;
-  runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");
+  runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which LHC analyses to run
   getAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
   
   std::vector<std::string> inputFileName;
-  inputFileName.push_back("ColliderBit/data/sps1aWithDecays.spc");
-  std::vector<std::string> pythiaOptions;
+  inputFileName.push_back("ColliderBit/data/sps1aWithDecays.spc"); // specify the input SLHA filename(s)
+  std::vector<std::string> pythiaOptions; // use this vector to store Pythia options
   pythiaOptions.push_back("PartonLevel:MPI = off");
   pythiaOptions.push_back("PartonLevel:ISR = on");
   pythiaOptions.push_back("PartonLevel:FSR = on");
   pythiaOptions.push_back("HadronLevel:all = on");
   pythiaOptions.push_back("TauDecays:mode = 0");
-
-  getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/");
-  //getPythiaFileReader.setOption<std::vector<std::string>>("Pythia_Standalone, pythiaOptions_1",pythiaOptions);
+  getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
   getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFileName);
   
   std::vector<std::string> pythiaNames;
   pythiaNames.push_back("Pythia_SUSY_LHC_8TeV");
   operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
-  operateLHCLoop.setOption<int>("nEvents",10000.);
+  operateLHCLoop.setOption<int>("nEvents",10000.); // specify the number of simulated LHC events
 
   // Start running here
 
   {
-        
+    
     // Call the initialisation functions for all backends that are in use. 
     nulike_1_0_0_init.reset_and_calculate();
-    
+
+    // Call the LHC likelihood
     operateLHCLoop.reset_and_calculate();
     calc_LHC_LogLike.reset_and_calculate();
 
