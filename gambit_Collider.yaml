@@ -46,12 +46,11 @@ Scanner:
 
     random:
       plugin: random_sampler
-      options:
-        point_number: 1
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
+      point_number: 1
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
 
 ###############################
 # Observables of interest
@@ -179,7 +178,7 @@ Rules:
     function:  getPythia
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "../gambit_internal/extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/"
+      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV:
         pythiaOptions_1: ["PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",

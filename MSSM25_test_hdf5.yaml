@@ -57,10 +57,9 @@ Scanner:
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
-      options:
-        point_number: 25
-        output_file:  output
-        like:  Likelihood
+      point_number: 25
+      output_file:  output
+      like:  Likelihood
     de:
       plugin: Diver
       like: Likelihood
@@ -71,17 +70,16 @@ Scanner:
         info_file:
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 1000
-        tol: 0.1
-        mmodal: 0
-        # write native MultiNest ascii output files?
-        outfile: 1 # yes, need them for resuming
-        # No options to set, but still need the nodes at the moment...
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
+      like:  Likelihood
+      nlive: 1000
+      tol: 0.1
+      mmodal: 0
+      # write native MultiNest ascii output files?
+      outfile: 1 # yes, need them for resuming
+      # No options to set, but still need the nodes at the moment...
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
 ObsLikes:
   - purpose:      Test

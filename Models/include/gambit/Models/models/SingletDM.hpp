@@ -26,7 +26,7 @@
 #define PARENT SingletDM_running
   START_MODEL
   // translate this model into SingletDM_running
-  INTERPRET_AS_PARENT__FUNCTION(SingletDM_to_SingletDM_running)
+  INTERPRET_AS_PARENT_FUNCTION(SingletDM_to_SingletDM_running)
   // if this transformation depends on the spectrum uncomment following line
   // INTERPRET_AS_PARENT_DEPENDENCY(SingletDM_spectrum, const Spectrum*)
 

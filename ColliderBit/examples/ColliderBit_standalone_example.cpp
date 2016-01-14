@@ -63,8 +63,8 @@ int main()
 
   // Resolve backend requirements 'by hand'.  Must be done before dependencies are resolved.
   // In our case, this means nulike (for likelihood calculations)
-  calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
-  // calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_0::Functown::nulike_lnpin); // treat systematics with a Gaussian distribution
+  calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_1::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
+  // calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_1::Functown::nulike_lnpin); // treat systematics with a Gaussian distribution
   
   // Notify any module functions that care of the model(s) being scanned.
   // 'Care' means where they depend on model parameters directly, or have dependencies or backend requirements that are
@@ -102,7 +102,7 @@ int main()
     CMSSM_primary_parameters->setValue("sgnmu",1.);
     
     // Call the initialisation functions for all backends that are in use. 
-    nulike_1_0_0_init.reset_and_calculate();
+    nulike_1_0_1_init.reset_and_calculate();
 
     // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled;
     // i.e. calculate quantities that other quantities depend on first.

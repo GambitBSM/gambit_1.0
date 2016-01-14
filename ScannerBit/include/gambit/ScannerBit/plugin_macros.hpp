@@ -104,6 +104,13 @@ namespace __gambit_plugin_namespace__                                           
             {                                                                                           \
                 myData.outputFuncs[#name] = new Gambit::Scanner::Plugins::classFactory<__VA_ARGS__>;    \
             }                                                                                           \
+                                                                                                        \
+            ~interface()                                                                                \
+            {                                                                                           \
+                if (myData.outputFuncs.find(#name) != myData.outputFuncs.end())                         \
+                    delete myData.outputFuncs[#name];                                                   \
+            }                                                                                           \
+                                                                                                        \
         };                                                                                              \
                                                                                                         \
         template <>                                                                                     \
@@ -137,6 +144,13 @@ namespace __gambit_plugin_namespace__                                           
                 myData.outputFuncs[#name]                                                               \
                     = new Gambit::Scanner::Plugins::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);  \
             }                                                                                           \
+                                                                                                        \
+            ~interface()                                                                                \
+            {                                                                                           \
+                if (myData.outputFuncs.find(#name) != myData.outputFuncs.end())                         \
+                    delete myData.outputFuncs[#name];                                                   \
+            }                                                                                           \
+                                                                                                        \
         };                                                                                              \
                                                                                                         \
         template <>                                                                                     \

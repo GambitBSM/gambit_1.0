@@ -17,11 +17,7 @@
 
 
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME SuperIso
-#endif
+#define BACKENDNAME SuperIso
 #define VERSION 3.4
 #define SAFE_VERSION 3_4
 

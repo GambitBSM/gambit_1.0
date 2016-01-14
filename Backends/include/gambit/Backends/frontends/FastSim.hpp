@@ -7,11 +7,7 @@
  * 
  */
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME FastSim
-#endif
+#define BACKENDNAME FastSim
 #define VERSION 1.0
 #define SAFE_VERSION 1_0
 

@@ -58,3 +58,11 @@ endif()
 
 include(cmake/scanners.cmake)
 include(cmake/backends.cmake)
+
+# Print outcomes of BOSSing efforts
+if(NOT needs_BOSSing STREQUAL "")
+  message("${Yellow}-- BOSS step successfully generated for the following cmake targets: ${needs_BOSSing} ${ColourReset}")
+endif()
+if(NOT needs_BOSSing_failed STREQUAL "")
+  message("${Yellow}-- Failed to generate BOSS step for the following cmake targets: ${needs_BOSSing_failed} ${ColourReset}")
+endif()

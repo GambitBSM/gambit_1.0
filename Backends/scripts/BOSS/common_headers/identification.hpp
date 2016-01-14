@@ -2,12 +2,7 @@
 
 #include "gambit/Utils/cats.hpp"
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME __BACKEND_NAME__
-#endif
-
+#define BACKENDNAME __BACKEND_NAME__
 #define VERSION __BACKEND_VERSION__
 #define SAFE_VERSION __BACKEND_SAFE_VERSION__
 

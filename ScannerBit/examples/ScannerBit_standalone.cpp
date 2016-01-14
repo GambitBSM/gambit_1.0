@@ -201,8 +201,5 @@ int main(int argc, char **argv)
         }
     }
 
-    // Free the memory held by the RNG
-    Random::delete_rng_engine();
-
     return 0;
 }

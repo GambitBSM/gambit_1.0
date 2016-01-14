@@ -2,12 +2,7 @@
 
 #include "gambit/Utils/cats.hpp"
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME Pythia
-#endif
-
+#define BACKENDNAME Pythia
 #define VERSION 8.186
 #define SAFE_VERSION 8_186
 

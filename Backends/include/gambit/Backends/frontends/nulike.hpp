@@ -19,13 +19,9 @@
 ///
 ///  *********************************************
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME nulike
-#endif
-#define VERSION 1.0.0
-#define SAFE_VERSION 1_0_0
+#define BACKENDNAME nulike
+#define VERSION 1.0.1
+#define SAFE_VERSION 1_0_1
 
 // Load it
 LOAD_LIBRARY
@@ -33,7 +29,7 @@ LOAD_LIBRARY
 // Import functions
 BE_FUNCTION(nulike_init, void, (const char&, const char&, const char&, const char&, const char&, double&, bool&, bool&), "nulike_init_", "nulike_init")
 BE_FUNCTION(nulike_bounds, void, (const char&, const double&, const double&, nuyield_function_pointer, double&, double&, int&,
-                                  double&, double&, const int&, const double&, const bool&, const bool&, const double&, const double&, void*&, const bool&), 
+                                  double&, double&, const int&, const double&, const int&, const bool&, const double&, const double&, void*&, const bool&), 
                                   "nulike_bounds", "nubounds")
 BE_FUNCTION(nulike_lnpiln, double, (const int&, const double&, const double&, const double&), "nulike_lnpiln_", "lnlike_marg_poisson_lognormal_error")
 BE_FUNCTION(nulike_lnpin,  double, (const int&, const double&, const double&, const double&), "nulike_lnpin_",  "lnlike_marg_poisson_gaussian_error")

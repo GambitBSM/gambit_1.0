@@ -758,6 +758,8 @@ namespace Gambit {
         //They need to be added (but will probably update to paper result)
 
         SignalRegionData results_BC1;
+        results_BC1.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
+        results_BC1.set_sr_label("BC1");
         results_BC1.set_observation(456.);
         results_BC1.set_background(482.);
         results_BC1.set_backgroundsys(76.);
@@ -765,6 +767,8 @@ namespace Gambit {
         results_BC1.set_signal(_numBC1);
 
         SignalRegionData results_BC2;
+        results_BC2.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
+        results_BC2.set_sr_label("BC2");
         results_BC2.set_observation(25.);
         results_BC2.set_background(18.);
         results_BC2.set_backgroundsys(5.);
@@ -772,6 +776,8 @@ namespace Gambit {
         results_BC2.set_signal(_numBC2);
 
         SignalRegionData results_BC3;
+        results_BC3.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
+        results_BC3.set_sr_label("BC3");
         results_BC3.set_observation(6.);
         results_BC3.set_background(7.);
         results_BC3.set_backgroundsys(3.);
@@ -779,6 +785,8 @@ namespace Gambit {
         results_BC3.set_signal(_numBC3);
 
         SignalRegionData results_TN2;
+        results_TN2.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
+        results_TN2.set_sr_label("TN2");
         results_TN2.set_observation(14.);
         results_TN2.set_background(13.);
         results_TN2.set_backgroundsys(3.);
@@ -786,6 +794,8 @@ namespace Gambit {
         results_TN2.set_signal(_numTN2);
 
         SignalRegionData results_TN3;
+        results_TN3.set_analysis_name("Analysis_ATLAS_1LEPStop_20invfb");
+        results_TN3.set_sr_label("TN3");
         results_TN3.set_observation(7.);
         results_TN3.set_background(5.);
         results_TN3.set_backgroundsys(2.);

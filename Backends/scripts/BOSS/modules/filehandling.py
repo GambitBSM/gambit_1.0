@@ -278,7 +278,7 @@ def copyFilesToSourceTree(verbose=False):
         factory_source_fname_short = cfg.factory_file_prefix + class_name['short'] + cfg.source_extension
 
         cp_source = os.path.join(cfg.extra_output_dir, factory_source_fname_short)
-        cp_target = os.path.join(cfg.source_path, factory_source_fname_short)
+        cp_target = os.path.join(cfg.src_files_to, factory_source_fname_short)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
@@ -292,8 +292,8 @@ def copyFilesToSourceTree(verbose=False):
 
         # cp_source = os.path.join(cfg.extra_output_dir, function_source_fname_short)
         cp_source = os.path.join(source_file_path)
-        # cp_target = os.path.join(cfg.source_path, function_source_fname_short)
-        cp_target = os.path.join(cfg.source_path, source_file_name)
+        # cp_target = os.path.join(cfg.src_files_to, function_source_fname_short)
+        cp_target = os.path.join(cfg.src_files_to, source_file_name)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
@@ -303,7 +303,7 @@ def copyFilesToSourceTree(verbose=False):
         extra_source_fname_short = class_name['short'] + '_extras' + gb.code_suffix + cfg.source_extension
 
         cp_source = os.path.join(cfg.extra_output_dir, extra_source_fname_short)
-        cp_target = os.path.join(cfg.source_path, extra_source_fname_short)
+        cp_target = os.path.join(cfg.src_files_to, extra_source_fname_short)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
@@ -311,67 +311,67 @@ def copyFilesToSourceTree(verbose=False):
 
     # -- abstractbase.hpp
     cp_source = os.path.join(cfg.extra_output_dir, 'abstractbase.hpp')
-    cp_target = os.path.join(cfg.include_paths[0], gb.gambit_backend_incl_dir, 'abstractbase.hpp')
+    cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, 'abstractbase.hpp')
     source_target_tuples.append( (cp_source, cp_target) )
     new_files.append(cp_target)
     
     # -- abstracttypedefs.hpp
     cp_source = os.path.join(cfg.extra_output_dir, gb.abstract_typedefs_fname + cfg.header_extension)
-    cp_target = os.path.join(cfg.include_paths[0], gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension)
+    cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension)
     source_target_tuples.append( (cp_source, cp_target) )
     new_files.append(cp_target)
 
     # -- backend_undefs.hpp
     cp_source = os.path.join(cfg.extra_output_dir, 'backend_undefs.hpp')
-    cp_target = os.path.join(cfg.include_paths[0], gb.gambit_backend_incl_dir, 'backend_undefs.hpp')
+    cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, 'backend_undefs.hpp')
     source_target_tuples.append( (cp_source, cp_target) )
     new_files.append(cp_target)
 
     # -- cats.hpp
     cp_source = os.path.join(cfg.extra_output_dir, 'cats.hpp')
-    cp_target = os.path.join(cfg.include_paths[0], gb.gambit_utils_incl_dir, 'cats.hpp')
+    cp_target = os.path.join(cfg.header_files_to, gb.gambit_utils_incl_dir, 'cats.hpp')
     source_target_tuples.append( (cp_source, cp_target) )
     new_files.append(cp_target)
 
     # -- wrapperbase.hpp
     if len(gb.classes_done) > 0:
         cp_source = os.path.join(cfg.extra_output_dir, 'wrapperbase.hpp')
-        cp_target = os.path.join(cfg.include_paths[0], gb.gambit_backend_incl_dir, 'wrapperbase.hpp')
+        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, 'wrapperbase.hpp')
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
     # -- wrapperdeleter.hpp
     if len(gb.classes_done) > 0:
         cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.header_extension)
-        cp_target = os.path.join(cfg.include_paths[0], gb.gambit_backend_incl_dir, gb.wrapper_deleter_fname + cfg.header_extension)
+        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_deleter_fname + cfg.header_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
     # -- function_return_utils.hpp
     if len(gb.functions_done) > 0:
         cp_source = os.path.join(cfg.extra_output_dir, 'function_return_utils.hpp')
-        cp_target = os.path.join(cfg.include_paths[0], gb.gambit_backend_incl_dir, 'function_return_utils.hpp')
+        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, 'function_return_utils.hpp')
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
     # -- wrappertypedefs.hpp
     if len(gb.classes_done) > 0:
         cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_typedefs_fname + cfg.header_extension)
-        cp_target = os.path.join(cfg.include_paths[0], gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension)
+        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
     # -- wrapperdeleter.cpp
     if len(gb.classes_done) > 0:
         cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.source_extension)
-        cp_target = os.path.join(cfg.source_path, gb.wrapper_deleter_fname + cfg.source_extension)
+        cp_target = os.path.join(cfg.src_files_to, gb.wrapper_deleter_fname + cfg.source_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
     # -- function_return_utils.cpp
     if len(gb.functions_done) > 0:
         cp_source = os.path.join(cfg.extra_output_dir, gb.func_return_utils_fname + cfg.source_extension)
-        cp_target = os.path.join(cfg.source_path, gb.func_return_utils_fname + cfg.source_extension)
+        cp_target = os.path.join(cfg.src_files_to, gb.func_return_utils_fname + cfg.source_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
@@ -379,12 +379,12 @@ def copyFilesToSourceTree(verbose=False):
     #   Will create a similar directory in the include path of the original source tree
     if len(gb.classes_done) > 0:    
         source_dir = os.path.join(cfg.extra_output_dir, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full)
-        target_dir = os.path.join(cfg.include_paths[0], gb.gambit_backend_types_basedir, gb.gambit_backend_name_full)
+        target_dir = os.path.join(cfg.header_files_to, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full)
         source_files = [ os.path.join(source_dir,f) for f in os.listdir(source_dir) if os.path.isfile( os.path.join(source_dir,f) ) ]
         for file_path in source_files:
             target_file_name = os.path.basename(file_path)
             cp_source = file_path
-            cp_target = os.path.join(cfg.include_paths[0], gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, target_file_name)
+            cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, target_file_name)
             source_target_tuples.append( (cp_source, cp_target) )
             new_files.append(cp_target)
 
@@ -416,9 +416,9 @@ def copyFilesToSourceTree(verbose=False):
 
     # Construct list of new directories
     new_dirs = [ 
-                  os.path.join(cfg.include_paths[0], gb.gambit_backend_incl_dir),
-                  os.path.join(cfg.include_paths[0], gb.gambit_utils_incl_dir),
-                  os.path.join(cfg.include_paths[0], gb.gambit_backend_types_basedir, gb.gambit_backend_name_full),
+                  os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir),
+                  os.path.join(cfg.header_files_to, gb.gambit_utils_incl_dir),
+                  os.path.join(cfg.header_files_to, gb.gambit_backend_types_basedir, gb.gambit_backend_name_full),
                ]    
 
     # Return the list of manipulated file, new files and new directories
@@ -430,7 +430,7 @@ def copyFilesToSourceTree(verbose=False):
 
 # ====== parseFactoryFunctionFiles ========
 
-# Parse the factory function source files using gccxml.
+# Parse the factory function source files using castxml.
 # The harvested information will later be used to 
 # generate the file loaded_types.hpp
 
@@ -444,9 +444,9 @@ def parseFactoryFunctionFiles():
         if class_name['long_templ'] not in gb.class_factory_file_dict.keys():
             continue
         factory_source_dir, factory_source_fname = os.path.split( gb.class_factory_file_dict[class_name['long_templ']] )
-        factory_source_path = os.path.join(cfg.source_path, factory_source_fname)
+        factory_source_path = os.path.join(cfg.src_files_to, factory_source_fname)
 
-        # Construct file name for xml file produced by gccxml
+        # Construct file name for xml file produced by castxml
         xml_output_path = os.path.join(gb.boss_temp_dir, 'tempfile_' + str(i) + '_' + factory_source_fname.replace('.','_') + '.xml' )
 
         # List all include paths
@@ -456,9 +456,9 @@ def parseFactoryFunctionFiles():
         timeout = 20.
         poll = 0.2
 
-        # Run gccxml
+        # Run castxml
         try:
-            utils.gccxmlRunner(factory_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
+            utils.castxmlRunner(factory_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
         except:
             raise
 
@@ -518,7 +518,7 @@ def createLoadedTypesHeader(factory_xml_files_dict):
 
 # ====== parseFunctionSourceFiles ========
 
-# Parse the global function source files using gccxml.
+# Parse the global function source files using castxml.
 # The harvested information will later be used to 
 # generate the GAMBIT frontend header file.
 
@@ -532,10 +532,10 @@ def parseFunctionSourceFiles():
         if func_name['long_templ_args'] not in gb.function_file_dict.keys():
             continue
         function_source_dir, function_source_fname = os.path.split( gb.function_file_dict[func_name['long_templ_args']] )
-        function_source_path = os.path.join(cfg.source_path, function_source_fname)
+        function_source_path = os.path.join(cfg.src_files_to, function_source_fname)
 
 
-        # Construct file name for xml file produced by gccxml
+        # Construct file name for xml file produced by castxml
         xml_output_path = os.path.join(gb.boss_temp_dir, function_source_path.replace('/','_').replace('.','_') + '.xml' )
 
         # List all include paths
@@ -545,9 +545,9 @@ def parseFunctionSourceFiles():
         timeout = 20.
         poll = 0.2
 
-        # Run gccxml
+        # Run castxml
         try:
-            utils.gccxmlRunner(function_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
+            utils.castxmlRunner(function_source_path, cfg.include_paths, xml_output_path, timeout_limit=timeout, poll_interval=poll)
         except:
             raise
 
@@ -618,7 +618,8 @@ def createFrontendHeader(function_xml_files_dict):
         args_bracket = funcutils.constrArgsBracket(args, include_arg_name=False, include_arg_type=True, include_namespace=True)
 
         # Get mangled symbol
-        symbol = wr_func_el.get('mangled')
+        # symbol = wr_func_el.get('mangled')
+        symbol = wr_func_el.get('name')
 
         be_function_macro_code += 'BE_FUNCTION(' 
         be_function_macro_code += func_name['short'] + ', ' 

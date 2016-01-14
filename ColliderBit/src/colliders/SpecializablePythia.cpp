@@ -56,25 +56,27 @@ namespace Gambit {
     void SpecializablePythia::init_external(const std::string pythiaDocPath,
                                      const std::vector<std::string>& externalSettings,
                                      const SLHAea::Coll* slhaea, std::ostream& os) {
-
-        _pythiaInstance = new Pythia8::Pythia(pythiaDocPath, false);
-
-      // Special version of the init function for user defined models
-      // Needs to directly construct the new matrix elements (rather than use flags)
+        // Special version of the init function for user defined models
+        // Needs to directly construct the new matrix elements (rather than use flags)
 
         // Settings acquired externally (ex from a gambit yaml file)
         for(const auto command : externalSettings) {
           _pythiaSettings.push_back(command);
         }
-
         // Specialized settings:
         _specialInit(this);
 
-        // Use all settings to instantiate and initialize Pythia
-        for(const auto command : _pythiaSettings)
-          _pythiaInstance->readString(command);
+        if (!_pythiaBase) {
+          _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
 
-        if(!_pythiaInstance) throw InitializationError();
+          // Use all settings to instantiate and initialize PythiaBase
+          for(const auto command : _pythiaSettings)
+            _pythiaBase->readString(command);
+
+          if(!_pythiaBase) throw InitializationError();
+          _pythiaBase->init(os);
+        }
+        _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
 
 	//User makes the matrix elements here
 	// MJW: need to reintroduce once Anders fixes bossed Pythia
@@ -89,8 +91,6 @@ namespace Gambit {
         if(slhaea)
           _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
 
-
-
         _pythiaInstance->init(os);
       }
 
@@ -99,21 +99,24 @@ namespace Gambit {
       void SpecializablePythia::init(const std::string pythiaDocPath,
                                      const std::vector<std::string>& externalSettings,
                                      const SLHAea::Coll* slhaea, std::ostream& os) {
-        _pythiaInstance = new Pythia8::Pythia(pythiaDocPath, false);
-
         // Settings acquired externally (ex from a gambit yaml file)
         for(const auto command : externalSettings) {
           _pythiaSettings.push_back(command);
         }
-
         // Specialized settings:
         _specialInit(this);
 
-        // Use all settings to instantiate and initialize Pythia
-        for(const auto command : _pythiaSettings)
-          _pythiaInstance->readString(command);
+        if (!_pythiaBase) {
+          _pythiaBase = new Pythia8::Pythia(pythiaDocPath, false);
 
-        if(!_pythiaInstance) throw InitializationError();
+          // Use all settings to instantiate and initialize PythiaBase
+          for(const auto command : _pythiaSettings)
+            _pythiaBase->readString(command);
+
+          if(!_pythiaBase) throw InitializationError();
+          _pythiaBase->init(os);
+        }
+        _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
 
         // Send along the SLHAea::Coll pointer, if it exists
         if(slhaea)

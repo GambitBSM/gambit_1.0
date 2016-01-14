@@ -5,9 +5,16 @@
 ###################################
 
 
-# ~~~~~ GCCXML options ~~~~~
+# ~~~~~ CASTXML options ~~~~~
 
-gccxml_compiler = 'g++'       # g++, gcc, icpc, icc, ... (use name of executable)
+# See CastXML documentation for details on these options: 
+#
+#   https://github.com/CastXML/CastXML/blob/master/doc/manual/castxml.1.rst 
+#
+
+castxml_cc_id  = 'gnu'      # Reference compiler: 'gnu', 'gnu-c', 'msvc', 'msvc-c'
+castxml_cc     = 'g++'      # Name a specific compiler: 'g++', 'cl', ...
+castxml_cc_opt = ''         # Additional option string passed to the compiler in castxml_cc (e.g. '-m32')
 
 
 # ~~~~~ GAMBIT-specific options ~~~~~
@@ -22,17 +29,21 @@ gambit_base_namespace  = ''
 # Use either absolute paths or paths relative to the main BOSS directory.
 input_files   = ['example_path/include/classes.hpp']
 include_paths = ['example_path/include']
-source_path   = 'example_path/src'
+base_paths    = ['example_path']
 
-accepted_paths = ['example_path']
+header_files_to = 'example_path/include'
+src_files_to    = 'example_path/src'
 
 
-loaded_classes = [
-                    'ClassOne',
-                    'SomeNamespace::ClassTwo',
-                 ]
 
-loaded_functions = []
+load_classes = [
+    'ClassOne',
+    'SomeNamespace::ClassTwo',
+]
+
+load_functions = [
+    'SomeNamespace::foo(int, SomeNamespace::ClassTwo)'
+]
 
 ditch = []
 
@@ -55,32 +66,11 @@ function_files_prefix  = 'function_'
 
 # ~~~~~ Information about other known types ~~~~~
 
-std_include_paths  = ['/usr/include/']
+# Dictionary key: type name
+# Dictionary value: header file with containing type declaration.
+#
+# Example:
+#   known_classes = {"SomeNamespace::KnownClassOne" : "path_to_header/KnownClassOne.hpp", 
+#                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
 
-known_classes = [
-                ]
-
-known_class_headers = {
-    "std::array"             : "<array>", 
-    "std::vector"            : "<vector>", 
-    "std::deque"             : "<deque>", 
-    "std::complex"           : "<complex>", 
-    "std::list"              : "<list>", 
-    "std::forward_list"      : "<forward_list>", 
-    "std::set"               : "<set>",  
-    "std::multiset"          : "<set>", 
-    "std::map"               : "<map>", 
-    "std::multimap"          : "<map>", 
-    "std::unordered_set"     : "<unordered_set>", 
-    "std::unordered_multiset": "<unordered_set>", 
-    "std::unordered_map"     : "<unordered_map>", 
-    "std::unordered_multimap": "<unordered_map>", 
-    "std::stack"             : "<stack>", 
-    "std::queue"             : "<queue>",
-    "std::priority_queue"    : "<queue>",
-    "std::string"            : "<string>",
-    "std::istream"           : "<istream>",
-    "std::ostream"           : "<ostream>",
-    "std::iostream"          : "<iostream>"
-}
-
+known_classes = {}
