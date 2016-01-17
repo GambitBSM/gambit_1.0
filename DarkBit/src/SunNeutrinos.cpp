@@ -17,7 +17,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
-#define DARKBIT_DEBUG
+//#define DARKBIT_DEBUG
 
 namespace Gambit
 {
@@ -331,9 +331,13 @@ namespace Gambit
       char experiment[300] = "IC-22";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
-          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+          theoryError, speed, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      piped_invalid_point.check();
+      piped_errors.check(DarkBit_error());
+      piped_warnings.check(DarkBit_warning());
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -358,9 +362,13 @@ namespace Gambit
       char experiment[300] = "IC-79 WH";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
-          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+          theoryError, speed, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      piped_invalid_point.check();
+      piped_errors.check(DarkBit_error());
+      piped_warnings.check(DarkBit_warning());
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -385,9 +393,13 @@ namespace Gambit
       char experiment[300] = "IC-79 WL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
-          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+          theoryError, speed, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      piped_invalid_point.check();
+      piped_errors.check(DarkBit_error());
+      piped_warnings.check(DarkBit_warning());
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -412,9 +424,13 @@ namespace Gambit
       char experiment[300] = "IC-79 SL";
       void* context = NULL;
       double theoryError = (*Dep::mwimp > 100.0 ? 0.05*sqrt(*Dep::mwimp*0.01) : 0.05);
+      int speed = runOptions->getValueOrDef<int>(3,"nulike_speed");
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun,
           byVal(Dep::nuyield_ptr->pointer), sigpred, bgpred, totobs, lnLike, pval, 4,
-          theoryError, true, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+          theoryError, speed, false, 0.0, 0.0, context, Dep::nuyield_ptr->threadsafe);
+      piped_invalid_point.check();
+      piped_errors.check(DarkBit_error());
+      piped_warnings.check(DarkBit_warning());
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;

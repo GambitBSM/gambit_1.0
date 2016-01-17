@@ -33,9 +33,12 @@
 #include <iostream>
 #include <cmath>
 #include <functional>
+#include <omp.h>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
+
+#include "gambit/Utils/signal_handling.hpp" // temp
 
 namespace Gambit
 {
@@ -115,33 +118,6 @@ namespace Gambit
       else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from external_funcs BEgroup.");
     }
 
-
-    /*
-    void Aldo_test(int &nevents) {
-
-      using namespace Pipes::Aldo_test;
-
-      cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
-        BEreq::Read_Aldo_Sim.name() << " from " <<
-        BEreq::Read_Aldo_Sim.backend() << ", v" <<
-        BEreq::Read_Aldo_Sim.version() << "." << endl;
-
-      cout << " calling function " << BEreq::Read_Aldo_Sim(nevents) << endl;
-
-      nevents = 42;
-
-    }
-    */
-
-
-    void Aldos_evgen(HEPUtils::Event &how_many) {
-
-      HEPUtils::Particle* chosen = new HEPUtils::Particle(40.5, -32.6, 0.5, 51.992884131, 13);
-      how_many.add_particle(chosen);
-
-      cout << " we created a particle " << endl;
-    }
-
     // FastSim
     void fast_sim_init(double &which) {
 
@@ -217,40 +193,58 @@ namespace Gambit
     /// Some example functions for using loops within the dependency structure
     /// @{
 
+
     /// Run a fake 'event loop'
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
-      //unsigned int nEvents = 20;         // Number of times to run the loop  //bjf> unused variable warning
+      unsigned int nEvents = 200;         // Number of times to run the loop
 
-      //There is basically just one thing available from the Loops namespace in loop managers like this one:
+      //There are three things available from the Loops namespace in loop managers like this one:
       //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered
       //                                                  set of nested functions, passing them the iteration_number.
+      //  Loop::done -- boolean flag indicating if the loop should terminate or not
+      //  Loop::reset() -- reset the 'done' flag
 
       //A simple loop example without OpenMP.  Commented out for now.
+      //unsigned int nEvents = 20;       // Number of times to run the loop
       //for(unsigned long it = 0; it < nEvents; it++)
       //{
       //  cout << "This is iteration " << it+1 << " of " << nEvents << " being run by eventLoopManager." << endl;
       //  Loop::executeIteration(it);    // This is a (member) function pointer, so *Loop::executeIteration(it) works fine too.
       //}
 
+      logger() << "Running eventLoopManager" << EOM;
+
+      if(not signaldata().inside_multithreaded_region())
+      {
+        std::cerr << "Inside eventLoopManager, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
+
       //A simple loop example using OpenMP
-      int it = 0;
+      unsigned int it = 0;
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done) { Loop::executeIteration(it++); }
+        while(not *Loop::done and it<nEvents and not piped_errors.inquire()) 
+        { Loop::executeIteration(it++); }
       }
+      // Raise any piped exceptions that occurred in the loop functors
+      piped_warnings.check(ExampleBit_A_warning());
+      piped_errors.check(ExampleBit_A_error());
 
       // Start over again, just to demonstrate the reset function.  This just sets the Loop::done flag
       // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves
       // by re-running iteration zero again, unless you want them to just set Loop::done true again straight away.
+      std::cout << "Resetting loop!" << std::endl;
       it = 0;
       Loop::reset();
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done) { Loop::executeIteration(it++); }
+        while(not *Loop::done and it<nEvents and not piped_errors.inquire())
+        { Loop::executeIteration(it++); }
       }
 
       //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
@@ -263,10 +257,28 @@ namespace Gambit
     {
       using namespace Pipes::exampleEventGen;
       result = Random::draw()*5.0;                 // Generate and return the random number
-      #pragma omp critical (print)
+      //#pragma omp critical (print)
+      //{
+      //  cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
+      //}
+      if(not signaldata().inside_multithreaded_region())
       {
-        cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
+        std::cerr << "Inside exampleEventGen, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
       }
+ 
+      // Testing MPI shutdown on random failure
+      // if(result<0.0001*5.0) // shut down with 0.01% probability
+      // {
+      //   // Don't raise errors like this when inside a looped region:
+      //   //   ExampleBit_A_error().raise(LOCAL_INFO,"Error triggered for testing purposes.");  
+      //   // Must raise them like this instead:
+      //   piped_errors.request(LOCAL_INFO, "Error triggered for testing purposes.");
+      // }
+
+      // testing loggers during parallel block...
+      logger() << "thread "<<omp_get_thread_num()<<": Running exampleEventGen in iteration "<<*Loop::iteration<<EOM;
+
       //if (result > 2.0) invalid_point().raise("This point is annoying.");
     }
 
@@ -275,10 +287,7 @@ namespace Gambit
     {
       using namespace Pipes::exampleCut;
       result = (int) *Dep::event;
-      #pragma omp critical (print)
-      {
-        cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
-      }
+      logger()<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
     }
 
     /// Adds an integral event count to a total number of accumulated events.
@@ -294,6 +303,12 @@ namespace Gambit
 
       // Do the actual computations in each thread seperately
       int increment = *Dep::event + 1;
+
+      if(not signaldata().inside_multithreaded_region())
+      {
+        std::cerr << "Inside eventAccumulator, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
 
       // Only let one thread at a time mess with the accumulator.
       #pragma omp critical (eventAccumulator_update)
@@ -315,13 +330,13 @@ namespace Gambit
       }
 
       // Print some diagnostic info
-      #pragma omp critical (print)
-      {
-        cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
-        cout<<"  Retrieved event count: "<<*Dep::event<<endl;
-        cout<<"  I have thread index: "<<omp_get_thread_num();
-        cout<<"  Current total counts is: "<<result<<endl;
-      }
+      //#pragma omp critical (print)
+      //{
+      //  cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
+      //  cout<<"  Retrieved event count: "<<*Dep::event<<endl;
+      //  cout<<"  I have thread index: "<<omp_get_thread_num()<<endl;
+      //  cout<<"  Current total counts is: "<<result<<endl;
+      //}
 
       // If we have reached 50 counts, quit the loop.
       if (result >= 50) { Loop::wrapup(); }

@@ -33,12 +33,11 @@ Scanner:
   scanners:
    random:
     plugin: random_sampler
-    options:
-      point_number: 1000000
-      output_file:  output
-      like:  LogLike
-      files:
-        output_file: "weights ..."
+    point_number: 1000000
+    output_file:  output
+    like:  LogLike
+    files:
+      output_file: "weights ..."
                     
 #======== Observables of interest ========
 ObsLikes:

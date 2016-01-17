@@ -46,12 +46,11 @@ Scanner:
 
     random:
       plugin: random_sampler
-      options:
-        point_number: 1
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
+      point_number: 1
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
 
 ###############################
 # Observables of interest

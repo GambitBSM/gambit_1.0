@@ -100,6 +100,7 @@
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
 
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
@@ -778,7 +779,7 @@ namespace Gambit
          }
 
          // Gather the IDs for previous points
-         bool allvalid = true;
+         //bool allvalid = true;
          unsigned long lastvalid = 0;
          for(size_t i=0; i<dsetdata.pointIDs.size(); i++)
          {
@@ -1010,7 +1011,7 @@ namespace Gambit
     void HDF5Printer::combine_output(const int N, const bool resume, const bool finalcombine)
     {
       std::ostringstream command;
-      command << "python Printers/scripts/combine_hdf5.py "<<file<<"  "<<finalfile<<" "<<group<<" "<<N<<" "<<resume<<" 2>&1";
+      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<finalfile<<" "<<group<<" "<<N<<" "<<resume<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
                << "--------------------" << std::endl;

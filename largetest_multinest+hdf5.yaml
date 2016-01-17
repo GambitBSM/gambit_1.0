@@ -35,17 +35,16 @@ Scanner:
   scanners:
     multinest:
       plugin: MultiNest
-      options:
-        like:  LogLike
-        nlive: 20000
-        tol: 0.01
-        mmodal: 0
-        # write native MultiNest ascii output files?
-        outfile: 1 # yes, need them for resuming
-        # No options to set, but still need the nodes at the moment...
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
+      like:  LogLike
+      nlive: 20000
+      tol: 0.01
+      mmodal: 0
+      # write native MultiNest ascii output files?
+      outfile: 1 # yes, need them for resuming
+      # No options to set, but still need the nodes at the moment...
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
     de:
       plugin: Diver
       like: LogLike

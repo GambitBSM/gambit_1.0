@@ -237,7 +237,7 @@ namespace Gambit
                                 
                                 if (compare2 != NULL && compare2->isEmpty())
                                 {
-                                        delete compare1;
+                                        delete compare2;
                                         compare2 = NULL;
                                 }
                                 

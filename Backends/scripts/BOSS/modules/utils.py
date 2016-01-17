@@ -137,7 +137,7 @@ def isKnownClass(el, class_name=None):
 
     # Check if listed among the user-specified known types
     full_name = class_name['long_templ']
-    if (full_name in cfg.known_classes) or (full_name.replace(' ','') in cfg.known_classes):
+    if (full_name in cfg.known_classes.keys()) or (full_name.replace(' ','') in cfg.known_classes.keys()):
         is_known = True
 
     return is_known
@@ -205,7 +205,7 @@ def isEnumeration(el):
 
 def isNative(el):
 
-    # Makes use of global variables:  accepted_paths
+    # Makes use of global variables:  base_paths
 
     is_native = False
     can_check_tags = ['Class', 'Constructor', 'Converter', 'Destructor', 'Enumeration', 
@@ -227,7 +227,7 @@ def isNative(el):
         check_path = file_el.get('name')
 
         is_native = False
-        for accepted_path in cfg.accepted_paths:
+        for accepted_path in cfg.base_paths:
             if accepted_path in os.path.dirname(check_path):
                 is_native = True
                 break
@@ -248,7 +248,7 @@ def isNative(el):
 
 def isStdType(el, class_name=None):
 
-    # Makes use of global variables:  accepted_paths
+    # Makes use of global variables:  base_paths
 
     is_std = False
     can_check_tags = ['Class', 'Struct', 'Union', 'Enumeration']
@@ -1031,7 +1031,7 @@ def isLoadedClass(input_type, byname=False, class_name=None):
     # If the class_name dict is passed as an argument, use it.
     if class_name is not None:
 
-        if class_name['long_templ'] in cfg.loaded_classes:
+        if class_name['long_templ'] in cfg.load_classes:
             is_loaded_class = True
 
     else:
@@ -1045,8 +1045,8 @@ def isLoadedClass(input_type, byname=False, class_name=None):
             # Remove template bracket
             type_name = type_name.split('<')[0]
 
-            # Check against cfg.loaded_classes
-            if type_name in cfg.loaded_classes:
+            # Check against cfg.load_classes
+            if type_name in cfg.load_classes:
                 is_loaded_class = True
 
         else:
@@ -1055,12 +1055,12 @@ def isLoadedClass(input_type, byname=False, class_name=None):
 
             if type_el.tag in ['Class', 'Struct']:
 
-                if type_dict['name'] in cfg.loaded_classes:
+                if type_dict['name'] in cfg.load_classes:
                     is_loaded_class = True
 
                 # namespaces_list = getNamespaces(type_el, include_self=True)
                 # full_name = '::'.join(namespaces_list)
-                # if full_name in cfg.loaded_classes:
+                # if full_name in cfg.load_classes:
                 #     is_loaded_class = True
 
 
@@ -1225,7 +1225,7 @@ def constrWrpForwardDeclHeader(file_output_path):
 #     code = ''
 #     insert_pos = 0
 
-#     for class_name in cfg.loaded_classes:
+#     for class_name in cfg.load_classes:
 
 #         namespace, class_name_short = removeNamespace(class_name, return_namespace=True)
 
@@ -1689,10 +1689,10 @@ def identifyIncludedHeaders(content, only_native=True):
     # Connect with XML elements
     for check_file_path, file_el in gb.file_dict.items():
 
-        # - If only_native=True, check for match with cfg.accepted_paths
+        # - If only_native=True, check for match with cfg.base_paths
         if only_native:
             is_native_file = False
-            for accepted_path in cfg.accepted_paths:
+            for accepted_path in cfg.base_paths:
                 if accepted_path in os.path.dirname(check_file_path):
                     is_native_file = True
                     break
@@ -1901,14 +1901,14 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
 
             else:
-                if type_name['long'] in cfg.known_class_headers:
-                    header_name = cfg.known_class_headers[type_name['long']].strip()
+                if type_name['long'] in cfg.known_classes.keys():
+                    header_name = cfg.known_classes[type_name['long']].strip()
                     if (header_name[0] == '<') and (header_name[-1] == '>'):
-                        include_statements.append('#include ' + cfg.known_class_headers[type_name['long']])
+                        include_statements.append('#include ' + cfg.known_classes[type_name['long']])
                     else:
-                        include_statements.append('#include "' + cfg.known_class_headers[type_name['long']] + '"')
+                        include_statements.append('#include "' + cfg.known_classes[type_name['long']] + '"')
                 else:
-                    reason = "The type '%s' has no specified header file. Please update config file." % type_name['long_templ']
+                    reason = "The type '%s' has no specified header file. Please update the 'known_classes' dictionary in the config file." % type_name['long_templ']
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
         else:
             infomsg.NoIncludeStatementGenerated( type_name['long_templ'] ).printMessage()
@@ -2081,6 +2081,7 @@ def constrLoadedTypesHeaderContent():
     #
     class_lines = []
 
+    # Loop over all classes
     for class_name in gb.classes_done:
 
         if not class_name['long'] in gb.factory_info.keys():
@@ -2110,7 +2111,8 @@ def constrLoadedTypesHeaderContent():
             #     class_line += '(("' + symbol + '",' + args_bracket + ')) '
 
             for info_dict in gb.factory_info[ class_name['long'] ]:
-                class_line += '(("' + info_dict['symbol'] + '",' + info_dict['args_bracket'] + ')) '
+                # class_line += '(("' + info_dict['symbol'] + '",' + info_dict['args_bracket'] + ')) '
+                class_line += '(("' + info_dict['name'] + '",' + info_dict['args_bracket'] + ')) '
 
             class_line += ')) \\'
             class_lines.append(class_line)
@@ -2274,6 +2276,10 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     # - Add include paths
     for incl_path in include_paths_list:
         castxml_cmd += ' -I' + incl_path
+
+    # - Add standard include paths
+    for std_incl_path in gb.std_include_paths:
+        castxml_cmd += ' -I' + std_incl_path        
 
     # - Add the input file path (full path)
     castxml_cmd += ' ' + input_file_path
@@ -2528,7 +2534,7 @@ def isProblematicType(el):
 
 # ====== addParentClasses ========
 
-# Adds parent classes to cfg.loaded_classes.
+# Adds parent classes to cfg.load_classes.
 
 def addParentClasses():
 
@@ -2558,9 +2564,9 @@ def addParentClasses():
 
                         class_name = classutils.getClassNameDict(parent_el)
 
-                        # - Update cfg.loaded_classes
-                        if class_name['long_templ'] not in cfg.loaded_classes:
-                            cfg.loaded_classes.append(class_name['long_templ'])
+                        # - Update cfg.load_classes
+                        if class_name['long_templ'] not in cfg.load_classes:
+                            cfg.load_classes.append(class_name['long_templ'])
 
 # ====== END: addParentClasses ========
 
@@ -2569,7 +2575,7 @@ def addParentClasses():
 
 # ====== fillParentsOfLoadedClassesList ========
 
-# Adds parent classes to cfg.loaded_classes.
+# Adds parent classes to cfg.load_classes.
 
 def fillParentsOfLoadedClassesList():
 
@@ -2734,7 +2740,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
                 continue
 
             # Check that class is requested
-            if (class_name['long_templ'] in cfg.loaded_classes):
+            if (class_name['long_templ'] in cfg.load_classes):
 
                 # Check that class is complete
                 if isComplete(el):
@@ -2763,7 +2769,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
                     
                     type_name = classutils.getClassNameDict(type_el)
 
-                    if type_name['long_templ'] in cfg.loaded_classes:
+                    if type_name['long_templ'] in cfg.load_classes:
                         gb.typedef_dict[typedef_name] = el
                 
                 # If neither fundamental or class/struct, ignore it.
@@ -2779,7 +2785,7 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
             except KeyError:
                 continue
 
-            if func_name['long_templ_args'] in cfg.loaded_functions:
+            if func_name['long_templ_args'] in cfg.load_functions:
                 gb.func_dict[func_name['long_templ_args']] = el
 
 
@@ -2823,12 +2829,91 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
 
 
 
+# ====== identifyStdIncludePaths ========
+
+def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
+
+    # Shell command: Pipe an include statement to the compiler and use 
+    # verbose mode to print the header search paths.
+    command = 'echo "#include <iostream>" | ' + cfg.castxml_cc + ' -v -x c++ -c -'
+
+    # Avoid including intel headers when in "gnu mode" by
+    # temporarily unsetting some environment variables
+    if cfg.castxml_cc_id  == 'gnu':
+        temp_env_vars = {}
+        for var_name in ['CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH']:
+            try:
+                if 'intel' in os.environ[var_name].lower():
+                    temp_env_vars[var_name] = str(os.environ[var_name])
+                    os.environ[var_name] = ''
+            except KeyError:
+                pass
+
+    # Run command
+    print '  Runing command: ' + command
+    proc, output, timed_out = shelltimeout.shrun(command, timeout_limit, use_exec=True, poll_interval=poll_interval)
+
+    # Reset environment variables
+    if cfg.castxml_cc_id  == 'gnu':
+        for var_name, value in temp_env_vars.items():
+            os.environ[var_name] = value
+
+    # Check for timeout or error
+    did_fail = False
+    if timed_out:
+        print '  ERROR: Shell command timed out.'
+        did_fail = True
+    elif proc.returncode != 0:        
+        print '  ERROR: Shell command failed.'
+        did_fail = True
+
+    # Print error report
+    if did_fail:
+        print
+        print 'START SHELL COMMAND OUTPUT'
+        print '--------------------------'
+        print
+        print output
+        print 'END SHELL COMMAND OUTPUT'
+        print '------------------------'
+        print
+        raise Exception('Shell command failed')
+    
+    else:
+        print '  Command finished successfully.'
+    print
+
+
+    std_include_paths = []
+    output_lines = output.split('\n')
+
+    try:
+        start_i = output_lines.index("#include <...> search starts here:")
+        end_i   = output_lines.index("End of search list.")
+    except ValueError:
+        print '  WARNING: Could not identify standard include paths.'
+        print '  Add them manually in the config file if necessary.'
+        print
+    else:
+        for line in output_lines[start_i+1:end_i]:
+            std_include_paths.append( line.strip().split()[0] )
+        print '  Identified %i standard include paths.' % len(std_include_paths)
+        print
+
+    # Set global list 
+    gb.std_include_paths = std_include_paths
+
+# ====== END: identifyStdIncludePaths ========
+
+
+
+
 # # ====== fillNewHeaderFilesDict ========
 
 # def fillNewHeaderFilesDict():
 
 #     # Update global dict: new header files
-#     for class_name_long_templ in cfg.loaded_classes:
+#     for class_name_long_templ in cfg.load_classes:
         
 #         class_name_short = class_name.split('<',1)[0].split('::')[-1]
 #         class_name_long  = class_name.split('<',1)[0]

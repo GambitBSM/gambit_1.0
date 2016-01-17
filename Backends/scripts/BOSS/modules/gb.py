@@ -39,6 +39,7 @@ new_header_files        = OrderedDict()
 accepted_types          = [] 
 std_headers_used        = []
 original_file_paths     = OrderedDict()
+std_include_paths       = []
 
 functions_done          = []
 classes_done            = []
@@ -48,6 +49,8 @@ class_factory_file_dict = OrderedDict()
 
 function_file_dict      = OrderedDict()
 wr_func_names           = OrderedDict()
+
+symbol_name_counter     = 1
 
 
 gambit_backend_namespace    = 'CAT_3(BACKENDNAME,_,SAFE_VERSION)'
@@ -63,8 +66,9 @@ gambit_frontend_dir_complete = os.path.join(cfg.extra_output_dir, gambit_fronten
 gambit_backend_incl_dir = 'gambit/Backends/'
 gambit_utils_incl_dir   = 'gambit/Utils/'
 
-code_suffix         = '__BOSS'
-abstr_class_prefix  = 'Abstract_'
+code_suffix          = '__BOSS'
+abstr_class_prefix   = 'Abstract_'
+wrapper_class_prefix = 'Wrapper_'
 
 
 func_return_utils_fname = 'function_return_utils'

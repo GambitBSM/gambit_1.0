@@ -49,30 +49,27 @@ Scanner:
 
     multinest:
       plugin: MultiNest
-      options:
-        like:  LogLike
-        nlive: 10000
-        tol: 0.005
-        root: "runs/CMSSM_multinest_LEP/samples/native-"
-        aux_printer_txt_options:
-          output_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.txt"
-          info_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.txt_info"
-        aux_printer_stats_options:
-          output_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.stats"
-          info_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.stats_info"
-        aux_printer_live_options:
-          output_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.live"
-          info_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.live_info"
-
+      like:  LogLike
+      nlive: 10000
+      tol: 0.005
+      root: "runs/CMSSM_multinest_LEP/samples/native-"
+      aux_printer_txt_options:
+        output_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.txt"
+        info_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.txt_info"
+      aux_printer_stats_options:
+        output_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.stats"
+        info_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.stats_info"
+      aux_printer_live_options:
+        output_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.live"
+        info_file: "runs/CMSSM_multinest_LEP/samples/gambit_output.live_info"
 
     random:
       plugin: random_sampler
-      options:
-        point_number: 100
-        output_file:  output
-        like:  LogLike
-        files:
-          output_file: "weights ..."
+      point_number: 100
+      output_file:  output
+      like:  LogLike
+      files:
+        output_file: "weights ..."
 
 ###############################
 # Observables of interest
