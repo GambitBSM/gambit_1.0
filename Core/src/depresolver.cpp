@@ -106,6 +106,7 @@ namespace Gambit
       return sortVertices(set, topoOrder);
     }
 
+
     //
     // Functions that compare ini-file entries and observables
     //
@@ -159,6 +160,7 @@ namespace Gambit
     }
 
     // Check whether functor matches rules
+    // Matches function name and type
     bool matchesRules( functor *f, const Rule & rule)
     {
       //cout << (*f).name() << " vs " << rule.function << endl;
@@ -167,7 +169,6 @@ namespace Gambit
                stringComp( rule.module, (*f).origin())
              );
     }
-
 
 
     //
@@ -209,6 +210,7 @@ namespace Gambit
           out << ">]";
         }
     };
+
 
     //
     // Misc
@@ -260,7 +262,6 @@ namespace Gambit
     }
 
 
-
     ///////////////////////////////////////////////////
     // Public definitions of DependencyResolver class
     ///////////////////////////////////////////////////
@@ -290,6 +291,7 @@ namespace Gambit
       }
       logger() << EOM;
     }
+
 
     //
     // Initialization stage
@@ -520,6 +522,7 @@ namespace Gambit
 
       logger() << LogTags::dependency_resolver << ss.str() << EOM;
     }
+
 
     //
     // Runtime
