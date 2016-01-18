@@ -250,12 +250,13 @@ def main():
     #
     # Identify standard include paths
     #
-    print
-    print 'Identifying standard include paths:'
-    print '-----------------------------------'
-    print 
+    if cfg.auto_detect_stdlib_paths:
+        print
+        print 'Identifying standard include paths:'
+        print '-----------------------------------'
+        print 
 
-    utils.identifyStdIncludePaths()
+        utils.identifyStdIncludePaths()
 
 
 

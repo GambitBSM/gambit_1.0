@@ -48,6 +48,9 @@ load_functions = [
 ditch = []
 
 
+auto_detect_stdlib_paths = False
+
+
 load_parent_classes    = False
 wrap_inherited_members = False
 
