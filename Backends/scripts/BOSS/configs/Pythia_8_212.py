@@ -77,7 +77,7 @@ load_functions = [
 ditch = ['Pythia8::Pythia::initSLHA']
 
 
-auto_detect_stdlib_paths = True
+auto_detect_stdlib_paths = False
 
 
 load_parent_classes    = False
