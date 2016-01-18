@@ -420,7 +420,7 @@ set(FH_C_FLAGS "${CMAKE_C_FLAGS}")             #For skipping -O2, which seems to
 set(FH_CXX_FLAGS "${CMAKE_CXX_FLAGS}")         #For skipping -O2, which seems to cause issues
 ExternalProject_Add(feynhiggs
   URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/${feynhiggs_dl}
-  URL_MD5 8912a4ba060e404ba206e47bfdf338d3
+  URL_MD5 49f5ea1838cb233baffd85bbc1b0d87d
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${feynhiggs_dir}
   BUILD_IN_SOURCE 1

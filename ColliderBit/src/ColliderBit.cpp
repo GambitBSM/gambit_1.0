@@ -124,7 +124,7 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // Nicely ask the entire loop to be quiet
-      std::cout.rdbuf(0);
+      std::cout.rdbuf(0); 
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -217,8 +217,7 @@ namespace Gambit
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        if (runOptions->hasKey(*iter, pythiaConfigName)) pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -313,13 +312,14 @@ namespace Gambit
         std::string pythiaConfigName;
         // Setup new Pythia
         pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-      }
+        if (runOptions->hasKey(*iter, pythiaConfigName))pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
 
+      }
+      
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
@@ -915,6 +915,7 @@ namespace Gambit
       } // end ana loop
 
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
+      
       result = -total_dll_obs;
     }
 
