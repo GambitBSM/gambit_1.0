@@ -29,22 +29,21 @@ gambit_base_namespace  = ''
 # Use either absolute paths or paths relative to the main BOSS directory.
 
 input_files = [
-   '../../../Backends/installed/gm2calc/1.0.0/src/MSSMNoFV_onshell.hpp',
-   '../../../Backends/installed/gm2calc/1.0.0/src/gm2_1loop.hpp',
-   '../../../Backends/installed/gm2calc/1.0.0/src/gm2_2loop.hpp',
+    '../../../Backends/installed/gm2calc/1.0.0/src/MSSMNoFV_onshell.hpp',
+    '../../../Backends/installed/gm2calc/1.0.0/src/gm2_1loop.hpp',
+    '../../../Backends/installed/gm2calc/1.0.0/src/gm2_2loop.hpp',
 ]
-
 include_paths = [
     '../../../Backends/installed/gm2calc/1.0.0/src', 
     '/usr/include/eigen3',
-    '/usr/include'
+    # '/usr/include',
 ]
+base_paths = ['../../../Backends/installed/gm2calc/1.0.0']
 
-source_path   = '../../../Backends/installed/gm2calc/1.0.0/src'
+header_files_to = '../../../Backends/installed/gm2calc/1.0.0/src'
+src_files_to    = '../../../Backends/installed/gm2calc/1.0.0/src'
 
-accepted_paths = ['../../../Backends/installed/gm2calc/1.0.0']
-
-loaded_classes = [
+load_classes = [
     'gm2calc::MSSMNoFV_onshell_susy_parameters',
     'gm2calc::MSSMNoFV_onshell',
     'gm2calc::MSSMNoFV_onshell_mass_eigenstates',
@@ -53,7 +52,7 @@ loaded_classes = [
     'gm2calc::MSSMNoFV_onshell_physical',
 ]
 
-loaded_functions = [
+load_functions = [
   'gm2calc::calculate_amu_1loop(const gm2calc::MSSMNoFV_onshell&)',
   'gm2calc::calculate_amu_1loop_non_tan_beta_resummed(const gm2calc::MSSMNoFV_onshell&)',
   'gm2calc::calculate_amu_2loop(const gm2calc::MSSMNoFV_onshell&)',
@@ -81,20 +80,14 @@ function_files_prefix  = 'function_'
 
 # ~~~~~ Information about other known types ~~~~~
 
-known_classes = [ 
-    "Eigen::Matrix<double,2,2,0,2,2>",
-    "Eigen::Matrix<double,3,3,0,3,3>",
-    "Eigen::Matrix<double,4,4,0,4,4>",
-    "Eigen::Array<double,1,1,0,1,1>",
-    "Eigen::Array<double,2,1,0,2,1>",
-    "Eigen::Array<double,4,1,0,4,1>",
-    "Eigen::Matrix<std::complex<double>,2,2,0,2,2>",
-    "Eigen::Matrix<std::complex<double>,4,4,0,4,4>",
-]
-
-
-known_class_headers = {
-    "Eigen::Matrix"          : "<Eigen/Core>",
-    "Eigen::Array"           : "<Eigen/Core>",
+known_classes = { 
+    "Eigen::Matrix<double,2,2,0,2,2>" : "<Eigen/Core>",
+    "Eigen::Matrix<double,3,3,0,3,3>" : "<Eigen/Core>",
+    "Eigen::Matrix<double,4,4,0,4,4>" : "<Eigen/Core>",
+    "Eigen::Array<double,1,1,0,1,1>"  : "<Eigen/Core>",
+    "Eigen::Array<double,2,1,0,2,1>"  : "<Eigen/Core>",
+    "Eigen::Array<double,4,1,0,4,1>"  : "<Eigen/Core>",
+    "Eigen::Matrix<std::complex<double>,2,2,0,2,2>" : "<Eigen/Core>",
+    "Eigen::Matrix<std::complex<double>,4,4,0,4,4>" : "<Eigen/Core>",
 }
 
