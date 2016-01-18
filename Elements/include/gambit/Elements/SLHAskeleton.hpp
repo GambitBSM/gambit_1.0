@@ -19,8 +19,8 @@
 
 #include "gambit/Elements/subspectrum.hpp"
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
 
       /// Skeleton "model" class which interacts with an SLHAea object
       class SLHAeaModel
@@ -123,7 +123,6 @@ namespace Gambit {
       };
  
 
-   } // end SpecBit namespace
 } // end Gambit namespace
 
 #endif

@@ -136,7 +136,9 @@ int main(int argc, char* argv[])
     logger() << "ignore_signals_during_shutdown = " << signaldata().ignore_signals_during_shutdown << EOM;
 
     // Check if user wants to disable use of MPI_Abort (since it does not work correctly in all MPI implementations)
+    #ifdef WITH_MPI
     use_mpi_abort = iniFile.getValueOrDef<bool>(true, "use_mpi_abort");
+    #endif
 
     // Initialise the random number generator, letting the RNG class choose its own default.
     Random::create_rng_engine(iniFile.getValueOrDef<str>("default", "rng"));

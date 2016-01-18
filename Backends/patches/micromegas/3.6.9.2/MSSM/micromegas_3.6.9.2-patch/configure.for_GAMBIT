@@ -18,6 +18,7 @@ patch -b sources/omega.c omega.c.dif
 if [ ! -f "CalcHEP_src/getFlags.orig" ]; then
   cp -p "CalcHEP_src/getFlags" "CalcHEP_src/getFlags.orig"
   #sed -i '/-fPIC/!s|\(FFLAGS="\?\)|\1-fPIC |g' CalcHEP_src/getFlags
+  patch CalcHEP_src/getFlags getFlags.dif
   sed -i '/\\"\$FFLAGS\\"/!s|\(FFLAGS="\?\)|\1-fPIC |g' CalcHEP_src/getFlags
 fi
 

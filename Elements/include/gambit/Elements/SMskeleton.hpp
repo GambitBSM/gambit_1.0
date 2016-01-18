@@ -18,10 +18,10 @@
 #define __SMskeleton_hpp__
 
 #include "gambit/Elements/subspectrum.hpp"
-#include "gambit/SpecBit/SLHAskeleton.hpp"
+#include "gambit/Elements/SLHAskeleton.hpp"
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{
 
       /// Skeleton "model" class which interacts with an SLHAea object
       /// Some common functions defined in base class
@@ -90,9 +90,7 @@ namespace Gambit {
             static PhysGetterMaps    phys_fill_getter_maps();
 
       };
- 
 
-   } // end SpecBit namespace
 } // end Gambit namespace
 
 #endif

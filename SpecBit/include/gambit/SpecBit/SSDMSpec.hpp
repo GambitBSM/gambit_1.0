@@ -46,14 +46,14 @@ namespace Gambit
 
    namespace SpecBit
    {
-      void shift(double &a, double &b, double &c, const double d)
-      {
-          a=b;
-          b=c;
-          c=d;
-      }
-      int stability; // stability flag
-      double high_energy_minimum;  // scale at which high energy minimum occurs (or if no second minimum then default is Planck scale)
+//      void shift(double &a, double &b, double &c, const double d)
+//      {
+//          a=b;
+//          b=c;
+//          c=d;
+//      }
+     // int stability; // stability flag
+     // double high_energy_minimum;  // scale at which high energy minimum occurs (or if no second minimum then default is Planck scale)
      
       //
       // IMPLEMENTATION OF SSDMSpec MEMBER FUNCTIONS FOLLOWS  // edited for use with SSDM with most functions removed (JM)
@@ -223,7 +223,7 @@ namespace Gambit
             tmp_map["Lambda1"]= &Model::get_Lambda1;
            
             tmp_map["Lambda2"]= &Model::get_Lambda2;
-            tmp_map["Lambda_hs"]= &Model::get_Lambda2; // same naming convention as SingletDM
+            tmp_map["lambda_hS"]= &Model::get_Lambda2; // same naming convention as SingletDM
             tmp_map["Lambda3"]= &Model::get_Lambda3;
             tmp_map["Lambda_s"]= &Model::get_Lambda3; // alternative naming convention
 
@@ -234,6 +234,7 @@ namespace Gambit
          {
             typename MTget::fmap0 tmp_map;
             tmp_map["vev"] = &Model::get_v;
+            tmp_map["lambda_hS"]= &Model::get_Lambda2;  // ??? not sure why it wants it here
             map_collection[Par::mass1].map0 = tmp_map;
          }
 

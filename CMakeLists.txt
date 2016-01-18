@@ -332,6 +332,10 @@ foreach(bit ${GAMBIT_BITS})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
 
+# MJW adds this to get ColliderBit_standalone compiled
+# It is probably naughty
+set(SPEC_BIT_OBJECTS "$<TARGET_OBJECTS:SpecBit>")
+
 # Add the executables
 include(cmake/executables.cmake)
 
