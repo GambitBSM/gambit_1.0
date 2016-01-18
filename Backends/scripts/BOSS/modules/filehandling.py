@@ -573,6 +573,43 @@ def createFrontendHeader(function_xml_files_dict):
 
 
     #
+    # Generate typedefs for loaded classes, from ::BACKENDNAME_SAFE_VERSION::class_name
+    # to ::Gambit::Backends::BACKENDNAME_SAFE_VERSION::class_name
+    #
+
+    outer_namespace_list = ['Gambit', 'Backends', gb.gambit_backend_name_full]
+
+    typedef_code  = ''
+    typedef_code += utils.constrNamespace(outer_namespace_list, 'open', indent=cfg.indent)
+
+
+    # Loop over all classes
+    for class_name in gb.classes_done:
+
+        if not class_name['long'] in gb.factory_info.keys():
+            continue
+        else:
+
+            class_typedef_code = ''
+            
+            class_namespace, class_name_short = utils.removeNamespace(class_name['long'], return_namespace=True)
+
+            if class_namespace == '':
+                class_typedef_code += 'typedef ::' + gb.gambit_backend_name_full + '::' + class_name['long'] + ' ' + class_name['short'] + ';\n'
+            else:
+                class_namespace_list = class_namespace.split('::')
+
+                class_typedef_code += utils.constrNamespace(class_namespace_list, 'open', indent=cfg.indent)
+                class_typedef_code += ' '*cfg.indent*len(class_namespace_list) + 'typedef ::' + gb.gambit_backend_name_full + '::' + class_name['long'] + ' ' + class_name['short'] + ';\n'
+                class_typedef_code += utils.constrNamespace(class_namespace_list, 'close', indent=cfg.indent)
+
+            class_typedef_code = utils.addIndentation(class_typedef_code, 3*cfg.indent)
+            typedef_code += class_typedef_code
+
+    typedef_code += utils.constrNamespace(outer_namespace_list, 'close', indent=cfg.indent)
+
+
+    #
     # Generate code for all the BE_FUNCTION macros
     #
 
@@ -648,6 +685,10 @@ def createFrontendHeader(function_xml_files_dict):
     # - LOAD_LIBRARY macro
     frontend_content += '\n'
     frontend_content += 'LOAD_LIBRARY\n'
+
+    # - Class typedefs
+    frontend_content += '\n'
+    frontend_content += typedef_code
 
     # - BE_FUNCTION macros
     frontend_content += '\n'
