@@ -18,17 +18,15 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/version.hpp"
 
+#include <boost/lexical_cast.hpp>
 
 namespace Gambit
 {
 
-  // DecayTable methods
+  // Local helper functions
 
-  /// Create a DecayTable from an SLHAea object containing DECAY blocks
-  DecayTable::DecayTable(const SLHAstruct& slha, int context)
+  void get_calculator_info(const SLHAstruct& slha, str& calculator, str& calculator_version)
   {
-    // Extract the calculator info if it exists
-    str calculator, calculator_version;
     auto dcinfo = slha.find("DCINFO");
     if (dcinfo != slha.end())
     {
@@ -49,6 +47,27 @@ namespace Gambit
         }
       }
     }
+  }
+
+
+  // DecayTable methods
+
+  /// Create a DecayTable from an SLHA file
+  DecayTable::DecayTable(str slha, int context)
+   : DecayTable(read_SLHA(slha), context)
+  {}
+
+  /// Create a DecayTable from an SLHA file, with PDG code remapping
+  DecayTable::DecayTable(str slha, const std::map<int, int>& PDG_map, int context)
+   : DecayTable(read_SLHA(slha), PDG_map, context)
+  {}
+
+  /// Create a DecayTable from an SLHAea object containing DECAY blocks
+  DecayTable::DecayTable(const SLHAstruct& slha, int context)
+  {
+    // Extract the calculator info if it exists
+    str calculator, calculator_version;
+    get_calculator_info(slha, calculator, calculator_version);
 
     // Iterate over all blocks in the file, ignoring everything except DECAY blocks
     for (auto block = slha.begin(); block != slha.end(); ++block)
@@ -61,6 +80,47 @@ namespace Gambit
           // Make sure the block definition has the particle's width and PDG code
           if (block_def->size() < 3) utils_error().raise(LOCAL_INFO, "SLHAea object has DECAY block with < 3 entries in its block definition.");
           int pdg = SLHAea::to<int>(block_def->at(1));
+          // Add an entry containing the info in this block
+          operator()(std::pair<int,int>(pdg,context)) = Entry(*block, block_def, context, calculator, calculator_version);
+        }
+      }
+    }
+  }
+
+  /// Create a DecayTable from an SLHAea object containing DECAY blocks, and remap PDG codes according to provided map
+  DecayTable::DecayTable(const SLHAstruct& slha_in, const std::map<int, int>& PDG_map, int context)
+  {
+    // Make a local copy so we can mess with it
+    SLHAstruct slha(slha_in);
+
+    // Extract the calculator info if it exists
+    str calculator, calculator_version;
+    get_calculator_info(slha, calculator, calculator_version);
+
+    // Iterate over all blocks in the file, ignoring everything except DECAY blocks
+    for (auto block = slha.begin(); block != slha.end(); ++block)
+    {
+      auto block_def = block->find_block_def();
+      if (block_def != block->end())
+      {
+        if(block_def->at(0) == "DECAY")
+        {
+          // Make sure the block definition has the particle's width and PDG code
+          if (block_def->size() < 3) utils_error().raise(LOCAL_INFO, "SLHAea object has DECAY block with < 3 entries in its block definition.");
+          int pdg = SLHAea::to<int>(block_def->at(1));
+          if (PDG_map.find(pdg) != PDG_map.end()) (*block_def)[1] = boost::lexical_cast<str>(PDG_map.at(pdg));
+          // Step through the block and convert any final state PDG codes that need to be remapped
+          for (auto line = block->begin() + 1; line != block->end(); ++line)
+          {
+            if (not line->is_comment_line())
+            {
+              for (int i = 2; i < 2 + SLHAea::to<int>(line->at(1)); i++)
+              {
+                int local_pdg = SLHAea::to<int>(line->at(i));
+                if (PDG_map.find(local_pdg) != PDG_map.end()) (*line)[i] = boost::lexical_cast<str>(PDG_map.at(local_pdg));
+              }
+            }
+          }
           // Add an entry containing the info in this block
           operator()(std::pair<int,int>(pdg,context)) = Entry(*block, block_def, context, calculator, calculator_version);
         }

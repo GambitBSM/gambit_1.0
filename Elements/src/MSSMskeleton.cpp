@@ -49,7 +49,7 @@ namespace Gambit
       MSSMea::MSSMea(const SLHAea::Coll& input)
         : SLHAeaModel(input)
       {
-        std::map<int, int> slha1to2; //FIXME this needs to get passed out somehow for the decays
+        std::map<int, int>& slha1to2 = PDG_translation_map;
         str blocks[4] = {"DSQMIX", "USQMIX", "SELMIX", "SNUMIX"};
         str gen3mix[3] = {"SBOTMIX", "STOPMIX", "STAUMIX"};
         logger() << LogTags::utils;
@@ -270,6 +270,10 @@ namespace Gambit
 
       /// Add SLHAea object to another
       void MSSMskeleton::add_to_SLHAea(SLHAea::Coll& slha) const { return slhawrap.add_to_SLHAea(slha); } 
+
+      /// Retrieve the PDG translation map
+      const std::map<int, int>& MSSMskeleton::PDG_translator() const { return slhawrap.PDG_translator(); }
+
 
       // Map fillers    
 

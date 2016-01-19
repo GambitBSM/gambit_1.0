@@ -60,6 +60,13 @@ namespace Gambit
         slha.insert(slha.end(), data.cbegin(), data.cend());
       }
 
+      /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+      const std::map<int, int>& SLHAeaModel::PDG_translator() const
+      {
+        return PDG_translation_map;
+      }
+
+
       /// @{ Helper functions to do error checking for SLHAea object contents
 
       /// One index

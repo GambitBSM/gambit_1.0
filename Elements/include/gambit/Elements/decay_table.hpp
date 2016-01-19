@@ -42,8 +42,14 @@ namespace Gambit
       /// @{
       /// Default constructor
       DecayTable() {}
+      /// Create a DecayTable from an SLHA file
+      DecayTable(str slha, int context = 0);
+      /// Create a DecayTable from an SLHA file, with PDG code remapping
+      DecayTable(str slha, const std::map<int, int>& PDG_map, int context = 0);
       /// Create a DecayTable from an SLHAea object containing DECAY blocks
       DecayTable(const SLHAstruct&, int context = 0);
+      /// Create a DecayTable from an SLHAea object containing DECAY blocks, and remap PDG codes according to provided map
+      DecayTable(const SLHAstruct&, const std::map<int, int>&, int context = 0);
       /// @}
 
       /// Output entire decay table as an SLHAea file full of DECAY blocks
