@@ -111,6 +111,7 @@ namespace Gambit
 
             virtual int get_index_offset() const;
             virtual SLHAstruct getSLHAea() const;
+            virtual void add_to_SLHAea(SLHAea::Coll&) const; 
  
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes

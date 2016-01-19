@@ -14,9 +14,12 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/util_functions.hpp" 
 #include "gambit/Elements/MSSMskeleton.hpp" 
+#include "gambit/Utils/util_functions.hpp" 
+#include "gambit/Utils/variadic_functions.hpp" 
+#include "gambit/Logs/log.hpp"
 
+#include <boost/lexical_cast.hpp>
 
 using namespace SLHAea;
 
@@ -32,6 +35,8 @@ namespace Gambit
       typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
       //typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
 
+      /// Helper function for sorting int, double pairs according to the double
+      bool orderer (std::pair<int, double> a, std::pair<int, double> b) { return a.second < b.second; }
  
       /// @{ Member functions for SLHAeaModel class
            
@@ -43,7 +48,89 @@ namespace Gambit
       /// Constructor via SLHAea object
       MSSMea::MSSMea(const SLHAea::Coll& input)
         : SLHAeaModel(input)
-      {}
+      {
+        std::map<int, int> slha1to2; //FIXME this needs to get passed out somehow for the decays
+        str blocks[4] = {"DSQMIX", "USQMIX", "SELMIX", "SNUMIX"};
+        str gen3mix[3] = {"SBOTMIX", "STOPMIX", "STAUMIX"};
+        logger() << LogTags::utils;
+
+        // Work out if this SLHAea object is SLHA1 or SLHA2
+        if (data.find(blocks[0]) == data.end() or 
+            data.find(blocks[1]) == data.end() or
+            data.find(blocks[2]) == data.end() or
+            data.find(blocks[3]) == data.end() )
+        {
+          if (data.find(gen3mix[0]) == data.end() or 
+              data.find(gen3mix[1]) == data.end() or
+              data.find(gen3mix[2]) == data.end() )
+          {
+            utils_error().raise(LOCAL_INFO, "SLHA file appears to be neither SLHA1 nor SLHA2.");
+          }
+          logger() << "SLHA for setting up skeleton spectrum is SLHA1.  You old dog." << EOM;
+
+          //Looks like it is SLHA1, so convert it to SLHA2.
+          int lengths[4] = {6, 6, 6, 3};
+          str names[4] = {"~d_", "~u_", "~l_", "~nu_"};  
+          std::vector<int> pdg[4];
+          std::vector< std::pair<int, double> > masses[4];
+          pdg[0] = initVector<int>(1000001, 1000003, 1000005, 2000001, 2000003, 2000005); // d-type squarks
+          pdg[1] = initVector<int>(1000002, 1000004, 1000006, 2000002, 2000004, 2000006); // u-type squarks
+          pdg[2] = initVector<int>(1000011, 1000013, 1000015, 2000011, 2000013, 2000015); // sleptons
+          pdg[3] = initVector<int>(1000012, 1000014, 1000016);                            // sneutrinos
+          for (int j = 0; j < 4; j++)
+          {
+            // Get the masses
+            for (int i = 0; i < lengths[j]; i++) masses[j].push_back(std::pair<int, double>(pdg[j][i], getdata("MASS",pdg[j][i]))); 
+
+            // Sort them
+            std::sort(masses[j].begin(), masses[j].end(), orderer);
+
+            // Rewrite them in correct order, and populate the pdg-pdg maps
+            for (int i = 0; i < lengths[j]; i++)
+            {
+              data["MASS"][pdg[j][i]][1] = boost::lexical_cast<str>(masses[j][i].second);
+              data["MASS"][pdg[j][i]][2] = "# "+names[j]+boost::lexical_cast<str>(i+1);
+              slha1to2[masses[j][i].first] = pdg[j][i];
+            }
+
+            // Write the mixing block.  i is the SLHA2 index, k is the SLHA1 index.
+            data[blocks[j]][""] << "BLOCK" << blocks[j];
+            for (int i = 0; i < lengths[j]; i++) for (int k = 0; k < lengths[j]; k++)
+            {
+              double datum;
+              if (lengths[j] == 3 or (k != 2 and k != 5)) // first or second generation (or neutrinos)
+              { 
+                datum = (slha1to2.at(pdg[j][k]) == pdg[j][i]) ? 1.0 : 0.0;
+              }
+              else // third generation => need to use the 2x2 SLHA1 mixing matrices.
+              {
+                double family_index = 0;
+                if (k == 2)
+                {
+                  if (slha1to2.at(pdg[j][k]) == pdg[j][i]) family_index = 1;
+                  else if (slha1to2.at(pdg[j][5]) == pdg[j][i]) family_index = 2;
+                }
+                else if (k == 5)
+                {
+                  if (slha1to2.at(pdg[j][k]) == pdg[j][i]) family_index = 2;
+                  else if (slha1to2.at(pdg[j][2]) == pdg[j][i]) family_index = 1;
+                }
+                if (family_index > 0)
+                {
+                  datum = getdata(gen3mix[j], family_index, (k+1)/3);
+                }
+                else datum = 0.0;
+              }
+              data[blocks[j]][""] << i+1 << k+1 << datum << "# "+blocks[j]+boost::lexical_cast<str>(i*10+k+11);
+            }
+
+          }
+
+        }
+
+        else logger() << "SLHA for setting up skeleton spectrum is SLHA2.  *living in the future*" << EOM;       
+
+      }
 
       /// @{ Getters for MSSM information 
 
@@ -180,6 +267,9 @@ namespace Gambit
 
       /// Retrieve SLHAea object
       SLHAea::Coll MSSMskeleton::getSLHAea() const { return slhawrap.getSLHAea(); } 
+
+      /// Add SLHAea object to another
+      void MSSMskeleton::add_to_SLHAea(SLHAea::Coll& slha) const { return slhawrap.add_to_SLHAea(slha); } 
 
       // Map fillers    
 

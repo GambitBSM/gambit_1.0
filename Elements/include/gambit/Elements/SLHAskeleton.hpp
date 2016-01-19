@@ -25,7 +25,7 @@ namespace Gambit
       /// Skeleton "model" class which interacts with an SLHAea object
       class SLHAeaModel
       {
-         private:
+         protected:
            SLHAea::Coll data;
 
          public:
@@ -36,6 +36,9 @@ namespace Gambit
 
            /// Get reference to internal SLHAea object
            const SLHAea::Coll& getSLHAea() const;
+
+           /// Add spectrum information to an SLHAea object
+           void add_to_SLHAea(SLHAea::Coll&) const;
 
            /// Helper functions to do error checking for SLHAea object contents
            double getdata(const std::string& block, int index) const;
