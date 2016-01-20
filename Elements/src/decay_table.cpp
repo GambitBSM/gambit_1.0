@@ -53,17 +53,17 @@ namespace Gambit
   // DecayTable methods
 
   /// Create a DecayTable from an SLHA file
-  DecayTable::DecayTable(str slha, int context)
-   : DecayTable(read_SLHA(slha), context)
+  DecayTable::DecayTable(str slha, int context, bool force_SM_fermion_gauge_eigenstates)
+   : DecayTable(read_SLHA(slha), context, force_SM_fermion_gauge_eigenstates)
   {}
 
   /// Create a DecayTable from an SLHA file, with PDG code remapping
-  DecayTable::DecayTable(str slha, const std::map<int, int>& PDG_map, int context)
-   : DecayTable(read_SLHA(slha), PDG_map, context)
+  DecayTable::DecayTable(str slha, const std::map<int, int>& PDG_map, int context, bool force_SM_fermion_gauge_eigenstates)
+   : DecayTable(read_SLHA(slha), PDG_map, context, force_SM_fermion_gauge_eigenstates)
   {}
 
   /// Create a DecayTable from an SLHAea object containing DECAY blocks
-  DecayTable::DecayTable(const SLHAstruct& slha, int context)
+  DecayTable::DecayTable(const SLHAstruct& slha, int context, bool force_SM_fermion_gauge_eigenstates)
   {
     // Extract the calculator info if it exists
     str calculator, calculator_version;
@@ -78,17 +78,19 @@ namespace Gambit
         if(block_def->at(0) == "DECAY")
         {
           // Make sure the block definition has the particle's width and PDG code
-          if (block_def->size() < 3) utils_error().raise(LOCAL_INFO, "SLHAea object has DECAY block with < 3 entries in its block definition.");
+          if (block_def->size() < 3) utils_error().raise(LOCAL_INFO,
+           "SLHAea object has DECAY block with < 3 entries in its block definition.");
           int pdg = SLHAea::to<int>(block_def->at(1));
           // Add an entry containing the info in this block
-          operator()(std::pair<int,int>(pdg,context)) = Entry(*block, block_def, context, calculator, calculator_version);
+          operator()(std::pair<int,int>(pdg,context)) = Entry(*block, block_def, context,
+           force_SM_fermion_gauge_eigenstates, calculator, calculator_version);
         }
       }
     }
   }
 
   /// Create a DecayTable from an SLHAea object containing DECAY blocks, and remap PDG codes according to provided map
-  DecayTable::DecayTable(const SLHAstruct& slha_in, const std::map<int, int>& PDG_map, int context)
+  DecayTable::DecayTable(const SLHAstruct& slha_in, const std::map<int, int>& PDG_map, int context, bool force_SM_fermion_gauge_eigenstates)
   {
     // Make a local copy so we can mess with it
     SLHAstruct slha(slha_in);
@@ -126,7 +128,8 @@ namespace Gambit
             }
           }
           // Add an entry containing the info in this block
-          operator()(std::pair<int,int>(pdg,context)) = Entry(*block, block_def, context, calculator, calculator_version);
+          operator()(std::pair<int,int>(pdg,context)) = Entry(*block, block_def, context,
+           force_SM_fermion_gauge_eigenstates, calculator, calculator_version);
         }
       }
     }
@@ -194,7 +197,8 @@ namespace Gambit
   // DecayTable::Entry subclass methods
 
   /// Constructor creating a DecayTable Entry from an SLHAea DECAY block; full version
-  DecayTable::Entry::Entry(const SLHAea::Block& block, int context, str calc, str calc_ver) :
+  DecayTable::Entry::Entry(const SLHAea::Block& block, int context,
+   bool force_SM_fermion_gauge_eigenstates, str calc, str calc_ver) :
    positive_error(0.0),
    negative_error(0.0),
    calculator(calc),
@@ -206,11 +210,13 @@ namespace Gambit
     if (block_def->at(0) != "DECAY" or  block_def->size() < 3)
      utils_error().raise(LOCAL_INFO, "SLHAea block is not DECAY or has < 3 entries in its block definition.");
     width_in_GeV = SLHAea::to<double>(block_def->at(2));
-    init(block, context);
+    init(block, context, force_SM_fermion_gauge_eigenstates);
   }
 
-  /// Constructor creating a DecayTable Entry from an SLHAea DECAY block; full version; version assuming block def is already known
-  DecayTable::Entry::Entry(const SLHAea::Block& block, SLHAea::Block::const_iterator block_def, int context, str calc, str calc_ver) :
+  /// Constructor creating a DecayTable Entry from an SLHAea DECAY block; full version;
+  /// version assuming block def is already known
+  DecayTable::Entry::Entry(const SLHAea::Block& block, SLHAea::Block::const_iterator block_def,
+   int context, bool force_SM_fermion_gauge_eigenstates, str calc, str calc_ver) :
    width_in_GeV (SLHAea::to<double>(block_def->at(2))),
    positive_error(0.0),
    negative_error(0.0),
@@ -219,11 +225,11 @@ namespace Gambit
    warnings(""),
    errors("")
   {
-    init(block, context);
+    init(block, context, force_SM_fermion_gauge_eigenstates);
   }
 
   /// Initialise a DecayTable Entry using an SLHAea DECAY block
-  void DecayTable::Entry::init(const SLHAea::Block& block, int context)
+  void DecayTable::Entry::init(const SLHAea::Block& block, int context, bool force_SM_fermion_gauge_eigenstates)
   {
     for (auto channel = block.begin(); channel != block.end(); ++channel)
     {
@@ -236,7 +242,15 @@ namespace Gambit
         std::vector<std::pair<int,int> > daughter_pdg_codes;
         for (int i = 2; i < n_daughters+2; ++i)
         {
-          std::pair<int,int> pdg_pair(SLHAea::to<int>(channel->at(i)), context);
+          int pdg = SLHAea::to<int>(channel->at(i));
+          int context_local = context;
+          if (force_SM_fermion_gauge_eigenstates)
+          {
+            int abspdg = abs(pdg);
+            // Select SM fermions, including 4th gen, and force gauge eigenstates (context = 1).
+            if (abspdg < 19 and abspdg != 9 and abspdg != 10) context_local = 1;
+          }          
+          std::pair<int,int> pdg_pair(pdg, context_local);
           daughter_pdg_codes.push_back(pdg_pair);
         }
         set_BF(BF, 0.0, daughter_pdg_codes);

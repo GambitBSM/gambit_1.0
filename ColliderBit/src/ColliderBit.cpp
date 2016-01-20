@@ -2172,13 +2172,18 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
+      str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
+      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-    
+      
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:

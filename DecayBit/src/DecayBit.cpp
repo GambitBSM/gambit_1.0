@@ -34,9 +34,6 @@
 #include <string>
 #include <map>
 
-    #include "gambit/Elements/spectrum_factories.hpp"
-    #include "gambit/Elements/MSSMskeleton.hpp"
-
 namespace Gambit
 {
 

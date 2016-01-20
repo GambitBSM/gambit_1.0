@@ -46,20 +46,31 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(const Spectrum *& outSpec){
       static Spectrum mySpec;
-      mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);
-      
+      mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);     
       outSpec = &mySpec;
     }
     
-    void createDecays(DecayTable& outDecays){
-      std::ifstream ifs(inputFileName);
-      if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
-      SLHAstruct slha(ifs);
-      ifs.close();
-      const Spectrum* spec = (*Pipes::createSelDecays::Dep::MSSM_spectrum);
-      outDecays = DecayTable(inputFileName,spec->PDG_translator()); 
-      std::cout <<  outDecays.as_slhaea() << std::endl;
+    void createDecays(DecayTable& outDecays)
+    {
+      // Here we create a GAMBIT DecayTable from an SLHA file.
+      // This is a bit of a nasty example, as the DecayTable class stores
+      // stuff internally using SLHA2 PDG codes for sfermions, but we want
+      // to read an SLHA1 file -- but this is possible!  First we need to get
+      // a spectrum object that has already read the SLHA1 file and worked out
+      // which PDG codes need to be remapped to which others:
+      const Spectrum* spec = (*Pipes::createDecays::Dep::MSSM_spectrum);
+      
+      // Then we need to pass the SLHA1 PDG --> SLHA2 PDG map to the constructor of a DecayTable, along with our SLHA1 file.
+      // The third argument below is the default context integer to give to PDG pairs identified with the particles
+      // involved in the decays.  The fourth argument forces context = 1 for all SM fermions though, so that we use gauge
+      // instead of mass eigenstates for them.
+      outDecays = DecayTable(inputFileName, spec->PDG_translator(), 0, true);
 
+      // The equivalent code for reading decays from an SLHA2 file would be just
+      //  outDecays = DecayTable(inputFileName);
+      // or, if you needed to have SM fermions identified as their gauge eigenstates,
+      //  outDecays = DecayTable(inputFileName, 0, true);
+      // i.e. with SLHA2 files no spectrum object is required at all to make a DecayTable object.
     }
     
     void createZDecays(DecayTable::Entry& result){
@@ -188,13 +199,7 @@ int main()
     runAnalyses.resolveLoopManager(&operateLHCLoop);
     std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFast, &getAnalysisContainer,&generatePythia8Event,&convertPythia8ParticleEvent,&reconstructBuckFastEvent,&runAnalyses);
     operateLHCLoop.setNestedList(nested_functions);
-    
-    // Set up an example LEP calculation
-    // Note that the LEP functions need a spectrum
-    // Use SpecBit::Pipes::get_MSSM_spectrum_from_SLHAfile
-    
-    // QUICK_FUNCTION(ColliderBit, ALEPH_Selectron_LLike, NEW_CAPABILITY, ALEPH_Selectron_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_selselbar, triplet<double>), (LEP208_xsec_serserbar, triplet<double>), (selectron_l_decay_rates, DecayTable::Entry), (selectron_r_decay_rates, DecayTable::Entry))
-    
+          
     // ALEPH_Selectron_Conservative_LLike 
     ALEPH_Selectron_Conservative_LLike.notifyOfModel("MSSM30atQ");
     createSpectrum.notifyOfModel("MSSM30atQ");
@@ -343,11 +348,10 @@ int main()
       createSmurDecays.reset_and_calculate();
       createStau1Decays.reset_and_calculate();
       createStau2Decays.reset_and_calculate();
-      //std::cout << "Caling ALEPH selectron log likelihood" << std::endl;
-      //ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
+      ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
       //double loglike = ALEPH_Selectron_Conservative_LLike(0);
       //std::cout << "ALEPH selectron log likelihood is " << loglike << std::endl;
-      //ALEPH_Smuon_Conservative_LLike.reset_and_calculate();
+      ALEPH_Smuon_Conservative_LLike.reset_and_calculate();
       ALEPH_Stau_Conservative_LLike.reset_and_calculate();
       std::cout << "ALEPH stau LL " << ALEPH_Stau_Conservative_LLike(0) << std::endl;
       
