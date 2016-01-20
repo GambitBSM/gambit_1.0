@@ -1847,7 +1847,6 @@ namespace Gambit
 
       // se_L, se_L
       xsecLimit = limitContainer.limitAverage(mass_seL, mass_neut1, mZ);
-      std::cout << "MJW debug sel mass " << mass_seL << " ser string " << mass_seR << std::endl;
       xsecWithError = *Dep::LEP208_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
       xsecWithError.central *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1902,9 +1901,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
+      str smur_string = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
+      const double mass_smuL=spec->get(Par::Pole_Mass,smul_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,smur_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1915,7 +1919,7 @@ namespace Gambit
 
       // smu_L, smu_L
       xsecLimit = limitContainer.limitAverage(mass_smuL, mass_neut1, mZ);
-
+      std::cout << "smuL " << mass_smuL << " smuR " << mass_smuR << std::endl;
       xsecWithError = *Dep::LEP208_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
       xsecWithError.central *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1946,7 +1950,7 @@ namespace Gambit
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
-
+      
     }
 
     void ALEPH_Stau_Conservative_LLike(double& result)
@@ -1965,9 +1969,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
+      str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
+      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2028,13 +2037,18 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
+      str ser_string = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
+      const double mass_seL=spec->get(Par::Pole_Mass,sel_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,ser_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+    
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -2091,13 +2105,17 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
+      str smur_string = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
+      const double mass_smuL=spec->get(Par::Pole_Mass,smul_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,smur_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+    
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -2154,13 +2172,18 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
+      str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
+      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+      
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
