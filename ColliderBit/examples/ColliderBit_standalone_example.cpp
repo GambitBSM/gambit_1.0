@@ -18,25 +18,81 @@
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
 #include "gambit/Elements/MSSMskeleton.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 
 using namespace ColliderBit::Accessors;     // Helper functions that provide some info about the module
 using namespace ColliderBit::Functown;      // Functors wrapping the module's actual module functions
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(ColliderBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, const Spectrum*, (MSSM30atQ,MSSM30atMGUT))
+QUICK_FUNCTION(ColliderBit, all_decays, NEW_CAPABILITY, createDecays, DecayTable, (MSSM30atQ,MSSM30atMGUT), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, Z_decay_rates, NEW_CAPABILITY, createZDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT))
+QUICK_FUNCTION(ColliderBit, selectron_l_decay_rates, NEW_CAPABILITY, createSelDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, selectron_r_decay_rates, NEW_CAPABILITY, createSerDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
+
+// SLHA file for input: user can change name here
+// Note that it must contain the decay table for the LEP likelihoods to function properly
 
 const std::string inputFileName = "ColliderBit/data/sps1aWithDecays.spc";
 
 namespace Gambit
 {
   namespace ColliderBit {
-    
+
+    // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(const Spectrum *& outSpec){
       static Spectrum mySpec;
       mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);
       
       outSpec = &mySpec;
     }
+    
+    void createDecays(DecayTable& outDecays){
+      std::ifstream ifs(inputFileName);
+      if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
+      SLHAstruct slha(ifs);
+      ifs.close();
+      const Spectrum* spec = (*Pipes::createSelDecays::Dep::MSSM_spectrum);
+      outDecays = DecayTable(inputFileName,spec->PDG_translator());
+      std::cout <<  outDecays.as_slhaea() << std::endl;
+
+    }
+    
+    void createZDecays(DecayTable::Entry& result){
+      result.width_in_GeV = 2.4952;
+      result.positive_error = 2.3e-03;
+      result.negative_error = 2.3e-03;
+      result.set_BF(0.03363, 0.00004, "e+", "e-");
+      result.set_BF(0.03366, 0.00007, "mu+", "mu-");
+      result.set_BF(0.03370, 0.00008, "tau+", "tau-");
+      result.set_BF(0.6991, 0.0006, "hadron", "hadron");      
+    }
+    
+    
+    void createSelDecays(DecayTable::Entry& outSelDecays){
+
+      // This is a little more complicated than the previous function
+      // Need to get the string that corresponds to a left-handed selectron (the decay table entries are in the mass eigenstate basis)
+      double max_mixing;
+      const SubSpectrum* mssm = (*Pipes::createSelDecays::Dep::MSSM_spectrum)->get_HE();
+      str x = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
+      std::cout << "I think that the sel is " << x << std::endl;
+      outSelDecays = (*Pipes::createSelDecays::Dep::all_decays)(x);
+    }
+
+    void createSerDecays(DecayTable::Entry& outSerDecays){
+
+      // This is a little more complicated than the previous function
+      // Need to get the string that corresponds to a left-handed selectron (the decay table entries are in the mass eigenstate basis)
+      double max_mixing;
+      const SubSpectrum* mssm = (*Pipes::createSerDecays::Dep::MSSM_spectrum)->get_HE();
+      str x = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
+      outSerDecays = (*Pipes::createSerDecays::Dep::all_decays)(x);
+    }
+
+    
+    
+    
   }
 }
 
@@ -104,8 +160,26 @@ int main()
     
     // ALEPH_Selectron_Conservative_LLike depends on the model
     // It also depends on an MSSM_spectrum  
-    std::cout << "About to resolve LEP " << std::endl;
+    ALEPH_Selectron_Conservative_LLike.notifyOfModel("MSSM30atQ");
+    createSpectrum.notifyOfModel("MSSM30atQ");
+    createDecays.notifyOfModel("MSSM30atQ");
+    createSelDecays.notifyOfModel("MSSM30atQ");
+    createSerDecays.notifyOfModel("MSSM30atQ");
     ALEPH_Selectron_Conservative_LLike.resolveDependency(&createSpectrum);
+    ALEPH_Selectron_Conservative_LLike.resolveDependency(&LEP208_SLHA1_convention_xsec_selselbar);
+    ALEPH_Selectron_Conservative_LLike.resolveDependency(&LEP208_SLHA1_convention_xsec_serserbar);
+    ALEPH_Selectron_Conservative_LLike.resolveDependency(&createSelDecays);
+    ALEPH_Selectron_Conservative_LLike.resolveDependency(&createSerDecays);
+    LEP208_SLHA1_convention_xsec_selselbar.resolveDependency(&createSpectrum);
+    LEP208_SLHA1_convention_xsec_selselbar.resolveDependency(&createZDecays);
+    LEP208_SLHA1_convention_xsec_serserbar.resolveDependency(&createSpectrum);
+    LEP208_SLHA1_convention_xsec_serserbar.resolveDependency(&createZDecays);
+    createDecays.resolveDependency(&createSpectrum);
+    createSelDecays.resolveDependency(&createDecays);
+    createSelDecays.resolveDependency(&createSpectrum);
+    createSerDecays.resolveDependency(&createDecays);
+    createSerDecays.resolveDependency(&createSpectrum);
+    
     
     // Double-check which backend requirements have been filled with what
     std::cout << std::endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << std::endl;
@@ -176,14 +250,26 @@ int main()
       // Call the initialisation functions for all backends that are in use. 
       nulike_1_0_1_init.reset_and_calculate();
 
+      /*
       // Call the LHC likelihood
       operateLHCLoop.reset_and_calculate();
       calc_LHC_LogLike.reset_and_calculate();
       
-      // Retrieve and print the log likelihood
-      
+      // Retrieve and print the LHC likelihood
       double loglike = calc_LHC_LogLike(0);
-      std::cout << "Finished. Log likelihood is " << loglike << std::endl;
+      std::cout << "LHC log likelihood is " << loglike << std::endl;
+      */
+
+      // Call the LEP likelihood
+      createSpectrum.reset_and_calculate();
+      createDecays.reset_and_calculate();
+      createZDecays.reset_and_calculate();
+      createSelDecays.reset_and_calculate();
+      createSerDecays.reset_and_calculate();
+      std::cout << "Caling ALEPH selectron log likelihood" << std::endl;
+      ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
+      double loglike = ALEPH_Selectron_Conservative_LLike(0);
+      std::cout << "ALEPH selectron log likelihood is " << loglike << std::endl;
       
     }
   }
