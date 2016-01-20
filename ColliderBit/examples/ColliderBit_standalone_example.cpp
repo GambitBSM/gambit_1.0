@@ -42,20 +42,31 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(const Spectrum *& outSpec){
       static Spectrum mySpec;
-      mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);
-      
+      mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);     
       outSpec = &mySpec;
     }
     
-    void createDecays(DecayTable& outDecays){
-      std::ifstream ifs(inputFileName);
-      if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
-      SLHAstruct slha(ifs);
-      ifs.close();
-      const Spectrum* spec = (*Pipes::createSelDecays::Dep::MSSM_spectrum);
-      outDecays = DecayTable(inputFileName,spec->PDG_translator());
-      std::cout <<  outDecays.as_slhaea() << std::endl;
+    void createDecays(DecayTable& outDecays)
+    {
+      // Here we create a GAMBIT DecayTable from an SLHA file.
+      // This is a bit of a nasty example, as the DecayTable class stores
+      // stuff internally using SLHA2 PDG codes for sfermions, but we want
+      // to read an SLHA1 file -- but this is possible!  First we need to get
+      // a spectrum object that has already read the SLHA1 file and worked out
+      // which PDG codes need to be remapped to which others:
+      const Spectrum* spec = (*Pipes::createDecays::Dep::MSSM_spectrum);
 
+      // Then we need to pass the SLHA1 PDG --> SLHA2 PDG map to the constructor of a DecayTable, along with our SLHA1 file.
+      // The third argument below is the default context integer to give to PDG pairs identified with the particles
+      // involved in the decays.  The fourth argument forces context = 1 for all SM fermions though, so that we use gauge
+      // instead of mass eigenstates for them.
+      outDecays = DecayTable(inputFileName, spec->PDG_translator(), 0, true);
+
+      // The equivalent code for reading decays from an SLHA2 file would be just
+      //  outDecays = DecayTable(inputFileName);
+      // or, if you needed to have SM fermions identified as their gauge eigenstates,
+      //  outDecays = DecayTable(inputFileName, 0, true);
+      // i.e. with SLHA2 files no spectrum object is required at all to make a DecayTable object.
     }
     
     void createZDecays(DecayTable::Entry& result){
