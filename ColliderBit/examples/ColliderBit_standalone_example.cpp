@@ -200,7 +200,7 @@ int main()
     std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFast, &getAnalysisContainer,&generatePythia8Event,&convertPythia8ParticleEvent,&reconstructBuckFastEvent,&runAnalyses);
     operateLHCLoop.setNestedList(nested_functions);
           
-    // ALEPH_Selectron_Conservative_LLike 
+    // ALEPH selectron limits
     ALEPH_Selectron_Conservative_LLike.notifyOfModel("MSSM30atQ");
     createSpectrum.notifyOfModel("MSSM30atQ");
     createDecays.notifyOfModel("MSSM30atQ");
@@ -221,7 +221,7 @@ int main()
     createSerDecays.resolveDependency(&createDecays);
     createSerDecays.resolveDependency(&createSpectrum);
 
-    // ALEPH_Smuon_Conservative_LLike
+    // ALEPH smuon limits
     ALEPH_Smuon_Conservative_LLike.notifyOfModel("MSSM30atQ");
     createSmulDecays.notifyOfModel("MSSM30atQ");
     createSmurDecays.notifyOfModel("MSSM30atQ");
@@ -234,13 +234,12 @@ int main()
     LEP208_SLHA1_convention_xsec_smulsmulbar.resolveDependency(&createZDecays);
     LEP208_SLHA1_convention_xsec_smursmurbar.resolveDependency(&createSpectrum);
     LEP208_SLHA1_convention_xsec_smursmurbar.resolveDependency(&createZDecays);
-    createDecays.resolveDependency(&createSpectrum);
     createSmulDecays.resolveDependency(&createDecays);
     createSmulDecays.resolveDependency(&createSpectrum);
     createSmurDecays.resolveDependency(&createDecays);
     createSmurDecays.resolveDependency(&createSpectrum);
 
-    // ALEPH_Stau_Conservative_LLike
+    // ALEPH stau limits
     ALEPH_Stau_Conservative_LLike.notifyOfModel("MSSM30atQ");
     createStau1Decays.notifyOfModel("MSSM30atQ");
     createStau2Decays.notifyOfModel("MSSM30atQ");
@@ -253,11 +252,50 @@ int main()
     LEP208_SLHA1_convention_xsec_stau1stau1bar.resolveDependency(&createZDecays);
     LEP208_SLHA1_convention_xsec_stau2stau2bar.resolveDependency(&createSpectrum);
     LEP208_SLHA1_convention_xsec_stau2stau2bar.resolveDependency(&createZDecays);
-    createDecays.resolveDependency(&createSpectrum);
     createStau1Decays.resolveDependency(&createDecays);
     createStau1Decays.resolveDependency(&createSpectrum);
     createStau2Decays.resolveDependency(&createDecays);
     createStau2Decays.resolveDependency(&createSpectrum);
+
+    // L3 selectron limits
+    L3_Selectron_Conservative_LLike.notifyOfModel("MSSM30atQ");
+    L3_Selectron_Conservative_LLike.resolveDependency(&createSpectrum);
+    L3_Selectron_Conservative_LLike.resolveDependency(&LEP205_SLHA1_convention_xsec_selselbar);
+    L3_Selectron_Conservative_LLike.resolveDependency(&LEP205_SLHA1_convention_xsec_serserbar);
+    L3_Selectron_Conservative_LLike.resolveDependency(&createSelDecays);
+    L3_Selectron_Conservative_LLike.resolveDependency(&createSerDecays);
+    LEP205_SLHA1_convention_xsec_selselbar.resolveDependency(&createSpectrum);
+    LEP205_SLHA1_convention_xsec_selselbar.resolveDependency(&createZDecays);
+    LEP205_SLHA1_convention_xsec_serserbar.resolveDependency(&createSpectrum);
+    LEP205_SLHA1_convention_xsec_serserbar.resolveDependency(&createZDecays);
+
+    // L3 smuon limits
+    L3_Smuon_Conservative_LLike.notifyOfModel("MSSM30atQ");
+    createSmulDecays.notifyOfModel("MSSM30atQ");
+    createSmurDecays.notifyOfModel("MSSM30atQ");
+    L3_Smuon_Conservative_LLike.resolveDependency(&createSpectrum);
+    L3_Smuon_Conservative_LLike.resolveDependency(&LEP205_SLHA1_convention_xsec_smulsmulbar);
+    L3_Smuon_Conservative_LLike.resolveDependency(&LEP205_SLHA1_convention_xsec_smursmurbar);
+    L3_Smuon_Conservative_LLike.resolveDependency(&createSmulDecays);
+    L3_Smuon_Conservative_LLike.resolveDependency(&createSmurDecays);
+    LEP205_SLHA1_convention_xsec_smulsmulbar.resolveDependency(&createSpectrum);
+    LEP205_SLHA1_convention_xsec_smulsmulbar.resolveDependency(&createZDecays);
+    LEP205_SLHA1_convention_xsec_smursmurbar.resolveDependency(&createSpectrum);
+    LEP205_SLHA1_convention_xsec_smursmurbar.resolveDependency(&createZDecays);
+
+    // L3 stau limits
+    L3_Stau_Conservative_LLike.notifyOfModel("MSSM30atQ");
+    createStau1Decays.notifyOfModel("MSSM30atQ");
+    createStau2Decays.notifyOfModel("MSSM30atQ");
+    L3_Stau_Conservative_LLike.resolveDependency(&createSpectrum);
+    L3_Stau_Conservative_LLike.resolveDependency(&LEP205_SLHA1_convention_xsec_stau1stau1bar);
+    L3_Stau_Conservative_LLike.resolveDependency(&LEP205_SLHA1_convention_xsec_stau2stau2bar);
+    L3_Stau_Conservative_LLike.resolveDependency(&createStau1Decays);
+    L3_Stau_Conservative_LLike.resolveDependency(&createStau2Decays);
+    LEP205_SLHA1_convention_xsec_stau1stau1bar.resolveDependency(&createSpectrum);
+    LEP205_SLHA1_convention_xsec_stau1stau1bar.resolveDependency(&createZDecays);
+    LEP205_SLHA1_convention_xsec_stau2stau2bar.resolveDependency(&createSpectrum);
+    LEP205_SLHA1_convention_xsec_stau2stau2bar.resolveDependency(&createZDecays);
     
     // Double-check which backend requirements have been filled with what
     std::cout << std::endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << std::endl;
@@ -348,11 +386,30 @@ int main()
       createSmurDecays.reset_and_calculate();
       createStau1Decays.reset_and_calculate();
       createStau2Decays.reset_and_calculate();
+      std::cout << "Making cross-sections" << std::endl;
+      LEP208_SLHA1_convention_xsec_selselbar.reset_and_calculate();
+      std::cout << "Made first set of cross-sections" << std::endl;
+      LEP208_SLHA1_convention_xsec_smulsmulbar.reset_and_calculate();
+      LEP208_SLHA1_convention_xsec_serserbar.reset_and_calculate();
+      LEP208_SLHA1_convention_xsec_smursmurbar.reset_and_calculate();
+      LEP208_SLHA1_convention_xsec_stau1stau1bar.reset_and_calculate();
+      LEP208_SLHA1_convention_xsec_stau2stau2bar.reset_and_calculate();
+      LEP205_SLHA1_convention_xsec_selselbar.reset_and_calculate();
+      LEP205_SLHA1_convention_xsec_smulsmulbar.reset_and_calculate();
+      LEP205_SLHA1_convention_xsec_serserbar.reset_and_calculate();
+      LEP205_SLHA1_convention_xsec_smursmurbar.reset_and_calculate();
+      LEP205_SLHA1_convention_xsec_stau1stau1bar.reset_and_calculate();
+      LEP205_SLHA1_convention_xsec_stau2stau2bar.reset_and_calculate();
+      
       ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
       //double loglike = ALEPH_Selectron_Conservative_LLike(0);
       //std::cout << "ALEPH selectron log likelihood is " << loglike << std::endl;
       ALEPH_Smuon_Conservative_LLike.reset_and_calculate();
       ALEPH_Stau_Conservative_LLike.reset_and_calculate();
+      L3_Selectron_Conservative_LLike.reset_and_calculate();
+      L3_Smuon_Conservative_LLike.reset_and_calculate();
+      L3_Stau_Conservative_LLike.reset_and_calculate();
+
       std::cout << "ALEPH stau LL " << ALEPH_Stau_Conservative_LLike(0) << std::endl;
       
       
