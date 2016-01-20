@@ -108,7 +108,11 @@ namespace Gambit
           // Make sure the block definition has the particle's width and PDG code
           if (block_def->size() < 3) utils_error().raise(LOCAL_INFO, "SLHAea object has DECAY block with < 3 entries in its block definition.");
           int pdg = SLHAea::to<int>(block_def->at(1));
-          if (PDG_map.find(pdg) != PDG_map.end()) (*block_def)[1] = boost::lexical_cast<str>(PDG_map.at(pdg));
+          if (PDG_map.find(pdg) != PDG_map.end())
+          {
+            pdg = PDG_map.at(pdg);
+            (*block_def)[1] = boost::lexical_cast<str>(pdg);
+          }
           // Step through the block and convert any final state PDG codes that need to be remapped
           for (auto line = block->begin() + 1; line != block->end(); ++line)
           {
