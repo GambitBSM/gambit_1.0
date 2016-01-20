@@ -24,6 +24,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
     
             public:
+                using Pythia8::Abstract_ResonanceWidths::pointerAssign__BOSS;
                 virtual void pointerAssign__BOSS(Abstract_ResonanceGmZ*) =0;
                 virtual Abstract_ResonanceGmZ* pointerCopy__BOSS() =0;
     
