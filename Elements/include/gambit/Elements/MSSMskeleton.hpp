@@ -63,6 +63,7 @@ namespace Gambit
            double get_g2() const;
            double get_g3() const;
            double get_tanbeta() const;
+           double get_sinthW2_DRbar() const;
   
            double get_MGlu_pole() const;
 

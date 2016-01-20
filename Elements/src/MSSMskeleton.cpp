@@ -163,10 +163,16 @@ namespace Gambit
       double MSSMea::get_g2() const { return getdata("GAUGE",2); }
       double MSSMea::get_g3() const { return getdata("GAUGE",3); }
       double MSSMea::get_tanbeta() const { return get_vu()/get_vd(); }
+      double MSSMea::get_sinthW2_DRbar() const
+      {
+        double sg1 = 0.6 * Utils::sqr(get_g1());
+        return sg1 / (sg1 + Utils::sqr(get_g2()));
+      }
   
       double MSSMea::get_MGlu_pole() const { return getdata("MASS",1000021); }
 
-      double MSSMea::get_Mhh_pole_slha(int i) const { 
+      double MSSMea::get_Mhh_pole_slha(int i) const
+      { 
          if      (i==1){ return getdata("MASS",25); } // Neutral Higgs(1)
          else if (i==2){ return getdata("MASS",35); } // Neutral Higgs(2)
          else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_Mhh_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
@@ -174,12 +180,14 @@ namespace Gambit
       double MSSMea::get_MAh_pole () const { return getdata("MASS",36); }  
       double MSSMea::get_MHpm_pole() const { return getdata("MASS",37); }   
 
-      double MSSMea::get_MCha_pole_slha(int i) const {
+      double MSSMea::get_MCha_pole_slha(int i) const
+      {
          if      (i==1){ return getdata("MASS",1000024); } // Chargino(1)
          else if (i==2){ return getdata("MASS",1000037); } // Chargino(2)
          else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MCha_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
-      double MSSMea::get_MSd_pole_slha(int i) const {
+      double MSSMea::get_MSd_pole_slha(int i) const
+      {
          static std::map<int,int> match;
 
          if      (i==1){ return getdata("MASS",1000001); } // d-type squark(1)
@@ -190,7 +198,8 @@ namespace Gambit
          else if (i==6){ return getdata("MASS",2000005); } // d-type squark(6)
          else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
-      double MSSMea::get_MSu_pole_slha(int i) const {
+      double MSSMea::get_MSu_pole_slha(int i) const
+      {
          if      (i==1){ return getdata("MASS",1000002); } // u-type squark(1)
          else if (i==2){ return getdata("MASS",1000004); } // u-type squark(2)
          else if (i==3){ return getdata("MASS",1000006); } // u-type squark(3)
@@ -199,7 +208,8 @@ namespace Gambit
          else if (i==6){ return getdata("MASS",2000006); } // u-type squark(6)
          else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
-      double MSSMea::get_MSe_pole_slha(int i) const {
+      double MSSMea::get_MSe_pole_slha(int i) const
+      {
          if      (i==1){ return getdata("MASS",1000011); } // charged slepton(1)
          else if (i==2){ return getdata("MASS",1000013); } // charged slepton(2)
          else if (i==3){ return getdata("MASS",1000015); } // charged slepton(3)
@@ -208,13 +218,15 @@ namespace Gambit
          else if (i==6){ return getdata("MASS",2000015); } // charged slepton(6)
          else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
-      double MSSMea::get_MSv_pole_slha(int i) const {
+      double MSSMea::get_MSv_pole_slha(int i) const
+      {
          if      (i==1){ return getdata("MASS",1000012); } // Sneutrino(1)
          else if (i==2){ return getdata("MASS",1000014); } // Sneutrino(2)
          else if (i==3){ return getdata("MASS",1000016); } // Sneutrino(3)
          else { utils_error().raise(LOCAL_INFO,"Invalid index input to get_MSd_pole_slha! Please check index range limits in wrapper SubSpectrum class!"); return -1; } // Should not return.
       }
-      double MSSMea::get_MChi_pole_slha(int i) const {
+      double MSSMea::get_MChi_pole_slha(int i) const
+      {
          if      (i==1){ return getdata("MASS",1000022); } // Neutralino(1)
          else if (i==2){ return getdata("MASS",1000023); } // Neutralino(2)
          else if (i==3){ return getdata("MASS",1000025); } // Neutralino(3)
@@ -329,6 +341,7 @@ namespace Gambit
             tmp_map["g2"]= &Model::get_g2;
             tmp_map["g3"]= &Model::get_g3;
             tmp_map["tanbeta"]= &Model::get_tanbeta;
+            tmp_map["sinW2"]= &Model::get_sinthW2_DRbar;
             map_collection[Par::dimensionless].map0 = tmp_map;
          }
          {
