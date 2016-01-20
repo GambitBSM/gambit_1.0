@@ -1829,9 +1829,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+    
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
+      str ser_string = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
+      const double mass_seL=spec->get(Par::Pole_Mass,sel_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,ser_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1842,7 +1847,7 @@ namespace Gambit
 
       // se_L, se_L
       xsecLimit = limitContainer.limitAverage(mass_seL, mass_neut1, mZ);
-       std::cout << "MJW debug sel mass " << mass_seL << std::endl;
+      std::cout << "MJW debug sel mass " << mass_seL << " ser string " << mass_seR << std::endl;
       xsecWithError = *Dep::LEP208_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
       xsecWithError.central *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
