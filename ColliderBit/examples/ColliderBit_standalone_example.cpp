@@ -29,6 +29,10 @@ QUICK_FUNCTION(ColliderBit, all_decays, NEW_CAPABILITY, createDecays, DecayTable
 QUICK_FUNCTION(ColliderBit, Z_decay_rates, NEW_CAPABILITY, createZDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT))
 QUICK_FUNCTION(ColliderBit, selectron_l_decay_rates, NEW_CAPABILITY, createSelDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
 QUICK_FUNCTION(ColliderBit, selectron_r_decay_rates, NEW_CAPABILITY, createSerDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, smuon_l_decay_rates, NEW_CAPABILITY, createSmulDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, smuon_r_decay_rates, NEW_CAPABILITY, createSmurDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, stau_1_decay_rates, NEW_CAPABILITY, createStau1Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, stau_2_decay_rates, NEW_CAPABILITY, createStau2Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
 
 // SLHA file for input: user can change name here
 // Note that it must contain the decay table for the LEP likelihoods to function properly
@@ -53,7 +57,7 @@ namespace Gambit
       SLHAstruct slha(ifs);
       ifs.close();
       const Spectrum* spec = (*Pipes::createSelDecays::Dep::MSSM_spectrum);
-      outDecays = DecayTable(inputFileName,spec->PDG_translator());
+      outDecays = DecayTable(inputFileName,spec->PDG_translator()); 
       std::cout <<  outDecays.as_slhaea() << std::endl;
 
     }
@@ -90,8 +94,41 @@ namespace Gambit
       outSerDecays = (*Pipes::createSerDecays::Dep::all_decays)(x);
     }
 
+    void createSmulDecays(DecayTable::Entry& outSmulDecays){
+      
+      double max_mixing;
+      const SubSpectrum* mssm = (*Pipes::createSmulDecays::Dep::MSSM_spectrum)->get_HE();
+      str x = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
+      std::cout << "I think that the smu is " << x << std::endl;
+      outSmulDecays = (*Pipes::createSmulDecays::Dep::all_decays)(x);
+    }
     
+    void createSmurDecays(DecayTable::Entry& outSmurDecays){
+
+      double max_mixing;
+      const SubSpectrum* mssm = (*Pipes::createSmurDecays::Dep::MSSM_spectrum)->get_HE();
+      str x = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
+      outSmurDecays = (*Pipes::createSmurDecays::Dep::all_decays)(x);
+    }
     
+    void createStau1Decays(DecayTable::Entry& outStau1Decays){
+
+      const SubSpectrum* mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum)->get_HE();
+      // Set these arguments by hand for this example
+      const static double tol = 0.001;
+      const static bool pterror=false;
+      str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
+      outStau1Decays = (*Pipes::createStau1Decays::Dep::all_decays)(stau1_string);
+    }
+
+    void createStau2Decays(DecayTable::Entry& outStau2Decays){
+
+      const SubSpectrum* mssm = (*Pipes::createStau1Decays::Dep::MSSM_spectrum)->get_HE();
+      const static double tol = 0.001;
+      const static bool pterror=false;
+      str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
+      outStau2Decays = (*Pipes::createStau2Decays::Dep::all_decays)(stau2_string);
+    }
     
   }
 }
@@ -158,8 +195,7 @@ int main()
     
     // QUICK_FUNCTION(ColliderBit, ALEPH_Selectron_LLike, NEW_CAPABILITY, ALEPH_Selectron_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, const Spectrum*), (LEP208_xsec_selselbar, triplet<double>), (LEP208_xsec_serserbar, triplet<double>), (selectron_l_decay_rates, DecayTable::Entry), (selectron_r_decay_rates, DecayTable::Entry))
     
-    // ALEPH_Selectron_Conservative_LLike depends on the model
-    // It also depends on an MSSM_spectrum  
+    // ALEPH_Selectron_Conservative_LLike 
     ALEPH_Selectron_Conservative_LLike.notifyOfModel("MSSM30atQ");
     createSpectrum.notifyOfModel("MSSM30atQ");
     createDecays.notifyOfModel("MSSM30atQ");
@@ -179,7 +215,44 @@ int main()
     createSelDecays.resolveDependency(&createSpectrum);
     createSerDecays.resolveDependency(&createDecays);
     createSerDecays.resolveDependency(&createSpectrum);
-    
+
+    // ALEPH_Smuon_Conservative_LLike
+    ALEPH_Smuon_Conservative_LLike.notifyOfModel("MSSM30atQ");
+    createSmulDecays.notifyOfModel("MSSM30atQ");
+    createSmurDecays.notifyOfModel("MSSM30atQ");
+    ALEPH_Smuon_Conservative_LLike.resolveDependency(&createSpectrum);
+    ALEPH_Smuon_Conservative_LLike.resolveDependency(&LEP208_SLHA1_convention_xsec_smulsmulbar);
+    ALEPH_Smuon_Conservative_LLike.resolveDependency(&LEP208_SLHA1_convention_xsec_smursmurbar);
+    ALEPH_Smuon_Conservative_LLike.resolveDependency(&createSmulDecays);
+    ALEPH_Smuon_Conservative_LLike.resolveDependency(&createSmurDecays);
+    LEP208_SLHA1_convention_xsec_smulsmulbar.resolveDependency(&createSpectrum);
+    LEP208_SLHA1_convention_xsec_smulsmulbar.resolveDependency(&createZDecays);
+    LEP208_SLHA1_convention_xsec_smursmurbar.resolveDependency(&createSpectrum);
+    LEP208_SLHA1_convention_xsec_smursmurbar.resolveDependency(&createZDecays);
+    createDecays.resolveDependency(&createSpectrum);
+    createSmulDecays.resolveDependency(&createDecays);
+    createSmulDecays.resolveDependency(&createSpectrum);
+    createSmurDecays.resolveDependency(&createDecays);
+    createSmurDecays.resolveDependency(&createSpectrum);
+
+    // ALEPH_Stau_Conservative_LLike
+    ALEPH_Stau_Conservative_LLike.notifyOfModel("MSSM30atQ");
+    createStau1Decays.notifyOfModel("MSSM30atQ");
+    createStau2Decays.notifyOfModel("MSSM30atQ");
+    ALEPH_Stau_Conservative_LLike.resolveDependency(&createSpectrum);
+    ALEPH_Stau_Conservative_LLike.resolveDependency(&LEP208_SLHA1_convention_xsec_stau1stau1bar);
+    ALEPH_Stau_Conservative_LLike.resolveDependency(&LEP208_SLHA1_convention_xsec_stau2stau2bar);
+    ALEPH_Stau_Conservative_LLike.resolveDependency(&createStau1Decays);
+    ALEPH_Stau_Conservative_LLike.resolveDependency(&createStau2Decays);
+    LEP208_SLHA1_convention_xsec_stau1stau1bar.resolveDependency(&createSpectrum);
+    LEP208_SLHA1_convention_xsec_stau1stau1bar.resolveDependency(&createZDecays);
+    LEP208_SLHA1_convention_xsec_stau2stau2bar.resolveDependency(&createSpectrum);
+    LEP208_SLHA1_convention_xsec_stau2stau2bar.resolveDependency(&createZDecays);
+    createDecays.resolveDependency(&createSpectrum);
+    createStau1Decays.resolveDependency(&createDecays);
+    createStau1Decays.resolveDependency(&createSpectrum);
+    createStau2Decays.resolveDependency(&createDecays);
+    createStau2Decays.resolveDependency(&createSpectrum);
     
     // Double-check which backend requirements have been filled with what
     std::cout << std::endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << std::endl;
@@ -260,16 +333,24 @@ int main()
       std::cout << "LHC log likelihood is " << loglike << std::endl;
       */
 
-      // Call the LEP likelihood
+      // Call the ALEPH slepton likelihoods
       createSpectrum.reset_and_calculate();
       createDecays.reset_and_calculate();
       createZDecays.reset_and_calculate();
       createSelDecays.reset_and_calculate();
       createSerDecays.reset_and_calculate();
-      std::cout << "Caling ALEPH selectron log likelihood" << std::endl;
-      ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
-      double loglike = ALEPH_Selectron_Conservative_LLike(0);
-      std::cout << "ALEPH selectron log likelihood is " << loglike << std::endl;
+      createSmulDecays.reset_and_calculate();
+      createSmurDecays.reset_and_calculate();
+      createStau1Decays.reset_and_calculate();
+      createStau2Decays.reset_and_calculate();
+      //std::cout << "Caling ALEPH selectron log likelihood" << std::endl;
+      //ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
+      //double loglike = ALEPH_Selectron_Conservative_LLike(0);
+      //std::cout << "ALEPH selectron log likelihood is " << loglike << std::endl;
+      //ALEPH_Smuon_Conservative_LLike.reset_and_calculate();
+      ALEPH_Stau_Conservative_LLike.reset_and_calculate();
+      std::cout << "ALEPH stau LL " << ALEPH_Stau_Conservative_LLike(0) << std::endl;
+      
       
     }
   }
