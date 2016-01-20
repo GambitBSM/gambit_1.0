@@ -239,7 +239,7 @@ ExternalProject_Add(pythia
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
   CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${pythia_CXX_SHARED_FLAGS}" --lib-suffix=".so"
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}"
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX="${CMAKE_CXX_COMPILER}" lib/libpythia8.so
   INSTALL_COMMAND ""
 )
 ExternalProject_Add_Step(pythia apply_hacks
