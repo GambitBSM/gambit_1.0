@@ -182,7 +182,6 @@ namespace Gambit
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
-          result.clear();
           print_pythia_banner = false;
         }
 
@@ -251,15 +250,17 @@ namespace Gambit
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0) {
+        if (omp_get_thread_num() == 0)
+        {
           code = -1;
           totalxsec = 0.;
-          while(true) {
+          while(true)
+          {
             std::getline(processLevelOutput, readline);
             std::istringstream issPtr(readline);
             issPtr.seekg(47, issPtr.beg);
             issPtr >> code;
-            if (issPtr.good() || totalxsec <= 0.) break;
+            if (!issPtr.good() && totalxsec > 0.) break;
             issPtr >> _junk >> xsec;
             if (issPtr.good()) totalxsec += xsec;
           }
@@ -284,7 +285,6 @@ namespace Gambit
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
@@ -295,7 +295,6 @@ namespace Gambit
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
-          result.clear();
           print_pythia_banner = false;
         }
         // If there are no debug filenames set, look for them.
@@ -337,30 +336,34 @@ namespace Gambit
         if (omp_get_thread_num() == 0)
           logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
         pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
-        try {
+        try
+        {
           if (omp_get_thread_num() == 0)
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
           else
             result.init(pythia_doc_path, pythiaOptions);
-        } catch (SpecializablePythia::InitializationError &e) {
+        }
+        catch (SpecializablePythia::InitializationError &e)
+        {
           piped_invalid_point.request("Bad point: Pythia can't initialize");
           Loop::wrapup();
           return;
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0) {
+        if (omp_get_thread_num() == 0)
+        {
           code = -1;
           totalxsec = 0.;
-          while(true) {
+          while(true)
+          {
             std::getline(processLevelOutput, readline);
-            issPtr = new std::istringstream(readline);
-            issPtr->seekg(47, issPtr->beg);
-            (*issPtr) >> code;
-            if (!issPtr->good() && totalxsec > 0.) break;
-            (*issPtr) >> _junk >> xsec;
-            if (issPtr->good()) totalxsec += xsec;
-            delete issPtr;
+            std::istringstream issPtr(readline);
+            issPtr.seekg(47, issPtr.beg);
+            issPtr >> code;
+            if (!issPtr.good() && totalxsec > 0.) break;
+            issPtr >> _junk >> xsec;
+            if (issPtr.good()) totalxsec += xsec;
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -370,7 +373,6 @@ namespace Gambit
 
       }
     }
-
 
 
     /// *** Detector Simulators ***
