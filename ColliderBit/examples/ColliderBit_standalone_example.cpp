@@ -25,14 +25,14 @@ using namespace ColliderBit::Functown;      // Functors wrapping the module's ac
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(ColliderBit, MSSM_spectrum, NEW_CAPABILITY, createSpectrum, const Spectrum*, (MSSM30atQ,MSSM30atMGUT))
-QUICK_FUNCTION(ColliderBit, all_decays, NEW_CAPABILITY, createDecays, DecayTable, (MSSM30atQ,MSSM30atMGUT), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, (MSSM30atQ,MSSM30atMGUT), (MSSM_spectrum, const Spectrum*))
 QUICK_FUNCTION(ColliderBit, Z_decay_rates, NEW_CAPABILITY, createZDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT))
-QUICK_FUNCTION(ColliderBit, selectron_l_decay_rates, NEW_CAPABILITY, createSelDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, selectron_r_decay_rates, NEW_CAPABILITY, createSerDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, smuon_l_decay_rates, NEW_CAPABILITY, createSmulDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, smuon_r_decay_rates, NEW_CAPABILITY, createSmurDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, stau_1_decay_rates, NEW_CAPABILITY, createStau1Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
-QUICK_FUNCTION(ColliderBit, stau_2_decay_rates, NEW_CAPABILITY, createStau2Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (all_decays, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, selectron_l_decay_rates, NEW_CAPABILITY, createSelDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, selectron_r_decay_rates, NEW_CAPABILITY, createSerDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, smuon_l_decay_rates, NEW_CAPABILITY, createSmulDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, smuon_r_decay_rates, NEW_CAPABILITY, createSmurDecays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, stau_1_decay_rates, NEW_CAPABILITY, createStau1Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
+QUICK_FUNCTION(ColliderBit, stau_2_decay_rates, NEW_CAPABILITY, createStau2Decays, DecayTable::Entry, (MSSM30atQ,MSSM30atMGUT), (decay_rates, DecayTable), (MSSM_spectrum, const Spectrum*))
 
 // SLHA file for input: user can change name here
 // Note that it must contain the decay table for the LEP likelihoods to function properly
@@ -92,7 +92,7 @@ namespace Gambit
       const SubSpectrum* mssm = (*Pipes::createSelDecays::Dep::MSSM_spectrum)->get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
       std::cout << "I think that the sel is " << x << std::endl;
-      outSelDecays = (*Pipes::createSelDecays::Dep::all_decays)(x);
+      outSelDecays = (*Pipes::createSelDecays::Dep::decay_rates)(x);
     }
 
     void createSerDecays(DecayTable::Entry& outSerDecays){
@@ -102,7 +102,7 @@ namespace Gambit
       double max_mixing;
       const SubSpectrum* mssm = (*Pipes::createSerDecays::Dep::MSSM_spectrum)->get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
-      outSerDecays = (*Pipes::createSerDecays::Dep::all_decays)(x);
+      outSerDecays = (*Pipes::createSerDecays::Dep::decay_rates)(x);
     }
 
     void createSmulDecays(DecayTable::Entry& outSmulDecays){
@@ -111,7 +111,7 @@ namespace Gambit
       const SubSpectrum* mssm = (*Pipes::createSmulDecays::Dep::MSSM_spectrum)->get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
       std::cout << "I think that the smu is " << x << std::endl;
-      outSmulDecays = (*Pipes::createSmulDecays::Dep::all_decays)(x);
+      outSmulDecays = (*Pipes::createSmulDecays::Dep::decay_rates)(x);
     }
     
     void createSmurDecays(DecayTable::Entry& outSmurDecays){
@@ -119,7 +119,7 @@ namespace Gambit
       double max_mixing;
       const SubSpectrum* mssm = (*Pipes::createSmurDecays::Dep::MSSM_spectrum)->get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
-      outSmurDecays = (*Pipes::createSmurDecays::Dep::all_decays)(x);
+      outSmurDecays = (*Pipes::createSmurDecays::Dep::decay_rates)(x);
     }
     
     void createStau1Decays(DecayTable::Entry& outStau1Decays){
@@ -129,7 +129,7 @@ namespace Gambit
       const static double tol = 0.001;
       const static bool pterror=false;
       str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
-      outStau1Decays = (*Pipes::createStau1Decays::Dep::all_decays)(stau1_string);
+      outStau1Decays = (*Pipes::createStau1Decays::Dep::decay_rates)(stau1_string);
     }
 
     void createStau2Decays(DecayTable::Entry& outStau2Decays){
@@ -138,7 +138,7 @@ namespace Gambit
       const static double tol = 0.001;
       const static bool pterror=false;
       str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
-      outStau2Decays = (*Pipes::createStau2Decays::Dep::all_decays)(stau2_string);
+      outStau2Decays = (*Pipes::createStau2Decays::Dep::decay_rates)(stau2_string);
     }
     
   }
@@ -296,6 +296,22 @@ int main()
     LEP205_SLHA1_convention_xsec_stau1stau1bar.resolveDependency(&createZDecays);
     LEP205_SLHA1_convention_xsec_stau2stau2bar.resolveDependency(&createSpectrum);
     LEP205_SLHA1_convention_xsec_stau2stau2bar.resolveDependency(&createZDecays);
+
+    // L3 Neutralino all channels
+    //QUICK_FUNCTION(ColliderBit, L3_Neutralino_All_Channels_LLike, NEW_CAPABILITY, L3_Neutralino_All_Channels_Conservative_LLike, double, (MSSM30atQ, MSSM30atMGUT), (MSSM_spectrum, const Spectrum*), (LEP188_xsec_chi00_12, triplet<double>), (LEP188_xsec_chi00_13, triplet<double>), (LEP188_xsec_chi00_14, triplet<double>), (decay_rates, DecayTable))
+
+    L3_Neutralino_All_Channels_Conservative_LLike.notifyOfModel("MSSM30atQ");
+    L3_Neutralino_All_Channels_Conservative_LLike.resolveDependency(&createSpectrum);
+    L3_Neutralino_All_Channels_Conservative_LLike.resolveDependency(&LEP188_SLHA1_convention_xsec_chi00_12);
+    L3_Neutralino_All_Channels_Conservative_LLike.resolveDependency(&LEP188_SLHA1_convention_xsec_chi00_13);
+    L3_Neutralino_All_Channels_Conservative_LLike.resolveDependency(&LEP188_SLHA1_convention_xsec_chi00_14);
+    L3_Neutralino_All_Channels_Conservative_LLike.resolveDependency(&createDecays);
+    LEP188_SLHA1_convention_xsec_chi00_12.resolveDependency(&createSpectrum);
+    LEP188_SLHA1_convention_xsec_chi00_12.resolveDependency(&createZDecays);
+    LEP188_SLHA1_convention_xsec_chi00_13.resolveDependency(&createSpectrum);
+    LEP188_SLHA1_convention_xsec_chi00_13.resolveDependency(&createZDecays);
+    LEP188_SLHA1_convention_xsec_chi00_14.resolveDependency(&createSpectrum);
+    LEP188_SLHA1_convention_xsec_chi00_14.resolveDependency(&createZDecays);
     
     // Double-check which backend requirements have been filled with what
     std::cout << std::endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << std::endl;
@@ -411,6 +427,12 @@ int main()
       L3_Stau_Conservative_LLike.reset_and_calculate();
 
       std::cout << "ALEPH stau LL " << ALEPH_Stau_Conservative_LLike(0) << std::endl;
+
+      // Gaugino LL
+      LEP188_SLHA1_convention_xsec_chi00_12.reset_and_calculate();
+      LEP188_SLHA1_convention_xsec_chi00_13.reset_and_calculate();
+      LEP188_SLHA1_convention_xsec_chi00_14.reset_and_calculate();
+      L3_Neutralino_All_Channels_Conservative_LLike.reset_and_calculate();
       
       
     }
