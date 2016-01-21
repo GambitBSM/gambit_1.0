@@ -289,7 +289,7 @@ def main():
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
 
         # Timeout limit and process poll interval [seconds]
-        timeout = 20.
+        timeout = 200.
         poll = 0.2
 
         # Run castxml

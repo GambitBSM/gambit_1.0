@@ -332,6 +332,9 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
     else:
         class_decl += '\n'
         class_decl += ' '*(n_indents+1)*indent + 'public:\n'
+        for parent_dict in parent_classes:
+            if parent_dict['loaded']:
+                class_decl += ' '*(n_indents+2)*indent + 'using ' + parent_dict['abstr_class_name']['long_templ'] + '::pointerAssign' + gb.code_suffix + ';\n'
         class_decl += constrPtrAssignFunc(class_el, abstr_class_name_short, class_name['short'], virtual=True, indent=indent, n_indents=n_indents+2)
         class_decl += constrPtrCopyFunc(class_el, abstr_class_name_short, class_name['short'], virtual=True, indent=indent, n_indents=n_indents+2)
 
