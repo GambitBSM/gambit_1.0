@@ -172,7 +172,6 @@ namespace Gambit
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
@@ -258,11 +257,11 @@ namespace Gambit
           while(true) {
             std::getline(processLevelOutput, readline);
             std::istringstream issPtr(readline);
-            issPtr->seekg(47, issPtr->beg);
-            (*issPtr) >> code;
-            if (issPtr->good() || totalxsec <= 0.) break;
-            (*issPtr) >> _junk >> xsec;
-            if (issPtr->good()) totalxsec += xsec;
+            issPtr.seekg(47, issPtr.beg);
+            issPtr >> code;
+            if (issPtr.good() || totalxsec <= 0.) break;
+            issPtr >> _junk >> xsec;
+            if (issPtr.good()) totalxsec += xsec;
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific

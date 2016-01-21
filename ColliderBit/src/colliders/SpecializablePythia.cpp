@@ -69,7 +69,7 @@ namespace Gambit
     ///@{
 
       
-    SpecializablePythia::~SpecializablePythia();
+    SpecializablePythia::~SpecializablePythia()
     {
       _pythiaSettings.clear();
       if (_pythiaInstance) delete _pythiaInstance;
@@ -106,7 +106,7 @@ namespace Gambit
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
         _pythiaBase->init(os);
       }
-      if (_pythiaInstance) delete _pythiaInstance
+      if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
 
 //User makes the matrix elements here
@@ -140,7 +140,7 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
         for(const auto command : _pythiaSettings) _pythiaBase->readString(command);
         _pythiaBase->init(os);
       }
-      if (_pythiaInstance) delete _pythiaInstance
+      if (_pythiaInstance) delete _pythiaInstance;
       _pythiaInstance = new Pythia8::Pythia(_pythiaBase->particleData, _pythiaBase->settings);
 
       // Send along the SLHAea::Coll pointer, if it exists
