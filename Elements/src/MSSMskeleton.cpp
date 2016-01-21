@@ -134,10 +134,15 @@ namespace Gambit
 
       /// @{ Getters for MSSM information 
 
-      double MSSMea::get_Mu()   const { return getdata("HMIX",1); }
-      double MSSMea::get_BMu()  const { return getdata("HMIX",101); }
-      double MSSMea::get_vd()   const { return getdata("HMIX",102); }
-      double MSSMea::get_vu()   const { return getdata("HMIX",103); }
+      double MSSMea::get_Mu()      const { return getdata("HMIX",1); }
+      double MSSMea::get_BMu()     const { return getdata("HMIX",101); }
+      double MSSMea::get_vd()      const { return getdata("HMIX",102); }
+      double MSSMea::get_vu()      const { return getdata("HMIX",103); }
+      double MSSMea::get_tanbeta() const
+      {
+        try { return get_vu()/get_vd(); }
+        catch(std::exception ex) { return getdata("HMIX",2); }
+      }
 
       double MSSMea::get_MassB () const { return getdata("MSOFT",1); }
       double MSSMea::get_MassWB() const { return getdata("MSOFT",2); }
@@ -162,7 +167,6 @@ namespace Gambit
       double MSSMea::get_g1() const { return getdata("GAUGE",1); }
       double MSSMea::get_g2() const { return getdata("GAUGE",2); }
       double MSSMea::get_g3() const { return getdata("GAUGE",3); }
-      double MSSMea::get_tanbeta() const { return get_vu()/get_vd(); }
       double MSSMea::get_sinthW2_DRbar() const
       {
         double sg1 = 0.6 * Utils::sqr(get_g1());
