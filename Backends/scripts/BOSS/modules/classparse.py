@@ -589,6 +589,8 @@ def generateClassMemberInterface(class_el, class_name, abstr_class_name, namespa
         ptr_declaration_code += ' '*cfg.indent*(n_indents+1) + 'public:\n'
         ptr_declaration_code += classutils.constrPtrCopyFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=n_indents+2, only_declaration=True)
         ptr_declaration_code += '\n'
+
+        ptr_declaration_code += ' '*cfg.indent*(n_indents+2) + 'using ' + abstr_class_name['short'] + '::pointerAssign' + gb.code_suffix + ';\n'
         ptr_declaration_code += classutils.constrPtrAssignFunc(class_el, abstr_class_name['short'], class_name['short'], virtual=False, indent=cfg.indent, n_indents=n_indents+2, only_declaration=True)
         
         ptr_implementation_code += '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full,'identification.hpp') + '"\n'
