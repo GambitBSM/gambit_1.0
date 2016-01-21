@@ -27,9 +27,12 @@
 # Require a minimum cmake version of 2.8.5
 cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
 
+SET(CMAKE_BUILD_TYPE_STRING "Choose the type of build, options are: None Debug Release Release_03 RelWithDebInfo MinSizeRel.")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  SET(CMAKE_BUILD_TYPE Debug CACHE STRING
-      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+  SET(CMAKE_BUILD_TYPE None CACHE STRING "${CMAKE_BUILD_TYPE_STRING}" FORCE)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release_03")
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING "${CMAKE_BUILD_TYPE_STRING}" FORCE)
+  SET(FORCE_03 TRUE)
 endif()
 
 # Set certain policies to NEW
@@ -195,9 +198,9 @@ include(cmake/warnings.cmake)
 
 # Construct the full set of compiler flags to be used for external projects
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")# ${CMAKE_C_FLAGS_DEBUG}")
-  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")# ${CMAKE_CXX_FLAGS_DEBUG}")
-  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")# ${CMAKE_Fortran_FLAGS_DEBUG}")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_DEBUG}")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
   # Unless invoked with FORCE_O3, drop down to -O2 optimisation for more reasonable compile time.
   if (NOT DEFINED FORCE_O3)
@@ -219,7 +222,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
   set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_MINSIZEREL}")
   set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_MINSIZEREL}")
-  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_MINSIZEREL}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_MINSIZEREL}")  
 else()
   set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")
   set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
