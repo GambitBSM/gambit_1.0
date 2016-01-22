@@ -21,7 +21,10 @@
 #          (p.scott@imperial.ac.uk)              
 #  \date 2014 Nov, Dec
 #  \date 2015 May  
-#                                               
+#
+#  \author Antje Putze (putze@lapth.cnrs.fr)
+#  \date 2016 Jan
+#
 #************************************************
 
 
@@ -87,10 +90,34 @@ ExternalProject_Add(multinest
 enable_auto_rebuild(multinest)
 add_external_clean(multinest ${mn_dir} clean)
 
+# GreAT
+set(great_location "${GAMBIT_INTERNAL}/great-1.0.0")
+set(great_ver "1\\.0\\.0")
+set(great_lib "libgreat")
+set(great_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/GreAT/1.0.0")
+ExternalProject_Add(great
+  GIT_REPOSITORY https://gitlab.in2p3.fr/derome/GreAT.git
+  GIT_TAG d11bfc72d17494fc29dae85da61440e7ca508290
+  DOWNLOAD_DIR ${scanner_download}
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${great_location} ${great_dir}
+  SOURCE_DIR ${great_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  CONFIGURE_CAMMAND mkdir build COMMAND cd build
+  CMAKE_COMMAND ${CMAKE_COMMAND} ..
+  CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_LINKER=${CMAKE_CXX_LINKER}
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+  INSTALL_COMMAND ""
+)
+enable_auto_rebuild(great)
+add_external_clean(great ${great_dir} cleanall)
+
+
+
 # All other scanners are implemented natively in ScannerBit.
 
 
-set_target_properties(diver multinest PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(diver multinest great PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(scanners DEPENDS diver multinest)
-add_custom_target(clean-scanners DEPENDS clean-diver clean-multinest)
+add_custom_target(scanners DEPENDS diver multinest great)
+add_custom_target(clean-scanners DEPENDS clean-diver clean-multinest clean-great)
