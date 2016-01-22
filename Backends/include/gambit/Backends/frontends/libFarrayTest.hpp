@@ -6,11 +6,7 @@
 
 #include "gambit/Utils/util_types.hpp"
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME LibFarrayTest
-#endif
+#define BACKENDNAME LibFarrayTest
 #define VERSION 1.0
 #define SAFE_VERSION 1_0
 

@@ -57,8 +57,8 @@
   DEFINEPARS(alphainv, GF, alphaS) // 1,2,3
   DEFINEPARS(mZ)                   // 4
         
-  DEFINEPARS(mE, mMu, mTau)        // 9,11,7 
-  DEFINEPARS(mNu1, mNu2, mNu3)     // 10,12,8
+  DEFINEPARS(mE, mMu, mTau)        // 11,13,7
+  DEFINEPARS(mNu1, mNu2, mNu3)     // 12,14,8
 
   DEFINEPARS(mD, mU)               // 21,22
   DEFINEPARS(mS, mCmC)             // 23,24

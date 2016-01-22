@@ -4,13 +4,6 @@
 ///
 ///  Frontend for SuperIso backend
 ///
-///  Note that if you're going to put backend
-///  convenience and ini functions in a cpp file,
-///  you need to have one cpp file for each renamed
-///  version of the backend that you want to employ.
-///  You also need to define BACKENDRENAME *before*
-///  including the frontend header.
-
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):

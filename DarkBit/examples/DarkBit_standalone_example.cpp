@@ -120,7 +120,7 @@ int main()
 
 //  DD_couplings_SingletDM.notifyOfModel("SingletDM");
 //  DD_couplings_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
-//  SpecBit::get_SingletDM_spectrum.resolveDependency(&SpecBit::get_SMINPUTS);
+  //SpecBit::get_SingletDM_spectrum.resolveDependency(&SpecBit::get_SMINPUTS);
 
 //  // Call the initialisation functions for all backends that are in use. 
 //  LibFortran_1_0_init.reset_and_calculate();

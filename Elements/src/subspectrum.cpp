@@ -6,16 +6,16 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
+///  Authors:
 ///  <!-- add name and date if you modify -->
-///   
-///  \author Peter Athron  
+///
+///  \author Peter Athron
 ///          (peter.athron@coepp.org.au)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan, Feb, Mar
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2014, 2015 Jan - Jul 
+///  \date 2014, 2015 Jan - Jul
 ///
 ///  *********************************************
 
@@ -45,23 +45,24 @@ namespace Gambit
   {
     std::ofstream ofs(filename);
     if (ofs)
-    { 
+    {
       ofs << getSLHAea();
     }
     else
-    { 
+    {
       utils_error().raise(LOCAL_INFO,"Could not open file '"+filename+
-       "' for writing. Please check that the path exists!"); 
-    }     
+       "' for writing. Please check that the path exists!");
+    }
     ofs.close();
   }
-           
+
   /// Get spectrum information in SLHAea format (if possible)
   SLHAstruct SubSpectrum::getSLHAea() const
   {
     SLHAstruct slha;
     this->add_to_SLHAea(slha);
-    return slha;    
+    add_MODSEL_disclaimer(slha, "spectrum");
+    return slha;
   }
 
 }

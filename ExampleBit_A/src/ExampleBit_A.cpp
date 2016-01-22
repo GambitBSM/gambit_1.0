@@ -33,9 +33,12 @@
 #include <iostream>
 #include <cmath>
 #include <functional>
+#include <omp.h>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
+
+#include "gambit/Utils/signal_handling.hpp" // temp
 
 namespace Gambit
 {
@@ -80,8 +83,9 @@ namespace Gambit
     void nevents_int(int &result)
     {
       result = (int) (*Pipes::nevents_int::Dep::nevents);
-      // Randomly raise some ficticious alarms about this point, with probability x.
-      double x = 0.5;
+      // Randomly raise some ficticious alarms about this point, with probability x,
+      // where x is given by the input yaml option or a default of 0.5.
+      double x = 1.0-Pipes::nevents_int::runOptions->getValueOrDef<double>(0.5, "probability_of_validity");
       if (Random::draw() < x)
       {
         //Example of how to raise an error from a module function.
@@ -112,33 +116,6 @@ namespace Gambit
         result = &some_other_function;
       }
       else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from external_funcs BEgroup.");
-    }
-
-
-    /*
-    void Aldo_test(int &nevents) {
-
-      using namespace Pipes::Aldo_test;
-
-      cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
-        BEreq::Read_Aldo_Sim.name() << " from " <<
-        BEreq::Read_Aldo_Sim.backend() << ", v" <<
-        BEreq::Read_Aldo_Sim.version() << "." << endl;
-
-      cout << " calling function " << BEreq::Read_Aldo_Sim(nevents) << endl;
-
-      nevents = 42;
-
-    }
-    */
-
-
-    void Aldos_evgen(HEPUtils::Event &how_many) {
-
-      HEPUtils::Particle* chosen = new HEPUtils::Particle(40.5, -32.6, 0.5, 51.992884131, 13);
-      how_many.add_particle(chosen);
-
-      cout << " we created a particle " << endl;
     }
 
     // FastSim
@@ -216,44 +193,62 @@ namespace Gambit
     /// Some example functions for using loops within the dependency structure
     /// @{
 
+
     /// Run a fake 'event loop'
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
-      //unsigned int nEvents = 20;         // Number of times to run the loop  //bjf> unused variable warning
+      unsigned int nEvents = 200;         // Number of times to run the loop
 
-      //There is basically just one thing available from the Loops namespace in loop managers like this one:
+      //There are three things available from the Loops namespace in loop managers like this one:
       //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered
       //                                                  set of nested functions, passing them the iteration_number.
+      //  Loop::done -- boolean flag indicating if the loop should terminate or not
+      //  Loop::reset() -- reset the 'done' flag
 
       //A simple loop example without OpenMP.  Commented out for now.
+      //unsigned int nEvents = 20;       // Number of times to run the loop
       //for(unsigned long it = 0; it < nEvents; it++)
       //{
       //  cout << "This is iteration " << it+1 << " of " << nEvents << " being run by eventLoopManager." << endl;
       //  Loop::executeIteration(it);    // This is a (member) function pointer, so *Loop::executeIteration(it) works fine too.
       //}
 
+      logger() << "Running eventLoopManager" << EOM;
+
+      if(not signaldata().inside_multithreaded_region())
+      {
+        std::cerr << "Inside eventLoopManager, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
+
       //A simple loop example using OpenMP
-      int it = 0;
+      unsigned int it = 0;
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done) { Loop::executeIteration(it++); }
+        while(not *Loop::done and it<nEvents and not piped_errors.inquire()) 
+        { Loop::executeIteration(it++); }
       }
+      // Raise any piped exceptions that occurred in the loop functors
+      piped_warnings.check(ExampleBit_A_warning());
+      piped_errors.check(ExampleBit_A_error());
 
       // Start over again, just to demonstrate the reset function.  This just sets the Loop::done flag
-      // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves 
+      // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves
       // by re-running iteration zero again, unless you want them to just set Loop::done true again straight away.
+      std::cout << "Resetting loop!" << std::endl;
       it = 0;
       Loop::reset();
       Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        while(not *Loop::done) { Loop::executeIteration(it++); }
+        while(not *Loop::done and it<nEvents and not piped_errors.inquire())
+        { Loop::executeIteration(it++); }
       }
 
       //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
-      Loop::executeIteration(it++); 
+      Loop::executeIteration(it++);
 
     }
 
@@ -262,10 +257,28 @@ namespace Gambit
     {
       using namespace Pipes::exampleEventGen;
       result = Random::draw()*5.0;                 // Generate and return the random number
-      #pragma omp critical (print)
+      //#pragma omp critical (print)
+      //{
+      //  cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
+      //}
+      if(not signaldata().inside_multithreaded_region())
       {
-        cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
+        std::cerr << "Inside exampleEventGen, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
       }
+ 
+      // Testing MPI shutdown on random failure
+      // if(result<0.0001*5.0) // shut down with 0.01% probability
+      // {
+      //   // Don't raise errors like this when inside a looped region:
+      //   //   ExampleBit_A_error().raise(LOCAL_INFO,"Error triggered for testing purposes.");  
+      //   // Must raise them like this instead:
+      //   piped_errors.request(LOCAL_INFO, "Error triggered for testing purposes.");
+      // }
+
+      // testing loggers during parallel block...
+      logger() << "thread "<<omp_get_thread_num()<<": Running exampleEventGen in iteration "<<*Loop::iteration<<EOM;
+
       //if (result > 2.0) invalid_point().raise("This point is annoying.");
     }
 
@@ -274,10 +287,7 @@ namespace Gambit
     {
       using namespace Pipes::exampleCut;
       result = (int) *Dep::event;
-      #pragma omp critical (print)
-      {
-        cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
-      }
+      logger()<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
     }
 
     /// Adds an integral event count to a total number of accumulated events.
@@ -294,6 +304,12 @@ namespace Gambit
       // Do the actual computations in each thread seperately
       int increment = *Dep::event + 1;
 
+      if(not signaldata().inside_multithreaded_region())
+      {
+        std::cerr << "Inside eventAccumulator, but inside_omp_block flag is not set to 1!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
+
       // Only let one thread at a time mess with the accumulator.
       #pragma omp critical (eventAccumulator_update)
       {
@@ -307,20 +323,20 @@ namespace Gambit
         else
         {
           // Add the latest event count to the total
-          accumulatedCounts += increment;              
+          accumulatedCounts += increment;
         }
         // Return the current total
-        result = accumulatedCounts;                    
+        result = accumulatedCounts;
       }
 
       // Print some diagnostic info
-      #pragma omp critical (print)
-      {
-        cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
-        cout<<"  Retrieved event count: "<<*Dep::event<<endl;
-        cout<<"  I have thread index: "<<omp_get_thread_num();
-        cout<<"  Current total counts is: "<<result<<endl;
-      }
+      //#pragma omp critical (print)
+      //{
+      //  cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
+      //  cout<<"  Retrieved event count: "<<*Dep::event<<endl;
+      //  cout<<"  I have thread index: "<<omp_get_thread_num()<<endl;
+      //  cout<<"  Current total counts is: "<<result<<endl;
+      //}
 
       // If we have reached 50 counts, quit the loop.
       if (result >= 50) { Loop::wrapup(); }
@@ -355,16 +371,16 @@ namespace Gambit
       // Passing farray to Fortran function
       double tmp = function_pointer(commonBlock->b);
       cout << "Returned value: " << tmp << endl;
-      
+
       // Example on how to pass an farray to a Fortran function that is declared to take Fdouble* instead of Farray< Fdouble,1,3>&
       // This should only be necessary in very special cases, where you need to pass arrays with different index ranges than those specified in the function.
       cout << "Calling doubleFuncArray2 with commonblock element b as argument..." << endl;
       tmp = BEreq::libFarrayTest_doubleFuncArray2(&(commonBlock->b.array[0]));
       cout << "Returned value: " << tmp << endl;
-      
+
       cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
       BEreq::libFarrayTest_fptrRoutine(commonBlock->b,commonBlock->c,byVal(function_pointer));
-      // Note: byVal is necessary to convert lvalue to rvalue      
+      // Note: byVal is necessary to convert lvalue to rvalue
       // If we instead pass BEreq::libFarrayTest_doubleFuncArray2.pointer() directly, byVal is not necessary
       //cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
       //BEreq::libFarrayTest_fptrRoutine(commonBlock->b.array,commonBlock->c,BEreq::libFarrayTest_doubleFuncArray2.pointer());
@@ -374,35 +390,35 @@ namespace Gambit
       arr(1,2) = 12;
       arr(1,3) = 13;
       arr(2,2) = 22;
-      arr(2,3) = 23;       
+      arr(2,3) = 23;
       tmp = BEreq::libFarrayTest_doubleFuncArray3(arr);
       cout << "Return value: " << tmp << endl << endl;
 
       cout << "Playing around with commmonBlock2:" << endl;
-      
-      cout << "Reading charb(3) with and without trailing spaces. Result:" << endl;
-      std::string trail   = commonBlock2->charb(3).str();    
-      std::string noTrail = commonBlock2->charb(3).trimmed_str();
-      cout << trail   << "<-- string ends here" << endl;        
-      cout << noTrail << "<-- string ends here" << endl << endl; 
 
-      cout << "Reading the elements of charc from c++:" << endl;   
-      cout << "(1,-1):" << commonBlock2->charc(1,-1).trimmed_str() << "  (1,0):" << commonBlock2->charc(1,0).trimmed_str() << endl;  
+      cout << "Reading charb(3) with and without trailing spaces. Result:" << endl;
+      std::string trail   = commonBlock2->charb(3).str();
+      std::string noTrail = commonBlock2->charb(3).trimmed_str();
+      cout << trail   << "<-- string ends here" << endl;
+      cout << noTrail << "<-- string ends here" << endl << endl;
+
+      cout << "Reading the elements of charc from c++:" << endl;
+      cout << "(1,-1):" << commonBlock2->charc(1,-1).trimmed_str() << "  (1,0):" << commonBlock2->charc(1,0).trimmed_str() << endl;
       cout << "(2,-1):" << commonBlock2->charc(2,-1).trimmed_str() << "  (2,0):" << commonBlock2->charc(2,0).trimmed_str() << endl << endl;
-       
+
       cout << "Setting charc(2,0) = chara." << endl;
       commonBlock2->charc(2,0)=commonBlock2->chara;
       cout << "Setting charc(1,-1) = \"WIN!567\", which will be truncated." << endl;
-      commonBlock2->charc(1,-1) = "WIN!567";      
-      cout << "Setting charb(1) = \"ha!\"." << endl;      
+      commonBlock2->charc(1,-1) = "WIN!567";
+      cout << "Setting charb(1) = \"ha!\"." << endl;
       commonBlock2->charb(1) = "ha!";
-      cout << "Setting charb(2) = chara." << endl;      
+      cout << "Setting charb(2) = chara." << endl;
       commonBlock2->charb(2) = commonBlock2->chara;
-            
-      cout << "Calling printStuff..." << endl;
-      BEreq::libFarrayTest_printStuff();      
 
-      cout << "Getting value of e:" << endl;      
+      cout << "Calling printStuff..." << endl;
+      BEreq::libFarrayTest_printStuff();
+
+      cout << "Getting value of e:" << endl;
       cout << commonBlock2->e << endl << endl;
 
       cout << "Reading complex numbers from Fortran: " << commonBlock3->cpa.re << " + " << commonBlock3->cpa.im << "i" << endl;
@@ -504,7 +520,7 @@ namespace Gambit
       double test3 = BEreq::example_be_array_3D(&arr3D[0]);
       cout << "TEST 3 in array_test: " << test3 << endl;
       result = test3;
-    } 
+    }
 
 
     /// @}

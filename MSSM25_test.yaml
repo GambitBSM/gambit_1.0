@@ -55,10 +55,9 @@ Scanner:
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
-      options:
-        point_number: 2
-        output_file:  output
-        like:  Likelihood
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
 
 ObsLikes:
   - purpose:      Test
@@ -102,6 +101,8 @@ Logger:
 KeyValues:
 
   default_output_path: "run/MSSM25_test"
+
+  print_timing_data: true
 
   dependency_resolution:
     prefer_model_specific_functions: true

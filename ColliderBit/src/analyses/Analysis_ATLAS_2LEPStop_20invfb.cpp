@@ -372,6 +372,8 @@ namespace Gambit {
 
       void collect_results() {
         SignalRegionData results_SRM90;
+        results_SRM90.set_analysis_name("Analysis_ATLAS_2LEPStop_20invfb");
+        results_SRM90.set_sr_label("SRM90");
         results_SRM90.set_observation(274.);
         results_SRM90.set_background(300.);
         results_SRM90.set_backgroundsys(50.);
@@ -379,6 +381,8 @@ namespace Gambit {
         results_SRM90.set_signal(_numSRM90SF+_numSRM90DF);
 
         SignalRegionData results_SRM100;
+        results_SRM100.set_analysis_name("Analysis_ATLAS_2LEPStop_20invfb");
+        results_SRM100.set_sr_label("SRM100");
         results_SRM100.set_observation(3.);
         results_SRM100.set_background(5.2);
         results_SRM100.set_backgroundsys(2.2);
@@ -386,6 +390,8 @@ namespace Gambit {
         results_SRM100.set_signal(_numSRM100SF+_numSRM100DF);
 
         SignalRegionData results_SRM110;
+        results_SRM110.set_analysis_name("Analysis_ATLAS_2LEPStop_20invfb");
+        results_SRM110.set_sr_label("SRM110");
         results_SRM110.set_observation(8.);
         results_SRM110.set_background(9.3);
         results_SRM110.set_backgroundsys(3.5);
@@ -393,6 +399,8 @@ namespace Gambit {
         results_SRM110.set_signal(_numSRM110SF+_numSRM110DF);
 
         SignalRegionData results_SRM120;
+        results_SRM120.set_analysis_name("Analysis_ATLAS_2LEPStop_20invfb");
+        results_SRM120.set_sr_label("SRM120");
         results_SRM120.set_observation(18.);
         results_SRM120.set_background(19.);
         results_SRM120.set_backgroundsys(9.);

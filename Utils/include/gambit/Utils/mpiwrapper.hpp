@@ -49,6 +49,7 @@
 #include <sstream>
 #include <iostream>
 #include <type_traits>
+#include <chrono>
 
 #include "gambit/Core/error_handlers.hpp"
 
@@ -290,7 +291,7 @@ namespace Gambit
               //#ifdef MPI_MSG_DEBUG
               //std::cout<<"rank "<<Get_rank()<<": Iprobe() called (source="<<source<<", tag="<<tag<<")"<<std::endl;
               //#endif 
-              int errflag;
+               int errflag;
                int you_have_mail; // C does not have a bool type...
                MPI_Status def_status;
                MPI_Status* status;
@@ -314,6 +315,20 @@ namespace Gambit
                return (you_have_mail != 0);
             }
 
+            // Perform an Isend to all other processes
+            // (using templated non-blocking send repeatedly)
+            template<class T>
+            void IsendToAll(T *buf, int count, int tag, 
+                      MPI_Request *request /*out*/)
+            {
+               int rank = Get_rank();
+               int size = Get_size();
+               for(int i=0; i<size; i++)
+               {
+                  if(i!=rank) Isend(buf, count, i, tag, request);
+               }
+            }
+
             // Force all processes in this group (possibly all processes in
             // the "WORLD"; implementation dependent) to stop executing.
             // Useful for abnormal termination (since if one processes throws
@@ -330,6 +345,15 @@ namespace Gambit
 
             /// Inverse of the above. Everyone waits for master to pass this (but not for anyone else)
             void allWaitForMaster(int tag);
+
+            /// An implementation of Barrier that will fall through if synchronisation takes too long
+            /// Could modify to take a function pointer to run while waiting.
+            /// Supply MPI tag to identify each particular barrier.
+            /// Returns 'false' if barrier succeeds, 'true' if barrier times out (i.e. answers the question "did the barrier time out?")
+            bool BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag, std::ostream& errorlog = std::cout);
+
+            /// A generic place to store a tag commonly used by this communicator
+            int mytag = 1;
 
          private:
 

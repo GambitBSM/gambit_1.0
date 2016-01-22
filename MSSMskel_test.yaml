@@ -16,10 +16,9 @@ Scanner:
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
-      options:
-        point_number: 10
-        output_file:  output
-        like:  Likelihood
+      point_number: 10
+      output_file:  output
+      like:  Likelihood
 
 
 ObsLikes:

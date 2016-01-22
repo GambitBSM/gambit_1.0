@@ -223,11 +223,11 @@ namespace Gambit {
         case MC_FINALIZE:
           return;
       }
-      ChainParticle* chn;
+      shared_ptr<ChainParticle> chn;
       try
       {
-        chn = new ChainParticle( vec3(0), &(*Dep::cascadeMC_DecayTable),
-                                 *Dep::cascadeMC_InitialState); 
+        chn.reset(new ChainParticle( vec3(0), &(*Dep::cascadeMC_DecayTable),
+                                     *Dep::cascadeMC_InitialState) ); 
         chn->generateDecayChainMC(cMC_maxChainLength,cMC_Emin); 
       }
       catch(Piped_exceptions::description err)
@@ -235,7 +235,7 @@ namespace Gambit {
         Loop::wrapup(); 
         piped_errors.request(err); 
       }
-      chain=ChainContainer(chn);      
+      chain=ChainContainer(chn);
     }
 
     // Function for sampling SimYieldTables (tabulated spectra). 
@@ -452,6 +452,7 @@ namespace Gambit {
           result = histList;
           return;
       }
+
       // Get list of endpoint states for this chain
       vector<const ChainParticle*> endpoints;
       (*Dep::cascadeMC_ChainEvent).chain->

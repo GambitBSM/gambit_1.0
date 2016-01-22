@@ -33,6 +33,8 @@ START_MODULE
   /// Module function declarations for SpecBit_MSSM.cpp
   #include "gambit/SpecBit/SpecBit_MSSM_rollcall.hpp"
 
+  #include "gambit/SpecBit/SpecBit_SSDM_rollcall.hpp"
+
   /// Module function declarations for SpecBit_SingletDM.cpp
   #include "gambit/SpecBit/SpecBit_SingletDM_rollcall.hpp"
 

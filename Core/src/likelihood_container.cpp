@@ -26,6 +26,8 @@
 
 #include "gambit/Core/likelihood_container.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/signal_helpers.hpp"
+#include "gambit/Utils/signal_handling.hpp"
 
 //#define CORE_DEBUG
 
@@ -35,13 +37,30 @@ namespace Gambit
   // Methods for Likelihood_Container class.
 
   /// Constructor
-  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap,
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile,
-   Priors::CompositePrior &prior, const str &purpose)
-  : dependencyResolver (dependencyResolver),
+  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
+   Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+  #ifdef WITH_MPI
+    , GMPI::Comm& comm
+  #endif
+  ) 
+  : dependencyResolver (dependencyResolver), 
     prior              (prior),
+    printer            (printer),
     functorMap         (functorMap),
+    #ifdef WITH_MPI
+    errorComm          (comm), 
+    #endif
     min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
+    intralooptime_label("Runtime(ns) intraloop"),
+    interlooptime_label("Runtime(ns) interloop"),
+    totallooptime_label("Runtime(ns) totalloop"),
+    /* Note, likelihood container should be constructed after dependency 
+       resolution, so that new printer IDs can be safely acquired without
+       risk of collision with graph vertex IDs */
+    intraloopID(Printers::get_main_param_id(intralooptime_label)),
+    interloopID(Printers::get_main_param_id(interlooptime_label)),
+    totalloopID(Printers::get_main_param_id(totallooptime_label)),
     #ifdef CORE_DEBUG
       debug            (true)
     #else
@@ -111,16 +130,31 @@ namespace Gambit
   /// Evaluate total likelihood function
   double Likelihood_Container::main (const std::vector<double> &in)
   {
+    /// Unblock system signals (these are blocked to prevent external scanner 
+    /// codes from getting interrupted while they are performing sensitive
+    /// tasks, like writing to disk; i.e. we do not trust them to have 
+    /// protected themselves properly.
+    unblock_signals();    
+
+    /// Check for signals to abort run
+    signaldata().check_for_shutdown_signal();
+
     double lnlike = 0;
     bool compute_aux = true;
     setParameters(in);
 
-    logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
+    logger() << LogTags::core << LogTags::debug << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
+
+    // Begin timing of total likelihood evaluation
+    std::chrono::time_point<std::chrono::system_clock> startL = std::chrono::system_clock::now();
+  
+    // Compute time since the previous likelihood evaluation ended
+    std::chrono::duration<double> interloop_time = startL - previous_endL;
 
     // First work through the target functors, i.e. the ones contributing to the likelihood.
     for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
     {
-      logger() << LogTags::core << "Calculating likelihood vertex " << *it << "." << EOM;
+      logger() << LogTags::core << LogTags::debug <<  "Calculating likelihood vertex " << *it << "." << EOM;
       try
       {
         dependencyResolver.calcObsLike(*it,getPtID()); //pointID is passed through to the printer call for each functor
@@ -174,18 +208,40 @@ namespace Gambit
         // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
         if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
 
-        logger() << LogTags::core << "Computed likelihood vertex " << *it << "." << EOM;
+        logger() << LogTags::core <<  LogTags::debug << "Computed likelihood vertex " << *it << "." << EOM;
       }
 
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
       catch(invalid_point_exception& e)
       {
+        // TODO: I did not tag this as "debug" since it is not "normal" behaviour; it is a borderline case though.
         logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
         logger().leaving_module();
         lnlike = min_valid_lnlike;
         compute_aux = false;
         if (debug) cout << "Point invalid." << endl;
         break;
+      }
+
+      // End timing of total likelihood evaluation
+      std::chrono::time_point<std::chrono::system_clock> endL = std::chrono::system_clock::now();
+ 
+      // Compute time since the previous likelihood evaluation ended
+      // I.e. computing time of this likelihood, plus overhead from previous inter-loop time.
+      std::chrono::duration<double> true_total_loop_time = endL - previous_endL;
+
+      // Update stored timing information for use in next loop
+      previous_startL = startL;
+      previous_endL   = endL;
+
+      // Print timing data
+      if(dependencyResolver.printTiming())
+      {
+        int rank = printer.getRank();
+        std::chrono::duration<double> runtimeL = endL - startL;
+        printer.print(runtimeL.count(),            intralooptime_label,intraloopID,rank,getPtID());
+        printer.print(interloop_time.count(),      interlooptime_label,interloopID,rank,getPtID());
+        printer.print(true_total_loop_time.count(),totallooptime_label,totalloopID,rank,getPtID());
       }
     }
 
@@ -194,14 +250,15 @@ namespace Gambit
     {
       for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
       {
-        logger() << LogTags::core << "Calculating auxiliary vertex " << *it << EOM;
+        logger() << LogTags::core << LogTags::debug << "Calculating auxiliary vertex " << *it << EOM;
         try
         {
           dependencyResolver.calcObsLike(*it,getPtID());
-          logger() << LogTags::core << "done with auxiliary vertex " << *it << EOM;;
+          logger() << LogTags::core << LogTags::debug << "done with auxiliary vertex " << *it << EOM;;
         }
         catch(Gambit::invalid_point_exception& e)
         {
+          // TODO: again, not tagged as 'debug' for now
           logger() << LogTags::core << "Observable calculation was declared invalid by " << e.thrower()->origin()
                    << "::" << e.thrower()->name() << ".  Not declaring point invalid, as no likelihood depends on this."
                    << "Message: " << e.message() << EOM;
@@ -212,6 +269,26 @@ namespace Gambit
 
     if (debug) cout << "log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
+
+    #ifdef WITH_MPI
+    /// Check for shutdown signals from other processes
+    if(errorComm.Iprobe(MPI_ANY_SOURCE, errorComm.mytag))
+    {
+      int tmp_buf;
+      MPI_Status msg_status;
+      errorComm.Recv(&tmp_buf, 1, MPI_ANY_SOURCE, errorComm.mytag, &msg_status);
+      // Set flag to begin emergency shutdown
+      signaldata().set_shutdown_begun(1);
+      logger() << LogTags::core << LogTags::info << "Received emergency shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
+    }
+    #endif
+
+    /// Check once more for signals to abort run
+    signaldata().check_for_shutdown_signal();
+
+    /// Re-block signals 
+    block_signals();    
+
     return lnlike;
   }
 
