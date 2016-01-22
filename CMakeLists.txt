@@ -234,6 +234,9 @@ set(GAMBIT_VERSION_MAJOR 1)
 set(GAMBIT_VERSION_MINOR 0)
 set(GAMBIT_VERSION_REVISION 0)
 
+# Add doxygen build as an external project
+add_custom_target(docs  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen doc/doxygen.conf)
+
 # Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
 add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
 
