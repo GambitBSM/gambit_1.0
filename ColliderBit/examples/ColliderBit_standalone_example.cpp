@@ -37,7 +37,7 @@ QUICK_FUNCTION(ColliderBit, stau_2_decay_rates, NEW_CAPABILITY, createStau2Decay
 // SLHA file for input: user can change name here
 // Note that it must contain the decay table for the LEP likelihoods to function properly
 
-const std::string inputFileName = "ColliderBit/data/sps1aWithDecays.spc";
+const std::string inputFileName = "ColliderBit/data/standalone.slha";
 
 namespace Gambit
 {
@@ -358,6 +358,8 @@ int main()
     std::vector<std::string> runTheseAnalyses;
     runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which LHC analyses to run
     getAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
+
+    std::cout << "Here a" << std::endl;
     
     std::vector<std::string> inputFiles;
     inputFiles.push_back(inputFileName); // specify the input SLHA filename(s)
@@ -369,7 +371,9 @@ int main()
     pythiaOptions.push_back("TauDecays:mode = 0");
     getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
     getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
-  
+
+    std::cout << "Here b" << std::endl;
+    
     std::vector<std::string> pythiaNames;
     pythiaNames.push_back("Pythia_SUSY_LHC_8TeV");
     operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
@@ -393,8 +397,11 @@ int main()
       */
 
       // Call the ALEPH slepton likelihoods
+      std::cout << "Here c" << std::endl;
       createSpectrum.reset_and_calculate();
+      std::cout << "Here d" << std::endl;
       createDecays.reset_and_calculate();
+      std::cout << "Here e" << std::endl;
       createZDecays.reset_and_calculate();
       createSelDecays.reset_and_calculate();
       createSerDecays.reset_and_calculate();
@@ -402,9 +409,7 @@ int main()
       createSmurDecays.reset_and_calculate();
       createStau1Decays.reset_and_calculate();
       createStau2Decays.reset_and_calculate();
-      std::cout << "Making cross-sections" << std::endl;
       LEP208_SLHA1_convention_xsec_selselbar.reset_and_calculate();
-      std::cout << "Made first set of cross-sections" << std::endl;
       LEP208_SLHA1_convention_xsec_smulsmulbar.reset_and_calculate();
       LEP208_SLHA1_convention_xsec_serserbar.reset_and_calculate();
       LEP208_SLHA1_convention_xsec_smursmurbar.reset_and_calculate();
@@ -418,22 +423,23 @@ int main()
       LEP205_SLHA1_convention_xsec_stau2stau2bar.reset_and_calculate();
       
       ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
-      //double loglike = ALEPH_Selectron_Conservative_LLike(0);
-      //std::cout << "ALEPH selectron log likelihood is " << loglike << std::endl;
       ALEPH_Smuon_Conservative_LLike.reset_and_calculate();
       ALEPH_Stau_Conservative_LLike.reset_and_calculate();
       L3_Selectron_Conservative_LLike.reset_and_calculate();
       L3_Smuon_Conservative_LLike.reset_and_calculate();
       L3_Stau_Conservative_LLike.reset_and_calculate();
 
-      std::cout << "ALEPH stau LL " << ALEPH_Stau_Conservative_LLike(0) << std::endl;
+      std::cout << "ALEPH slepton log likes " << ALEPH_Selectron_Conservative_LLike(0) << " " << ALEPH_Smuon_Conservative_LLike(0) << " " << ALEPH_Stau_Conservative_LLike(0) << std::endl;
+      std::cout << "L3 slepton log likes " << L3_Selectron_Conservative_LLike(0) << " " << L3_Smuon_Conservative_LLike(0) << " " << L3_Stau_Conservative_LLike(0) << std::endl;
 
       // Gaugino LL
+      
       LEP188_SLHA1_convention_xsec_chi00_12.reset_and_calculate();
       LEP188_SLHA1_convention_xsec_chi00_13.reset_and_calculate();
       LEP188_SLHA1_convention_xsec_chi00_14.reset_and_calculate();
       L3_Neutralino_All_Channels_Conservative_LLike.reset_and_calculate();
       
+      std::cout << "L3 neutralino log likes " << L3_Neutralino_All_Channels_Conservative_LLike(0) << std::endl;
       
     }
   }

@@ -57,11 +57,8 @@ namespace Gambit
         {"~tau_L", "~tau_R"}          
       };
 
-      std::cout << "Here a" << std::endl;
-      
       // Subspectrum
       const SubSpectrum* mssm = spec->get_HE();
-      std::cout << "Here aa" << std::endl;
       // PDG codes
       const int id1 = 1000000*l_chirality + 11 +2*(generation-1);
       const int id2 = -(1000000*lbar_chirality + 11 +2*(generation-1));
@@ -71,10 +68,9 @@ namespace Gambit
       const double g2 = mssm->runningpars().get(Par::dimensionless,"g2");
       const double sinW2 = mssm->runningpars().get(Par::dimensionless,"sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
-      std::cout << "Here aaa" << std::endl;
       // MSSM parameters
       const double tanb = mssm->runningpars().get(Par::dimensionless,"tanbeta");
-      std::cout << "Here aaaa" << std::endl;
+      
       // Get the mass eigenstate strings and 2x2 slepton generation mass mixing matrix
       str mass_es1, mass_es2;
       MixMatrix sleptonmix(2,std::vector<double>(2));
@@ -91,7 +87,6 @@ namespace Gambit
       }
       else
       {
-	std::cout << "Here aaa" << std::endl;
         // Requested final states are family mass eigenstates.  Pass 2x2 family mass mixing matrix to low-level routine.
         str m_light, m_heavy;
         std::vector<double> slepton4vec = slhahelp::family_state_mix_matrix("~e-", generation, m_light, m_heavy, mssm, tol, LOCAL_INFO, pt_error);
@@ -112,8 +107,6 @@ namespace Gambit
       std::pair<double,double> m2_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, mass_es2),
                                           mssm->phys().get(Par::Pole_Mass_1srd_low,  mass_es2));
 
-      std::cout << "Here b" << std::endl;
-      
       // If the final state is kinematically inaccessible *even* if both masses 
       // are 2simga lower than their central values, then return zero. 
       if (m1*(1.0-2.0*m1_uncerts.second) + m2*(1.0-2.0*m2_uncerts.second) > sqrts)
@@ -133,7 +126,7 @@ namespace Gambit
 
       // Convert neutralino mixing matrix to BFM convention
       SLHA2BFM_NN(neutmix, tanb, sinW2);
-      std::cout << "Here c" << std::endl;
+
       // Calculate the cross-section
       result.central = xsec_sleislej(id1, id2, sqrts, m1, m2, sleptonmix, neutmix, neutmass, alpha, mZ, gammaZ, sinW2);
 
