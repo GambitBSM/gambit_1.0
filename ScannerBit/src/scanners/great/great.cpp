@@ -52,7 +52,6 @@ scanner_plugin(GreAT, version(1, 0, 0))
   reqd_libraries("great");
   reqd_headers("fparser.hh", "TGreatManager.h");
 
-
   // Code to execute when the plugin is loaded.
   plugin_constructor
   {
