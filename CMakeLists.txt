@@ -257,11 +257,13 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/scratch")
 endif()
 
 # Generate the ScannerBit compilation files
-message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
-set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
-execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${locate_scanners})
-message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
+  set(locate_scanners ${PROJECT_SOURCE_DIR}/ScannerBit/scripts/locate_scanners.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
+  execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+  check_result(${result} ${locate_scanners})
+  message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
+endif()
 
 # Generate the cmake_variables.hpp file
 include(cmake/preprocessor.cmake)
@@ -310,7 +312,7 @@ add_dependencies(printer_harvest module_harvest)
 
 # Generate the CMakeLists.txt files for GAMBIT modules, Backends, Models and Printers)
 message("${Yellow}-- Updating GAMBIT module, model, backend, and printer CMake files.${ColourReset}")
-set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/scripts/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 check_result(${result} ${update_cmakelists})
 message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - done.${ColourReset}")
