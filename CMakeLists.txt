@@ -259,9 +259,9 @@ endif()
 # Generate the ScannerBit compilation files
 if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
-  set(locate_scanners ${PROJECT_SOURCE_DIR}/ScannerBit/scripts/locate_scanners.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
-  execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-  check_result(${result} ${locate_scanners})
+  set(scanner_harvester ${PROJECT_SOURCE_DIR}/ScannerBit/scripts/scanner+_harvester.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
+  execute_process(RESULT_VARIABLE result COMMAND python ${scanner_harvester} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+  check_result(${result} ${scanner_harvester})
   message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
 endif()
 
