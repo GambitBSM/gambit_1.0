@@ -250,12 +250,13 @@ def main():
     #
     # Identify standard include paths
     #
-    print
-    print 'Identifying standard include paths:'
-    print '-----------------------------------'
-    print 
+    if cfg.auto_detect_stdlib_paths:
+        print
+        print 'Identifying standard include paths:'
+        print '-----------------------------------'
+        print 
 
-    utils.identifyStdIncludePaths()
+        utils.identifyStdIncludePaths()
 
 
 
@@ -288,7 +289,7 @@ def main():
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
 
         # Timeout limit and process poll interval [seconds]
-        timeout = 20.
+        timeout = 100.
         poll = 0.2
 
         # Run castxml

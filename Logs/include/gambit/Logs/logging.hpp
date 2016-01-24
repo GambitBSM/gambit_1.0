@@ -246,9 +246,15 @@ namespace Gambit
         void entering_backend(int);
         void leaving_backend();
 
-        /// Setter for "separate_file_per_process" flag
+        /// @{ Setters for behaviour options 
         /// Must be used before "initialise" in order to have any effect
+        /// Choose whether a separate log file for each MPI process is used
         void set_separate_file_per_process(bool flag) {separate_file_per_process=flag;}
+
+        /// Choose whether "Debug" tagged log messages will be ignored (i.e. not logged)
+        void set_log_debug_messages(bool flag) {log_debug_messages=flag;}
+
+        /// @}        
 
       private:
         /// Empty the backlog buffer to the 'send' function
@@ -266,8 +272,12 @@ namespace Gambit
         /// Flag to silence logger 
         bool silenced;
 
+        /// Flag to store log messages for different processes in separate files
         bool separate_file_per_process;
 
+        /// Flag to ignore Debug tagged messages
+        bool log_debug_messages;
+ 
         /// MPI variables
         int MPIrank;
         int MPIsize;

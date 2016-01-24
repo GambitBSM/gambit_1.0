@@ -124,7 +124,7 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // Nicely ask the entire loop to be quiet
-      std::cout.rdbuf(0);
+      std::cout.rdbuf(0); 
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -172,7 +172,6 @@ namespace Gambit
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
@@ -183,7 +182,6 @@ namespace Gambit
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
-          result.clear();
           print_pythia_banner = false;
         }
 
@@ -217,8 +215,7 @@ namespace Gambit
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        if (runOptions->hasKey(*iter, pythiaConfigName)) pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -253,18 +250,19 @@ namespace Gambit
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0) {
+        if (omp_get_thread_num() == 0)
+        {
           code = -1;
           totalxsec = 0.;
-          while(true) {
+          while(true)
+          {
             std::getline(processLevelOutput, readline);
-            issPtr = new std::istringstream(readline);
-            issPtr->seekg(47, issPtr->beg);
-            (*issPtr) >> code;
-            if (!issPtr->good() && totalxsec > 0.) break;
-            (*issPtr) >> _junk >> xsec;
-            if (issPtr->good()) totalxsec += xsec;
-            delete issPtr;
+            std::istringstream issPtr(readline);
+            issPtr.seekg(47, issPtr.beg);
+            issPtr >> code;
+            if (!issPtr.good() && totalxsec > 0.) break;
+            issPtr >> _junk >> xsec;
+            if (issPtr.good()) totalxsec += xsec;
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -287,7 +285,6 @@ namespace Gambit
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
@@ -298,7 +295,6 @@ namespace Gambit
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
-          result.clear();
           print_pythia_banner = false;
         }
         // If there are no debug filenames set, look for them.
@@ -313,13 +309,14 @@ namespace Gambit
         std::string pythiaConfigName;
         // Setup new Pythia
         pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-      }
+        if (runOptions->hasKey(*iter, pythiaConfigName))pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
 
+      }
+      
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
@@ -339,30 +336,34 @@ namespace Gambit
         if (omp_get_thread_num() == 0)
           logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
         pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
-        try {
+        try
+        {
           if (omp_get_thread_num() == 0)
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
           else
             result.init(pythia_doc_path, pythiaOptions);
-        } catch (SpecializablePythia::InitializationError &e) {
+        }
+        catch (SpecializablePythia::InitializationError &e)
+        {
           piped_invalid_point.request("Bad point: Pythia can't initialize");
           Loop::wrapup();
           return;
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0) {
+        if (omp_get_thread_num() == 0)
+        {
           code = -1;
           totalxsec = 0.;
-          while(true) {
+          while(true)
+          {
             std::getline(processLevelOutput, readline);
-            issPtr = new std::istringstream(readline);
-            issPtr->seekg(47, issPtr->beg);
-            (*issPtr) >> code;
-            if (!issPtr->good() && totalxsec > 0.) break;
-            (*issPtr) >> _junk >> xsec;
-            if (issPtr->good()) totalxsec += xsec;
-            delete issPtr;
+            std::istringstream issPtr(readline);
+            issPtr.seekg(47, issPtr.beg);
+            issPtr >> code;
+            if (!issPtr.good() && totalxsec > 0.) break;
+            issPtr >> _junk >> xsec;
+            if (issPtr.good()) totalxsec += xsec;
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -372,7 +373,6 @@ namespace Gambit
 
       }
     }
-
 
 
     /// *** Detector Simulators ***
@@ -915,6 +915,7 @@ namespace Gambit
       } // end ana loop
 
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
+      
       result = -total_dll_obs;
     }
 

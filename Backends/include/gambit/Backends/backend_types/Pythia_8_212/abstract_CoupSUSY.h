@@ -203,6 +203,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual int typeChar(int) =0;
     
             public:
+                using Pythia8::Abstract_Couplings::pointerAssign__BOSS;
                 virtual void pointerAssign__BOSS(Abstract_CoupSUSY*) =0;
                 virtual Abstract_CoupSUSY* pointerCopy__BOSS() =0;
     

@@ -45,8 +45,6 @@ LibFortran:
   1.0:         ./Backends/examples/libfortran.so
 
 Pythia:
-  8.186:       ./Backends/installed/Pythia/8.186/lib/libpythia8.so
-  8.209:       ./Backends/installed/Pythia/8.209/lib/libpythia8.so
   8.212:       ./Backends/installed/Pythia/8.212/lib/libpythia8.so
 
 gamLike:

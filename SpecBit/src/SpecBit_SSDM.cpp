@@ -37,7 +37,6 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-#include "gambit/SpecBit/SMskeleton.hpp"
 //#include "gambit/SpecBit/SSDMskeleton.hpp" does not exist
 #include "gambit/SpecBit/SSDMSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes

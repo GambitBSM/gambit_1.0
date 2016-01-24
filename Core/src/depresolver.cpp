@@ -593,7 +593,7 @@ namespace Gambit
       {
         std::ostringstream ss;
         ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
-        logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << EOM;
+        logger() << LogTags::dependency_resolver << LogTags::info << LogTags::debug << ss.str() << EOM;
         masterGraph[*it]->calculate();
         if (boundIniFile->getValueOrDef<bool>(
               false, "dependency_resolution", "log_runtime") )

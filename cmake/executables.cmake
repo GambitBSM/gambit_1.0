@@ -70,6 +70,7 @@ endif()
 
 # Add the ColliderBit_standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND (";${GAMBIT_BITS};" MATCHES ";ColliderBit;"))
+  set(ColliderBit_XTRA ${ColliderBit_XTRA} ${SPEC_BIT_OBJECTS})
   if (NOT EXCLUDE_FLEXIBLESUSY)
     set(ColliderBit_XTRA ${flexiblesusy_LDFLAGS})
   endif()

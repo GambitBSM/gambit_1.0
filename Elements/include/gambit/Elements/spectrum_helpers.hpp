@@ -26,13 +26,6 @@
 #include <map>
 #include <string>
 #include <set>
-//#include <sstream>
-
-//#include "gambit/Utils/cats.hpp"
-//#include "gambit/Utils/standalone_error_handlers.hpp"
-//#include "gambit/Elements/slhaea_helpers.hpp"
-//#include "gambit/Models/partmap.hpp"
-
 
 namespace Gambit
 {

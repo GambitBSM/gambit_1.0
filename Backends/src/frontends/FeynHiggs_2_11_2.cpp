@@ -17,7 +17,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/FeynHiggs.hpp"
+#include "gambit/Backends/frontends/FeynHiggs_2_11_2.hpp"
 
 //#define FEYNHIGGS_DEBUG
 

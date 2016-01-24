@@ -282,9 +282,13 @@ macro(BOSS_backend cmake_project backend_name backend_version)
     list(APPEND needs_BOSSing_failed ${cmake_project})
   else()
     list(APPEND needs_BOSSing ${cmake_project})
+    set(BOSS_includes "-I ${Boost_INCLUDE_DIR}")
+    if (NOT ${GSL_INCLUDE_DIR} STREQUAL "")
+      set(BOSS_includes "${BOSS_includes} -I ${GSL_INCLUDE_DIR}")
+    endif()
     ExternalProject_Add_Step(${cmake_project} BOSS
       # Run BOSS
-      COMMAND cd ${BOSS_dir} && python boss.py --castxml-cc=${CMAKE_CXX_COMPILER} ${backend_name}_${backend_version_safe}
+      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} --castxml-cc=${CMAKE_CXX_COMPILER} ${backend_name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
       COMMAND cp -r ${BOSS_dir}/BOSS_output/backend_types/${backend_name}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
       COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${backend_name}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${backend_name}_${backend_version_safe}.hpp

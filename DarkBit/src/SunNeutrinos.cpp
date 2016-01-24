@@ -17,7 +17,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
-//#define DARKBIT_DEBUG
+#define DARKBIT_DEBUG
 
 namespace Gambit
 {
