@@ -37,7 +37,7 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-#include "gambit/SpecBit/SMskeleton.hpp"
+//#include "gambit/SpecBit/SMskeleton.hpp"
 //#include "gambit/SpecBit/SCDMskeleton.hpp" does not exist
 //#include "gambit/SpecBit/SCDMSpec.hpp"
 

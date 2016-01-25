@@ -37,7 +37,7 @@
 #include "gambit/SpecBit/SingletDMSpec.hpp"
 
 
-#include "gambit/SpecBit/SMskeleton.hpp"
+//#include "gambit/SpecBit/SMskeleton.hpp"
 
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)

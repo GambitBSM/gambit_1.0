@@ -26,7 +26,7 @@
 #define MODEL SingletDM_running
 #define PARENT SCDM
   START_MODEL
-  INTERPRET_AS_PARENT__FUNCTION(SingletDM_running_to_SCDM)
+  INTERPRET_AS_PARENT_FUNCTION(SingletDM_running_to_SCDM)
   DEFINEPARS(mS2, lambda_hS, lambda_S)
 #undef PARENT
 
