@@ -467,10 +467,10 @@ namespace Gambit
                 if (selectedPlugins.find(type) != selectedPlugins.end() && selectedPlugins[type].find(tag) != selectedPlugins[type].end())
                 {
                     Proto_Plugin_Details &detail = selectedPlugins[type][tag];
-                    YAML::Node plugin_options = options.getOptions(type + "s", tag).getNode();
+                    YAML::Node plugin_options = options.getNode(type + "s", tag);
                     plugin_options["default_output_path"] = options.getValue<std::string>("default_output_path");
-                    plugin_options["likelihood: model_invalid_for_lnlike_below"] = options.getValue<std::string>("model_invalid_for_lnlike_below");
-                    plugin_options["model_invalid_for_lnlike_below"] = plugin_options["likelihood: model_invalid_for_lnlike_below"];
+                    plugin_options["likelihood: model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
+                    plugin_options["model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
                     return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, plugin_options);
                 }
                 else

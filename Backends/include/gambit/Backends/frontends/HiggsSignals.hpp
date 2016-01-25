@@ -5,11 +5,7 @@
  * Christopher Rogan 2014-08-28
  */
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME HiggsSignals
-#endif
+#define BACKENDNAME HiggsSignals
 #define VERSION 1.4
 #define SAFE_VERSION 1_4
 

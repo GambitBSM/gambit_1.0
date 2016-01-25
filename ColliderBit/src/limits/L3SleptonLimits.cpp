@@ -7,14 +7,14 @@ namespace Gambit {
     /// @name L3SelectronLimitAt205GeV methods
     /// @{
 
-    P2 L3SelectronLimitAt205GeV::convertPt(double x, double y)
+    P2 L3SelectronLimitAt205GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 159.00) / (700.00 - 159.00) * (100. - 45.),
                 100. + (y - 40.50) / (610.00 - 40.50) * (0. - 100.));
     }
 
     /// @brief Check to see if the point is within the exclusion region
-    bool L3SelectronLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool L3SelectronLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x <= 205. / 2. and x > mZ / 2.);
     }
@@ -203,13 +203,13 @@ namespace Gambit {
     /// @name L3SmuonLimitAt205GeV methods
     /// @{
 
-    P2 L3SmuonLimitAt205GeV::convertPt(double x, double y)
+    P2 L3SmuonLimitAt205GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 1092.00) / (1633.00 - 1092.00) * (100. - 45.),
                 100. + (y - 40.50) / (610.00 - 40.50) * (0. - 100.));
     }
 
-    bool L3SmuonLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool L3SmuonLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x <= 205. / 2. and x > mZ / 2.);
     }
@@ -366,13 +366,13 @@ namespace Gambit {
     /// @name L3StauLimitAt205GeV methods
     /// @{
 
-    P2 L3StauLimitAt205GeV::convertPt(double x, double y)
+    P2 L3StauLimitAt205GeV::convertPt(double x, double y) const
     {
       return P2(45. + (x - 625.00) / (1166.00 - 625.00) * (100. - 45.),
                 100. + (y - 948.50) / (1518.00 - 948.50) * (0. - 100.));
     }
     
-    bool L3StauLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ)
+    bool L3StauLimitAt205GeV::isWithinExclusionRegion(double x, double y, double mZ) const
     {
       return (y <= x and x <= 205. / 2. and x > mZ / 2.);
     }

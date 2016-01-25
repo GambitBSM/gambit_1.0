@@ -39,6 +39,7 @@
 
 #include "gambit/SpecBit/SMskeleton.hpp"
 
+
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/src/ew_input.hpp"
 #include "flexiblesusy/src/lowe.h" // From softsusy; used by flexiblesusy

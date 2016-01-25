@@ -3,20 +3,20 @@
 # plus example backends libfirst and libFortran.
 #
 # Don't commit modified versions of this file!
-# If you want to change it in order to test 
-# your own modifications to the code, copy 
-# it to spartan_personal.yaml, which will be 
+# If you want to change it in order to test
+# your own modifications to the code, copy
+# it to spartan_personal.yaml, which will be
 # ignored by git.
 #
 # Pat Scott <p.scott@imperial.ac.uk>
 # Oct 2014
 #
- 
+
 ###################################
 # Input parameter declarations
 ###################################
 
-Parameters: 
+Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
          range: [173.15,173.15]
@@ -53,10 +53,10 @@ Parameters:
       # see also http://pdg.lbl.gov/2014/reviews/rpp2014-rev-neutrino-mixing.pdf
       # Note: angles given as x = sin^2(2*theta), so I have converted them as:
       # theta = 0.5*arcsin(sqrt(x))
-      # CP-violating phases not measured, so I set them to zero. 
+      # CP-violating phases not measured, so I set them to zero.
       theta12 :  0.58376 # solar angle
       theta23 :  0.76958 # atmospheric mixing angle
-      theta13 :  0.15495 #                                    
+      theta13 :  0.15495 #
       delta13 :  0       # Dirac CP-violating phase
       alpha1  :  0       # first Majorana CP-violating phase
       alpha2  :  0       # second CP-violating Majorana phase
@@ -96,7 +96,7 @@ Printer:
   # This options node is passed on wholesale to
   # the printer object; required options may
   # therefore vary according to the selected
-  # printer. 
+  # printer.
   options:
     # name of output file
     output_file: "gambit_output.txt"
@@ -116,42 +116,38 @@ Scanner:
 # Scanners
 
   scanners:
-  
+
     random:
       plugin: random_sampler
-      options:
-        point_number: 200
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
+      point_number: 200
+      output_file:  output
+      like:  LogLike
+      files:
+        output_file: "weights ..."
         
     square_grid:
       plugin: square_grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 1 #NxN grid
+      like:  LogLike
+      grid_pts: 1 #NxN grid
             
     grid:
       plugin: grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: [2, 2]
+      like:  LogLike
+      grid_pts: [2, 2]
 
   objectives:
 
     uniform:
       plugin: uniform
       version: ">=1.0 & <2.0"
-      options:
-        some_param: 10
+      some_param: 10
       parameters:
         param...2:
-          range: [-10, 10]          
+          range: [-10, 10]
 
-            
+
 ###############################
 # Observables of interest
 ###############################
@@ -202,7 +198,7 @@ Rules:
 Logger:
 
   # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Can redirect to stdout or stderr by specifying these as the "filenames".
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 

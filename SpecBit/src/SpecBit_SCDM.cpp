@@ -40,6 +40,7 @@
 #include "gambit/SpecBit/SMskeleton.hpp"
 //#include "gambit/SpecBit/SCDMskeleton.hpp" does not exist
 //#include "gambit/SpecBit/SCDMSpec.hpp"
+
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)

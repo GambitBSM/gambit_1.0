@@ -268,6 +268,16 @@ namespace Gambit
       std::string message;
   };
 
+  /// Special exception used during clean exit from diagnostics
+  class SilentShutdownException : public std::exception
+  {
+    public:
+      SilentShutdownException();
+      SilentShutdownException(const std::string& message);
+      virtual const char* what() const throw();
+    private:
+      std::string myWhat;
+  };
   /// Special exception used during controlled early shutdown
   class SoftShutdownException : public std::exception
   {

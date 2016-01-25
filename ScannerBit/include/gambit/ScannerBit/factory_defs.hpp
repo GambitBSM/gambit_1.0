@@ -70,7 +70,6 @@ namespace Gambit
             printer *main_printer;
             std::string purpose;
             int rank;
-            int shutdown_attempts;
  
             virtual void deleter(Function_Base <ret (args...)> *in) const
             {
@@ -80,7 +79,7 @@ namespace Gambit
             virtual const std::type_info & type() const {return typeid(ret (args...));}
                 
         public:
-            Function_Base() : rank(0), shutdown_attempts(0)
+            Function_Base() : rank(0)
             {
 #ifdef WITH_MPI
                     GMPI::Comm world;
@@ -92,58 +91,9 @@ namespace Gambit
             
             virtual ret main(const args&...) = 0;
             virtual ~Function_Base(){} 
-
-            /// Attempt to synchronise all processes, but abort if it takes too long
-            bool all_processes_ready()
-            {
-#ifdef WITH_MPI
-                   // sleep setup
-                   bool timedout = false;
-                   std::chrono::seconds timeout(5); // FIXME: replace with estimated plugin evaluation time
-                   GMPI::Comm shutdownComm; // FIXME: create new communicator group to avoid tag clashes
-                   if( shutdownComm.BarrierWithTimeout(timeout, 9999, std::cout) )
-                            timedout = true; // Barrier timed out waiting for some process to enter
-                   // else the barrier succeed in synchronising all processes
-                   return !timedout; 
-#else
-                   return true; // Always ready if no MPI
-#endif
-            }
-
-            void attempt_soft_shutdown()
-            {
-                   const int max_attempts=6; // 6 attempts ==> 3 plugin loops (we attempt shutdown both before and after the plugin evaluation) 
-                   if (all_processes_ready()) 
-                   {
-                           Gambit::Scanner::Plugins::plugin_info.dump();
-                           std::ostringstream msg;
-#ifdef WITH_MPI
-                           msg << "rank "<<rank<<": ";
-#endif
-                           msg << "Performing soft shutdown!";
-                           throw SoftShutdownException(msg.str()); 
-                   } else {
-                           shutdown_attempts+=1;
-                   }                    
-
-                   if (shutdown_attempts>=max_attempts) 
-                   {
-                           Gambit::Scanner::Plugins::plugin_info.dump();
-                           std::ostringstream msg;
-#ifdef WITH_MPI
-                           msg << "rank "<<rank<<": ";
-#endif
-                           msg << "Soft shutdown failed (could not synchronise all processes after "<<max_attempts<<" attempts), emergency shutdown performed instead! Data handled by external scanner codes (in other processes) may have been left in an inconsistent state." << std::endl;
-                           throw HardShutdownException(msg.str()); 
-                   }
-            }
             
             ret operator () (const args&... params) 
             {
-                    if(signaldata().shutdown_begun) Gambit::Scanner::Plugins::plugin_info.set_running(false);
-                    if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
-                            attempt_soft_shutdown();
- 
                     Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
                     unsigned long long int id = ++Gambit::Printers::get_point_id();
                     ret ret_val = main(params...);
@@ -153,11 +103,6 @@ namespace Gambit
                     main_printer->print(ret_val, purpose, rank, id);
                     main_printer->print(int(id), "pointID", rank, id);
                     main_printer->print(rank, "MPIrank", rank, id);
-
-                    if(signaldata().shutdown_begun) Gambit::Scanner::Plugins::plugin_info.set_running(false);
-                    if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
-                            attempt_soft_shutdown();
-                   
                     return ret_val;
             }
             

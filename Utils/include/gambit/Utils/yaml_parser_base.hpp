@@ -103,7 +103,7 @@ namespace Gambit
         YAML::Node filename_to_node(str);
         
         /// Do the basic parsing of the YAML file
-        void basicParse(YAML::Node);
+        void basicParse(YAML::Node,str);
          
       private:     
 

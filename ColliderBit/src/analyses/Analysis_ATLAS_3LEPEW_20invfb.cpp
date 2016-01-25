@@ -820,6 +820,8 @@ namespace Gambit {
 
       void collect_results() {
         SignalRegionData results_SR0tau_a_bin_1;
+        results_SR0tau_a_bin_1.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_1.set_sr_label("SR0tau_a_bin_1");
         results_SR0tau_a_bin_1.set_observation(36.);
         results_SR0tau_a_bin_1.set_background(23.);
         results_SR0tau_a_bin_1.set_backgroundsys(4.);
@@ -827,6 +829,8 @@ namespace Gambit {
         results_SR0tau_a_bin_1.set_signal(_num_SR0tau_a_bin_1);
 
         SignalRegionData results_SR0tau_a_bin_2;
+        results_SR0tau_a_bin_2.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_2.set_sr_label("SR0tau_a_bin_2");
         results_SR0tau_a_bin_2.set_observation(5.);
         results_SR0tau_a_bin_2.set_background(4.2);
         results_SR0tau_a_bin_2.set_backgroundsys(1.5);
@@ -834,6 +838,8 @@ namespace Gambit {
         results_SR0tau_a_bin_2.set_signal(_num_SR0tau_a_bin_2);
 
         SignalRegionData results_SR0tau_a_bin_3;
+        results_SR0tau_a_bin_3.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_3.set_sr_label("SR0tau_a_bin_3");
         results_SR0tau_a_bin_3.set_observation(9.);
         results_SR0tau_a_bin_3.set_background(10.6);
         results_SR0tau_a_bin_3.set_backgroundsys(1.8);
@@ -841,6 +847,8 @@ namespace Gambit {
         results_SR0tau_a_bin_3.set_signal(_num_SR0tau_a_bin_3);
 
         SignalRegionData results_SR0tau_a_bin_4;
+        results_SR0tau_a_bin_4.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_4.set_sr_label("SR0tau_a_bin_4");
         results_SR0tau_a_bin_4.set_observation(9.);
         results_SR0tau_a_bin_4.set_background(8.5);
         results_SR0tau_a_bin_4.set_backgroundsys(1.7);
@@ -848,6 +856,8 @@ namespace Gambit {
         results_SR0tau_a_bin_4.set_signal(_num_SR0tau_a_bin_4);
 
         SignalRegionData results_SR0tau_a_bin_5;
+        results_SR0tau_a_bin_5.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_5.set_sr_label("SR0tau_a_bin_5");
         results_SR0tau_a_bin_5.set_observation(11.);
         results_SR0tau_a_bin_5.set_background(12.9);
         results_SR0tau_a_bin_5.set_backgroundsys(2.4);
@@ -855,6 +865,8 @@ namespace Gambit {
         results_SR0tau_a_bin_5.set_signal(_num_SR0tau_a_bin_5);
 
         SignalRegionData results_SR0tau_a_bin_6;
+        results_SR0tau_a_bin_6.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_6.set_sr_label("SR0tau_a_bin_6");
         results_SR0tau_a_bin_6.set_observation(13.);
         results_SR0tau_a_bin_6.set_background(6.6);
         results_SR0tau_a_bin_6.set_backgroundsys(1.9);
@@ -862,6 +874,8 @@ namespace Gambit {
         results_SR0tau_a_bin_6.set_signal(_num_SR0tau_a_bin_6);
 
         SignalRegionData results_SR0tau_a_bin_7;
+        results_SR0tau_a_bin_7.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_7.set_sr_label("SR0tau_a_bin_7");
         results_SR0tau_a_bin_7.set_observation(15.);
         results_SR0tau_a_bin_7.set_background(14.1);
         results_SR0tau_a_bin_7.set_backgroundsys(2.2);
@@ -869,6 +883,8 @@ namespace Gambit {
         results_SR0tau_a_bin_7.set_signal(_num_SR0tau_a_bin_7);
 
         SignalRegionData results_SR0tau_a_bin_8;
+        results_SR0tau_a_bin_8.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_8.set_sr_label("SR0tau_a_bin_8");
         results_SR0tau_a_bin_8.set_observation(1.);
         results_SR0tau_a_bin_8.set_background(1.1);
         results_SR0tau_a_bin_8.set_backgroundsys(0.4);
@@ -876,6 +892,8 @@ namespace Gambit {
         results_SR0tau_a_bin_8.set_signal(_num_SR0tau_a_bin_8);
 
         SignalRegionData results_SR0tau_a_bin_9;
+        results_SR0tau_a_bin_9.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_9.set_sr_label("SR0tau_a_bin_9");
         results_SR0tau_a_bin_9.set_observation(28.);
         results_SR0tau_a_bin_9.set_background(22.4);
         results_SR0tau_a_bin_9.set_backgroundsys(3.6);
@@ -883,6 +901,8 @@ namespace Gambit {
         results_SR0tau_a_bin_9.set_signal(_num_SR0tau_a_bin_9);
 
         SignalRegionData results_SR0tau_a_bin_10;
+        results_SR0tau_a_bin_10.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_10.set_sr_label("SR0tau_a_bin_10");
         results_SR0tau_a_bin_10.set_observation(24.);
         results_SR0tau_a_bin_10.set_background(16.4);
         results_SR0tau_a_bin_10.set_backgroundsys(2.8);
@@ -890,6 +910,8 @@ namespace Gambit {
         results_SR0tau_a_bin_10.set_signal(_num_SR0tau_a_bin_10);
 
         SignalRegionData results_SR0tau_a_bin_11;
+        results_SR0tau_a_bin_11.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_11.set_sr_label("SR0tau_a_bin_11");
         results_SR0tau_a_bin_11.set_observation(29.);
         results_SR0tau_a_bin_11.set_background(27.);
         results_SR0tau_a_bin_11.set_backgroundsys(5.);
@@ -897,6 +919,8 @@ namespace Gambit {
         results_SR0tau_a_bin_11.set_signal(_num_SR0tau_a_bin_11);
 
         SignalRegionData results_SR0tau_a_bin_12;
+        results_SR0tau_a_bin_12.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_12.set_sr_label("SR0tau_a_bin_12");
         results_SR0tau_a_bin_12.set_observation(8.);
         results_SR0tau_a_bin_12.set_background(5.5);
         results_SR0tau_a_bin_12.set_backgroundsys(1.5);
@@ -904,6 +928,8 @@ namespace Gambit {
         results_SR0tau_a_bin_12.set_signal(_num_SR0tau_a_bin_12);
 
         SignalRegionData results_SR0tau_a_bin_13;
+        results_SR0tau_a_bin_13.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_13.set_sr_label("SR0tau_a_bin_13");
         results_SR0tau_a_bin_13.set_observation(714.);
         results_SR0tau_a_bin_13.set_background(715.);
         results_SR0tau_a_bin_13.set_backgroundsys(70.);
@@ -911,6 +937,8 @@ namespace Gambit {
         results_SR0tau_a_bin_13.set_signal(_num_SR0tau_a_bin_13);
 
         SignalRegionData results_SR0tau_a_bin_14;
+        results_SR0tau_a_bin_14.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_14.set_sr_label("SR0tau_a_bin_14");
         results_SR0tau_a_bin_14.set_observation(214.);
         results_SR0tau_a_bin_14.set_background(219.);
         results_SR0tau_a_bin_14.set_backgroundsys(33.);
@@ -918,6 +946,8 @@ namespace Gambit {
         results_SR0tau_a_bin_14.set_signal(_num_SR0tau_a_bin_14);
 
         SignalRegionData results_SR0tau_a_bin_15;
+        results_SR0tau_a_bin_15.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_15.set_sr_label("SR0tau_a_bin_15");
         results_SR0tau_a_bin_15.set_observation(63.);
         results_SR0tau_a_bin_15.set_background(65.);
         results_SR0tau_a_bin_15.set_backgroundsys(13.);
@@ -925,6 +955,8 @@ namespace Gambit {
         results_SR0tau_a_bin_15.set_signal(_num_SR0tau_a_bin_15);
 
         SignalRegionData results_SR0tau_a_bin_16;
+        results_SR0tau_a_bin_16.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_16.set_sr_label("SR0tau_a_bin_16");
         results_SR0tau_a_bin_16.set_observation(3.);
         results_SR0tau_a_bin_16.set_background(4.6);
         results_SR0tau_a_bin_16.set_backgroundsys(1.7);
@@ -932,6 +964,8 @@ namespace Gambit {
         results_SR0tau_a_bin_16.set_signal(_num_SR0tau_a_bin_16);
 
         SignalRegionData results_SR0tau_a_bin_17;
+        results_SR0tau_a_bin_17.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_17.set_sr_label("SR0tau_a_bin_17");
         results_SR0tau_a_bin_17.set_observation(60.);
         results_SR0tau_a_bin_17.set_background(69.);
         results_SR0tau_a_bin_17.set_backgroundsys(9.);
@@ -939,6 +973,8 @@ namespace Gambit {
         results_SR0tau_a_bin_17.set_signal(_num_SR0tau_a_bin_17);
 
         SignalRegionData results_SR0tau_a_bin_18;
+        results_SR0tau_a_bin_18.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_18.set_sr_label("SR0tau_a_bin_18");
         results_SR0tau_a_bin_18.set_observation(1.);
         results_SR0tau_a_bin_18.set_background(3.4);
         results_SR0tau_a_bin_18.set_backgroundsys(1.4);
@@ -946,6 +982,8 @@ namespace Gambit {
         results_SR0tau_a_bin_18.set_signal(_num_SR0tau_a_bin_18);
 
         SignalRegionData results_SR0tau_a_bin_19;
+        results_SR0tau_a_bin_19.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_19.set_sr_label("SR0tau_a_bin_19");
         results_SR0tau_a_bin_19.set_observation(0.);
         results_SR0tau_a_bin_19.set_background(1.2);
         results_SR0tau_a_bin_19.set_backgroundsys(0.4);
@@ -953,6 +991,8 @@ namespace Gambit {
         results_SR0tau_a_bin_19.set_signal(_num_SR0tau_a_bin_19);
 
         SignalRegionData results_SR0tau_a_bin_20;
+        results_SR0tau_a_bin_20.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR0tau_a_bin_20.set_sr_label("SR0tau_a_bin_20");
         results_SR0tau_a_bin_20.set_observation(0.);
         results_SR0tau_a_bin_20.set_background(0.29);
         results_SR0tau_a_bin_20.set_backgroundsys(0.18);
@@ -960,6 +1000,8 @@ namespace Gambit {
         results_SR0tau_a_bin_20.set_signal(_num_SR0tau_a_bin_20);
 
         SignalRegionData results_SR1tau;
+        results_SR1tau.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR1tau.set_sr_label("SR1tau");
         results_SR1tau.set_observation(13.);
         results_SR1tau.set_background(10.3);
         results_SR1tau.set_backgroundsys(1.2);
@@ -967,6 +1009,8 @@ namespace Gambit {
         results_SR1tau.set_signal(_num_SR1tau);
 
         SignalRegionData results_SR2tau_a;
+        results_SR2tau_a.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR2tau_a.set_sr_label("SR2tau_a");
         results_SR2tau_a.set_observation(6.);
         results_SR2tau_a.set_background(6.9);
         results_SR2tau_a.set_backgroundsys(0.8);
@@ -974,6 +1018,8 @@ namespace Gambit {
         results_SR2tau_a.set_signal(_num_SR1tau);
 
         SignalRegionData results_SR2tau_b;
+        results_SR2tau_b.set_analysis_name("Analysis_ATLAS_3LEPEW_20invfb");
+        results_SR2tau_b.set_sr_label("SR2tau_b");
         results_SR2tau_b.set_observation(5.);
         results_SR2tau_b.set_background(7.2);
         results_SR2tau_b.set_backgroundsys(0.8);
