@@ -245,9 +245,10 @@ function(add_gambit_executable executablename LIBRARIES)
     string( REGEX MATCH "\\.l*a[:space:]*$" LAPACK_STATIC "${LAPACK_LINKLIBS}" )
     if(LAPACK_STATIC)
       #Make sure scanners and backends can resolve their missing BLAS/LAPACK symbols from the main executable.  
-      set_target_properties(${executablename} PROPERTIES LINK_FLAGS "-Wl,--whole-archive ${LAPACK_LINKLIBS} -Wl,--no-whole-archive") 
+      set_target_properties(${executablename} PROPERTIES LINK_FLAGS "-Wl,--whole-archive ${LAPACK_LINKLIBS} -Wl,--no-whole-archive -Wl,-export-dynamic") 
     endif()
   endif()
+  message("LAPACK_STATIC: ${LAPACK_STATIC}  LAPACK_LINKLIBS: ${LAPACK_LINKLIBS}")
   target_link_libraries(${executablename} ${LIBRARIES} yaml-cpp)
   add_dependencies(${executablename} mkpath)
 

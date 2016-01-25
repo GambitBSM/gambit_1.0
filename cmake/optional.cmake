@@ -80,7 +80,7 @@ if(NOT LAPACK_LINKLIBS)
   find_package(LAPACK)
   if(NOT LAPACK_FOUND)
     message(FATAL_ERROR "${BoldRed}    LAPACK is currently required in order to build GAMBIT.${ColourReset}")
-    # In future MN and FS need to be ditched if lapack cannot be found and the build allowed to continue.
+    # In future MN and FS need to be ditched if lapack cannot be found, and the build allowed to continue.
     message("${BoldRed}   No LAPACK installation found. Excluding FlexibleSUSY and MultiNest from GAMBIT configuration. ${ColourReset}")
   else()
     # Check the libs for MKL
