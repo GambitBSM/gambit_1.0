@@ -16,8 +16,9 @@
 
 /// @{ Need these just so I can use SpecBit_error() etc.
 ///    Is there no more "lightweight" way to do this?
-#include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/SpecBit/SpecBit_rollcall.hpp"
+// NOTE: This is now in Elements, can probably just delete these includes
+//#include "gambit/Elements/gambit_module_headers.hpp"
+//#include "gambit/SpecBit/SpecBit_rollcall.hpp" // 
 /// @}
 
 #include "gambit/Elements/SMskeleton.hpp" 

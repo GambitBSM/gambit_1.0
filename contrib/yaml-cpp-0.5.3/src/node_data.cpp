@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <iterator>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <sstream>
 
 #include "yaml-cpp/exceptions.h"
@@ -28,7 +28,9 @@ void node_data::mark_defined() {
   m_isDefined = true;
 }
 
-void node_data::set_mark(const Mark& mark) { m_mark = mark; }
+void node_data::set_mark(const Mark& mark) {
+  m_mark = mark;
+}
 
 void node_data::set_type(NodeType::value type) {
   if (type == NodeType::Undefined) {
@@ -102,7 +104,7 @@ void node_data::compute_seq_size() const {
 void node_data::compute_map_size() const {
   kv_pairs::iterator it = m_undefinedPairs.begin();
   while (it != m_undefinedPairs.end()) {
-    kv_pairs::iterator jt = std::next(it);
+    kv_pairs::iterator jt = boost::next(it);
     if (it->first->is_defined() && it->second->is_defined())
       m_undefinedPairs.erase(it);
     it = jt;
