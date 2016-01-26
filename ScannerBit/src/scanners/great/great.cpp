@@ -84,56 +84,52 @@ scanner_plugin(GreAT, version(1, 0, 0))
     // MyModel->SetLogLikelihoodFunction(double (*functionpointer)(TGreatPoint&));
     MyModel->SetLogLikelihoodFunction(LogLikelihoodFunction);
 
+    // Setting up the GreAT Manager
+    // TGreatManager<typename T> MyManager(TGreatModel*);
     std::cout << "\033[1;31mCreating GreAT Manager\033[0m" << std::endl;
     TGreatManager<TGreatMCMCAlgorithmCovariance> MyManager(MyModel);
+    // Tell the algorithm to use former points to update its prior
     MyManager.GetAlgorithm()->SetUpdateStatus(true);
     MyManager.SetOutputFileName("MCMC.root");
     MyManager.SetTreeName("mcmc");
+    // Set number of trials (steps) and triallists (chains)
     MyManager.SetNTrialLists(nTrialLists);
     MyManager.SetNTrials(nTrials);
+    // Run GreAT
     std::cout << "\033[1;31mRunning GreAT...\033[0m" << std::endl;
     MyManager.Run();
 
+    // Deleting the GreAT model
     delete MyModel;
 
     // Analyse
+    // 1) Fetch the ROOT file
     TFile *file;
-    file = TFile::Open("MCMC.root");
+    file = TFile::Open(MyManager.GetOutputFileName().c_str());
     TTree *mcmc = (TTree *) file->Get("mcmc");
 
+    // 2) Define the estimator
+    // TGreatEstimator<typename T>(TTree*)
     TGreatEstimator<TGreatMCMCAlgorithmCovariance>* estimator = new TGreatEstimator<TGreatMCMCAlgorithmCovariance>(mcmc);
-    estimator->SetNBins(150);
+    // Show the scan statistics
     estimator->ShowStatistics();
-    estimator->ComputePDF();
 
-    std::cout.precision(5);
-    std::cout.setf(std::ios::fixed);
-
-    double confidenceInterval[2];
-    double beta = .68;
-    double MPV = 0.;
-    for(int i = 0; i < estimator->GetNParameters(); i++)
-    {
-      MPV = estimator->GetPDF1D(i)->GetBinCenter(estimator->GetPDF1D(i)->GetMaximumBin());
-      estimator->GetConfidenceInterval(estimator->GetPDF1D(i), beta, confidenceInterval);
-      std::cout << MPV - confidenceInterval[0] << "\t" << MPV << "\t" << confidenceInterval[1] - MPV << std::endl;
-    }
-
+    // Link to the GAMBIT printer
+    std::cout << "\033[1;31mWriting points...\033[0m" << std::endl;
     Scanner::printer* primary_printer(data.printer->get_stream());
-    int MPIrank = primary_printer->getRank();
-    int pointID = 0;
+    static const int MPIrank = data.likelihood_function->getRank();
+    int pointID = data.likelihood_function->getPtID();
 
     for(TGreatMCMCSample *sample = estimator->GetFirstIndSample(); sample != 0; sample = estimator->GetNextIndSample())
     {
-      primary_printer->print(sample->GetPoint(), "Posterior", MPIrank, pointID);
+      primary_printer->print(sample->GetPoint(), "Unit cube parameters", MPIrank, pointID);
       primary_printer->print(sample->GetLogProb(), "ln(Likelihood)", MPIrank, pointID);
-      pointID++;
     }
 
-    estimator->ComputeEvidence(estimator);
-
+    // Deleting the estimator
     delete estimator;
 
+    std::cout << "\033[1;31mGreAT finished successfully!\033[0m" << std::endl;
     return 0;
   }
 }

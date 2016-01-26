@@ -95,7 +95,6 @@ set(great_lib "libgreat")
 set(great_dir "${PROJECT_SOURCE_DIR}/ScannerBit/installed/GreAT/1.0.0")
 ExternalProject_Add(great
   GIT_REPOSITORY https://gitlab.in2p3.fr/derome/GreAT.git
-#  GIT_TAG d11bfc72d17494fc29dae85da61440e7ca508290
   DOWNLOAD_DIR ${scanner_download}
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${great_location} ${great_dir}
   SOURCE_DIR ${great_dir}
@@ -108,8 +107,6 @@ ExternalProject_Add(great
   INSTALL_COMMAND ""
 )
 add_extra_targets(great ${great_dir} null cleanall)
-
-
 
 # All other scanners are implemented natively in ScannerBit.
 
