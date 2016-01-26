@@ -241,13 +241,6 @@ function(add_gambit_executable executablename LIBRARIES)
     endif()
     set(LIBRARIES ${LIBRARIES} ${HDF5_LIBRARIES})
   endif()
-  if(LAPACK_LINKLIBS)
-    string( REGEX MATCH "\\.l*a[:space:]*$" LAPACK_STATIC "${LAPACK_LINKLIBS}" )
-    if(LAPACK_STATIC)
-      #Make sure scanners and backends can resolve their missing BLAS/LAPACK symbols from the main executable.  
-      set_target_properties(${executablename} PROPERTIES LINK_FLAGS "-Wl,--whole-archive ${LAPACK_LINKLIBS} -Wl,--no-whole-archive") 
-    endif()
-  endif()
   target_link_libraries(${executablename} ${LIBRARIES} yaml-cpp)
   add_dependencies(${executablename} mkpath)
 
