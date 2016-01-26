@@ -27,13 +27,14 @@
 #*********************************************
 import re
 import os
-import update_cmakelists
 import yaml
 import shutil
 import itertools
 import datetime
 import sys
 import getopt
+
+execfile("./cmake/scripts/update_cmakelists.py")
 
 scan_config = "./config/scanner_locations.yaml"
 test_config = "./config/objective_locations.yaml"
@@ -503,7 +504,7 @@ def main(argv):
     header = "./ScannerBit/include/gambit/ScannerBit/priors_rollcall.hpp"
     candidate = build_dir+"/priors_rollcall.hpp.candidate"
     with open(candidate,"w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(header, candidate)
+    update_only_if_different(header, candidate)
 
     if verbose: print "Finished writing ScannerBit/include/gambit/ScannerBit/priors_rollcall.hpp"
 
@@ -794,7 +795,7 @@ endif()                                          \n\n"
     cmake = "./ScannerBit/CMakeLists.txt"
     candidate = build_dir+"/ScannerBit_CMakeLists.txt.candidate"
     with open(candidate,"w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(cmake, candidate)
+    update_only_if_different(cmake, candidate)
 
     if verbose: print "Finished writing ScannerBit/CMakeLists.txt"
 
@@ -838,7 +839,7 @@ endif()                                          \n\n"
     req_entries = "./scratch/scanbit_reqd_entries.yaml"
     candidate = build_dir+"/scanbit_reqd_entries.yaml.candidate"
     with open(candidate,"w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(req_entries, candidate)
+    update_only_if_different(req_entries, candidate)
 
     if verbose: print "Finished writing scratch/scanbit_reqd_entries.yaml"
 
@@ -878,7 +879,7 @@ endif()                                          \n\n"
     flag_entries = "./scratch/scanbit_flags.yaml"
     candidate = build_dir+"/scanbit_flags.yaml.candidate"
     with open(candidate,"w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(flag_entries, candidate)
+    update_only_if_different(flag_entries, candidate)
 
     if verbose: print "Finished writing scratch/scanbit_flags.yaml"
 
@@ -918,7 +919,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES \"Darwin\")     \n"
     linked_out = build_dir+"/linkedout.cmake"
     candidate = linked_out+".candidate"
     with open(candidate,"w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(linked_out, candidate)
+    update_only_if_different(linked_out, candidate)
 
     if verbose: print "Finished writing linkedout.cmake"
 
