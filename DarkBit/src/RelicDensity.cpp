@@ -54,6 +54,7 @@ namespace Gambit {
           "CoannCharginosNeutralinos");
       bool CoannSfermions = runOptions->getValueOrDef<bool>(true,
           "CoannSfermions");
+      // TB: for me always the default value is used (not the one in the yaml file!?    
       double CoannMaxMass = runOptions->getValueOrDef<double>(1.6,
           "CoannMaxMass");
 
@@ -199,6 +200,22 @@ namespace Gambit {
       // NB: coannihilatingParticles does not have to be ordered,
       // but it is assumed that coannihilatingParticles[0] is the DM particle 
 
+      RD_coannihilating_particle tmp_co;
+      if (result.coannihilatingParticles.size() > 1)
+        for (std::size_t i=0; i<result.coannihilatingParticles.size()-1; i++)
+        {
+          for (std::size_t j=i+1; j<result.coannihilatingParticles.size(); j++)
+          {
+          if (result.coannihilatingParticles[j].mass<result.coannihilatingParticles[i].mass)
+            {
+              tmp_co=result.coannihilatingParticles[i];
+              result.coannihilatingParticles[i]=result.coannihilatingParticles[j];
+              result.coannihilatingParticles[j]=tmp_co;
+            }
+          }
+        }
+
+
       // add coannihilation thresholds
       if (result.coannihilatingParticles.size() > 1)
         for (int i=0; i<(int)result.coannihilatingParticles.size(); i++)
@@ -265,7 +282,7 @@ namespace Gambit {
         myrdmgev.kcoann(i)=specres.coannihilatingParticles[i-1].index;
         // NB: only this particle code is DS/SUSY specific!
       }
-      // now order: FIXME: probably not needed!
+      // now order: (still needed! (?) )
       double tmp; int itmp;
       for (int i=1; i<=myrdmgev.nco-1; i++) {
         for (int j=i+1; j<=myrdmgev.nco; j++) {
@@ -301,12 +318,13 @@ namespace Gambit {
       }
       // similar for other BEs...
 
-      double peff = 0.1;
-      if ( Utils::isnan((*result)(peff)) )
-      {
-        DarkBit_warning().raise(LOCAL_INFO, "Weff is nan.");
-        invalid_point().raise("Weff is nan in RD_eff_annrate_SUSY.");
-      }
+      // TB : why testing this only for peff= 0.1 ?
+//      double peff = 0.1;
+//      if ( Utils::isnan((*result)(peff)) )
+//      {
+//        DarkBit_warning().raise(LOCAL_INFO, "Weff is nan.");
+//        invalid_point().raise("Weff is nan in RD_eff_annrate_SUSY.");
+//      }
 
     } // function RD_eff_annrate_SUSY
 
@@ -411,6 +429,8 @@ namespace Gambit {
         for (std::size_t i=1; i<=((unsigned int)myrdmgev->nco); i++) {
           myrdmgev->mco(i)=myRDspec.coannihilatingParticles[i-1].mass;
           myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom; 
+          myrdmgev->kcoann(i)=myRDspec.coannihilatingParticles[i-1].index; 
+          std::cout << "kcoann, mco, mdof: " << myrdmgev->kcoann(i) << "  " << myrdmgev->mco(i) << "  " << myrdmgev->mdof(i) << std::endl;
         }
 
         // write information about thresholds and resonances to DS common blocks
@@ -421,6 +441,7 @@ namespace Gambit {
           for (std::size_t i=1; i<=myRDspec.resonances.size(); i++) {
             myrdmgev->rgev(i)=myRDspec.resonances[i-1].energy;
             myrdmgev->rwid(i)=myRDspec.resonances[i-1].width;
+            std::cout << "rgev, rwid: " << myrdmgev->rgev(i) << "  " << myrdmgev->rwid(i) << std::endl;
           }
         }
         // convert to momenta and write to DS common blocks
@@ -431,6 +452,7 @@ namespace Gambit {
         for (std::size_t i=1; i<myRDspec.threshold_energy.size(); i++) {
           myrdpth.pth(i)=sqrt(pow(myRDspec.threshold_energy[i],2)/4-pow(mwimp,2));
           myrdpth.incth(i)=1;
+          std::cout << "pth, incth: " << myrdpth.pth(i) << "  " << myrdpth.incth(i) << std::endl;
         }
         *BEreq::rdpth = myrdpth;
 
@@ -458,6 +480,7 @@ namespace Gambit {
           (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
         // Dump Weff info on screen
+          std::cout << "xstart = " << xstart << std::endl;
         for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
 
@@ -466,6 +489,15 @@ namespace Gambit {
 
         // tabulate invariant rate
         logger() << "Tabulating RD_eff_annrate..." << std::endl;
+        
+//            const Spectrum* mySpec = *Dep::MSSM_spectrum;
+//            SLHAstruct mySLHA = mySpec->getSLHAea();
+//            std::ofstream ofs("RelicDensity_debug.slha");
+//            ofs << mySLHA;
+//            ofs.close();
+        
+//        std::cout << "SLHA written to file" << std::endl;
+        
         start = std::chrono::system_clock::now();
         BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
         end = std::chrono::system_clock::now();
