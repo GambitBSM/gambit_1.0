@@ -189,7 +189,9 @@ BE_NAMESPACE
     }
     else if (istat > 1)
     {
-      piped_errors.request(LOCAL_INFO, "Inaccessible final state requested in neutrino flux calculation.");
+      std::ostringstream err;
+      err << "Error from DarkSUSY::dswayield functions in neutrino flux calculation.  istat = " << istat;      
+      piped_errors.request(LOCAL_INFO, err.str());
     }
     return result;
   }
