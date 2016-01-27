@@ -44,6 +44,8 @@
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
+// This is no longer needed by the printers
+#include "gambit/Elements/all_functor_types.hpp"
 
 namespace Gambit
 {

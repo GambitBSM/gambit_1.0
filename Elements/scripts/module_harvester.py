@@ -232,7 +232,7 @@ def main(argv):
 #include \"gambit/Elements/types_rollcall.hpp\"   \n\
                                                   \n\
 // Automatically generated preprocessor sequence of module functor types \n\
-#define PRINTABLE_TYPES \\\n"
+#define MODULE_FUNCTOR_TYPES \\\n"
     for t in types:
         towrite+='({0})'.format(t)+"\\\n"
 

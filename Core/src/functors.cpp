@@ -18,7 +18,7 @@
 #include "gambit/Elements/functor_definitions.hpp"
 
 // Instantiate the module functor templates for all required types
-BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,PRINTABLE_TYPES)
+BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,MODULE_FUNCTOR_TYPES)
 INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
 
 // Instantiate the backend functor templates for all required types 
