@@ -96,7 +96,7 @@ namespace Gambit
       /// @{
       virtual double getRuntimeAverage();
       virtual double getInvalidationRate();
-      virtual void setFadeRate();
+      virtual void setFadeRate(double);
       virtual void notifyOfInvalidation(const str&);
       virtual void reset();
       /// @}
