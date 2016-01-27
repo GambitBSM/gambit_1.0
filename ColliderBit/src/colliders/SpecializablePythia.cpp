@@ -16,59 +16,45 @@ namespace Gambit
   namespace ColliderBit
   {
 
-    /// @name Pythia specialization functions
-    ///@{
-
-    /// @brief No specialization - pure external settings only.
-    /// @{
+    /// SpecializablePythia init function for a user defined model.
     namespace Pythia_UserModel
     {
       void init(SpecializablePythia*) { }
     }
 
+    /// SpecializablePythia init function which does nothing - pure external settings only.
     namespace Pythia_external
     {
       void init(SpecializablePythia*) { }
     }
-    /// @}
 
-    /// @brief Specializes for SUSY @ 8TeV LHC
+    /// SpecializablePythia init function for a basic SUSY @ 8TeV LHC scenario.
     namespace Pythia_SUSY_LHC_8TeV
     {
 
       void init(SpecializablePythia* specializeMe) {
-        // Basic setup for a general SUSY LHC run
         specializeMe->addToSettings("Beams:eCM = 8000");
         specializeMe->addToSettings("Main:numberOfEvents = 1000");
         specializeMe->addToSettings("Main:timesAllowErrors = 1000");
-        // Default to SUSY with all subprocesses
         specializeMe->addToSettings("SUSY:all = on");
-
-        // Random seed setup
         specializeMe->addToSettings("Random:setSeed = on");
       }
 
     }
 
-    /// @brief Specializes for SUSY @ 8TeV LHC - only gluino squark processes
+    /// SpecializablePythia init function for gluino-squark production @ 8TeV LHC scenario.
     namespace Pythia_glusq_LHC_8TeV
     {
 
       void init(SpecializablePythia* specializeMe)
       {
-        /// @note "Inherit" another specialization by calling it also.
+        /// @note This "inherits" Pythia_SUSY_LHC_8TeV by explicitly calling its init before changing additional settings.
         Pythia_SUSY_LHC_8TeV::init(specializeMe);
         specializeMe->addToSettings("SUSY:idA = 1000021");
         specializeMe->addToSettings("SUSY:idVecB = 1000001, 1000002, 1000003, 1000004, 2000001, 2000002, 2000003, 2000004");
       }
     }
 
-    ///@}
-
-    /// @name SpecializablePythia definitions
-    ///@{
-
-      
     SpecializablePythia::~SpecializablePythia()
     {
       _pythiaSettings.clear();
@@ -165,7 +151,6 @@ _pythiaInstance->setSigmaPtr(new Sigma_MC4BSM_2012_UFO_qq_p1p1()); */
                <<"                     Now trying to configure Pythia entirely by yaml input..."
                <<"\n\n\n";
     }
-    ///@}
 
   }
 }
