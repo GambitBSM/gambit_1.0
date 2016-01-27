@@ -81,7 +81,7 @@ namespace Gambit
         
                 Scan_Manager::Scan_Manager (const Factory_Base *factoryIn, const Options options_in, const Priors::CompositePrior *priorIn, 
                  printer_interface *printerInterface) 
-                : options(options_in), printerInterface(printerInterface)
+                : options(options_in), printerInterface(printerInterface), has_local_prior_and_factory(false)
                 {
                         Plugins::plugin_info.iniFile(options, *printerInterface);
                         
@@ -156,9 +156,11 @@ namespace Gambit
                                         {
                                                 priorNode = options.getNode("priors");
                                         }
-                                        
+
                                         prior = new Gambit::Priors::CompositePrior(paramNode, priorNode);
                                         factory = new Plugin_Function_Factory(*prior, names);
+                                        has_local_prior_and_factory = true;
+                                        
                                 }
                                 else
                                 {
@@ -222,6 +224,13 @@ namespace Gambit
                         return 0;
                 }
                 
-                Scan_Manager::~Scan_Manager(){}
+                Scan_Manager::~Scan_Manager()
+                {
+                  if (has_local_prior_and_factory)
+                  {
+                    delete prior;
+                    delete factory;
+                  }
+                }
         }
 }

@@ -42,7 +42,7 @@
   // The user-defined part of the function can go anywhere, so long as you properly attach
   // it to this declaration (which puts the function here: Gambit::Models::MODEL::<FUNCTION>)
   // The MODEL_NAMESPACE macro get you the Gambit::Models::MODEL part, if MODEL is defined.
-  INTERPRET_AS_PARENT__FUNCTION(MSSM_I_IAPfunc)
+  INTERPRET_AS_PARENT_FUNCTION(MSSM_I_IAPfunc)
 
   // Note: "myparams" must be const. You're not allowed to change them here. Change "parentparams".
   // To be able to access the Pipes, in case dependencies exist, this function has to be put in
@@ -90,8 +90,8 @@
   //   using namespace Gambit::Models::MODEL::Pipes::MODEL_X_parameters;
   // which points to the pipes for the "module" function wrapping the user-defined
   // "interpret" function.
-  INTERPRET_AS_PARENT__FUNCTION(CMSSM_demo_IAPfunc)
-  INTERPRET_AS_PARENT__DEPENDENCY(id, std::string)
+  INTERPRET_AS_PARENT_FUNCTION(CMSSM_demo_IAPfunc)
+  INTERPRET_AS_PARENT_DEPENDENCY(id, std::string)
 
   void MODEL_NAMESPACE::CMSSM_demo_IAPfunc (const ModelParameters &myparams, ModelParameters &parentparams)
   {
@@ -165,7 +165,7 @@
 #define PARENT TWOHDM_demo_parent
   START_MODEL
   DEFINEPARS(X, Y, Z)
-  INTERPRET_AS_PARENT__FUNCTION(to_parent)
+  INTERPRET_AS_PARENT_FUNCTION(to_parent)
   INTERPRET_AS_X__FUNCTION(MSSM_demo,to_MSSM)
   void MODEL_NAMESPACE::to_parent(const ModelParameters &myparams, ModelParameters &parentparams)
   {
@@ -193,7 +193,7 @@
 #define PARENT TWOHDM_demo
   START_MODEL
   DEFINEPARS(Y,Z)
-  INTERPRET_AS_PARENT__FUNCTION(to_parent)
+  INTERPRET_AS_PARENT_FUNCTION(to_parent)
   void MODEL_NAMESPACE::to_parent(const ModelParameters &myparams, ModelParameters &parentparams)
   {
       USE_MODEL_PIPE(PARENT)

@@ -54,23 +54,20 @@ Scanner:
 
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 200
-        tol: 0.01
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
-
+      like:  Likelihood
+      nlive: 200
+      tol: 0.01
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
     random:
       plugin: random_sampler
-      options:
-        point_number: 100
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
+      point_number: 100
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
 
 ###############################
 # Observables of interest
@@ -211,9 +208,9 @@ Rules:
       #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
 
   - options:
-      #gauge_mixing_tolerance: 0.5
-      #family_mixing_tolerance: 0.5
-      #off_diagonal_tolerance: 0.5
+      gauge_mixing_tolerance: 0.5
+      family_mixing_tolerance: 0.5
+      off_diagonal_tolerance: 0.5
       #gauge_mixing_tolerance_invalidates_point_only: false
       #family_mixing_tolerance_invalidates_point_only: false
       #off_diagonal_tolerance_invalidates_point_only: false
@@ -222,15 +219,14 @@ Rules:
     function:  getPythia
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "../gambit_internal/extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/"
+      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV:
         pythiaOptions_1: ["Print:quiet = on",
                           "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = on",
                           "HadronLevel:all = on",
-        "SUSY:all = on",
-        "TauDecays:mode = 0"]
+                          "TauDecays:mode = 0"]
       #Pythia_glusq_LHC_8TeV:
       #  pythiaOptions_1: ["PartonLevel:MPI = off",
       #                    "PartonLevel:ISR = on",

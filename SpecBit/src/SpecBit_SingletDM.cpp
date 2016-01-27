@@ -27,10 +27,7 @@
 #include "gambit/SpecBit/SMHiggsContainer.hpp"
 #include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
-
-
 #include "gambit/SpecBit/SSDMSpec.hpp"
-#include "gambit/SpecBit/SMskeleton.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/src/ew_input.hpp"

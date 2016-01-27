@@ -213,6 +213,8 @@ namespace Gambit {
 
       void collect_results() {
         SignalRegionData results_250;
+        results_250.set_analysis_name("Analysis_CMS_MONOJET_20invfb");
+        results_250.set_sr_label("250");
         results_250.set_observation(52200.);
         results_250.set_background(51800.);
         results_250.set_backgroundsys(2000.);
@@ -220,6 +222,8 @@ namespace Gambit {
         results_250.set_signal(_num250);
 
         SignalRegionData results_300;
+        results_300.set_analysis_name("Analysis_CMS_MONOJET_20invfb");
+        results_300.set_sr_label("300");
         results_300.set_observation(19800.);
         results_300.set_background(19600.);
         results_300.set_backgroundsys(830.);
@@ -227,6 +231,8 @@ namespace Gambit {
         results_300.set_signal(_num300);
 
         SignalRegionData results_350;
+        results_350.set_analysis_name("Analysis_CMS_MONOJET_20invfb");
+        results_350.set_sr_label("350");
         results_350.set_observation(8320.);
         results_350.set_background(8190.);
         results_350.set_backgroundsys(400.);
@@ -234,6 +240,8 @@ namespace Gambit {
         results_350.set_signal(_num350);
 
         SignalRegionData results_400;
+        results_400.set_analysis_name("Analysis_CMS_MONOJET_20invfb");
+        results_400.set_sr_label("400");
         results_400.set_observation(3830.);
         results_400.set_background(3930.);
         results_400.set_backgroundsys(230.);
@@ -241,6 +249,8 @@ namespace Gambit {
         results_400.set_signal(_num400);
 
         SignalRegionData results_450;
+        results_450.set_analysis_name("Analysis_CMS_MONOJET_20invfb");
+        results_450.set_sr_label("450");
         results_450.set_observation(1830.);
         results_450.set_background(2050.);
         results_450.set_backgroundsys(150.);
@@ -248,6 +258,8 @@ namespace Gambit {
         results_450.set_signal(_num450);
 
         SignalRegionData results_500;
+        results_500.set_analysis_name("Analysis_CMS_MONOJET_20invfb");
+        results_500.set_sr_label("500");
         results_500.set_observation(934.);
         results_500.set_background(1040.);
         results_500.set_backgroundsys(100.);
@@ -255,6 +267,8 @@ namespace Gambit {
         results_500.set_signal(_num500);
 
         SignalRegionData results_550;
+        results_550.set_analysis_name("Analysis_CMS_MONOJET_20invfb");
+        results_550.set_sr_label("550");
         results_550.set_observation(519.);
         results_550.set_background(509.);
         results_550.set_backgroundsys(66.);

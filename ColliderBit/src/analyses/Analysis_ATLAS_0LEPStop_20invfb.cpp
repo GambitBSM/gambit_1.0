@@ -6,8 +6,6 @@
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/mt2_bisect.h"
 
-/// @todo Eliminate the ROOT vectors!
-
 using namespace std;
 
 /* The ATLAS 0 lepton direct stop analysis (20fb^-1) - `heavy stop'.
@@ -688,6 +686,8 @@ namespace Gambit {
       void collect_results() {
 
         SignalRegionData results_SRA1;
+        results_SRA1.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
+        results_SRA1.set_sr_label("SRA1");
         results_SRA1.set_observation(11.);
         results_SRA1.set_background(15.8);
         results_SRA1.set_backgroundsys(1.9);
@@ -695,6 +695,8 @@ namespace Gambit {
         results_SRA1.set_signal(_numSRA1);
 
         SignalRegionData results_SRA2;
+        results_SRA2.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
+        results_SRA2.set_sr_label("SRA2");
         results_SRA2.set_observation(4.);
         results_SRA2.set_background(4.1);
         results_SRA2.set_backgroundsys(0.8);
@@ -702,6 +704,8 @@ namespace Gambit {
         results_SRA2.set_signal(_numSRA2);
 
         SignalRegionData results_SRA3;
+        results_SRA3.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
+        results_SRA3.set_sr_label("SRA3");
         results_SRA3.set_observation(5.);
         results_SRA3.set_background(4.1);
         results_SRA3.set_backgroundsys(0.9);
@@ -709,6 +713,8 @@ namespace Gambit {
         results_SRA3.set_signal(_numSRA3);
 
         SignalRegionData results_SRA4;
+        results_SRA4.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
+        results_SRA4.set_sr_label("SRA4");
         results_SRA4.set_observation(4.);
         results_SRA4.set_background(2.4);
         results_SRA4.set_backgroundsys(0.7);
@@ -716,6 +722,8 @@ namespace Gambit {
         results_SRA4.set_signal(_numSRA4);
 
         SignalRegionData results_SRC1;
+        results_SRC1.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
+        results_SRC1.set_sr_label("SRC1");
         results_SRC1.set_observation(59.);
         results_SRC1.set_background(68.);
         results_SRC1.set_backgroundsys(7.);
@@ -723,6 +731,8 @@ namespace Gambit {
         results_SRC1.set_signal(_numSRC1);
 
         SignalRegionData results_SRC2;
+        results_SRC2.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
+        results_SRC2.set_sr_label("SRC2");
         results_SRC2.set_observation(30.);
         results_SRC2.set_background(34.);
         results_SRC2.set_backgroundsys(5.);
@@ -730,6 +740,8 @@ namespace Gambit {
         results_SRC2.set_signal(_numSRC2);
 
         SignalRegionData results_SRC3;
+        results_SRC3.set_analysis_name("Analysis_ATLAS_0LEPStop_20invfb");
+        results_SRC3.set_sr_label("SRC3");
         results_SRC3.set_observation(15.);
         results_SRC3.set_background(20.3);
         results_SRC3.set_backgroundsys(3.);

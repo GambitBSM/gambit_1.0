@@ -4,6 +4,21 @@
 ///
 ///  GAMBIT signal handling functions
 ///
+///  I have tried to make these standards
+///  conformant, however I suspect that they are
+///  not, and the emergency signal handlers
+///  definitely are not. Nevertheless, they seem
+///  to work well, and the emergency shutdown
+///  handlers are intended for emergencies only
+///  (when a clean shutdown is not possible), so
+///  non-conformance is the least of our problems
+///  in that situation.
+///  The "soft" shutdown handler should be at
+///  least very close to conformant I think,
+///  though there are some more steps that could
+///  be taken to improve this if it turns out to
+///  be an issue.
+///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -17,6 +32,7 @@
 #ifndef __signal_handling_hpp__
 #define __signal_handling_hpp__
 
+#include <signal.h>
 #include <setjmp.h>     /* jmp_buf, setjmp, longjmp */
 #include "yaml-cpp/yaml.h"
 
@@ -26,53 +42,99 @@ namespace Gambit
    std::string signal_name(int sig);
 
    /// Variables for use in signal handlers
-   struct SignalData
+   class SignalData
    {
-     /// MPI rank
-     #ifdef WITH_MPI
-     int rank;
-     #endif
-     
-     /// Flag to warn if early shutdown is already in process
-     bool shutdown_begun = false;
-     bool ignore_signals_during_shutdown = true; // Override via inifile value
-     
-     /// Saved information on calling environment for longjmp
-     jmp_buf env;
-     int havejumped = 1; // Store result of setjmp here so we can use it to test if a jump point has been set
-                         // Value will be zero on first invocation of setjmp. Will be set to the argument
-                         // of longjmp when the jump executes and returns to the setjmp point. 
-     /// Set jump point;
-     void setjump();
+     public:  
+       /// MPI rank
+       int rank = 0;
 
-     /// Set cleanup function to run during emergency shutdown
-     typedef void (*void_func)(); 
-     void_func cleanup;
-     bool cleanup_function_set = false;
-     void set_cleanup(void_func f);
-     void call_cleanup();    
+       /// Saved information on calling environment for longjmp
+       jmp_buf env;
+       int havejumped = 1; // Store result of setjmp here so we can use it to test if a jump point has been set
+                           // Value will be zero on first invocation of setjmp. Will be set to the argument
+                           // of longjmp when the jump executes and returns to the setjmp point. 
+       /// Set jump point;
+       void setjump();
 
-     /// Register that shutdown has begun
-     void set_shutdown_begun();
+       /// Set cleanup function to run during emergency shutdown
+       typedef void (*void_func)(); 
+       void_func cleanup;
+       bool cleanup_function_set = false;
+       void set_cleanup(void_func f);
+       void call_cleanup();    
 
-     /// Array to record received signals (up to max_signals)
-     static const int MAX_SIGNALS = 10;
-     int received_signals[MAX_SIGNALS];
-     int N_signals = 0;
+       /// Register that shutdown has begun
+       void set_shutdown_begun(const sig_atomic_t emergnc=0);
 
-     /// Add signal to record
-     void add_signal(int sig);
+       /// Check if shutdown has already begun
+       bool shutdown_begun();
 
-     /// Print to cout a list of the signals received so far by this process
-     void display_received_signals();
- 
+       /// Add signal to record
+       void add_signal(int sig);
+
+       /// Print to string a list of the signals received so far by this process
+       std::string display_received_signals();
+
+       /// Check if shutdown is in progress and raise appropriate termination 
+       /// exception if so.
+       /// (to be called by Gambit once it is safe to trigger termination)
+       void check_for_shutdown_signal();
+
+       /// Only check for emergency shutdown signals (i.e. do not attempt synchronisation) 
+       void check_for_emergency_shutdown_signal();
+
+       // Disable shutdown signals after the first one
+       // Override via inifile value
+       volatile sig_atomic_t ignore_signals_during_shutdown = 1; 
+
+       /// Switch to threadsafe signal handling mode
+       void entering_multithreaded_region();
+
+       /// Exit threadsafe signal handling mode
+       void leaving_multithreaded_region();
+
+       /// Report 'true' if inside a multithreaded region (according to our own flag)
+       bool inside_multithreaded_region();
+
+     private:
+       /// Flag to warn if early shutdown is already in process
+       volatile sig_atomic_t shutdownBegun = 0;
+       /// Flag to warn if the shutdown that is in progress is an emergency shutdown
+       /// (use to decided whether to attempt MPI synchronisation)
+       volatile sig_atomic_t emergency = 0;
+
+       /// Number of times synchronisation for soft shutdown has been attempted;
+       int shutdown_attempts = 0;
+
+       /// Flag to switch signal handling behavior to multithreaded mode
+       /// (i.e. triggers switch to threadsafe emergency shutdown behaviour)
+       bool inside_omp_block = 0;
+
+       /// Array to record received signals (up to max_signals)
+       static const int MAX_SIGNALS = 10;
+       int received_signals[MAX_SIGNALS];
+       int N_signals = 0;
+
+       /// Attempt to synchronise all processes, but abort if it takes too long
+       bool all_processes_ready();
+
+       /// Perform soft shutdown if processes can be synchronised, else do
+       /// hard shutdown.
+       void attempt_soft_shutdown();
+
    };
 
    /// Retrieve global instance of signal handler options struct
    SignalData& signaldata();
    
    /// @{ Signal handler functions
-            
+
+   /// Helpers
+   void sub_sighandler_emergency(int sig);
+   void sub_sighandler_emergency_longjmp(int sig);
+   void sub_sighandler_emergency_omp(int sig);
+        
+   /// Primary signal handlers
    void sighandler_emergency(int sig);
    void sighandler_emergency_longjmp(int sig);
    void sighandler_soft(int sig);

@@ -97,11 +97,20 @@ macro(enable_auto_rebuild package)
   add_dependencies(${package} check-rebuild-${package})
 endmacro()
 
-# Macro to write some shell commands to clean an external code
-macro(add_external_clean package dir target)
+# Macro to write some shell commands to clean an external code.  Adds clean-[package] and distclean-[package]
+macro(add_external_clean package dir dl target)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
-  add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install
+  add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
                                      COMMAND cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
+  add_custom_target(nuke-${package} DEPENDS clean-${package}
+                                    COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${dl} || true
+                                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
+endmacro()
+
+# Macro to add all additional targets for a new backend
+macro(add_extra_targets package dir dl target)
+  enable_auto_rebuild(${package})
+  add_external_clean(${package} ${dir} ${dl} ${target})
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists
@@ -273,9 +282,13 @@ macro(BOSS_backend cmake_project backend_name backend_version)
     list(APPEND needs_BOSSing_failed ${cmake_project})
   else()
     list(APPEND needs_BOSSing ${cmake_project})
+    set(BOSS_includes "-I ${Boost_INCLUDE_DIR}")
+    if (NOT ${GSL_INCLUDE_DIR} STREQUAL "")
+      set(BOSS_includes "${BOSS_includes} -I ${GSL_INCLUDE_DIR}")
+    endif()
     ExternalProject_Add_Step(${cmake_project} BOSS
       # Run BOSS
-      COMMAND cd ${BOSS_dir} && python boss.py ${backend_name}_${backend_version_safe}
+      COMMAND cd ${BOSS_dir} && python boss.py ${BOSS_includes} --castxml-cc=${CMAKE_CXX_COMPILER} ${backend_name}_${backend_version_safe}
       # Copy BOSS-generated files to correct folders within Backends/include
       COMMAND cp -r ${BOSS_dir}/BOSS_output/backend_types/${backend_name}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
       COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${backend_name}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${backend_name}_${backend_version_safe}.hpp

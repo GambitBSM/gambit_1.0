@@ -87,3 +87,9 @@ add_dependencies(distclean clean-pyc)
 # Ensure that distclean removes backup files
 add_custom_target(clean-backup COMMAND ${CMAKE_COMMAND} -E remove *~ */*~ */*/*~ */*/*/*~ */*/*/*/*~ WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_dependencies(distclean clean-backup)
+
+# Add clean targets for doxygen
+add_custom_target(clean-docs WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                             COMMAND ${CMAKE_COMMAND} -E remove_directory doc/html 
+                             COMMAND ${CMAKE_COMMAND} -E remove doc/*.tmp)
+add_dependencies(distclean clean-docs)

@@ -112,20 +112,10 @@ START_MODULE
   #undef CAPABILITY
 
 
-  #define CAPABILITY event_gen                // calling fastsim
-  START_CAPABILITY
-
-    #define FUNCTION Aldos_evgen          // Name of the function that initializes the fastsim
-    START_FUNCTION(HEPUtils::Event) // returns the number of events for now
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-
   #define CAPABILITY fast_sim_init                // calling fastsim
   START_CAPABILITY
     #define FUNCTION fast_sim_init                // calling fastsim
-      START_FUNCTION(double)                 // returns the number of events for now
+      START_FUNCTION(double)                      // returns the number of events for now
       BACKEND_REQ(fast_sim_init, (), int, (int))
     #undef FUNCTION
   #undef CAPABILITY

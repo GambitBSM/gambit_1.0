@@ -216,6 +216,8 @@ namespace Gambit {
 
       void collect_results() {
         SignalRegionData results_SR;
+        results_SR.set_analysis_name("Analysis_CMS_2LEPDMTOP_20invfb");
+        results_SR.set_sr_label("SR");
         results_SR.set_observation(1.);
         results_SR.set_background(1.89);
         results_SR.set_backgroundsys(0.66);

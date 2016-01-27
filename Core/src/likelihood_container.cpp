@@ -26,6 +26,8 @@
 
 #include "gambit/Core/likelihood_container.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/signal_helpers.hpp"
+#include "gambit/Utils/signal_handling.hpp"
 
 //#define CORE_DEBUG
 
@@ -128,11 +130,20 @@ namespace Gambit
   /// Evaluate total likelihood function
   double Likelihood_Container::main (const std::vector<double> &in)
   {
+    /// Unblock system signals (these are blocked to prevent external scanner 
+    /// codes from getting interrupted while they are performing sensitive
+    /// tasks, like writing to disk; i.e. we do not trust them to have 
+    /// protected themselves properly.
+    unblock_signals();    
+
+    /// Check for signals to abort run
+    signaldata().check_for_shutdown_signal();
+
     double lnlike = 0;
     bool compute_aux = true;
     setParameters(in);
 
-    logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
+    logger() << LogTags::core << LogTags::debug << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
 
     // Begin timing of total likelihood evaluation
     std::chrono::time_point<std::chrono::system_clock> startL = std::chrono::system_clock::now();
@@ -143,7 +154,7 @@ namespace Gambit
     // First work through the target functors, i.e. the ones contributing to the likelihood.
     for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
     {
-      logger() << LogTags::core << "Calculating likelihood vertex " << *it << "." << EOM;
+      logger() << LogTags::core << LogTags::debug <<  "Calculating likelihood vertex " << *it << "." << EOM;
       try
       {
         dependencyResolver.calcObsLike(*it,getPtID()); //pointID is passed through to the printer call for each functor
@@ -197,12 +208,13 @@ namespace Gambit
         // If we've dropped below the likelihood corresponding to effective zero already, skip the rest of the vertices.
         if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, false);
 
-        logger() << LogTags::core << "Computed likelihood vertex " << *it << "." << EOM;
+        logger() << LogTags::core <<  LogTags::debug << "Computed likelihood vertex " << *it << "." << EOM;
       }
 
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
       catch(invalid_point_exception& e)
       {
+        // TODO: I did not tag this as "debug" since it is not "normal" behaviour; it is a borderline case though.
         logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
         logger().leaving_module();
         lnlike = min_valid_lnlike;
@@ -238,14 +250,15 @@ namespace Gambit
     {
       for (auto it = aux_vertices.begin(), end = aux_vertices.end(); it != end; ++it)
       {
-        logger() << LogTags::core << "Calculating auxiliary vertex " << *it << EOM;
+        logger() << LogTags::core << LogTags::debug << "Calculating auxiliary vertex " << *it << EOM;
         try
         {
           dependencyResolver.calcObsLike(*it,getPtID());
-          logger() << LogTags::core << "done with auxiliary vertex " << *it << EOM;;
+          logger() << LogTags::core << LogTags::debug << "done with auxiliary vertex " << *it << EOM;;
         }
         catch(Gambit::invalid_point_exception& e)
         {
+          // TODO: again, not tagged as 'debug' for now
           logger() << LogTags::core << "Observable calculation was declared invalid by " << e.thrower()->origin()
                    << "::" << e.thrower()->name() << ".  Not declaring point invalid, as no likelihood depends on this."
                    << "Message: " << e.message() << EOM;
@@ -256,6 +269,26 @@ namespace Gambit
 
     if (debug) cout << "log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
+
+    #ifdef WITH_MPI
+    /// Check for shutdown signals from other processes
+    if(errorComm.Iprobe(MPI_ANY_SOURCE, errorComm.mytag))
+    {
+      int tmp_buf;
+      MPI_Status msg_status;
+      errorComm.Recv(&tmp_buf, 1, MPI_ANY_SOURCE, errorComm.mytag, &msg_status);
+      // Set flag to begin emergency shutdown
+      signaldata().set_shutdown_begun(1);
+      logger() << LogTags::core << LogTags::info << "Received emergency shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
+    }
+    #endif
+
+    /// Check once more for signals to abort run
+    signaldata().check_for_shutdown_signal();
+
+    /// Re-block signals 
+    block_signals();    
+
     return lnlike;
   }
 

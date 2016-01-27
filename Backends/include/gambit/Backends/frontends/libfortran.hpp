@@ -4,11 +4,7 @@
  * \author Anders Kvellestad
  */
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME LibFortran
-#endif
+#define BACKENDNAME LibFortran
 #define VERSION 1.0
 #define SAFE_VERSION 1_0
 

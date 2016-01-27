@@ -56,19 +56,18 @@ Scanner:
   scanners:
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 10
-        tol: 0.1
-        mmodal: 1
-        # write native MultiNest ascii output files?
-        outfile: 0
-        # resuming doesn't work yet
-        resume: 0
-        # No options to set, but still need the nodes at the moment...
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:  
+      like:  Likelihood
+      nlive: 10
+      tol: 0.1
+      mmodal: 1
+      # write native MultiNest ascii output files?
+      outfile: 0
+      # resuming doesn't work yet
+      resume: 0
+      # No options to set, but still need the nodes at the moment...
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:  
 
 ObsLikes:
 
@@ -323,7 +322,7 @@ Rules:
     function:  getPythia
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "../gambit_internal/extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/"
+      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV:
         pythiaOptions_1: ["Print:quiet = on",
                           "PartonLevel:MPI = off",
