@@ -1,0 +1,191 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Muon yields from annihilation in the Earth/Sun -- theory}
+
+We need to take into account all processes that yield muon neutrinos from
+annihilation in the Earth/Sun. To do this, we use a Monte Carlo, WimpSim \cite{wimpsim}, to simulate
+annihilations in the center of the Sun/Earth, neutrino oscillations and neutrino interactions on the way out of the Sun/Earth and to the detector.
+
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Monte Carlo simulations with WimpSim}
+\label{sec:nt-mcsim}
+
+We need to
+evaluate the yield of different particles per neutralino annihilation.
+The hadronization and/or decay of the annihilation products are
+simulated with {\sc Pythia} \cite{pythia} 6.414
+and we here describe how the simulations are done.
+For annihilation in the Sun/Earth 
+the simulations are done for a set of 22 neutralino
+masses, $m_{\chi}$ = 3, 6, 10, 25, 50, 80.3, 91.2, 100, 150, 176, 200, 250,
+350, 500, 750, 1000, 1500, 2000, 3000, 5000, 7500 and 10000 GeV\@.
+We tabulate the yields and then interpolate these tables in \ds.
+
+We are mainly interested in the flux of high energy muon neutrinos
+     and neutrino-induced muons at a neutrino telescope.  We simulate 13
+     `fundamental' annihilation channels,      
+%     $u\bar{u}$$c\bar{c}$, $b\bar{b}$,
+%     $t\bar{t}$, $\tau^+\tau^-$, $W^+W^-$ and $Z^0 Z^{0}$
+for each mass
+     (where kinematically allowed) above. In Table~\ref{tab:wa-channels} we list the `fundamental' channels for which simulations are run and the full set of more complex channels.
+     Pions and kaons get stopped
+     before they decay and are thus made stable in the {\sc Pythia}
+     simulations so that they don't produce any neutrinos.  For
+     annihilation channels containing Higgs bosons, we can calculate
+     the yield from these fundamental channels by letting the Higgs
+     bosons decaying in flight (see below).  We also take into account
+     the energy losses of $B$-mesons in the Sun and the Earth by
+     following the approximate treatment of \cite{RS} but with updated
+     $B$-meson interaction cross sections as given in
+     \cite{joakimthesis}.  We also take neutrino-interactions on the
+     way out of the Sun into account by considering the charged-current
+     interaction as a neutrino-loss and the neutral current
+     interactions are simulated with \code{nusigma} \cite{nusigma}.  The
+     neutrino-nucleon charged current interactions close to the
+     detector are also simulated with \code{nusigma} and finally the
+     multiple Coulomb scattering of the muon on its way to the detector
+     is calculated using distributions from~\cite{PDG}. We have used the CTEQ6
+     structure functions in these simulations.
+     We also take into account neutrino oscillations with a full three-neutrino Monte Carlo. All of these processes are put into the simulation package \code{WimpSim} \code{wimpsim} that can be downloaded separately. Results from simulation runs with this package are included with \ds.
+     For more details on these simulations, see~\cite{wimpnu}.
+     
+\begin{table}
+\begin{tabular}{llll}
+Annihilation channel & & Internal channel & Internal channel array index  \\
+\code{ch} & Particles & \code{chi} & \code{chii} \\ \hline
+1 & $S_1^0 S_1^0$ & - & - \\
+2 & $S_1^0 S_2^0$ & - & - \\
+3 & $S_2^0 S_2^0$ & - & - \\
+4 & $S_3^0 S_3^0$ & - & - \\
+5 & $S_1^0 S_3^0$ & - & - \\
+6 & $S_2^0 S_3^0$ & - & - \\
+7 & $S^- S^+$ & - & - \\
+8 & $Z^0 S_1^0$ & - & - \\
+9 & $Z^0 S_2^0$ & - & - \\
+10 & $Z^0 S_3^0$ & - & - \\
+11 & $W^- S^+ / W^+ W^-$ & - & - \\
+12 & $Z^0 Z^0$ & 9 & 9 \\
+13 & $W^+ W^-$ & 8 & 8 \\
+14 & $\nu_e \bar{\nu}_e$ & 12 & 11 \\
+15 & $e^+ e^-$ & - & - \\
+16 & $\nu_\mu \bar{\nu}_\mu$ & 13 & 12 \\
+17 & $\mu^+ \mu^-$ & 10 & - \\
+18 & $\nu_\tau \bar{\nu}_\tau$ & 14 & 13 \\
+19 & $\tau^+ \tau^-$ & 11 & 10 \\
+20 & $u \bar{u}$ & 2 & 2 \\
+21 & $d \bar{d}$ & 1 & 1 \\
+22 & $c \bar{c}$ & 4 & 4 \\
+23 & $s \bar{s}$ & 3 & 3 \\
+24 & $t \bar{t}$ & 6 & 6 \\
+25 & $b \bar{b}$ & 5 & 5 \\
+26 & $g g$ & 7 & 7 \\
+27 & $q q g$ & - & - \\
+28 & $\gamma \gamma$ & - & -\\
+29 & $Z^0 \gamma$ & - & - \\ \hline
+\end{tabular}
+\caption{The annihilation channels \code{ch} used in \code{dswayieldone}. Also shown are the internal channel numbers \code{chi} used for the fundamental channels used in the simulations (used by routine \code{dswayieldf}). To save some additional space with the data files in memory, there are also array index channel numbers \code{chii} that are only used internally to access the right elements of the yield arrays. $S$ denotes scalars (Higgs bosons).
+\label{tab:wa-channels}}
+\end{table}
+
+
+     For each annihilation channel and mass we simulate $10^{7}$ annihilations and tabulate the final results as a
+     neutrino-yield, neutrino-to-lepton conversion rate, a muon yield and hadronic shower yields
+     differential in energy and angle from the center of the Sun/Earth.
+     We also tabulate the integrated yield above a given threshold and
+     below an opening angle $\theta$. We assumed throughout that the
+     surrounding medium is water with a density of 1.0 g/cm$^3$. Hence,
+     the neutrino-to-muon conversion rates have to be multiplied by the
+     density of the medium. In the muon fluxes, the density cancels out
+     (to within a few percent). All results are summarized as yield tables that can be loaded and interpolated in with \ds\. This is done with the function \code{dswayieldf}. There are three kinds of yields (two-dimensional in opening angle $\theta$ and energy),
+     \code{kind}=1 gives integrated yields, \code{kind}=2 gives differential yields and \code{kind}=3 gives yields integrated in angle, but differential in $\theta$. For each \code{kind}, there are 26 different \code{type}s of yield available according to Table~\ref{tab:wa-types}. As a default, only \code{type} 3--4, 9--10 and 13--14 are included in the \ds\ download, as these are the most commonly used types. If you need any other types, download the auxiliary data files from \url{http://www.darksusy.org}, unpack them in \code{share/DarkSUSY} in the \ds\ root directory, and then do a usual configure and make to install them.
+Also note that the \code{kind}=3 yields are not tabulated directly, but are instead calculated and tabulated when the simulation tables are read in during \ds\ initialization.
+
+\begin{table}
+\begin{tabular}{ll}
+Decay width channel &  \\
+\code{dch} & Particles \\ \hline
+1--29 & Same as the annihilation channels in Table~\ref{tab:wa-channels}. \\
+30 & Sfermions \\
+31 & Neutralinos \\
+32 & Charginos \\ \hline
+\end{tabular}
+\caption{The neutral scalar (Higgs) decay width channels used. In \ds\, these are stored in the array \code{hdwidth(i,j)} where \code{i} is the decay channel index above and \code{j} is the Higgs number (1--3 for $H_1^0$, $H_2^0$ and $H_3^0$ respectively). For the \code{wa} routines, these decay branching ratios (partial width divided by total width) are stored in \code{dswas0br(i,j)}.
+ \label{tab:hdecay0}}
+\end{table}
+
+\begin{table}
+\begin{tabular}{ll}
+Decay width channel &  \\
+\code{dch} & Particles \\ \hline
+1 & $u \bar{d}$ \\
+2 & $u \bar{s}$ \\
+3 & $u \bar{b}$ \\
+4 & $c \bar{d}$ \\
+5 & $c \bar{s}$ \\
+6 & $c \bar{b}$ \\
+7 & $t \bar{d}$ \\
+8 & $t \bar{s}$ \\
+9 & $t \bar{b}$ \\
+10 & $\nu_e e^+$ \\
+11 & $\nu_\mu \mu^+$ \\
+12 & $\nu_\tau \tau^+$ \\
+13 & $W^+ S_1^0$ \\
+14 & $W^+ S_2^0$ \\
+15 & $W^+ S_3^0$ \\
+20 & Sfermions \\
+21 & Neutralinos and charginos\\
+\end{tabular}
+\caption{The (positively) charged scalar (Higgs) decay width channels used. In \ds\, these are stored in the array \code{hdwidth(i,4)} where \code{i} is the decay channel index above. For the \code{wa} routines, these decay branching ratios (partial width divided by total width) are stored in \code{dswascbr(i)}.
+ \label{tab:hdecay+}}
+\end{table}
+
+
+\begin{table}
+\begin{tabular}{lll}
+Yield type & & \\
+\code{type} & Yield & Unit \\ \hline
+1 & $\nu_e$ & $10^{-30}$ m$^{-2}$ annihilation$^{-1}$ \\
+2 & $\bar{\nu}_e$ & $10^{-30}$ m$^{-2}$ annihilation$^{-1}$ \\
+3 & $\nu_\mu$ & $10^{-30}$ m$^{-2}$ annihilation$^{-1}$ \\
+4 & $\bar{\nu}_\mu$ & $10^{-30}$ m$^{-2}$ annihilation$^{-1}$ \\
+5 & $\nu_\tau$ & $10^{-30}$ m$^{-2}$ annihilation$^{-1}$ \\
+6 & $\bar{\nu}_\tau$ & $10^{-30}$ m$^{-2}$ annihilation$^{-1}$ \\
+7 & $e^-$ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+8 & $e^+$ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+9 & $\mu^-$ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+10 & $\mu^+$ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+11 & $\tau^-$ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+12 & $\tau^+$ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+13 & $\mu^-$ at an imaginary plane at detector & $10^{-30}$ m$^{-2}$ annihilation$^{-1}$ \\
+14 & $\mu^+$ at an imaginary plane at detector & $10^{-30}$ m$^{-2}$ annihilation$^{-1}$ \\
+15 & hadronic shower from $\nu_e$ CC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+16 & hadronic shower from $\bar{\nu}_e$ CC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+17 & hadronic shower from $\nu_\mu$ CC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+18 & hadronic shower from $\bar{\nu}_\mu$ CC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+19 & hadronic shower from $\nu_\tau$ CC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+20 & hadronic shower from $\bar{\nu}_\tau$ CC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+21 & hadronic shower from $\nu_e$ NC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+22 & hadronic shower from $\bar{\nu}_e$ NC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+23 & hadronic shower from $\nu_\mu$ NC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+24 & hadronic shower from $\bar{\nu}_\mu$ NC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+25 & hadronic shower from $\nu_\tau$ NC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+26 & hadronic shower from $\bar{\nu}_\tau$ NC int.\ at neutrino-nucleon vertex & $10^{-30}$ m$^{-3}$ annihilation$^{-1}$ \\
+\end{tabular}
+\caption{The yield types available from the \code{wa} routines. All of these yields are at the detector (currently IceCube). Note that the units are for integrated yields (\code{kind}=1), for differential
+yields (\code{kind}=2), the units should be multiplied by GeV$^{-1}$ degree$^{-1}$.
+CC int.\ = charged current interactions. NC int.\ = neutral current interactions.
+\label{tab:wa-types}}
+\end{table}
+
+With these simulations, we can calculate the yield for any of these
+particles for a given MSSM model.  For the Higgs bosons, which decay
+in flight, an integration over the angle of the decay products with
+respect to the direction of the Higgs boson is performed.  Given the
+branching ratios for different annihilation channels it is then
+straightforward to compute the yield above any given energy
+threshold and within any angular region around the Sun or the center
+of the Earth. The routine \code{dswayieldone} calculates the yield for one channel, i.e.\ even these complex channels containing Higgs bosons, whereas the main routine \code{dswayield} calculates the total
+yield for a given model. Note that the WIMP annihilation yield routines do not know about SUSY at all, so before they are called, a routine \code{dswasetup} is called to set up the annihilation branching ratios for the WIMP and decay channels for the Higgs bosons. In Tables~\ref{tab:hdecay0} and \ref{tab:hdecay+}, the Higgs decay width channels are given.
+ If these routines are used with other particle physics models, replace \code{dswasetup} with a routine appropriate for your particle physics model and then call \code{dswayield} as usual.
+
