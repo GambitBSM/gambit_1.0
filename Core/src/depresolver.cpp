@@ -28,8 +28,8 @@
 
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Models/models.hpp"
-#include "gambit/Logs/log.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 

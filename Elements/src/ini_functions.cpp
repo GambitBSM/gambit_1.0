@@ -24,9 +24,11 @@
 #include <dlfcn.h>
 
 #include "gambit/Elements/ini_functions.hpp"
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
+#include "gambit/Logs/logging.hpp"
 
 #ifdef HAVE_LINK_H
   #include <link.h>

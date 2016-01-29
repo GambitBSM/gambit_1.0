@@ -16,11 +16,11 @@
 
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Models/model_helpers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Elements/numerical_constants.hpp"
 
 #include "gambit/Models/models/MSSM7atQ.hpp"
-
+#include "gambit/Elements/sminputs.hpp"
 
 // Activate debug output
 //#define MSSM7atQ_DBUG

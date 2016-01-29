@@ -21,7 +21,7 @@
 //
 //  *********************************************
 
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Models/model_macros.hpp"
 
 #include "gambit/Models/models/extraCMSSM.hpp"

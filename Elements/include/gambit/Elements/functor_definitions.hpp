@@ -39,13 +39,10 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Models/models.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Printers/baseprinter.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
-
-// This is no longer needed by the printers
-#include "gambit/Elements/all_functor_types.hpp"
 
 namespace Gambit
 {

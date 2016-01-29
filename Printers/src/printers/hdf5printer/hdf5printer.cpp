@@ -104,7 +104,7 @@
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"

@@ -27,6 +27,9 @@
 #include <fstream>
 #include <iomanip>
 
+// Boost
+#include <boost/preprocessor/seq/for_each_i.hpp>
+
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
@@ -35,7 +38,8 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/VertexBufferNumeric1D_HDF5.hpp"
 #include "gambit/Utils/yaml_options.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Utils/cats.hpp"
+#include "gambit/Logs/logger.hpp"
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
@@ -360,10 +364,11 @@ namespace Gambit
 
         // The type of the template print function buffers
         #define TEMPLATE_BUFFTYPE(TYPE) VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>
+
         #define TEMPLATE_PRINT(r,data,i,elem)                                   \
           NEW_BUFFMAN(TEMPLATE_BUFFTYPE(elem),CAT(template_,i))                 \
           void _print(elem const& value, const std::string& label, const int vID, \
-                       const unsigned int mpirank, const unsigned long pointID)                 \
+                       const unsigned int mpirank, const unsigned long pointID) \
           {                                                                     \
             template_print(value,label,vID,mpirank,pointID);                    \
           }                                                          

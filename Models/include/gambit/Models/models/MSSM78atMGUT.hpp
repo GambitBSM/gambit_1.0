@@ -23,6 +23,11 @@
 
 #include "gambit/Models/models/MSSM78atQ.hpp" // Must include models which are targets of translation functions
 
+// Forward declaration of needed types
+namespace Gambit {
+   class Spectrum;
+}
+
 // General GUT boundary condition parameterisation of the MSSM
 // There are several of these, compatible with different spectrum generators
 // To use a constrained GUT model like the CMSSM, there needs to be an 
