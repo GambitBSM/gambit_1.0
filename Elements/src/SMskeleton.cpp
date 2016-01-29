@@ -15,6 +15,7 @@
 ///  *********************************************
 
 #include "gambit/Elements/SMskeleton.hpp" 
+#include "gambit/Utils/util_functions.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
