@@ -34,9 +34,6 @@ FeynHiggs:
 LibFarrayTest:
   1.0:         ./Backends/examples/libFarrayTest.so
 
-FastSim:
-  1.0:         ./Backends/installed/fastsim/1.0/libfastsim.so
-
 LibFirst:
   1.0:         ./Backends/examples/libfirst.so
   1.1:         ./Backends/examples/libfirst.so
