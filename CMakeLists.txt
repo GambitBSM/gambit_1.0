@@ -27,9 +27,12 @@
 # Require a minimum cmake version of 2.8.5
 cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
 
+SET(CMAKE_BUILD_TYPE_STRING "Choose the type of build, options are: None Debug Release Release_03 RelWithDebInfo MinSizeRel.")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  SET(CMAKE_BUILD_TYPE Debug CACHE STRING
-      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+  SET(CMAKE_BUILD_TYPE None CACHE STRING "${CMAKE_BUILD_TYPE_STRING}" FORCE)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release_03")
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING "${CMAKE_BUILD_TYPE_STRING}" FORCE)
+  SET(FORCE_03 TRUE)
 endif()
 
 # Set certain policies to NEW
@@ -195,9 +198,9 @@ include(cmake/warnings.cmake)
 
 # Construct the full set of compiler flags to be used for external projects
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")# ${CMAKE_C_FLAGS_DEBUG}")
-  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")# ${CMAKE_CXX_FLAGS_DEBUG}")
-  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")# ${CMAKE_Fortran_FLAGS_DEBUG}")
+  set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
+  set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_DEBUG}")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
   # Unless invoked with FORCE_O3, drop down to -O2 optimisation for more reasonable compile time.
   if (NOT DEFINED FORCE_O3)
@@ -219,7 +222,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
   set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_MINSIZEREL}")
   set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_MINSIZEREL}")
-  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_MINSIZEREL}")
+  set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_MINSIZEREL}")  
 else()
   set(GAMBIT_C_FLAGS "${CMAKE_C_FLAGS}")
   set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -230,6 +233,9 @@ endif()
 set(GAMBIT_VERSION_MAJOR 1)
 set(GAMBIT_VERSION_MINOR 0)
 set(GAMBIT_VERSION_REVISION 0)
+
+# Add doxygen build as an external project
+add_custom_target(docs  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND doxygen doc/doxygen.conf)
 
 # Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
 add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
@@ -251,11 +257,13 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/scratch")
 endif()
 
 # Generate the ScannerBit compilation files
-message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
-set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
-execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${locate_scanners})
-message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
+  set(scanner_harvester ${PROJECT_SOURCE_DIR}/ScannerBit/scripts/scanner+_harvester.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
+  execute_process(RESULT_VARIABLE result COMMAND python ${scanner_harvester} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+  check_result(${result} ${scanner_harvester})
+  message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
+endif()
 
 # Generate the cmake_variables.hpp file
 include(cmake/preprocessor.cmake)
@@ -304,7 +312,7 @@ add_dependencies(printer_harvest module_harvest)
 
 # Generate the CMakeLists.txt files for GAMBIT modules, Backends, Models and Printers)
 message("${Yellow}-- Updating GAMBIT module, model, backend, and printer CMake files.${ColourReset}")
-set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/scripts/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 check_result(${result} ${update_cmakelists})
 message("${Yellow}-- Updating GAMBIT module, backend, and printer CMake files - done.${ColourReset}")

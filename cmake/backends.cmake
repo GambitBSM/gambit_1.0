@@ -211,9 +211,10 @@ ExternalProject_Add(micromegasSingletDM
 add_extra_targets(micromegasSingletDM ${micromegasSingletDM_dir} ${backend_download}/${micromegasSingletDM_dl} clean)
 
 # Pythia
+option(PYTHIA_OPT "For Pythia: Switch Intel's multi-file interprocedural optimization on/off" ON)
 set(pythia_CXXFLAGS "${GAMBIT_CXX_FLAGS}")
 # - Add additional compiler-specific optimisation flags and suppress warnings from -Wextra when building Pythia with gcc
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -fast -g")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -ffast-math")
@@ -224,8 +225,13 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 else()
   set(pythia_CXX_SHARED_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}")
 endif()
+# - Switch off Intel's multi-file interprocedural optimization?
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND NOT "${PYTHIA_OPT}")
+  set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -no-ipo -ip")
+endif()
 # - Set include directories
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
+
 # - Set local paths
 set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
 set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212")
