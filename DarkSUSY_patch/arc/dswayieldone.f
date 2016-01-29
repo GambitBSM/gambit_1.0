@@ -143,9 +143,7 @@ c      write(*,*) 'dswayieldone called with ',kind,type
 c--------------------------------------- if first call, load yield tables
 
       if (first) then
-        write(*,*) 'First! I am thread number ',omp_get_thread_num()
         if (omp_get_thread_num() .eq. 0) then
-          write(*,*) 'Initialising! I am thread number ',omp_get_thread_num()
           do i=1,26
              yload(1,i)=0
              yload(2,i)=0
@@ -154,16 +152,13 @@ c--------------------------------------- if first call, load yield tables
           walast(2)=0 ! last index for differential yields stored in memory
           first=.false.
         endif
-        write(*,*) 'Waiting! I am thread number ',omp_get_thread_num()
 !$omp barrier
       endif
 
       if (yload(kind2ki(kind),type).eq.0) then
         if (omp_get_thread_num() .eq. 0) then
-          write(*,*) 'Initialising again! I am thread number ',omp_get_thread_num()
           call dswainit(kind,type)
         endif
-        write(*,*) 'Waiting again! I am thread number ',omp_get_thread_num()
 !$omp barrier
       endif
 
