@@ -42,8 +42,14 @@ namespace Gambit
       /// @{
       /// Default constructor
       DecayTable() {}
+      /// Create a DecayTable from an SLHA file
+      DecayTable(str slha, int context = 0, bool force_SM_fermion_gauge_eigenstates = false);
+      /// Create a DecayTable from an SLHA file, with PDG code remapping
+      DecayTable(str slha, const std::map<int, int>& PDG_map, int context = 0, bool force_SM_fermion_gauge_eigenstates = false);
       /// Create a DecayTable from an SLHAea object containing DECAY blocks
-      DecayTable(const SLHAstruct&, int context = 0);
+      DecayTable(const SLHAstruct&, int context = 0, bool force_SM_fermion_gauge_eigenstates = false);
+      /// Create a DecayTable from an SLHAea object containing DECAY blocks, and remap PDG codes according to provided map
+      DecayTable(const SLHAstruct&, const std::map<int, int>&, int context = 0, bool force_SM_fermion_gauge_eigenstates = false);
       /// @}
 
       /// Output entire decay table as an SLHAea file full of DECAY blocks
@@ -88,7 +94,7 @@ namespace Gambit
         private:
 
           /// Initialise a DecayTable Entry using an SLHAea DECAY block
-          void init(const SLHAea::Block&, int);
+          void init(const SLHAea::Block&, int, bool force_SM_fermion_gauge_eigenstates = false);
 
           /// Make sure all particles listed in a set are actually known to the GAMBIT particle database
           void check_particles_exist(std::multiset< std::pair<int,int> >&) const;
@@ -120,9 +126,10 @@ namespace Gambit
           /// Constructor taking total width
           Entry(double width) :  width_in_GeV(width), calculator(""), calculator_version(""), warnings(""), errors("") {}
           /// Constructor creating a DecayTable Entry from an SLHAea DECAY block; full version 
-          Entry(const SLHAea::Block&, int context = 0, str calculator = "", str calculator_version = "");
+          Entry(const SLHAea::Block&, int context = 0, bool force_SM_fermion_gauge_eigenstates = false, str calculator = "", str calculator_version = "");
           /// Constructor creating a DecayTable Entry from an SLHAea DECAY block; full version; version assuming block def is already known 
-          Entry(const SLHAea::Block&, SLHAea::Block::const_iterator, int context = 0, str calculator = "", str calculator_version = "");
+          Entry(const SLHAea::Block&, SLHAea::Block::const_iterator, int context = 0, bool force_SM_fermion_gauge_eigenstates = false,
+           str calculator = "", str calculator_version = "");
 
           /// Set branching fraction for decay to a given final state.
           /// Supports arbitrarily many final state particles.

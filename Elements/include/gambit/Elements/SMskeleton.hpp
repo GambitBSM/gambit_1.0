@@ -52,10 +52,12 @@ namespace Gambit
            double get_MGluon_pole()    const; 
                                              
            double get_MW_pole()        const; 
+
+           double get_sinthW2_pole()   const;
            
-           double get_md() const;
-           double get_mu() const;
-           double get_ms() const;
+           double get_md()             const;
+           double get_mu()             const;
+           double get_ms()             const;
            /// @}
       };
 
