@@ -188,11 +188,11 @@ ObsLikes:
 # SM Nuisance Parameter Likelihoods:
 # SI nuclear parameters likelihood (only works for nuclear_params_sigmas_sigmal model)
     - capability: lnL_SI_nuclear_parameters
-      purpose:  Likelihood
+      purpose:  LogLike
 
 # DM Local Density likelihood
     - capability: lnL_rho0
-      purpose: Likelihood
+      purpose: LogLike
       
 # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses

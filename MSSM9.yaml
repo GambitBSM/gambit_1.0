@@ -148,6 +148,10 @@ ObsLikes:
     - capability: lnL_SI_nuclear_parameters
       purpose:    LogLike
 
+# DM Local Density likelihood
+    - capability: lnL_rho0
+      purpose: LogLike
+
     #- purpose:    LogLike
     #  capability: LHC_Combined_LogLike
 
