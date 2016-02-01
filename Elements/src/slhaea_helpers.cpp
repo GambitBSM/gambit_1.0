@@ -24,6 +24,22 @@
 
 namespace Gambit
 {
+  /// Read an SLHA file in to an SLHAea object with some error-checking
+  SLHAstruct read_SLHA(str slha)
+  {
+     SLHAstruct slhaea;
+     std::ifstream ifs(slha.c_str());
+     if (!ifs.good())
+     {
+       std::ostringstream err;
+       err << "ERROR: SLHA file " << slha << " not found.";
+       utils_error().raise(LOCAL_INFO,err.str());
+     }
+     ifs >> slhaea;
+     ifs.close();
+     return slhaea;
+   }
+
   /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
   void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object)
   {

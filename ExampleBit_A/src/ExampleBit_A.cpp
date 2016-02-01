@@ -118,30 +118,20 @@ namespace Gambit
       else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from external_funcs BEgroup.");
     }
 
-    // FastSim
-    void fast_sim_init(double &which) {
-
-      //using namespace Pipes::fast_sim;
-      using namespace Pipes::fast_sim_init;
-      cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
-        BEreq::fast_sim_init.name() << " from " <<
-        BEreq::fast_sim_init.backend() << ", v" <<
-        BEreq::fast_sim_init.version() << "." << endl;
-
-      cout << " calling function from library" << BEreq::fast_sim_init(1) << endl;
-      which = 10;
-
-    }
 
     /// Example of interacting with models
     void damu (double &result)
     {
       using namespace Pipes::damu;
       std::cout << "In ExampleBit_A, function damu" << std::endl;
+      logger() << "Is CMSSM being scanned? " << ModelInUse("CMSSM") << endl;
+      logger() << "Is NUHM1 being scanned? " << ModelInUse("NUHM1") << endl;
+      logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
+      logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
+      logger() << info << EOM;
       std::cout << "  Printing parameter values:" << std::endl;
-      std::cout << "p1: " << *Param["p1"] << std::endl;
-      std::cout << "p2: " << *Param["p2"] << std::endl;
-      std::cout << "p3: " << *Param["p3"] << std::endl;
+      std::cout << "mu: " << *Param["mu"] << std::endl;
+      std::cout << "sigma: " << *Param["sigma"] << std::endl;
       //A safety_bucket containing the ModelParameters object itself is also
       //available as a dependency at Pipes::<functionname>::Dep::<modelname>_parameters,
       //in case you want to do something more advanced than just read off the
@@ -169,13 +159,9 @@ namespace Gambit
 
       double loglTotal = 0.;
 
-      //logger() << "Is CMSSM_demo being scanned? " << ModelInUse("CMSSM_demo") << endl;
-      //logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
-      //logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
-      //logger() << info << EOM;
-
       // The loglikelihood value for the hypothesised parameters is then:
-      if (ModelInUse("NormalDist")) {
+      if (ModelInUse("NormalDist"))
+      {
         for (int i=0; i<N; ++i)
         {
           loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
@@ -183,7 +169,9 @@ namespace Gambit
       }
       else
       {
-         ExampleBit_A_error().raise(LOCAL_INFO,"Whoops, you are not scanning the model NormalDist! There is probably a bug ExampleBit_A_rollcall.hpp; this module function should have ALLOW_MODELS(NormalDist) defined.");
+         ExampleBit_A_error().raise(LOCAL_INFO,"Whoops, you are not scanning the model "
+          " NormalDist! There is probably a bug ExampleBit_A_rollcall.hpp; this module "
+          " function should have ALLOW_MODELS(NormalDist) defined.");
       }
       result = loglTotal;
     }

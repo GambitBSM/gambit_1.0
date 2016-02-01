@@ -100,14 +100,14 @@ namespace Gambit
     }
     if (not override_present)
     {
-      if (custom_bepathfile_exists and bepathfile[be][ver])
+      if (custom_bepathfile_exists and bepathfile[be] and bepathfile[be][ver])
       {
         p = bepathfile[be][ver].as<str>();
         if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
       }
       else
       {
-        if (default_bepathfile[be][ver])
+        if (default_bepathfile[be] and default_bepathfile[be][ver])
         {
           p = default_bepathfile[be][ver].as<str>();
           if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
