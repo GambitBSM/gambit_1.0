@@ -28,7 +28,7 @@ include(CMakeParseArguments)
 
 # Add precompiled header support
 ##include(cmake/PrecompiledHeader.cmake)
-#include(cmake/cotire.cmake)
+include(cmake/cotire.cmake)
 
 # defining some colors
 string(ASCII 27 Esc)
@@ -154,7 +154,7 @@ function(add_gambit_library libraryname)
   endif()
 
   # Cotire speeds up compilation by automatically generating and precompiling prefix headers for the targets
-  #cotire(${libraryname})
+  cotire(${libraryname})
   ##add_precompiled_header(${libraryname} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/common.hpp" TRUE)
 
 endfunction()
@@ -262,7 +262,7 @@ function(add_gambit_executable executablename LIBRARIES)
   endif()
 
   # Cotire speeds up compilation by automatically generating and precompiling prefix headers for the targets
-  #cotire(${executablename})
+  cotire(${executablename})
   ##add_precompiled_header(${executablename} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/common.hpp" TRUE)
 
 endfunction()

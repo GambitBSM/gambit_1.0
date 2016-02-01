@@ -76,6 +76,7 @@ namespace Gambit
      template <typename TYPE>
      LogMaster& operator << (LogMaster& logobj, const TYPE& input)
      {
+       using ::Gambit::operator<<; // Unhide operator overloads in Gambit scope
        std::stringstream ss;
        ss << input;
        logobj << ss.str();
