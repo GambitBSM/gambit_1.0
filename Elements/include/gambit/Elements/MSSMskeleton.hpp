@@ -63,6 +63,7 @@ namespace Gambit
            double get_g2() const;
            double get_g3() const;
            double get_tanbeta() const;
+           double get_sinthW2_DRbar() const;
   
            double get_MGlu_pole() const;
 
@@ -98,19 +99,30 @@ namespace Gambit
          friend class PhysDer  <MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
 
          private:
+
             typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MTget; 
 
-            typedef MSSMea Model; 
+            typedef MSSMea Model;
+
+            /// Set pole mass uncertainties
+            void set_pole_mass_uncertainties(double);
 
          public:
-            // Constructors/destructors
-            MSSMskeleton();
-            MSSMskeleton(const SLHAstruct&);
-            MSSMskeleton(const MSSMskeleton&);
+            /// Constructors.
+            /// The optional double uncert is the uncertainty to assign to pole masses (default is 3%).
+            /// @{
+            MSSMskeleton(double uncert = 0.03);
+            MSSMskeleton(const SLHAstruct&, double uncert = 0.03);
+            MSSMskeleton(const MSSMskeleton&, double uncert = 0.03);
+            /// @}
+
+            /// Destructor
             virtual ~MSSMskeleton() {};
 
             virtual int get_index_offset() const;
             virtual SLHAstruct getSLHAea() const;
+            virtual void add_to_SLHAea(SLHAea::Coll&) const; 
+            virtual const std::map<int, int>& PDG_translator() const;
  
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes

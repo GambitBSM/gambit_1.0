@@ -80,7 +80,7 @@ namespace Gambit
     /// @{
     double functor::getRuntimeAverage() { return 0; }
     double functor::getInvalidationRate() { return 0; }
-    void functor::setFadeRate() {}
+    void functor::setFadeRate(double) {}
     void functor::notifyOfInvalidation(const str&) {}
     void functor::reset() {}
     void functor::reset(int) {}

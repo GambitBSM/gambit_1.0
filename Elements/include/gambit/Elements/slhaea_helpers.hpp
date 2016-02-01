@@ -37,6 +37,9 @@ namespace Gambit
   /// Less confusing name for SLHAea container class
   typedef SLHAea::Coll SLHAstruct;
 
+  /// Read an SLHA file in to an SLHAea object with some error-checking
+  SLHAstruct read_SLHA(str slha); 
+
   /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
   void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object);
 

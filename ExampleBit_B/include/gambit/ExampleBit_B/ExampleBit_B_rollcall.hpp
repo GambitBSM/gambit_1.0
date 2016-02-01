@@ -74,7 +74,7 @@ START_MODULE
 
     #define FUNCTION xsection               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-    ALLOW_MODELS(MSSM_demo,NormalDist)
+    ALLOW_MODELS(demo_B,NormalDist)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -86,7 +86,7 @@ START_MODULE
     #define FUNCTION exampleCharge          // Name of specific function providing the observable
     START_FUNCTION(int)                     // Function calculates an integer variable
     ALLOW_MODEL(NormalDist)
-    ALLOW_MODELS(MSSM_demo, TWOHDM, UED)    // Function is only allowed to be used with the MSSM, 2HDM, UED and their descendents
+    ALLOW_MODELS(demo_B, nonexistent_model) // Function is only allowed to be used with models NormalDist, demo_B, nonexistent_model and their descendents
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -110,7 +110,7 @@ START_MODULE
     BACKEND_REQ(SomeInt, (model_dependent_reqs, libfirst1_only), int)
     BACKEND_REQ(someFunction, (libfirst1_only, common_be), void, ())
 
-    ACTIVATE_BACKEND_REQ_FOR_MODELS( (MSSM_demo, UED), (model_dependent_reqs) )
+    ACTIVATE_BACKEND_REQ_FOR_MODELS( (demo_B, nonexistent_model), (model_dependent_reqs) )
     BACKEND_OPTION( (LibFirst, 1.1), (libfirst1_only, lib123) )
     BACKEND_OPTION( (LibSecond), (lib123) )
     BACKEND_OPTION( (LibThird, 1.2, 1.3 , 1.5), (lib123) )
@@ -120,7 +120,7 @@ START_MODULE
     START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
     ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.1 or 1.2 
     ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
-    ACTIVATE_FOR_MODEL(MSSM_demo)                          // Dependency counts when scanning the MSSM or one of its sub-models
+    ACTIVATE_FOR_MODEL(demo_B)                             // Dependency counts when scanning demo_B or one of its sub-models
     #undef CONDITIONAL_DEPENDENCY
 
     #undef FUNCTION

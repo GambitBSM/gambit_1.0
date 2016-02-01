@@ -25,8 +25,11 @@ namespace Gambit
       /// Skeleton "model" class which interacts with an SLHAea object
       class SLHAeaModel
       {
-         private:
+         protected:
+           /// SLHAea object
            SLHAea::Coll data;
+           /// PDG translation map (e.g. from SLHA1 to SLHA2 for MSSMskeleton) 
+           std::map<int, int> PDG_translation_map;
 
          public:
            /// @{ Constructors
@@ -36,6 +39,12 @@ namespace Gambit
 
            /// Get reference to internal SLHAea object
            const SLHAea::Coll& getSLHAea() const;
+
+           /// Add spectrum information to an SLHAea object
+           void add_to_SLHAea(SLHAea::Coll&) const;
+
+           /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+           const std::map<int, int>& PDG_translator() const;
 
            /// Helper functions to do error checking for SLHAea object contents
            double getdata(const std::string& block, int index) const;
