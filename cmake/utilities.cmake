@@ -1,23 +1,23 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  Helpful CMake utility macros and functions for
-#  GAMBIT.  
-#    
+#  GAMBIT.
+#
 #************************************************
-#                                                
-#  Authors (add name and date if you modify):                                    
-#                                                
+#
+#  Authors (add name and date if you modify):
+#
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
 #        2015 Feb
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
-#                                               
+#
 #************************************************
 
 include(CMakeParseArguments)
@@ -62,7 +62,7 @@ macro(retrieve_bits bits root excludes quiet)
   file(GLOB children RELATIVE ${root} ${root}/*Bit*)
 
   foreach(child ${children})
-    string(FIND ${child} ".dSYM" FOUND_DSYM)  
+    string(FIND ${child} ".dSYM" FOUND_DSYM)
     if(IS_DIRECTORY ${root}/${child} AND ${FOUND_DSYM} EQUAL -1)
 
       # Work out if this Bit should be excluded or not.  Never exclude ScannerBit.
@@ -70,15 +70,15 @@ macro(retrieve_bits bits root excludes quiet)
       if(NOT ${child} STREQUAL "ScannerBit")
         foreach(x ${excludes})
           string(FIND ${child} ${x} location)
-          if(${location} EQUAL 0) 
+          if(${location} EQUAL 0)
             set(excluded "YES")
           endif()
-        endforeach()      
+        endforeach()
       endif()
 
       # Exclude or add this bit.
       if(${excluded})
-        if(NOT ${quiet} STREQUAL "Quiet") 
+        if(NOT ${quiet} STREQUAL "Quiet")
           message("${BoldCyan} X Excluding ${child} from GAMBIT configuration.${ColourReset}")
         endif()
       else()
@@ -93,15 +93,24 @@ endmacro()
 # Macro to clear the build stamp manually for an external project
 macro(enable_auto_rebuild package)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}-build")
-  add_custom_target(check-rebuild-${package} ${CMAKE_COMMAND} -E remove -f ${rmstring}) 
+  add_custom_target(check-rebuild-${package} ${CMAKE_COMMAND} -E remove -f ${rmstring})
   add_dependencies(${package} check-rebuild-${package})
 endmacro()
 
-# Macro to write some shell commands to clean an external code
-macro(add_external_clean package dir target)
+# Macro to write some shell commands to clean an external code.  Adds clean-[package] and distclean-[package]
+macro(add_external_clean package dir dl target)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
-  add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install
+  add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
                                      COMMAND cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
+  add_custom_target(nuke-${package} DEPENDS clean-${package}
+                                    COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${dl} || true
+                                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
+endmacro()
+
+# Macro to add all additional targets for a new backend
+macro(add_extra_targets package dir dl target)
+  enable_auto_rebuild(${package})
+  add_external_clean(${package} ${dir} ${dl} ${target})
 endmacro()
 
 # Function to add GAMBIT directory if and only if it exists
@@ -148,8 +157,8 @@ macro(strip_library KEY LIBRARIES)
         "${lib}" STREQUAL "optimized")
       set(LIB_TYPE_SPECIFIER "${lib}")
     else()
-      string(FIND "${lib}" "/${KEY}." FOUND_KEY1)  
-      string(FIND "${lib}" "/lib${KEY}." FOUND_KEY2)  
+      string(FIND "${lib}" "/${KEY}." FOUND_KEY1)
+      string(FIND "${lib}" "/lib${KEY}." FOUND_KEY2)
       if (${FOUND_KEY1} EQUAL -1 AND ${FOUND_KEY2} EQUAL -1)
         if (LIB_TYPE_SPECIFIER)
           list(APPEND ${LIBRARIES} ${LIB_TYPE_SPECIFIER})
@@ -165,7 +174,7 @@ macro(strip_library KEY LIBRARIES)
 endmacro()
 
 # Function to add a GAMBIT custom command and target
-macro(add_gambit_custom target filename HARVESTER DEPS) 
+macro(add_gambit_custom target filename HARVESTER DEPS)
   add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${filename}
                      COMMAND python ${${HARVESTER}} -x __not_a_real_name__,${itch_with_commas}
                      COMMAND touch ${CMAKE_BINARY_DIR}/${filename}
@@ -223,15 +232,15 @@ function(add_gambit_executable executablename LIBRARIES)
   if (GSL_FOUND)
     if(HDF5_FOUND AND "${USE_MATH_LIBRARY_CHOSEN_BY}" STREQUAL "HDF5")
       strip_library(m GSL_LIBRARIES)
-    endif()             
+    endif()
     set(LIBRARIES ${LIBRARIES} ${GSL_LIBRARIES})
   endif()
   if(HDF5_FOUND)
     if(GSL_FOUND AND "${USE_MATH_LIBRARY_CHOSEN_BY}" STREQUAL "GSL")
       strip_library(m HDF5_LIBRARIES)
-    endif()   
+    endif()
     set(LIBRARIES ${LIBRARIES} ${HDF5_LIBRARIES})
-  endif()                                         
+  endif()
   target_link_libraries(${executablename} ${LIBRARIES} yaml-cpp)
   add_dependencies(${executablename} mkpath)
 
@@ -250,9 +259,38 @@ function(find_python_module module)
   else()
     if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
       message(FATAL_ERROR "-- FAILED to find Python module ${module}.")
-    else()        
+    else()
       message(STATUS "FAILED to find Python module ${module}.")
-    endif() 
+    endif()
   endif()
 endfunction()
+
+# Macro for BOSSing a backend
+set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
+macro(BOSS_backend cmake_project backend_name backend_version)
+
+  # Replace "." by "_" in the backend version number
+  string(REPLACE "." "_" backend_version_safe ${backend_version})
+
+  # Construct path to the config file expected by BOSS
+  set(config_file_path "${BOSS_dir}/configs/${backend_name}_${backend_version_safe}.py")
+
+  # Only add BOSS step to the build process if the config file exists
+  if(NOT EXISTS ${config_file_path})
+    message("${BoldRed}-- The config file ${config_file_path} required ")
+    message("   to BOSS the backend ${backend_name} ${backend_version} was not found. This backend will not be BOSSed. ${ColourReset}")
+    list(APPEND needs_BOSSing_failed ${cmake_project})
+  else()
+    list(APPEND needs_BOSSing ${cmake_project})
+    ExternalProject_Add_Step(${cmake_project} BOSS
+      # Run BOSS
+      COMMAND cd ${BOSS_dir} && python boss.py --castxml-cc=${CMAKE_CXX_COMPILER} ${backend_name}_${backend_version_safe}
+      # Copy BOSS-generated files to correct folders within Backends/include
+      COMMAND cp -r ${BOSS_dir}/BOSS_output/backend_types/${backend_name}_${backend_version_safe} ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_types/
+      COMMAND cp ${BOSS_dir}/BOSS_output/frontends/${backend_name}_${backend_version_safe}.hpp ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/${backend_name}_${backend_version_safe}.hpp
+      DEPENDEES patch
+      DEPENDERS configure
+    )
+  endif()
+endmacro()
 

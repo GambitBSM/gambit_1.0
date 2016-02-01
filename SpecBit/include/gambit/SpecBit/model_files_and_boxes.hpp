@@ -68,7 +68,7 @@
                                                                                        \
           /* Internal data members for keeping track of objects needed/created by FlexibleSUSY */ \
           Model model;     /* FlexibleSUSY model */                                    \
-          QedQcd oneset;   /* SoftSUSY format Standard Model parameters */             \
+          softsusy::QedQcd oneset;   /* SoftSUSY format Standard Model parameters */ \
           InputParameters input;    /* Parameters needed to compute points of Model */ \
           Problems problems; /* FlexibleSUSY problems report manager */                \
           Scales scales;   /*scales at shich coundary conditions are applied*/         \
@@ -78,7 +78,7 @@
              virtual functions for that */                                             \
                                                                                        \
           /* Constructor */                                                            \
-          CAT_3(MODELNAME,_,interface) (const SpectrumGenerator& spectrum_generator, const QedQcd& onesetIN, const InputParameters& inputIN) \
+          CAT_3(MODELNAME,_,interface) (const SpectrumGenerator& spectrum_generator, const softsusy::QedQcd& onesetIN, const InputParameters& inputIN) \
           : model(spectrum_generator.get_model())                                      \
           , oneset(onesetIN)                                                           \
           , input(inputIN)                                                             \
@@ -138,8 +138,13 @@ MAKE_INTERFACE  // Creates CMSSM_interface class
 MAKE_INTERFACE
 #undef MODELNAME
 
+#define MODELNAME SSDM
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary NSM model headers etc.
+MAKE_INTERFACE
+#undef MODELNAME
+
 #define MODELNAME MSSM
-#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSMatMGUT model headers etc.
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSM model headers etc.
 MAKE_INTERFACE
 #undef MODELNAME
 

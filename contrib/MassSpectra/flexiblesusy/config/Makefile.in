@@ -17,6 +17,7 @@ ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
 ENABLE_META        := @ENABLE_META@
 ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
 ENABLE_THREADS     := @ENABLE_THREADS@
+ENABLE_TSIL        := @ENABLE_TSIL@
 
 # C/C++ preprocessor defines
 ENABLE_COLOR_PRINTOUT := @ENABLE_COLOR_PRINTOUT@
@@ -39,13 +40,14 @@ ALGORITHMS         := @ALGORITHMS@
 CXX                := @CXX@
 CPPFLAGS           := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
 CXXFLAGS           := @CXXFLAGS@
-CXX_DEP_GEN        := @CXX_DEP_GEN@
-CXXFLAGS_DEP_GEN   := @CXXFLAGS_DEP_GEN@
+CC                 := @CC@
+CFLAGS             := @CFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
 FC                 := @FC@
 FFLAGS             := @FFLAGS@
 FLIBS              := @FLIBS@
-FOR_DEP_GEN        := @FOR_DEP_GEN@
 MAKELIB            := @MAKELIB@
+LDFLAGS            := @LDFLAGS@
+LDLIBS             := @LDLIBS@
 LIBEXT             := @LIBEXT@
 BLASLIBS           := @BLASLIBS@
 BOOSTTESTLIBS      := @BOOSTTESTLIBS@
@@ -58,6 +60,8 @@ LAPACKLIBS         := @LAPACKLIBS@
 LOOPTOOLSFLAGS     := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS      := @LOOPTOOLSLIBS@
 THREADLIBS         := @THREADLIBS@
+TSILFLAGS          := @TSILFLAGS@
+TSILLIBS           := @TSILLIBS@
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 LOOPFUNCFLAGS	   := $(LOOPTOOLSFLAGS)
@@ -84,6 +88,9 @@ FSCONFIG := @FSCONFIG@
 
 # configure script
 CONFIGURE_SCRIPT := $(ABSBASEDIR)/configure
+
+# dependency generator
+DEPGEN = $(DEPGEN_EXE)
 
 # script which lists the SARAH model files
 SARAH_DEP_GEN := @SARAH_DEP_GEN@
@@ -141,8 +148,10 @@ ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
 ifeq ($(findstring pack-,$(MAKECMDGOALS)),)
+ifeq ($(findstring print-,$(MAKECMDGOALS)),)
 ifeq ($(findstring release-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif
@@ -168,19 +177,17 @@ clean-dep:
 depend:  clean-dep
 depend:  $(ALLDEP)
 
-%.d: %.cpp
-# -MT '$*.o' ensures that the target contains the full path
-	$(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
+%.d: %.cpp | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
-%.d: %.f
-# the sed script ensures that the target contains the full path
-	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
-	sed 's|.*\.o:|$*.o:|' > $@
+%.d: %.c | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
-%.d: %.F
-# the sed script ensures that the target contains the full path
-	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
-	sed 's|.*\.o:|$*.o:|' > $@
+%.d: %.f | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
+
+%.d: %.F | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
 clean-executables:
 	-rm -f $(ALLEXE)
@@ -205,13 +212,12 @@ showbuild:
 	@echo "CXX                = $(CXX)"
 	@echo "CPPFLAGS           = $(CPPFLAGS)"
 	@echo "CXXFLAGS           = $(CXXFLAGS)"
-	@echo "CXX_DEP_GEN        = $(CXX_DEP_GEN)"
-	@echo "CXXFLAGS_DEP_GEN   = $(CXXFLAGS_DEP_GEN)"
 	@echo "FC                 = $(FC)"
 	@echo "FFLAGS             = $(FFLAGS)"
 	@echo "FLIBS              = $(FLIBS)"
-	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "MAKELIB            = $(MAKELIB)"
+	@echo "LDFLAGS            = $(LDFLAGS)"
+	@echo "LDLIBS             = $(LDLIBS)"
 	@echo "LIBEXT             = $(LIBEXT)"
 	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
@@ -224,6 +230,8 @@ showbuild:
 	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
 	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
+	@echo "TSILLIBS           = $(TSILLIBS)"
+	@echo "TSILFLAGS          = $(TSILFLAGS)"
 	@echo ""
 	@echo "ENABLE_COLOR_PRINTOUT = $(ENABLE_COLOR_PRINTOUT)"
 	@echo "ENABLE_COMPILE     = $(ENABLE_COMPILE)"
@@ -235,11 +243,14 @@ showbuild:
 	@echo "ENABLE_SILENT      = $(ENABLE_SILENT)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
 	@echo "ENABLE_THREADS     = $(ENABLE_THREADS)"
+	@echo "ENABLE_TSIL        = $(ENABLE_TSIL)"
 	@echo "ENABLE_VERBOSE     = $(ENABLE_VERBOSE)"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"
 	@echo "$(MODULES)"
+
+print-% : ; @echo $* = $($*)
 
 tag:
 	git tag $(FLEXIBLESUSY_TAG)

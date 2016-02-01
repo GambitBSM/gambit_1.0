@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:14:17
+// File generated at Wed 28 Oct 2015 11:30:41
 
 #include "NUHMSSM_physical.hpp"
 #include "slha_io.hpp"
@@ -29,14 +29,14 @@ namespace flexiblesusy {
 
 NUHMSSM_physical::NUHMSSM_physical()
    :
-    MVG(0), MGlu(0), MFv(Eigen::Array<double,3,1>::Zero()), MVP(0), MVZ(0),
-       MSd(Eigen::Array<double,6,1>::Zero()), MSv(Eigen::Array<double,3,1>::Zero()
-       ), MSu(Eigen::Array<double,6,1>::Zero()), MSe(Eigen::Array<double,6,1>
-       ::Zero()), Mhh(Eigen::Array<double,2,1>::Zero()), MAh(Eigen::Array<double,2
-       ,1>::Zero()), MHpm(Eigen::Array<double,2,1>::Zero()), MChi(Eigen::Array<
-       double,4,1>::Zero()), MCha(Eigen::Array<double,2,1>::Zero()), MFe(
-       Eigen::Array<double,3,1>::Zero()), MFd(Eigen::Array<double,3,1>::Zero()),
-       MFu(Eigen::Array<double,3,1>::Zero()), MVWm(0)
+    MGlu(0), MFv(Eigen::Array<double,3,1>::Zero()), MVZ(0), MSd(Eigen::Array<
+       double,6,1>::Zero()), MSv(Eigen::Array<double,3,1>::Zero()), MSu(
+       Eigen::Array<double,6,1>::Zero()), MSe(Eigen::Array<double,6,1>::Zero()),
+       Mhh(Eigen::Array<double,2,1>::Zero()), MAh(Eigen::Array<double,2,1>::Zero()
+       ), MHpm(Eigen::Array<double,2,1>::Zero()), MChi(Eigen::Array<double,4,1>
+       ::Zero()), MCha(Eigen::Array<double,2,1>::Zero()), MFe(Eigen::Array<double,
+       3,1>::Zero()), MFd(Eigen::Array<double,3,1>::Zero()), MFu(Eigen::Array<
+       double,3,1>::Zero()), MVG(0), MVP(0), MVWm(0)
 
    , ZD(Eigen::Matrix<double,6,6>::Zero()), ZV(Eigen::Matrix<double,3,3>::Zero(
       )), ZU(Eigen::Matrix<double,6,6>::Zero()), ZE(Eigen::Matrix<double,6,6>
@@ -55,10 +55,8 @@ NUHMSSM_physical::NUHMSSM_physical()
 
 void NUHMSSM_physical::clear()
 {
-   MVG = 0.;
    MGlu = 0.;
    MFv = Eigen::Matrix<double,3,1>::Zero();
-   MVP = 0.;
    MVZ = 0.;
    MSd = Eigen::Matrix<double,6,1>::Zero();
    ZD = Eigen::Matrix<double,6,6>::Zero();
@@ -88,6 +86,8 @@ void NUHMSSM_physical::clear()
    MFu = Eigen::Matrix<double,3,1>::Zero();
    ZUL = Eigen::Matrix<std::complex<double>,3,3>::Zero();
    ZUR = Eigen::Matrix<std::complex<double>,3,3>::Zero();
+   MVG = 0.;
+   MVP = 0.;
    MVWm = 0.;
 
 }
@@ -119,10 +119,8 @@ void NUHMSSM_physical::print(std::ostream& ostr) const
    ostr << "----------------------------------------\n"
            "pole masses:\n"
            "----------------------------------------\n";
-   ostr << "MVG = " << MVG << '\n';
    ostr << "MGlu = " << MGlu << '\n';
    ostr << "MFv = " << MFv.transpose() << '\n';
-   ostr << "MVP = " << MVP << '\n';
    ostr << "MVZ = " << MVZ << '\n';
    ostr << "MSd = " << MSd.transpose() << '\n';
    ostr << "MSv = " << MSv.transpose() << '\n';
@@ -136,6 +134,8 @@ void NUHMSSM_physical::print(std::ostream& ostr) const
    ostr << "MFe = " << MFe.transpose() << '\n';
    ostr << "MFd = " << MFd.transpose() << '\n';
    ostr << "MFu = " << MFu.transpose() << '\n';
+   ostr << "MVG = " << MVG << '\n';
+   ostr << "MVP = " << MVP << '\n';
    ostr << "MVWm = " << MVWm << '\n';
 
    ostr << "----------------------------------------\n"

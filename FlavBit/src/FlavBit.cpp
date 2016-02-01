@@ -1233,10 +1233,8 @@ namespace Gambit
 
       if(*Dep::Debug_Cap)  cout<<"Starting b2sll_measurements function"<<endl;
 
-
-
-      Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
-      red->debug_mode(*Dep::Debug_Cap);
+      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+      red.debug_mode(*Dep::Debug_Cap);
       if(*Dep::Debug_Cap)  cout<<"init Flav Reader the B2sll "<<endl;
       vector<string> observablesn = {"FL", "AFB", "S3", "S4", "S5", "S7", "S8", "S9"};
       vector<string> observablesq = {"1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
@@ -1253,17 +1251,17 @@ namespace Gambit
 
       for(unsigned i=0;i<observables.size();++i)
       {
-        red->read_yaml_mesurement("example.yaml", observables[i]);
+        red.read_yaml_mesurement("example.yaml", observables[i]);
       }
 
-      red->create_global_corr();
+      red.create_global_corr();
       //cov matirces
 
-      boost::numeric::ublas::matrix<double> M_cov_uu=red->get_cov_uu();
-      boost::numeric::ublas::matrix<double> M_cov_du=red->get_cov_du();
-      boost::numeric::ublas::matrix<double> M_cov_ud=red->get_cov_ud();
-      boost::numeric::ublas::matrix<double> M_cov_dd=red->get_cov_dd();
-      boost::numeric::ublas::matrix<double> M_exp=red->get_exp_value();
+      boost::numeric::ublas::matrix<double> M_cov_uu=red.get_cov_uu();
+      boost::numeric::ublas::matrix<double> M_cov_du=red.get_cov_du();
+      boost::numeric::ublas::matrix<double> M_cov_ud=red.get_cov_ud();
+      boost::numeric::ublas::matrix<double> M_cov_dd=red.get_cov_dd();
+      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
       // we assert if the exrimental size and the observables are differnt size
       assert(! ( M_exp.size1() != observables.size()  ));
@@ -1458,16 +1456,16 @@ namespace Gambit
       // experimental measurement
       //Bsmumu
 
-      Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
-      red->debug_mode(*Dep::Debug_Cap);
+      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+      red.debug_mode(*Dep::Debug_Cap);
 
       if(*Dep::Debug_Cap) cout<<"Inited Flav reader"<<endl;
-      red->read_yaml_mesurement("example.yaml", "BR_Bs2mumu");
+      red.read_yaml_mesurement("example.yaml", "BR_Bs2mumu");
 
-      red->read_yaml_mesurement("example.yaml", "BR_B02mumu");
+      red.read_yaml_mesurement("example.yaml", "BR_B02mumu");
 
 
-      red->create_global_corr();
+      red.create_global_corr();
 
       double theory_bs2mumu=*(Dep::Bsmumu_untag);
       //SI_Bsmumu_untag(theory_bs2mumu);
@@ -1495,12 +1493,12 @@ namespace Gambit
 
       // #########################
 
-      boost::numeric::ublas::matrix<double> M_cov_uu=red->get_cov_uu();
-      boost::numeric::ublas::matrix<double> M_cov_du=red->get_cov_du();
-      boost::numeric::ublas::matrix<double> M_cov_ud=red->get_cov_ud();
-      boost::numeric::ublas::matrix<double> M_cov_dd=red->get_cov_dd();
+      boost::numeric::ublas::matrix<double> M_cov_uu=red.get_cov_uu();
+      boost::numeric::ublas::matrix<double> M_cov_du=red.get_cov_du();
+      boost::numeric::ublas::matrix<double> M_cov_ud=red.get_cov_ud();
+      boost::numeric::ublas::matrix<double> M_cov_dd=red.get_cov_dd();
 
-      boost::numeric::ublas::matrix<double> M_exp=red->get_exp_value();
+      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
 
 
@@ -1616,28 +1614,28 @@ namespace Gambit
       int n_experiments=5;
       // experimental measurement
 
-      Flav_reader *red = new Flav_reader(GAMBIT_DIR  "/FlavBit/data");
-      red->debug_mode(*Dep::Debug_Cap);
+      Flav_reader red(GAMBIT_DIR  "/FlavBit/data");
+      red.debug_mode(*Dep::Debug_Cap);
 
       if(*Dep::Debug_Cap)   cout<<"inited falv reader"<<endl;
-      red->read_yaml_mesurement("example.yaml", "BR_Btaunu");
+      red.read_yaml_mesurement("example.yaml", "BR_Btaunu");
 
       //#####################################################################
-      red->read_yaml_mesurement("example.yaml", "BR_BDtaunu");
-
-
-      //#####################################################################
-      red->read_yaml_mesurement("example.yaml", "BR_Dstaunu");
+      red.read_yaml_mesurement("example.yaml", "BR_BDtaunu");
 
 
       //#####################################################################
-      red->read_yaml_mesurement("example.yaml", "BR_Dsmunu");
+      red.read_yaml_mesurement("example.yaml", "BR_Dstaunu");
 
 
       //#####################################################################
-      red->read_yaml_mesurement("example.yaml", "BR_Dmunu");
+      red.read_yaml_mesurement("example.yaml", "BR_Dsmunu");
 
-      red->create_global_corr();
+
+      //#####################################################################
+      red.read_yaml_mesurement("example.yaml", "BR_Dmunu");
+
+      red.create_global_corr();
 
 
 
@@ -1692,12 +1690,12 @@ namespace Gambit
 
       // theory error done
 
-      boost::numeric::ublas::matrix<double> M_cov_uu=red->get_cov_uu();
-      boost::numeric::ublas::matrix<double> M_cov_du=red->get_cov_du();
-      boost::numeric::ublas::matrix<double> M_cov_ud=red->get_cov_ud();
-      boost::numeric::ublas::matrix<double> M_cov_dd=red->get_cov_dd();
+      boost::numeric::ublas::matrix<double> M_cov_uu=red.get_cov_uu();
+      boost::numeric::ublas::matrix<double> M_cov_du=red.get_cov_du();
+      boost::numeric::ublas::matrix<double> M_cov_ud=red.get_cov_ud();
+      boost::numeric::ublas::matrix<double> M_cov_dd=red.get_cov_dd();
 
-      boost::numeric::ublas::matrix<double> M_exp=red->get_exp_value();
+      boost::numeric::ublas::matrix<double> M_exp=red.get_exp_value();
 
 
       //#######################################################################

@@ -36,13 +36,15 @@ namespace Gambit
         {       
                 class Scan_Manager
                 {
-                private:
+                  private:
                         const Factory_Base *factory;
                         const Options options;
                         const Priors::CompositePrior *prior;
                         printer_interface *printerInterface;
+                        // Flag to indicate whether or not the prior and factory need deleting in the destructor.  Do not reset!
+                        bool has_local_prior_and_factory;
 
-                public:
+                  public:
                         Scan_Manager (const Factory_Base*, const Options, const Priors::CompositePrior*, printer_interface* = 0);
                         ~Scan_Manager();
                         int Run();                       

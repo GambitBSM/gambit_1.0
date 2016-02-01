@@ -1049,7 +1049,7 @@ START_MODULE
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, 
                                        nuyield_function_pointer, double&, double&, int&,
                                        double&, double&, const int&, const double&, 
-                                       const bool&, const bool&, const double&, 
+                                       const int&, const bool&, const double&, 
                                        const double&, void*&, const bool&))
     #undef FUNCTION
   #undef CAPABILITY
@@ -1112,7 +1112,7 @@ START_MODULE
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, 
                                        nuyield_function_pointer, double&, double&, int&,
                                        double&, double&, const int&, const double&, 
-                                       const bool&, const bool&, const double&, 
+                                       const int&, const bool&, const double&, 
                                        const double&, void*&, const bool&))
     #undef FUNCTION
   #undef CAPABILITY
@@ -1175,7 +1175,7 @@ START_MODULE
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, 
                                        nuyield_function_pointer, double&, double&, int&,
                                        double&, double&, const int&, const double&, 
-                                       const bool&, const bool&, const double&, 
+                                       const int&, const bool&, const double&, 
                                        const double&, void*&, const bool&))
     #undef FUNCTION
   #undef CAPABILITY
@@ -1238,7 +1238,7 @@ START_MODULE
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, 
                                        nuyield_function_pointer, double&, double&, int&,
                                        double&, double&, const int&, const double&, 
-                                       const bool&, const bool&, const double&, 
+                                       const int&, const bool&, const double&, 
                                        const double&, void*&, const bool&))
     #undef FUNCTION
   #undef CAPABILITY

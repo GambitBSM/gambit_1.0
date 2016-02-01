@@ -14,7 +14,7 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///    \date 2014 Sep - Dec, 2015 Jan - Mar
-///  
+///
 ///  *********************************************
 
 #include <string>
@@ -33,7 +33,7 @@
 #include "flexiblesusy/src/lowe.h"
 
 // Switch for debug mode
-#define SpecBit_DBUG 
+#define SpecBit_DBUG
 
 namespace Gambit
 {
@@ -54,15 +54,15 @@ namespace Gambit
       // SoftSUSY object used to set quark and lepton masses and gauge
       // couplings in QEDxQCD effective theory
       // Will be initialised by default using values in lowe.h, which we will
-      // override next. 
-      QedQcd oneset;
+      // override next.
+      softsusy::QedQcd oneset;
 
       // Fill QedQcd object with SMInputs values
       setup_QedQcd(oneset,sminputs);
 
       // Run everything to Mz
       oneset.toMz();
- 
+
       // Create a Spectrum object to wrap the qedqcd object
       static QedQcdWrapper qedqcdspec(oneset,sminputs);
       // TODO: This probably doesn't work, and only gets us one copy of the object once.
@@ -80,14 +80,14 @@ namespace Gambit
 
       // SoftSUSY object used to set quark and lepton masses and gauge
       // couplings in QEDxQCD effective theory
-      QedQcd oneset;
+      softsusy::QedQcd oneset;
 
       // Fill QedQcd object with SMInputs values
       setup_QedQcd(oneset,sminputs);
 
       // Run everything to Mz
       oneset.toMz();
- 
+
       // Create a SubSpectrum object to wrap the qedqcd object
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
       // extracted from the QedQcd object, so use the values that we put into it.)
@@ -96,7 +96,7 @@ namespace Gambit
       // Initialise an object to carry Higgs sector information
       SMHiggsModel higgsmodel;
       higgsmodel.HiggsPoleMass = *myPipe::Param.at("mH");
-      higgsmodel.HiggsVEV      = *myPipe::Param.at("vev");
+      higgsmodel.HiggsVEV      = 1. / sqrt(sqrt(2.)*sminputs.GF);
 
       // Create a SubSpectrum object to wrap the EW sector information
       SMHiggsContainer higgsspec(higgsmodel);

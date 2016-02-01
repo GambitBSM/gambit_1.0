@@ -60,7 +60,7 @@ namespace softsusy{
   
   const double EPSTOL = 1.0e-11; ///< underflow accuracy
   const double PI = atan(1.0) * 4.0; ///< or 3.141592653589793 longhand;
-  const double root2 = sqrt(2.0);
+  const double root2 = std::sqrt(2.0);
   ///< used to flag diabolical problems
   const double numberOfTheBeast = 6.66e66; 
   

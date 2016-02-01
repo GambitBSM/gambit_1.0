@@ -23,11 +23,7 @@
 ///  *********************************************
 
 // Identify backend
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME DDCalc0
-#endif
+#define BACKENDNAME DDCalc0
 #define VERSION 0.0
 #define SAFE_VERSION 0_0
 

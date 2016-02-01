@@ -28,11 +28,13 @@
 
 #ifdef WITH_MPI
   #include <mpi.h>
+  #include <chrono>
 #endif
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
+#include "gambit/Utils/signal_handling.hpp"
 
 namespace Gambit
 {
@@ -68,7 +70,7 @@ namespace Gambit
             printer *main_printer;
             std::string purpose;
             int rank;
-            
+ 
             virtual void deleter(Function_Base <ret (args...)> *in) const
             {
                     delete in;
@@ -80,7 +82,8 @@ namespace Gambit
             Function_Base() : rank(0)
             {
 #ifdef WITH_MPI
-                    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+                    GMPI::Comm world;
+                    rank = world.Get_rank();
 #endif
             }
             
@@ -91,30 +94,15 @@ namespace Gambit
             
             ret operator () (const args&... params) 
             {
-                    if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
-                    {
-                            Gambit::Scanner::Plugins::plugin_info.dump();
-#ifdef WITH_MPI
-                            MPI_Finalize();
-#endif
-                            exit(0);
-                    }
                     Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
                     unsigned long long int id = ++Gambit::Printers::get_point_id();
                     ret ret_val = main(params...);
-                    Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
+                    Gambit::Scanner::Plugins::plugin_info.set_calculating(false);
                     if (sizeof...(params) == 1)
                             main_printer->print(params..., "unitCubeParameters", rank, id);
                     main_printer->print(ret_val, purpose, rank, id);
                     main_printer->print(int(id), "pointID", rank, id);
                     main_printer->print(rank, "MPIrank", rank, id);
-                    
-//                     if (!Gambit::Scanner::Plugins::plugin_info.keep_running())
-//                     {
-//                             Gambit::Scanner::Plugins::plugin_info.dump();
-//                             exit(0);
-//                     }
-                    
                     return ret_val;
             }
             

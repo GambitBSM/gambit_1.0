@@ -99,7 +99,7 @@ namespace Gambit
     void Parser::readFile(std::string filename)
     {
       YAML::Node root = filename_to_node(filename);
-      basicParse(root);
+      basicParse(root,filename);
     }
 
     YAML::Node Parser::filename_to_node(std::string filename)
@@ -121,7 +121,7 @@ namespace Gambit
       return root;
     }
 
-    void Parser::basicParse(YAML::Node root)
+    void Parser::basicParse(YAML::Node root, std::string filename)
     {
       recursiveImport(root);
       parametersNode = root["Parameters"];
@@ -139,7 +139,16 @@ namespace Gambit
       }
       else
       {
-         inifile_error().raise(LOCAL_INFO,"No inifile entry found for 'default_output_path' in the KeyValue section. Please add this entry to your yaml file.");
+         // Assign a default default (;)) path based on the yaml file name
+         // Ridiculously we have to parse manually in C++ since no
+         // standard library tools for doing this exist...
+         // Assumes that file extension has only one dot, or that
+         // there is no file extension. Should work anyway if more
+         // dots, will just get a directory name with a dot in it.
+         size_t fname_start = filename.find_last_of("/\\");
+         size_t fname_end   = filename.find_last_of(".");
+         str fname = filename.substr(fname_start+1,fname_end);
+         defpath = "runs/" + fname + "/";
       }
       scannerNode["default_output_path"] = Utils::ensure_path_exists(defpath+"/scanner_plugins/");
       logNode    ["default_output_path"] = Utils::ensure_path_exists(defpath+"/logs/");
@@ -216,6 +225,8 @@ namespace Gambit
           }
       }
       // Initialise global LogMaster object
+      if(logNode["separate_file_per_process"])
+         logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>());
       logger().initialise(loggerinfo);
 
       // Parse the Parameters node and expand out some shorthand syntax

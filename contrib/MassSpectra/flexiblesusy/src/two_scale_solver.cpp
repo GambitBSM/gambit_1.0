@@ -32,6 +32,7 @@
 #include <iterator>
 #include <limits>
 #include <cassert>
+#include <sstream>
 
 /**
  * @file two_scale_solver.cpp

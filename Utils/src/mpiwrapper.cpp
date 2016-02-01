@@ -19,7 +19,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <time.h> // For short sleeps in master_wait_for_tag function
+#include <time.h> // For nanosleep (posix only)
+#include <chrono>
 
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Utils/new_mpi_datatypes.hpp"
@@ -36,11 +37,19 @@ namespace Gambit
       /// Default (attaches to MPI_COMM_WORLD):
       Comm::Comm() : boundcomm(MPI_COMM_WORLD)
       {
+         if(not Is_initialized())
+         {
+            utils_error().raise(LOCAL_INFO, "Error creating Comm object (wrapper for MPI communicator)! MPI has not been initialised!");
+         }
       }
 
       /// Copy existing communicator
       Comm::Comm(const MPI_Comm& comm) : boundcomm(comm)
       {
+         if(not Is_initialized())
+         {
+            utils_error().raise(LOCAL_INFO, "Error creating Comm object (wrapper for MPI communicator)! MPI has not been initialised!");
+         }
       }
 
       /// Duplicate input communicator into boundcomm
@@ -95,19 +104,19 @@ namespace Gambit
                {
                   // Do a blocking wait for each worker, until all messages received
                   int recv_buffer = 0; // To receive the null message
-                  //std::cout<<"rank "<<myRank<<": Waiting for tag "<<tag<<" from process "<<sender<<std::endl;
+                  //std::cerr<<"rank "<<myRank<<": Waiting for tag "<<tag<<" from process "<<sender<<std::endl;
                   Recv(&recv_buffer, 1, sender, tag); 
-                  //std::cout<<"rank "<<myRank<<": Received tag "<<tag<<" from process "<<sender<<std::endl;
+                  //std::cerr<<"rank "<<myRank<<": Received tag "<<tag<<" from process "<<sender<<std::endl;
                }
             }
             else
             {
                // Other processes simply signal that they have passed this point.
-               //std::cout<<"rank "<<myRank<<": Sending tag "<<tag<<" to process "<<0<<std::endl;
+               //std::cerr<<"rank "<<myRank<<": Sending tag "<<tag<<" to process "<<0<<std::endl;
                Isend(&null_send_buffer, 1, 0 /*master*/, tag, &req_null);
             }
          }
-         //std::cout<<"rank "<<myRank<<": Passed masterWaitForAll with tag "<<tag<<std::endl;
+         //std::cerr<<"rank "<<myRank<<": Passed masterWaitForAll with tag "<<tag<<std::endl;
       }
 
       /// Version of the above that loops over non-blocking commands. Could modify to do work
@@ -135,7 +144,7 @@ namespace Gambit
       //             // Check whether other processes have caught up yet
       //             for(std::size_t source=1;source<mpiSize;source++)
       //             {
-      //                //std::cout<<"rank "<<myRank<<": process "<<source<<" passed block? "<<passed[source]<<std::endl;
+      //                //std::cerr<<"rank "<<myRank<<": process "<<source<<" passed block? "<<passed[source]<<std::endl;
       //                if(not passed[source])
       //                {
       //                   if( Iprobe(source, tag, &status) )
@@ -176,7 +185,7 @@ namespace Gambit
                // Check whether other processes have caught up yet
                for(std::size_t dest=1; dest<mpiSize; dest++)
                {
-                  //std::cout<<"rank "<<myRank<<": Sending tag "<<tag<<" to process "<<dest<<std::endl;
+                  //std::cerr<<"rank "<<myRank<<": Sending tag "<<tag<<" to process "<<dest<<std::endl;
                   Isend(&null_send_buffer, 1, dest, tag, &req_null);
                }
             }
@@ -185,13 +194,84 @@ namespace Gambit
                // Keep this simple for now, and just block until message received.
                // Like above, could modify so that work could be done while waiting.
                int recv_buffer = 0; // To receive the null message
-               //std::cout<<"rank "<<myRank<<": Waiting for tag "<<tag<<" from process "<<0<<std::endl;
+               //std::cerr<<"rank "<<myRank<<": Waiting for tag "<<tag<<" from process "<<0<<std::endl;
                Recv(&recv_buffer, 1, 0 /*source*/, tag);
-               //std::cout<<"rank "<<myRank<<": Received tag "<<tag<<" from process "<<0<<std::endl;
+               //std::cerr<<"rank "<<myRank<<": Received tag "<<tag<<" from process "<<0<<std::endl;
             }
          }
-         //std::cout<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
+         //std::cerr<<"rank "<<myRank<<": Passed allWaitForMaster with tag "<<tag<<std::endl;
       }
+
+      bool Comm::BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag, std::ostream& errorlog)
+      {
+         std::size_t mpiSize = Get_size(); 
+         std::size_t myRank  = Get_rank();
+         bool timedout = false;
+
+         std::vector<bool> entered(mpiSize); // should init to "false"
+         entered[myRank] = true; // we know that we have entered the barrier
+         //std::cerr<<"rank "<<myRank<<": Entered BarrierWithTimeout (with tag "<<tag<<")"<<std::endl;
+         if(mpiSize>1)
+         {
+            int recv_buffer = 0; // To receive the null messages
+            MPI_Status status;
+
+            // First, tell all other processes that we have entered the barrier.
+            IsendToAll(&null_send_buffer, 1, tag, &req_null);
+
+            // Setup timeout interval and sleep time             
+            unsigned int Nchecks = 100; // Check for messages 100 times evenly spaced over the timeout interval
+            std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+
+            struct timespec sleeptime;
+            sleeptime.tv_sec = 0;
+            sleeptime.tv_nsec = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count() / Nchecks;
+
+            // Now, loop and wait for all other processes to send their own entering signals
+            while( not timedout and std::find(entered.begin(), entered.end(), false) != entered.end() ) // Pass when 'false' cannot be found
+            {
+               // Check whether other processes have entered the barrier
+               for(std::size_t source=0;source<mpiSize;source++)
+               {
+                  //std::cerr<<"rank "<<myRank<<": has process "<<source<<" entered BarrierWithTimeout? "<<entered[source]<<std::endl;
+                  if(not entered[source])
+                  {
+                     if( Iprobe(source, tag, &status) )
+                     {
+                        // Ok the source has now reached this barrier.
+                        entered[source] = true;
+                        Recv(&recv_buffer, 1, source, tag);
+                     } 
+                  }
+               }
+
+               // While waiting, could do work here.
+  
+               //std::cerr << "rank " << myRank <<": sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl;
+               // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
+               nanosleep(&sleeptime,NULL);
+
+               // Check if timeout interval has been exceeded
+               std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+               std::chrono::duration<double> time_waited = current - start;
+               //std::cerr << "rank " << myRank <<": time_waited = "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() << std::endl;
+               
+               if(time_waited >= timeout) timedout = true;
+            }
+         }
+
+         // if we timed out, spit out some errors
+         if(timedout)
+         {
+            errorlog << "rank " << myRank << ": timed out in BarrierWithTimeout (tag="<<tag<<") waiting for the following process(es): ";
+            for(std::size_t source=0;source<mpiSize;source++)
+            {
+               if(not entered[source]) errorlog << source << ", ";
+            }
+         }
+         return timedout;
+      }
+
 
       /// @}
 
@@ -236,7 +316,7 @@ namespace Gambit
         Printers::queue_mpidefs();
 
         // Do basic interrogation
-        std::cout << "Hooking up to MPI..." << std::endl;
+        std::cerr << "Hooking up to MPI..." << std::endl;
         if(Is_initialized())
         {
            std::ostringstream errmsg;
@@ -276,27 +356,27 @@ namespace Gambit
         // Create communicator and check out basic info
         Comm COMM_WORLD;
 
-        std::cout << "  Process pool size : " << COMM_WORLD.Get_size() << std::endl;
-        std::cout << "  I am process number " << COMM_WORLD.Get_rank() << std::endl;
+        std::cerr << "  Process pool size : " << COMM_WORLD.Get_size() << std::endl;
+        std::cerr << "  I am process number " << COMM_WORLD.Get_rank() << std::endl;
 
         // Run externally defined initialisation functions
-        std::cout << "  Running MPI initialisation functions..." << std::endl;
+        std::cerr << "  Running MPI initialisation functions..." << std::endl;
         for (std::vector<MpiIniFunc>::iterator it=get_mpi_ini_functions().begin();
               it != get_mpi_ini_functions().end(); it++)
         {
-          std::cout << "    - Running function '"<<it->myname()<<"'" << std::endl;
+          std::cerr << "    - Running function '"<<it->myname()<<"'" << std::endl;
           try
           {
              it->runme(); // Run function.
           }
           catch (const std::exception& e)
           {
-             std::cout << "Gambit has failed to initialise MPI due to fatal exception: " << e.what() << std::endl;
-             std::cout << "raised from an mpi_ini_function (with label="<<it->myname()<<") declared at: " << it->mylocation() << std::endl;
+             std::cerr << "Gambit has failed to initialise MPI due to fatal exception: " << e.what() << std::endl;
+             std::cerr << "raised from an mpi_ini_function (with label="<<it->myname()<<") declared at: " << it->mylocation() << std::endl;
              throw(e);
           }
         }
-        std::cout << "  MPI initialisation complete." << std::endl;
+        std::cerr << "  MPI initialisation complete." << std::endl;
       }
       
    }

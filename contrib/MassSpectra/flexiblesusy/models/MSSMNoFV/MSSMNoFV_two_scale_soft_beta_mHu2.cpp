@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:04:53
+// File generated at Wed 28 Oct 2015 11:46:23
 
 #include "MSSMNoFV_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -114,6 +114,25 @@ double MSSMNoFV_soft_parameters::calc_beta_mHu2_two_loop(const Soft_traces& soft
       + 32*tracemu2YuAdjYu*Sqr(g3) + 32*mHu2*traceYuAdjYu*Sqr(g3) + 64*
       traceYuAdjYu*AbsSqr(MassG)*Sqr(g3) - 32*traceAdjYuTYu*Conj(MassG)*Sqr(g3)
       ));
+
+
+   return beta_mHu2;
+}
+
+/**
+ * Calculates the three-loop beta function of mHu2.
+ *
+ * @return three-loop beta function
+ */
+double MSSMNoFV_soft_parameters::calc_beta_mHu2_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_mHu2;
+
+   beta_mHu2 = 0;
 
 
    return beta_mHu2;

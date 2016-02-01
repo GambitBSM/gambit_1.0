@@ -124,27 +124,24 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner: multinest
+  use_scanner: square_grid
 
   scanners:
     square_grid:
       plugin: square_grid
-      verion: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 3 #NxN grid
+      version: ">=1.0"
+      like: LogLike
+      grid_pts: 1 #NxN grid
 
     multinest:
       plugin: MultiNest
-      options:
-        like:  Likelihood
-        nlive: 1000
-        tol: 0.1
-        # No options to set, but still need the nodes at the moment...
-        aux_printer_txt_options:
-        aux_printer_stats_options:
-        aux_printer_live_options:
-
+      like:  LogLike
+      nlive: 1000
+      tol: 0.1
+      # No options to set, but still need the nodes at the moment...
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
 ###############################
 # Observables of interest
@@ -159,26 +156,26 @@ ObsLikes:
 #        GA_AnnYield:
 #          nbins: 20
     - capability: IC79_loglike
-      purpose: Likelihood
+      purpose: LogLike
 
 # Fermi LAT dwarf limits
     - capability: lnL_FermiLATdwarfs
       function: lnL_FermiLATdwarfs_gamLike
-      purpose:  Likelihood
+      purpose:  LogLike
     - capability: lnL_Higgs_invWidth
-      purpose: Likelihood
+      purpose: LogLike
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
     - capability: lnL_oh2
-      purpose: Likelihood
+      purpose: LogLike
       function: lnL_oh2_Simple
 # XENON100 2012 direct detection likelihood
     - capability: lnL_XENON100_2012
-      purpose: Likelihood
+      purpose: LogLike
 # LUX 2013 direct detection likelihood
     - capability: lnL_LUX_2013
-      purpose:  Likelihood
+      purpose:  LogLike
 # DARWIN argon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!
 #    - capability: lnL_DARWIN_Ar_2015
@@ -199,16 +196,16 @@ ObsLikes:
       
 # Charm quark and light quark mass ratio likelihoods
     - capability: lnL_light_quark_masses
-      purpose:  Likelihood
+      purpose:  LogLike
 # G_Fermi likelihood
     - capability: lnL_GF
-      purpose:  Likelihood
+      purpose:  LogLike
 # alpha_s likelihood
     - capability: lnL_alpha_s
-      purpose:  Likelihood
+      purpose:  LogLike
 # HiggsSignals LHC likelihood
     - capability: HS_LHC_lnL
-      purpose:  Likelihood
+      purpose:  LogLike
 
 Rules:
   # Gamma-rays -------------------------
@@ -311,7 +308,7 @@ Rules:
       # m_s
       ms_central: 95.E-03
       ms_error: 5.E-03
-       
+
 #########################
 # Logging setup
 #########################

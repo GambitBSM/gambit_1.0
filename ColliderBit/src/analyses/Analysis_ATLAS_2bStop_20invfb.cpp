@@ -390,6 +390,8 @@ namespace Gambit {
 
       void collect_results() {
         SignalRegionData results_SRA15;
+        results_SRA15.set_analysis_name("Analysis_ATLAS_2bStop_20invfb");
+        results_SRA15.set_sr_label("SRA15");
         results_SRA15.set_observation(102.);
         results_SRA15.set_background(94.);
         results_SRA15.set_backgroundsys(13.);
@@ -397,6 +399,8 @@ namespace Gambit {
         results_SRA15.set_signal(_numSRA15);
 
         SignalRegionData results_SRA20;
+        results_SRA20.set_analysis_name("Analysis_ATLAS_2bStop_20invfb");
+        results_SRA20.set_sr_label("SRA20");
         results_SRA20.set_observation(48.);
         results_SRA20.set_background(39.);
         results_SRA20.set_backgroundsys(6.);
@@ -404,6 +408,8 @@ namespace Gambit {
         results_SRA20.set_signal(_numSRA20);
 
         SignalRegionData results_SRA25;
+        results_SRA25.set_analysis_name("Analysis_ATLAS_2bStop_20invfb");
+        results_SRA25.set_sr_label("SRA25");
         results_SRA25.set_observation(14.);
         results_SRA25.set_background(15.8);
         results_SRA25.set_backgroundsys(2.8);
@@ -411,6 +417,8 @@ namespace Gambit {
         results_SRA25.set_signal(_numSRA25);
 
         SignalRegionData results_SRA30;
+        results_SRA30.set_analysis_name("Analysis_ATLAS_2bStop_20invfb");
+        results_SRA30.set_sr_label("SRA30");
         results_SRA30.set_observation(7.);
         results_SRA30.set_background(5.9);
         results_SRA30.set_backgroundsys(1.1);
@@ -418,6 +426,8 @@ namespace Gambit {
         results_SRA30.set_signal(_numSRA30);
 
         SignalRegionData results_SRA35;
+        results_SRA35.set_analysis_name("Analysis_ATLAS_2bStop_20invfb");
+        results_SRA35.set_sr_label("SRA35");
         results_SRA35.set_observation(3.);
         results_SRA35.set_background(2.5);
         results_SRA35.set_backgroundsys(0.6);
@@ -425,6 +435,8 @@ namespace Gambit {
         results_SRA35.set_signal(_numSRA35);
 
         SignalRegionData results_SRB;
+        results_SRB.set_analysis_name("Analysis_ATLAS_2bStop_20invfb");
+        results_SRB.set_sr_label("SRB");
         results_SRB.set_observation(65.);
         results_SRB.set_background(64.);
         results_SRB.set_backgroundsys(10.);

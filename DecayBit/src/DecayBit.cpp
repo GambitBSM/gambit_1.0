@@ -7,25 +7,25 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Aug
 ///  \date 2015 Mar-May
 ///
 ///  \author Csaba Balazs
-///          (csaba.balazs@monash.edu) 
+///          (csaba.balazs@monash.edu)
 ///  \date 2015 Jan-May
 ///
-///  \author Peter Athron  
+///  \author Peter Athron
 ///          (peter.athron@coepp.org.au)
-///  \date 2015 Jun 
+///  \date 2015 Jun
 ///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/virtual_higgs.hpp"
-#include "gambit/Elements/mssm_slhahelp.hpp" 
+#include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
 #include "gambit/Utils/version.hpp"
@@ -49,177 +49,177 @@ namespace Gambit
     /////////////// Standard Model ///////////////////
 
     /// SM decays: W+
-    void W_plus_decays (DecayTable::Entry& result) 
+    void W_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 2.085;                    
+      result.width_in_GeV = 2.085;
       result.positive_error = 4.2e-02;
       result.negative_error = 4.2e-02;
-      result.set_BF(0.1071, 0.0016, "e+", "nu_e");              
-      result.set_BF(0.1063, 0.0015, "mu+", "nu_mu");              
-      result.set_BF(0.1138, 0.0021, "tau+", "nu_tau");              
+      result.set_BF(0.1071, 0.0016, "e+", "nu_e");
+      result.set_BF(0.1063, 0.0015, "mu+", "nu_mu");
+      result.set_BF(0.1138, 0.0021, "tau+", "nu_tau");
       result.set_BF(0.6741, 0.0027, "hadron", "hadron");
     }
 
     /// SM decays: W-
-    void W_minus_decays (DecayTable::Entry& result) 
-    {     
+    void W_minus_decays (DecayTable::Entry& result)
+    {
       result = CP_conjugate(*Pipes::W_minus_decays::Dep::W_plus_decay_rates);
     }
 
     /// SM decays: Z
-    void Z_decays (DecayTable::Entry& result) 
+    void Z_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 2.4952;                    
+      result.width_in_GeV = 2.4952;
       result.positive_error = 2.3e-03;
       result.negative_error = 2.3e-03;
-      result.set_BF(0.03363, 0.00004, "e+", "e-");              
-      result.set_BF(0.03366, 0.00007, "mu+", "mu-");              
-      result.set_BF(0.03370, 0.00008, "tau+", "tau-");              
+      result.set_BF(0.03363, 0.00004, "e+", "e-");
+      result.set_BF(0.03366, 0.00007, "mu+", "mu-");
+      result.set_BF(0.03370, 0.00008, "tau+", "tau-");
       result.set_BF(0.6991, 0.0006, "hadron", "hadron");
     }
 
     /// SM decays: t
-    void t_decays (DecayTable::Entry& result) 
+    void t_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 2.00;                    
+      result.width_in_GeV = 2.00;
       result.positive_error = 4.7e-01;
       result.negative_error = 4.3e-01;
-      result.set_BF(0.91, 0.04, "W+", "b");  
+      result.set_BF(0.91, 0.04, "W+", "b");
     }
 
     /// SM decays: tbar
-    void tbar_decays (DecayTable::Entry& result) 
+    void tbar_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::tbar_decays::Dep::t_decay_rates);
     }
 
     /// SM decays: mu+
-    void mu_plus_decays (DecayTable::Entry& result) 
+    void mu_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 2.9959847e-19;                    
+      result.width_in_GeV = 2.9959847e-19;
       result.positive_error = 3.0e-25;
       result.negative_error = 3.0e-25;
-      result.set_BF(1.0, 0.0, "e+", "nu_e", "nubar_mu");              
+      result.set_BF(1.0, 0.0, "e+", "nu_e", "nubar_mu");
     }
 
     /// SM decays: mu-
-    void mu_minus_decays (DecayTable::Entry& result) 
+    void mu_minus_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::mu_minus_decays::Dep::mu_plus_decay_rates);
     }
 
     /// SM decays: tau+
-    void tau_plus_decays (DecayTable::Entry& result) 
+    void tau_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 2.267E-12;                    
+      result.width_in_GeV = 2.267E-12;
       result.positive_error = 4.0e-15;
       result.negative_error = 4.0e-15;
-      result.set_BF(0.1741, 0.0004, "mu+", "nu_mu", "nubar_tau");              
-      result.set_BF(0.1783, 0.0004, "e+", "nu_e", "nubar_tau");              
-      result.set_BF(0.1083, 0.0006, "pi+", "nubar_tau");              
-      result.set_BF(0.2552, 0.0009, "pi+", "pi0", "nubar_tau");              
-      result.set_BF(0.0930, 0.0011, "pi+", "pi0", "pi0", "nubar_tau");              
-      result.set_BF(0.0105, 0.0007, "pi+", "pi0", "pi0", "pi0", "nubar_tau");              
-      result.set_BF(0.0931, 0.0006, "pi+", "pi+", "pi-", "nubar_tau");              
-      result.set_BF(0.0462, 0.0006, "pi+", "pi+", "pi-", "pi0", "nubar_tau");        
+      result.set_BF(0.1741, 0.0004, "mu+", "nu_mu", "nubar_tau");
+      result.set_BF(0.1783, 0.0004, "e+", "nu_e", "nubar_tau");
+      result.set_BF(0.1083, 0.0006, "pi+", "nubar_tau");
+      result.set_BF(0.2552, 0.0009, "pi+", "pi0", "nubar_tau");
+      result.set_BF(0.0930, 0.0011, "pi+", "pi0", "pi0", "nubar_tau");
+      result.set_BF(0.0105, 0.0007, "pi+", "pi0", "pi0", "pi0", "nubar_tau");
+      result.set_BF(0.0931, 0.0006, "pi+", "pi+", "pi-", "nubar_tau");
+      result.set_BF(0.0462, 0.0006, "pi+", "pi+", "pi-", "pi0", "nubar_tau");
     }
 
     /// SM decays: tau-
-    void tau_minus_decays (DecayTable::Entry& result) 
+    void tau_minus_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::tau_minus_decays::Dep::tau_plus_decay_rates);
     }
 
     /// SM decays: pi0
-    void pi_0_decays (DecayTable::Entry& result) 
+    void pi_0_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 7.73e-09;                    
+      result.width_in_GeV = 7.73e-09;
       result.positive_error = 1.7e-10;
       result.negative_error = 1.7e-10;
-      result.set_BF(0.98823, 0.00034, "gamma", "gamma");              
-      result.set_BF(0.01174, 0.00035, "e+", "e-", "gamma");              
-      result.set_BF(3.34e-5, 0.16e-5, "e+", "e-", "e+", "e-");              
-      result.set_BF(6.46e-8, 0.33e-8, "e+", "e-");              
+      result.set_BF(0.98823, 0.00034, "gamma", "gamma");
+      result.set_BF(0.01174, 0.00035, "e+", "e-", "gamma");
+      result.set_BF(3.34e-5, 0.16e-5, "e+", "e-", "e+", "e-");
+      result.set_BF(6.46e-8, 0.33e-8, "e+", "e-");
     }
 
     /// SM decays: pi+
-    void pi_plus_decays (DecayTable::Entry& result) 
+    void pi_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 2.5284e-17;                    
+      result.width_in_GeV = 2.5284e-17;
       result.positive_error = 5.0e-21;
       result.negative_error = 5.0e-21;
-      result.set_BF(0.9998770, 0.0000004, "mu+", "nu_mu");              
-      result.set_BF(1.230e-4, 0.004e-4, "e+", "nu_e");              
+      result.set_BF(0.9998770, 0.0000004, "mu+", "nu_mu");
+      result.set_BF(1.230e-4, 0.004e-4, "e+", "nu_e");
     }
 
     /// SM decays: pi-
-    void pi_minus_decays (DecayTable::Entry& result) 
+    void pi_minus_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::pi_minus_decays::Dep::pi_plus_decay_rates);
     }
 
     /// SM decays: eta
-    void eta_decays (DecayTable::Entry& result) 
+    void eta_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 1.31e-06;                    
+      result.width_in_GeV = 1.31e-06;
       result.positive_error = 5.0e-08;
       result.negative_error = 5.0e-08;
-      //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
+      //See PDG meson sheet in DecayBit/data/PDG if you want BFs
     }
 
     /// SM decays: rho0
-    void rho_0_decays (DecayTable::Entry& result) 
+    void rho_0_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 1.491e-01;                    
+      result.width_in_GeV = 1.491e-01;
       result.positive_error = 8.0e-04;
       result.negative_error = 8.0e-04;
-      //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
+      //See PDG meson sheet in DecayBit/data/PDG if you want BFs
     }
 
     /// SM decays: rho+
-    void rho_plus_decays (DecayTable::Entry& result) 
+    void rho_plus_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 1.491e-01;                    
+      result.width_in_GeV = 1.491e-01;
       result.positive_error = 8.0e-04;
       result.negative_error = 8.0e-04;
-      //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
+      //See PDG meson sheet in DecayBit/data/PDG if you want BFs
     }
 
     /// SM decays: rho-
-    void rho_minus_decays (DecayTable::Entry& result) 
+    void rho_minus_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::rho_minus_decays::Dep::rho_plus_decay_rates);
     }
 
     /// SM decays: omega
-    void omega_decays (DecayTable::Entry& result) 
+    void omega_decays (DecayTable::Entry& result)
     {
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = 8.49e-03;                    
+      result.width_in_GeV = 8.49e-03;
       result.positive_error = 8.0e-05;
       result.negative_error = 8.0e-05;
-      //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
+      //See PDG meson sheet in DecayBit/data/PDG if you want BFs
     }
 
     /// SM decays: Higgs
@@ -229,7 +229,7 @@ namespace Gambit
       double mh = (*Pipes::SM_Higgs_decays::Dep::SM_spectrum)->get(Par::Pole_Mass,"h0_1");
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
-      result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);   
+      result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);
       result.set_BF(virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
       result.set_BF(virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
       result.set_BF(virtual_SMHiggs_widths("mumu",mh), 0.0, "mu+", "mu-");
@@ -241,20 +241,20 @@ namespace Gambit
       result.set_BF(virtual_SMHiggs_widths("Zgamma",mh), 0.0, "Z0", "gamma");
       result.set_BF(virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
       result.set_BF(virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
-     
-     
-    //////////// MSSM /////////////////////   
-      
+
+
+    //////////// MSSM /////////////////////
+
     /// FeynHiggs MSSM decays: t
-    void FH_t_decays (DecayTable::Entry& result) 
+    void FH_t_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::FH_t_decays;
       fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::Higgs_Couplings;
@@ -262,22 +262,22 @@ namespace Gambit
       result.calculator_version = FH_input.calculator_version;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
-      result.width_in_GeV = 2.0;                    
+      result.width_in_GeV = 2.0;
       result.positive_error = 4.7e-01;
       result.negative_error = 4.3e-01;
-      result.set_BF(FH_input.gammas[tBF(1)-1], 0.0, "W+", "b"); 
+      result.set_BF(FH_input.gammas[tBF(1)-1], 0.0, "W+", "b");
       result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: h0_1
-    void MSSM_h0_1_decays (DecayTable::Entry& result) 
+    void MSSM_h0_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::MSSM_h0_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -285,7 +285,7 @@ namespace Gambit
       result.calculator = BEreq::cb_widthhl_hdec.origin();
       result.calculator_version = BEreq::cb_widthhl_hdec.version();
 
-      result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;  
+      result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_widthhl_hdec->hlbrb : 0.0), 0.0, "b", "bbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_widthhl_hdec->hlbrl : 0.0), 0.0, "tau+", "tau-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_widthhl_hdec->hlbrm : 0.0), 0.0, "mu+", "mu-");
@@ -342,29 +342,29 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhlslnl/3.0 : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhlslnl/3.0 : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// FeynHiggs MSSM decays: h0_1
-    void FH_MSSM_h0_1_decays (DecayTable::Entry& result) 
+    void FH_MSSM_h0_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::FH_MSSM_h0_1_decays;
 
       // Get the mass pseudonyms for the gauge eigenstates
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-      
+
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::Higgs_Couplings;
       result.calculator = FH_input.calculator;
       result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about h0_1
-      int iH = 0;     
+      int iH = 0;
       // Set the total Higgs width
       result.width_in_GeV = FH_input.gammas[iH];
 
@@ -464,17 +464,17 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb1bar);
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb2bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: h0_2
-    void h0_2_decays (DecayTable::Entry& result) 
+    void h0_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::h0_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -541,20 +541,20 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhhslnl/3.0 : 0.0), 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisfer_hdec->bhhslnl/3.0 : 0.0), 0.0, psn.isntaul, psn.isntaulbar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// FeynHiggs MSSM decays: h0_2
-    void FH_h0_2_decays (DecayTable::Entry& result) 
+    void FH_h0_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::FH_h0_2_decays;
-      
+
       // Get the mass pseudonyms for the gauge eigenstates
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
@@ -663,17 +663,17 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb1bar);
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb2bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
 
     /// MSSM decays: A0
-    void A0_decays (DecayTable::Entry& result) 
+    void A0_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::A0_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -720,17 +720,17 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisusy_hdec->habrsl/2.0 : 0.0), 0.0, psn.istau1, psn.istau2bar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisusy_hdec->habrsl/2.0 : 0.0), 0.0, psn.istau1bar, psn.istau2);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// FeynHiggs MSSM decays: A0
-    void FH_A0_decays (DecayTable::Entry& result) 
+    void FH_A0_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::FH_A0_decays;
 
@@ -840,21 +840,21 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb1bar);
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset] : 0.0), 0.0, psn.isb2, psn.isb2bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: Hplus
-    void Hplus_decays (DecayTable::Entry& result) 
+    void Hplus_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::Hplus_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-     
+
       result.calculator = BEreq::cb_widthhc_hdec.origin();
       result.calculator_version = BEreq::cb_widthhc_hdec.version();
 
@@ -887,17 +887,17 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisusy_hdec->hcbrstb(1,2) : 0.0), 0.0, psn.ist1, psn.isb2bar);
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_wisusy_hdec->hcbrstb(2,1) : 0.0), 0.0, psn.ist2, psn.isb1bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// FeynHiggs MSSM decays: H+
-    void FH_Hplus_decays (DecayTable::Entry& result) 
+    void FH_Hplus_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::FH_Hplus_decays;
 
@@ -986,23 +986,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[HpSfSf(2,1,2,3,3)+offset] : 0.0), 0.0, psn.ist2, psn.isb1bar);
       result.set_BF((result.width_in_GeV > 0 ? FH_input.gammas[HpSfSf(2,2,2,3,3)+offset] : 0.0), 0.0, psn.ist2, psn.isb2bar);
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: Hminus
-    void Hminus_decays (DecayTable::Entry& result) 
+    void Hminus_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::Hminus_decays::Dep::Hplus_decay_rates);
     }
 
     /// MSSM decays: gluino
-    void gluino_decays (DecayTable::Entry& result) 
+    void gluino_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::gluino_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -1080,21 +1080,21 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_glui3body->brhcst1b : 0.0), 0.0, psn.ist1, "bbar", "H-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_glui3body->brhcst1b : 0.0), 0.0, psn.ist1bar, "b", "H+");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: stop_1
-    void stop_1_decays (DecayTable::Entry& result) 
+    void stop_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::stop_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-     
+
       result.calculator = BEreq::cb_sd_stopwidth.origin();
       result.calculator_version = BEreq::cb_sd_stopwidth.version();
 
@@ -1145,23 +1145,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stop3body->brstelsbnu(1,1) : 0.0), 0.0, psn.isb1, "mu+", "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stop3body->brstelsbnu(1,2) : 0.0), 0.0, psn.isb2, "mu+", "nu_mu");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
 
     /// MSSM decays: stopbar_1
-    void stopbar_1_decays (DecayTable::Entry& result) 
+    void stopbar_1_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::stopbar_1_decays::Dep::stop_1_decay_rates);
     }
 
     /// MSSM decays: stop_2
-    void stop_2_decays (DecayTable::Entry& result) 
+    void stop_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::stop_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -1230,23 +1230,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stop3body->brst2st1nunu : 0.0), 0.0, psn.ist1, "nu_mu", "nubar_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stop3body->brst2st1nunu : 0.0), 0.0, psn.ist1, "nu_tau", "nubar_tau");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: stopbar_2
-    void stopbar_2_decays (DecayTable::Entry& result) 
+    void stopbar_2_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::stopbar_2_decays::Dep::stop_2_decay_rates);
     }
 
     /// MSSM decays: sbottom_1
-    void sbottom_1_decays (DecayTable::Entry& result) 
+    void sbottom_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sbottom_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -1290,27 +1290,27 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sbot3body->brsbelstnu(1,1) : 0.0), 0.0, psn.ist1, "mu-", "nubar_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sbot3body->brsbelstnu(1,2) : 0.0), 0.0, psn.ist1, "mu-", "nubar_mu");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: sbottombar_1
-    void sbottombar_1_decays (DecayTable::Entry& result) 
+    void sbottombar_1_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::sbottombar_1_decays::Dep::sbottom_1_decay_rates);
     }
 
     /// MSSM decays: sbottom_2
-    void sbottom_2_decays (DecayTable::Entry& result) 
+    void sbottom_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sbottom_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-     
+
       result.calculator = BEreq::cb_sd_sbotwidth.origin();
       result.calculator_version = BEreq::cb_sd_sbotwidth.version();
 
@@ -1367,23 +1367,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sbot3body->brsb2sb1nunu : 0.0), 0.0, psn.isb1, "nu_mu", "nubar_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sbot3body->brsb2sb1nunu : 0.0), 0.0, psn.isb1, "nu_tau", "nubar_tau");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: sbottombar_2
-    void sbottombar_2_decays (DecayTable::Entry& result) 
+    void sbottombar_2_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::sbottombar_2_decays::Dep::sbottom_2_decay_rates);
     }
 
     /// MSSM decays: sup_l
-    void sup_l_decays (DecayTable::Entry& result) 
+    void sup_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sup_l_decays;
 
@@ -1399,23 +1399,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplcdow(2) : 0.0), 0.0, "~chi+_2", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplglui : 0.0), 0.0, "~g", "u");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: supbar_l
-    void supbar_l_decays (DecayTable::Entry& result) 
+    void supbar_l_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::supbar_l_decays::Dep::sup_l_decay_rates);
     }
 
     /// MSSM decays: sup_r
-    void sup_r_decays (DecayTable::Entry& result) 
+    void sup_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sup_r_decays;
       result.calculator = BEreq::cb_sd_supwidth.origin();
@@ -1428,23 +1428,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprcdow(1) : 0.0), 0.0, "~chi+_1", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprcdow(2) : 0.0), 0.0, "~chi+_2", "d");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprglui : 0.0), 0.0, "~g", "u");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: supbar_r
-    void supbar_r_decays (DecayTable::Entry& result) 
+    void supbar_r_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::supbar_r_decays::Dep::sup_r_decay_rates);
     }
 
     /// MSSM decays: sdown_l
-    void sdown_l_decays (DecayTable::Entry& result) 
+    void sdown_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sdown_l_decays;
       result.calculator = BEreq::cb_sd_sdownwidth.origin();
@@ -1457,23 +1457,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlchup(1) : 0.0), 0.0, "~chi-_1", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlchup(2) : 0.0), 0.0, "~chi-_2", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlglui : 0.0), 0.0, "~g", "d");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: sdownbar_l
-    void sdownbar_l_decays (DecayTable::Entry& result) 
+    void sdownbar_l_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::sdownbar_l_decays::Dep::sdown_l_decay_rates);
     }
 
     /// MSSM decays: sdown_r
-    void sdown_r_decays (DecayTable::Entry& result) 
+    void sdown_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sdown_r_decays;
       result.calculator = BEreq::cb_sd_sdownwidth.origin();
@@ -1486,23 +1486,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrchup(1) : 0.0), 0.0, "~chi-_1", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrchup(2) : 0.0), 0.0, "~chi-_2", "u");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrglui : 0.0), 0.0, "~g", "d");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: sdownbar_r
-    void sdownbar_r_decays (DecayTable::Entry& result) 
+    void sdownbar_r_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::sdownbar_r_decays::Dep::sdown_r_decay_rates);
     }
 
     /// MSSM decays: scharm_l
-    void scharm_l_decays (DecayTable::Entry& result) 
+    void scharm_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::scharm_l_decays;
       result.calculator = BEreq::cb_sd_supwidth.origin();
@@ -1515,23 +1515,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplcdow(1) : 0.0), 0.0, "~chi+_1", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplcdow(2) : 0.0), 0.0, "~chi+_2", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuplglui : 0.0), 0.0, "~g", "c");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: scharmbar_l
-    void scharmbar_l_decays (DecayTable::Entry& result) 
+    void scharmbar_l_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::scharmbar_l_decays::Dep::scharm_l_decay_rates);
     }
 
     /// MSSM decays: scharm_r
-    void scharm_r_decays (DecayTable::Entry& result) 
+    void scharm_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::scharm_r_decays;
       result.calculator = BEreq::cb_sd_supwidth.origin();
@@ -1544,23 +1544,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprcdow(1) : 0.0), 0.0, "~chi+_1", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprcdow(2) : 0.0), 0.0, "~chi+_2", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sup2body->brsuprglui : 0.0), 0.0, "~g", "c");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: scharmbar_r
-    void scharmbar_r_decays (DecayTable::Entry& result) 
+    void scharmbar_r_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::scharmbar_r_decays::Dep::scharm_r_decay_rates);
     }
 
     /// MSSM decays: sstrange_l
-    void sstrange_l_decays (DecayTable::Entry& result) 
+    void sstrange_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sstrange_l_decays;
       result.calculator = BEreq::cb_sd_sdownwidth.origin();
@@ -1573,23 +1573,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlchup(1) : 0.0), 0.0, "~chi-_1", "c");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlchup(2) : 0.0), 0.0, "~chi-_2", "c");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowlglui : 0.0), 0.0, "~g", "s");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: sstrangebar_l
-    void sstrangebar_l_decays (DecayTable::Entry& result) 
+    void sstrangebar_l_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::sstrangebar_l_decays::Dep::sstrange_l_decay_rates);
     }
 
     /// MSSM decays: sstrange_r
-    void sstrange_r_decays (DecayTable::Entry& result) 
+    void sstrange_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::sstrange_r_decays;
       result.calculator = BEreq::cb_sd_sdownwidth.origin();
@@ -1602,23 +1602,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrchup(1) : 0.0), 0.0, "~chi-_1", "c");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrchup(2) : 0.0), 0.0, "~chi-_2", "c");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sdown2body->brsdowrglui : 0.0), 0.0, "~g", "s");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: sstrangebar_r
-    void sstrangebar_r_decays (DecayTable::Entry& result) 
+    void sstrangebar_r_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::sstrangebar_r_decays::Dep::sstrange_r_decay_rates);
     }
 
     /// MSSM decays: selectron_l
-    void selectron_l_decays (DecayTable::Entry& result) 
+    void selectron_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::selectron_l_decays;
       result.calculator = BEreq::cb_sd_selwidth.origin();
@@ -1630,23 +1630,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellneute(4) : 0.0), 0.0, "~chi0_4", "e-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellcharnue(1) : 0.0), 0.0, "~chi-_1", "nu_e");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellcharnue(2) : 0.0), 0.0, "~chi-_2", "nu_e");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: selectronbar_l
-    void selectronbar_l_decays (DecayTable::Entry& result) 
+    void selectronbar_l_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::selectronbar_l_decays::Dep::selectron_l_decay_rates);
     }
 
     /// MSSM decays: selectron_r
-    void selectron_r_decays (DecayTable::Entry& result) 
+    void selectron_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::selectron_r_decays;
       result.calculator = BEreq::cb_sd_selwidth.origin();
@@ -1658,23 +1658,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrneute(4) : 0.0), 0.0, "~chi0_4", "e-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrcharnue(1) : 0.0), 0.0, "~chi-_1", "nu_e");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrcharnue(2) : 0.0), 0.0, "~chi-_2", "nu_e");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: selectronbar_r
-    void selectronbar_r_decays (DecayTable::Entry& result) 
+    void selectronbar_r_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::selectronbar_r_decays::Dep::selectron_r_decay_rates);
     }
-  
+
     /// MSSM decays: smuon_l
-    void smuon_l_decays (DecayTable::Entry& result) 
+    void smuon_l_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::smuon_l_decays;
       result.calculator = BEreq::cb_sd_selwidth.origin();
@@ -1686,23 +1686,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellneute(4) : 0.0), 0.0, "~chi0_4", "mu-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellcharnue(1) : 0.0), 0.0, "~chi-_1", "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brsellcharnue(2) : 0.0), 0.0, "~chi-_2", "nu_mu");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: smuonbar_l
-    void smuonbar_l_decays (DecayTable::Entry& result) 
+    void smuonbar_l_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::smuonbar_l_decays::Dep::smuon_l_decay_rates);
     }
-  
+
     /// MSSM decays: smuon_r
-    void smuon_r_decays (DecayTable::Entry& result) 
+    void smuon_r_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::smuon_r_decays;
       result.calculator = BEreq::cb_sd_selwidth.origin();
@@ -1714,27 +1714,27 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrneute(4) : 0.0), 0.0, "~chi0_4", "mu-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrcharnue(1) : 0.0), 0.0, "~chi-_1", "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sel2body->brselrcharnue(2) : 0.0), 0.0, "~chi-_2", "nu_mu");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
-  
+
     /// MSSM decays: smuonbar_r
-    void smuonbar_r_decays (DecayTable::Entry& result) 
+    void smuonbar_r_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::smuonbar_r_decays::Dep::smuon_r_decay_rates);
     }
-  
+
     /// MSSM decays: stau_1
-    void stau_1_decays (DecayTable::Entry& result) 
+    void stau_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::stau_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-      
+
       result.calculator = BEreq::cb_sd_stauwidth.origin();
       result.calculator_version = BEreq::cb_sd_stauwidth.version();
 
@@ -1749,27 +1749,27 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stau2body->brstau1wsn(1) : 0.0), 0.0, psn.isntaul, "W-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stau2bodygrav->brstautaugrav : 0.0), 0.0, "~G", "tau-");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: staubar_1
-    void staubar_1_decays (DecayTable::Entry& result) 
+    void staubar_1_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::staubar_1_decays::Dep::stau_1_decay_rates);
     }
-  
+
     /// MSSM decays: stau_2
-    void stau_2_decays (DecayTable::Entry& result) 
+    void stau_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::stau_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-      
+
       result.calculator = BEreq::cb_sd_stauwidth.origin();
       result.calculator_version = BEreq::cb_sd_stauwidth.version();
 
@@ -1787,24 +1787,24 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stau2body->brstau2ha : 0.0), 0.0, psn.istau1, "A0");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_stau2body->brstau2ztau : 0.0), 0.0, psn.istau1, "Z0");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
-     
+
     /// MSSM decays: staubar_2
-    void staubar_2_decays (DecayTable::Entry& result) 
+    void staubar_2_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::staubar_2_decays::Dep::stau_2_decay_rates);
     }
 
     /// MSSM decays: snu_electronl
-    void snu_electronl_decays (DecayTable::Entry& result) 
-    {      
+    void snu_electronl_decays (DecayTable::Entry& result)
+    {
       using namespace Pipes::snu_electronl_decays;
       result.calculator = BEreq::cb_sd_snelwidth.origin();
       result.calculator_version = BEreq::cb_sd_snelwidth.version();
@@ -1815,23 +1815,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellneut(4) : 0.0), 0.0, "~chi0_4", "nu_e");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellchar(1) : 0.0), 0.0, "~chi+_1", "e-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellchar(2) : 0.0), 0.0, "~chi+_2", "e-");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: snubar_electronl
-    void snubar_electronl_decays (DecayTable::Entry& result) 
+    void snubar_electronl_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::snubar_electronl_decays::Dep::snu_electronl_decay_rates);
     }
 
     /// MSSM decays: snu_muonl
-    void snu_muonl_decays (DecayTable::Entry& result) 
+    void snu_muonl_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::snu_muonl_decays;
       result.calculator = BEreq::cb_sd_snelwidth.origin();
@@ -1843,24 +1843,24 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellneut(4) : 0.0), 0.0, "~chi0_4", "nu_mu");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellchar(1) : 0.0), 0.0, "~chi+_1", "mu-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_snel2body->brsnellchar(2) : 0.0), 0.0, "~chi+_2", "mu-");
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: snubar_muonl
-    void snubar_muonl_decays (DecayTable::Entry& result) 
+    void snubar_muonl_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::snubar_muonl_decays::Dep::snu_muonl_decay_rates);
     }
 
     /// MSSM decays: snu_taul
     /// Note that SUSY-HIT calls ~nu_tau_L "snutau1" even though it has no RH (~)nus.
-    void snu_taul_decays (DecayTable::Entry& result) 
+    void snu_taul_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::snu_taul_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -1880,23 +1880,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sntau2body->brsntau1wstau(1) : 0.0), 0.0, psn.istau1bar, "W-");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_sntau2body->brsntau1wstau(2) : 0.0), 0.0, psn.istau2bar, "W-");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: snubar_taul
-    void snubar_taul_decays (DecayTable::Entry& result) 
+    void snubar_taul_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::snubar_taul_decays::Dep::snu_taul_decay_rates);
     }
 
     /// MSSM decays: charginoplus_1
-    void charginoplus_1_decays (DecayTable::Entry& result) 
+    void charginoplus_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::charginoplus_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -1966,27 +1966,27 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brglchsb(1) : 0.0), 0.0, "~g", "c", "sbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brgltopbb(1) : 0.0), 0.0, "~g", "t", "bbar");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
     /// MSSM decays: charginominus_1
-    void charginominus_1_decays (DecayTable::Entry& result) 
+    void charginominus_1_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::charginominus_1_decays::Dep::charginoplus_1_decay_rates);
     }
 
     /// MSSM decays: charginoplus_2
-    void charginoplus_2_decays (DecayTable::Entry& result) 
+    void charginoplus_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::charginoplus_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-      
+
       result.calculator = BEreq::cb_sd_charwidth.origin();
       result.calculator_version = BEreq::cb_sd_charwidth.version();
 
@@ -2068,23 +2068,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brglchsb(2) : 0.0), 0.0, "~g", "c", "sbar");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_char3body->brgltopbb(2) : 0.0), 0.0, "~g", "t", "bbar");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
- 
+
     /// MSSM decays: charginominus_2
-    void charginominus_2_decays (DecayTable::Entry& result) 
+    void charginominus_2_decays (DecayTable::Entry& result)
     {
       result = CP_conjugate(*Pipes::charginominus_2_decays::Dep::charginoplus_2_decay_rates);
     }
 
     /// MSSM decays: neutralino_1
-    void neutralino_1_decays (DecayTable::Entry& result) 
+    void neutralino_1_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::neutralino_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
@@ -2183,23 +2183,23 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglst(1) : 0.0), 0.0, "~g", "sbar", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(1) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(1) : 0.0), 0.0, "~g", "bbar", "b");
- 
-      if (result.width_in_GeV < 0) 
+
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
-  
+
 
     /// MSSM decays: neutralino_2
-    void neutralino_2_decays (DecayTable::Entry& result) 
+    void neutralino_2_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::neutralino_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-      
+
       result.calculator = BEreq::cb_sd_neutwidth.origin();
       result.calculator_version = BEreq::cb_sd_neutwidth.version();
 
@@ -2312,22 +2312,22 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(2) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(2) : 0.0), 0.0, "~g", "bbar", "b");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
-  
+
 
     /// MSSM decays: neutralino_3
-    void neutralino_3_decays (DecayTable::Entry& result) 
+    void neutralino_3_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::neutralino_3_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-      
+
       result.calculator = BEreq::cb_sd_neutwidth.origin();
       result.calculator_version = BEreq::cb_sd_neutwidth.version();
 
@@ -2457,22 +2457,22 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(3) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(3) : 0.0), 0.0, "~g", "bbar", "b");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
-  
+
 
     /// MSSM decays: neutralino_4
-    void neutralino_4_decays (DecayTable::Entry& result) 
+    void neutralino_4_decays (DecayTable::Entry& result)
     {
       using namespace Pipes::neutralino_4_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-     
+
       result.calculator = BEreq::cb_sd_neutwidth.origin();
       result.calculator_version = BEreq::cb_sd_neutwidth.version();
 
@@ -2619,16 +2619,16 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(4) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(4) : 0.0), 0.0, "~g", "bbar", "b");
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
     }
 
-  
+
     //////////// Singlet DM /////////////////////
 
     /// Add the decay of Higgs to singlets for the SingletDM model
@@ -2646,7 +2646,7 @@ namespace Gambit
 
       // Add the h->SS width to the total
       double massratio2 = pow(mass/mhpole,2);
-      double gamma = (2.0*mass <= mhpole) ? pow(lambda*v0,2)/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2) : 0.0;        
+      double gamma = (2.0*mass <= mhpole) ? pow(lambda*v0,2)/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2) : 0.0;
       double newwidth = Dep::Higgs_decay_rates->width_in_GeV + gamma;
       result.width_in_GeV = newwidth;
       // Import the previous error estimates on the total width
@@ -2656,28 +2656,28 @@ namespace Gambit
       result.set_BF(gamma/newwidth, 0.0, "S", "S");
       // Get the SM decays and rescale them
       double wscaling = Dep::Higgs_decay_rates->width_in_GeV / newwidth;
-      for (auto it = Dep::Higgs_decay_rates->channels.begin(); it != Dep::Higgs_decay_rates->channels.end(); ++it)  
-      {                                     
+      for (auto it = Dep::Higgs_decay_rates->channels.begin(); it != Dep::Higgs_decay_rates->channels.end(); ++it)
+      {
         result.channels[it->first] = std::pair<double, double>(it->second.first*wscaling, it->second.second*wscaling);
       }
       // Log calculator
       result.calculator = "GAMBIT::DecayBit";
       result.calculator_version = gambit_version;
 
-      if (result.width_in_GeV < 0) 
+      if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))
-          invalid_point().raise("Negative width returned!"); 
+          invalid_point().raise("Negative width returned!");
         else
-          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!"); 
+          DecayBit_error().raise(LOCAL_INFO, "Negative width returned!");
       }
    }
-  
+
 
     //////////// Everything ///////////////////
-  
-    /// Collect all the DecayTable entries into an actual DecayTable 
-    void all_decays (DecayTable &decays) 
+
+    /// Collect all the DecayTable entries into an actual DecayTable
+    void all_decays (DecayTable &decays)
     {
       using namespace Pipes::all_decays;
 
@@ -2717,8 +2717,8 @@ namespace Gambit
 
         decays("h0_2") = *Dep::h0_2_decay_rates;                 // Add the h0_2 decays.
         decays("A0") = *Dep::A0_decay_rates;                     // Add the A0 decays.
-        decays("H+") = *Dep::Hplus_decay_rates;                  // Add the H+ decays.       
-        decays("H-") = *Dep::Hminus_decay_rates;                 // Add the H+ decays.       
+        decays("H+") = *Dep::Hplus_decay_rates;                  // Add the H+ decays.
+        decays("H-") = *Dep::Hminus_decay_rates;                 // Add the H+ decays.
 
         decays("~g") = *Dep::gluino_decay_rates;                 // Add the gluino decays.
 
@@ -2775,14 +2775,14 @@ namespace Gambit
         decays(psn.isnelbar)= *Dep::snubar_electronl_decay_rates;// Add the ~nu_e decays.
         decays(psn.isnmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
         decays(psn.isntaulbar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
-        
+
       }
 
       //cout << "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
-  
+
     }
 
-    /// Read an SLHA file in and use it to create a GAMBIT DecayTable 
+    /// Read an SLHA file in and use it to create a GAMBIT DecayTable
     void all_decays_from_SLHA(DecayTable& decays)
     {
       using namespace Pipes::all_decays_from_SLHA;
@@ -2801,7 +2801,7 @@ namespace Gambit
       if (counter >= filenames.size()) counter = 0;
       decays = DecayTable(slha);
     }
- 
+
     /// Get MSSM mass eigenstate pseudonyms for the gauge eigenstates
     void get_mass_es_pseudonyms(mass_es_pseudonyms& result)
     {

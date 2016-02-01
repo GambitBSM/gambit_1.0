@@ -10,32 +10,19 @@
 // SLHA interface.
 // (The Pythia-specific components reside in the SLHAinterface class.)
 
-#ifndef SLHA_H
-#define SLHA_H
+#ifndef Pythia8_SLHA_H
+#define Pythia8_SLHA_H
 
-// Stdlib header files for string and character manipulation.
-#include <string>
-#include <cctype>
-// Stdlib header files for containers.
-#include <vector>
-#include <map>
-// Stdlib header files for input/output.
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-// Stdlib header files for mathematics.
-#include <cmath>
-#include <cstdlib>
+#include "Pythia8/PythiaStdlib.h"
+// NOTE: Gambit hack to include slhaea support
 // SLHAea (for SLHA input from an SLHAea object instead of a file)
 #include "SLHAea/slhaea.h"
 
-// Stdlib namespace
-using namespace std;
+namespace Pythia8 {
+
+//==========================================================================
 
 //************************* SLHA AUX CLASSES *****************************//
-
-namespace Pythia8 {
 
   //class LHblock: the generic SLHA block (see below for matrices)
   //Explicit typing required, e.g. block<double> minpar;
@@ -404,11 +391,11 @@ public:
   SusyLesHouches(int verboseIn=1) : verboseSav(verboseIn),
     headerPrinted(false), footerPrinted(false), filePrinted(false),
     slhaRead(false), lhefRead(false), lhefSlha(false), useDecay(true),
-    slhaeaCollPtr(NULL) {};
+    slhaeaCollPtr(NULL) {}; // NOTE: <== slhaeaCollPtr is a Gambit hack
   SusyLesHouches(string filename, int verboseIn=1) : verboseSav(verboseIn),
     headerPrinted(false), footerPrinted(false), filePrinted(false),
     slhaRead(true), lhefRead(false), lhefSlha(false), useDecay(true),
-    slhaeaCollPtr(NULL) {readFile(filename);};
+    slhaeaCollPtr(NULL) {readFile(filename);}; // NOTE: <== slhaeaCollPtr is a Gambit hack
 
 
   //***************************** SLHA FILE I/O *****************************//
@@ -418,6 +405,7 @@ public:
   int readFile(istream& ,int verboseIn=1,
     bool useDecayIn=true);
   //int writeFile(string filename): write SLHA file on filename
+// NOTE: Gambit hack to include slhaea support
   // Read from SLHAea::Coll
   int readSLHAea(int verboseIn=1, bool useDecayIn=true);
   void setSLHAea(const SLHAea::Coll* inputSLHAea) { slhaeaCollPtr = inputSLHAea; }
@@ -662,6 +650,7 @@ private:
   int verboseSav;
   bool headerPrinted, footerPrinted, filePrinted;
   bool slhaRead, lhefRead, lhefSlha, useDecay;
+// NOTE: Gambit hack to include slhaea support
   // SLHAea Collection (for SLHA input from a SLHAea::Coll instead of a file)
   const SLHAea::Coll* slhaeaCollPtr;
 
@@ -896,6 +885,9 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, int indx,
   return false;
  }
 
+//==========================================================================
+
+
 } // end of namespace Pythia8
 
-#endif
+#endif // end Pythia8_SLHA_H

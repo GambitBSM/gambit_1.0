@@ -16,12 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:25
+// File generated at Wed 28 Oct 2015 11:35:25
 
 #ifndef NSM_TWO_SCALE_soft_parameters_H
 #define NSM_TWO_SCALE_soft_parameters_H
 
-#include "rge.h"
 #include "NSM_two_scale_susy_parameters.hpp"
 
 #include <iosfwd>
@@ -41,7 +40,7 @@ public:
 );
    virtual ~NSM_soft_parameters() {}
    virtual Eigen::ArrayXd beta() const;
-   virtual const Eigen::ArrayXd get() const;
+   virtual Eigen::ArrayXd get() const;
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
 
@@ -89,16 +88,22 @@ private:
 
    double calc_beta_Lambda5_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda5_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_Lambda5_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda4_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_Lambda4_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_Lambda4_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_mS2_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_mS2_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_mS2_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_mH2_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_mH2_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_mH2_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_vH_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_vH_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_vH_three_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_vS_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_vS_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_vS_three_loop(const TRACE_STRUCT_TYPE&) const;
 
 };
 

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:48:02
+// File generated at Wed 28 Oct 2015 11:46:39
 
 #ifndef MSSMNoFVatMGUT_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
 #define MSSMNoFVatMGUT_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
@@ -51,6 +51,7 @@ public:
 
 protected:
    void update_scale();
+   bool check_non_perturbative();
 
 private:
    double scale;
