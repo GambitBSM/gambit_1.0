@@ -430,6 +430,8 @@ Rules:
 
   - capability: RD_fraction
     function: RD_fraction_from_oh2
+    options:
+      mode: leq_one
 
   # Direct detection -------------------
   # For MSSM-based models, which of the DarkSUSY, MicrOmegas, or internal

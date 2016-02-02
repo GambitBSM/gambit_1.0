@@ -16,17 +16,17 @@ Parameters:
     deltas:
       fixed_value: -0.085
 
-    LocalHalo:
-      rho0: # Local dark matter density
-        fixed_value: .3 # GeV/cm^3
-        #range: [.2, .4]
-        #prior_type: flat
-      vrot: # Local disk rotation speed (unused in DarkSUSY)
-        fixed_value: 235 # km/s
-      v0: # Maxwellian most-probable speed (unused in DarkSUSY)
-        fixed_value: 235 # km/s
-      vesc: # Local galactic escape speed (unused in DarkSUSY)
-        fixed_value: 550 # km/s
+  LocalHalo:
+    rho0: # Local dark matter density
+      fixed_value: .3 # GeV/cm^3
+      #range: [.2, .4]
+      #prior_type: flat
+    vrot: # Local disk rotation speed (unused in DarkSUSY)
+      fixed_value: 235 # km/s
+    v0: # Maxwellian most-probable speed (unused in DarkSUSY)
+      fixed_value: 235 # km/s
+    vesc: # Local galactic escape speed (unused in DarkSUSY)
+      fixed_value: 550 # km/s
 
   MSSM7atQ:
     Qin:
@@ -54,18 +54,6 @@ Parameters:
     mf2:
       range: [1e4, 1e8]
       prior_type: log
-
-    LocalHalo:
-      rho0: # Local dark matter density
-        fixed_value: .4 # GeV/cm^3
-        #range: [.2, .8]
-        #prior_type: flat
-      vrot: # Local disk rotation speed (unused in DarkSUSY)
-        fixed_value: 235 # km/s
-      v0: # Maxwellian most-probable speed (unused in DarkSUSY)
-        fixed_value: 235 # km/s
-      vesc: # Local galactic escape speed (unused in DarkSUSY)
-        fixed_value: 550 # km/s
 
 Priors:
 
@@ -154,7 +142,7 @@ ObsLikes:
     - capability: lnL_SI_nuclear_parameters
       purpose:    LogLike
 
-# DM Local Density likelihood
+    # DM Local Density likelihood
     - capability: lnL_rho0
       purpose: LogLike
         
@@ -322,6 +310,8 @@ Rules:
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
     function: RD_fraction_from_oh2
+    options:
+      mode: leq_one
 
   # Nuclear Parameter Likelihoods (All values in MeV)
   - capability: lnL_SI_nuclear_parameters

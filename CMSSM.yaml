@@ -31,6 +31,17 @@ Parameters:
       prior_type: flat
     SignMu: 1
 
+  LocalHalo:
+    rho0: # Local dark matter density
+      fixed_value: .4 # GeV/cm^3
+      #range: [.2, .8]
+      #prior_type: flat
+    vrot: # Local disk rotation speed (unused in DarkSUSY)
+      fixed_value: 235 # km/s
+    v0: # Maxwellian most-probable speed (unused in DarkSUSY)
+      fixed_value: 235 # km/s
+    vesc: # Local galactic escape speed (unused in DarkSUSY)
+      fixed_value: 550 # km/s
 
 Priors:
 
@@ -109,6 +120,10 @@ ObsLikes:
     - capability: lnL_SI_nuclear_parameters
       purpose:    LogLike
 
+    # DM Local Density likelihood
+    - capability: lnL_rho0
+      purpose: LogLike
+      
     # FlavBit likelihoods
     - purpose:    LogLike
       capability: b2ll_LL
@@ -285,6 +300,8 @@ Rules:
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
     function: RD_fraction_from_oh2
+    options:
+      mode: leq_one
 
   # Nuclear Parameter Likelihoods (All values in MeV)
   - capability: lnL_SI_nuclear_parameters
@@ -295,6 +312,13 @@ Rules:
       sigmal_central: 58.
       sigmal_error: 9.
 
+  # DM Local Density Likelihood
+  - capability: lnL_rho0
+    function: lnL_rho0_lognormal
+    options:
+      rho0_central: 0.4 # GeV/cm^3
+      rho0_percentage_error: .3
+      
   # Precision Bit
   - capability: lnL_light_quark_masses
     options:
