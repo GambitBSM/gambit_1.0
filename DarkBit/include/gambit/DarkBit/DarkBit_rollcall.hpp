@@ -988,9 +988,12 @@ START_MODULE
     #define FUNCTION capture_rate_Sun_constant_xsec
       START_FUNCTION(double)
       BACKEND_REQ(capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
+      BACKEND_REQ(dshmcom, (DarkSUSY), DS_HMCOM)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(sigma_SI_p, double)
       DEPENDENCY(sigma_SD_p, double)
+      DEPENDENCY(RD_fraction, double)
+      ALLOW_MODELS(LocalHalo)
     #undef FUNCTION
   #undef CAPABILITY
   
