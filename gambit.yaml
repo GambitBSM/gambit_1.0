@@ -400,7 +400,7 @@ Rules:
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
-  - capability:    "MSSM_demo_parameters"
+  - capability:    "MSSM_parameters"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
