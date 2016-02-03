@@ -1861,9 +1861,6 @@ namespace Gambit
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
 
-      std::cout << "MJW debug sel mass " << mass_seL << " BR " << Dep::selectron_l_decay_rates->BF("~chi0_1", "e-") << std::endl;
-      std::cout << "MJW debug ser mass " << mass_seR << std::endl;
-      
       // se_R, se_R
       xsecLimit = limitContainer.limitAverage(mass_seR, mass_neut1, mZ);
 
@@ -1881,8 +1878,6 @@ namespace Gambit
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
 
-      std::cout << "MJW debug ser mass " << mass_seR << " BR " << Dep::selectron_r_decay_rates->BF("~chi0_1", "e-") << std::endl;
-      
     }
 
     void ALEPH_Smuon_Conservative_LLike(double& result)
@@ -1919,7 +1914,6 @@ namespace Gambit
 
       // smu_L, smu_L
       xsecLimit = limitContainer.limitAverage(mass_smuL, mass_neut1, mZ);
-      std::cout << "smuL " << mass_smuL << " smuR " << mass_smuR << std::endl;
       xsecWithError = *Dep::LEP208_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
       xsecWithError.central *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);

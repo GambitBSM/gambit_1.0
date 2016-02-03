@@ -91,7 +91,6 @@ namespace Gambit
       double max_mixing;
       const SubSpectrum* mssm = (*Pipes::createSelDecays::Dep::MSSM_spectrum)->get_HE();
       str x = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
-      std::cout << "I think that the sel is " << x << std::endl;
       outSelDecays = (*Pipes::createSelDecays::Dep::decay_rates)(x);
     }
 
@@ -359,25 +358,42 @@ int main()
     runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which LHC analyses to run
     getAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
 
-    std::cout << "Here a" << std::endl;
+    std::vector<std::string> pythiaNames;
+    pythiaNames.push_back("Pythia_Standalone");
     
     std::vector<std::string> inputFiles;
     inputFiles.push_back(inputFileName); // specify the input SLHA filename(s)
     std::vector<std::string> pythiaOptions; // use this vector to store Pythia options
-    pythiaOptions.push_back("PartonLevel:MPI = off");
+    /*pythiaOptions.push_back("PartonLevel:MPI = off");
     pythiaOptions.push_back("PartonLevel:ISR = on");
     pythiaOptions.push_back("PartonLevel:FSR = on");
     pythiaOptions.push_back("HadronLevel:all = on");
     pythiaOptions.push_back("TauDecays:mode = 0");
+    pythiaOptions.push_back("SUSY:all = off");*/
+
+    YAML::Node Pythia_Standalone;
+    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:MPI = off");
+    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:ISR = on");
+    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:FSR = on");
+    Pythia_Standalone["pythiaOptions_1"].push_back("HadronLevel:all = on");
+    Pythia_Standalone["pythiaOptions_1"].push_back("TauDecays:mode = 0");
+    Pythia_Standalone["pythiaOptions_1"].push_back("SUSY:all = on");
+    Pythia_Standalone["pythiaOptions_1"].push_back("Beams:eCM = 8000");
+    Pythia_Standalone["pythiaOptions_1"].push_back("Main:timesAllowErrors = 1000");
+    getPythiaFileReader.setOption<YAML::Node>("Pythia_Standalone",Pythia_Standalone);
     getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
     getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
 
-    std::cout << "Here b" << std::endl;
+    // Try and parse nested pythia options
+    //YAML::Node Pythia_Standalone = YAML::Load("{pythiaOptions_1: [PartonLevel:MPI = off,PartonLevel:ISR = on]}");
+    /*YAML::Node Pythia_Standalone;
+    Pythia_Standalone["key"] = "value";
+    Pythia_Standalone["pythiaOptions_1"].push_back("PartonLevel:MPI = off");
+    Pythia_Standalone["pythiaOptions_1"].push_back("SUSY:all = off");
+    std::cout << Pythia_Standalone["pythiaOptions_1"][0].as<std::string>() << "\n";*/
     
-    std::vector<std::string> pythiaNames;
-    pythiaNames.push_back("Pythia_SUSY_LHC_8TeV");
     operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
-    operateLHCLoop.setOption<int>("nEvents",10000.); // specify the number of simulated LHC events
+    operateLHCLoop.setOption<int>("nEvents",5000.); // specify the number of simulated LHC events
     
     // Start running here
     
@@ -386,7 +402,7 @@ int main()
       // Call the initialisation functions for all backends that are in use. 
       nulike_1_0_1_init.reset_and_calculate();
 
-      /*
+      
       // Call the LHC likelihood
       operateLHCLoop.reset_and_calculate();
       calc_LHC_LogLike.reset_and_calculate();
@@ -394,14 +410,11 @@ int main()
       // Retrieve and print the LHC likelihood
       double loglike = calc_LHC_LogLike(0);
       std::cout << "LHC log likelihood is " << loglike << std::endl;
-      */
+      
 
       // Call the ALEPH slepton likelihoods
-      std::cout << "Here c" << std::endl;
       createSpectrum.reset_and_calculate();
-      std::cout << "Here d" << std::endl;
       createDecays.reset_and_calculate();
-      std::cout << "Here e" << std::endl;
       createZDecays.reset_and_calculate();
       createSelDecays.reset_and_calculate();
       createSerDecays.reset_and_calculate();
