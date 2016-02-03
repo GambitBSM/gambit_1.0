@@ -105,6 +105,7 @@ BE_INI_FUNCTION
 
     }
 
+    // Initialization of local DM halo parameters.
     if (ModelInUse("LocalHalo")) {
       double rho0 = *Param["rho0"];
       double vrot = *Param["vrot"];
