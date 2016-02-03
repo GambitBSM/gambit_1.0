@@ -21,12 +21,14 @@ Parameters:
       fixed_value: .3 # GeV/cm^3
       #range: [.2, .4]
       #prior_type: flat
-    vrot: # Local disk rotation speed (unused in DarkSUSY)
+    vrot: # Local disk rotation speed
       fixed_value: 235 # km/s
-    v0: # Maxwellian most-probable speed (unused in DarkSUSY)
+    v0: # Maxwellian most-probable speed
       fixed_value: 235 # km/s
-    vesc: # Local galactic escape speed (unused in DarkSUSY)
+    vesc: # Local galactic escape speed
       fixed_value: 550 # km/s
+    vearth: # Keplerian velocity of the earth around the sun
+      fixed_value: 29.78 # km/s
 
   MSSM7atQ:
     Qin:
