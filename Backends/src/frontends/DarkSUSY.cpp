@@ -105,17 +105,33 @@ BE_INI_FUNCTION
 
     }
 
-    // Fraction of DM
-    // double fraction = *Dep::RD_fraction;
-
     if (ModelInUse("LocalHalo")) {
       double rho0 = *Param["rho0"];
-      // double rho0_eff = fraction*rho0;
-      // dshmcom->rho0 = rho0_eff;
+      double vrot = *Param["vrot"];
+      double vearth = *Param["vearth"];
+      double vd_3d = sqrt(3./2.)*(*Param["v0"]);
+      double vesc = *Param["vesc"];
+
       dshmcom->rho0 = rho0;
+      dshmcom->rhox = rho0;
+      dshmcom->v_sun = vrot;
+      dshmcom->v_earth = vearth;
+
+      dshmframevelcom->v_obs = vrot;
+
+      dshmisodf->vd_3d = vd_3d;
+      dshmisodf->vgalesc = vesc;
+
+      dshmnoclue->vobs = vrot;
+
       logger() << "Updating DarkSUSY halo parameters:" << EOM;
-      logger() << "    rho0 [GeV/cm^3]     = " << rho0 << EOM;
-      //logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+      logger() << "    rho0 [GeV/cm^3] = " << rho0 << EOM;
+      logger() << "    rho0_eff [GeV/cm^3] = " << rho0 << EOM;
+      logger() << "    v_sun [km/s]  = " << vrot<< EOM;
+      logger() << "    v_earth [km/s]  = " << vearth << EOM;
+      logger() << "    v_obs [km/s]  = " << vrot << EOM;
+      logger() << "    vd_3d [km/s]  = " << vd_3d << EOM;
+      logger() << "    v_esc [km/s]  = " << vesc << EOM;
     }
 
 }
