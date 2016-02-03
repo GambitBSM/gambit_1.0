@@ -28,11 +28,11 @@ AC_PROG_FC([ifort gfortran])
 if test "${FCSET}" = "false" ; then
   if test "${FC}" = "ifort"; then 
     echo "Fortran compiler is $FC"
-    FCFLAGS=${FCFLAGS+-O -extend_source}
+    FCFLAGS=${FCFLAGS+-O -extend_source -openmp}
   fi 
   if test "${FC}" = "gfortran"; then
     echo "Fortran compiler is $FC"
-    FCFLAGS=${FCFLAGS+-O -ffixed-line-length-none}
+    FCFLAGS=${FCFLAGS+-O -ffixed-line-length-none -fopenmp}
   fi
 fi
 
