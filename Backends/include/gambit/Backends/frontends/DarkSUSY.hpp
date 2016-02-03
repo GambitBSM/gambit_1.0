@@ -119,8 +119,11 @@ BE_VARIABLE(DS_IBINTVARS,IBintvars,"ibintvars_", "IBintvars")
 BE_VARIABLE(DS_DDCOM, ddcom, "ddcom_",    "ddcom")
 // Neutrino detection
 BE_VARIABLE(DS_NUCOM, wabranch, "wabranch_", "nu_common_block")
-// Halo model common block
+// Halo model common blocks
 BE_VARIABLE(DS_HMCOM, dshmcom, "dshmcom_", "dshmcom")
+BE_VARIABLE(DS_HMFRAMEVELCOM, dshmframevelcom, "dshmframevelcom_", "dshmframevelcom")
+BE_VARIABLE(DS_HMISODF, dshmisodf, "dshmisodf_", "dshmisdof")
+BE_VARIABLE(DS_HMNOCLUE, dshmnoclue, "dshmnoclue_", "dshmnoclue")
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "nuyield")
