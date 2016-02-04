@@ -23,7 +23,8 @@
 #include <mpi.h>
 #endif
 
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
+#include "gambit/Logs/logmaster.hpp"
 #include "gambit/Printers/printermanager.hpp"
 #include "gambit/ScannerBit/scannerbit.hpp"
 #include "gambit/Utils/yaml_parser_base.hpp"
@@ -200,9 +201,6 @@ int main(int argc, char **argv)
             std::cout << "ScannerBit has exited with fatal exception: " << e.what() << std::endl;
         }
     }
-
-    // Free the memory held by the RNG
-    Random::delete_rng_engine();
 
     return 0;
 }

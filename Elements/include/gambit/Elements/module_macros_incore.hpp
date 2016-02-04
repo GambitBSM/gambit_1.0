@@ -139,8 +139,6 @@
 /// Define a model GROUP of name GROUPNAME for use with ALLOW_MODEL_COMBINATION.
 #define MODEL_GROUP(GROUPNAME,GROUP)                      CORE_MODEL_GROUP(MODULE,FUNCTION,GROUPNAME,GROUP)
 
-#define LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)            CORE_LITTLEGUY_ALLOWED_MODEL(PARAMETER,MODEL)
-
 /// BACKEND_REQ indicates that the current \link FUNCTION() FUNCTION\endlink requires one
 /// backend variable or function to be available from a capability group \em GROUP,
 /// and then declares a viable member of that group, with capability \em REQUIREMENT, 
@@ -803,19 +801,6 @@
     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
     CORE_ALLOWED_MODEL_ARRANGE_DEP(MODULE,FUNCTION,MODEL)                      \
   }                                                                            \
-
-/// "Little guys" wrapper for ALLOW_MODEL
-#define CORE_LITTLEGUY_ALLOWED_MODEL(FUNCTION,MODEL)                           \
-  namespace Gambit                                                             \
-  {                                                                            \
-    /* Add MODEL to global set of tags of recognised models */                 \
-    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
-    namespace Models                                                           \
-    {                                                                          \
-      CORE_ALLOWED_MODEL_ARRANGE_DEP(MODEL,FUNCTION,MODEL)                     \
-      CORE_ALLOW_MODEL(MODEL,FUNCTION,MODEL)                                   \
-    }                                                                          \
-  }
 
 /// Set up the dependency on the parameters object of a given model.
 #define CORE_ALLOWED_MODEL_ARRANGE_DEP(MODULE,FUNCTION,MODEL)                  \

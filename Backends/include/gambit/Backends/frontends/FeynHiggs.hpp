@@ -3,15 +3,12 @@
  * 
  * Last modified:
  * Christopher Rogan Sept 2015
+ * Pat Scott Dec 2015
  */
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME FeynHiggs
-#endif
-#define VERSION 2.11
-#define SAFE_VERSION 2_11
+#define BACKENDNAME FeynHiggs
+#define VERSION 2.11.3
+#define SAFE_VERSION 2_11_3
 
 /* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */

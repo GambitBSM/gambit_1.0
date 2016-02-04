@@ -528,9 +528,11 @@ module BTaggingWithTruth BTagging {
   # gluon's PDG code has the lowest priority
 
   # default efficiency formula (misidentification rate)
-  add EfficiencyFormula {0} {0.02}
+  #add EfficiencyFormula {0} {0.02}
+  add EfficiencyFormula {0} {0.0}
   # efficiency formula for c-jets (misidentification rate)
-  add EfficiencyFormula {4} {0.02}
+  #add EfficiencyFormula {4} {0.02}
+  add EfficiencyFormula {4} {0.0}
   # efficiency formula for b-jets
   add EfficiencyFormula {5} {1.0}
 }
@@ -591,4 +593,3 @@ module TreeWriter TreeWriter {
   add Branch MissingET/momentum MissingET MissingET
   add Branch ScalarHT/energy ScalarHT ScalarHT
 }
-

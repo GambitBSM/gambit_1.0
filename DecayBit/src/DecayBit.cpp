@@ -2183,7 +2183,7 @@ namespace Gambit
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglst(1) : 0.0), 0.0, "~g", "sbar", "s");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brgltop(1) : 0.0), 0.0, "~g", "tbar", "t");
       result.set_BF((result.width_in_GeV > 0 ? BEreq::cb_sd_neut3body->brglbot(1) : 0.0), 0.0, "~g", "bbar", "b");
- 
+
       if (result.width_in_GeV < 0)
       {
         if  (runOptions->getValueOrDef<bool>(false, "invalid_point_for_negative_width"))

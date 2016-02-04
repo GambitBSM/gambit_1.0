@@ -26,18 +26,23 @@
 
 #include <vector>
 
-#include "gambit/Elements/functors.hpp"
+//#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 /// Define the separator to use instead of "::" when macros get gnarly.
 #define NS_SEP ___no_apologies_for_rocking_macros___
 
 namespace Gambit
 {
-    
+  /// Forward declarations 
+  class functor;
+  class module_functor_common;
+  class model_functor;
+  class Options;
+  
   /// Catch initialisation exceptions
   void ini_catch(std::exception&);
     
@@ -69,7 +74,7 @@ namespace Gambit
   int set_allowed_models(functor&, std::vector<str>&, str);
 
   /// Load a backend library
-  int loadLibrary(str, str, str, void*&, bool&, bool);
+  int loadLibrary(str, str, str, void*&, bool);
   
   /// Try to resolve a pointer to a partial path to a shared library and use it to override the stored backend path.  
   void attempt_backend_path_override(str&, str&, const char*);
@@ -81,10 +86,10 @@ namespace Gambit
   int register_type(str bever, str classname);
   
   /// Disable a backend functor if its library is missing or the symbol cannot be found. 
-  int set_backend_functor_status(bool, functor&, str);
+  int set_backend_functor_status(functor&, str);
 
   /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.        
-  int get_ctor_status(str, str, str, str, str, str, bool);
+  int get_ctor_status(str, str, str, str, str, str);
 
   /// Create a log tag for a new module.
   int register_module_with_log(str);

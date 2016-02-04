@@ -120,9 +120,6 @@ namespace Gambit
       /// Choose the engine to use for random number generation, based on the contents of the ini file.
       static void create_rng_engine(str);
 
-      /// Destroy the dynamically-declared RNG engine
-      static void delete_rng_engine();
-
       /// Draw a single uniform random deviate using the chosen RNG engine
       static double draw();
 

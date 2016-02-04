@@ -50,11 +50,11 @@
 #include <iostream>
 #include <type_traits>
 #include <chrono>
+#include <mpi.h>
+#include <boost/utility/enable_if.hpp>
 
 #include "gambit/Core/error_handlers.hpp"
 
-#include <mpi.h>
-#include <boost/utility/enable_if.hpp>
 
 /// Provide template specialisation of get_mpi_data_type only if the requested type hasn't been used to define one already.
 #define SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(TYPEDEFD_TYPE, RETURN_MPI_TYPE)                                                   \

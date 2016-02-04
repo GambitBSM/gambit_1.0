@@ -3,35 +3,32 @@
 # plus example backends libfirst and libFortran.
 #
 # Don't commit modified versions of this file!
-# If you want to change it in order to test 
-# your own modifications to the code, copy 
-# it to spartan_personal.yaml, which will be 
+# If you want to change it in order to test
+# your own modifications to the code, copy
+# it to spartan_personal.yaml, which will be
 # ignored by git.
 #
 # Pat Scott <p.scott@imperial.ac.uk>
 # Oct 2014
 #
- 
+
 ###################################
 # Input parameter declarations
 ###################################
 
-Parameters: 
+Parameters:
 
-  CMSSM_demo:
+  CMSSM:
     A0:
       range: [-1000, 1000]
     M0:
       prior_type: log
       range: [0.001,1000]
     M12:
-    #  same_as: CMSSM_demo::M0
-    Mstop:
-      same_as: CMSSM_demo::M0
-    sgnmu:
+    SignMu:
       range: [-1, 1]
       fixed_value: 1
-    tanb:
+    TanBeta:
       fixed_value: 1
 
 
@@ -43,15 +40,15 @@ Parameters:
 Priors:
 
   # Here specify the priors, the parameters they work with, and any options as needed for that prior
-  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
-  # and then they are combined into a "composite" prior 
+  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above),
+  # and then they are combined into a "composite" prior
 
-  m12_prior: 
-    parameters: [CMSSM_demo::M12]
+  m12_prior:
+    parameters: [CMSSM::M12]
     prior_type: composite
-    options: 
-      new_prior: 
-        parameters: [CMSSM_demo::M12]
+    options:
+      new_prior:
+        parameters: [CMSSM::M12]
         prior_type: log
         range: [100,2000]
 
@@ -68,7 +65,7 @@ Printer:
   # This options node is passed on wholesale to
   # the printer object; required options may
   # therefore vary according to the selected
-  # printer. 
+  # printer.
   options:
     output_file: "gambit_output.txt"
 
@@ -84,42 +81,38 @@ Scanner:
 # Scanners
 
   scanners:
-  
+
     random:
       plugin: random_sampler
-      options:
-        point_number: 20
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
+      output_file:  output
+      like:  LogLike
+      point_number: 20
+      files:
+        output_file: "weights ..."
         
     square_grid:
       plugin: square_grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 3 #NxN grid
+      like: LogLike
+      grid_pts: 3 #NxN grid
             
     grid:
       plugin: grid
       version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: [2, 2]
+      like: LogLike
+      grid_pts: [2, 2]
 
   objectives:
 
     uniform:
       plugin: uniform
       version: ">=1.0 & <2.0"
-      options:
-        some_param: 10
+      some_param: 10
       parameters:
         param...2:
-          range: [-10, 10]          
+          range: [-10, 10]
 
-            
+
 ###############################
 # Observables of interest
 ###############################
@@ -127,8 +120,8 @@ Scanner:
 ObsLikes:
 
 
-  # Test CMSSM_I, ExampleBit_A and ExampleBit_B
-  - purpose:      Likelihood
+  # Test CMSSM, ExampleBit_A and ExampleBit_B
+  - purpose:      LogLike
     capability:   lnL_ExampleBitB
     type:         double
     function:     ""
@@ -139,7 +132,7 @@ ObsLikes:
     capability:   ptrmeth_arr_tester
 
   # Test loop manager
-  - purpose:      Likelihood
+  - purpose:      LogLike
     capability:   nevents_like
     type:         double
 
@@ -161,14 +154,14 @@ Rules:
 
   - capability:   "LibFirst_1_1_init"
     dependencies:
-    - {capability: "nevents", module: "ExampleBit_A"}  
+    - {capability: "nevents", module: "ExampleBit_A"}
 
   - capability:    "nevents_postcuts"
     type: "int*"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
-  - capability:    "MSSM_demo_parameters"
+  - capability:    "MSSM_parameters"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
@@ -188,7 +181,7 @@ Rules:
 Logger:
 
   # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Can redirect to stdout or stderr by specifying these as the "filenames".
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 

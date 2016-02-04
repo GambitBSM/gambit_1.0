@@ -37,9 +37,11 @@
 #include <sstream>
 #include <omp.h>
 #include <cstring>
+#include <complex>
 
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
+#include "gambit/Utils/local_info.hpp"
 
 namespace Gambit
 {

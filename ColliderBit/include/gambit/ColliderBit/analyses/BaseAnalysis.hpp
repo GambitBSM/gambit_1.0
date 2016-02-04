@@ -13,51 +13,59 @@ using std::vector;
 namespace Gambit {
   namespace ColliderBit {
 
-    /// @brief A simple container for the result of one analysis signal region.
+    /// A simple container for the result of one signal region from one analysis.
     struct SignalRegionData {
-      double n_observed;
-      double n_signal;
-      double n_background;
-      double signal_sys;
-      double background_sys;
+      std::string analysis_name;
+      std::string sr_label; ///< A label for the particular signal region of the analysis.
+      double n_observed; ///< The number of events passing selection for this signal region,
+                         ///< as reported by the experiment.
+      double n_signal; ///< The number of simulated model events passing selection for this signal region.
+      double n_signal_at_lumi; ///< n_signal, scaled to the experimental luminosity.
+      double n_background; ///< The number of standard model events expected to pass the selection for this signal
+                           ///< region, as reported by the experiment.
+      double signal_sys; ///< The absolute systematic error of n_signal.
+      double background_sys; ///< The absolute systematic error of n_background.
 
       SignalRegionData() {}
 
+      void set_analysis_name(std::string a) {analysis_name=a;}
+      void set_sr_label(std::string a) {sr_label=a;}
       void set_observation(double a) {n_observed=a;}
       void set_signal(double a) {n_signal=a;}
+      void set_signal_at_lumi(double a) {n_signal_at_lumi=a;}
       void set_background(double a) {n_background=a;}
       void set_signalsys(double a) {signal_sys=a;}
       void set_backgroundsys(double a) {background_sys=a;}
     };
 
 
-    /// @brief An abstract base class for collider analyses within ColliderBit.
+    /// An abstract base class for collider analyses within ColliderBit.
     template <typename EventT>
     class BaseAnalysis {
+      private:
       /// @name Member variables
       //@{
-      private:
         double _ntot, _xsec, _xsecerr, _luminosity;
         std::vector<SignalRegionData> _results;
         typedef EventT EventType;
       //@}
 
+      public:
       /// @name Construction, Destruction, and Recycling
       //@{
-      public:
         BaseAnalysis() : _ntot(0), _xsec(-1), _xsecerr(-1), _luminosity(-1) {  }
         virtual ~BaseAnalysis() { }
-        /// @brief Reset this instance for reuse, avoiding the need for "new" or "delete".
+        /// Reset this instance for reuse, avoiding the need for "new" or "delete".
         virtual void clear() {
           _ntot = 0; _xsec = -1; _xsecerr = -1; _luminosity = -1;
           _results.clear();
         }
       //@}
 
+      public:
       /// @name Event analysis, event number, and cross section functions
       //@{
-      public:
-        /// @brief Analyze the event (accessed by reference)
+        /// Analyze the event (accessed by reference)
         void analyze(const EventT& e) { analyze(&e); }
         /// @brief Analyze the event (accessed by pointer)
         /// @note Needs to be called from Derived::analyze()
@@ -85,16 +93,20 @@ namespace Gambit {
           if (_results.empty()) collect_results();
           return _results;
         }
+      //@}
+
       protected:
+      /// @name Protected collection functions
+      //@{
         /// Add the given result to the internal results list
         void add_result(const SignalRegionData& res) { _results.push_back(res);}
         /// Gather together the info for likelihood calculation
         virtual void collect_results() = 0;
       //@}
 
+      public:
       /// @name (Re-)Initialization functions
       //@{
-      public:
         /// @brief General init for any analysis of this type.
         virtual void init(const std::vector<std::string>&) {}
         /// @brief General init for any collider of this type - no settings version.
@@ -105,15 +117,15 @@ namespace Gambit {
             factor = _luminosity * _xsec / _ntot;
           auto myIter = _results.begin();
           while (myIter != _results.end()) {
-            (*myIter).n_signal *= factor;
+            (*myIter).n_signal_at_lumi = factor * (*myIter).n_signal;
             myIter++;
           }
         }
       //@}
 
+      public:
       /// @name BaseAnalysis combination operations
       //@{
-      public:
         /// @brief An operator to do xsec-weighted combination of analysis runs
         virtual void add(BaseAnalysis* other) {
           if (_results.empty()) collect_results();

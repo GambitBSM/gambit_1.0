@@ -271,6 +271,12 @@ namespace Gambit
      return slha;
    }
 
+   /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+   const std::map<int, int>& Spectrum::PDG_translator() const
+   {
+     return HE->PDG_translator();
+   }
+
    // The expressions in all of the following CKM functions are from the CKMFitter paper hep-ph/0406184v3.
 
    ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar

@@ -100,10 +100,11 @@
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
 
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
@@ -778,7 +779,7 @@ namespace Gambit
          }
 
          // Gather the IDs for previous points
-         bool allvalid = true;
+         //bool allvalid = true;
          unsigned long lastvalid = 0;
          for(size_t i=0; i<dsetdata.pointIDs.size(); i++)
          {
@@ -1010,7 +1011,7 @@ namespace Gambit
     void HDF5Printer::combine_output(const int N, const bool resume, const bool finalcombine)
     {
       std::ostringstream command;
-      command << "python Printers/scripts/combine_hdf5.py "<<file<<"  "<<finalfile<<" "<<group<<" "<<N<<" "<<resume<<" 2>&1";
+      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<finalfile<<" "<<group<<" "<<N<<" "<<resume<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
                << "--------------------" << std::endl;
@@ -1159,8 +1160,8 @@ namespace Gambit
       unsigned long pointID = ppid.pointID; // unsigned versions were coming out gibberish in python...
       unsigned int mpirank = ppid.rank;
       //std::cout << "rank "<<myRank<<": adding new RA PPID to list: (" << pointID << "," << mpirank << ")" << std::endl;
-      print(pointID, "RA_pointID", -2000, mpirank, pointID);
-      print(mpirank, "RA_MPIrank", -2001, mpirank, pointID);
+      _print(pointID, "RA_pointID", -2000, mpirank, pointID);
+      _print(mpirank, "RA_MPIrank", -2001, mpirank, pointID);
     }
 
     /// Completely reset the PPIDlists
@@ -1578,8 +1579,8 @@ namespace Gambit
          // the very first point gets missed.
          /// TODO: Ok currently cannot both print them here and in the scanner plugins.
          /// Need to deal with duplicate print attempts better.
-         //print(candidate_newpoint, "pointID", -1000, myRank, candidate_newpoint);
-         //print(myRank,             "MPIrank", -1001, myRank, candidate_newpoint);
+         //_print(candidate_newpoint, "pointID", -1000, myRank, candidate_newpoint);
+         //_print(myRank,             "MPIrank", -1001, myRank, candidate_newpoint);
       }
     }
 
@@ -1593,13 +1594,13 @@ namespace Gambit
     // Bools can't quite use the template print function directly, since there
     // are some issues with bools and MPI/HDF5 types. Easier to just convert
     // the bool to an int first.
-    void HDF5Printer::print(bool const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    void HDF5Printer::_print(bool const& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
       unsigned int val_as_uint = value;
       template_print(val_as_uint,label,vID,mpirank,pointID);
     }                                                          
 
-    void HDF5Printer::print(const std::vector<double>& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    void HDF5Printer::_print(const std::vector<double>& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
        // We will write to several 'double' buffers, rather than a single vector buffer.
        // Change this once a vector buffer is actually available
@@ -1641,7 +1642,7 @@ namespace Gambit
        }
     }
    
-    void HDF5Printer::print(const triplet<double>& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
+    void HDF5Printer::_print(const triplet<double>& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
     {
       // Retrieve the buffer manager for buffers with this type
       typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;
@@ -1676,13 +1677,13 @@ namespace Gambit
       }
     }
 
-    void HDF5Printer::print(const ModelParameters& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    void HDF5Printer::_print(const ModelParameters& value, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
        std::map<std::string, double> parameter_map = value.getValues();
-       print(parameter_map, label, vID, mpirank, pointID);
+       _print(parameter_map, label, vID, mpirank, pointID);
     }
  
-    void HDF5Printer::print(const std::map<std::string,double>& map, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
+    void HDF5Printer::_print(const std::map<std::string,double>& map, const std::string& label, const int vID, const unsigned int mpirank, const unsigned long pointID)
     {
        // We will write to one 'double' buffer for each map entry
        typedef VertexBufferNumeric1D_HDF5<double,BUFFERLENGTH> BuffType;

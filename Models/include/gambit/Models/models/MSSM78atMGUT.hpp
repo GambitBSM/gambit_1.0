@@ -23,6 +23,11 @@
 
 #include "gambit/Models/models/MSSM78atQ.hpp" // Must include models which are targets of translation functions
 
+// Forward declaration of needed types
+namespace Gambit {
+   class Spectrum;
+}
+
 // General GUT boundary condition parameterisation of the MSSM
 // There are several of these, compatible with different spectrum generators
 // To use a constrained GUT model like the CMSSM, there needs to be an 
@@ -36,9 +41,9 @@
   START_MODEL
 
   /// Can translate this model into MSSM78atQ (where Q will then be set to MGUT)
-  INTERPRET_AS_PARENT__FUNCTION(MSSM78atMGUT_to_MSSM78atQ)
+  INTERPRET_AS_PARENT_FUNCTION(MSSM78atMGUT_to_MSSM78atQ)
   /// Depends on an MSSM spectrum, since RGEs must run in order to determine MGUT
-  INTERPRET_AS_PARENT__DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
+  INTERPRET_AS_PARENT_DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
 
   DEFINEPARS(TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)

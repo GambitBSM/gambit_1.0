@@ -26,10 +26,8 @@
 #include "gambit/Models/orphan.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/Utils/util_macros.hpp"
-#include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
 #include "gambit/Elements/ini_functions.hpp"
-#include "gambit/Elements/types_rollcall.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
@@ -46,17 +44,17 @@
   #define START_MODEL                                             CORE_START_MODEL
   #define DEFINEPARS(...)                                         CORE_DEFINEPARS(__VA_ARGS__)
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
-  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
-  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
+  #define INTERPRET_AS_X_FUNCTION(MODEL_X,FUNC)                   CORE_INTERPRET_AS_X_FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT_FUNCTION(FUNC)                      CORE_INTERPRET_AS_PARENT_FUNCTION(FUNC)
+  #define INTERPRET_AS_X_DEPENDENCY(MODEL_X, DEP, TYPE)           CORE_INTERPRET_AS_X_DEPENDENCY(MODEL_X, DEP, TYPE)
 #else
   #include "gambit/Elements/module_macros_inmodule.hpp"
   #define START_MODEL                                             MODULE_START_MODEL
   #define DEFINEPARS(...)                                         /* Do nothing */
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 /* Do nothing */
-  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
-  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
+  #define INTERPRET_AS_X_FUNCTION(MODEL_X,FUNC)                   MODULE_INTERPRET_AS_X_FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT_FUNCTION(FUNC)                      MODULE_INTERPRET_AS_X_FUNCTION(PARENT,FUNC)
+  #define INTERPRET_AS_X_DEPENDENCY(MODEL_X, DEP, TYPE)           MODULE_INTERPRET_AS_X_DEPENDENCY(MODEL_X, DEP, TYPE)
 #endif
 
 
@@ -86,8 +84,8 @@
    }                                                                           \
   }                                                                            \
 
-/// "In module" version of the INTERPRET_AS_X__FUNCTION macro
-#define MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                          \
+/// "In module" version of the INTERPRET_AS_X_FUNCTION macro
+#define MODULE_INTERPRET_AS_X_FUNCTION(MODEL_X,FUNC)                           \
   namespace Gambit                                                             \
   {                                                                            \
     namespace Models                                                           \
@@ -117,8 +115,8 @@
     }                                                                          \
   }                                                                            \
 
-/// "In module" version of the INTERPRET_AS_X__DEPENDENCY macro
-#define MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                  \
+/// "In module" version of the INTERPRET_AS_X_DEPENDENCY macro
+#define MODULE_INTERPRET_AS_X_DEPENDENCY(MODEL_X, DEP, TYPE)                  \
   MODULE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)
 
 
@@ -201,9 +199,9 @@
           bool provides<Gambit::Tags::CAPABILITY>() { return true; }           \
         }                                                                      \
                                                                                \
-        /* The wrapper function which extracts the value of PARAMETER from
-           the parameter object. This is the analogue of a module function, 
-           and is what will be wrapped in a functor for processing by the 
+        /* The wrapper function which extracts the value of PARAMETER from     \
+           the parameter object. This is the analogue of a module function,    \
+           and is what will be wrapped in a functor for processing by the      \
            core */                                                             \
         /* Just the prototype here: defined a bit later on */                  \
         void PARAMETER (double &);                                             \
@@ -275,11 +273,11 @@
 /// @}
 
 /// Real declaration macro for INTERPRET_AS_X functions.
-#define CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                            \
-        INTERPRET_AS_X__FUNCTION_FULL(MODEL_X,FUNC,1)                          \
+#define CORE_INTERPRET_AS_X_FUNCTION(MODEL_X,FUNC)                             \
+        INTERPRET_AS_X_FUNCTION_FULL(MODEL_X,FUNC,1)                           \
 
 /// Generic declaration macro for INTERPRET_AS_ functions.
-#define INTERPRET_AS_X__FUNCTION_FULL(MODEL_X,FUNC,ADD_FRIEND)                 \
+#define INTERPRET_AS_X_FUNCTION_FULL(MODEL_X,FUNC,ADD_FRIEND)                  \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -335,7 +333,7 @@
   }                                                                            \
                                                                                \
   /* Automatically add a dependency on the host model's parameters */          \
-  INTERPRET_AS_X__DEPENDENCY(MODEL_X,CAT(MODEL,_parameters),ModelParameters)   \
+  INTERPRET_AS_X_DEPENDENCY(MODEL_X,CAT(MODEL,_parameters),ModelParameters)    \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -372,15 +370,15 @@
 
 
 /// Add a dependency to an interpret-as-X function.
-#define CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                    \
+#define CORE_INTERPRET_AS_X_DEPENDENCY(MODEL_X, DEP, TYPE)                     \
   CORE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)        \
 
 /// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 /// @{
-#define INTERPRET_AS_PARENT__DEPENDENCY(DEP, TYPE)                             \
-  INTERPRET_AS_X__DEPENDENCY(PARENT, DEP, TYPE)                                
-#define CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)                               \
-  INTERPRET_AS_X__FUNCTION_FULL(PARENT,FUNC,0)                                        
+#define INTERPRET_AS_PARENT_DEPENDENCY(DEP, TYPE)                              \
+  INTERPRET_AS_X_DEPENDENCY(PARENT, DEP, TYPE)                                
+#define CORE_INTERPRET_AS_PARENT_FUNCTION(FUNC)                                \
+  INTERPRET_AS_X_FUNCTION_FULL(PARENT,FUNC,0)                                        
 /// @}
 
 /// Macro to get to model namespace easily

@@ -4,13 +4,6 @@
 ///
 ///  Frontend for MicrOmegas MSSM 3.5.5 backend
 ///
-///  Note that if you're going to put backend
-///  convenience and ini functions in a cpp file,
-///  you need to have one cpp file for each renamed
-///  version of the backend that you want to employ.
-///  You also need to define BACKENDRENAME *before*
-///  including the frontend header.
-
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -124,7 +117,7 @@ BE_INI_FUNCTION
     ofs.close();
 
     // Convert filename string to char* type
-    char * filename_c = new char[filename.size() + 1];
+    char* filename_c = new char[filename.size() + 1];
     std::copy(filename.begin(), filename.end(), filename_c);
     filename_c[filename.size()] = '\0';
 
@@ -161,6 +154,9 @@ BE_INI_FUNCTION
 
     // Initialize yield tables for use in cascade decays
     readSpectra();
+
+    // Delete the heap filename
+    delete [] filename_c;
 
 }
 END_BE_INI_FUNCTION

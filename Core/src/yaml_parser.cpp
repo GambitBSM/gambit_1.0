@@ -34,7 +34,7 @@ namespace Gambit
 
       // Perform the basic read and parse operations defined by the parent.
       YAML::Node root = filename_to_node(filename);
-      basicParse(root);
+      basicParse(root,filename);
       
       // Get the observables and rules sections
       YAML::Node outputNode = root["ObsLikes"];

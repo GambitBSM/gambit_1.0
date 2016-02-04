@@ -20,6 +20,11 @@
 // Parent model must be declared first! Include it here to ensure that this happens.
 #include "gambit/Models/models/MSSM9atQ.hpp" 
 
+// Forward declaration of needed types
+namespace Gambit { 
+  class SMInputs;
+}
+
 #define MODEL MSSM7atQ
 #define PARENT MSSM9atQ
   START_MODEL
@@ -33,8 +38,8 @@
 
   DEFINEPARS(Au_3)
 
-  INTERPRET_AS_PARENT__FUNCTION(MSSM7atQ_to_MSSM9atQ)
-  INTERPRET_AS_PARENT__DEPENDENCY(SMINPUTS, SMInputs)
+  INTERPRET_AS_PARENT_FUNCTION(MSSM7atQ_to_MSSM9atQ)
+  INTERPRET_AS_PARENT_DEPENDENCY(SMINPUTS, SMInputs)
 
 #undef PARENT
 #undef MODEL

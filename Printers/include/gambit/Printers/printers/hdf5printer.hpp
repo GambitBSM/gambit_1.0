@@ -27,6 +27,9 @@
 #include <fstream>
 #include <iomanip>
 
+// Boost
+#include <boost/preprocessor/seq/for_each_i.hpp>
+
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
@@ -35,7 +38,8 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/VertexBufferNumeric1D_HDF5.hpp"
 #include "gambit/Utils/yaml_options.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Utils/cats.hpp"
+#include "gambit/Logs/logger.hpp"
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
@@ -308,7 +312,7 @@ namespace Gambit
         #define HDF5_PRINTABLE_TYPES TEMPLATE_TYPES NON_TEMPLATE_TYPES
 
         #define DECLARE_PRINT(r,data,ELEM) \
-          void print(ELEM const& value, const std::string& label, const int IDcode, const unsigned int mpirank, const unsigned long pointID); \
+          void _print(ELEM const& value, const std::string& label, const int IDcode, const unsigned int mpirank, const unsigned long pointID); \
                                                                               
         #define DECLARE_PRINT_FUNCTIONS(TYPES) BOOST_PP_SEQ_FOR_EACH(DECLARE_PRINT, _, TYPES)
         DECLARE_PRINT_FUNCTIONS(NON_TEMPLATE_TYPES)       
@@ -360,10 +364,11 @@ namespace Gambit
 
         // The type of the template print function buffers
         #define TEMPLATE_BUFFTYPE(TYPE) VertexBufferNumeric1D_HDF5<TYPE,BUFFERLENGTH>
+
         #define TEMPLATE_PRINT(r,data,i,elem)                                   \
           NEW_BUFFMAN(TEMPLATE_BUFFTYPE(elem),CAT(template_,i))                 \
-          void print(elem const& value, const std::string& label, const int vID, \
-                       const unsigned int mpirank, const unsigned long pointID)                 \
+          void _print(elem const& value, const std::string& label, const int vID, \
+                       const unsigned int mpirank, const unsigned long pointID) \
           {                                                                     \
             template_print(value,label,vID,mpirank,pointID);                    \
           }                                                          
@@ -387,9 +392,9 @@ namespace Gambit
 
         /// Regular print functions
         // Now already declared in macro above
-        //void print(std::vector<double> const&, const std::string&, const int, const unsigned int, const unsigned long);
-        //void print(ModelParameters     const&, const std::string&, const int, const unsigned int, const unsigned long);
-        //void print(triplet<double> const&,     const std::string&, const int, const unsigned int, const unsigned long);
+        //void _print(std::vector<double> const&, const std::string&, const int, const unsigned int, const unsigned long);
+        //void _print(ModelParameters     const&, const std::string&, const int, const unsigned int, const unsigned long);
+        //void _print(triplet<double> const&,     const std::string&, const int, const unsigned int, const unsigned long);
 
       private:
         // String names for output file and group

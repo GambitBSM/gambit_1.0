@@ -6,16 +6,16 @@
 ///
 ///  *********************************************
 ///
-///  Authors: 
-///   
+///  Authors:
+///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2015 Mar 
+///  \date 2015 Mar
 ///
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Jul
-/// 
+///
 ///  *********************************************
 
 #include "gambit/Utils/standalone_error_handlers.hpp"
@@ -24,6 +24,29 @@
 
 namespace Gambit
 {
+  /// Read an SLHA file in to an SLHAea object with some error-checking
+  SLHAstruct read_SLHA(str slha)
+  {
+     SLHAstruct slhaea;
+     std::ifstream ifs(slha.c_str());
+     if (!ifs.good())
+     {
+       std::ostringstream err;
+       err << "ERROR: SLHA file " << slha << " not found.";
+       utils_error().raise(LOCAL_INFO,err.str());
+     }
+     ifs >> slhaea;
+     ifs.close();
+     return slhaea;
+   }
+
+  /// Add a disclaimer about the absence of a MODSEL block in a generated SLHAea object
+  void add_MODSEL_disclaimer(SLHAstruct& slha, const str& object)
+  {
+    slha.push_front("# depend on which calculator you intend this object or file to be used with.");
+    slha.push_front("# Note that block MODSEL is not automatically emitted, as its contents");
+    slha.push_front("# This SLHA(ea) object was created from a GAMBIT "+object+" object.");
+  }
 
   /// Get an entry from an SLHAea object as a double, with some error checking
   double SLHAea_get(const SLHAstruct& slha, const str& block, const int index)
@@ -39,7 +62,7 @@ namespace Gambit
       errmsg << "Error accessing data at index " << index << " of block " << block
              << ". Please check that the SLHAea object was properly filled." << std::endl
              << "(Received out_of_range error from SLHAea class with message: " << e.what() << ")";
-      utils_error().raise(LOCAL_INFO,errmsg.str());    
+      utils_error().raise(LOCAL_INFO,errmsg.str());
     }
     return output;
   }
@@ -56,12 +79,12 @@ namespace Gambit
     {
       std::ostringstream warn;
       warn << "Warning! No entry found at index "<<index<<" of block "<<block<<". Using default value: "<<defvalue<< std::endl;
-      utils_warning().raise(LOCAL_INFO,warn.str());    
+      utils_warning().raise(LOCAL_INFO,warn.str());
       output = defvalue;
     }
     return output;
   }
-  
+
   /// Add a new block to an SLHAea object, with our without a scale
   void SLHAea_add_block(SLHAstruct& slha, const str& name, const double scale)
   {
@@ -86,7 +109,7 @@ namespace Gambit
     catch (const std::out_of_range& e)
     {
       // Nope; add it.
-      slha[block][""] << "BLOCK" << block;  
+      slha[block][""] << "BLOCK" << block;
     }
     // Check for existing entry
     if(not overwrite)
@@ -100,7 +123,7 @@ namespace Gambit
       catch (const std::out_of_range& e)
       {
         // entry doesn't exist; continue with writing
-      } 
+      }
     }
     return false;
   }

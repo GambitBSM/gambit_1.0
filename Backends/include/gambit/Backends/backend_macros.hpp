@@ -45,7 +45,7 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Elements/module_macros_incore.hpp"
 #include "gambit/Elements/functors.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/ini_functions.hpp"
 #include "gambit/Backends/common_macros.hpp"
 #ifndef STANDALONE
@@ -118,10 +118,9 @@ namespace Gambit                                                            \
                                                                             \
       void * pHandle;                                                       \
       void_voidFptr pSym;                                                   \
-      bool present;                                                         \
       std::vector<str> allowed_models;                                      \
       int load = loadLibrary(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION),    \
-                             STRINGIFY(SAFE_VERSION), pHandle, present,     \
+                             STRINGIFY(SAFE_VERSION), pHandle,              \
                              BOOST_PP_IF(DO_CLASSLOADING,true,false));      \
                                                                             \
       /* Register this backend with the Core if not running in standalone */\
@@ -269,8 +268,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                     
    Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::PTRNAME =                               \
    Gambit::Backends::handover_factory_pointer(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION),       \
    STRINGIFY(NAME), STRINGIFY(BARENAME), STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)),                 \
-   SYMBOLNAME, Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::present,                    \
-   Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                                   \
+   SYMBOLNAME, Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::NAME,                       \
    &Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::CAT(backend_not_loaded_,NAME),         \
    &Gambit::Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION)::CAT(factory_not_loaded_,NAME));        \
 }                                                                                               \
@@ -320,8 +318,8 @@ namespace Gambit                                                              \
       SET_ALLOWED_MODELS(NAME, MODELS)                                        \
                                                                               \
       /* Disable the functor if the library is missing or symbol not found. */\
-      int CAT(vstatus_,NAME) = set_backend_functor_status(present,            \
-       Functown::NAME, SYMBOLNAME);                                           \
+      int CAT(vstatus_,NAME) =                                                \
+       set_backend_functor_status(Functown::NAME, SYMBOLNAME);                \
                                                                               \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                            \
   } /* end namespace Backends */                                              \
@@ -407,7 +405,7 @@ namespace Gambit                                                                
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* Disable the functor if the library is not present or the symbol not found. */          \
-      int CAT(fstatus_,NAME) = set_backend_functor_status(present, Functown::NAME, SYMBOLNAME); \
+      int CAT(fstatus_,NAME) = set_backend_functor_status(Functown::NAME, SYMBOLNAME);          \
                                                                                                 \
       /* Set the allowed model properties of the functor. */                                    \
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \
@@ -472,6 +470,10 @@ namespace Gambit                                                                
          STRINGIFY(SAFE_VERSION)  BOOST_PP_COMMA()                                              \
          Models::ModelDB());                                                                    \
       } /* end namespace Functown */                                                            \
+                                                                                                \
+      /* Disable the functor if the library is not present or the symbol not found. */          \
+      int CAT(fstatus_,NAME) = set_backend_functor_status(Functown::NAME, "no_symbol");         \
+                                                                                                \
       /* Set the allowed model properties of the functor. */                                    \
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \
     }                                                                                           \

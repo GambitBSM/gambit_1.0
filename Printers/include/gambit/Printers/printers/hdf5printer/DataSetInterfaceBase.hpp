@@ -31,7 +31,7 @@
  
 // Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 namespace Gambit {
   

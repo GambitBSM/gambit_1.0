@@ -59,7 +59,6 @@ namespace Gambit
 
       // Subspectrum
       const SubSpectrum* mssm = spec->get_HE();
-
       // PDG codes
       const int id1 = 1000000*l_chirality + 11 +2*(generation-1);
       const int id2 = -(1000000*lbar_chirality + 11 +2*(generation-1));
@@ -69,12 +68,13 @@ namespace Gambit
       const double g2 = mssm->runningpars().get(Par::dimensionless,"g2");
       const double sinW2 = mssm->runningpars().get(Par::dimensionless,"sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
-
       // MSSM parameters
       const double tanb = mssm->runningpars().get(Par::dimensionless,"tanbeta");
+      
       // Get the mass eigenstate strings and 2x2 slepton generation mass mixing matrix
       str mass_es1, mass_es2;
       MixMatrix sleptonmix(2,std::vector<double>(2));
+   
       if (l_are_gauge_es)
       {
         // Requested final states are gauge eigenstates.  Pass diagonal mixing matrix to low-level routine.
@@ -106,7 +106,7 @@ namespace Gambit
                                           mssm->phys().get(Par::Pole_Mass_1srd_low,  mass_es1));
       std::pair<double,double> m2_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, mass_es2),
                                           mssm->phys().get(Par::Pole_Mass_1srd_low,  mass_es2));
-      
+
       // If the final state is kinematically inaccessible *even* if both masses 
       // are 2simga lower than their central values, then return zero. 
       if (m1*(1.0-2.0*m1_uncerts.second) + m2*(1.0-2.0*m2_uncerts.second) > sqrts)
@@ -126,7 +126,7 @@ namespace Gambit
 
       // Convert neutralino mixing matrix to BFM convention
       SLHA2BFM_NN(neutmix, tanb, sinW2);
-      
+
       // Calculate the cross-section
       result.central = xsec_sleislej(id1, id2, sqrts, m1, m2, sleptonmix, neutmix, neutmass, alpha, mZ, gammaZ, sinW2);
 

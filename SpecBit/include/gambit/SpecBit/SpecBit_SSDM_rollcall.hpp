@@ -3,41 +3,38 @@
 ///  \file
 ///
 ///  Rollcall declarations for module functions
-///  contained in SpecBit_MSSM.cpp
+///  contained in SpecBit_SSDM.cpp
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
 ///
-///  \author Ben Farmer
-///          (benjamin.farmer@fysik.su.se)
-///    \date 2014 Sep - Dec, 2015 Jan - Mar
-///  
-///  \author Christopher Rogan
-///          (christophersrogan@gmail.com)
-///  \date 2015 Apr
+///  \author James McKay
+///          (j.mckay14@imperial.ac.uk)
+///    \date Nov 2015
+///
 ///
 ///  *********************************************
 
 #ifndef __SpecBit_SSDM_hpp__
 #define __SpecBit_SSDM_hpp__
 
-
-  #define CAPABILITY SSDM_spectrum
-  START_CAPABILITY                          
-
-    #define FUNCTION get_SSDM_spectrum
-    START_FUNCTION(const Spectrum*)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
-    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SingletDM_running))
-    ALLOW_MODEL_COMBINATION(higgs, singlet)
-    #undef FUNCTION
-
-
-
-  #undef CAPABILITY
+//
+//  #define CAPABILITY SSDM_spectrum
+//  START_CAPABILITY                          
+//
+//    #define FUNCTION get_SSDM_spectrum
+//    START_FUNCTION(const Spectrum*)
+//    DEPENDENCY(SMINPUTS, SMInputs)
+//    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+//    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+//    MODEL_GROUP(singlet, (SingletDM_running))
+//    ALLOW_MODEL_COMBINATION(higgs, singlet)
+//    #undef FUNCTION
+//
+//
+//
+//  #undef CAPABILITY
 
   #define CAPABILITY check_perturb
   START_CAPABILITY
@@ -45,7 +42,7 @@
     #define FUNCTION check_perturb_simple
     START_FUNCTION(bool)
     DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SSDM_spectrum,const Spectrum*)
+    DEPENDENCY(SingletDM_spectrum,const Spectrum*)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
     MODEL_GROUP(singlet, (SingletDM_running))
@@ -55,7 +52,7 @@
     #define FUNCTION check_perturb_to_min_lambda
     START_FUNCTION(bool)
     DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SSDM_spectrum,const Spectrum*)
+    DEPENDENCY(SingletDM_spectrum,const Spectrum*)
     DEPENDENCY(vacuum_stability, ddpair)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
@@ -75,7 +72,7 @@
     #define FUNCTION find_min_lambda
     START_FUNCTION(ddpair)
     DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(SSDM_spectrum,const Spectrum*)
+    DEPENDENCY(SingletDM_spectrum,const Spectrum*)
     ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
     MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
     MODEL_GROUP(singlet, (SingletDM_running))

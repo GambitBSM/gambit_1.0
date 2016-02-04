@@ -18,6 +18,11 @@
 #ifndef __nuclear_params_hpp__
 #define __nuclear_params_hpp__
 
+// Forward declaration of needed types
+namespace Gambit {
+  class SMInputs;
+}
+
 // Explicitly defined hadronic matrix elements
 #define MODEL nuclear_params_fnq
   START_MODEL
@@ -31,8 +36,8 @@
   START_MODEL
   DEFINEPARS(sigma0, sigmal)
   DEFINEPARS(deltad, deltau, deltas)
-  INTERPRET_AS_PARENT__FUNCTION(sigma0_sigmal_to_fnq)
-  INTERPRET_AS_PARENT__DEPENDENCY(SMINPUTS, SMInputs)
+  INTERPRET_AS_PARENT_FUNCTION(sigma0_sigmal_to_fnq)
+  INTERPRET_AS_PARENT_DEPENDENCY(SMINPUTS, SMInputs)
 #undef PARENT
 #undef MODEL
 
@@ -42,8 +47,8 @@
   START_MODEL
   DEFINEPARS(sigmas, sigmal)
   DEFINEPARS(deltad, deltau, deltas)
-  INTERPRET_AS_PARENT__FUNCTION(sigmas_to_sigma0)
-  INTERPRET_AS_PARENT__DEPENDENCY(SMINPUTS, SMInputs)
+  INTERPRET_AS_PARENT_FUNCTION(sigmas_to_sigma0)
+  INTERPRET_AS_PARENT_DEPENDENCY(SMINPUTS, SMInputs)
 #undef PARENT
 #undef MODEL
 

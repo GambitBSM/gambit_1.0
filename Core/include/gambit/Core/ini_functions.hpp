@@ -21,12 +21,18 @@
 #ifndef __ini_functions_core_hpp__
 #define __ini_functions_core_hpp__
 
-#include "gambit/Utils/util_types.hpp"
-#include "gambit/Elements/functors.hpp"
+//#include "gambit/Utils/util_types.hpp"
+//#include "gambit/Elements/functors.hpp"
 
 namespace Gambit
 {
-    
+  typedef std::string str;
+
+  /// Forward declarations 
+  class functor;
+  class module_functor_common;
+  class primary_model_functor;
+   
   /// Register a module with the Core.
   int register_module(str);
 

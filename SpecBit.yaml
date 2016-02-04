@@ -3,14 +3,14 @@
 Parameters:
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  extraCMSSM:
+  CMSSM:
     M0:
       fixed_value: 100
     M12:
       fixed_value: 100
-    signmu:
+    SignMu:
       fixed_value: 1
-    tanb:
+    TanBeta:
       fixed_value: 3
   
 Priors:
@@ -26,10 +26,9 @@ Scanner:
   scanners:
     toy_mcmc:
       plugin: toy_mcmc
-      options:
-        point_number: 2
-        output_file:  output
-        like:  Likelihood
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
 
 
 ObsLikes:
