@@ -260,7 +260,7 @@ BOSS_backend(pythia Pythia 8.212)
 add_extra_targets(pythia ${pythia_dir} ${backend_download}/${pythia_dl} distclean)
 
 # Pythia with external model (pythiaEM)
-set(pythiaEM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212_EM")
+set(pythiaEM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212/EM")
 set(pythiaEM_dl "pythia8212.tgz")
 # - Actual configure and compile commands
 ExternalProject_Add(pythiaEM
@@ -305,7 +305,7 @@ ExternalProject_Add_Step(pythiaEM apply_hacks
   DEPENDEES download
   DEPENDERS patch
 )
-BOSS_backend(pythiaEM Pythia 8.212_EM)
+BOSS_backend(pythiaEM PythiaEM 8.212)
 add_extra_targets(pythiaEM ${pythiaEM_dir} ${backend_download}/${pythia_dl} distclean)
 
 # Fastsim
