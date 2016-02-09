@@ -26,6 +26,12 @@ namespace Gambit
     /// Compute a simple chi-square likelihood (returns log likelihood)
     double gaussian_loglikelihood(double theory, double obs, double theoryerr, double obserr);
 
+    /// Use a detection to compute a simple chi-square likelihood for the case
+    /// where the quantity ln(obs/theory) is normally distributed. (err/theory)^2 is
+    /// the variance of the distribution of ln(obs/theory) values.
+    /// (returns log-likelihood)
+    double lognormal_loglikelihood(double theory, double obs, double theoryerr, double obserr);
+
     /// Use a detection to compute a log-likelihood for an upper limit
     double detection_as_upper_limit(double theory, double obs, double theoryerr, double obserr, const str& limit_method="simple");
 

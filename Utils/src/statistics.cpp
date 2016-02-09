@@ -34,6 +34,20 @@ namespace Gambit
       return (-log(sqrt(errsq*2*pi)) - 0.5*pow(theory-obs,2)/errsq);
     }
 
+    /// Use a detection to compute a simple chi-square likelihood for the case
+    /// where the quantity ln(obs/theory) is normally distributed. (err/theory)^2 is
+    /// the variance of the distribution of ln(obs/theory) values.
+    /// (returns log-likelihood)
+    double lognormal_loglikelihood(double theory, double obs, double theoryerr, double obserr)
+    {
+
+        double errsq_prime = (theoryerr*theoryerr + obserr*obserr) / (theory*theory);
+        double obs_prime = obs / theory;
+
+        return (-log(sqrt(errsq_prime*2*pi)) - log(obs_prime)
+                - 0.5*pow(log(obs_prime),2)/errsq_prime);
+    }
+
     /// Use a detection to compute a log-likelihood for an upper limit
     double detection_as_upper_limit(double theory, double obs, double theoryerr, double obserr, const str& limit_method)
     {
