@@ -11,12 +11,15 @@
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Aug
+///  \author Jonathan Cornell
+///          (cornellj@physics.mcgill.ca)
+///  \date 2016 Feb
 ///
 ///  *********************************************
 
 #include "gambit/Utils/statistics.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-
+#include "gambit/Elements/numerical_constants.hpp"
 
 namespace Gambit
 {
@@ -28,7 +31,7 @@ namespace Gambit
     double gaussian_loglikelihood(double theory, double obs, double theoryerr, double obserr)
     {
       double errsq = theoryerr*theoryerr + obserr*obserr;
-      return -0.5*pow(theory-obs,2)/errsq;
+      return (-log(sqrt(errsq*2*pi)) - 0.5*pow(theory-obs,2)/errsq);
     }
 
     /// Use a detection to compute a log-likelihood for an upper limit
