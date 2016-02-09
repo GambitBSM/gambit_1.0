@@ -37,6 +37,14 @@ namespace Gambit
     void capture_rate_Sun_constant_xsec(double &result)
     {
       using namespace Pipes::capture_rate_Sun_constant_xsec;
+
+      // Set local DM density based on calculated relic density.
+
+      double rho0_eff = (*Dep::RD_fraction)*(*Param["rho0"]);
+      BEreq::dshmcom->rhox = rho0_eff;
+      logger() << "Updating DarkSUSY halo parameters:" << EOM;
+      logger() << "  rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+
       // Here we assume that the proton and neutron scattering cross-sections
       // are the same.
       result = BEreq::capture_rate_Sun(
