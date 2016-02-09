@@ -214,10 +214,10 @@ namespace Gambit {
     {
         using namespace Pipes::lnL_rho0_lognormal;
         double rho0 = *Param["rho0"];
-        double rho0_obs = log(runOptions->getValueOrDef<double>(.4, "rho0_obs"));
+        double rho0_obs = runOptions->getValueOrDef<double>(.4, "rho0_obs");
         double rho0_obserror = runOptions->getValueOrDef<double>(.15, "rho0_obserr");
 
-        result = Stats::lognormal_loglikelihood(rho0, rho0_obs, 0,
+        result = Stats::lognormal_loglikelihood(rho0, rho0_obs, 0.,
                 rho0_obserror);
         logger() << "lnL_rho0 yields " << result << EOM;
     }
@@ -228,7 +228,7 @@ namespace Gambit {
       double vrot = *Param["vrot"];
       double vrot_obs = runOptions->getValueOrDef<double>(235, "vrot_obs");
       double vrot_obserr  = runOptions->getValueOrDef<double>(20, "vrot_obserr");
-      result = Stats::gaussian_loglikelihood(vrot, vrot_obs, 0, vrot_obserr);
+      result = Stats::gaussian_loglikelihood(vrot, vrot_obs, 0., vrot_obserr);
       logger() << "lnL_vrot yields " << result << EOM;
     }
 
@@ -238,7 +238,7 @@ namespace Gambit {
       double v0 = *Param["v0"];
       double v0_obs = runOptions->getValueOrDef<double>(235, "v0_obs");
       double v0_obserr  = runOptions->getValueOrDef<double>(20, "v0_obserr");
-      result = Stats::gaussian_loglikelihood(v0, v0_obs, 0, v0_obserr);
+      result = Stats::gaussian_loglikelihood(v0, v0_obs, 0., v0_obserr);
       logger() << "lnL_v0 yields " << result << EOM;
     }
 
@@ -248,7 +248,7 @@ namespace Gambit {
       double vesc = *Param["vesc"];
       double vesc_obs = runOptions->getValueOrDef<double>(550, "vesc_obs");
       double vesc_obserr  = runOptions->getValueOrDef<double>(35, "vesc_obserr");
-      result = Stats::gaussian_loglikelihood(vesc, vesc_obs, 0, vesc_obserr);
+      result = Stats::gaussian_loglikelihood(vesc, vesc_obs, 0., vesc_obserr);
       logger() << "lnL_vesc yields " << result << EOM;
     }
 
