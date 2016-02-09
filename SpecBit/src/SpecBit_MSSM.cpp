@@ -308,9 +308,23 @@ namespace Gambit
        return output;
     }
 
-    /// Helper function for filling MSSM78-compatible input parameter objects
+    /// As above, but for symmetric input (i.e. 6 entries, assumed to be the upper triangle)
+    Eigen::Matrix<double,3,3> fill_3x3_symmetric_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
+    {
+       Eigen::Matrix<double,3,3> output;
+       for(int i=0; i<3; ++i) { for(int j=i; j<3; ++j) {
+         std::stringstream parname;
+         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
+         /// TODO: Error checking...
+         std::cout<< parname << " ";
+         output(i,j) = *Param.at(parname.str());
+       } std::cout<<std::endl;}
+       return output;
+    }
+
+    /// Helper function for filling MSSM63-compatible input parameter objects
     template <class T>
-    void fill_MSSM78_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    void fill_MSSM63_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
 
       //double valued parameters
@@ -323,11 +337,11 @@ namespace Gambit
       input.MassGInput  = *Param.at("M3");
 
       //3x3 matrices; filled with the help of a convenience function
-      input.mq2Input = fill_3x3_parameter_matrix("mq2", Param);
-      input.ml2Input = fill_3x3_parameter_matrix("ml2", Param);
-      input.md2Input = fill_3x3_parameter_matrix("md2", Param);
-      input.mu2Input = fill_3x3_parameter_matrix("mu2", Param);
-      input.me2Input = fill_3x3_parameter_matrix("me2", Param);
+      input.mq2Input = fill_3x3_symmetric_parameter_matrix("mq2", Param);
+      input.ml2Input = fill_3x3_symmetric_parameter_matrix("ml2", Param);
+      input.md2Input = fill_3x3_symmetric_parameter_matrix("md2", Param);
+      input.mu2Input = fill_3x3_symmetric_parameter_matrix("mu2", Param);
+      input.me2Input = fill_3x3_symmetric_parameter_matrix("me2", Param);
       input.Aeij = fill_3x3_parameter_matrix("Ae", Param);
       input.Adij = fill_3x3_parameter_matrix("Ad", Param);
       input.Auij = fill_3x3_parameter_matrix("Au", Param);
@@ -432,7 +446,7 @@ namespace Gambit
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSM_input_parameters input;
       input.Qin = *myPipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
-      fill_MSSM78_input(input,myPipe::Param);
+      fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }
@@ -444,7 +458,7 @@ namespace Gambit
       namespace myPipe = Pipes::get_MSSMatMGUT_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSMatMGUT_input_parameters input;
-      fill_MSSM78_input(input,myPipe::Param);
+      fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }

@@ -189,7 +189,7 @@ namespace Gambit
         slha.clear();
         spectrum.clear();
         slha = Dep::decay_rates->as_slhaea();
-        if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+        if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
         {
           // MSSM-specific
           spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
