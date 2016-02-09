@@ -23,7 +23,9 @@ namespace Gambit
   namespace Stats
   {
 
-    /// Compute a simple chi-square likelihood (returns log likelihood)
+    /// Use a detection to compute a simple chi-square likelihood.
+    /// For the case when obs/theory is normally distributed with a variance of
+    /// (err/theory)^2. (returns log likelihood)
     double gaussian_loglikelihood(double theory, double obs, double theoryerr, double obserr);
 
     /// Use a detection to compute a simple chi-square likelihood for the case
