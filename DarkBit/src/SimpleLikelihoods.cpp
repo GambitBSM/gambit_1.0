@@ -205,20 +205,21 @@ namespace Gambit {
         logger() << "lnL for SI nuclear parameters is " << result << EOM;
     }
 
-    /// \brief Likelihood for local DM density. The likelihood follows a log-normal distribution.
-    /// Default data:
-    ///  rho_0 : .4 GeV/cm^3
-    ///  percentage error on rho_0: .3
+    /// \brief Likelihoods for halo parameters. The likelihood for the local DM density follows a
+    /// log normal distribution while for the velocities the distribution is Gaussian.
+    /// For discussion of the default values for measured halo paramters and their errors,
+    /// see JCAP04(2011)012.
 
     void lnL_rho0_lognormal(double &result)
     {
         using namespace Pipes::lnL_rho0_lognormal;
         double rho0 = *Param["rho0"];
-        double rho0_central = log(runOptions->getValueOrDef<double>(.4, "rho0_central"));
-        double rho0_error = runOptions->getValueOrDef<double>(.3, "rho0_percentage_error");
+        double rho0_obs = log(runOptions->getValueOrDef<double>(.4, "rho0_obs"));
+        double rho0_obserror = runOptions->getValueOrDef<double>(.15, "rho0_obserr");
 
-        result = Stats::gaussian_loglikelihood(log(rho0), rho0_central, 0,
-                sqrt(1. + rho0_error*rho0_error));
+        result = Stats::lognormal_loglikelihood(rho0, rho0_obs, 0,
+                rho0_obserror);
+        logger() << "lnL_rho0 yields " << result << EOM;
     }
 
     /*! \brief Helper function to dump gamma-ray spectra.
