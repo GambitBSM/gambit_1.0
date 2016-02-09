@@ -442,6 +442,30 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY lnL_vrot
+  START_CAPABILITY
+    #define FUNCTION lnL_vrot_gaussian
+      START_FUNCTION(double)
+      ALLOW_MODELS(LocalHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_v0
+  START_CAPABILITY
+    #define FUNCTION lnL_v0_gaussian
+      START_FUNCTION(double)
+      ALLOW_MODELS(LocalHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_vesc
+  START_CAPABILITY
+    #define FUNCTION lnL_vesc_gaussian
+      START_FUNCTION(double)
+      ALLOW_MODELS(LocalHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   // Simple WIMP property extractors =======================================
 
   // Retrieve the DM mass in GeV for generic models
