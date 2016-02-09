@@ -455,11 +455,12 @@ Rules:
       sigmal_error: 9.
 
   # DM Local Density Likelihood
+  # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)
   - capability: lnL_rho0
     function: lnL_rho0_lognormal
     options:
-      rho0_central: 0.4 # GeV/cm^3
-      rho0_percentage_error: .3
+      rho0_obs: 0.4 # GeV/cm^3
+      rho0_obserr: .15 # GeV/cm^3
 
   # Miscellaneous ----------------------
   - capability: MSSMspectrum
