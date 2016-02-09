@@ -144,9 +144,18 @@ ObsLikes:
     - capability: lnL_SI_nuclear_parameters
       purpose:    LogLike
 
-    # DM Local Density likelihood
+    # DM Local Halo likelihoods
     - capability: lnL_rho0
       purpose: LogLike
+      
+    - capability: lnL_vrot
+      purpose: LogLike
+      
+    - capability: lnL_v0
+      purpose: logLike
+      
+    - capability: lnL_vesc
+      purpose: logLike
         
     #- purpose:    Likelihood
     #  capability: LHC_Combined_LogLike
@@ -324,13 +333,28 @@ Rules:
       sigmal_central: 58.
       sigmal_error: 9.
 
-  # DM Local Density Likelihood
+  # DM Halo Model Likelihoods
   # (rho0_obserr/rho0_obs)^2 is the variance of ln(rho0/rho0_obs)
-  - capability: lnL_rho0
+  - capability: lnL_rho0  # Local dark matter density
     function: lnL_rho0_lognormal
     options:
       rho0_obs: 0.4 # GeV/cm^3
       rho0_obserr: .15 # GeV/cm^3
+  - capability: lnL_vrot  # Local disk rotation speed
+    function: lnL_vrot_gaussian
+    options:
+      vrot_obs: 235 # km/s
+      vrot_obserr: 20 # km/s
+  - capability: lnL_v0   # Maxwellian most-probable speed
+    function: lnL_v0_gaussian
+    options:
+      v0_obs: 235 # km/s
+      v0_obserr: 20 # km/s
+  - capability: lnL_vesc # Local galactic escape speed
+    function: lnL_vesc_gaussian
+    options:
+      vesc_obs: 550 # km/s
+      vesc_obserr: 35 # km/s
 
   # Precision Bit
   - capability: lnL_light_quark_masses
