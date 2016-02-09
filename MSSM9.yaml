@@ -158,10 +158,10 @@ ObsLikes:
       purpose: LogLike
       
     - capability: lnL_v0
-      purpose: logLike
+      purpose: LogLike
       
     - capability: lnL_vesc
-      purpose: logLike
+      purpose: LogLike
 
     #- purpose:    LogLike
     #  capability: LHC_Combined_LogLike
