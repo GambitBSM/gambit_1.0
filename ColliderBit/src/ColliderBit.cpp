@@ -74,9 +74,9 @@ namespace Gambit
           else step /= 10.;
         }
       }
-    
+
       double result = 0.5 * (1.0 - erf(p95 + (x - x95) / sigma / sqrt(2.)));
-    
+
       if (result < 0.0 or Utils::isnan(result))
       {
         cout << "result: " << result << endl;
@@ -583,7 +583,7 @@ namespace Gambit
 
         }
 
-        // Veto leptonic taus
+        // Find tau candidates
         if(p.idAbs()==15) {
           std::vector<int> tauDaughterList = p.daughterList();
           HEPUtils::P4 tmpMomentum;
@@ -592,6 +592,8 @@ namespace Gambit
           for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
+            // Veto leptonic taus
+            /// @todo What's wrong with having a W daughter? Doesn't that just mark a final tau?
             if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
                 || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
               isGoodTau=false;
@@ -637,7 +639,7 @@ namespace Gambit
 
       /// Jet finding
       /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
-      /// @todo choose jet algorithm via _settings?
+      /// @todo Choose jet algorithm via detector _settings? Run several algs?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
       std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
