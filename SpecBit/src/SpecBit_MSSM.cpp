@@ -26,14 +26,13 @@
 #include <sstream>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/spectrum.hpp"
+#include "gambit/Elements/spectrum_factories.hpp"
+#include "gambit/Elements/MSSMskeleton.hpp"
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-#include "gambit/SpecBit/SMskeleton.hpp"
-#include "gambit/SpecBit/MSSMskeleton.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
@@ -85,7 +84,7 @@ namespace Gambit
       // couplings in QEDxQCD effective theory
       // Will be initialised by default using values in lowe.h, which we will
       // override next.
-      QedQcd oneset;
+      softsusy::QedQcd oneset;
 
       // Fill QedQcd object with SMInputs values
       setup_QedQcd(oneset,sminputs);
@@ -237,7 +236,7 @@ namespace Gambit
          if( runOptions.getValue<bool>("invalid_point_fatal") )
          {
             ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
-            // just die.
+            /// just die.
             std::ostringstream errmsg;
             errmsg << "A serious problem was encountered during spectrum generation!; ";
             errmsg << "Message from FlexibleSUSY below:" << std::endl;
@@ -528,29 +527,9 @@ namespace Gambit
         ncycle++;
       }
 
-      // Create MSSMskeleton SubSpectrum object from the SLHAea object
-      // (interacts with MSSM blocks)
-      MSSMskeleton mssmskel(input_slha);
-
-      // Create SMInputs object from the SLHAea object
-      SMInputs sminputs(input_slha);
-
-      // Create SMskeleton SubSpectrum object from the SLHAea object
-      // (basically just interacts with SMINPUTS block)
-      SMskeleton smskel(input_slha);
-
-      // Create full Spectrum object from components above
+      // Create Spectrum object from the slhaea object
       static Spectrum matched_spectra;
-      // Note subtlety! There are TWO constructors for the Spectrum object:
-      // If pointers to SubSpectrum objects are passed, it is assumed that
-      // these objects are managed EXTERNALLY! So if we were to do this:
-      //   matched_spectra = Spectrum(&smskel,&mssmskel,sminputs);
-      // then the SubSpectrum objects would end up DELETED at the end of
-      // this scope, and we will get a segfault if we try to access them
-      // later. INSTEAD, we should just pass the objects themselves, and
-      // then they will be CLONED and the Spectrum object will take
-      // possession of them:
-      matched_spectra = Spectrum(smskel,mssmskel,sminputs,NULL);
+      matched_spectra = spectrum_from_SLHAea<MSSMskeleton>(input_slha);
       result = &matched_spectra;
 
       // No sneaking in charged LSPs via SLHA, jävlar.

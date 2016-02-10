@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:32
+// File generated at Wed 28 Oct 2015 11:35:27
 
 #include "NSM_info.hpp"
 
@@ -29,14 +29,14 @@ namespace NSM_info {
    const double normalization_g2 = 1;
    const double normalization_g3 = 1;
 
-   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 3, 1, 1
-      , 1, 3, 3, 3, 2, 1};
+   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 3, 1, 1, 3
+      , 3, 3, 2, 1, 1, 1};
 
-   const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Hp", "Fv", "Ah",
-      "VP", "VZ", "Fd", "Fu", "Fe", "hh", "VWp"};
+   const char* particle_names[NUMBER_OF_PARTICLES] = {"Hp", "Fv", "Ah", "VZ",
+      "Fd", "Fu", "Fe", "hh", "VG", "VP", "VWp"};
 
-   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "g", "H^+",
-      "\\nu", "A^0", "\\gamma", "Z", "d", "u", "e", "h", "W^+"};
+   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "H^+", "\\nu",
+      "A^0", "Z", "d", "u", "e", "h", "g", "\\gamma", "W^+"};
 
    const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
       "Lambda2", "Lambda3", "Lambda1", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)",

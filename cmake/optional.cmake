@@ -1,26 +1,26 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  Cmake configuration script to look for optional
-#  things for GAMBIT.  
-#    
+#  things for GAMBIT.
+#
 #************************************************
-#                                                
-#  Authors (add name and date if you modify):                                    
-#                                                
+#
+#  Authors (add name and date if you modify):
+#
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
 #
 #  \author Ben Farmer
 #          (benjamin.farmer@fysik.su.se)
 #  \date 2015 May
-#                                               
+#
 #************************************************
 
 # Check for MPI libraries; disable manually with "cmake -DMPI=OFF .."
@@ -49,7 +49,7 @@ if(MPI)
   # Do things for Fortran backends and scanners
   if(MPI_Fortran_FOUND)
     if(MPI_C_FOUND)
-      message("${BoldYellow}-- MPI Fortran libraries found. Fortran scanners will be MPI-enabled.${ColourReset}") 
+      message("${BoldYellow}-- MPI Fortran libraries found. Fortran scanners will be MPI-enabled.${ColourReset}")
       # Includes
       foreach(dir ${MPI_Fortran_INCLUDE_PATH})
         set(GAMBIT_MPI_F_INC "${GAMBIT_MPI_F_INC} -I${dir}")
@@ -80,21 +80,19 @@ if(NOT LAPACK_LINKLIBS)
   find_package(LAPACK)
   if(NOT LAPACK_FOUND)
     message(FATAL_ERROR "${BoldRed}    LAPACK is currently required in order to build GAMBIT.${ColourReset}")
-    # In future MN and FS need to be ditched if lapack cannot be found, and the build allowed to continue.
+    # In future MN and FS need to be ditched if lapack cannot be found and the build allowed to continue.
     message("${BoldRed}   No LAPACK installation found. Excluding FlexibleSUSY and MultiNest from GAMBIT configuration. ${ColourReset}")
   else()
     # Check the libs for MKL
-    string(FIND "${LAPACK_LIBRARIES}" "libmkl_" FOUND_MKL)  
+    string(FIND "${LAPACK_LIBRARIES}" "libmkl_" FOUND_MKL)
     foreach(lib ${LAPACK_LIBRARIES})
-      if(NOT LAPACK_LINKLIBS)
-        string(REGEX REPLACE "^(.*)/(.*)\\..*$" "\\1" BLAS_LAPACK_LOCATION ${lib})
-        if(NOT ${FOUND_MKL} EQUAL -1)
-          # Add the silver-bullet SDL mkl_rt.so if possible.
-          set(SDL "${BLAS_LAPACK_LOCATION}/libmkl_rt.so")
-          if(EXISTS ${SDL})
-            set(LAPACK_LINKLIBS "${LAPACK_LINKLIBS} ${SDL}")
-          endif()
-        endif()  
+      string(REGEX REPLACE "^(.*)/(.*)\\..*$" "\\1" BLAS_LAPACK_LOCATION ${lib})
+      if(NOT ${FOUND_MKL} EQUAL -1)
+        # Add the silver-bullet SDL mkl_rt.so if possible.
+        set(SDL "${BLAS_LAPACK_LOCATION}/libmkl_rt.so")
+        if(EXISTS ${SDL})
+          set(LAPACK_LINKLIBS "${LAPACK_LINKLIBS} ${SDL}")
+        endif()
       endif()
       string(FIND "${lib}" ".framework" IS_FRAMEWORK)
       if(NOT ${IS_FRAMEWORK} EQUAL -1)
@@ -103,7 +101,7 @@ if(NOT LAPACK_LINKLIBS)
       set(LAPACK_LINKLIBS "${LAPACK_LINKLIBS} ${lib}")
     endforeach()
     string(STRIP "${LAPACK_LINKLIBS}" LAPACK_LINKLIBS)
-    message("   using the following LAPACK libraries: ${LAPACK_LINKLIBS}")  
+    message("   using the following LAPACK libraries: ${LAPACK_LINKLIBS}")
   endif()
 else()
   message("${BoldCyan}   LAPACK linking commands provided by hand; skipping cmake search and assuming no LAPACK-dependent components need to be ditched.${ColourReset}")
@@ -113,7 +111,7 @@ endif()
 find_package(ROOT)
 if (NOT ROOT_FOUND OR ROOT_VERSION VERSION_GREATER 6)
   # Excluding ColliderBit from GAMBIT
-  if (NOT ROOT_FOUND) 
+  if (NOT ROOT_FOUND)
     message("${BoldRed}   No ROOT installation found. Excluding Delphes from GAMBIT configuration. ${ColourReset}")
   else()
     message("${BoldRed}   Unsupported ROOT version found: ${ROOT_VERSION}. Delphes needs ROOT 5. Excluding Delphes from GAMBIT configuration. ${ColourReset}")
@@ -127,8 +125,8 @@ endif()
 find_package(HDF5 QUIET COMPONENTS C)
 if(HDF5_FOUND)
   include_directories(${HDF5_INCLUDE_DIR})
-  message("-- Found HDF5 libraries")  
-  if (VERBOSE) 
+  message("-- Found HDF5 libraries")
+  if (VERBOSE)
     message(STATUS ${HDF5_LIBRARIES})
   endif()
 else()

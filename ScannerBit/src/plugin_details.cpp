@@ -89,10 +89,10 @@ namespace Gambit
                 std::string lib = path.substr(path.rfind("/") + 1);
                 if (libNode.IsMap())
                 {
-                    if (libNode[lib].IsMap())
+                    if (libNode[lib] and libNode[lib].IsMap())
                     {
                         std::multimap<std::string, std::string> linked_libs_temp;
-                        if (libNode[lib]["linked_libs"].IsMap())
+                        if (libNode[lib]["linked_libs"] and libNode[lib]["linked_libs"].IsMap())
                         {
                             for (auto it = libNode[lib]["linked_libs"].begin(), end = libNode[lib]["linked_libs"].end(); it != end; ++it)
                             {
@@ -125,7 +125,7 @@ namespace Gambit
                         reqd_not_linked_libs = linked_temp;
                         
                         std::multimap<std::string, std::string> found_incs_temp;
-                        if (libNode[lib]["found_incs"].IsMap())
+                        if (libNode[lib]["found_incs"] and libNode[lib]["found_incs"].IsMap())
                         {
                             for (auto it = libNode[lib]["found_incs"].begin(), end = libNode[lib]["found_incs"].end(); it != end; ++it)
                                 found_incs_temp.insert(std::pair<std::string, std::string>(it->first.as<std::string>(), it->second.as<std::string>()));

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 13:14:17
+// File generated at Wed 28 Oct 2015 11:30:41
 
 #ifndef NUHMSSM_PHYSICAL_H
 #define NUHMSSM_PHYSICAL_H
@@ -36,10 +36,8 @@ struct NUHMSSM_physical {
    void convert_to_slha(); ///< converts pole masses to SLHA convention
    void print(std::ostream&) const;
 
-   double MVG;
    double MGlu;
    Eigen::Array<double,3,1> MFv;
-   double MVP;
    double MVZ;
    Eigen::Array<double,6,1> MSd;
    Eigen::Array<double,3,1> MSv;
@@ -53,6 +51,8 @@ struct NUHMSSM_physical {
    Eigen::Array<double,3,1> MFe;
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
+   double MVG;
+   double MVP;
    double MVWm;
 
    Eigen::Matrix<double,6,6> ZD;

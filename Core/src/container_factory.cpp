@@ -24,16 +24,23 @@
 ///  *********************************************
 
 #include "gambit/Core/likelihood_container.hpp"
-
+#include "gambit/Utils/mpiwrapper.hpp"
 
 namespace Gambit
 {
 
   Likelihood_Container_Factory::Likelihood_Container_Factory(const gambit_core &core, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior)
-  : dependencyResolver(dependencyResolver), 
-    prior(prior),
-    iniFile(iniFile)
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, Printers::BaseBasePrinter& printer
+  #ifdef WITH_MPI
+    , GMPI::Comm& comm
+  #endif
+  ) : dependencyResolver(dependencyResolver)
+    , prior(prior)
+    , iniFile(iniFile)
+    , printer(printer)
+    #ifdef WITH_MPI
+    , myComm(comm)
+    #endif
   {
     functorMap = core.getActiveModelFunctors();
     
@@ -75,6 +82,10 @@ namespace Gambit
     
   void * Likelihood_Container_Factory::operator() (const std::string &purpose) const
   {
-    return __scanner_factories__["Scanner_Function"](functorMap, dependencyResolver, iniFile, prior, purpose);
+    return __scanner_factories__["GAMBIT_Scanner_Target_Function"](functorMap, dependencyResolver, iniFile, prior, purpose, printer
+      #ifdef WITH_MPI
+       , myComm
+      #endif
+      );
   }
 }

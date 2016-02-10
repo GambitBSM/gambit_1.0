@@ -13,6 +13,8 @@
 #include <iosfwd>
 #include <complex>
 
+namespace softsusy {
+
 ///drop-in replacement for the original home-grown Complex class
 class Complex : public std::complex<double> {
 public:
@@ -92,5 +94,7 @@ inline std::complex<T> operator+(const int lhs, std::complex<T> rhs)
 {
    return operator+(rhs, lhs);
 }
+
+} // namespace softsusy
 
 #endif

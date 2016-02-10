@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:25
+// File generated at Wed 28 Oct 2015 11:35:25
 
 #include "NSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -76,6 +76,9 @@ NSM_soft_parameters NSM_soft_parameters::calc_beta() const
       beta_vH += calc_beta_vH_two_loop(TRACE_STRUCT);
       beta_vS += calc_beta_vS_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
@@ -97,7 +100,7 @@ void NSM_soft_parameters::clear()
 
 }
 
-const Eigen::ArrayXd NSM_soft_parameters::get() const
+Eigen::ArrayXd NSM_soft_parameters::get() const
 {
    Eigen::ArrayXd pars(NSM_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);

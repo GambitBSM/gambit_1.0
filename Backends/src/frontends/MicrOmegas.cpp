@@ -4,13 +4,6 @@
 ///
 ///  Frontend for MicrOmegas MSSM 3.5.5 backend
 ///
-///  Note that if you're going to put backend
-///  convenience and ini functions in a cpp file,
-///  you need to have one cpp file for each renamed
-///  version of the backend that you want to employ.
-///  You also need to define BACKENDRENAME *before*
-///  including the frontend header.
-
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -37,7 +30,9 @@ BE_NAMESPACE
       //       7 - 9: e, m, l
       //       10 - 15: Z, ZT, ZL, W, WT, WL
       double tab[250];  // NZ = 250
-      readSpectra();
+      // readSpectra() moved to initialization function.
+      // Must be inside critical block if used here!
+      // readSpectra();
       mInterp(Ecm/2, inP, outN, tab);
       return zInterp(log(E/Ecm*2), tab);
     }
@@ -122,7 +117,7 @@ BE_INI_FUNCTION
     ofs.close();
 
     // Convert filename string to char* type
-    char * filename_c = new char[filename.size() + 1];
+    char* filename_c = new char[filename.size() + 1];
     std::copy(filename.begin(), filename.end(), filename_c);
     filename_c[filename.size()] = '\0';
 
@@ -137,14 +132,13 @@ BE_INI_FUNCTION
     {
         usleep(usec);
         error = lesHinput(byVal(filename_c));
-        if (error != 0) 
-            backend_warning().raise(LOCAL_INFO, 
+        if (error != 0)
+            backend_warning().raise(LOCAL_INFO,
                     "Troubles loading SLHA file in MicrOmegas lesHinput: " + filename + "\n"
                     "Trying again."
                     );
-        else 
+        else
         {
-            std::cout << "Yeah, loaded " + filename + " on the " << counter << " trial" << std::endl;
             break;
         }
         if (counter == 99) backend_error().raise(LOCAL_INFO, "MicrOmegas function "
@@ -157,6 +151,12 @@ BE_INI_FUNCTION
 
     if (remove(filename_c) != 0)
         backend_warning().raise(LOCAL_INFO, "Unable to delete SLHA file "+filename);
+
+    // Initialize yield tables for use in cascade decays
+    readSpectra();
+
+    // Delete the heap filename
+    delete [] filename_c;
 
 }
 END_BE_INI_FUNCTION

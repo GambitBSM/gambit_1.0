@@ -30,6 +30,7 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
 #include <sstream>
@@ -105,6 +106,7 @@ namespace Gambit
       return sortVertices(set, topoOrder);
     }
 
+
     //
     // Functions that compare ini-file entries and observables
     //
@@ -158,6 +160,7 @@ namespace Gambit
     }
 
     // Check whether functor matches rules
+    // Matches function name and type
     bool matchesRules( functor *f, const Rule & rule)
     {
       //cout << (*f).name() << " vs " << rule.function << endl;
@@ -166,7 +169,6 @@ namespace Gambit
                stringComp( rule.module, (*f).origin())
              );
     }
-
 
 
     //
@@ -208,6 +210,7 @@ namespace Gambit
           out << ">]";
         }
     };
+
 
     //
     // Misc
@@ -259,7 +262,6 @@ namespace Gambit
     }
 
 
-
     ///////////////////////////////////////////////////
     // Public definitions of DependencyResolver class
     ///////////////////////////////////////////////////
@@ -289,6 +291,7 @@ namespace Gambit
       }
       logger() << EOM;
     }
+
 
     //
     // Initialization stage
@@ -384,8 +387,8 @@ namespace Gambit
          (*masterGraph[*vi]).dependencies().size()%
          (*masterGraph[*vi]).backendreqs().size();
       }
-      logger() << endl << "Registered Backend vertices" << endl;
-      logger() <<         "---------------------------" << endl;
+      logger() <<  "Registered Backend vertices" << endl;
+      logger() <<  "---------------------------" << endl;
       logger() << printGenericFunctorList(boundCore->getBackendFunctors());
       logger() << EOM;
     }
@@ -520,6 +523,7 @@ namespace Gambit
       logger() << LogTags::dependency_resolver << ss.str() << EOM;
     }
 
+
     //
     // Runtime
     //
@@ -589,7 +593,7 @@ namespace Gambit
       {
         std::ostringstream ss;
         ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
-        logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << EOM;
+        logger() << LogTags::dependency_resolver << LogTags::info << LogTags::debug << ss.str() << EOM;
         masterGraph[*it]->calculate();
         if (boundIniFile->getValueOrDef<bool>(
               false, "dependency_resolution", "log_runtime") )
@@ -608,8 +612,12 @@ namespace Gambit
         //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
         if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter,pointID);
+        //masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
       }
     }
+
+    /// Getter for print_timing flag (used by LikelihoodContainer)
+    bool DependencyResolver::printTiming() { return print_timing; }
 
     // Get the functor corresponding to a single VertexID
     functor* DependencyResolver::get_functor(VertexID id)
@@ -808,8 +816,11 @@ namespace Gambit
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
         // Inform the active functors of the vertex ID that the masterGraph has assigned to them
-        // (so that later on they can pass this to the printer object to identify themselves)
-        masterGraph[*vi]->setVertexID(index[*vi]);
+        // (so that later on they can pass this to the printer object to identify themselves)  
+        masterGraph[*vi]->setVertexID(index[*vi]);  
+        // Same for timing output ID, but get ID number from printer system
+        std::string timing_label = masterGraph[*vi]->timingLabel();
+        masterGraph[*vi]->setTimingVertexID(Printers::get_main_param_id(timing_label));  
 
         // Check for non-void type and status==2 (after the dependency resolution) to print only active, printable functors.
         // TODO: this doesn't currently check for non-void type; that is done at the time of printing in calcObsLike.  Not sure if this is
@@ -909,8 +920,11 @@ namespace Gambit
               }
               else if ( zlevels[jt->first.as<std::string>()].as<int>() == getEntryLevelForOptions(*it) )
               {
-                cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
-                exit(-1);
+                //cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
+                //exit(-1);
+                std::ostringstream errmsg;
+                errmsg << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>();
+                dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
               }
             }
           }
@@ -975,7 +989,7 @@ namespace Gambit
           << "    class is missing from the backend, or the factory functions" << endl
           << "    for this class have not been BOSSed and loaded correctly." << endl;
         }
-        errmsg << "Please check inifile for typos, and make sure that the" << endl
+        errmsg << "Please check your yaml file for typos, and make sure that the" << endl
         << "models you are scanning are compatible with at least one function" << endl
         << "that provides this capability (they may all have been deactivated" << endl
         << "due to having ALLOW_MODELS declarations which are" << endl
@@ -1340,10 +1354,11 @@ namespace Gambit
       logger() << "################################################" << endl;
       logger() << EOM;
 
-      // Read ini entry
-      use_regex = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
-      if ( use_regex )
-        logger() << "Using regex for string comparison." << endl;
+      // Read ini entries
+      use_regex    = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
+      print_timing = boundIniFile->getValueOrDef<bool>(false, "print_timing_data");
+      if ( use_regex )    logger() << "Using regex for string comparison." << endl;
+      if ( print_timing ) logger() << "Will output timing information for all functors (via printer system)" << endl;
 
       //
       // Main loop: repeat until dependency queue is empty
@@ -1359,7 +1374,7 @@ namespace Gambit
 
         // Print information about required quantity and dependent vertex
         logger() << LogTags::dependency_resolver;
-        logger() << endl << "Resolving ";
+        logger() << "Resolving ";
         logger() << printQuantityToBeResolved(quantity, toVertex) << endl << endl;;
 
         // Check that ObsLike vertices have non-empty capability
@@ -1389,7 +1404,9 @@ namespace Gambit
 
         // Check if we wanted to output this observable to the printer system.
         //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        if(printme) masterGraph[fromVertex]->setPrintRequirement(true);
+        if(printme)      masterGraph[fromVertex]->setPrintRequirement(true);
+        // Check if the flag to output timing data is set
+        if(print_timing) masterGraph[fromVertex]->setTimingPrintRequirement(true);
 
         // Apply resolved dependency to masterGraph and functors
         if ( toVertex != OBSLIKE_VERTEXID )
@@ -1581,7 +1598,7 @@ namespace Gambit
       if ((*masterGraph[vertex]).backendreqs().size() == 0) return;
 
       // Get started.
-      logger() << LogTags::dependency_resolver << "Backend function resolution: " << endl << EOM;
+      logger() << LogTags::dependency_resolver << "Doing backend function resolution..." << EOM;
 
       // Check whether this vertex is mentioned in the inifile.
       const IniParser::ObservableType * auxEntry = findIniEntry(vertex, boundIniFile->getRules(), "Rules");
@@ -1607,7 +1624,7 @@ namespace Gambit
             {
               logger() << LogTags::dependency_resolver;
               logger() << "Resolving ungrouped requirement " << req->first;
-              logger() << " (" << req->second << ")..." << endl << EOM;
+              logger() << " (" << req->second << ")..." << EOM;
 
               // Find a backend function that fulfills the backend requirement.
               std::set<sspair> reqsubset;
@@ -1626,7 +1643,7 @@ namespace Gambit
                 remaining_reqs.insert(*req);
                 logger() << LogTags::dependency_resolver;
                 logger() << "Resolution of ungrouped requirement " << req->first;
-                logger() << " (" << req->second << ") deferred until later." << endl << EOM;
+                logger() << " (" << req->second << ") deferred until later." << EOM;
               }
             }
             if (not remaining_reqs.empty()) remaining_groups.insert(*it);
@@ -1634,8 +1651,7 @@ namespace Gambit
           else
           {
             logger() << LogTags::dependency_resolver;
-            logger() << "Resolving from group " << *it;
-            logger() << "..." << endl << EOM;
+            logger() << "Resolving from group " << *it << "..." << EOM;
 
             // Collect the list of backend requirements in this group.
             std::set<sspair> reqs = (*masterGraph[vertex]).backendreqs(*it);
@@ -1655,7 +1671,7 @@ namespace Gambit
               remaining_groups.insert(*it);
               logger() << LogTags::dependency_resolver;
               logger() << "Resolution from group " << *it;
-              logger() << "deferred until later." << endl << EOM;
+              logger() << "deferred until later." << EOM;
             }
           }
         }
@@ -1839,10 +1855,22 @@ namespace Gambit
                  << " 0: This function is not compatible with any model you are scanning." << endl
                  << "-1: The backend that provides this function is missing." << endl
                  << "-2: The backend is present, but function is absent or broken." << endl
-                 << "\nPlease check that all shared objects exist for the"
-                 << "\nnecessary backends, and that they contain all the"
-                 << "\nnecessary functions required for this scan. Also "
-                 << "\ncheck your backend rules and YAML file.\n";
+                 << endl
+                 << "Make sure to check your YAML file, especially the rules" << endl
+                 << "pertaining to backends."  << endl
+                 << endl
+                 << "Please also check that all shared objects exist for the"  << endl
+                 << "necessary backends, and that they contain all the"  << endl
+                 << "necessary functions required for this scan.  You may"  << endl
+                 << "check the status of different backends by running"  << endl
+                 << "  ./gambit backends"  << endl
+                 << "You may also wish to check the specified search paths for each" << endl
+                 << "backend shared library in "  << endl;
+          if (Backends::backendInfo().custom_locations_exist())
+          {
+            errmsg << "  " << Backends::backendInfo().backend_locations()  << endl << "and"  << endl;
+          }
+          errmsg << "  " << Backends::backendInfo().default_backend_locations()  << endl;
         }
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
@@ -1896,7 +1924,7 @@ namespace Gambit
       logger() << LogTags::dependency_resolver;
       logger() << "Resolved by: [" << func->name() << ", ";
       logger() << func->origin() << " (" << func->version() << ")]";
-      logger() << endl << EOM;
+      logger() << EOM;
     }
 
 

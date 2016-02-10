@@ -10,7 +10,7 @@
 #define Pythia8_Pythia_H
 
 // Version number defined for use in macros and for consistency checks.
-#define PYTHIA_VERSION 8.209
+#define PYTHIA_VERSION 8.212
 
 // Header files for the Pythia class and for what else the user may need.
 #include "Pythia8/Analysis.h"
@@ -56,6 +56,11 @@ public:
   // Constructor. (See Pythia.cc file.)
   Pythia(string xmlDir = "../share/Pythia8/xmldoc", bool printBanner = true);
 
+  // Special constructor to copy settings and particle database from another
+  // Pythia object instead of XML files (to speed up multiple initialisations)
+  Pythia(ParticleData& particleDataIn, Settings& settingsIn,
+         bool printBanner = true);
+  
   // Destructor. (See Pythia.cc file.)
   ~Pythia();
 

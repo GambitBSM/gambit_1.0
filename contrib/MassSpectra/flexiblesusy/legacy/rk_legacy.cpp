@@ -11,6 +11,8 @@
 #include "def.h"
 #include "rk_legacy.hpp"
 
+using namespace softsusy;
+
 // returns >0 if there's a problem:
 int integrateOdes(DoubleVector & ystart, double from, double to, double eps,
 	      double h1, double hmin, 

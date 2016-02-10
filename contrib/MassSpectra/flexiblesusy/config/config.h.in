@@ -17,6 +17,8 @@
 
 #define MATHEMATICA_VERSION   @MATH_VERSION@
 
+#define GM2CALC_VERSION       "@GM2CALC_VERSION@"
+
 /* System information */
 #define OPERATING_SYSTEM      "@OPERATING_SYSTEM@"
 #define KERNEL_VERSION        "@KERNEL_VERSION@"
@@ -62,6 +64,9 @@
 
 /* Enable multi-threading */
 @DEFINE_ENABLE_THREADS@
+
+/* Enable tsil */
+@DEFINE_ENABLE_TSIL@
 
 /* Enable <random> header */
 @DEFINE_ENABLE_RANDOM@

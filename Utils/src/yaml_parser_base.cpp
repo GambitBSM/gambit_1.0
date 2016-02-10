@@ -99,7 +99,7 @@ namespace Gambit
     void Parser::readFile(std::string filename)
     {
       YAML::Node root = filename_to_node(filename);
-      basicParse(root);
+      basicParse(root,filename);
     }
 
     YAML::Node Parser::filename_to_node(std::string filename)
@@ -121,7 +121,7 @@ namespace Gambit
       return root;
     }
 
-    void Parser::basicParse(YAML::Node root)
+    void Parser::basicParse(YAML::Node root, std::string filename)
     {
       recursiveImport(root);
       parametersNode = root["Parameters"];
@@ -139,7 +139,16 @@ namespace Gambit
       }
       else
       {
-         inifile_error().raise(LOCAL_INFO,"No inifile entry found for 'default_output_path' in the KeyValue section. Please add this entry to your yaml file.");
+         // Assign a default default (;)) path based on the yaml file name
+         // Ridiculously we have to parse manually in C++ since no
+         // standard library tools for doing this exist...
+         // Assumes that file extension has only one dot, or that
+         // there is no file extension. Should work anyway if more
+         // dots, will just get a directory name with a dot in it.
+         size_t fname_start = filename.find_last_of("/\\");
+         size_t fname_end   = filename.find_last_of(".");
+         str fname = filename.substr(fname_start+1,fname_end);
+         defpath = "runs/" + fname + "/";
       }
       scannerNode["default_output_path"] = Utils::ensure_path_exists(defpath+"/scanner_plugins/");
       logNode    ["default_output_path"] = Utils::ensure_path_exists(defpath+"/logs/");
@@ -187,35 +196,52 @@ namespace Gambit
       {
          prefix = logNode["default_output_path"].as<std::string>()+"/";
       }
-      YAML::Node redir = logNode["redirection"];
+
       // map storing info used to set up logger objects
       std::map<std::set<std::string>,std::string> loggerinfo;
-      for(YAML::const_iterator it=redir.begin(); it!=redir.end(); ++it) 
+      if(logNode["redirection"])
       {
-          std::set<std::string> tags;
-          std::string filename;
-          // Iterate through tags and add them to the set 
-          YAML::Node yamltags = it->first;
-          for(YAML::const_iterator it2=yamltags.begin();it2!=yamltags.end();++it2)         
-          {
-            tags.insert( it2->as<std::string>() );
-          }
-          filename = (it->second).as<std::string>();
+         YAML::Node redir = logNode["redirection"];
+         for(YAML::const_iterator it=redir.begin(); it!=redir.end(); ++it) 
+         {
+             std::set<std::string> tags;
+             std::string filename;
+             // Iterate through tags and add them to the set 
+             YAML::Node yamltags = it->first;
+             for(YAML::const_iterator it2=yamltags.begin();it2!=yamltags.end();++it2)         
+             {
+               tags.insert( it2->as<std::string>() );
+             }
+             filename = (it->second).as<std::string>();
     
-          // Add entry to the loggerinfo map
-          if((filename=="stdout") or (filename=="stderr"))
-          {
-            // Special cases to trigger redirection to standard output streams
-            loggerinfo[tags] = filename;
-          }
-          else
-          {
-            // The logger won't be able to create the log files if the prefix 
-            // directory doesn't exist, so let us now make sure that it does
-            loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
-          }
+             // Add entry to the loggerinfo map
+             if((filename=="stdout") or (filename=="stderr"))
+             {
+               // Special cases to trigger redirection to standard output streams
+               loggerinfo[tags] = filename;
+             }
+             else
+             {
+               // The logger won't be able to create the log files if the prefix 
+               // directory doesn't exist, so let us now make sure that it does
+               loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
+             }
+         }
       }
+      else
+      {
+         // Use default log file only
+         std::set<std::string> tags;
+         std::string filename;
+         tags.insert("Default");
+         filename = "default.log"; 
+         loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
+     }
       // Initialise global LogMaster object
+      if(logNode["separate_file_per_process"])
+         logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>());
+      if(logNode["log_debug_messages"])
+         logger().set_log_debug_messages(logNode["log_debug_messages"].as<bool>());
       logger().initialise(loggerinfo);
 
       // Parse the Parameters node and expand out some shorthand syntax

@@ -23,7 +23,7 @@ namespace Pythia8 {
 
 // The current Pythia (sub)version number, to agree with XML version.
 const double Pythia::VERSIONNUMBERHEAD = PYTHIA_VERSION;
-const double Pythia::VERSIONNUMBERCODE = 8.209;
+const double Pythia::VERSIONNUMBERCODE = 8.212;
 
 //--------------------------------------------------------------------------
 
@@ -113,7 +113,9 @@ Pythia::Pythia(string xmlDir, bool printBanner) {
     info.errorMsg("Abort from Pythia::Pythia: settings unavailable");
     return;
   }
-
+  // Also save XML path in settings
+  settings.addWord("xmlPath",xmlPath);
+  
   // Check that XML version number matches code version number.
   double versionNumberXML = parm("Pythia:versionNumber");
   isConstructed = (abs(versionNumberXML - VERSIONNUMBERCODE) < 0.0005);
@@ -157,6 +159,112 @@ Pythia::Pythia(string xmlDir, bool printBanner) {
 
 //--------------------------------------------------------------------------
 
+// Constructor from pre-initialised ParticleData and Settings objects.
+
+Pythia::Pythia(ParticleData& particleDataIn, Settings& settingsIn,
+                 bool printBanner) {
+
+  // Initial values for pointers to PDF's.
+  useNewPdfA      = false;
+  useNewPdfB      = false;
+  useNewPdfHard   = false;
+  useNewPdfPomA   = false;
+  useNewPdfPomB   = false;
+  pdfAPtr         = 0;
+  pdfBPtr         = 0;
+  pdfHardAPtr     = 0;
+  pdfHardBPtr     = 0;
+  pdfPomAPtr      = 0;
+  pdfPomBPtr      = 0;
+
+  // Initial values for pointers to Les Houches Event objects.
+  doLHA           = false;
+  useNewLHA       = false;
+  lhaUpPtr        = 0;
+
+  //Initial value for couplings pointer
+  couplingsPtr    = &couplings;
+
+  // Initial value for pointer to external decay handler.
+  decayHandlePtr  = 0;
+
+  // Initial value for pointer to user hooks.
+  userHooksPtr    = 0;
+
+  // Initial value for pointer to merging hooks.
+  doMerging          = false;
+  hasMergingHooks    = false;
+  hasOwnMergingHooks = false;
+  mergingHooksPtr    = 0;
+
+  // Initial value for pointer to beam shape.
+  useNewBeamShape = false;
+  beamShapePtr    = 0;
+
+  // Initial values for pointers to timelike and spacelike showers.
+  useNewTimesDec  = false;
+  useNewTimes     = false;
+  useNewSpace     = false;
+  timesDecPtr     = 0;
+  timesPtr        = 0;
+  spacePtr        = 0;
+
+  // Copy XML path
+  const string key = "xmlPath";
+  xmlPath = settingsIn.word(key);
+  
+  // Copy settings database
+  settings = settingsIn;
+  // Reset pointers to pertain to this PYTHIA object
+  settings.initPtr( &info);
+  isConstructed = settings.getIsInit();
+  if (!isConstructed) {
+    info.errorMsg("Abort from Pythia::Pythia: settings unavailable");
+    return;
+  }
+
+  // Check that XML version number matches code version number.
+  double versionNumberXML = parm("Pythia:versionNumber");
+  isConstructed = (abs(versionNumberXML - VERSIONNUMBERCODE) < 0.0005);
+  if (!isConstructed) {
+    ostringstream errCode;
+    errCode << fixed << setprecision(3) << ": in code " << VERSIONNUMBERCODE
+            << " but in XML " << versionNumberXML;
+    info.errorMsg("Abort from Pythia::Pythia: unmatched version numbers",
+      errCode.str());
+    return;
+  }
+
+  // Check that header version number matches code version number.
+  isConstructed = (abs(VERSIONNUMBERHEAD - VERSIONNUMBERCODE) < 0.0005);
+  if (!isConstructed) {
+    ostringstream errCode;
+    errCode << fixed << setprecision(3) << ": in code " << VERSIONNUMBERCODE
+            << " but in header " << VERSIONNUMBERHEAD;
+    info.errorMsg("Abort from Pythia::Pythia: unmatched version numbers",
+      errCode.str());
+    return;
+  }
+
+  // Read in files with all particle data.
+  particleData.initPtr( &info, &settings, &rndm, couplingsPtr);
+  isConstructed = particleData.init( particleDataIn);
+  if (!isConstructed) {
+    info.errorMsg("Abort from Pythia::Pythia: particle data unavailable");
+    return;
+  }
+
+  // Write the Pythia banner to output.
+  if (printBanner) banner();
+
+  // Not initialized until at the end of the init() call.
+  isInit = false;
+  info.addCounter(0);
+
+}
+
+//--------------------------------------------------------------------------
+  
 // Destructor.
 
 Pythia::~Pythia() {
@@ -338,7 +446,7 @@ bool Pythia::setPDFPtr( PDF* pdfAPtrIn, PDF* pdfBPtrIn, PDF* pdfHardAPtrIn,
 
 // Routine to initialize with the variable values of the Beams kind.
 
-bool Pythia::init(ostream& os) {
+bool Pythia::init(ostream& os) {  // NOTE: <== os is a Gambit hack
 
   // Check that constructor worked.
   isInit = false;
@@ -490,6 +598,7 @@ bool Pythia::init(ostream& os) {
         string lhefIn = (frameType == 4) ? lhef : "";
         mergingHooksPtr->setLHEInputFile( lhefIn);
       }
+
       // Initialise counting of Les Houches Events significantly above the
       // merging scale.
       info.setCounter(41,0);
@@ -618,14 +727,13 @@ bool Pythia::init(ostream& os) {
     useNewSpace = true;
   }
 
-  // Initialize showers, especially for simple showers in decays.
+  // Initialize pointers in showers.
   timesPtr->initPtr( &info, &settings, &particleData, &rndm, couplingsPtr,
     &partonSystems, userHooksPtr, mergingHooksPtr);
   timesDecPtr->initPtr( &info, &settings, &particleData, &rndm, couplingsPtr,
     &partonSystems, userHooksPtr, mergingHooksPtr);
   spacePtr->initPtr( &info, &settings, &particleData, &rndm, couplingsPtr,
     &partonSystems, userHooksPtr, mergingHooksPtr);
-  timesDecPtr->init( 0, 0);
 
   // Set up values related to beam shape.
   if (beamShapePtr == 0) {
@@ -677,11 +785,15 @@ bool Pythia::init(ostream& os) {
   // Send info/pointers to process level for initialization.
   if ( doProcessLevel && !processLevel.init( &info, settings, &particleData,
     &rndm, &beamA, &beamB, couplingsPtr, &sigmaTot, doLHA, &slhaInterface,
-    userHooksPtr, sigmaPtrs, phaseSpacePtrs, os) ) {
+    userHooksPtr, sigmaPtrs, phaseSpacePtrs, os) ) {  // NOTE: <== os is a Gambit hack
     info.errorMsg("Abort from Pythia::init: "
       "processLevel initialization failed");
     return false;
   }
+
+  // Initialize timelike showers already here, since needed in decays.
+  // The pointers to the beams are needed by some external plugin showers.
+  timesDecPtr->init( &beamA, &beamB);
 
   // Alternatively only initialize resonance decays.
   if ( !doProcessLevel) processLevel.initDecays( &info, &particleData,
@@ -697,6 +809,10 @@ bool Pythia::init(ostream& os) {
     return false;
   }
 
+  // Make pointer to shower available for merging machinery.
+  if ( doMerging && (hasMergingHooks || hasOwnMergingHooks) )
+    mergingHooksPtr->setShowerPointer(&partonLevel);
+
   // Alternatively only initialize final-state showers in resonance decays.
   if ( !doProcessLevel || !doPartonLevel) partonLevel.init( &info, settings,
     &particleData, &rndm, 0, 0, 0, 0, couplingsPtr, &partonSystems, 0,
@@ -706,7 +822,7 @@ bool Pythia::init(ostream& os) {
   if ( doMerging && !trialPartonLevel.init( &info, settings, &particleData,
       &rndm, &beamA, &beamB, &beamPomA, &beamPomB, couplingsPtr,
       &partonSystems, &sigmaTot, timesDecPtr, timesPtr, spacePtr, &rHadrons,
-      NULL, mergingHooksPtr, true) ) {
+      userHooksPtr, mergingHooksPtr, true) ) {
     info.errorMsg("Abort from Pythia::init: "
       "trialPartonLevel initialization failed");
     return false;
@@ -720,7 +836,7 @@ bool Pythia::init(ostream& os) {
   // Note: forceHadronLevel() can come, so we must always initialize.
   if ( !hadronLevel.init( &info, settings, &particleData, &rndm,
     couplingsPtr, timesDecPtr, &rHadrons, decayHandlePtr,
-    handledParticles) ) {
+    handledParticles, userHooksPtr) ) {
     info.errorMsg("Abort from Pythia::init: "
       "hadronLevel initialization failed");
     return false;
@@ -805,6 +921,10 @@ bool Pythia::checkBeams() {
   isUnresolvedA   = isLeptonA && (idAabs%2 == 0 || isUnresLep);
   isUnresolvedB   = isLeptonB && (idBabs%2 == 0 || isUnresLep);
 
+  // Equate Dark Matter "beams" with incoming neutrinos.
+  if (idAabs > 50 && idAabs < 61) isLeptonA = isUnresolvedA = true;
+  if (idBabs > 50 && idBabs < 61) isLeptonB = isUnresolvedB = true;
+
   // Lepton-lepton collisions OK (including neutrinos) if both (un)resolved.
   if (isLeptonA && isLeptonB && isUnresolvedA == isUnresolvedB) return true;
 
@@ -826,11 +946,13 @@ bool Pythia::checkBeams() {
                 || (idBabs == 211)  || (idB == 990);
   if (isHadronA && isHadronB) return true;
 
-  // Lepton-hadron collisions OK for DIS processes, although still primitive.
+  // Lepton-hadron collisions OK for DIS processes or LHEF input,
+  // although still primitive.
   if ( (isLeptonA && isHadronB) || (isHadronA && isLeptonB) ) {
     bool doDIS = settings.flag("WeakBosonExchange:all")
               || settings.flag("WeakBosonExchange:ff2ff(t:gmZ)")
-              || settings.flag("WeakBosonExchange:ff2ff(t:W)");
+              || settings.flag("WeakBosonExchange:ff2ff(t:W)")
+              || (frameType == 4);
     if (doDIS) return true;
   }
 
@@ -1088,6 +1210,10 @@ bool Pythia::next() {
 
     // Provide the hard process that starts it off. Only one try.
     info.clear();
+
+    // Reset the event information. Necessary if the previous event was read
+    // from LHEF, while the current event is not read from LHEF.
+    info.setLHEF3EventInfo();
     process.clear();
 
     if ( !processLevel.next( process) ) {
@@ -1113,12 +1239,15 @@ bool Pythia::next() {
     if (doMerging) {
       int veto = merging.mergeProcess( process );
       // Apply possible merging scale cut.
-      if ( veto == -1 ) {
+      if (veto == -1) {
         hasVetoed = true;
         if (abortIfVeto) return false;
         continue;
       // Exit because of vanishing no-emission probability.
-      } else if ( veto == 0 ) break;
+      } else if (veto == 0) {
+        event = process;
+        break;
+      }
 
       // Redo resonance decays after the merging, in case the resonance
       // structure has been changed because of reclusterings.
@@ -1267,6 +1396,7 @@ bool Pythia::next() {
     if (!physical) {
       info.errorMsg("Abort from Pythia::next: "
         "parton+hadronLevel failed; giving up");
+      // NOTE: Gambit hack:
       //return false;
     }
 
@@ -1321,12 +1451,21 @@ bool Pythia::forceHadronLevel(bool findJunctions) {
   // Allow for CR before the hadronization.
   if (forceHadronLevelCR) {
 
-    // Setup parton system for colour reconnection.
-    partonSystems.clear();
-    partonSystems.addSys();
-    partonSystems.addSys();
-    for(int i = 5;i < event.size();++i)
-      partonSystems.addOut(event[i].mother1() - 3,i);
+    // Setup parton system for SK-I and SK-II colour reconnection.
+    // Require all final state particles to have the Ws as mothers.
+    if (reconnectMode == 3 || reconnectMode == 4) {
+      partonSystems.clear();
+      partonSystems.addSys();
+      partonSystems.addSys();
+      for (int i = 5;i < event.size();++i) {
+        if (event[i].mother1() - 3 < 0 || event[i].mother1() - 3 > 1) {
+          info.errorMsg("Error from Pythia::forceHadronLevel: "
+            " Event is not setup correctly for SK-I or SK-II CR");
+          return false;
+        }
+        partonSystems.addOut(event[i].mother1() - 3,i);
+      }
+    }
 
     // save spare copy of event in case of failure.
     Event spareEvent = event;
@@ -1592,8 +1731,8 @@ void Pythia::banner(ostream& os) {
      << "erg.de                                |  | \n"
      << " |  |   Philip Ilten;  Massachusetts Institut"
      << "e of Technology,                      |  | \n"
-     << " |  |      stationed at CERN, CH-1211 Geneva "
-     << "23, Switzerland;                      |  | \n"
+     << " |  |      77 Massachusetts Ave, Cambridge, M"
+     << "A 02139, USA;                         |  | \n"
      << " |  |      e-mail: philten@cern.ch           "
      << "                                      |  | \n"
      << " |  |   Stephen Mrenna;  Computing Division, "

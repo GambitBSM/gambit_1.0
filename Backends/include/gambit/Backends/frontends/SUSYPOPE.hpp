@@ -6,11 +6,7 @@
 //
 ///  *********************************************
 
-#ifdef BACKENDRENAME
-  #define BACKENDNAME BACKENDRENAME
-#else
-  #define BACKENDNAME SUSYPOPE
-#endif
+#define BACKENDNAME SUSYPOPE
 #define VERSION 0.2
 #define SAFE_VERSION 0_2
 

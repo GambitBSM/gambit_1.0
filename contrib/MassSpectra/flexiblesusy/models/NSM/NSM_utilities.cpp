@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:32
+// File generated at Wed 28 Oct 2015 11:35:27
 
 #include "NSM_utilities.hpp"
 #include "NSM_input_parameters.hpp"
@@ -31,8 +31,6 @@
 #define PHYSICAL(p) model.get_physical().p
 #define MODELPARAMETER(p) model.get_##p()
 
-using namespace softsusy;
-
 namespace flexiblesusy {
 
 NSM_spectrum_plotter::NSM_spectrum_plotter()
@@ -40,6 +38,29 @@ NSM_spectrum_plotter::NSM_spectrum_plotter()
    , scale(0.0)
    , width(16)
 {
+}
+
+
+void NSM_spectrum_plotter::extract_spectrum(const NSM_mass_eigenstates& model)
+{
+   spectrum.clear();
+   scale = model.get_scale();
+
+   spectrum.push_back(TParticle("hh", "h", to_valarray(PHYSICAL(Mhh))));
+
+   if (model.do_calculate_sm_pole_masses()) {
+      spectrum.push_back(TParticle("Ah", "A^0", to_valarray(PHYSICAL(MAh))));
+      spectrum.push_back(TParticle("Fd", "d", to_valarray(PHYSICAL(MFd))));
+      spectrum.push_back(TParticle("Fe", "e", to_valarray(PHYSICAL(MFe))));
+      spectrum.push_back(TParticle("Fu", "u", to_valarray(PHYSICAL(MFu))));
+      spectrum.push_back(TParticle("Fv", "\\nu", to_valarray(PHYSICAL(MFv))));
+      spectrum.push_back(TParticle("Hp", "H^+", to_valarray(PHYSICAL(MHp))));
+      spectrum.push_back(TParticle("VG", "g", to_valarray(PHYSICAL(MVG))));
+      spectrum.push_back(TParticle("VP", "\\gamma", to_valarray(PHYSICAL(MVP))));
+      spectrum.push_back(TParticle("VWp", "W^+", to_valarray(PHYSICAL(MVWp))));
+      spectrum.push_back(TParticle("VZ", "Z", to_valarray(PHYSICAL(MVZ))));
+
+   }
 }
 
 void NSM_spectrum_plotter::write_to_file(const std::string& file_name) const
@@ -56,7 +77,7 @@ void NSM_spectrum_plotter::write_to_file(const std::string& file_name) const
       return;
    }
 
-   filestr << "### one-loop pole masses (Q = " << scale << " GeV)\n";
+   filestr << "### pole masses (Q = " << scale << " GeV)\n";
    write_spectrum(spectrum, filestr);
 
    filestr.close();

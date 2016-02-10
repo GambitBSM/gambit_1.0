@@ -1,37 +1,37 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  Cmake configuration scripts for obtaining,
-#  configuring, compiling and installing 
+#  configuring, compiling and installing
 #  'extra' non-GAMBIT packages.
-#  
+#
 #  Note that this is not necessarily the canonical
 #  way to manage the compilation of all backends,
 #  and GAMBIT support for backend compilation is
 #  minimal, even with this method -- so please
 #  contact the authors of the respective codes
-#  if they won't compile!  
-#    
+#  if they won't compile!
+#
 #************************************************
-#                                                
+#
 #  Authors (add name and date if you modify):
 #
 #  \author Antje Putze
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
-#  \date 2015 May  
+#  \date 2015 May
 #
 #************************************************
 
 
 include(ExternalProject)
 
-# Specify the location of unreleased codes in the gambit_internal repository. 
+# Specify the location of unreleased codes in the gambit_internal repository.
 set(GAMBIT_INTERNAL "${PROJECT_SOURCE_DIR}/../gambit_internal/extras")
 
 # Specify the warning to give when trying to compile unreleased codes.
@@ -50,11 +50,19 @@ set(nl "___totally_unlikely_to_occur_naturally___")
 set(true_nl \"\\n\")
 
 # Define the module location switch differently depending on compiler
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel") 
-  set(FMODULE "module")         
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU") 
-  set(FMODULE "J")          
-endif()                                                 
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(FMODULE "module")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(FMODULE "J")
+endif()
 
 include(cmake/scanners.cmake)
 include(cmake/backends.cmake)
+
+# Print outcomes of BOSSing efforts
+if(NOT needs_BOSSing STREQUAL "")
+  message("${Yellow}-- BOSS step successfully generated for the following cmake targets: ${needs_BOSSing} ${ColourReset}")
+endif()
+if(NOT needs_BOSSing_failed STREQUAL "")
+  message("${Yellow}-- Failed to generate BOSS step for the following cmake targets: ${needs_BOSSing_failed} ${ColourReset}")
+endif()

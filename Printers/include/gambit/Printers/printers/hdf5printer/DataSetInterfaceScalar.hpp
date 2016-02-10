@@ -141,6 +141,8 @@ namespace Gambit {
                   <<this->dsetnextemptyslab<<" --> "<<this->dsetnextemptyslab+CHUNKLENGTH<<std::endl;
          #endif
          this->dsetnextemptyslab += CHUNKLENGTH;
+         H5Sclose(dspace_id);
+         H5Sclose(memspace_id);
       }
 
       /// Set all elements of the dataset to zero
@@ -255,6 +257,10 @@ namespace Gambit {
                     << "  dtype = " << dtype;
              printer_error().raise(LOCAL_INFO, errmsg.str());
          }
+         
+         H5Tclose(dtype);
+         H5Sclose(dspace_id);
+         H5Sclose(dspace);
 
       ///     hsize_t offsets[DSETRANK];
 

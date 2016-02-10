@@ -28,7 +28,6 @@
 ///  *********************************************
 
 #include <cmath>
-#include <chrono>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -43,9 +42,6 @@
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 
 //#define DUMP_LIMIT_PLOT_DATA
-#ifndef THREADS
-#define THREADS 32
-#endif
 
 namespace Gambit
 {
@@ -101,14 +97,8 @@ namespace Gambit
     int pythiaConfigurations, pythiaNumber, nEvents;
     /// Analysis stuff
     std::vector<std::string> analysisNames;
-    HEPUtilsAnalysisContainer* globalSubprocessAnalyses = new HEPUtilsAnalysisContainer();
-    HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
-    /// Timing stuff
-    timer_map_type timers[THREADS];
-    timer_map_type timer_maxima[THREADS];
-    timer_map_type global_timers;
-    timer_map_type global_timer_maxima;
-
+    HEPUtilsAnalysisContainer globalAnalyses;
+    
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
@@ -121,9 +111,9 @@ namespace Gambit
     {
       using namespace Pipes::operateLHCLoop;
       static std::streambuf *coutbuf = std::cout.rdbuf(); // save cout buffer for running the loop quietly
-      global_timers.clear();
-      global_timer_maxima.clear();
+      int currentEvent;
       nEvents = 0;
+      // Set eventsGenerated to true once some events are generated.
       eventsGenerated = false;
 
       // Do the base-level initialisation
@@ -133,8 +123,8 @@ namespace Gambit
       // @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
-      // Nicely ask the entire loop to stfu
-      std::cout.rdbuf(0);
+      // Nicely ask the entire loop to be quiet
+      std::cout.rdbuf(0); 
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -150,43 +140,21 @@ namespace Gambit
           ++pythiaNumber;
           Loop::reset();
           Loop::executeIteration(INIT);
+          currentEvent = 0;
           #pragma omp parallel
           {
-            const int me = omp_get_thread_num();
-            timers[me].clear();
-            timer_maxima[me].clear();
             Loop::executeIteration(START_SUBPROCESS);
             // main event loop
-            #pragma omp for nowait
-            for(int i=0; i<nEvents; i++) {
-              if(not *Loop::done) Loop::executeIteration(i);
+            while(currentEvent<nEvents and not *Loop::done) {
+              Loop::executeIteration(currentEvent++);
             }
             Loop::executeIteration(END_SUBPROCESS);
-            #pragma omp critical (end_timing)
-            {
-              for(timer_map_type::iterator it=timers[me].begin(); it!=timers[me].end(); ++it)
-                global_timers[it->first] += it->second;
-              for(timer_map_type::iterator it=timer_maxima[me].begin(); it!=timer_maxima[me].end(); ++it)
-                if(it->second > global_timer_maxima[it->first])
-                  global_timer_maxima[it->first] = it->second;
-            }
           }
         }
       }
-      // Nicely thank the loop for stfu, and restore everyone's vocal cords
+      // Nicely thank the loop for being quiet, and restore everyone's vocal cords
       std::cout.rdbuf(coutbuf);
       Loop::executeIteration(FINALIZE);
-
-      std::cout<<"\n$$$$ ColliderBit loop timing";
-      std::cout<<"\n============================";
-      std::cout<<"\n$$$$ Totals, in milliseconds, per thread where parallel:\n\n";
-      for(timer_map_type::iterator it=global_timers.begin(); it!=global_timers.end(); ++it)
-        std::cout << "    " << it->first << ":    " << it->second << std::endl;
-      std::cout << "\n\n";
-      std::cout<<"\n$$$$ Maxima for each function call, in milliseconds:\n\n";
-      for(timer_map_type::iterator it=global_timer_maxima.begin(); it!=global_timer_maxima.end(); ++it)
-        std::cout << "    " << it->first << ":    " << it->second << std::endl;
-      std::cout << "\n\n\n";
     }
 
 
@@ -203,60 +171,53 @@ namespace Gambit
       static SLHAstruct spectrum;
       // variables for xsec veto
       std::stringstream processLevelOutput;
-      std::string _junk, line;
+      std::string _junk, readline;
       std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
       if (*Loop::iteration == BASE_INIT)
       {
-        TIME_THAT_SHIT_GLOBALLY(getPythia_BASE_INIT)
+        // Get Pythia to print its banner.
+        if (print_pythia_banner)
         {
-          // Get Pythia to print its banner.
-          if (print_pythia_banner)
-          {
-            pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
-            result.banner(pythia_doc_path);
-            result.clear();
-            print_pythia_banner = false;
-          }
+          pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
+          result.banner(pythia_doc_path);
+          result.clear();
+          print_pythia_banner = false;
+        }
 
-          // SLHAea object constructed from dependencies on the spectrum and decays.
-          slha.clear();
-          spectrum.clear();
-          slha = Dep::decay_rates->as_slhaea();
-          if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
-          {
-            // MSSM-specific
-            spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
-            SLHAea::Block block("MODSEL");
-            block.push_back("BLOCK MODSEL              # Model selection");
-            SLHAea::Line line;
-            line << 1 << 0 << "# General MSSM";
-            block.push_back(line);
-            slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
-            slha.push_front(block);
-          }
-          else
-          {
-            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
-          }
-        } // end TIME_THAT_SHIT_GLOBALLY
+        // SLHAea object constructed from dependencies on the spectrum and decays.
+        slha.clear();
+        spectrum.clear();
+        slha = Dep::decay_rates->as_slhaea();
+        if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+        {
+          // MSSM-specific
+          spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
+          SLHAea::Block block("MODSEL");
+          block.push_back("BLOCK MODSEL              # Model selection");
+          SLHAea::Line line;
+          line << 1 << 0 << "# General MSSM";
+          block.push_back(line);
+          slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
+          slha.push_front(block);
+        }
+        else
+        {
+          ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model.");
+        }
       }
 
       if (*Loop::iteration == INIT)
       {
-        TIME_THAT_SHIT_GLOBALLY(getPythia_INIT)
-        {
-          std::string pythiaConfigName;
-          // Setup new Pythia
-          pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
-          // Get pythia options
-          // If the SpecializablePythia specialization is hard-coded, okay with no options.
-          pythiaCommonOptions.clear();
-          if (runOptions->hasKey(*iter, pythiaConfigName))
-            pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-        } // end TIME_THAT_SHIT_GLOBALLY
+        std::string pythiaConfigName;
+        // Setup new Pythia
+        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+        // Get pythia options
+        // If the SpecializablePythia specialization is hard-coded, okay with no options.
+        pythiaCommonOptions.clear();
+        if (runOptions->hasKey(*iter, pythiaConfigName)) pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -278,13 +239,10 @@ namespace Gambit
 
         try
         {
-          TIME_THAT_SHIT(getPythia_initialize_Pythia)
-          {
-            if (omp_get_thread_num() == 0)
-              result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
-            else
-              result.init(pythia_doc_path, pythiaOptions, &slha);
-          } // end TIME_THAT_SHIT
+          if (omp_get_thread_num() == 0)
+            result.init(pythia_doc_path, pythiaOptions, &slha, processLevelOutput);
+          else
+            result.init(pythia_doc_path, pythiaOptions, &slha);
         }
         catch (SpecializablePythia::InitializationError &e)
         {
@@ -298,8 +256,8 @@ namespace Gambit
           code = -1;
           totalxsec = 0.;
           while(true) {
-            std::getline(processLevelOutput, line);
-            issPtr = new std::istringstream(line);
+            std::getline(processLevelOutput, readline);
+            issPtr = new std::istringstream(readline);
             issPtr->seekg(47, issPtr->beg);
             (*issPtr) >> code;
             if (!issPtr->good() && totalxsec > 0.) break;
@@ -327,7 +285,7 @@ namespace Gambit
       static unsigned int fileCounter = -1;
       // variables for xsec veto
       std::stringstream processLevelOutput;
-      std::string _junk, line;
+      std::string _junk, readline;
       std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
@@ -354,13 +312,14 @@ namespace Gambit
         std::string pythiaConfigName;
         // Setup new Pythia
         pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
+
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))
-          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-      }
+        if (runOptions->hasKey(*iter, pythiaConfigName))pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
 
+      }
+      
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
@@ -396,8 +355,8 @@ namespace Gambit
           code = -1;
           totalxsec = 0.;
           while(true) {
-            std::getline(processLevelOutput, line);
-            issPtr = new std::istringstream(line);
+            std::getline(processLevelOutput, readline);
+            issPtr = new std::istringstream(readline);
             issPtr->seekg(47, issPtr->beg);
             (*issPtr) >> code;
             if (!issPtr->good() && totalxsec > 0.) break;
@@ -467,60 +426,40 @@ namespace Gambit
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
-        TIME_THAT_SHIT_GLOBALLY(getAnalysisContainer_BASE_INIT)
-        {
-          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-          globalAnalyses->clear();
-          globalAnalyses->init(analysisNames);
-        } // end TIME_THAT_SHIT_GLOBALLY
+        GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
+        globalAnalyses.clear();
+        globalAnalyses.init(analysisNames);
         return;
       }
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
-        TIME_THAT_SHIT(getAnalysisContainer_START_SUBPROCESS)
-        {
-          // Each thread gets its own Analysis container.
-          // Thus, their initialization is *after* INIT, within omp parallel.
-          if (omp_get_thread_num() == 0) {
-            globalSubprocessAnalyses->clear();
-            globalSubprocessAnalyses->init(analysisNames);
-          }
-          result.clear();
-          result.init(analysisNames);
-        } // end TIME_THAT_SHIT
+        // Each thread gets its own Analysis container.
+        // Thus, their initialization is *after* INIT, within omp parallel.
+        result.clear();
+        result.init(analysisNames);
         return;
       }
 
       if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
       {
-        TIME_THAT_SHIT(getAnalysisContainer_END_SUBPROCESS)
+        const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
+        const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
+        result.add_xsec(xs_fb, xserr_fb);
+
+        // Combine results from the threads together
+        #pragma omp critical (access_globalAnalyses)
         {
-          const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
-          const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
-          result.add_xsec(xs_fb, xserr_fb);
-          // Combine results from this subprocess together
-          #pragma omp critical (access_globalAnalyses)
-          {
-            globalSubprocessAnalyses->add(result);
-            // Use improve_xsec to combine results from the same process type
-            globalSubprocessAnalyses->improve_xsec(result);
-          }
-          // Add total results from this subprocess to the main globalAnalyses container
-          // (Synchronize threads first to ensure all results are totalled)
-          #pragma omp barrier
-          if (omp_get_thread_num() == 0) {
-            globalAnalyses->add(globalSubprocessAnalyses);
-            // Use add_xsec to combine results from the different process types
-            globalAnalyses->add_xsec(globalSubprocessAnalyses);
-          }
-        } // end TIME_THAT_SHIT
-        return;
+          globalAnalyses.add(result);
+          // Use improve_xsec to combine results from the same process type
+          globalAnalyses.improve_xsec(result);
+        }
+	return;
       }
-
+      
     }
-
-
+    
+    
 
     /// *** Hard Scattering Event Generators ***
 
@@ -532,10 +471,7 @@ namespace Gambit
 
       /// Get the next event from Pythia8
       try {
-        TIME_THAT_SHIT(generatePythia8Event_nextEvent)
-        {
-          (*Dep::HardScatteringSim).nextEvent(result);
-        } // end TIME_THAT_SHIT
+        (*Dep::HardScatteringSim).nextEvent(result);
       } catch (SpecializablePythia::EventFailureError &e) {
         piped_invalid_point.request("Bad point: Pythia can't generate events");
         Loop::wrapup();
@@ -864,8 +800,8 @@ namespace Gambit
       if (*Loop::iteration == FINALIZE && eventsGenerated) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        globalAnalyses->scale();
-        for (auto anaPtr = globalAnalyses->analyses.begin(); anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
+        globalAnalyses.scale();
+        for (auto anaPtr = globalAnalyses.analyses.begin(); anaPtr != globalAnalyses.analyses.end(); ++anaPtr)
           result.push_back((*anaPtr)->get_results());
         return;
       }
@@ -881,6 +817,12 @@ namespace Gambit
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
+      /* The use of the following requires ALLOW_MODEL(CMSSM) in the rollcall.
+      logger() << "This model:";
+      logger() << "\nm0: " << *Param["M0"];
+      logger() << "\nm1/2: " << *Param["M12"] << EOM;
+      */
+
       // xsec veto
       if (not eventsGenerated) {
         logger() << "This point was xsec vetoed." << EOM;
@@ -911,13 +853,25 @@ namespace Gambit
 
           // A contribution to the predicted number of events that is not known exactly
           const double n_predicted_uncertain_b = srData.n_background;
-          const double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
+          const double n_predicted_uncertain_sb = srData.n_signal_at_lumi + srData.n_background;
 
           // Relative error for n_predicted_uncertain
           const double uncertainty_b = srData.background_sys/srData.n_background;
           const double uncertainty_sb = sqrt(srData.background_sys*srData.background_sys + srData.signal_sys*srData.signal_sys) / n_predicted_uncertain_sb;
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
+
+	  logger() << endl;                                                                                                                                                                                  
+          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;                                                                                                          
+          logger() << "  NEvents, not scaled to luminosity :" << endl;                                                                                                                                       
+          logger() << "    " << srData.n_signal << endl;                                                                                                                                                     
+	  logger() << "  NEvents, scaled  to luminosity :  " << endl;
+
+	  logger() << "    " << srData.n_signal_at_lumi << endl;
+
+          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;                                                                                                                                      
+          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "                                                                                                                     
+                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;  
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
           // Use a log-normal distribution for the nuisance parameter (more correct)
@@ -942,13 +896,18 @@ namespace Gambit
             bestexp_dll_obs = llb_obs - llsb_obs;
           }
 
-          /* if (bestexp_dll_obs < 0) {
-            cout << "OBS " << n_obs << " EXACT " << n_predicted_exact
-                 << " UNCERTAIN_B "   << n_predicted_uncertain_b  << " UNCERTAINTY_B "   << uncertainty_b
-                 << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
-            cout << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
-            cout << "Turns out that DELTA log likes are totally allowed to be positive.\n\n";
-          } */
+          /* The following was used for some final tests of ColliderBit:
+          logger() << endl;
+          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
+          logger() << "  LLikes (b_ex sb_ex b_obs sb_obs):" << endl;
+          logger() << "    " << llb_exp << " " << llsb_exp << " "
+                   << llb_obs << " " << llsb_obs << endl;
+          logger() << "  NEvents, not scaled to luminosity :" << endl;
+          logger() << "    " << srData.n_signal << endl;
+          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
+          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
+          */
         } // end SR loop
 
         // Update the total obs dll
@@ -958,6 +917,7 @@ namespace Gambit
       } // end ana loop
 
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
+      
       result = -total_dll_obs;
     }
 
@@ -1857,11 +1817,11 @@ namespace Gambit
     /// @{
     void ALEPH_Selectron_Conservative_LLike(double& result)
     {
-      static ALEPHSelectronLimitAt208GeV *limitContainer = new ALEPHSelectronLimitAt208GeV();
+      static const ALEPHSelectronLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/ALEPHSelectronLimitAt208GeV.dump");
         dumped=true;
       }
@@ -1871,9 +1831,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+    
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
+      str ser_string = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
+      const double mass_seL=spec->get(Par::Pole_Mass,sel_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,ser_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1883,8 +1848,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // se_L, se_L
-      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1, mZ);
-
+      xsecLimit = limitContainer.limitAverage(mass_seL, mass_neut1, mZ);
       xsecWithError = *Dep::LEP208_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
       xsecWithError.central *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1900,7 +1864,7 @@ namespace Gambit
       }
 
       // se_R, se_R
-      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_seR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_serserbar;
       xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1920,11 +1884,11 @@ namespace Gambit
 
     void ALEPH_Smuon_Conservative_LLike(double& result)
     {
-      static ALEPHSmuonLimitAt208GeV *limitContainer = new ALEPHSmuonLimitAt208GeV();
+      static const ALEPHSmuonLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/ALEPHSmuonLimitAt208GeV.dump");
         dumped=true;
       }
@@ -1934,9 +1898,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
+      str smur_string = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
+      const double mass_smuL=spec->get(Par::Pole_Mass,smul_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,smur_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1946,8 +1915,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // smu_L, smu_L
-      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1, mZ);
-
+      xsecLimit = limitContainer.limitAverage(mass_smuL, mass_neut1, mZ);
       xsecWithError = *Dep::LEP208_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
       xsecWithError.central *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1963,7 +1931,7 @@ namespace Gambit
       }
 
       // smu_R, smu_R
-      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_smuR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_smursmurbar;
       xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1978,16 +1946,16 @@ namespace Gambit
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
-
+      
     }
 
     void ALEPH_Stau_Conservative_LLike(double& result)
     {
-      static ALEPHStauLimitAt208GeV *limitContainer = new ALEPHStauLimitAt208GeV();
+      static const ALEPHStauLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/ALEPHStauLimitAt208GeV.dump");
         dumped=true;
       }
@@ -1997,9 +1965,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
+      str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
+      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2009,7 +1982,7 @@ namespace Gambit
       // the paper, the best we can do is to try these two processes individually:
 
       // stau_1, stau_1
-      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_stau1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_stau1stau1bar;
       xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2026,7 +1999,7 @@ namespace Gambit
       }
 
       // stau_2, stau_2
-      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_stau2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_stau2stau2bar;
       xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2046,11 +2019,11 @@ namespace Gambit
 
     void L3_Selectron_Conservative_LLike(double& result)
     {
-      static L3SelectronLimitAt205GeV *limitContainer = new L3SelectronLimitAt205GeV();
+      static const L3SelectronLimitAt205GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/L3SelectronLimitAt205GeV.dump");
         dumped=true;
       }
@@ -2060,19 +2033,24 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
+      str ser_string = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
+      const double mass_seL=spec->get(Par::Pole_Mass,sel_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,ser_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+    
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
 
       // se_L, se_L
-      xsecLimit = limitContainer->limitAverage(mass_seL, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_seL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -2089,7 +2067,7 @@ namespace Gambit
       }
 
       // se_R, se_R
-      xsecLimit = limitContainer->limitAverage(mass_seR, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_seR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_serserbar;
       xsecWithError.upper *= pow(Dep::selectron_r_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -2109,11 +2087,11 @@ namespace Gambit
 
     void L3_Smuon_Conservative_LLike(double& result)
     {
-      static L3SmuonLimitAt205GeV *limitContainer = new L3SmuonLimitAt205GeV();
+      static const L3SmuonLimitAt205GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/L3SmuonLimitAt205GeV.dump");
         dumped=true;
       }
@@ -2123,19 +2101,23 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
+      str smur_string = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
+      const double mass_smuL=spec->get(Par::Pole_Mass,smul_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,smur_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+    
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
 
       // smu_L, smu_L
-      xsecLimit = limitContainer->limitAverage(mass_smuL, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_smuL, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -2152,7 +2134,7 @@ namespace Gambit
       }
 
       // smu_R, smu_R
-      xsecLimit = limitContainer->limitAverage(mass_smuR, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_smuR, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_smursmurbar;
       xsecWithError.upper *= pow(Dep::smuon_r_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -2172,11 +2154,11 @@ namespace Gambit
 
     void L3_Stau_Conservative_LLike(double& result)
     {
-      static L3StauLimitAt205GeV *limitContainer = new L3StauLimitAt205GeV();
+      static const L3StauLimitAt205GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 115., 0., 100.,
+        limitContainer.dumpPlotData(45., 115., 0., 100.,
                                      "lepLimitPlanev2/L3StauLimitAt205GeV.dump");
         dumped=true;
       }
@@ -2186,19 +2168,24 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
+      str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
+      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+      
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
 
       // stau_1, stau_1
-      xsecLimit = limitContainer->limitAverage(mass_stau1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_stau1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_stau1stau1bar;
       xsecWithError.upper *= pow(Dep::stau_1_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2215,7 +2202,7 @@ namespace Gambit
       }
 
       // stau_2, stau_2
-      xsecLimit = limitContainer->limitAverage(mass_stau2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_stau2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP205_xsec_stau2stau2bar;
       xsecWithError.upper *= pow(Dep::stau_2_decay_rates->BF("~chi0_1", "tau-"), 2);
@@ -2238,11 +2225,11 @@ namespace Gambit
     /// @{
     void L3_Neutralino_All_Channels_Conservative_LLike(double& result)
     {
-      static L3NeutralinoAllChannelsLimitAt188pt6GeV *limitContainer = new L3NeutralinoAllChannelsLimitAt188pt6GeV();
+      static const L3NeutralinoAllChannelsLimitAt188pt6GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(0., 200., 0., 100.,
+        limitContainer.dumpPlotData(0., 200., 0., 100.,
                                      "lepLimitPlanev2/L3NeutralinoAllChannelsLimitAt188pt6GeV.dump");
         dumped=true;
       }
@@ -2266,7 +2253,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like Z* decays
@@ -2297,7 +2284,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like Z* decays
@@ -2328,7 +2315,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like Z* decays
@@ -2362,11 +2349,11 @@ namespace Gambit
 
     void L3_Neutralino_Leptonic_Conservative_LLike(double& result)
     {
-      static L3NeutralinoLeptonicLimitAt188pt6GeV *limitContainer = new L3NeutralinoLeptonicLimitAt188pt6GeV();
+      static const L3NeutralinoLeptonicLimitAt188pt6GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(0., 200., 0., 100.,
+        limitContainer.dumpPlotData(0., 200., 0., 100.,
                                      "lepLimitPlanev2/L3NeutralinoLeptonicLimitAt188pt6GeV.dump");
         dumped=true;
       }
@@ -2390,7 +2377,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_12;
       // Total up all channels which look like leptonic Z* decays
@@ -2418,7 +2405,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_13;
       // Total up all channels which look like leptonic Z* decays
@@ -2446,7 +2433,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chi00_14;
       // Total up all channels which look like leptonic Z* decays
@@ -2477,11 +2464,11 @@ namespace Gambit
 
     void L3_Chargino_All_Channels_Conservative_LLike(double& result)
     {
-      static L3CharginoAllChannelsLimitAt188pt6GeV *limitContainer = new L3CharginoAllChannelsLimitAt188pt6GeV();
+      static const L3CharginoAllChannelsLimitAt188pt6GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 100., 0., 100.,
+        limitContainer.dumpPlotData(45., 100., 0., 100.,
                                      "lepLimitPlanev2/L3CharginoAllChannelsLimitAt188pt6GeV.dump");
         dumped=true;
       }
@@ -2504,7 +2491,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like W* decays
@@ -2529,7 +2516,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like W* decays
@@ -2557,11 +2544,11 @@ namespace Gambit
 
     void L3_Chargino_Leptonic_Conservative_LLike(double& result)
     {
-      static L3CharginoLeptonicLimitAt188pt6GeV *limitContainer = new L3CharginoLeptonicLimitAt188pt6GeV();
+      static const L3CharginoLeptonicLimitAt188pt6GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(45., 100., 0., 100.,
+        limitContainer.dumpPlotData(45., 100., 0., 100.,
                                      "lepLimitPlanev2/L3CharginoLeptonicLimitAt188pt6GeV.dump");
         dumped=true;
       }
@@ -2584,7 +2571,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2612,7 +2599,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP188_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2643,11 +2630,11 @@ namespace Gambit
 
     void OPAL_Chargino_Hadronic_Conservative_LLike(double& result)
     {
-      static OPALCharginoHadronicLimitAt208GeV *limitContainer = new OPALCharginoHadronicLimitAt208GeV();
+      static const OPALCharginoHadronicLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(75., 105., 0., 105.,
+        limitContainer.dumpPlotData(75., 105., 0., 105.,
                                      "lepLimitPlanev2/OPALCharginoHadronicLimitAt208GeV.dump");
         dumped=true;
       }
@@ -2670,7 +2657,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like hadronic W* decays
@@ -2694,7 +2681,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like hadronic W* decays
@@ -2721,11 +2708,11 @@ namespace Gambit
 
     void OPAL_Chargino_SemiLeptonic_Conservative_LLike(double& result)
     {
-      static OPALCharginoSemiLeptonicLimitAt208GeV *limitContainer = new OPALCharginoSemiLeptonicLimitAt208GeV();
+      static const OPALCharginoSemiLeptonicLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(75., 105., 0., 105.,
+        limitContainer.dumpPlotData(75., 105., 0., 105.,
                                      "lepLimitPlanev2/OPALCharginoSemiLeptonicLimitAt208GeV.dump");
         dumped=true;
       }
@@ -2755,7 +2742,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2800,7 +2787,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2848,11 +2835,11 @@ namespace Gambit
 
     void OPAL_Chargino_Leptonic_Conservative_LLike(double& result)
     {
-      static OPALCharginoLeptonicLimitAt208GeV *limitContainer = new OPALCharginoLeptonicLimitAt208GeV();
+      static const OPALCharginoLeptonicLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(75., 105., 0., 105.,
+        limitContainer.dumpPlotData(75., 105., 0., 105.,
                                      "lepLimitPlanev2/OPALCharginoLeptonicLimitAt208GeV.dump");
         dumped=true;
       }
@@ -2882,7 +2869,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like leptonic W* decays
@@ -2916,7 +2903,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like leptonic W* decays
@@ -2953,11 +2940,11 @@ namespace Gambit
 
     void OPAL_Chargino_All_Channels_Conservative_LLike(double& result)
     {
-      static OPALCharginoAllChannelsLimitAt208GeV *limitContainer = new OPALCharginoAllChannelsLimitAt208GeV();
+      static const OPALCharginoAllChannelsLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(75., 105., 0., 105.,
+        limitContainer.dumpPlotData(75., 105., 0., 105.,
                                      "lepLimitPlanev2/OPALCharginoAllChannelsLimitAt208GeV.dump");
         dumped=true;
       }
@@ -2987,7 +2974,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // char1, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char1, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char1, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_11;
       // Total up all channels which look like W* decays
@@ -3018,7 +3005,7 @@ namespace Gambit
       }
 
       // char2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_char2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_char2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chipm_22;
       // Total up all channels which look like W* decays
@@ -3052,11 +3039,11 @@ namespace Gambit
 
     void OPAL_Neutralino_Hadronic_Conservative_LLike(double& result)
     {
-      static OPALNeutralinoHadronicLimitAt208GeV *limitContainer = new OPALNeutralinoHadronicLimitAt208GeV();
+      static const OPALNeutralinoHadronicLimitAt208GeV limitContainer;
 #ifdef DUMP_LIMIT_PLOT_DATA
       static bool dumped=false;
       if(!dumped) {
-        limitContainer->dumpPlotData(0., 200., 0., 100.,
+        limitContainer.dumpPlotData(0., 200., 0., 100.,
                                      "lepLimitPlanev2/OPALNeutralinoHadronicLimitAt208GeV.dump");
         dumped=true;
       }
@@ -3080,7 +3067,7 @@ namespace Gambit
       // the paper, the best we can do is to try these processes individually:
 
       // neut2, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut2, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut2, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_12;
       // Total up all channels which look like Z* decays
@@ -3105,7 +3092,7 @@ namespace Gambit
       }
 
       // neut3, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut3, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut3, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_13;
       // Total up all channels which look like Z* decays
@@ -3130,7 +3117,7 @@ namespace Gambit
       }
 
       // neut4, neut1
-      xsecLimit = limitContainer->limitAverage(mass_neut4, mass_neut1, mZ);
+      xsecLimit = limitContainer.limitAverage(mass_neut4, mass_neut1, mZ);
 
       xsecWithError = *Dep::LEP208_xsec_chi00_14;
       // Total up all channels which look like Z* decays

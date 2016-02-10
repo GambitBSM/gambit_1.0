@@ -56,7 +56,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | calculate_sm_masses              | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | pole_mass_loop_order             | 0, 1, 2                      | 2 (= 2-loop)    |
  * | ewsb_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
- * | beta_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
+ * | beta_loop_order                  | 0, 1, 2, 3                   | 2 (= 2-loop)    |
  * | threshold_corrections_loop_order | 0, 1, 2                      | 2 (= 2-loop)    |
  * | higgs_2loop_correction_at_as     | 0, 1                         | 1 (= enabled)   |
  * | higgs_2loop_correction_ab_as     | 0, 1                         | 1 (= enabled)   |

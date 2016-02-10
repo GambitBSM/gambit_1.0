@@ -134,6 +134,9 @@ namespace Gambit
          /// entries are overwritten at each step, so HE takes precendence over LE, and LE takes precedence
          /// over SMINPUTS.
          SLHAstruct getSLHAea() const;
+
+         /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+         const std::map<int, int>& PDG_translator() const;
          
          /// CKM Wolfenstein (lambda, A, rhobar, etabar) --> V_qq standard parameterisation convertors
          /// @{

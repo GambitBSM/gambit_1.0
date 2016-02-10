@@ -27,9 +27,11 @@
 #include <algorithm>
 #include <limits>
 #include <chrono>
+#include <omp.h>
 
 // Gambit
 #include "gambit/Logs/logging.hpp"
+#include "gambit/Utils/signal_helpers.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
@@ -124,7 +126,6 @@ namespace Gambit
     // Function to return the next unused tag index
     int getfreetag()
     {
-      // Could make this search more efficient, since probably there are no free tags below the last tag used, but I think the loop will be so fast that this isn't worth doing, and it only runs during initialisation anyway.
       for(int i=0; i<std::numeric_limits<int>::max(); ++i)
       {
         if( tag2str().count(i) == 0 ) { return i; }
@@ -176,46 +177,145 @@ namespace Gambit
     /// Keeps track of the individual logging objects.
 
     LogMaster::LogMaster()
-      : loggers_readyQ(false), silenced(false), current_module(-1), current_backend(-1)
+      : loggers_readyQ (false)
+      , silenced       (false)
+      , separate_file_per_process(true)
+      , log_debug_messages(false)
+      , MPIrank        (0)
+      , MPIsize        (1)
+      , globlMaxThreads(omp_get_max_threads())
+      , current_module (NULL)
+      , current_backend(NULL)
+      , stream         (NULL)
+      , streamtags     (NULL)
+      , backlog        (NULL)
     {
+      // Note! MPIrank and MPIsize will not be correct until initialisation occurs!
     }
 
     /// Alternate constructor
     // Mainly for testing; lets you pass in pre-built loggers and their tags
     LogMaster::LogMaster(std::map<std::set<int>,BaseLogger*>& loggersIN)
-      : loggers(loggersIN), loggers_readyQ(true), silenced(false), current_module(-1), current_backend(-1)
+      : loggers        (loggersIN)
+      , loggers_readyQ (true)
+      , silenced       (false)
+      , separate_file_per_process(true)
+      , log_debug_messages(false)
+      , MPIrank        (0)
+      , MPIsize        (1)
+      , globlMaxThreads(omp_get_max_threads())
+      , current_module (NULL)
+      , current_backend(NULL)
+      , stream         (NULL)
+      , streamtags     (NULL)
+      , backlog        (NULL)
     {
+      // Note! MPIrank and MPIsize will not be correct until initialisation occurs!
+    }
+
+    // Initialise dynamic memory required for thread safety
+    void LogMaster::init_memory()
+    {
+      int n = globlMaxThreads;
+      // Reserve enough space to hold as many variables as there are slots (threads) allowed
+      if(stream==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_stream)
+        {
+          if(stream==NULL) stream = new std::ostringstream[n];
+        }
+      }
+      if(streamtags==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_streamtags)
+        {
+          if(streamtags==NULL) streamtags = new std::set<int>[n];
+        }
+      }
+      if(backlog==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_backlog)
+        {
+          if(backlog==NULL) backlog = new std::deque<Message>[n];
+        }
+      }
+      if(current_module==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_current_module)
+        {
+          if(current_module==NULL) current_module = new int[n];
+          std::fill(current_module, current_module+n, -1);
+        }
+      }
+      if(current_backend==NULL)
+      {
+        #pragma omp critical(logmaster_common_init_memory_current_backend)
+        {
+          if(current_backend==NULL) current_backend = new int[n];
+          std::fill(current_backend, current_backend+n, -1);
+        }
+      }
     }
 
     // Destructor
     LogMaster::~LogMaster()
     {
+       // See signal_handling.cpp for why we should not bail out in this situation
+       // // LogMaster should not be destructed from within a parallel block. This check helps detect such a bug.
+       // if(omp_get_level()!=0)
+       // {
+       //    // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
+       //    #pragma omp critical(logmaster_destructor)
+       //    {
+       //      std::cout << "rank "<<MPIrank<<": "<< LOCAL_INFO << ": Tried to destruct LogMaster from inside an omp parallel block! This should not be allowed to happen, please file a bug report." << std::endl;
+       //      exit(EXIT_FAILURE);
+       //    }
+       // }
+
        if(not silenced)
        {
-         // If LogMaster was never initialised, and there are messages in the buffer, then create a default log file to which the messages can be dumped.
-         if (prelim_buffer.size()!=0)
+         // Check if there is anything in the output stream that has not been sent, and send it if there is
+         // (these messages will get backlogged because they are sent (ended) from a parallel block, but we are
+         // about to empty the backlogs anyway so that is no problem).
+         if (stream != NULL and streamtags!= NULL)
          {
-           std::cout<<"Logger buffer is not empty; attempting to deliver unsent messages to the logs..."<<std::endl;
-           if (not loggers_readyQ)
-           {
-             std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
-             StdLogger* deflogger = new StdLogger(GAMBIT_DIR "/scratch/default.log");
-             std::set<int> deftag;
-             deftag.insert(def);
-             loggers[deftag] = deflogger;
-             loggers_readyQ = true;
+           #pragma omp parallel
+           {  
+              int i = omp_get_thread_num();
+              if (not stream[i].str().empty() or not streamtags[i].empty())
+              {
+                *this <<"#### NO EOM RECEIVED FOR MESSAGE FROM THREAD ("<<i<<"): MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+              }
            }
-           std::cout<<"Delivering messages..."<<std::endl;
-           // Dump buffered messages
-           dump_prelim_buffer();
-           std::cout<<"Messages delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
          }
 
-         // Check if there is anything in the output stream that has not been sent, and send it if there is
-         if (not stream.str().empty() or not streamtags.empty())
+         // Empty message backlogs if needed
+         if (backlog!=NULL)
          {
-           *this <<"#### NO EOM RECEIVED: MESSAGE MAY BE INCOMPLETE ####"<<warn<<EOM;
+           bool backlog_empty = true;
+           for(int i=0; i<globlMaxThreads; i++)
+           {
+              if(backlog[i].size()!=0) backlog_empty = false;
+           }
+           if (not backlog_empty)
+           {
+             *this<<"Logger backlog buffer not empty during LogMaster destruction; attempting to deliver unsent messages to the logs..."<<EOM;
+             // If LogMaster was never initialised, create a default log file to which the messages can be dumped.
+             if (not loggers_readyQ)
+             {
+               std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
+               StdLogger* deflogger = new StdLogger(GAMBIT_DIR "/scratch/default.log");
+               std::set<int> deftag;
+               deftag.insert(def);
+               loggers[deftag] = deflogger;
+               loggers_readyQ = true;
+               std::cout<<"Log messages will be delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
+             }
+             // Dump buffered messages
+             empty_backlog();
+           }
          }
+
        }
 
        // Delete logger objects
@@ -227,12 +327,45 @@ namespace Gambit
          //(keyvalue->second)->flush();
          delete (keyvalue->second);
        }
+
+       // Delete the thread variables
+       if (stream != NULL)         delete [] stream;
+       if (streamtags != NULL)     delete [] streamtags;
+       if (backlog != NULL)        delete [] backlog;
+       if (current_module !=NULL)  delete [] current_module;
+       if (current_backend !=NULL) delete [] current_backend;
     }
 
     /// Function to construct loggers according to blueprint
     // This is the function that yaml_parser.hpp uses. You provide tags as a set of strings, and the filename as a string. We then construct the logger objects in here.
     void LogMaster::initialise(std::vector<std::pair< std::set<std::string>, std::string >>& loggerinfo)
     {
+       // Fix up the MPI variables
+       #ifdef WITH_MPI
+       if(GMPI::Is_initialized())
+       {
+         GMPI::Comm COMM_WORLD;
+         MPIsize = COMM_WORLD.Get_size();
+         MPIrank = COMM_WORLD.Get_rank();
+       }
+       #endif
+
+       // Check options and inform user what they are
+       std::cout << "Initialising logger...";
+       #ifdef WITH_MPI
+       std::cout << std::endl << "  separate_file_per_process = ";
+       if(separate_file_per_process){ std::cout << "true; log messages will be stored in separate files for each MPI process (filename will be appended with underscore + MPI rank)"; }
+       else{ std::cout << "false; log messages from separate MPI processes will be merged into one file (orchestrated by the OS; some mangling of concurrently written log messages may occur. Set this separate_file_per_process to 'True' if this mangling is a problem for you)";}
+       #endif
+       std::cout << std::endl << "  log_debug_messages = ";
+       if(log_debug_messages){ std::cout << "true; log messages tagged as 'Debug' WILL be logged. Warning! This may lead to very large log files!";}
+       else{ 
+          // Add "Debug" tag to the global ignore list
+          ignore.insert(LogTag::debug);
+          std::cout << "false; log messages tagged as 'Debug' will NOT be logged";
+       }
+       std::cout << std::endl;
+
        // Iterate through map and build the logger objects
        for(std::vector<std::pair< std::set<std::string>, std::string >>::iterator infopair = loggerinfo.begin();
             infopair != loggerinfo.end(); ++infopair)
@@ -241,6 +374,14 @@ namespace Gambit
           std::string filename = infopair->second;
           std::set<int> tags;
 
+          if(separate_file_per_process and MPIsize>1 
+             and filename!="stdout" and filename!="stderr")
+          {
+            std::ostringstream unique_filename;
+            unique_filename << filename << "_" << MPIrank;
+            filename = unique_filename.str();
+          }
+ 
           // Log the loggers being created :)
           // (will be put into a preliminary buffer until loggers are all constructed)
           *this << LogTag::logs << LogTag::debug << std::endl << "Creating logger for tags [";
@@ -257,8 +398,8 @@ namespace Gambit
               // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
               std::ostringstream errormsg;
               errormsg << "Tag name received in Logging::str2tag function could not be found in str2tag map!";
-              errormsg << "Probably this is because you specified an invalid LogTag name in the logging redirection";
-              errormsg << "part of your YAML input file. Tag string was: "<<*stag<<".";
+              errormsg << "This is probably because you specified an invalid LogTag name in the logging redirection ";
+              errormsg << "section of your YAML input file. Tag string was: "<<*stag<<".";
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
             *this << *stag <<", ";
@@ -284,7 +425,7 @@ namespace Gambit
        *this << EOM; // End message about loggers.
        // Set logger objects ready for use and dump any buffered messages
        loggers_readyQ = true;
-       dump_prelim_buffer();
+       empty_backlog();
     }
 
     // Overload for initialise to allow input of logging instructions via maps
@@ -330,16 +471,28 @@ namespace Gambit
        return silenced;
     }
 
-    // Dump the prelim buffer to the 'finalsend' function
-    void LogMaster::dump_prelim_buffer()
+    // Dump the backlog buffer to the 'finalsend' function
+    void LogMaster::empty_backlog()
     {
-       for(std::vector<Message>::iterator msg = prelim_buffer.begin();
-            msg != prelim_buffer.end(); ++msg)
+       // See signal_handling.cpp for why we should not bail out in this situation
+       //if(omp_get_level()!=0)
+       //{
+       //   // Raising an error from within the loggers within a parallel block probably will not end well, just use cout.
+       //   #pragma omp critical(logmaster_empty_backlog)
+       //   {
+       //     std::cout << LOCAL_INFO << ": (rank "<<MPIrank<<") Tried to run empty_backlog() (in LogMaster) from inside an omp parallel block! This should not be possible, please file a bug report." << std::endl;
+       //     exit(EXIT_FAILURE);
+       //   }
+       //}
+
+       for(int i=0; i<globlMaxThreads; i++)
        {
-         finalsend(*msg);
+         for(size_t j=0; j<backlog[i].size(); j++)
+         {
+            finalsend(backlog[i].front());
+            backlog[i].pop_front();
+         }
        }
-       // Clear the buffer
-       prelim_buffer.clear();
     }
 
     /// Main logging function (user-friendly overloaded version)
@@ -480,32 +633,34 @@ namespace Gambit
 
        // Preliminary stuff
 
+       // Get thread number
+       int i = omp_get_thread_num();
+
        // Automatically add the "def" (Default) tag so that the message definitely tries to go somewhere
        tags.insert(def);
 
        // Automatically add the tags for the "current" module and backend to the tags list
-       if (current_module != -1)
+       if (current_module[i] != -1)
        {
          //std::cout<<"current_module="<<current_module<<"; adding tag "<<tag2str()[current_module]<<std::endl;
-         tags.insert(current_module);
+         tags.insert(current_module[i]);
        }
-       if (current_backend != -1)
+       if (current_backend[i] != -1)
        {
          //std::cout<<"current_backend="<<current_backend<<"; adding tag "<<tag2str()[current_backend]<<std::endl;
-         tags.insert(current_backend);
+         tags.insert(current_backend[i]);
        }
 
        // If the loggers have not yet been initialised, buffer the message
-       if ( not loggers_readyQ )
+       if(omp_get_level()!=0 or not loggers_readyQ)
        {
-         //std::cout<<"Loggers not ready, buffering message..."<<std::endl;
-         prelim_buffer.emplace_back(message,tags); //time stamp automatically added NOW
-         return;
+         backlog[i].emplace_back(message,tags); //time stamp automatically added NOW
        }
-       //std::cout<<"Loggers ready, forwarding message..."<<std::endl;
-
-       finalsend(Message(message,tags)); //time stamp automatically added NOW
-
+       else
+       {
+         if(omp_get_level()==0) empty_backlog();
+         finalsend(Message(message,tags)); //time stamp automatically added NOW
+       }
     } // end LogHub::send
 
     /// Version of send function used by buffer dump; skips all the tag modification stuff
@@ -555,94 +710,76 @@ namespace Gambit
     /// Handle LogTag input
     LogMaster& LogMaster::operator<< (const LogTag& tag)
     {
-       #pragma omp critical
-       streamtags.insert(tag);
+       init_memory();
+       streamtags[omp_get_thread_num()].insert(tag);
        return *this;
     }
 
     /// Handle end of message character
     LogMaster& LogMaster::operator<< (const endofmessage&)
     {
-       #pragma omp critical (LogMaster_steram_EOM)
-       {
-         // Collect the stream and tags, then send the message
-         send(stream.str(), streamtags);
-         // Clear stream and tags for next message;
-         stream.str(std::string()); //TODO: check that this works properly on all compilers...
-         streamtags.clear();
-       }
+       init_memory();
+       size_t i = omp_get_thread_num();
+       // Collect the stream and tags, then send the message
+       send(stream[i].str(), streamtags[i]);
+       // Clear stream and tags for next message;
+       stream[i].str(std::string()); //TODO: check that this works properly on all compilers...
+       streamtags[i].clear();
        return *this;
     }
 
     /// Handle various stream manipulators
     LogMaster& LogMaster::operator<< (const manip1 fp)
     {
-       #pragma omp critical
-       stream << fp;
+       init_memory();
+       stream[omp_get_thread_num()] << fp;
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip2 fp)
     {
-       #pragma omp critical
-       stream << fp;
+       init_memory();
+       stream[omp_get_thread_num()] << fp;
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip3 fp)
     {
-       #pragma omp critical
-       stream << fp;
+       init_memory();
+       stream[omp_get_thread_num()] << fp;
        return *this;
     }
 
     void LogMaster::entering_module(int i)
     {
-       #pragma omp critical (current_module)
-       {
-         current_module = i;
-       }
+       init_memory();
+       current_module[omp_get_thread_num()] = i;
     }
 
     void LogMaster::leaving_module()
     {
-       #pragma omp critical (current_module)
-       {
-         current_module = -1;
-       }
+       init_memory();
+       current_module[omp_get_thread_num()] = -1;
        leaving_backend();
     }
 
     void LogMaster::entering_backend(int i)
     {
-       #pragma omp critical (current_backend)
-       {
-         current_backend = i;
-       }
-       #pragma omp critical(LogMaster_entering_backend)
-       {
-          *this<<"setting current_backend="<<i;
-          *this<<logs<<debug<<EOM;
-       }
+       init_memory();
+       current_backend[omp_get_thread_num()] = i;
+       *this<<"setting current_backend="<<i;
+       *this<<logs<<debug<<EOM;
        // TODO: Activate std::out and std::err redirection, if requested in inifile
     }
     void LogMaster::leaving_backend()
-    {
+    { 
+       init_memory();
        int cb_test;
-       #pragma omp critical (current_backend)
-       {
-         cb_test = current_backend;
-       }
+       cb_test = current_backend[omp_get_thread_num()];
        if (cb_test == -1) return;
-       #pragma omp critical (current_backend)
-       {
-         current_backend = -1;
-       }
-       #pragma omp critical(LogMaster_leaving_backend)
-       {
-          *this<<"restoring current_backend="<<-1;
-          *this<<logs<<debug<<EOM;
-       }
+       current_backend[omp_get_thread_num()] = -1;
+       *this<<"restoring current_backend="<<-1;
+       *this<<logs<<debug<<EOM;
        // TODO: Restore std::out and std::err to normal
     }
 
@@ -714,8 +851,19 @@ namespace Gambit
 
     /// Constructor
     /// Attach logger object to an existing stream
-    StdLogger::StdLogger(std::ostream& logstream) : my_stream(logstream)
+    StdLogger::StdLogger(std::ostream& logstream) 
+      : my_stream(logstream)
+      , MPIrank(0)
+      , MPIsize(1)
     {
+      #ifdef WITH_MPI
+      if(GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        MPIsize = COMM_WORLD.Get_size();
+        MPIrank = COMM_WORLD.Get_rank();
+      }
+      #endif
       // Check error bits on stream and throw exception in anything is bad
       if( my_stream.fail() | my_stream.bad() )
       {
@@ -727,12 +875,26 @@ namespace Gambit
 
     /// Open new file stream and manage it internally
     StdLogger::StdLogger(const std::string& filename)
-     : my_own_fstream(filename, std::ofstream::out), my_stream(my_own_fstream)
+      : my_own_fstream(filename, std::ofstream::out)
+      , my_stream(my_own_fstream)
+      , MPIrank(0)
+      , MPIsize(1)
     {
+      #ifdef WITH_MPI
+      if(GMPI::Is_initialized())
+      {
+        GMPI::Comm COMM_WORLD;
+        MPIsize = COMM_WORLD.Get_size();
+        MPIrank = COMM_WORLD.Get_rank();
+      }
+      #endif
       // Check error bits on stream and throw exception in anything is bad
       if( my_stream.fail() | my_stream.bad() )
       {
          std::ostringstream ss;
+         #ifdef WITH_MPI
+         ss << "rank "<<MPIrank<<": ";
+         #endif
          ss << "IO error while constructing StdLogger! Tried to open ofstream to file \""<<filename<<"\", but encountered error bit in the created ostream.";
          throw std::runtime_error( ss.str() );
       }
@@ -749,10 +911,11 @@ namespace Gambit
       std::chrono::duration<double> diff = mail.received_at - start_time;
       my_stream<<"("<<diff.count()<<" [s])";
       // MPI rank
-      #ifdef WITH_MPI
-        GMPI::Comm COMM_WORLD;
-        my_stream << "(Rank " << COMM_WORLD.Get_rank() << ")";
-      #endif
+      // Might as well add this even if different ranks output to different
+      // files, since people might like to cat together the different files
+      // later on or something.
+      if(MPIsize>1) my_stream << "(Rank " << MPIrank << ")";
+
       // Message tags
       writetags(mail.component_tags);
       writetags(mail.type_tags);

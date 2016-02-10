@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:27
+// File generated at Wed 28 Oct 2015 11:35:25
 
 #include "NSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -40,8 +40,10 @@ double NSM_soft_parameters::calc_beta_Lambda4_one_loop(const Soft_traces& soft_t
 
    double beta_Lambda4;
 
-   beta_Lambda4 = Re(0.5*oneOver16PiSqr*Lambda4*(12*traceYdAdjYd + 4*
-      traceYeAdjYe - 3*(-4*traceYuAdjYu - 8*Lambda1 + Sqr(g1) + 3*Sqr(g2))));
+   beta_Lambda4 = Re(oneOver16PiSqr*(6*traceYdAdjYd*Lambda4 + 2*
+      traceYeAdjYe*Lambda4 + 6*traceYuAdjYu*Lambda4 - 12*Lambda1*Lambda4 - 8*
+      Lambda3*Lambda4 - 12*Lambda3*Lambda5 - 1.5*Lambda4*Sqr(g1) - 4.5*Lambda4*
+      Sqr(g2)));
 
 
    return beta_Lambda4;
@@ -65,14 +67,39 @@ double NSM_soft_parameters::calc_beta_Lambda4_two_loop(const Soft_traces& soft_t
 
    double beta_Lambda4;
 
-   beta_Lambda4 = Re(0.020833333333333332*twoLoop*Lambda4*(557*Power(g1,4
-      ) - 435*Power(g2,4) - 648*traceYdAdjYdYdAdjYd - 1008*traceYdAdjYuYuAdjYd
-      - 216*traceYeAdjYeYeAdjYe - 648*traceYuAdjYuYuAdjYu - 3456*traceYuAdjYu*
-      Lambda1 + 340*traceYuAdjYu*Sqr(g1) + 1152*Lambda1*Sqr(g1) + 540*
-      traceYuAdjYu*Sqr(g2) + 3456*Lambda1*Sqr(g2) + 90*Sqr(g1)*Sqr(g2) + 12*
-      traceYeAdjYe*(-96*Lambda1 + 25*Sqr(g1) + 15*Sqr(g2)) + 1920*traceYuAdjYu*
-      Sqr(g3) + 4*traceYdAdjYd*(-864*Lambda1 + 25*Sqr(g1) + 135*Sqr(g2) + 480*
-      Sqr(g3)) - 2880*Sqr(Lambda1)));
+   beta_Lambda4 = Re(twoLoop*(11.604166666666666*Power(g1,4)*Lambda4 -
+      9.0625*Power(g2,4)*Lambda4 - 13.5*traceYdAdjYdYdAdjYd*Lambda4 - 21*
+      traceYdAdjYuYuAdjYd*Lambda4 - 4.5*traceYeAdjYeYeAdjYe*Lambda4 - 13.5*
+      traceYuAdjYuYuAdjYu*Lambda4 + 72*traceYuAdjYu*Lambda1*Lambda4 + 24*
+      traceYuAdjYu*Lambda3*Lambda4 - 144*Lambda1*Lambda3*Lambda4 - 96*Lambda2*
+      Lambda3*Lambda4 - 288*Lambda2*Lambda3*Lambda5 + 7.083333333333333*
+      traceYuAdjYu*Lambda4*Sqr(g1) - 24*Lambda1*Lambda4*Sqr(g1) - 2*Lambda3*
+      Lambda4*Sqr(g1) + 11.25*traceYuAdjYu*Lambda4*Sqr(g2) - 72*Lambda1*Lambda4
+      *Sqr(g2) - 6*Lambda3*Lambda4*Sqr(g2) + 1.875*Lambda4*Sqr(g1)*Sqr(g2) +
+      0.25*traceYeAdjYe*Lambda4*(96*Lambda1 + 32*Lambda3 + 25*Sqr(g1) + 15*Sqr(
+      g2)) + 40*traceYuAdjYu*Lambda4*Sqr(g3) + 0.08333333333333333*traceYdAdjYd
+      *Lambda4*(864*Lambda1 + 288*Lambda3 + 25*Sqr(g1) + 135*Sqr(g2) + 480*Sqr(
+      g3)) - 60*Lambda4*Sqr(Lambda1) + 48*Lambda4*Sqr(Lambda2) - 46*Lambda4*Sqr
+      (Lambda3) - 96*Lambda5*Sqr(Lambda3)));
+
+
+   return beta_Lambda4;
+}
+
+/**
+ * Calculates the three-loop beta function of Lambda4.
+ *
+ * @return three-loop beta function
+ */
+double NSM_soft_parameters::calc_beta_Lambda4_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+
+
+   double beta_Lambda4;
+
+   beta_Lambda4 = 0;
 
 
    return beta_Lambda4;

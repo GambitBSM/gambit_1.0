@@ -64,7 +64,7 @@ START_MODULE
     #define FUNCTION getPythiaFileReader
     START_FUNCTION(Gambit::ColliderBit::SpecializablePythia)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
+  NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -383,7 +383,7 @@ START_MODULE
     START_FUNCTION(fh_HiggsProd)
     DEPENDENCY(Higgs_Couplings, fh_Couplings)
     BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
-    BACKEND_OPTION( (FeynHiggs, 2.11), (libfeynhiggs) )
+    BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY

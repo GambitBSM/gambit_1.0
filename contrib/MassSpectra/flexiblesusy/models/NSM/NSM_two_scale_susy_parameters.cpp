@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Mon 1 Jun 2015 12:42:17
+// File generated at Wed 28 Oct 2015 11:35:22
 
 #include "NSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -92,6 +92,9 @@ NSM_susy_parameters NSM_susy_parameters::calc_beta() const
       beta_Yd += calc_beta_Yd_two_loop(TRACE_STRUCT);
       beta_Ye += calc_beta_Ye_two_loop(TRACE_STRUCT);
 
+      if (get_loops() > 2) {
+
+      }
    }
 
 
@@ -116,7 +119,7 @@ void NSM_susy_parameters::clear()
 
 
 
-const Eigen::ArrayXd NSM_susy_parameters::get() const
+Eigen::ArrayXd NSM_susy_parameters::get() const
 {
    Eigen::ArrayXd pars(numberOfParameters);
 
