@@ -303,8 +303,9 @@ namespace Gambit
          std::stringstream parname;
          parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
          /// TODO: Error checking...
+         std::cout << parname.str() << " ";
          output(i,j) = *Param.at(parname.str());
-       }}
+       }std::cout<<std::endl;}
        return output;
     }
 
@@ -316,9 +317,9 @@ namespace Gambit
          std::stringstream parname;
          parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
          /// TODO: Error checking...
-         std::cout<< parname << " ";
+         std::cout << parname.str() << " ";
          output(i,j) = *Param.at(parname.str());
-       } std::cout<<std::endl;}
+       }std::cout<<std::endl;}
        return output;
     }
 
