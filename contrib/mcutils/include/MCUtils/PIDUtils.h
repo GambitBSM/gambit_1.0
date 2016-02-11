@@ -704,7 +704,6 @@ namespace MCUtils {
 
     /// Determine if the PID is that of a electromagnetically interacting particle
     inline bool isEMInteracting(int pid) {
-      
       return isCharged(pid) || isPhoton(pid);
     }
 
