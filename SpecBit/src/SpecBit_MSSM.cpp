@@ -299,13 +299,12 @@ namespace Gambit
     Eigen::Matrix<double,3,3> fill_3x3_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
        Eigen::Matrix<double,3,3> output;
-       for(int i=0; i<3; ++i) { for(int j=0; j<3; ++j) {
+       for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
+       {
          std::stringstream parname;
          parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         /// TODO: Error checking...
-         std::cout << parname.str() << " ";
          output(i,j) = *Param.at(parname.str());
-       }std::cout<<std::endl;}
+       }
        return output;
     }
 
@@ -313,13 +312,12 @@ namespace Gambit
     Eigen::Matrix<double,3,3> fill_3x3_symmetric_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
        Eigen::Matrix<double,3,3> output;
-       for(int i=0; i<3; ++i) { for(int j=i; j<3; ++j) {
+       for(int i=0; i<3; ++i) for(int j=i; j<3; ++j)
+       {
          std::stringstream parname;
          parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         /// TODO: Error checking...
-         std::cout << parname.str() << " ";
          output(i,j) = *Param.at(parname.str());
-       }std::cout<<std::endl;}
+       }
        return output;
     }
 

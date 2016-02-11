@@ -454,7 +454,7 @@ namespace Gambit
           // Use improve_xsec to combine results from the same process type
           globalAnalyses.improve_xsec(result);
         }
-	return;
+        return;
       }
       
     }
