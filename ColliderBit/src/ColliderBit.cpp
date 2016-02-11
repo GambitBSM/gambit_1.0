@@ -560,8 +560,8 @@ namespace Gambit
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
-        const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
-
+	const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
+		
         // Add prompt and invisible particles as individual particles
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
