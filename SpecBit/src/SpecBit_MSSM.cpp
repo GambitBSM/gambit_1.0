@@ -327,7 +327,6 @@ namespace Gambit
     template <class T>
     void fill_MSSM63_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
-
       //double valued parameters
       input.TanBeta     = *Param.at("TanBeta");
       input.SignMu      = *Param.at("SignMu");
@@ -336,6 +335,20 @@ namespace Gambit
       input.MassBInput  = *Param.at("M1");
       input.MassWBInput = *Param.at("M2");
       input.MassGInput  = *Param.at("M3");
+
+      // Sanity checks
+      if(input.TanBeta<0)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set TanBeta parameter to a negative value ("<<input.TanBeta<<")! This parameter must be positive. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+      if(input.SignMu!=-1 and input.SignMu!=1)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set SignMu parameter to a value that is not a sign! ("<<input.SignMu<<")! This parameter must be set to either 1 or -1. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
 
       //3x3 matrices; filled with the help of a convenience function
       input.mq2Input = fill_3x3_symmetric_parameter_matrix("mq2", Param);
@@ -425,6 +438,20 @@ namespace Gambit
       input.TanBeta = *myPipe::Param["TanBeta"];
       input.SignMu  = *myPipe::Param["SignMu"];
       input.Azero   = *myPipe::Param["A0"];
+
+      // Sanity checks
+      if(input.TanBeta<0)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set TanBeta parameter to a negative value ("<<input.TanBeta<<")! This parameter must be positive. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+      if(input.SignMu!=-1 and input.SignMu!=1)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set SignMu parameter to a value that is not a sign! ("<<input.SignMu<<")! This parameter must be set to either 1 or -1. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
 
       // Run spectrum generator
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
