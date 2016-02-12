@@ -35,19 +35,19 @@
      targetP.setValues(myP,false);
 
      // RH squark soft masses, gen 1 and 2
-     targetP.setValue("mq2_1",  myP["mq2_12"] ); // mq2_11 in MSSM78
+     targetP.setValue("mq2_1",  myP["mq2_12"] ); // mq2_11 in MSSM63
      targetP.setValue("mq2_2",  myP["mq2_12"] ); // mq2_22   " "
      // RH slepton soft masses, gen 1 and 2
-     targetP.setValue("ml2_1",  myP["ml2_12"] ); // ml2_11 in MSSM78
+     targetP.setValue("ml2_1",  myP["ml2_12"] ); // ml2_11 in MSSM63
      targetP.setValue("ml2_2",  myP["ml2_12"] ); // ml2_22   " "
      // LH down-type squark soft masses
-     targetP.setValue("md2_1",  myP["md2_12"] ); // ml2_11 in MSSM78
+     targetP.setValue("md2_1",  myP["md2_12"] ); // ml2_11 in MSSM63
      targetP.setValue("md2_2",  myP["md2_12"] ); // ml2_22   " "
      // LH up-type squark soft masses
-     targetP.setValue("mu2_1",  myP["mu2_12"] ); // mu2_11 in MSSM78
+     targetP.setValue("mu2_1",  myP["mu2_12"] ); // mu2_11 in MSSM63
      targetP.setValue("mu2_2",  myP["mu2_12"] ); // mu2_22   " "
      // LH charged slepton soft masses
-     targetP.setValue("me2_1",  myP["me2_12"] ); // me2_11 in MSSM78
+     targetP.setValue("me2_1",  myP["me2_12"] ); // me2_11 in MSSM63
      targetP.setValue("me2_2",  myP["me2_12"] ); // me2_22   " "
 
      // Done

@@ -308,6 +308,13 @@ Rules:
   - capability: t_decay_rates
     function: FH_t_decays
 
+  # THIS RULE DIDN'T WORK, why? I nuked FeynHiggs 2.11.2 to solve the problem.
+  ## Use FeynHiggs version (2.11.3) for FHConstraints when running FH_PrecisionObs function from PrecisionBit
+  #- capability: FH_Precision
+  #  function: FH_PrecisionObs
+  #  backends:
+  #  - {capability: FHConstraints, backend: FeynHiggs, version: 2.11.3}
+
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
     function: RD_fraction_from_oh2

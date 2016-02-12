@@ -299,20 +299,32 @@ namespace Gambit
     Eigen::Matrix<double,3,3> fill_3x3_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
        Eigen::Matrix<double,3,3> output;
-       for(int i=0; i<3; ++i) { for(int j=0; j<3; ++j) {
+       for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
+       {
          std::stringstream parname;
          parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         /// TODO: Error checking...
          output(i,j) = *Param.at(parname.str());
-       }}
+       }
        return output;
     }
 
-    /// Helper function for filling MSSM78-compatible input parameter objects
-    template <class T>
-    void fill_MSSM78_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    /// As above, but for symmetric input (i.e. 6 entries, assumed to be the upper triangle)
+    Eigen::Matrix<double,3,3> fill_3x3_symmetric_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
+       Eigen::Matrix<double,3,3> output;
+       for(int i=0; i<3; ++i) for(int j=i; j<3; ++j)
+       {
+         std::stringstream parname;
+         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
+         output(i,j) = *Param.at(parname.str());
+       }
+       return output;
+    }
 
+    /// Helper function for filling MSSM63-compatible input parameter objects
+    template <class T>
+    void fill_MSSM63_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    {
       //double valued parameters
       input.TanBeta     = *Param.at("TanBeta");
       input.SignMu      = *Param.at("SignMu");
@@ -322,12 +334,26 @@ namespace Gambit
       input.MassWBInput = *Param.at("M2");
       input.MassGInput  = *Param.at("M3");
 
+      // Sanity checks
+      if(input.TanBeta<0)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set TanBeta parameter to a negative value ("<<input.TanBeta<<")! This parameter must be positive. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+      if(input.SignMu!=-1 and input.SignMu!=1)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set SignMu parameter to a value that is not a sign! ("<<input.SignMu<<")! This parameter must be set to either 1 or -1. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+
       //3x3 matrices; filled with the help of a convenience function
-      input.mq2Input = fill_3x3_parameter_matrix("mq2", Param);
-      input.ml2Input = fill_3x3_parameter_matrix("ml2", Param);
-      input.md2Input = fill_3x3_parameter_matrix("md2", Param);
-      input.mu2Input = fill_3x3_parameter_matrix("mu2", Param);
-      input.me2Input = fill_3x3_parameter_matrix("me2", Param);
+      input.mq2Input = fill_3x3_symmetric_parameter_matrix("mq2", Param);
+      input.ml2Input = fill_3x3_symmetric_parameter_matrix("ml2", Param);
+      input.md2Input = fill_3x3_symmetric_parameter_matrix("md2", Param);
+      input.mu2Input = fill_3x3_symmetric_parameter_matrix("mu2", Param);
+      input.me2Input = fill_3x3_symmetric_parameter_matrix("me2", Param);
       input.Aeij = fill_3x3_parameter_matrix("Ae", Param);
       input.Adij = fill_3x3_parameter_matrix("Ad", Param);
       input.Auij = fill_3x3_parameter_matrix("Au", Param);
@@ -411,6 +437,20 @@ namespace Gambit
       input.SignMu  = *myPipe::Param["SignMu"];
       input.Azero   = *myPipe::Param["A0"];
 
+      // Sanity checks
+      if(input.TanBeta<0)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set TanBeta parameter to a negative value ("<<input.TanBeta<<")! This parameter must be positive. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+      if(input.SignMu!=-1 and input.SignMu!=1)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set SignMu parameter to a value that is not a sign! ("<<input.SignMu<<")! This parameter must be set to either 1 or -1. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+
       // Run spectrum generator
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 
@@ -432,7 +472,7 @@ namespace Gambit
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSM_input_parameters input;
       input.Qin = *myPipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
-      fill_MSSM78_input(input,myPipe::Param);
+      fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }
@@ -444,7 +484,7 @@ namespace Gambit
       namespace myPipe = Pipes::get_MSSMatMGUT_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSMatMGUT_input_parameters input;
-      fill_MSSM78_input(input,myPipe::Param);
+      fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }

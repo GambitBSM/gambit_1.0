@@ -1,7 +1,7 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  MSSM78 model declaration
+//  MSSM63 model declaration
 //   
 //
 //  *********************************************
@@ -18,10 +18,10 @@
 //
 //  *********************************************
 
-#ifndef __MSSM78atMGUT_hpp__
-#define __MSSM78atMGUT_hpp__
+#ifndef __MSSM63atMGUT_hpp__
+#define __MSSM63atMGUT_hpp__
 
-#include "gambit/Models/models/MSSM78atQ.hpp" // Must include models which are targets of translation functions
+#include "gambit/Models/models/MSSM63atQ.hpp" // Must include models which are targets of translation functions
 
 // Forward declaration of needed types
 namespace Gambit {
@@ -35,38 +35,40 @@ namespace Gambit {
 // the appropriate general GUT parameterisation for the spectrum generator
 // being used.
 
-/// FlexibleSUSY compatible general (78 parameters plus sign) GUT scale MSSM parameterisation
-#define MODEL  MSSM78atMGUT
-#define PARENT MSSM78atQ
+/// FlexibleSUSY compatible general (63 parameters plus sign) GUT scale MSSM parameterisation
+#define MODEL  MSSM63atMGUT
+#define PARENT MSSM63atQ
   START_MODEL
 
-  /// Can translate this model into MSSM78atQ (where Q will then be set to MGUT)
-  INTERPRET_AS_PARENT_FUNCTION(MSSM78atMGUT_to_MSSM78atQ)
+  /// Can translate this model into MSSM63atQ (where Q will then be set to MGUT)
+  INTERPRET_AS_PARENT_FUNCTION(MSSM63atMGUT_to_MSSM63atQ)
   /// Depends on an MSSM spectrum, since RGEs must run in order to determine MGUT
   INTERPRET_AS_PARENT_DEPENDENCY(unimproved_MSSM_spectrum, const Spectrum*)
 
   DEFINEPARS(TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
-  
+ 
+  /// Mass matrices are symmetric (Hermitian, and we are restricted to real entries at the moment) 
+  /// so only one 'triangle' needed.
   DEFINEPARS(mq2_11, mq2_12, mq2_13,
-             mq2_21, mq2_22, mq2_23,
-             mq2_31, mq2_32, mq2_33)
+                     mq2_22, mq2_23,
+                             mq2_33)
 
   DEFINEPARS(ml2_11, ml2_12, ml2_13,
-             ml2_21, ml2_22, ml2_23,
-             ml2_31, ml2_32, ml2_33)
+                     ml2_22, ml2_23,
+                             ml2_33)
 
   DEFINEPARS(md2_11, md2_12, md2_13,
-             md2_21, md2_22, md2_23,
-             md2_31, md2_32, md2_33)
+                     md2_22, md2_23,
+                             md2_33)
 
   DEFINEPARS(mu2_11, mu2_12, mu2_13,
-             mu2_21, mu2_22, mu2_23,
-             mu2_31, mu2_32, mu2_33)
+                     mu2_22, mu2_23,
+                             mu2_33)
 
   DEFINEPARS(me2_11, me2_12, me2_13,
-             me2_21, me2_22, me2_23,
-             me2_31, me2_32, me2_33)
+                     me2_22, me2_23,
+                             me2_33)
 
   DEFINEPARS(Ae_11, Ae_12, Ae_13,
              Ae_21, Ae_22, Ae_23,

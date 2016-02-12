@@ -35,7 +35,7 @@
      targetP.setValues(myP);
 
      // MH2
-     targetP.setValue("mH2", myP["M0"]);
+     targetP.setValue("mH", myP["M0"]);
 
   }
 

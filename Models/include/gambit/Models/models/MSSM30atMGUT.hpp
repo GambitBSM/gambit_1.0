@@ -3,7 +3,7 @@
 ///
 ///  MSSM30atMGUT model definition
 ///
-///  Specialisation of MSSM78atQ with all 
+///  Specialisation of MSSM63atQ with all 
 ///  off-diagonal m and A terms set to zero.
 ///  *********************************************
 ///
@@ -21,11 +21,11 @@
 #ifndef __MSSM30atMGUT_hpp__
 #define __MSSM30atMGUT_hpp__
 
-#include "gambit/Models/models/MSSM78atMGUT.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
+#include "gambit/Models/models/MSSM63atMGUT.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
 
 /// FlexibleSUSY compatible general (78 parameters plus sign) MSSM parameterisation
 #define MODEL MSSM30atMGUT
-#define PARENT MSSM78atMGUT
+#define PARENT MSSM63atMGUT
   START_MODEL
 
   DEFINEPARS(TanBeta,SignMu,
@@ -47,7 +47,7 @@
 
   DEFINEPARS(Au_1, Au_2, Au_3)
 
-  INTERPRET_AS_PARENT_FUNCTION(MSSM30atMGUT_to_MSSM78atMGUT)
+  INTERPRET_AS_PARENT_FUNCTION(MSSM30atMGUT_to_MSSM63atMGUT)
 
 #undef PARENT
 #undef MODEL
