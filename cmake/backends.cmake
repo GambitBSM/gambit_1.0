@@ -60,7 +60,7 @@ ExternalProject_Add(darksusy
  # FIXME DarkSUSY segfaults with -O2 setting
  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} dslib_shared
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} dslib_shared install_tables
   INSTALL_COMMAND ""
 )
 add_extra_targets(darksusy ${darksusy_dir} ${backend_download}/${darksusy_dl} distclean)
