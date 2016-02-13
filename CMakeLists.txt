@@ -42,6 +42,7 @@ foreach(p
   CMP0022 # CMake 2.8.12
   CMP0025 # CMake 3.0
   CMP0042 # CMake 3.0
+  CMP0051 # CMake 3.1
   CMP0054 # CMake 3.1
   )
   if(POLICY ${p})
@@ -56,6 +57,14 @@ project(GAMBIT C CXX Fortran)
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message(FATAL_ERROR "GAMBIT does not support the Clang compiler. Please choose another compiler.")
 endif()
+
+# Use ccache to speed up re-compiling if it is available
+#find_program(CCACHE_FOUND ccache)
+#if(CCACHE_FOUND)
+#  message("-- Found ccache. Will use it to speed up recompilation.")
+#  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+#  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+#endif(CCACHE_FOUND)
 
 # Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)

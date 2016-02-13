@@ -26,18 +26,23 @@
 
 #include <vector>
 
-#include "gambit/Elements/functors.hpp"
+//#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 /// Define the separator to use instead of "::" when macros get gnarly.
 #define NS_SEP ___no_apologies_for_rocking_macros___
 
 namespace Gambit
 {
-    
+  /// Forward declarations 
+  class functor;
+  class module_functor_common;
+  class model_functor;
+  class Options;
+  
   /// Catch initialisation exceptions
   void ini_catch(std::exception&);
     

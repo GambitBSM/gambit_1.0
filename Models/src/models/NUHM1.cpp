@@ -16,7 +16,7 @@
 
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Models/model_helpers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 #include "gambit/Models/models/NUHM1.hpp"
 
@@ -32,8 +32,8 @@
      targetP.setValues(myP,false);
 
      // MH2
-     targetP.setValue("mHu2", myP["mH2"]);
-     targetP.setValue("mHd2", myP["mH2"]);
+     targetP.setValue("mHu", myP["mH"]);
+     targetP.setValue("mHd", myP["mH"]);
 
   }
 

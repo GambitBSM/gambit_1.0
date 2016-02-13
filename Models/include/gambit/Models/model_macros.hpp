@@ -26,10 +26,8 @@
 #include "gambit/Models/orphan.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/Utils/util_macros.hpp"
-#include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
 #include "gambit/Elements/ini_functions.hpp"
-#include "gambit/Elements/types_rollcall.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 

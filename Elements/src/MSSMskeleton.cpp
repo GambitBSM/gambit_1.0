@@ -17,7 +17,7 @@
 #include "gambit/Elements/MSSMskeleton.hpp" 
 #include "gambit/Utils/util_functions.hpp" 
 #include "gambit/Utils/variadic_functions.hpp" 
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 #include <boost/lexical_cast.hpp>
 

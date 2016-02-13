@@ -39,5 +39,6 @@
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/threadsafe_rng.hpp"
+#include "gambit/Logs/logger.hpp"
 
 #endif /* defined(__gambit_module_headers_hpp__) */

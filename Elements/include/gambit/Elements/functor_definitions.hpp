@@ -39,11 +39,11 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Models/models.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Printers/baseprinter.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
-
+#include <boost/io/ios_state.hpp>
 
 namespace Gambit
 {
@@ -94,6 +94,7 @@ namespace Gambit
     {
       if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
       {
+        boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
         int thread_num = omp_get_thread_num();
         init_memory();                               // Init memory if this is the first run through.
         if (needs_recalculating[thread_num])         // Do the actual calculation if required.
@@ -216,6 +217,7 @@ namespace Gambit
     {
       if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
       {
+        boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
         int thread_num = omp_get_thread_num();
         init_memory();                               // Init memory if this is the first run through.
         if (needs_recalculating[thread_num])

@@ -973,8 +973,15 @@ namespace Gambit
 
    /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
    /// are not needed by the getters.
+   /// @{
    class DummyModel {};
    class DummyInput {};
+   struct DummyTraits
+   {
+     typedef DummyModel Model;
+     typedef DummyInput Input;
+   };
+   /// @}
   
 } // end namespace Gambit
 

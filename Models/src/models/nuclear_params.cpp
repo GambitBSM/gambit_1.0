@@ -16,10 +16,11 @@
 //  *********************************************
 
 #include "gambit/Models/model_macros.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Elements/numerical_constants.hpp"
 
 #include "gambit/Models/models/nuclear_params.hpp"
+#include "gambit/Elements/sminputs.hpp"
 
 #define MODEL nuclear_params_sigma0_sigmal
 #define PARENT nuclear_params_fnq

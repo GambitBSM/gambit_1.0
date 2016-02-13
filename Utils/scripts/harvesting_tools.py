@@ -366,18 +366,21 @@ def get_headers(path,header_set,exclude_set,verbose=False):
         for line in readlines_nocomments(f):
             addifheader(line,header_set,exclude_set,verbose=verbose)        
 
-def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
+def find_and_harvest_headers(header_set,fullheadlist,exclude_set,dir_exclude_set,verbose=False):
     """Locate 'init_headers' in gambit source tree, then read through them and add any headers that are "include"ed in them to headlist
     Args:
     header_set - set of file names of headers to parse
     fullheadlist - list to which full paths of both init_headers, and any subsequently found headers, should be added.
     exclude_set - set of names of headers to ignore if we find them.
+    dir_exclude_set - set of directory names to skip over during the os.walk
     """
     full_header_paths=[]
     # Locate the header in the GAMBIT directory structure...
     # (we should technically search all the include paths in the make file; could pass these in to this script)
     # Ignores any headers that cannot be found (assumed to be external libraries, etc.)
     for root,dirs,files in os.walk("."):
+       # Delete any directories from the traverse list if they are in the exclude this
+       dirs[:] = [d for d in dirs if d not in dir_exclude_set]
        for name in files:
           for header in header_set:
                 if os.path.join(root,name).endswith(header):
@@ -404,7 +407,7 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
         if verbose: print "  Harvested the following new headers:"
         for header in new_headers:
             if verbose: print "    "+header
-        find_and_harvest_headers(new_headers,fullheadlist,new_exclude_set,verbose=verbose)
+        find_and_harvest_headers(new_headers,fullheadlist,new_exclude_set,dir_exclude_set,verbose=verbose)
 
 #Search the source tree to determine which modules are present, and write a module_rollcall header if the GAMBIT Core exists. 
 def retrieve_rollcall_headers(verbose,install_dir,excludes):
