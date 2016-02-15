@@ -422,9 +422,6 @@ namespace Gambit {
       int index; 
       double m_1, m_2, sv;
 
-      cout << "Annihilation branching fractions in setup of process catalog." << endl;
-      cout << "DM mass in process catalog: " << M_DM << endl;
-
       // Macro for setting up 2-body annihilations (chi chi -> X X) from results in DS
 #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                      \
       /* Check if process is kinematically allowed */                          \
@@ -435,7 +432,6 @@ namespace Gambit {
         /* Set cross-section */                                                \
         index = PARTCH;                                                        \
         double CAT(sigma_,NAME) = BEreq::dssigmav(index);                      \
-        cout << STRINGIFY(NAME) << ": " << CAT(sigma_,NAME) << endl;           \
         /* Create associated kinematical functions (just dependent on vrel)    \
          *  here: s-wave, vrel independent 1-dim constant function */          \
         Funk::Funk CAT(kinematicFunction_,NAME) =                              \

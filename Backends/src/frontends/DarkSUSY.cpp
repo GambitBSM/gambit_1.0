@@ -182,12 +182,19 @@ BE_NAMESPACE
     int istat = 0;
     const char object[3] = "su";
     double result = 1e-30 * dsntmuonyield(pow(10.0,log10E),10.0,object[0],3,1,ptype,istat);
-    if (istat == 1)
+    if ((istat bitand 1) == 1)
     {
-      if (not piped_warnings.inquire()) // Don't bother re-raising this warning if it's already been done since the last .check().
+      if (not piped_warnings.inquire()) // Don't bother re-raising a warning if it's already been done since the last .check().
         piped_warnings.request(LOCAL_INFO, "Neutrino yield from Sun is lower bound; likelihood will be conservative.");
     }
-    else if (istat > 1)
+    if ((istat bitand 4) == 4)
+    {
+      if (not piped_warnings.inquire()) // Don't bother re-raising a warning if it's already been done since the last .check().
+        piped_warnings.request(LOCAL_INFO, "DarkSUSY's dswayiled_int didn't converge. This occasionally happens "
+                                           "due to finite statistics in the nu yield tables from Pythia. "
+                                           "This is benign (the missing integrals are always negligible).");
+    }    
+    if (istat > 4)
     {
       std::ostringstream err;
       err << "Error from DarkSUSY::dswayield functions in neutrino flux calculation.  istat = " << istat;      
