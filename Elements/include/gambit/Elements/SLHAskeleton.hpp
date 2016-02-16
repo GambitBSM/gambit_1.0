@@ -121,7 +121,7 @@ namespace Gambit
             {
                utils_error().raise(LOCAL_INFO,
                   "Call made to RunToScale function of SLHAskeleton!  This is not allowed; this\n"
-                  "version of the SubSpectrum wrapper cannot perform RGE running.  It is just a\n"
+                  "version of the SubSpectrum wrapper cannot perform RGE   It is just a\n"
                   "simple box containing SLHA information read from a file or SLHAea object.\n");
             }
 

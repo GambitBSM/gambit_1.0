@@ -184,9 +184,9 @@ namespace Gambit
       // Add extra information about the scales used to the wrapper object
       // (last parameter turns the 'safety' check for the override setter off, which allows
       //  us to set parameters that don't previously exist)
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 
       /// add theory errors
       static const MSSM_strs ms;
@@ -196,30 +196,30 @@ namespace Gambit
       static const std::vector<int> i1234   = initVector(1,2,3,4);
       static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error"
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error"
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, "~chi0", i1234, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_3, i123, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_3, i123, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error"
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error"
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, "~chi0", i1234, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_3, i123, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_3, i123, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12, false);
 
       /// do the Higgs mass seperately
       /// Default in most codes is 3 GeV,
       /// seems like an underestimate if the stop masses are heavy enough.
       /// (TODO: are we happy assigning the same for both higgses?)
       /// FIXME this does not work for the second higgs
-      double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
+      double rd_mh = 3.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
 
       /// Save the input value of TanBeta
       if (input_Param.find("TanBeta") != input_Param.end())
       {
-        mssmspec.runningpars().set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", false);
+        mssmspec.set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", false);
       }
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator

@@ -69,8 +69,8 @@ namespace Gambit
       QedQcdWrapper::QedQcdWrapper(const softsusy::QedQcd& model, const SMInputs& input)
          : qedqcd(model)
          , sminputs(input)        /***/
-         , hardup(phys().get(Par::Pole_Mass,"t")) // QedQcd object will throw an error if we try to run above this, so set this as the limit /***/
-         , softup(phys().get(Par::Pole_Mass,"t")) // Set top quark pole mass as soft upper limit of running. /***/
+         , hardup(get(Par::Pole_Mass,"t")) // QedQcd object will throw an error if we try to run above this, so set this as the limit /***/
+         , softup(get(Par::Pole_Mass,"t")) // Set top quark pole mass as soft upper limit of  /***/
          , softlow(2) // (GeV) QedQcd object sets beta functions to zero below here anyway
          , hardlow(2) // (GeV) QedQcd object sets beta functions to zero below here anyway
       {}

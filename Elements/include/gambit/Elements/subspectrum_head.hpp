@@ -88,12 +88,82 @@ namespace Gambit
          virtual void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true)) = 0;
          virtual void set(const Par::Tags, const double, const str&, int, int) = 0;
    };
+   
+  
+   /// Definition of struct to hold various override values for a given ParamTag
+   struct OverrideMaps
+   {    
+      std::map<str,double>                             m0; // No indices
+      std::map<str,std::map<int,double>>               m1; // One index
+      std::map<str,std::map<int,std::map<int,double>>> m2; // Two indices
+      /* e.g. retrieve like this: contents = m2[name][i][j]; */
+   };
 
+  
+   /// Helper getter and checker functions for Spec class, just factored out into their own class.
+   /// i.e. the PDG overloads, and functions which handle the override maps.
+   class CommonFuncs: public virtual CommonAbstract
+   {
+      public:
+         /// Need to explicitly introduce the functions from CommonAbstract into this
+         /// context, since otherwise they get hidden by the ones with the same name
+         /// declared here
+         using CommonAbstract::has;
+         using CommonAbstract::get;
+       
+         CommonFuncs(const str& cname, const std::map<Par::Tags,OverrideMaps>& override_maps) 
+           : classname(cname)
+           , get_override_maps(override_maps) 
+         {}
+         virtual ~CommonFuncs() {}
+
+         str classname;
+         std::map<Par::Tags,OverrideMaps> get_override_maps;
+
+ 
+         /* The parameter overrides are handled entirely by this base class, so
+            they are not virtual.  */
+         void set_override(const Par::Tags, const double, const str&, const bool safety = true);
+         void set_override(const Par::Tags, const double, const str&, const int, const bool safety = true);
+         void set_override(const Par::Tags, const double, const str&, const int, const int, const bool safety = true);
+
+         /* Helpers for override functions which take parameter names and indices as vectors, and
+            loop over them, to make it easy to set many parameters to the same value.
+            No two-index versions at the moment, but could be added if needed. */
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, bool safety = true);
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const std::vector<int>, bool safety = true);
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const int, bool safety = true);
+         void set_override_vector(const Par::Tags, const double, const str&, const std::vector<int>, bool safety = true);
+
+         /* Overloads of getter/checker functions to allow access using PDG codes */
+         /* as defined in Models/src/particle_database.cpp */
+         /* These don't have to be virtual; they just call the virtual functions in the end. */
+         bool   has(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         double get(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         bool   has(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         double get(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         bool   has(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+         double get(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+
+         /// @{ PDB overloads for setters
+
+         /* Input PDG code plus context integer */
+         void set_override(const Par::Tags, const double, const int, const int,     const bool safety = true);  
+         void set_override(const Par::Tags, const double, const std::pair<int,int>, const bool safety = true);
+
+         /* Input short name plus index */
+         void set_override(const Par::Tags, const double, const std::pair<str,int>, const bool safety = true);
+
+         /// @}
+
+         /// TODO: extra PDB overloads to handle all the one and two index cases (well all the ones that are feasible...)
+   };
 
    /// Virtual base class for interacting with spectrum generator output
    // Includes facilities for running RGEs
    // This is the interface class that most module-writers see
-   class SubSpectrum : public virtual CommonAbstract
+   class SubSpectrum : public virtual CommonAbstract,
+                       public virtual CommonFuncs
    {
       private:
          const std::map<int, int> empty_map;
@@ -167,81 +237,14 @@ namespace Gambit
          virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
          
    };
-   
-  
-   /// Definition of struct to hold various override values for a given ParamTag
-   struct OverrideMaps
-   {    
-      std::map<str,double>                             m0; // No indices
-      std::map<str,std::map<int,double>>               m1; // One index
-      std::map<str,std::map<int,std::map<int,double>>> m2; // Two indices
-      /* e.g. retrieve like this: contents = m2[name][i][j]; */
-   };
 
-  
-   /// Helper getter and checker functions for Spec class, just factored out into their own class.
-   /// i.e. the PDG overloads, and functions which handle the override maps.
-   class CommonFuncs: public virtual CommonAbstract
-   {
-      public:
-         /// Need to explicitly introduce the functions from CommonAbstract into this
-         /// context, since otherwise they get hidden by the ones with the same name
-         /// declared here
-         using CommonAbstract::has;
-         using CommonAbstract::get;
-       
-         CommonFuncs(const str& cname, const std::map<Par::Tags,OverrideMaps>& override_maps) 
-           : classname(cname)
-           , get_override_maps(override_maps) 
-         {}
-         virtual ~CommonFuncs() {}
 
-         str classname;
-         std::map<Par::Tags,OverrideMaps> get_override_maps;
 
- 
-         /* The parameter overrides are handled entirely by this base class, so
-            they are not virtual.  */
-         void set_override(const Par::Tags, const double, const str&, const bool safety = true);
-         void set_override(const Par::Tags, const double, const str&, const int, const bool safety = true);
-         void set_override(const Par::Tags, const double, const str&, const int, const int, const bool safety = true);
-
-         /* Helpers for override functions which take parameter names and indices as vectors, and
-            loop over them, to make it easy to set many parameters to the same value.
-            No two-index versions at the moment, but could be added if needed. */
-         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, bool safety = true);
-         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const std::vector<int>, bool safety = true);
-         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const int, bool safety = true);
-         void set_override_vector(const Par::Tags, const double, const str&, const std::vector<int>, bool safety = true);
-
-         /* Overloads of getter/checker functions to allow access using PDG codes */
-         /* as defined in Models/src/particle_database.cpp */
-         /* These don't have to be virtual; they just call the virtual functions in the end. */
-         bool   has(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
-         double get(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
-         bool   has(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
-         double get(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
-         bool   has(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
-         double get(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
-
-         /// @{ PDB overloads for setters
-
-         /* Input PDG code plus context integer */
-         void set_override(const Par::Tags, const double, const int, const int,     const bool safety = true);  
-         void set_override(const Par::Tags, const double, const std::pair<int,int>, const bool safety = true);
-
-         /* Input short name plus index */
-         void set_override(const Par::Tags, const double, const std::pair<str,int>, const bool safety = true);
-
-         /// @}
-
-         /// TODO: extra PDB overloads to handle all the one and two index cases (well all the ones that are feasible...)
-   };
 
    /// Implementations (overrides) of the virtual getters/setters found in CommonAbstract.
    /// These now need to be templated so that they know details of the derived spectrum object.
    template <class Host>
-   class CommonTemplateFuncs: public CommonFuncs
+   class CommonTemplateFuncs: public virtual CommonFuncs
    {
       public:
 
@@ -395,7 +398,7 @@ namespace Gambit
    // Various inherited classes are just used to factor out code, some of which
    // doesn't need to be templated.
    template <class DerivedSpec, class DerivedSpecTraits>
-   class Spec : public SubSpectrum
+   class Spec : public SubSpectrum,
                 public CommonTemplateFuncs<Spec<DerivedSpec, DerivedSpecTraits>>
    { 
       private:
@@ -476,31 +479,12 @@ namespace Gambit
          /// @}
          
       public: 
-         /// Minimal constructor used in default constructors of derived classes
-         Spec()
-           : rp(*this)
-           , pp(*this)
-         {}
 
-         /// Need special copy constructor to properly copy the "nested" Phys
-         /// and RunningPars classes, but replace their "parent" reference.
-         Spec(const Spec<D,DT>& other)
-           : rp(other.rp, *this)
-           , pp(other.pp, *this)
-         {}
- 
-         /// Copy-assignment
-         // Spec& operator=(Spec<D,DT> other)
-         //   : rp(other.rp, *this)
-         //   , pp(other.pp, *this)
-         // {}
+         /// Using default constructors
+       
+         /// Virtual destructor
+         virtual ~Spec() {};
     
-         // /// Move constructor
-         // Spec(Spec<D,DT>&& other)
-         //   : rp(other.rp, *this)
-         //   , pp(other.pp, *this)
-         // {}
-          
          /// CRTP-style polymorphic clone function
          /// Now derived classes will not need to re-implement the clone function.
          virtual std::unique_ptr<SubSpectrum> clone() const       
