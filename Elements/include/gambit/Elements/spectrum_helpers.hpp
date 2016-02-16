@@ -39,39 +39,30 @@ namespace Gambit
    /// List of parameter types used to classify spectrum contents
    namespace Par
    {
-     enum Phys
-     {
-         Pole_Mass = 0,
-         Pole_Mass_1srd_high,
-         Pole_Mass_1srd_low,
-         Pole_Mixing
-     };
-
-     // Stick enum values in a vector to help auto-generate maps that use them as keys
-     inline std::vector<Phys> get_Phys_all()
-     {
-        std::vector<Phys> vec;
-        vec.push_back(Pole_Mass);
-        vec.push_back(Pole_Mass_1srd_high);
-        vec.push_back(Pole_Mass_1srd_low);
-        vec.push_back(Pole_Mixing);
-        return vec;
-     }
-
-     enum Running
-     {
-         mass4 = Pole_Mixing+1,
-         mass3,
-         mass2,
-         mass1,
-         dimensionless,
-         mass_eigenstate
+      enum Tags
+      {
+          /// Ex-"Phys" tags
+          Pole_Mass = 0,
+          Pole_Mass_1srd_high,
+          Pole_Mass_1srd_low,
+          Pole_Mixing,
+          /// Ex-"Running" tags
+          mass4 = Pole_Mixing+1,
+          mass3,
+          mass2,
+          mass1,
+          dimensionless,
+          mass_eigenstate
       };
 
       // Stick enum values in a vector to help auto-generate maps that use them as keys
-      inline std::vector<Running> get_Running_all()
+      inline std::vector<Tags> get_all()
       {
-         std::vector<Running> vec;
+         std::vector<Tags> vec;
+         vec.push_back(Pole_Mass);
+         vec.push_back(Pole_Mass_1srd_high);
+         vec.push_back(Pole_Mass_1srd_low);
+         vec.push_back(Pole_Mixing);
          vec.push_back(mass4);
          vec.push_back(mass3);
          vec.push_back(mass2);
