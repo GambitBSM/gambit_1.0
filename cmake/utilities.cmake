@@ -109,7 +109,7 @@ endmacro()
 macro(add_external_clean package dir dl target)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
-                                     COMMAND cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
+                                     COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
   add_custom_target(nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${dl} || true
                                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
@@ -268,10 +268,11 @@ function(add_gambit_executable executablename LIBRARIES)
 endfunction()
 
 # Simple function to find specific Python modules
-function(find_python_module module)
+macro(find_python_module module)
   execute_process(COMMAND python -c "import ${module}" RESULT_VARIABLE return_value ERROR_QUIET)
   if (NOT return_value)
     message(STATUS "Found Python module ${module}.")
+    set(PY_${module}_FOUND TRUE)
   else()
     if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
       message(FATAL_ERROR "-- FAILED to find Python module ${module}.")
@@ -279,7 +280,7 @@ function(find_python_module module)
       message(STATUS "FAILED to find Python module ${module}.")
     endif()
   endif()
-endfunction()
+endmacro()
 
 # Macro for BOSSing a backend
 set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")
