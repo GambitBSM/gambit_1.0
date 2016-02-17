@@ -271,7 +271,7 @@ ExternalProject_Add(fastsim
 add_extra_targets(fastsim ${fastsim_dir} null distclean)
 
 # Nulike
-set(nulike_ver "1.0.1")
+set(nulike_ver "1.0.2")
 set(nulike_location "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/${nulike_ver}")
@@ -279,7 +279,7 @@ set(nulike_short_dir "./Backends/installed/nulike/${nulike_ver}")
 set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   URL ${nulike_location}
-  URL_MD5 4240dad169ee5ccbde876ed708ac7801
+  URL_MD5 517a4928c947ec20870171d019d5fbee
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
