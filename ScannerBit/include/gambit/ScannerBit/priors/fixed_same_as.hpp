@@ -30,15 +30,28 @@ namespace Gambit
         class FixedPrior : public BasePrior
         {
         private:
-            double value;
+            std::vector<double> value;
             std::vector<std::string> names;
+            mutable size_t iter;
                 
         public:
-            FixedPrior(const std::vector<std::string>& param, const Options& options) : names(param)
+            FixedPrior(const std::vector<std::string>& param, const Options& options) : names(param), iter(0)
             {
                 if (options.hasKey("fixed_value"))
                 {
-                    value = options.getValue<double>("fixed_value");
+                    if (options.getNode("fixed_value").IsScalar())
+                    {
+                        value.push_back(options.getValue<double>("fixed_value"));
+                    }
+                    else if (options.getNode("fixed").IsSequence())
+                    {
+                        value = options.getValue<std::vector<double>>("fixed_value");
+                    }
+                    else
+                    {
+                        scan_err << "fixed_value input for parameter " << names[0] << "is not a Scalar or Sequence" << scan_end;
+                    }
+                    
                 }
                 else
                 {
@@ -47,14 +60,31 @@ namespace Gambit
                     Scanner::scan_error().raise(LOCAL_INFO, err.str());
                 }
             }
+            
+            FixedPrior(const std::string& param, const Options& options) : names(1, param), iter(0)
+            {
+                if (options.getNode().IsScalar())
+                {
+                    value.push_back(options.getValue<double>());
+                }
+                else if (options.getNode().IsSequence())
+                {
+                    value = options.getValue<std::vector<double>>();
+                }
+                else
+                {
+                    scan_err << "fixed_value input for parameter " << names[0] << "is not a Scalar or Sequence" << scan_end;
+                }
+            }
                 
-            FixedPrior(std::string name, double value) : value(value), names(1, name) {}
+            FixedPrior(std::string name, double value) : value(1, value), names(1, name), iter(0) {}
             
             void transform(const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
             {
                 for (auto it = names.begin(), end = names.end(); it != end; it++)
                 {
-                    outputMap[*it] = value;
+                    outputMap[*it] = value[iter++];
+                    iter %= value.size();
                 }
             }
         };

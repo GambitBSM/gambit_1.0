@@ -103,14 +103,8 @@ Scanner:
 
     random:
       plugin: random_sampler
-<<<<<<< HEAD
-      options:
-        point_number: 10000000
-        like: Likelihood
-=======
-      point_number: 100000000
+      point_number: 100
       like: LogLike
->>>>>>> master
           
     toy:
       like: LogLike
@@ -120,26 +114,14 @@ Scanner:
     square_grid:
       plugin: square_grid
       version: ">=1.0"
-<<<<<<< HEAD
-      options:
-        purpose: Likelihood
-        grid_pts: 2 #NxN grid
-=======
       like: LogLike
       grid_pts: 3 #NxN grid
->>>>>>> master
         
     grid:
       plugin: grid
       version: ">=1.0"
-<<<<<<< HEAD
-      options:
-        purpose: Likelihood
-        grid_pts: [3, 3]
-=======
-      like: LogLike
+      like: LogLike2
       grid_pts: [4, 2]
->>>>>>> master
         
     multinest:
       plugin: MultiNest
@@ -195,15 +177,6 @@ Scanner:
         xrange: [-5, 5]
         yrange: [-5, 5]
         grid: [50, 50]
-<<<<<<< HEAD
-        #selected_pts: 
-        #  - "EggBox::param_0"
-        #  - "EggBox::param_1"
-        selected_pts: 
-          - "gaussian::param_0"
-          - "gaussian::param_1"
-        mult: ["Posterior"]
-=======
         selected_pts:
           - "EggBox::param_0"
           - "EggBox::param_1"
@@ -211,7 +184,6 @@ Scanner:
         #  - "gaussian::param_0"
         #  - "gaussian::param_1"
         mult: ["mult"]
->>>>>>> master
         #loglike: 1
         flags: ["linear"]
         #flags: ["linear", "noadjx", "logx"]
@@ -418,7 +390,7 @@ Scanner:
 
     gaussian:
       plugin: gaussian
-      purpose: LogLike
+      purpose: LogLike2
       #options:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
@@ -429,12 +401,8 @@ Scanner:
         ##  shift: -1
         param...2:
           range: [-5, 5]
-<<<<<<< HEAD
-        #param_x: 0
-      
-=======
-
->>>>>>> master
+        params...2: 
+          fixed_value: [-1, 1]
     test:
       plugin: test_plug
       #plugin_path: /home/gmartine/test.so
