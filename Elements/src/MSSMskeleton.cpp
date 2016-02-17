@@ -26,13 +26,6 @@ using namespace SLHAea;
 namespace Gambit
 {
 
-      /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MTget; 
-      //typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Set> MTset; 
-
-      typedef std::map<Par::Tags,MapCollection<MTget>> GetterMaps; 
-      //typedef std::map<Par::Tags,MapCollection<MTset>> SetterMaps; 
-
       /// Helper function for sorting int, double pairs according to the double
       bool orderer (std::pair<int, double> a, std::pair<int, double> b) { return a.second < b.second; }
  
@@ -319,7 +312,7 @@ namespace Gambit
 
       // Map fillers    
 
-      GetterMaps MSSMskeleton::fill_getter_maps()
+      MSSMskeleton::GetterMaps MSSMskeleton::fill_getter_maps()
       {
          GetterMaps map_collection; 
          

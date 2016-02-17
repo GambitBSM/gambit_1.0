@@ -19,7 +19,7 @@
 ///  *********************************************
 
 
-#include "gambit/Models/models/StandardModel_Higgs_running.hpp".
+#include "gambit/Models/models/StandardModel_Higgs_running.hpp"
 
 #ifndef __StandardModel_Higgs_hpp__
 #define __StandardModel_Higgs_hpp__

@@ -37,11 +37,6 @@ using namespace SLHAea;
 namespace Gambit
 {
 
-      /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
-      typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-      typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-
       /// @{ Member functions for SLHAeaModel class
            
       /// Default Constructor
@@ -128,11 +123,11 @@ namespace Gambit
       
       // Map fillers
 
-      RunningGetterMaps SMskeleton::runningpars_fill_getter_maps()
+      SMskeleton::GetterMaps SMskeleton::fill_getter_maps()
       {
-         RunningGetterMaps map_collection; 
+         GetterMaps map_collection; 
 
-         /// Filler for mass1 map 
+         /// Fill for mass1 map 
          {
             MTget::fmap0 tmp_map;
 
@@ -142,14 +137,8 @@ namespace Gambit
  
             map_collection[Par::mass1].map0 = tmp_map;
          }
-         return map_collection;
-      }
 
-      PhysGetterMaps SMskeleton::phys_fill_getter_maps()
-      {
-         PhysGetterMaps map_collection; 
-
-         /// Filler for Pole_mass map (from Model object)
+         /// Fill Pole_mass map (from Model object)
          {
             { //local scoping block
               MTget::fmap0 tmp_map;
@@ -180,6 +169,7 @@ namespace Gambit
               map_collection[Par::Pole_Mixing].map0 = tmp_map;
             }
          }
+
          return map_collection;
       }
 

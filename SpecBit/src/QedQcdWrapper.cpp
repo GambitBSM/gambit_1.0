@@ -22,6 +22,7 @@
 
 #include "gambit/Elements/sminputs.hpp"
 #include "gambit/Elements/spectrum.hpp"
+#include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
@@ -48,15 +49,6 @@ namespace Gambit
 
    namespace SpecBit
    {
-
-      /// Simplify access to map types and collections in this file
-      typedef MapTypes<QedQcdWrapperTraits,MapTag::Get> MTget; 
-      typedef MapTypes<QedQcdWrapperTraits,MapTag::Set> MTset; 
-
-      typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-      typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-      typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-      typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
 
       /// @{ QedQcdWrapper member functions
       
@@ -96,11 +88,11 @@ namespace Gambit
         
         // Add the b pole mass
         SLHAea_add_block(slha, "MASS");
-        SLHAea_add_from_subspec(slha, LOCAL_INFO, this->phys(), Par::Pole_Mass,"b","MASS",5,"# mb (pole)");
+        SLHAea_add_from_subspec(slha, LOCAL_INFO, *this, Par::Pole_Mass,"b","MASS",5,"# mb (pole)");
       }
 
       /// Run masses and couplings to end_scale
-      void QedQcdWrapper::RunToScale(double end_scale) 
+      void QedQcdWrapper::RunToScaleOverride(double end_scale) 
       {
         const double tol = 1.0e-5; // Value used internally in QedQcd methods
         double begin_scale = GetScale();
@@ -175,10 +167,10 @@ namespace Gambit
         return (1 - Utils::sqr(qedqcd.displayPoleMW()) / Utils::sqr(qedqcd.displayPoleMZ()));
       }
     
-      // Filler function for getter function pointer maps extractable from "runningpars" container
-      RunningGetterMaps QedQcdWrapper::runningpars_fill_getter_maps()
+      // Filler function for getter function pointer maps
+      QedQcdWrapper::GetterMaps QedQcdWrapper::fill_getter_maps()
       {
-         RunningGetterMaps map_collection; 
+         GetterMaps map_collection; 
          
          /// @{ mass1 - mass dimension 1 parameters
          //
@@ -217,19 +209,8 @@ namespace Gambit
 
             map_collection[Par::dimensionless].map0_extraM = tmp_map;
          }
-
          /// @}  
-         return map_collection;
-      }
 
-
-
-     
-      // Filler function for getter function pointer maps extractable from "phys" container
-      PhysGetterMaps QedQcdWrapper::phys_fill_getter_maps()
-      {
-         PhysGetterMaps map_collection; 
-         
          /// @{ Pole_Mass - Pole mass parameters
          //
          // Functions utilising the plain-vanilla function signature ("fmap")
@@ -283,17 +264,18 @@ namespace Gambit
 
          /// @}
 
+
          return map_collection;
-      } 
+      }
+
 
       /// Plain C-function wrappers for extra pole mass setters (manually specified masses)
       void set_Pole_mElectron(SMInputs& inputs, double set_value) { inputs.mE = set_value; }
 
-
-      // Filler function for setter function pointer maps associated with the "phys" container
-      PhysSetterMaps QedQcdWrapper::phys_fill_setter_maps()
+      // Filler function for setter function pointer maps
+      QedQcdWrapper::SetterMaps QedQcdWrapper::fill_setter_maps()
       {
-         PhysSetterMaps map_collection; 
+         SetterMaps map_collection; 
          
          /// @{ Pole_Mass - Pole mass parameters
          //
@@ -310,7 +292,7 @@ namespace Gambit
             // input, as in the getter case)
             //addtomap(("Z0", "Z"),       &softsusy::QedQcd::displayPoleMZ);
             addtomap(("Z0", "Z"),       &softsusy::QedQcd::setPoleMZ);
-            addtomap(("W+", "W-"),       &softsusy::QedQcd::setPoleMW);  
+            addtomap(("W+", "W-"),      &softsusy::QedQcd::setPoleMW);  
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 

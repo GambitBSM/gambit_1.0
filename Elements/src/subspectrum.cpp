@@ -58,7 +58,7 @@ namespace Gambit
    /// @{ CommonFuncs member function definitions
 
    /// Initialiser function for empty map of override maps
-   static std::map<Par::Tags,OverrideMaps> CommonFuncs::create_override_maps()
+   std::map<Par::Tags,OverrideMaps> CommonFuncs::create_override_maps()
    {
       std::map<Par::Tags,OverrideMaps> tmp;
       std::vector<Par::Tags> all = Par::get_all();
@@ -143,7 +143,7 @@ namespace Gambit
       // Otherwise, add new entry only if safety=false
       if( has(partype,name,SafeBool(false)) ) // Don't match on antiparticle; want to override particle if no antiparticle match is found
       {
-         get_override_maps.at(partype).m0[name] = value;
+         override_maps.at(partype).m0[name] = value;
          done = true;
       }
       else if( Models::ParticleDB().has_short_name(name) )
@@ -151,7 +151,7 @@ namespace Gambit
          std::pair<str, int> p = Models::ParticleDB().short_name_pair(name);
          if( has(partype,p.first,p.second,SafeBool(false)) )
          {
-            get_override_maps.at(partype).m1[p.first][p.second] = value;
+            override_maps.at(partype).m1[p.first][p.second] = value;
             done = true;
          }
       }
@@ -167,7 +167,7 @@ namespace Gambit
            // Repeat the logic above
            if( has(partype,antiname,SafeBool(false)) )
            {
-              get_override_maps.at(partype).m0[antiname] = value;
+              override_maps.at(partype).m0[antiname] = value;
               done = true;
            }
            else if( Models::ParticleDB().has_short_name(antiname) )
@@ -175,7 +175,7 @@ namespace Gambit
               std::pair<str, int> p = Models::ParticleDB().short_name_pair(antiname);
               if( has(partype,p.first,p.second,SafeBool(false)) )
               {
-                 get_override_maps.at(partype).m1[p.first][p.second] = value;
+                 override_maps.at(partype).m1[p.first][p.second] = value;
                  done = true;
               }
            }
@@ -187,13 +187,13 @@ namespace Gambit
       {                                      
         std::ostringstream errmsg;           
         errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
-        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
+        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' exists in the wrapped spectrum!" <<std::endl;
         errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
         utils_error().forced_throw(LOCAL_INFO,errmsg.str());
       }
       else
       {  
-        get_override_maps.at(partype).m0[name] = value;
+        override_maps.at(partype).m0[name] = value;
       }
    }
 
@@ -207,7 +207,7 @@ namespace Gambit
       // Otherwise, add new entry only if safety=false
       if( has(partype,name,i,SafeBool(false)) ) // Don't match anti-particle; will check that if other matching fails
       {
-         get_override_maps.at(partype).m1[name][i] = value;
+         override_maps.at(partype).m1[name][i] = value;
          done = true;
       }
       else if( Models::ParticleDB().has_particle(std::make_pair(name, i)) )
@@ -215,7 +215,7 @@ namespace Gambit
          str longname = Models::ParticleDB().long_name(name,i);
          if( has(partype,longname,SafeBool(false)) )
          {
-            get_override_maps.at(partype).m0[longname] = value;
+            override_maps.at(partype).m0[longname] = value;
             done = true;
          }
       }
@@ -231,7 +231,7 @@ namespace Gambit
            // Repeat the logic above
            if( has(partype,antiname,i,false) ) // Don't match anti-particle; will check that if other matching fails
            {
-              get_override_maps.at(partype).m1[antiname][i] = value;
+              override_maps.at(partype).m1[antiname][i] = value;
               done = true;
            }
            else if( Models::ParticleDB().has_particle(std::make_pair(antiname, i)) )
@@ -239,7 +239,7 @@ namespace Gambit
               str longname = Models::ParticleDB().long_name(antiname,i);
               if( has(partype,longname,SafeBool(false)) )
               {
-                 get_override_maps.at(partype).m0[longname] = value;
+                 override_maps.at(partype).m0[longname] = value;
                  done = true;
               }
            }
@@ -251,13 +251,13 @@ namespace Gambit
       {                                      
         std::ostringstream errmsg;           
         errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
-        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and index '"<<i<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
+        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and index '"<<i<<"' exists in the wrapped spectrum!" <<std::endl;
         errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
         utils_error().forced_throw(LOCAL_INFO,errmsg.str());
       }
       else
       {
-        get_override_maps.at(partype).m1[name][i] = value;
+        override_maps.at(partype).m1[name][i] = value;
       }
    }
 
@@ -268,11 +268,11 @@ namespace Gambit
       {                                      
         std::ostringstream errmsg;           
         errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
-        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and indices '"<<i<<","<<j<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
+        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and indices '"<<i<<","<<j<<"' exists in the wrapped spectrum!" <<std::endl;
         errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
         utils_error().forced_throw(LOCAL_INFO,errmsg.str());
       }
-      get_override_maps.at(partype).m2[name][i][j] = value;
+      override_maps.at(partype).m2[name][i][j] = value;
    }
 
    /// PDB overloads of set_override functions

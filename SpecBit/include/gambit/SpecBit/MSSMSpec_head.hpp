@@ -52,18 +52,6 @@ namespace Gambit {
       template <class MI>
       class MSSMSpec : public Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>
       {
-         friend class RunparDer<MSSMSpec<MI>,MSSMSpecTraits<MI>>;
-         friend class PhysDer  <MSSMSpec<MI>,MSSMSpecTraits<MI>>;
-        
-         public:
-            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Get> MTget; 
-            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Set> MTset; 
-
-            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
-   
          private:
             str backend_name;
             str backend_version;
@@ -71,11 +59,15 @@ namespace Gambit {
             virtual int get_index_offset() const {return index_offset;}
 
          public:
-            
-            /// Interface function overrides for RunningPars
+             /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
+            /// template wrapper classes, so need to help them along:
+            typedef typename MSSMSpec<MI>::MTget MTget; 
+            typedef typename MSSMSpec<MI>::MTset MTset; 
+           
+            /// Interface function overrides
             virtual double GetScale() const;
             virtual void SetScale(double scale);           
-            virtual void RunToScale(double scale);
+            virtual void RunToScaleOverride(double scale);
 
             //constructors
             MSSMSpec(bool switch_index_convention=false);
@@ -95,6 +87,8 @@ namespace Gambit {
             // Functions to interface Model and Input objects with the base 'Spec' class
             typename MSSMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
             typename MSSMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            const typename MSSMSpecTraits<MI>::Model& get_Model() const { return model_interface.model; }
+            const typename MSSMSpecTraits<MI>::Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
             //some model independent stuff
             virtual double get_lsp_mass(int & particle_type, 
@@ -137,14 +131,8 @@ namespace Gambit {
             }
 
             /// Map filler overrides
-
-            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
-            static RunningGetterMaps runningpars_fill_getter_maps();
-            static RunningSetterMaps runningpars_fill_setter_maps();
- 
-            /// Phys parameter map fillers (access parameters via spectrum.phys())
-            static PhysGetterMaps    phys_fill_getter_maps();
-            static PhysSetterMaps    phys_fill_setter_maps(); // Currently unused
+            static typename MSSMSpec<MI>::GetterMaps fill_getter_maps();
+            static typename MSSMSpec<MI>::SetterMaps fill_setter_maps();
 
       };
 

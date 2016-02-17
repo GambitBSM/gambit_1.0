@@ -17,7 +17,7 @@
 #ifndef __SLHAskeleton_hpp__
 #define __SLHAskeleton_hpp__
 
-#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spec.hpp"
 
 namespace Gambit
 {
@@ -85,8 +85,12 @@ namespace Gambit
             virtual ~SLHAskeleton() {};
  
             // Functions to interface Model and Input objects with the base 'Spec' class
+            // Need both const and non-const versions of it, so that wrapped objects cannot be modified
+            // if the wrapper is const
             typename DerivedTraits::Model& get_Model() { return slhawrap; }
+            const typename DerivedTraits::Model& get_Model() const { return slhawrap; }
             typename DerivedTraits::Input& get_Input() { return dummyinput; /*unused, but needs to be defined for the interface*/ }
+            const typename DerivedTraits::Input& get_Input() const { return dummyinput; /*unused, but needs to be defined for the interface*/ }
 
             // virtual int get_index_offset() const; 
             // virtual int get_numbers_stable_particles() const;

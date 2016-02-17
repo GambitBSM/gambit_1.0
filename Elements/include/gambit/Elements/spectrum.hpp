@@ -36,12 +36,13 @@
 #include <complex>
 
 #include "gambit/Elements/sminputs.hpp"
-#include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/partmap.hpp"
 
 namespace Gambit
 {
+   /// Less confusing name for SLHAea container class
+   typedef SLHAea::Coll SLHAstruct;
 
    /// "Standard Model" (low-energy) plus high-energy model container class
    class Spectrum

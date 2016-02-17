@@ -19,22 +19,26 @@
 #ifndef __SingletDMContainer_hpp__
 #define __SingletDMContainer_hpp__
 
-#include "gambit/Elements/subspectrum.hpp"
-#include "gambit/SpecBit/SMHiggsContainer.hpp"
+#include "gambit/Elements/spec.hpp"
 
 namespace Gambit
 {     
    namespace SpecBit
    {
 
-      /// Simple extension for the SMHiggs container "model object"
+      /// Simple extension of the SMHiggsContainer "model object"
       /// to include scalar singlet DM parameters
-      struct SingletDMModel : public SMHiggsModel
+      struct SingletDMModel
       {
+         double HiggsPoleMass;
+         double HiggsVEV;
          double SingletPoleMass;
          double SingletLambda;
+
+         double get_HiggsPoleMass()   const { return HiggsPoleMass; } 
+         double get_HiggsVEV()        const { return HiggsVEV;      } 
          double get_SingletPoleMass() const { return SingletPoleMass; } 
-         double get_lambda_hS() const { return SingletLambda; } 
+         double get_lambda_hS()       const { return SingletLambda; } 
       };
 
       // Needed for typename aliases in Spec and MapTypes classes
@@ -44,49 +48,47 @@ namespace Gambit
          typedef DummyInput     Input;
       };
      
-      class SingletDMContainer : public BaseHiggsContainer<SingletDMContainer,SingletDMModelTraits> 
+      class SingletDMContainer : public Spec<SingletDMContainer,SingletDMModelTraits> 
       {
-        friend class BaseHiggsContainer<SingletDMContainer,SingletDMModelTraits>;
 
-        private:
+         private:
             typedef SingletDMContainer   This;
             typedef SingletDMModelTraits Traits;
             typedef MapTypes<Traits,MapTag::Get> MTget; 
 
+            typename Traits::Model model;
+            typename Traits::Input dummyinput;
+
          public:
             /// @{ Constructors/destructors
-            SingletDMContainer() 
-              : BaseHiggsContainer<This,Traits>()  
+            SingletDMContainer(const typename Traits::Model& m)
+             : model(m)
+             , dummyinput()
             {}
-
-            SingletDMContainer(const typename Traits::Model& model)
-              : BaseHiggsContainer<This,Traits>(model)
-            {}
-
-            SingletDMContainer(const This& other)
-              : BaseHiggsContainer<This,Traits>(other)
-            {} 
-
-            virtual ~SingletDMContainer() {};
             /// @}
  
-            /// (Derived class) Map fillers
-            /// These are not the normal map fillers called by the Spec class
-            /// They are called from the base class BaseHiggsContainer and used
-            /// to add the extra values into the maps stored there.
-            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
- 
-            /// Definitions of map fillers
-            static void derived_phys_fill_getter_maps(PhysGetterMaps& in)
-            {
-               in[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
-               in[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass; 
-            }
+            // Functions to interface Model and Input objects with the base 'Spec' class
+            Traits::Model& get_Model() { return model; }
+            Traits::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            const Traits::Model& get_Model() const { return model; }
+            const Traits::Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
-            static void derived_runningpars_fill_getter_maps(RunningGetterMaps& in)
+            /// Map fillers
+            static GetterMaps fill_getter_maps()
             {
-               in[Par::mass1].map0["lambda_hS"] = &Model::get_lambda_hS;
+               GetterMaps map_collection; 
+
+               map_collection[Par::mass1].map0["vev"] = &Model::get_HiggsVEV;
+
+               map_collection[Par::Pole_Mass].map0["h0"]   = &Model::get_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0["h0_1"] = &Model::get_HiggsPoleMass;
+ 
+               map_collection[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
+               map_collection[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass; 
+ 
+               map_collection[Par::mass1].map0["lambda_hS"] = &Model::get_lambda_hS;
+  
+               return map_collection;
             }
 
         }; 

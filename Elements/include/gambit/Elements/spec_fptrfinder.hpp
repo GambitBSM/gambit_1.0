@@ -20,7 +20,8 @@
 #ifndef __SpecFptrFinder_hpp__
 #define __SpecFptrFinder_hpp__
 
-#include "gambit/Elements/subspectrum_head.hpp"
+#include "gambit/Elements/spectrum_helpers.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/partmap.hpp"
 
 // Particle database access
@@ -31,6 +32,10 @@
 
 namespace Gambit {
 
+   /// Forward declaration of FptrFinder
+   template<class This, class MTag>
+   class FptrFinder;
+
    /// FptrFinder friend class for implementing named parameter idiom
    template<class This, class MTag>
    class SetMaps
@@ -39,9 +44,10 @@ namespace Gambit {
          // Type of traits class from derived spectrum object
          typedef typename This::DT DT;
 
-         SetMaps(const std::string& label, const This* const fakethis)
+         SetMaps(const std::string& label, This* const fakethis)
           : label_(label) 
           , fakethis_(fakethis)
+          , const_fakethis_(fakethis)
           , override_only_(false)
           , map0_(NULL)
           , map0M_(NULL)
@@ -56,6 +62,29 @@ namespace Gambit {
           , omap1_(NULL)
           , omap2_(NULL)
          {}
+
+         /// Version to deal with const host object
+         SetMaps(const std::string& label, const This* const fakethis)
+          : label_(label) 
+          , fakethis_(NULL) // CANNOT USE WHEN HOST IS CONST
+          , const_fakethis_(fakethis)
+          , override_only_(false)
+          , map0_(NULL)
+          , map0M_(NULL)
+          , map0I_(NULL)
+          , map1_(NULL)
+          , map1M_(NULL)
+          , map1I_(NULL)
+          , map2_(NULL)
+          , map2M_(NULL)
+          , map2I_(NULL)
+          , omap0_(NULL)
+          , omap1_(NULL)
+          , omap2_(NULL)
+         {}
+
+
+
          /// derived class maps
          SetMaps& map0(const typename MapTypes<DT,MTag>::fmap0&        map0)  { map0_=&map0; return *this; }
          SetMaps& map0M(const typename MapTypes<DT,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
@@ -76,7 +105,8 @@ namespace Gambit {
       private:
          friend class FptrFinder<This,MTag>; 
          const std::string label_;
-         const This* const fakethis_;
+         This* const fakethis_;
+         const This* const const_fakethis_;
          bool override_only_;
 
          /// Maps from derived class
@@ -107,7 +137,11 @@ namespace Gambit {
    class FptrFinder
    {
       friend struct CallFcn<This,MTag>;
+  
       private:
+         // Type of traits class from derived spectrum object
+         typedef typename This::DT DT;
+
          /// Label to help track down errors if they occur
          const std::string label;
  
@@ -115,7 +149,8 @@ namespace Gambit {
          std::string lastname;
 
          /// This class pretending to be an extra set of class functions, so need the "this" pointer
-         const This* const fakethis;
+         This* const fakethis;
+         const This* const const_fakethis;
 
          /// Flag to permit searching only override maps
          const bool override_only_;
@@ -199,6 +234,7 @@ namespace Gambit {
            : label(params.label_)
            , lastname("NONE")
            , fakethis(params.fakethis_)
+           , const_fakethis(params.const_fakethis_)
            , override_only_(params.override_only_)
            , omap0_(params.omap0_)   
            , omap1_(params.omap1_)   
@@ -484,7 +520,7 @@ namespace Gambit {
                #define CHECK_INDICES_1(ITER,WHICHITER,DEBUG)   \
                   CAT(ITER,_safe)=true;   \
                   /* Switch index convention */ \
-                  int offset = fakethis->parent.get_index_offset(); \
+                  int offset = const_fakethis->get_index_offset(); \
                   index1 = i + offset; /* set for later use */ \
                   /* Check that index is in the permitted set */ \
                   if( not within_bounds(index1, ITER->second.iset1) ) \
@@ -572,7 +608,7 @@ namespace Gambit {
                #define CHECK_INDICES_2(ITER,WHICHITER)   \
                   CAT(ITER,_safe)=true; \
                   /* Switch index convention */ \
-                  int offset = fakethis->parent.get_index_offset(); \
+                  int offset = const_fakethis->get_index_offset(); \
                   index1 = i + offset; /* set for later use */ \
                   index2 = j + offset; /* set for later use */ \
                   /* Check that index is in the permitted set */ \
@@ -628,8 +664,8 @@ namespace Gambit {
          double result(-1); // should not be returned in this state
          if(ff->error_code==0)
          {
-            typename DT::Model& model = ff->fakethis->parent.model();
-            typename DT::Input& input = ff->fakethis->parent.input();
+            const typename DT::Model& model = ff->const_fakethis->model();
+            const typename DT::Input& input = ff->const_fakethis->input();
             switch( ff->whichiter )
             {
                // Override retrieval cases
@@ -728,6 +764,9 @@ namespace Gambit {
    struct CallFcn<This,MapTag::Set>
    {
      private:
+      // Type of traits class from derived spectrum object
+      typedef typename This::DT DT;
+
       typedef MapTypes<DT,MapTag::Set> MT;
       FptrFinder<This,MapTag::Set>* ff;
 
@@ -740,8 +779,15 @@ namespace Gambit {
       {
          if(ff->error_code==0)
          {
-            typename DT::Model& model = ff->fakethis->parent.model();
-            typename DT::Input& input = ff->fakethis->parent.input();
+            // Must use NON-const version; make sure pointer correctly initialised!
+            if(ff->fakethis==NULL)
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error! 'Setter' version of FptrFinder tried to use non-const 'fakethis' pointer, but the pointer was not initialised! This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Setter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
+                utils_error().forced_throw(LOCAL_INFO,errmsg.str());                 
+            }
+            typename DT::Model& model = ff->fakethis->model();
+            typename DT::Input& input = ff->fakethis->input();
             switch( ff->whichiter )
             {
                // Override retrieval cases

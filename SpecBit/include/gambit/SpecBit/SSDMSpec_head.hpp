@@ -24,7 +24,7 @@
 #ifndef SSDMSPEC_HEAD_H
 #define SSDMSPEC_HEAD_H
 
-#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spec.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
@@ -53,17 +53,6 @@ namespace Gambit {
       template <class MI>
       class SSDMSpec : public Spec<SSDMSpec<MI>,SSDMSpecTraits<MI>>
       {
-         friend class RunparDer<SSDMSpec<MI>,SSDMSpecTraits<MI>>;
-         friend class PhysDer  <SSDMSpec<MI>,SSDMSpecTraits<MI>>;
-        
-         public:
-            typedef MapTypes<SSDMSpecTraits<MI>,MapTag::Get> MTget;
-            typedef MapTypes<SSDMSpecTraits<MI>,MapTag::Set> MTset;
-
-            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
    
          private:
             str backend_name;
@@ -72,14 +61,16 @@ namespace Gambit {
             virtual int get_index_offset() const {return index_offset;}
 
          public:
-            
-            /// Interface function overrides for RunningPars
+            /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
+            /// template wrapper classes, so need to help them along:
+            typedef typename SSDMSpec<MI>::MTget MTget; 
+            typedef typename SSDMSpec<MI>::MTset MTset; 
+
+            /// Interface function overrides
             virtual double GetScale() const;
             virtual void SetScale(double scale);           
-            virtual void RunToScale(double scale);
+            virtual void RunToScaleOverride(double scale);
         
-
-
             //constructors
             SSDMSpec(bool switch_index_convention=false);
             SSDMSpec(MI, str backend_name, str backend_version, bool switch_index_convention=false);
@@ -98,6 +89,8 @@ namespace Gambit {
             // Functions to interface Model and Input objects with the base 'Spec' class
             typename SSDMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
             typename SSDMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            const typename SSDMSpecTraits<MI>::Model& get_Model() const { return model_interface.model; }
+            const typename SSDMSpecTraits<MI>::Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
 
             //may use something like this to pass error to Gambit
@@ -137,14 +130,9 @@ namespace Gambit {
 
         // protected:
             /// Map filler overrides
-
-            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
-            static RunningGetterMaps runningpars_fill_getter_maps();
-            static RunningSetterMaps runningpars_fill_setter_maps();
- 
-            /// Phys parameter map fillers (access parameters via spectrum.phys())
-            static PhysGetterMaps    phys_fill_getter_maps();
-            static PhysSetterMaps    phys_fill_setter_maps(); // Currently unused
+            // Unfortunately need to qualify the type name when wrapper is itself a template class
+            static typename SSDMSpec<MI>::GetterMaps fill_getter_maps();
+            static typename SSDMSpec<MI>::SetterMaps fill_setter_maps();
            
 
       };

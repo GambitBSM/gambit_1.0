@@ -17,7 +17,7 @@
 #ifndef __MSSMskeleton_hpp__
 #define __MSSMskeleton_hpp__
 
-#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spec.hpp"
 #include "gambit/Elements/SLHAskeleton.hpp"
 
 namespace Gambit
@@ -97,8 +97,6 @@ namespace Gambit
       {
          private:
 
-            typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MTget; 
-
             typedef MSSMea Model;
 
             /// Set pole mass uncertainties
@@ -124,8 +122,6 @@ namespace Gambit
             /// Map fillers
             /// Used to initialise maps in Spec class, accessed via SubSpectrum interface class
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
-            typedef std::map<Par::Tags,MapCollection<MTget>> GetterMaps; 
-            //typedef std::map<Par::Tags,MapCollection<MTset>> SetterMaps; 
 
             static GetterMaps fill_getter_maps();
             //static SetterMaps fill_setter_maps();

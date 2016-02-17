@@ -17,7 +17,7 @@
 #ifndef __SMskeleton_hpp__
 #define __SMskeleton_hpp__
 
-#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spec.hpp"
 #include "gambit/Elements/SLHAskeleton.hpp"
 
 namespace Gambit
@@ -64,16 +64,8 @@ namespace Gambit
       /// SM specialisation of SLHAea object wrapper version of SubSpectrum class
       class SMskeleton : public SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> > 
       {
-         friend class RunparDer<SMskeleton,SLHAskeletonTraits<SMea> >;
-         friend class PhysDer  <SMskeleton,SLHAskeletonTraits<SMea> >;
         
          public:
-            typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
-            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
-
             // Constructors/destructors
             SMskeleton();
             SMskeleton(const SLHAea::Coll&);
@@ -82,14 +74,10 @@ namespace Gambit
 
             virtual double GetScale() const;
             
-            /// Map fillers
-            /// Used to initialise maps in the RunparDer and PhysDer classes
+            /// Map filler
+            /// Used to initialise maps of function pointers
+            static GetterMaps fill_getter_maps();
  
-            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
-            static RunningGetterMaps runningpars_fill_getter_maps();
- 
-            /// Phys parameter map fillers (access parameters via spectrum.phys())
-            static PhysGetterMaps    phys_fill_getter_maps();
 
       };
 
