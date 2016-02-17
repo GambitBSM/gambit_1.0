@@ -95,9 +95,6 @@ namespace Gambit
       /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class
       class MSSMskeleton : public SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> > 
       {
-         friend class RunparDer<MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
-         friend class PhysDer  <MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
-
          private:
 
             typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MTget; 
@@ -125,20 +122,13 @@ namespace Gambit
             virtual const std::map<int, int>& PDG_translator() const;
  
             /// Map fillers
-            /// Used to initialise maps in the RunparDer and PhysDer classes
+            /// Used to initialise maps in Spec class, accessed via SubSpectrum interface class
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
-            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-            //typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-            //typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
+            typedef std::map<Par::Tags,MapCollection<MTget>> GetterMaps; 
+            //typedef std::map<Par::Tags,MapCollection<MTset>> SetterMaps; 
 
-            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
-            static RunningGetterMaps runningpars_fill_getter_maps();
-            //static RunningSetterMaps runningpars_fill_setter_maps();
- 
-            /// Phys parameter map fillers (access parameters via spectrum.phys())
-            static PhysGetterMaps    phys_fill_getter_maps();
-            //static PhysSetterMaps    phys_fill_setter_maps();
+            static GetterMaps fill_getter_maps();
+            //static SetterMaps fill_setter_maps();
        };
 
 } // end Gambit namespace

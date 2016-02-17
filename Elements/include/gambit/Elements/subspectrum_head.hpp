@@ -110,17 +110,18 @@ namespace Gambit
          /// declared here
          using CommonAbstract::has;
          using CommonAbstract::get;
-       
-         CommonFuncs(const str& cname, const std::map<Par::Tags,OverrideMaps>& override_maps) 
-           : classname(cname)
-           , get_override_maps(override_maps) 
-         {}
-         virtual ~CommonFuncs() {}
-
-         str classname;
-         std::map<Par::Tags,OverrideMaps> get_override_maps;
-
  
+         /// Map of override maps
+         std::map<Par::Tags,OverrideMaps> override_maps;
+
+         /// Initialiser function for override_maps
+         static std::map<Par::Tags,OverrideMaps> create_override_maps();
+
+         /// @{ Constructors/destructors
+         CommonFuncs() : override_maps(create_override_maps()) {}      
+         virtual ~CommonFuncs() {}
+         /// @}
+
          /* The parameter overrides are handled entirely by this base class, so
             they are not virtual.  */
          void set_override(const Par::Tags, const double, const str&, const bool safety = true);
@@ -228,14 +229,67 @@ namespace Gambit
          /// These virtual functions are here just to simplify the wrapper definitions.
          /// TODO: Can we hide these from the user? Currently won't compile unless these are public, but can perhaps add more friend declarations and make protected.
 
-         /// Run object to a particular scale
-         virtual void RunToScale(double) { vfcn_error(LOCAL_INFO); }
+         /// Run spectrum to new scale
+         virtual void RunToScaleOverride(double) { vfcn_error(LOCAL_INFO); }
          /// Returns the renormalisation scale of parameters
          virtual double GetScale() const { vfcn_error(LOCAL_INFO); return -1;}
          /// Manually set the renormalisation scale of parameters 
          /// somewhat dangerous to allow this but may be needed
          virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
-         
+ 
+         /// Run spectrum to a new scale
+         /// This function is a wrapper for RunToScaleOverride which automatically checks limits and
+         /// raises warnings.
+         // Behaviour modified by "behave" integer:
+         // behave = 0  -- If running beyond soft limit requested, halt at soft limit
+         //                (assumes hard limits outside of soft limits; but this is not enforced)
+         // behave = 1  -- If running beyond soft limit requested, throw warning
+         //                  "           "   hard limit     "    , throw error
+         // behave = anything else -- Ignore limits and attempt running to requested scale 
+         void RunToScale(double scale, int behave = 0)
+         {
+            if(behave==0 or behave==1) 
+            {
+               if(scale < hard_lower() or scale > hard_upper()) {
+                  if(behave==1) {
+                     std::ostringstream msg;
+                     msg << "RGE running requested outside hard limits! This is forbidden with behave=1. Set behave=0 (default) to automatically stop running at soft limits, or behave=2 to force running to requested scale (may trigger errors from underlying RGE code!)." << std::endl;
+                     msg << "  Requested : "<< scale << std::endl;
+                     msg << "  hard_upper: "<< hard_upper() << std::endl;
+                     msg << "  hard_lower: "<< hard_lower() << std::endl;
+                     utils_error().raise(LOCAL_INFO, msg.str());
+                  } else { // behave==0
+                     if     (scale < soft_lower()) { scale=soft_lower(); } 
+                     else if(scale > soft_upper()) { scale=soft_upper(); }
+                     else {
+                       // Hard limits must be outside soft limits; this is a bug in the derived Spectum object
+                       std::ostringstream msg;
+                       msg << "RGE running requested outside hard limits, but within soft limits! The soft limits should always be within the hard limits, so this is a bug in the derived SubSpectrum object being accessed. I cannot tell you which class this is though; check the dependency graph to see which ones are being created, and if necessary consult your debugger." << std::endl;
+                       msg << "  Requested : "<< scale << std::endl;
+                       msg << "  hard_upper: "<< hard_upper() << std::endl;
+                       msg << "  soft_upper: "<< soft_upper() << std::endl;
+                       msg << "  soft_lower: "<< soft_lower() << std::endl;
+                       msg << "  hard_lower: "<< hard_lower() << std::endl;
+                       utils_error().raise(LOCAL_INFO, msg.str());
+                     } 
+                  }
+               } else if(scale < soft_lower() or scale > soft_upper()) {
+                  if(behave==1) {
+                     std::ostringstream msg;
+                     msg << "RGE running requested outside soft limits! Accuracy may be low. Note: Set behave=2 to suppress this warning, or behave=0 (default) to automatically stop running when soft limit is hit." << std::endl;
+                     msg << "  Requested : "<< scale << std::endl;
+                     msg << "  soft_upper: "<< soft_upper() << std::endl;
+                     msg << "  soft_lower: "<< soft_lower() << std::endl;
+                     utils_warning().raise(LOCAL_INFO, msg.str());
+                  } else { // behave==0
+                     if(scale < soft_lower()) scale=soft_lower();
+                     if(scale > soft_upper()) scale=soft_upper();
+                  }
+               }
+            }
+            RunToScaleOverride(scale);
+         }
+        
    };
 
 
@@ -389,9 +443,9 @@ namespace Gambit
    class Spec;
 
    /// Forward declarations related to FptrFinder class
-   template<class,class,class> class SetMaps;
-   template<class,class,class> class FptrFinder;  
-   template<class,class,class> class CallFcn;  
+   template<class,class> class SetMaps;
+   template<class,class> class FptrFinder;  
+   template<class,class> class CallFcn;  
   
          
    // CRTP used to allow access to some special data members of the derived class.
@@ -401,7 +455,7 @@ namespace Gambit
    class Spec : public SubSpectrum,
                 public CommonTemplateFuncs<Spec<DerivedSpec, DerivedSpecTraits>>
    { 
-      private:
+      public:
          typedef DerivedSpec D;
          typedef DerivedSpecTraits DT;
          typedef Spec<D,DT> Self;
@@ -413,7 +467,6 @@ namespace Gambit
          typedef typename DT::Model Model;
          typedef typename DT::Input Input;
    
-      public:
          typedef MapTypes<DT,MapTag::Get> MTget; 
          typedef MapTypes<DT,MapTag::Set> MTset; 
 
@@ -429,6 +482,7 @@ namespace Gambit
             std::map<Par::Tags,MapCollection<MTset>> tmp;
             return tmp;
          }
+         /// @}
 
       private:
          /// @{ Functions to ensure that all the possible tags exist in the final map, 
@@ -475,7 +529,6 @@ namespace Gambit
             return tmp;
          }
 
-
          /// @}
          
       public: 
@@ -514,10 +567,10 @@ namespace Gambit
 
          //friend class CommonTemplateFuncs<RunparDer<DerivedSpec,DerivedSpecTraits>, Par::Tags>; // base class
          //friend class Spec<D,DT>;
-         friend class FptrFinder<DT,Self,MapTag::Get>;
-         friend class FptrFinder<DT,Self,MapTag::Set>;
-         friend class CallFcn<DT,Self,MapTag::Get>;
-         friend class CallFcn<DT,Self,MapTag::Set>;
+         friend class FptrFinder<Self,MapTag::Get>;
+         friend class FptrFinder<Self,MapTag::Set>;
+         friend class CallFcn<Self,MapTag::Get>;
+         friend class CallFcn<Self,MapTag::Set>;
 
       public:
 
@@ -537,89 +590,6 @@ namespace Gambit
          void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
          void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
          void set(const Par::Tags, const double, const str&, int, int);
-
-         /// Run object to a particular scale
-         // Override this function in derived class to perform running
-         virtual void RunToScaleOverride(double) = 0;
-
-         /// Wrapper for RunToScaleOverride which automatically checks limits and
-         /// raises warnings.
-         // Behaviour modified by "behave" integer:
-         // behave = 0  -- If running beyond soft limit requested, halt at soft limit
-         //                (assumes hard limits outside of soft limits; but this is not enforced)
-         // behave = 1  -- If running beyond soft limit requested, throw warning
-         //                  "           "   hard limit     "    , throw error
-         // behave = anything else -- Ignore limits and attempt running to requested scale 
-         void RunToScale(double scale, int behave = 0)
-         {
-            if(behave==0 or behave==1) 
-            {
-               if(scale < hard_lower() or scale > hard_upper()) {
-                  if(behave==1) {
-                     std::ostringstream msg;
-                     msg << "RGE running requested outside hard limits! This is forbidden with behave=1. Set behave=0 (default) to automatically stop running at soft limits, or behave=2 to force running to requested scale (may trigger errors from underlying RGE code!)." << std::endl;
-                     msg << "  Requested : "<< scale << std::endl;
-                     msg << "  hard_upper: "<< hard_upper() << std::endl;
-                     msg << "  hard_lower: "<< hard_lower() << std::endl;
-                     utils_error().raise(LOCAL_INFO, msg.str());
-                  } else { // behave==0
-                     if     (scale < soft_lower()) { scale=soft_lower(); } 
-                     else if(scale > soft_upper()) { scale=soft_upper(); }
-                     else {
-                       // Hard limits must be outside soft limits; this is a bug in the derived Spectum object
-                       std::ostringstream msg;
-                       msg << "RGE running requested outside hard limits, but within soft limits! The soft limits should always be within the hard limits, so this is a bug in the derived SubSpectrum object being accessed. I cannot tell you which class this is though; check the dependency graph to see which ones are being created, and if necessary consult your debugger." << std::endl;
-                       msg << "  Requested : "<< scale << std::endl;
-                       msg << "  hard_upper: "<< hard_upper() << std::endl;
-                       msg << "  soft_upper: "<< soft_upper() << std::endl;
-                       msg << "  soft_lower: "<< soft_lower() << std::endl;
-                       msg << "  hard_lower: "<< hard_lower() << std::endl;
-                       utils_error().raise(LOCAL_INFO, msg.str());
-                     } 
-                  }
-               } else if(scale < soft_lower() or scale > soft_upper()) {
-                  if(behave==1) {
-                     std::ostringstream msg;
-                     msg << "RGE running requested outside soft limits! Accuracy may be low. Note: Set behave=2 to suppress this warning, or behave=0 (default) to automatically stop running when soft limit is hit." << std::endl;
-                     msg << "  Requested : "<< scale << std::endl;
-                     msg << "  soft_upper: "<< soft_upper() << std::endl;
-                     msg << "  soft_lower: "<< soft_lower() << std::endl;
-                     utils_warning().raise(LOCAL_INFO, msg.str());
-                  } else { // behave==0
-                     if(scale < soft_lower()) scale=soft_lower();
-                     if(scale > soft_upper()) scale=soft_upper();
-                  }
-               }
-            }
-            RunToScaleOverride(scale);
-
-         }
-   
-         /// returns the renormalisation scale of parameters
-         virtual double GetScale() const = 0; 
-         /// Sets the renormalisation scale of parameters 
-         /// somewhat dangerous to allow this but may be needed
-         virtual void SetScale(double) = 0;
-        
-         /// Default limits to RGE running; warning/error raised if running beyond these is attempted.
-         // If these aren't overridden in the derived class then effectively no limit on running will exist.
-         virtual double hard_upper() const = 0; 
-         virtual double soft_upper() const = 0; 
-         virtual double soft_lower() const = 0; 
-         virtual double hard_lower() const = 0; 
-
-         /// Create empty override maps, themselves stored in a map
-         static std::map<Par::Tags,OverrideMaps> create_override_maps()
-         {
-            std::map<Par::Tags,OverrideMaps> tmp;
-            std::vector<Par::Tags> all = Par::get_all();
-            for(std::vector<Par::Tags>::iterator it = all.begin(); it!=all.end(); ++it)
-            { 
-              tmp[*it];
-            }
-            return tmp;
-         }
-
 
          /// @}      
    };

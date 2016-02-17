@@ -57,6 +57,18 @@ namespace Gambit
 
    /// @{ CommonFuncs member function definitions
 
+   /// Initialiser function for empty map of override maps
+   static std::map<Par::Tags,OverrideMaps> CommonFuncs::create_override_maps()
+   {
+      std::map<Par::Tags,OverrideMaps> tmp;
+      std::vector<Par::Tags> all = Par::get_all();
+      for(std::vector<Par::Tags>::iterator it = all.begin(); it!=all.end(); ++it)
+      { 
+        tmp[*it];
+      }
+      return tmp;
+   }
+
    /// @{ PDB getter/checker overloads
 
    /* Input PDG code plus context integer as separate arguments */

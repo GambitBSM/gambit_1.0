@@ -32,10 +32,13 @@
 namespace Gambit {
 
    /// FptrFinder friend class for implementing named parameter idiom
-   template<class DT, class This, class MTag>
+   template<class This, class MTag>
    class SetMaps
    {
       public:
+         // Type of traits class from derived spectrum object
+         typedef typename This::DT DT;
+
          SetMaps(const std::string& label, const This* const fakethis)
           : label_(label) 
           , fakethis_(fakethis)
@@ -71,7 +74,7 @@ namespace Gambit {
          SetMaps& override_only(const bool flag) { override_only_=flag; return *this;}
 
       private:
-         friend class FptrFinder<DT,This,MTag>; 
+         friend class FptrFinder<This,MTag>; 
          const std::string label_;
          const This* const fakethis_;
          bool override_only_;
@@ -94,16 +97,16 @@ namespace Gambit {
    }; 
  
    /// Helper class for calling function pointers found by FptrFinder
-   template<class DT, class This, class MTag>
+   template<class This, class MTag>
    struct CallFcn;
 
    /// Helper class for locating the function pointer corresponding to a 
    /// requested string, from amongst the various different maps in which
    /// it could be located.
-   template<class DT, class This, class MTag>
+   template<class This, class MTag>
    class FptrFinder
    {
-      friend struct CallFcn<DT,This,MTag>;
+      friend struct CallFcn<This,MTag>;
       private:
          /// Label to help track down errors if they occur
          const std::string label;
@@ -189,10 +192,10 @@ namespace Gambit {
          /// do the specialisation after the class declaration.
          /// This has to be a struct, since we partial specialisation of functions is
          /// not allowed in C++, but it is treated like a member function.
-         CallFcn<DT,This,MTag> callfcn;
+         CallFcn<This,MTag> callfcn;
 
          // Constructor utilising named "parameters"
-         FptrFinder(const SetMaps<DT,This,MTag>& params)
+         FptrFinder(const SetMaps<This,MTag>& params)
            : label(params.label_)
            , lastname("NONE")
            , fakethis(params.fakethis_)
@@ -607,15 +610,16 @@ namespace Gambit {
    }; // end class FptrFinder
 
    /// Specialisation of CallFcn for calling 'getter' functions
-   template<class DT, class This>
-   struct CallFcn<DT,This,MapTag::Get>
+   template<class This>
+   struct CallFcn<This,MapTag::Get>
    {
      private:
+      typedef typename This::DT DT;
       typedef MapTypes<DT,MapTag::Get> MT;
-      FptrFinder<DT,This,MapTag::Get>* ff;
+      FptrFinder<This,MapTag::Get>* ff;
 
      public: 
-      CallFcn(FptrFinder<DT,This,MapTag::Get>* host) 
+      CallFcn(FptrFinder<This,MapTag::Get>* host) 
         : ff(host) 
       {}
 
@@ -720,15 +724,15 @@ namespace Gambit {
    };
 
    /// Specialisation of CallFcn for calling 'setter' functions
-   template<class DT, class This>
-   struct CallFcn<DT,This,MapTag::Set>
+   template<class This>
+   struct CallFcn<This,MapTag::Set>
    {
      private:
       typedef MapTypes<DT,MapTag::Set> MT;
-      FptrFinder<DT,This,MapTag::Set>* ff;
+      FptrFinder<This,MapTag::Set>* ff;
 
      public: 
-      CallFcn(FptrFinder<DT,This,MapTag::Set>* host) 
+      CallFcn(FptrFinder<This,MapTag::Set>* host) 
         : ff(host) 
       {}
 

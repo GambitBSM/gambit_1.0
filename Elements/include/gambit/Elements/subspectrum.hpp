@@ -50,8 +50,8 @@ namespace Gambit {
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Get> finder =                                
-                       SetMaps<DT,Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Get> finder =                                
+                       SetMaps<Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
                               .omap0(  overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
@@ -73,8 +73,8 @@ namespace Gambit {
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Get> finder =                                
-                       SetMaps<DT,Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Get> finder =                                
+                       SetMaps<Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
                               .omap0(  overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
@@ -99,8 +99,8 @@ namespace Gambit {
          for it, so that we can warn people that the value they are trying to
          set will be masked by the override */
       const OverrideMaps overridecoll = derivedthis->get_override_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Set> override_finder =                                
-                       SetMaps<DT,Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Set> override_finder =                                
+                       SetMaps<Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .override_only(true); // switch to permit search of only override maps
@@ -115,8 +115,8 @@ namespace Gambit {
 
       /* Create finder object, tell it what maps to search, and do the search */
       const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Set> finder =                                
-                       SetMaps<DT,Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Set> finder =                                
+                       SetMaps<Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
                               .map0(  mapcoll.map0 )       
                               .map0M( mapcoll.map0_extraM )
                               .map0I( mapcoll.map0_extraI )
@@ -138,8 +138,8 @@ namespace Gambit {
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Get> finder =                                
-                       SetMaps<DT,Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Get> finder =                                
+                       SetMaps<Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
@@ -161,8 +161,8 @@ namespace Gambit {
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Get> finder =                                
-                       SetMaps<DT,Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Get> finder =                                
+                       SetMaps<Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .map0(  mapcoll.map0 )       
@@ -187,8 +187,8 @@ namespace Gambit {
          for it, so that we can warn people that the value they are trying to
          set will be masked by the override */
       const OverrideMaps overridecoll = derivedthis->get_override_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Set> override_finder =                                
-                       SetMaps<DT,Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Set> override_finder =                                
+                       SetMaps<Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
                               .omap0( overridecoll.m0 ) 
                               .omap1( overridecoll.m1 )
                               .override_only(true); // switch to permit search of only override maps
@@ -203,8 +203,8 @@ namespace Gambit {
 
       /* Create finder object, tell it what maps to search, and do the search */
       const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Set> finder =                                
-                       SetMaps<DT,Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Set> finder =                                
+                       SetMaps<Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
                               .map0(  mapcoll.map0 )       
                               .map0M( mapcoll.map0_extraM )
                               .map0I( mapcoll.map0_extraI )
@@ -228,8 +228,8 @@ namespace Gambit {
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Get> finder =                                
-                       SetMaps<DT,Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Get> finder =                                
+                       SetMaps<Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
                               .omap2( overridecoll.m2 )
                               .map2( mapcoll.map2 )
                               .map2M( mapcoll.map2_extraM )
@@ -247,8 +247,8 @@ namespace Gambit {
       /* Create finder object, tell it what maps to search, and do the search */
       const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
       const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Get> finder =                                
-                       SetMaps<DT,Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Get> finder =                                
+                       SetMaps<Host,MapTag::Get>(Par::toString.at(partype),derivedthis)
                               .omap2( overridecoll.m2 )
                               .map2( mapcoll.map2 )
                               .map2M( mapcoll.map2_extraM )
@@ -267,8 +267,8 @@ namespace Gambit {
 
       /* Create finder object, tell it what maps to search, and do the search */
       const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<DT,Host,MapTag::Set> finder =                                
-                       SetMaps<DT,Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
+      FptrFinder<Host,MapTag::Set> finder =                                
+                       SetMaps<Host,MapTag::Set>(Par::toString.at(partype),derivedthis)
                               .map2( mapcoll.map2 )
                               .map2M( mapcoll.map2_extraM )
                               .map2I( mapcoll.map2_extraI );
