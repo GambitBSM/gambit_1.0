@@ -41,6 +41,7 @@ M$ClassesDescription = {
     SelfConjugate   -> True,
     Indices	    -> {},
     Mass	    -> {Mp1, 10},
+    PDG             -> {51},
     Width	    -> {Wp1, 0}
   }
 	   

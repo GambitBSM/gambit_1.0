@@ -63,8 +63,7 @@ class Parameters_GambitDemo_UFO
         GC_103, GC_104, GC_105, GC_106, GC_107, GC_108, GC_109, GC_110, GC_111,
         GC_112, GC_113, GC_114, GC_115, GC_116, GC_117, GC_118, GC_119, GC_120,
         GC_121, GC_122, GC_123, GC_124, GC_125, GC_126, GC_127, GC_128, GC_129,
-        GC_130, GC_131, GC_132, GC_133, GC_134, GC_135, GC_136, GC_137, GC_138,
-        GC_139, GC_140, GC_141, GC_142, GC_143, GC_144, GC_52;
+        GC_130, GC_131, GC_132, GC_133, GC_52;
     // Model couplings dependent on aS
     std::complex<double> GC_12, GC_11, GC_10; 
 

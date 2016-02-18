@@ -204,7 +204,7 @@ Rules:
       #                    "SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004",
       #                    "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
       SLHA_filenames:
-        - param_card_GambitDemo_UFO_test.dat
+        - ColliderBit/data/param_card_GambitDemo_UFO_test.dat
 
   - capability: LHC_Combined_LogLike
     backends:

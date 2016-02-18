@@ -8,13 +8,17 @@
 //
 #pragma once
 
+#if __cplusplus <= 199711L
+#error "This library needs at least a C++11 compliant compiler: are you using -std=c++11?"
+#endif
+
 /// @file Functions for filtering and classifying HepMC record contents
 /// @author Andy Buckley <andy.buckley@cern.ch>
 /// @author Nataliia Kondrashova <Nataliia.Kondrashova@cern.ch>
 
 #include "HepMC/GenEvent.h"
-#include "boost/function.hpp" //< Replace with std::function when possible
 #include <vector>
+#include <functional>
 
 #include "MCUtils/HepMCEventUtils.h"
 #include "MCUtils/PIDUtils.h"
@@ -34,7 +38,7 @@ namespace MCUtils {
   //@{
 
   /// Convenient type name for a generic classifier function / function object
-  typedef boost::function<bool(const HepMC::GenParticle*)> PClassifier;
+  typedef std::function<bool(const HepMC::GenParticle*)> PClassifier;
 
 
   /// Is this particle species charged?
@@ -260,26 +264,26 @@ namespace MCUtils {
 
   /// @brief Is this particle the first in the 'decay' chain to match property F?
   ///
-  /// i.e. F(const GenParticle* p) is true, and p has no parents which match F
+  /// i.e. classifier(const GenParticle* p) is true, and p has no parents which match F
   template <typename F>
   inline bool isFirstWith(const HepMC::GenParticle* p, const F& classifier) {
-    if (!F(p)) return false; // p doesn't have property F so it can't be the first particle with it
+    if (!classifier(p)) return false; // p doesn't have property F so it can't be the first particle with it
     if (!p->production_vertex()) return true; // p has no parents, so it's the first
-    BOOST_FOREACH (const HepMC::GenParticle* parent, const_parents(p->production_vertex())) {
-      if (F(parent)) return false; // if its parent has property F, p can't be the first
+    for (const HepMC::GenParticle* parent : const_parents(p->production_vertex())) {
+      if (classifier(parent)) return false; // if its parent has property F, p can't be the first
     }
     return true; // p has F and no parents do
   }
 
   /// @brief Is this particle the last in the 'decay' chain to match property F?
   ///
-  /// i.e. F(const GenParticle* p) is true, and p has no children which match F
+  /// i.e. classifier(const GenParticle* p) is true, and p has no children which match F
   template <typename F>
   inline bool isLastWith(const HepMC::GenParticle* p, const F& classifier) {
-    if (!F(p)) return false; // p doesn't have property F so it can't be the last particle with it
+    if (!classifier(p)) return false; // p doesn't have property F so it can't be the last particle with it
     if (!p->end_vertex()) return true; // p has no children, so it's the last
-    BOOST_FOREACH (const HepMC::GenParticle* child, const_children(p->end_vertex())) {
-      if (F(child)) return false; // if its child has property F, p can't be the first
+    for (const HepMC::GenParticle* child : const_children(p->end_vertex())) {
+      if (classifier(child)) return false; // if its child has property F, p can't be the first
     }
     return true; // p has F and no children do
   }
@@ -289,10 +293,10 @@ namespace MCUtils {
   ///
   /// i.e. it has no parents with the same PID
   inline bool isFirstReplica(const HepMC::GenParticle* p) {
-    /// @todo Rewrite with a lambda based on matching p->pdg_id
+    /// @todo Rewrite with isFirstWith and a lambda based on matching p->pdg_id
     if (!p->production_vertex()) return true;
     bool isfirst = true;
-    BOOST_FOREACH (const HepMC::GenParticle* m, const_parents(p->production_vertex())) {
+    for (const HepMC::GenParticle* m : const_parents(p->production_vertex())) {
       if (m->pdg_id() == p->pdg_id()) {
         isfirst = false;
         break;
@@ -305,10 +309,10 @@ namespace MCUtils {
   ///
   /// i.e. it has no daughters with the same PID
   inline bool isLastReplica(const HepMC::GenParticle* p) {
-    /// @todo Rewrite with a lambda based on matching p->pdg_id
+    /// @todo Rewrite with isLastWith and a lambda based on matching p->pdg_id
     if (!p->end_vertex()) return true;
     bool islast = true;
-    BOOST_FOREACH (const HepMC::GenParticle* d, const_children(p->end_vertex())) {
+    for (const HepMC::GenParticle* d : const_children(p->end_vertex())) {
       if (d->pdg_id() == p->pdg_id()) {
         islast = false;
         break;

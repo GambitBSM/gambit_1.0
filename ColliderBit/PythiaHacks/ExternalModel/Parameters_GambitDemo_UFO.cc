@@ -32,7 +32,7 @@ void Parameters_GambitDemo_UFO::setIndependentParameters(ParticleData * & pd,
   mdl_WT = pd->mWidth(6); 
   mdl_WW = pd->mWidth(24); 
   mdl_WZ = pd->mWidth(23); 
-  mdl_Mp1 = pd->m0(9000006); 
+  mdl_Mp1 = pd->m0(51); 
   mdl_Muv = pd->m0(9000005); 
   mdl_MH = pd->m0(25); 
   mdl_MB = pd->m0(5); 
@@ -216,111 +216,98 @@ void Parameters_GambitDemo_UFO::setIndependentCouplings()
   GC_56 = -mdl_ee/(2. * mdl_sw); 
   GC_57 = -(mdl_ee * mdl_complexi)/(2. * mdl_sw); 
   GC_58 = (mdl_ee * mdl_complexi)/(2. * mdl_sw); 
-  GC_59 = mdl_ee/(2. * mdl_sw); 
-  GC_60 = (mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_61 = (mdl_CKM1x1 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_62 = (mdl_CKM1x2 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_63 = (mdl_CKM1x3 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_64 = (mdl_CKM2x1 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_65 = (mdl_CKM2x2 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_66 = (mdl_CKM2x3 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_67 = (mdl_CKM3x1 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_68 = (mdl_CKM3x2 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_69 = (mdl_CKM3x3 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
-  GC_70 = -((mdl_cw * mdl_ee * mdl_complexi)/mdl_sw); 
-  GC_71 = (mdl_cw * mdl_ee * mdl_complexi)/mdl_sw; 
-  GC_72 = -mdl_ee__exp__2/(2. * mdl_sw); 
-  GC_73 = -(mdl_ee__exp__2 * mdl_complexi)/(2. * mdl_sw); 
-  GC_74 = mdl_ee__exp__2/(2. * mdl_sw); 
-  GC_75 = (-2. * mdl_cw * mdl_ee__exp__2 * mdl_complexi)/mdl_sw; 
-  GC_76 = (mdl_ee * mdl_complexi * mdl_sw)/(3. * mdl_cw); 
-  GC_77 = (-2. * mdl_ee * mdl_complexi * mdl_sw)/(3. * mdl_cw); 
-  GC_78 = (mdl_ee * mdl_complexi * mdl_sw)/mdl_cw; 
+  GC_59 = (mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_60 = (mdl_CKM1x1 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_61 = (mdl_CKM1x2 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_62 = (mdl_CKM1x3 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_63 = (mdl_CKM2x1 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_64 = (mdl_CKM2x2 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_65 = (mdl_CKM2x3 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_66 = (mdl_CKM3x1 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_67 = (mdl_CKM3x2 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_68 = (mdl_CKM3x3 * mdl_ee * mdl_complexi)/(mdl_sw * mdl_sqrt__2); 
+  GC_69 = -(mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw); 
+  GC_70 = (mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw); 
+  GC_71 = -((mdl_cw * mdl_ee * mdl_complexi)/mdl_sw); 
+  GC_72 = (mdl_cw * mdl_ee * mdl_complexi)/mdl_sw; 
+  GC_73 = -mdl_ee__exp__2/(2. * mdl_sw); 
+  GC_74 = -(mdl_ee__exp__2 * mdl_complexi)/(2. * mdl_sw); 
+  GC_75 = mdl_ee__exp__2/(2. * mdl_sw); 
+  GC_76 = (-2. * mdl_cw * mdl_ee__exp__2 * mdl_complexi)/mdl_sw; 
+  GC_77 = -(mdl_ee * mdl_complexi * mdl_sw)/(6. * mdl_cw); 
+  GC_78 = (mdl_ee * mdl_complexi * mdl_sw)/(2. * mdl_cw); 
   GC_79 = -(mdl_cw * mdl_ee)/(2. * mdl_sw) - (mdl_ee * mdl_sw)/(2. * mdl_cw); 
-  GC_80 = -(mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw) - (mdl_ee *
-      mdl_complexi * mdl_sw)/(6. * mdl_cw);
-  GC_81 = (mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw) - (mdl_ee *
-      mdl_complexi * mdl_sw)/(6. * mdl_cw);
-  GC_82 = -(mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw) + (mdl_ee *
+  GC_80 = -(mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw) + (mdl_ee *
       mdl_complexi * mdl_sw)/(2. * mdl_cw);
-  GC_83 = (mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw) + (mdl_ee *
+  GC_81 = (mdl_cw * mdl_ee * mdl_complexi)/(2. * mdl_sw) + (mdl_ee *
       mdl_complexi * mdl_sw)/(2. * mdl_cw);
-  GC_84 = (mdl_cw * mdl_ee__exp__2 * mdl_complexi)/mdl_sw - (mdl_ee__exp__2 *
+  GC_82 = (mdl_cw * mdl_ee__exp__2 * mdl_complexi)/mdl_sw - (mdl_ee__exp__2 *
       mdl_complexi * mdl_sw)/mdl_cw;
-  GC_85 = -(mdl_ee__exp__2 * mdl_complexi) + (mdl_cw__exp__2 * mdl_ee__exp__2 *
+  GC_83 = -(mdl_ee__exp__2 * mdl_complexi) + (mdl_cw__exp__2 * mdl_ee__exp__2 *
       mdl_complexi)/(2. * mdl_sw__exp__2) + (mdl_ee__exp__2 * mdl_complexi *
       mdl_sw__exp__2)/(2. * mdl_cw__exp__2);
-  GC_86 = mdl_ee__exp__2 * mdl_complexi + (mdl_cw__exp__2 * mdl_ee__exp__2 *
+  GC_84 = mdl_ee__exp__2 * mdl_complexi + (mdl_cw__exp__2 * mdl_ee__exp__2 *
       mdl_complexi)/(2. * mdl_sw__exp__2) + (mdl_ee__exp__2 * mdl_complexi *
       mdl_sw__exp__2)/(2. * mdl_cw__exp__2);
-  GC_87 = -(mdl_ee__exp__2 * mdl_vev)/(2. * mdl_cw); 
-  GC_88 = (mdl_ee__exp__2 * mdl_vev)/(2. * mdl_cw); 
-  GC_89 = -2. * mdl_complexi * mdl_lam * mdl_vev; 
-  GC_90 = -6. * mdl_complexi * mdl_lam * mdl_vev; 
-  GC_91 = -(mdl_ee__exp__2 * mdl_vev)/(4. * mdl_sw__exp__2); 
-  GC_92 = -(mdl_ee__exp__2 * mdl_complexi * mdl_vev)/(4. * mdl_sw__exp__2); 
-  GC_93 = (mdl_ee__exp__2 * mdl_complexi * mdl_vev)/(2. * mdl_sw__exp__2); 
-  GC_94 = (mdl_ee__exp__2 * mdl_vev)/(4. * mdl_sw__exp__2); 
-  GC_95 = -(mdl_ee__exp__2 * mdl_vev)/(2. * mdl_sw); 
-  GC_96 = (mdl_ee__exp__2 * mdl_vev)/(2. * mdl_sw); 
-  GC_97 = -(mdl_ee__exp__2 * mdl_vev)/(4. * mdl_cw) - (mdl_cw * mdl_ee__exp__2
+  GC_85 = -(mdl_ee__exp__2 * mdl_vev)/(2. * mdl_cw); 
+  GC_86 = (mdl_ee__exp__2 * mdl_vev)/(2. * mdl_cw); 
+  GC_87 = -2. * mdl_complexi * mdl_lam * mdl_vev; 
+  GC_88 = -6. * mdl_complexi * mdl_lam * mdl_vev; 
+  GC_89 = -(mdl_ee__exp__2 * mdl_vev)/(4. * mdl_sw__exp__2); 
+  GC_90 = -(mdl_ee__exp__2 * mdl_complexi * mdl_vev)/(4. * mdl_sw__exp__2); 
+  GC_91 = (mdl_ee__exp__2 * mdl_complexi * mdl_vev)/(2. * mdl_sw__exp__2); 
+  GC_92 = (mdl_ee__exp__2 * mdl_vev)/(4. * mdl_sw__exp__2); 
+  GC_93 = -(mdl_ee__exp__2 * mdl_vev)/(2. * mdl_sw); 
+  GC_94 = (mdl_ee__exp__2 * mdl_vev)/(2. * mdl_sw); 
+  GC_95 = -(mdl_ee__exp__2 * mdl_vev)/(4. * mdl_cw) - (mdl_cw * mdl_ee__exp__2
       * mdl_vev)/(4. * mdl_sw__exp__2);
-  GC_98 = (mdl_ee__exp__2 * mdl_vev)/(4. * mdl_cw) - (mdl_cw * mdl_ee__exp__2 *
+  GC_96 = (mdl_ee__exp__2 * mdl_vev)/(4. * mdl_cw) - (mdl_cw * mdl_ee__exp__2 *
       mdl_vev)/(4. * mdl_sw__exp__2);
-  GC_99 = -(mdl_ee__exp__2 * mdl_vev)/(4. * mdl_cw) + (mdl_cw * mdl_ee__exp__2
+  GC_97 = -(mdl_ee__exp__2 * mdl_vev)/(4. * mdl_cw) + (mdl_cw * mdl_ee__exp__2
       * mdl_vev)/(4. * mdl_sw__exp__2);
-  GC_100 = (mdl_ee__exp__2 * mdl_vev)/(4. * mdl_cw) + (mdl_cw * mdl_ee__exp__2
-      * mdl_vev)/(4. * mdl_sw__exp__2);
-  GC_101 = -(mdl_ee__exp__2 * mdl_complexi * mdl_vev)/2. - (mdl_cw__exp__2 *
+  GC_98 = (mdl_ee__exp__2 * mdl_vev)/(4. * mdl_cw) + (mdl_cw * mdl_ee__exp__2 *
+      mdl_vev)/(4. * mdl_sw__exp__2);
+  GC_99 = -(mdl_ee__exp__2 * mdl_complexi * mdl_vev)/2. - (mdl_cw__exp__2 *
       mdl_ee__exp__2 * mdl_complexi * mdl_vev)/(4. * mdl_sw__exp__2) -
       (mdl_ee__exp__2 * mdl_complexi * mdl_sw__exp__2 * mdl_vev)/(4. *
       mdl_cw__exp__2);
-  GC_102 = mdl_ee__exp__2 * mdl_complexi * mdl_vev + (mdl_cw__exp__2 *
+  GC_100 = mdl_ee__exp__2 * mdl_complexi * mdl_vev + (mdl_cw__exp__2 *
       mdl_ee__exp__2 * mdl_complexi * mdl_vev)/(2. * mdl_sw__exp__2) +
       (mdl_ee__exp__2 * mdl_complexi * mdl_sw__exp__2 * mdl_vev)/(2. *
       mdl_cw__exp__2);
-  GC_103 = -(mdl_yb/mdl_sqrt__2); 
-  GC_104 = -((mdl_complexi * mdl_yb)/mdl_sqrt__2); 
-  GC_105 = mdl_yb/mdl_sqrt__2; 
-  GC_106 = -(mdl_yc/mdl_sqrt__2); 
-  GC_107 = -((mdl_complexi * mdl_yc)/mdl_sqrt__2); 
-  GC_108 = mdl_yc/mdl_sqrt__2; 
-  GC_109 = -(mdl_ydo/mdl_sqrt__2); 
-  GC_110 = -((mdl_complexi * mdl_ydo)/mdl_sqrt__2); 
-  GC_111 = mdl_ydo/mdl_sqrt__2; 
-  GC_112 = -mdl_ye; 
-  GC_113 = mdl_ye; 
-  GC_114 = -(mdl_ye/mdl_sqrt__2); 
-  GC_115 = -((mdl_complexi * mdl_ye)/mdl_sqrt__2); 
-  GC_116 = mdl_ye/mdl_sqrt__2; 
-  GC_117 = -mdl_ym; 
-  GC_118 = mdl_ym; 
-  GC_119 = -(mdl_ym/mdl_sqrt__2); 
-  GC_120 = -((mdl_complexi * mdl_ym)/mdl_sqrt__2); 
-  GC_121 = mdl_ym/mdl_sqrt__2; 
-  GC_122 = -(mdl_ys/mdl_sqrt__2); 
-  GC_123 = -((mdl_complexi * mdl_ys)/mdl_sqrt__2); 
-  GC_124 = mdl_ys/mdl_sqrt__2; 
-  GC_125 = -(mdl_yt/mdl_sqrt__2); 
-  GC_126 = -((mdl_complexi * mdl_yt)/mdl_sqrt__2); 
-  GC_127 = mdl_yt/mdl_sqrt__2; 
-  GC_128 = -mdl_ytau; 
-  GC_129 = mdl_ytau; 
-  GC_130 = -(mdl_ytau/mdl_sqrt__2); 
-  GC_131 = -((mdl_complexi * mdl_ytau)/mdl_sqrt__2); 
-  GC_132 = mdl_ytau/mdl_sqrt__2; 
-  GC_133 = -(mdl_yup/mdl_sqrt__2); 
-  GC_134 = -((mdl_complexi * mdl_yup)/mdl_sqrt__2); 
-  GC_135 = mdl_yup/mdl_sqrt__2; 
-  GC_136 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x1)/(mdl_sw * mdl_sqrt__2); 
-  GC_137 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x2)/(mdl_sw * mdl_sqrt__2); 
-  GC_138 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x3)/(mdl_sw * mdl_sqrt__2); 
-  GC_139 = (mdl_ee * mdl_complexi * mdl_conjg__CKM2x1)/(mdl_sw * mdl_sqrt__2); 
-  GC_140 = (mdl_ee * mdl_complexi * mdl_conjg__CKM2x2)/(mdl_sw * mdl_sqrt__2); 
-  GC_141 = (mdl_ee * mdl_complexi * mdl_conjg__CKM2x3)/(mdl_sw * mdl_sqrt__2); 
-  GC_142 = (mdl_ee * mdl_complexi * mdl_conjg__CKM3x1)/(mdl_sw * mdl_sqrt__2); 
-  GC_143 = (mdl_ee * mdl_complexi * mdl_conjg__CKM3x2)/(mdl_sw * mdl_sqrt__2); 
-  GC_144 = (mdl_ee * mdl_complexi * mdl_conjg__CKM3x3)/(mdl_sw * mdl_sqrt__2); 
+  GC_101 = -(mdl_yb/mdl_sqrt__2); 
+  GC_102 = -((mdl_complexi * mdl_yb)/mdl_sqrt__2); 
+  GC_103 = -((mdl_complexi * mdl_yc)/mdl_sqrt__2); 
+  GC_104 = mdl_yc/mdl_sqrt__2; 
+  GC_105 = -(mdl_ydo/mdl_sqrt__2); 
+  GC_106 = -((mdl_complexi * mdl_ydo)/mdl_sqrt__2); 
+  GC_107 = -mdl_ye; 
+  GC_108 = mdl_ye; 
+  GC_109 = -(mdl_ye/mdl_sqrt__2); 
+  GC_110 = -((mdl_complexi * mdl_ye)/mdl_sqrt__2); 
+  GC_111 = -mdl_ym; 
+  GC_112 = mdl_ym; 
+  GC_113 = -(mdl_ym/mdl_sqrt__2); 
+  GC_114 = -((mdl_complexi * mdl_ym)/mdl_sqrt__2); 
+  GC_115 = -(mdl_ys/mdl_sqrt__2); 
+  GC_116 = -((mdl_complexi * mdl_ys)/mdl_sqrt__2); 
+  GC_117 = -((mdl_complexi * mdl_yt)/mdl_sqrt__2); 
+  GC_118 = mdl_yt/mdl_sqrt__2; 
+  GC_119 = -mdl_ytau; 
+  GC_120 = mdl_ytau; 
+  GC_121 = -(mdl_ytau/mdl_sqrt__2); 
+  GC_122 = -((mdl_complexi * mdl_ytau)/mdl_sqrt__2); 
+  GC_123 = -((mdl_complexi * mdl_yup)/mdl_sqrt__2); 
+  GC_124 = mdl_yup/mdl_sqrt__2; 
+  GC_125 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x1)/(mdl_sw * mdl_sqrt__2); 
+  GC_126 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x2)/(mdl_sw * mdl_sqrt__2); 
+  GC_127 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x3)/(mdl_sw * mdl_sqrt__2); 
+  GC_128 = (mdl_ee * mdl_complexi * mdl_conjg__CKM2x1)/(mdl_sw * mdl_sqrt__2); 
+  GC_129 = (mdl_ee * mdl_complexi * mdl_conjg__CKM2x2)/(mdl_sw * mdl_sqrt__2); 
+  GC_130 = (mdl_ee * mdl_complexi * mdl_conjg__CKM2x3)/(mdl_sw * mdl_sqrt__2); 
+  GC_131 = (mdl_ee * mdl_complexi * mdl_conjg__CKM3x1)/(mdl_sw * mdl_sqrt__2); 
+  GC_132 = (mdl_ee * mdl_complexi * mdl_conjg__CKM3x2)/(mdl_sw * mdl_sqrt__2); 
+  GC_133 = (mdl_ee * mdl_complexi * mdl_conjg__CKM3x3)/(mdl_sw * mdl_sqrt__2); 
   GC_52 = mdl_complexi * mdl_lam1; 
 }
 void Parameters_GambitDemo_UFO::setDependentParameters(ParticleData * & pd,
@@ -848,28 +835,6 @@ void Parameters_GambitDemo_UFO::printIndependentCouplings()
       setw(10) << GC_132 << endl;
   cout << setw(20) <<  "GC_133 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_133 << endl;
-  cout << setw(20) <<  "GC_134 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_134 << endl;
-  cout << setw(20) <<  "GC_135 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_135 << endl;
-  cout << setw(20) <<  "GC_136 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_136 << endl;
-  cout << setw(20) <<  "GC_137 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_137 << endl;
-  cout << setw(20) <<  "GC_138 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_138 << endl;
-  cout << setw(20) <<  "GC_139 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_139 << endl;
-  cout << setw(20) <<  "GC_140 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_140 << endl;
-  cout << setw(20) <<  "GC_141 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_141 << endl;
-  cout << setw(20) <<  "GC_142 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_142 << endl;
-  cout << setw(20) <<  "GC_143 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_143 << endl;
-  cout << setw(20) <<  "GC_144 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_144 << endl;
   cout << setw(20) <<  "GC_52 " <<  "= " << setiosflags(ios::scientific) <<
       setw(10) << GC_52 << endl;
 }
