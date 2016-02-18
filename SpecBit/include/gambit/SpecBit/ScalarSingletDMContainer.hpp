@@ -41,23 +41,17 @@ namespace Gambit
          double get_lambda_hS()       const { return SingletLambda; } 
       };
 
-      // Needed for typename aliases in Spec and MapTypes classes
-      struct SingletDMModelTraits
-      {
-         typedef SingletDMModel Model;
-         typedef DummyInput     Input;
-      };
      
-      class SingletDMContainer : public Spec<SingletDMContainer,SingletDMModelTraits> 
+      class SingletDMContainer : public Spec<SingletDMContainer> 
       {
+         public:
+            /// Typedefs required by Spec class, so that it knows about these types.
+            typedef SingletDMModel Model;
+            typedef DummyInput     Input;
 
          private:
-            typedef SingletDMContainer   This;
-            typedef SingletDMModelTraits Traits;
-            typedef MapTypes<Traits,MapTag::Get> MTget; 
-
-            typename Traits::Model model;
-            typename Traits::Input dummyinput;
+            Model model;
+            Input dummyinput;
 
          public:
             /// @{ Constructors/destructors
@@ -68,10 +62,10 @@ namespace Gambit
             /// @}
  
             // Functions to interface Model and Input objects with the base 'Spec' class
-            Traits::Model& get_Model() { return model; }
-            Traits::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
-            const Traits::Model& get_Model() const { return model; }
-            const Traits::Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            Model& get_Model() { return model; }
+            Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            const Model& get_Model() const { return model; }
+            const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
             /// Map fillers
             static GetterMaps fill_getter_maps()

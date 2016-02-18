@@ -74,24 +74,21 @@ namespace Gambit
    // CRTP used to allow access to some special data members of the derived class.
    // Various inherited classes are just used to factor out code, some of which
    // doesn't need to be templated.
-   template <class DerivedSpec, class DerivedSpecTraits>
+   template <class DerivedSpec>
    class Spec : public SubSpectrum,
-                public CommonTemplateFuncs<Spec<DerivedSpec, DerivedSpecTraits>>
+                public CommonTemplateFuncs<Spec<DerivedSpec>>
    { 
       public:
          typedef DerivedSpec D;
-         typedef DerivedSpecTraits DT;
-         typedef Spec<D,DT> Self;
+         typedef Spec<D> Self;
 
-         /// Note: DerivedSpecTraits will need to typedef Model and Input
-         /// Also make sure to initialise the members "model" and "input" in the 
-         /// derived class via this class's full constructor.
+         /// Note: DerivedSpec will need to typedef Model and Input
          /// "Grab" these typedefs here to simplify notation
-         typedef typename DT::Model Model;
-         typedef typename DT::Input Input;
-   
-         typedef MapTypes<DT,MapTag::Get> MTget; 
-         typedef MapTypes<DT,MapTag::Set> MTset; 
+         typedef typename D::Model Model;
+         typedef typename D::Input Input;
+
+         typedef MapTypes<D,MapTag::Get> MTget; 
+         typedef MapTypes<D,MapTag::Set> MTset; 
 
          /// @{ Default (empty) map filler functions
          /// Override as needed in derived classes
@@ -198,11 +195,11 @@ namespace Gambit
    };
 
    /// Initialise maps (uses filler overrides from DerivedSpec if defined)
-   template <class D, class DT>
-   const typename Spec<D,DT>::GetterMaps Spec<D,DT>::getter_maps(Spec<D,DT>::final_fill_getter_maps());
+   template <class D>
+   const typename Spec<D>::GetterMaps Spec<D>::getter_maps(Spec<D>::final_fill_getter_maps());
 
-   template <class D, class DT>
-   const typename Spec<D,DT>::SetterMaps Spec<D,DT>::setter_maps(Spec<D,DT>::final_fill_setter_maps());
+   template <class D>
+   const typename Spec<D>::SetterMaps Spec<D>::setter_maps(Spec<D>::final_fill_setter_maps());
 
 
    /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
@@ -210,11 +207,6 @@ namespace Gambit
    /// @{
    class DummyModel {};
    class DummyInput {};
-   struct DummyTraits
-   {
-     typedef DummyModel Model;
-     typedef DummyInput Input;
-   };
    /// @}
   
 } // end namespace Gambit

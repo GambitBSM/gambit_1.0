@@ -133,17 +133,17 @@ namespace Gambit
    };
 
    /// Fully unspecialised MapTypes declaration
-   template <class DerivedSpecTraits, class GetOrSet>
+   template <class DerivedSpec, class GetOrSet>
    struct MapTypes;
 
    /// Types needed for function pointer maps
    /// Partial specialisation for "getter" maps
-   template <class DerivedSpecTraits>
-   struct MapTypes<DerivedSpecTraits, MapTag::Get>
+   template <class DerivedSpec>
+   struct MapTypes<DerivedSpec, MapTag::Get>
    {
       // Typedef collection
-      typedef typename DerivedSpecTraits::Model Model;
-      typedef typename DerivedSpecTraits::Input Input;
+      typedef typename DerivedSpec::Model Model;
+      typedef typename DerivedSpec::Input Input;
       typedef double(Model::*FSptr)(void) const; /* Function pointer signature for Model object member functions with no arguments */
       typedef double(Model::*FSptr1)(int) const; /* Function pointer signature for Model object member functions with one argument */
       typedef double(Model::*FSptr2)(int,int) const; /* Function pointer signature for Model object member functions with two arguments */
@@ -172,12 +172,12 @@ namespace Gambit
 
    /// Types needed for function pointer maps
    /// Partial specialisation for "setter" maps
-   template <class DerivedSpecTraits>
-   struct MapTypes<DerivedSpecTraits, MapTag::Set>
+   template <class DerivedSpec>
+   struct MapTypes<DerivedSpec, MapTag::Set>
    {
       // Typedef collection
-      typedef typename DerivedSpecTraits::Model Model;
-      typedef typename DerivedSpecTraits::Input Input;
+      typedef typename DerivedSpec::Model Model;
+      typedef typename DerivedSpec::Input Input;
       typedef void(Model::*FSptr)(double); /* Function pointer signature for Model object member functions with no arguments */
       typedef void(Model::*FSptr1)(int,double); /* Function pointer signature for Model object member functions with one argument */
       typedef void(Model::*FSptr2)(int,int,double); /* Function pointer signature for Model object member functions with two arguments */

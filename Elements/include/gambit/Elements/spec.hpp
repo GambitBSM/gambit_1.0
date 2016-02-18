@@ -35,7 +35,6 @@ namespace Gambit {
    template <class Host>
    bool CommonTemplateFuncs<Host>::has(const Par::Tags partype, const str& name, SafeBool check_antiparticle) const
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTget MTget;
       /// TODO: Could avoid dismantling the MapCollection struct by just letting the
       ///       SetMaps class do it, but one step at a time...
@@ -65,7 +64,6 @@ namespace Gambit {
    template <class Host>
    double CommonTemplateFuncs<Host>::get(const Par::Tags partype, const str& name, SafeBool check_antiparticle) const
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTget MTget;
       const Host* derivedthis = static_cast<const Host*>(this); 
 
@@ -90,7 +88,6 @@ namespace Gambit {
    template <class Host>
    void CommonTemplateFuncs<Host>::set(const Par::Tags partype, const double set_value, const str& name, SafeBool check_antiparticle)
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTset MTset;
       Host* derivedthis = static_cast<Host*>(this); // Non-const pointer for setter!
 
@@ -130,7 +127,6 @@ namespace Gambit {
    template <class Host>
    bool CommonTemplateFuncs<Host>::has(const Par::Tags partype, const str& name, int i, SafeBool check_antiparticle) const
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTget MTget;
       const Host* derivedthis = static_cast<const Host*>(this); 
 
@@ -153,7 +149,6 @@ namespace Gambit {
    template <class Host>
    double CommonTemplateFuncs<Host>::get(const Par::Tags partype, const str& name, int i, SafeBool check_antiparticle) const
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTget MTget;
       const Host* derivedthis = static_cast<const Host*>(this); 
 
@@ -178,7 +173,6 @@ namespace Gambit {
    template <class Host>
    void CommonTemplateFuncs<Host>::set(const Par::Tags partype, const double set_value, const str& name, int i, SafeBool check_antiparticle)
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTset MTset;
       Host* derivedthis = static_cast<Host*>(this); // Non-const pointer for setter!
 
@@ -220,7 +214,6 @@ namespace Gambit {
    template <class Host>
    bool CommonTemplateFuncs<Host>::has(const Par::Tags partype, const str& name, int i, int j) const
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTget MTget;
       const Host* derivedthis = static_cast<const Host*>(this); 
 
@@ -239,7 +232,6 @@ namespace Gambit {
    template <class Host>
    double CommonTemplateFuncs<Host>::get(const Par::Tags partype, const str& name, int i, int j) const
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTget MTget;
       const Host* derivedthis = static_cast<const Host*>(this); 
 
@@ -260,7 +252,6 @@ namespace Gambit {
    template <class Host>
    void CommonTemplateFuncs<Host>::set(const Par::Tags partype, const double set_value, const str& name, int i, int j)
    {
-      typedef typename Host::DT DT;
       typedef typename Host::MTset MTset;
       Host* derivedthis = static_cast<Host*>(this); // Non-const pointer for setter!
 

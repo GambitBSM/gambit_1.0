@@ -34,25 +34,17 @@ namespace Gambit {
          double get_HiggsPoleMass()  const { return HiggsPoleMass; } 
          double get_HiggsVEV()       const { return HiggsVEV;      } 
       };
-
-      // Needed for typename aliases in Spec and MapTypes classes
-      struct SMHiggsModelTraits
-      {
-         typedef SMHiggsModel Model;
-         typedef DummyInput   Input;
-      };
      
 
       /// SubSpectrum wrapper class for the SM Higgs sector
-      class SMHiggsContainer : public Spec<SMHiggsContainer,SMHiggsModelTraits> 
+      class SMHiggsContainer : public Spec<SMHiggsContainer> 
       {
-    
-            typedef SMHiggsContainer   This;
-            typedef SMHiggsModelTraits Traits;
-            typedef MapTypes<Traits,MapTag::Get> MTget; 
-            typedef typename Traits::Model Model;
-            typedef typename Traits::Input Input;
+         public:
+           /// Typedefs required by Spec class, so it knows about these types.
+           typedef SMHiggsModel Model;
+           typedef DummyInput   Input; // DummyInput is just an empty struct
 
+         private:
             /// Store the struct containing the parameters plus get/set functions
             Model model; 
 
@@ -72,11 +64,6 @@ namespace Gambit {
             const Model& get_Model() const { return model; }
             const Input& get_Input() const { return input; }
 
-            // virtual int get_numbers_stable_particles() const;
-
-            /// Offset from user-input indices (user assumes 1,2,3 indexed, e.g. use offset=-1 for zero-indexing)
-            virtual int get_index_offset() const {return 0.;} // Actually there are no indexed getters so far.
- 
             /// Map fillers
             /// Used to initialise maps in the RunparDer and PhysDer classes
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
