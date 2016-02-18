@@ -276,7 +276,7 @@ void Sigma_GambitDemo_UFO_uux_uvuvx::calculate_wavefunctions(const int perm[],
   oxxxxx(p[perm[2]], mME[2], hel[2], +1, w[2]); 
   ixxxxx(p[perm[3]], mME[3], hel[3], -1, w[3]); 
   FFV1P0_3(w[0], w[1], pars->GC_11, pars->ZERO, pars->ZERO, w[4]); 
-  FFS2_3(w[0], w[2], pars->GC_52, pars->mdl_Mp1, pars->ZERO, w[5]); 
+  FFS3_3(w[0], w[2], pars->GC_52, pars->mdl_Mp1, pars->ZERO, w[5]); 
 
   // Calculate all amplitudes
   // Amplitude(s) for diagram number 0

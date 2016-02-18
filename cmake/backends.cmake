@@ -583,6 +583,7 @@ set_target_properties(darksusy
                       feynhiggs_2_11_2
                       susyhit
                       pythia
+		      pythiaEM
                       ddcalc
                       gamlike
                       nulike

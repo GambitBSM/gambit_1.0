@@ -136,7 +136,7 @@ namespace HEPUtils {
         if (p->abspid() == 11) _electrons.push_back(p);
         if (p->abspid() == 13) _muons.push_back(p);
         if (p->abspid() == 15) _taus.push_back(p);
-        if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 || p->pid() == 1000022) _invisibles.push_back(p);
+        if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 || p->pid() == 1000022 || p->pid() == 51) _invisibles.push_back(p);
       }
     }
 
