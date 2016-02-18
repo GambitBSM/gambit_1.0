@@ -14,6 +14,7 @@
 ///
 ///  *********************************************
 
+#include <iostream>
 #include <signal.h>
 #include <setjmp.h>     /* jmp_buf, setjmp, longjmp */
 #include <omp.h>
