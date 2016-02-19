@@ -129,6 +129,7 @@ Scanner:
     square_grid:
       plugin: square_grid
       version: ">=1.0"
+      like: LogLike # ?
       options:
         purpose: Likelihood
         grid_pts: 1 #NxN grid

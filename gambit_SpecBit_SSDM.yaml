@@ -19,7 +19,7 @@
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
-         range: [173.15,173.15]
+         range: [150,190]
          prior_type: flat
 
       # SLHA1
@@ -63,7 +63,7 @@ Parameters:
 
     StandardModel_Higgs:
       mH:
-        range: [125, 125]
+        range: [110, 140]
         prior_type: flat
    #   vev: 246
 
@@ -111,11 +111,12 @@ Printer:
 Scanner:
 
   #use_objectives: uniform
-  use_scanner: square_grid
+  use_scanner: multinest
 
 # Scanners
 
   scanners:
+
 
     random:
       plugin: random_sampler
@@ -135,7 +136,18 @@ Scanner:
       plugin: grid
       version: ">=1.0"
       like:  LogLike
-      grid_pts: [2, 2]
+      grid_pts: [20, 20]
+
+    multinest:
+      plugin: MultiNest
+      like:  LogLike
+      nlive: 1000
+      tol: 0.1
+      outfile: 0
+      root: "runs/SSDM/samples/native-"
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
   objectives:
 
@@ -161,8 +173,8 @@ ObsLikes:
 #      function: find_min_lambda
 
 
-#    - capability: VS_likelihood
-#      purpose: Observable
+    - capability: VS_likelihood
+      purpose: LogLike
 
 #    - capability: check_perturb
 #      purpose: Observable
@@ -188,8 +200,7 @@ Rules:
      #   set_high_scale: 10000  #option can be used with check_perturb_simple only
 
     - capability: SingletDM_spectrum
-      function: get_SingletDM_spectrum_pole
-
+      function: get_SCDM_spectrum
 
 #########################
 # Logging setup

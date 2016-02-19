@@ -536,8 +536,8 @@ namespace Gambit
       else
       {
         LB=1.22e19;
-        lifetime=1e99;
-        //stability=0; // stabe
+        lifetime=std::numeric_limits<double>::infinity();
+        //stability=0; // stable
       }
       age_pair = std::make_pair (lifetime,LB);
     
@@ -550,7 +550,7 @@ namespace Gambit
       namespace myPipe = Pipes::get_expected_lifetime;//
       using namespace Gambit;
       ddpair age = *myPipe::Dep::vacuum_stability;
-      lifetime=std::get<0>(age);
+      lifetime=std::get<0>(age)*(6.5821195e-16)/(31536000);// gives expected lifetime in units of years
     }
     
 //    void default_scale(std::pair<double, double>& age_pair)
@@ -566,8 +566,7 @@ namespace Gambit
       namespace myPipe = Pipes::get_likelihood;//
       using namespace Gambit;
       ddpair age = *myPipe::Dep::vacuum_stability;
-      result=log10(  ( 1 / ( std::get<0>(age) ) ) * exp(140) * (1/ (1.2e19) )   );
-     result=1;
+      result=((- ( 1 / ( std::get<0>(age) ) ) * exp(140) * (1/ (1.2e19) ) )  ); // log of the likelihood
     }
     
 
