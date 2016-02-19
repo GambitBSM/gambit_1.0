@@ -61,8 +61,18 @@ namespace Gambit
            /// @}
       };
 
+      class SMskeleton;
+
+      /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
+      template <>
+      struct SpecTraits<SMskeleton> 
+      {
+           typedef SMea     Model;
+           typedef DummyInput Input; // DummyInput is just an empty struct
+      };
+
       /// SM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class SMskeleton : public SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> > 
+      class SMskeleton : public SLHAskeleton<SMskeleton> 
       {
         
          public:

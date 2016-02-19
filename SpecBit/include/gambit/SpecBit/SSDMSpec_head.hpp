@@ -31,27 +31,31 @@
 #include "flexiblesusy/config/config.h"
 
 
-namespace Gambit {
-   namespace SpecBit {
-
+namespace Gambit 
+{
+   namespace SpecBit 
+   {
       template <class MI>  // "MI" for "Model_interface"
       class SSDMSpec;
+   }
  
-      // For example of what kind of class MI needs to be, see
-      // SpecBit/include/model_files_and_boxes.hpp, 
-      // MODELNAME_interface class
+   // For example of what kind of class MI needs to be, see
+   // SpecBit/include/model_files_and_boxes.hpp, 
+   // MODELNAME_interface class
 
-      /// Specialisation of "traits" class used to inform Spec<T> class of what
-      /// "Model" and "Input" are for this derived class
-      template <class MI>
-      struct SSDMSpecTraits
-      {
-         typedef typename MI::Model Model;
-         typedef DummyInput Input;
-      };
+   /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
+   template <>
+   template <class MI>
+   struct SpecTraits<SpecBit::SSDMSpec<MI>> 
+   {
+      typedef typename MI::Model Model;
+      typedef DummyInput Input;
+   };
 
+   namespace SpecBit
+   {
       template <class MI>
-      class SSDMSpec : public Spec<SSDMSpec<MI>,SSDMSpecTraits<MI>>
+      class SSDMSpec : public Spec<SSDMSpec<MI>>
       {
    
          private:
@@ -62,9 +66,14 @@ namespace Gambit {
 
          public:
             /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
-            /// template wrapper classes, so need to help them along:
-            typedef typename SSDMSpec<MI>::MTget MTget; 
-            typedef typename SSDMSpec<MI>::MTset MTset; 
+            /// templated wrapper classes, so need to help them along:
+            typedef SSDMSpec<MI> Self;
+            typedef typename Self::MTget MTget; 
+            typedef typename Self::MTset MTset; 
+            typedef typename Self::GetterMaps GetterMaps;
+            typedef typename Self::SetterMaps SetterMaps;
+            typedef typename SpecTraits<Self>::Model Model;
+            typedef typename SpecTraits<Self>::Input Input;
 
             /// Interface function overrides
             virtual double GetScale() const;
@@ -87,16 +96,13 @@ namespace Gambit {
             virtual ~SSDMSpec();
 
             // Functions to interface Model and Input objects with the base 'Spec' class
-            typename SSDMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
-            typename SSDMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
-            const typename SSDMSpecTraits<MI>::Model& get_Model() const { return model_interface.model; }
-            const typename SSDMSpecTraits<MI>::Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
-
+            Model& get_Model() { return model_interface.model; }
+            Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            const Model& get_Model() const { return model_interface.model; }
+            const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
             //may use something like this to pass error to Gambit
             virtual std::string AccessError(std::string state) const;
-
-
 
             /// TODO: Need to implement this properly...
             /// Copy low energy spectrum information from another model object
@@ -130,10 +136,8 @@ namespace Gambit {
 
         // protected:
             /// Map filler overrides
-            // Unfortunately need to qualify the type name when wrapper is itself a template class
-            static typename SSDMSpec<MI>::GetterMaps fill_getter_maps();
-            static typename SSDMSpec<MI>::SetterMaps fill_setter_maps();
-           
+            static GetterMaps fill_getter_maps();
+            static SetterMaps fill_setter_maps();
 
       };
    } // end SpecBit namespace

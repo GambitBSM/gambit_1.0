@@ -254,21 +254,21 @@ namespace Gambit
  
       /// Default Constructor
       MSSMskeleton::MSSMskeleton(double uncert) 
-        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >()
+        : SLHAskeleton<MSSMskeleton>()
       {
         set_pole_mass_uncertainties(uncert);
       }
 
       /// Constructor via SLHAea object
       MSSMskeleton::MSSMskeleton(const SLHAea::Coll& input, double uncert)
-        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >(input)
+        : SLHAskeleton<MSSMskeleton>(input)
       {
         set_pole_mass_uncertainties(uncert);
       }
 
       /// Copy constructor: needed by clone function.
       MSSMskeleton::MSSMskeleton(const MSSMskeleton& other, double uncert)
-        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >(other)
+        : SLHAskeleton<MSSMskeleton>(other)
       {
         set_pole_mass_uncertainties(uncert);
       }

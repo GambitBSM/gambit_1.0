@@ -92,13 +92,20 @@ namespace Gambit
            /// @}
       };
 
+      class MSSMskeleton;
+
+      /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
+      template <>
+      struct SpecTraits<MSSMskeleton> 
+      {
+           typedef MSSMea     Model;
+           typedef DummyInput Input; // DummyInput is just an empty struct
+      };
+
       /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class MSSMskeleton : public SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> > 
+      class MSSMskeleton : public SLHAskeleton<MSSMskeleton> 
       {
          private:
-
-            typedef MSSMea Model;
-
             /// Set pole mass uncertainties
             void set_pole_mass_uncertainties(double);
 

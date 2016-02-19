@@ -37,24 +37,27 @@
 
 namespace Gambit
 {
-
    namespace SpecBit
    {
+      class QedQcdWrapper;       
+   }
 
-      // Needed for typename aliases in Spec and MapTypes classes
-      struct QedQcdWrapperTraits
+   /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
+   template <>
+   struct SpecTraits<SpecBit::QedQcdWrapper> 
+   {
+      typedef softsusy::QedQcd Model;
+      typedef SMInputs         Input;
+   };
+     
+   namespace SpecBit
+   {   
+      class QedQcdWrapper : public Spec<QedQcdWrapper> 
       {
-         typedef softsusy::QedQcd Model;
-         typedef SMInputs         Input;
-      };
-       
-      class QedQcdWrapper : public Spec<QedQcdWrapper,QedQcdWrapperTraits> 
-      {
-   
          private:
             // Keep copies of Model and Input objects internally
-            typename QedQcdWrapperTraits::Model qedqcd;
-            typename QedQcdWrapperTraits::Input sminputs;
+            Model qedqcd;
+            Input sminputs;
    
          public:
             // Constructors/destructors
@@ -63,10 +66,10 @@ namespace Gambit
             virtual ~QedQcdWrapper();        /***/
    
             // Functions to interface Model and Input objects with the base 'Spec' class
-            QedQcdWrapperTraits::Model& get_Model() { return qedqcd; }
-            QedQcdWrapperTraits::Input& get_Input() { return sminputs; }
-            const QedQcdWrapperTraits::Model& get_Model() const { return qedqcd; }
-            const QedQcdWrapperTraits::Input& get_Input() const { return sminputs; }
+            Model& get_Model() { return qedqcd; }
+            Input& get_Input() { return sminputs; }
+            const Model& get_Model() const { return qedqcd; }
+            const Input& get_Input() const { return sminputs; }
 
             virtual int get_index_offset() const;  /***/   
             virtual int get_numbers_stable_particles() const;  /***/

@@ -21,9 +21,10 @@
 
 #include "gambit/Elements/spec.hpp"
 
-namespace Gambit {
-   namespace SpecBit {
-
+namespace Gambit 
+{
+   namespace SpecBit 
+   {
       /// Simple container "model object" for the SM Higgs sector variables.
       /// We will derived from this for simple extensions, like for scalar singlet DM 
       struct SMHiggsModel
@@ -34,16 +35,23 @@ namespace Gambit {
          double get_HiggsPoleMass()  const { return HiggsPoleMass; } 
          double get_HiggsVEV()       const { return HiggsVEV;      } 
       };
-     
 
+      class SMHiggsContainer;
+   }
+
+   /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
+   template <>
+   struct SpecTraits<SpecBit::SMHiggsContainer> 
+   {
+        typedef SpecBit::SMHiggsModel Model;
+        typedef DummyInput            Input; // DummyInput is just an empty struct
+   };
+
+   namespace SpecBit 
+   {
       /// SubSpectrum wrapper class for the SM Higgs sector
       class SMHiggsContainer : public Spec<SMHiggsContainer> 
       {
-         public:
-           /// Typedefs required by Spec class, so it knows about these types.
-           typedef SMHiggsModel Model;
-           typedef DummyInput   Input; // DummyInput is just an empty struct
-
          private:
             /// Store the struct containing the parameters plus get/set functions
             Model model; 

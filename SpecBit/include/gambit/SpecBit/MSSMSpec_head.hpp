@@ -30,27 +30,32 @@
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
 
-namespace Gambit {
-   namespace SpecBit {
-
+namespace Gambit 
+{
+   namespace SpecBit 
+   {
       template <class MI>  // "MI" for "Model_interface"
       class MSSMSpec;
- 
-      // For example of what kind of class MI needs to be, see
-      // SpecBit/include/model_files_and_boxes.hpp, 
-      // MODELNAME_interface class
+   } 
 
-      /// Specialisation of "traits" class used to inform Spec<T> class of what
-      /// "Model" and "Input" are for this derived class
-      template <class MI>
-      struct MSSMSpecTraits
-      {
-         typedef typename MI::Model Model;
-         typedef DummyInput Input;
-      };
+   // For example of what kind of class MI needs to be, see
+   // SpecBit/include/model_files_and_boxes.hpp, 
+   // MODELNAME_interface class
 
+   /// Specialisation of "traits" class used to inform Spec<T> class of what
+   /// "Model" and "Input" are for this derived class
+   template <>
+   template <class MI>
+   struct SpecTraits<SpecBit::MSSMSpec<MI>>
+   {
+      typedef typename MI::Model Model;
+      typedef DummyInput Input;
+   };
+
+   namespace SpecBit
+   {
       template <class MI>
-      class MSSMSpec : public Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>
+      class MSSMSpec : public Spec<MSSMSpec<MI>>
       {
          private:
             str backend_name;
@@ -59,10 +64,15 @@ namespace Gambit {
             virtual int get_index_offset() const {return index_offset;}
 
          public:
-             /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
-            /// template wrapper classes, so need to help them along:
-            typedef typename MSSMSpec<MI>::MTget MTget; 
-            typedef typename MSSMSpec<MI>::MTset MTset; 
+            /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
+            /// templated wrapper classes, so need to help them along:
+            typedef MSSMSpec<MI> Self;
+            typedef typename Self::MTget MTget; 
+            typedef typename Self::MTset MTset; 
+            typedef typename Self::GetterMaps GetterMaps;
+            typedef typename Self::SetterMaps SetterMaps;
+            typedef typename SpecTraits<Self>::Model Model;
+            typedef typename SpecTraits<Self>::Input Input;
            
             /// Interface function overrides
             virtual double GetScale() const;
@@ -85,10 +95,10 @@ namespace Gambit {
             virtual ~MSSMSpec();
 
             // Functions to interface Model and Input objects with the base 'Spec' class
-            typename MSSMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
-            typename MSSMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
-            const typename MSSMSpecTraits<MI>::Model& get_Model() const { return model_interface.model; }
-            const typename MSSMSpecTraits<MI>::Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            Model& get_Model() { return model_interface.model; }
+            Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            const Model& get_Model() const { return model_interface.model; }
+            const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
             //some model independent stuff
             virtual double get_lsp_mass(int & particle_type, 
@@ -131,8 +141,8 @@ namespace Gambit {
             }
 
             /// Map filler overrides
-            static typename MSSMSpec<MI>::GetterMaps fill_getter_maps();
-            static typename MSSMSpec<MI>::SetterMaps fill_setter_maps();
+            static GetterMaps fill_getter_maps();
+            static SetterMaps fill_setter_maps();
 
       };
 

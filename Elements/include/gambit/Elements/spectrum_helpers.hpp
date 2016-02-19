@@ -136,14 +136,19 @@ namespace Gambit
    template <class DerivedSpec, class GetOrSet>
    struct MapTypes;
 
+   /// Declare empty base traits class which communicates
+   /// Model and Input typedefs from the wrapper class
+   template <class>
+   struct SpecTraits;
+
    /// Types needed for function pointer maps
    /// Partial specialisation for "getter" maps
    template <class DerivedSpec>
    struct MapTypes<DerivedSpec, MapTag::Get>
    {
       // Typedef collection
-      typedef typename DerivedSpec::Model Model;
-      typedef typename DerivedSpec::Input Input;
+      typedef typename SpecTraits<DerivedSpec>::Model Model;
+      typedef typename SpecTraits<DerivedSpec>::Input Input;
       typedef double(Model::*FSptr)(void) const; /* Function pointer signature for Model object member functions with no arguments */
       typedef double(Model::*FSptr1)(int) const; /* Function pointer signature for Model object member functions with one argument */
       typedef double(Model::*FSptr2)(int,int) const; /* Function pointer signature for Model object member functions with two arguments */
@@ -176,8 +181,8 @@ namespace Gambit
    struct MapTypes<DerivedSpec, MapTag::Set>
    {
       // Typedef collection
-      typedef typename DerivedSpec::Model Model;
-      typedef typename DerivedSpec::Input Input;
+      typedef typename SpecTraits<DerivedSpec>::Model Model;
+      typedef typename SpecTraits<DerivedSpec>::Input Input;
       typedef void(Model::*FSptr)(double); /* Function pointer signature for Model object member functions with no arguments */
       typedef void(Model::*FSptr1)(int,double); /* Function pointer signature for Model object member functions with one argument */
       typedef void(Model::*FSptr2)(int,int,double); /* Function pointer signature for Model object member functions with two arguments */

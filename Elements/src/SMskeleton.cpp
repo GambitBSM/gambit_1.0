@@ -101,17 +101,17 @@ namespace Gambit
  
       /// Default Constructor
       SMskeleton::SMskeleton() 
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >()
+        : SLHAskeleton<SMskeleton>()
       {}
 
       /// Constructor via SLHAea object
       SMskeleton::SMskeleton(const SLHAea::Coll& input)
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >(input)
+        : SLHAskeleton<SMskeleton>(input)
       {}
 
       /// Copy constructor: needed by clone function.
       SMskeleton::SMskeleton(const SMskeleton& other)
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >(other)
+        : SLHAskeleton<SMskeleton>(other)
       {} 
 
       /// @}  

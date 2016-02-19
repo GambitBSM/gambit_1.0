@@ -25,7 +25,6 @@ namespace Gambit
 {     
    namespace SpecBit
    {
-
       /// Simple extension of the SMHiggsContainer "model object"
       /// to include scalar singlet DM parameters
       struct SingletDMModel
@@ -40,22 +39,29 @@ namespace Gambit
          double get_SingletPoleMass() const { return SingletPoleMass; } 
          double get_lambda_hS()       const { return SingletLambda; } 
       };
+   
+      class SingletDMContainer;  
+   }
 
-     
+   /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
+   template <>
+   struct SpecTraits<SpecBit::SingletDMContainer> 
+   {
+        typedef SpecBit::SingletDMModel Model;
+        typedef DummyInput              Input; // DummyInput is just an empty struct
+   };
+
+   namespace SpecBit
+   { 
       class SingletDMContainer : public Spec<SingletDMContainer> 
       {
-         public:
-            /// Typedefs required by Spec class, so that it knows about these types.
-            typedef SingletDMModel Model;
-            typedef DummyInput     Input;
-
          private:
             Model model;
             Input dummyinput;
 
          public:
             /// @{ Constructors/destructors
-            SingletDMContainer(const typename Traits::Model& m)
+            SingletDMContainer(const Model& m)
              : model(m)
              , dummyinput()
             {}

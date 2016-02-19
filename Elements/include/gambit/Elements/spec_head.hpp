@@ -35,7 +35,7 @@ namespace Gambit
 
    /// Implementations (overrides) of the virtual getters/setters found in CommonAbstract.
    /// These now need to be templated so that they know details of the derived spectrum object.
-   template <class Host>
+   template <class HostSpec>
    class CommonTemplateFuncs: public virtual CommonFuncs
    {
       public:
@@ -62,8 +62,24 @@ namespace Gambit
    
      
    /// Need to forward declare Spec class
-   template <class, class>
+   template <class>
    class Spec;
+
+   /// Helper for the static_assert below
+   template< typename T >
+   struct always_false { 
+       enum { value = false };  
+   };
+
+   /// Forward declare base traits class which communicates
+   /// Model and Input typedefs from the wrapper class
+   /// Triggers informative compiler error if an appropriate specialisation is not defined
+   /// for whatever SubSpectrum wrapper might be trying to instantiate this.
+   template <class T>
+   struct SpecTraits
+   {
+      static_assert(always_false<T>::value, "Failed to find appropriate specialisation of SpecTraits! Did you define one along with your SubSpectrum wrapper? If so, please be sure that the template parameter matches the name of your wrapper class.");
+   };
 
    /// Forward declarations related to FptrFinder class
    template<class,class> class SetMaps;
@@ -82,10 +98,11 @@ namespace Gambit
          typedef DerivedSpec D;
          typedef Spec<D> Self;
 
-         /// Note: DerivedSpec will need to typedef Model and Input
+         /// Note: Wrapper need to define a specialisation of 
+         /// SpecTraits, which typedefs Model and Input.
          /// "Grab" these typedefs here to simplify notation
-         typedef typename D::Model Model;
-         typedef typename D::Input Input;
+         typedef typename SpecTraits<D>::Model Model;
+         typedef typename SpecTraits<D>::Input Input;
 
          typedef MapTypes<D,MapTag::Get> MTget; 
          typedef MapTypes<D,MapTag::Set> MTset; 
