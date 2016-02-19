@@ -8,11 +8,16 @@
 //
 #pragma once
 
+#if __cplusplus <= 199711L
+#error "This library needs at least a C++11 compliant compiler: are you using -std=c++11?"
+#endif
+
 #include <cmath>
 #include <vector>
 #include <cassert>
+#include <cstdlib>
 #include <cstddef>
-#include "boost/foreach.hpp"
+#include <type_traits>
 
 /// @file Convenience maths functions for HEP MC physics
 /// @author Andy Buckley <andy.buckley@cern.ch>
@@ -87,40 +92,38 @@ namespace HEPUtils {
 
 
   /// Make a list of @a nbins + 1 values linearly spaced between @a start and @a end inclusive.
-  inline std::vector<double> linspace(size_t nbins, double start, double end) {
+  inline std::vector<double> linspace(size_t nbins, double start, double end, bool include_end=true) {
     assert(end >= start);
     assert(nbins > 0);
     std::vector<double> rtn;
     const double interval = (end-start)/static_cast<double>(nbins);
     // Add all edges except the last
-    double edge = start;
-    while (in_range(edge, start, end)) {
-      rtn.push_back(edge);
-      edge += interval;
+    for (size_t i = 0; i < nbins; ++i) {
+      rtn.push_back(start + i*interval);
     }
     // Add the last edge
-    rtn.push_back(edge);
-    assert(rtn.size() == nbins+1);
+    assert(rtn.size() == nbins);
+    if (include_end) rtn.push_back(end); // exact end, not result of n * interval
     return rtn;
   }
 
 
   /// Make a list of @a nbins + 1 values exponentially spaced between @a start and @a end inclusive.
-  inline std::vector<double> logspace(size_t nbins, double start, double end, double offset=0) {
+  inline std::vector<double> logspace(size_t nbins, double start, double end, double offset=0, bool include_end=true) {
     assert(end >= start);
     assert(start+offset > 0);
     assert(nbins > 0);
     const double logstart = std::log(start+offset);
     const double logend = std::log(end+offset);
-    const std::vector<double> logvals = linspace(nbins, logstart, logend);
-    assert(logvals.size() == nbins+1);
-    std::vector<double> rtn; rtn.reserve(logvals.size());
-    rtn.push_back(start);
-    for (size_t i = 1; i < logvals.size()-1; ++i) {
+    const std::vector<double> logvals = linspace(nbins, logstart, logend, false);
+    assert(logvals.size() == nbins);
+    std::vector<double> rtn; rtn.reserve(nbins+1);
+    rtn.push_back(start); //< exact start, not exp(log(start))
+    for (size_t i = 1; i < logvals.size(); ++i) {
       rtn.push_back(std::exp(logvals[i]));
     }
-    rtn.push_back(end);
-    assert(rtn.size() == nbins+1);
+    assert(rtn.size() == nbins);
+    if (include_end) rtn.push_back(end); //< exact end, not exp(n * loginterval)
     return rtn;
   }
 
