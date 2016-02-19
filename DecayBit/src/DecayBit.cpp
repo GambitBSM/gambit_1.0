@@ -2711,7 +2711,7 @@ namespace Gambit
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
 
       // MSSM-specific
-      if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+      if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
       {
         mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 

@@ -466,7 +466,7 @@ digraph G {
 		style="rounded,filled"];
 	2 -> 167;
 	279	 [fillcolor="#F0F0D0",
-		label=< <font point-size="20" color="red">MSSM78atQ_parameters</font><br/>Type: ModelParameters<br/>Function: MSSM78atQ_parameters<br/>Module: MSSM25atQ>,
+		label=< <font point-size="20" color="red">MSSM63atQ_parameters</font><br/>Type: ModelParameters<br/>Function: MSSM63atQ_parameters<br/>Module: MSSM25atQ>,
 		shape=box,
 		style="rounded,filled"];
 	2 -> 279;

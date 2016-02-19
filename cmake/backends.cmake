@@ -42,19 +42,9 @@
 #************************************************
 
 # DarkSUSY
-set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
-set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
 set(darksusy_dir "${PROJECT_SOURCE_DIR}/Backends/installed/DarkSUSY/5.1.3")
 set(darksusy_dl "darksusy-5.1.3.tar.gz")
-set(DS_PATCH_DIR "${PROJECT_SOURCE_DIR}/Backends/patches/DarkSUSY/5.1.3")
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(_ld_prefix "-Wl,-all_load")
-  set(_ld_suffix "")
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  set(_ld_prefix "-Wl,--whole-archive")
-  set(_ld_suffix "-Wl,--no-whole-archive")
-endif()
-set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE_DIR>/lib/libdarksusy.a <SOURCE_DIR>/lib/libisajet.a ${_ld_suffix})
+set(darksusy_patch "${PROJECT_SOURCE_DIR}/Backends/patches/DarkSUSY/5.1.3")
 ExternalProject_Add(darksusy
   URL http://www.fysik.su.se/~edsjo/darksusy/tars/${darksusy_dl}
   URL_MD5 ca95ffa083941a469469710fab2f3c97
@@ -62,17 +52,16 @@ ExternalProject_Add(darksusy
   SOURCE_DIR ${darksusy_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
-        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
-        #COMMAND patch -b -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
-        #COMMAND patch -b -p2 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif
+  PATCH_COMMAND patch -p1 < ${darksusy_patch}/patchDS_sharedlib_+_threadsafety.dif
+        COMMAND patch -p1 -d src < ${darksusy_patch}/patchDS.dif
+        COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${darksusy_patch}/patchISA.dif
+        #COMMAND patch -b -p2 -d src < ${darksusy_patch}/patchDS_OMP_src.dif
+        #COMMAND patch -b -p2 -d include < ${darksusy_patch}/patchDS_OMP_include.dif
  # FIXME DarkSUSY segfaults with -O2 setting
  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
-        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy}
-        COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
-  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} ${OpenMP_Fortran_FLAGS} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} dslib_shared install_tables
+  INSTALL_COMMAND ""
 )
 add_extra_targets(darksusy ${darksusy_dir} ${backend_download}/${darksusy_dl} distclean)
 
@@ -97,10 +86,10 @@ ExternalProject_Add(darksusy_5_1_1
   SOURCE_DIR ${darksusy_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  PATCH_COMMAND patch -b -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
-        COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
-        #COMMAND patch -b -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
-        #COMMAND patch -b -p2 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif
+  PATCH_COMMAND patch -p1 -d src < ${DS_PATCH_DIR}/patchDS.dif
+        COMMAND patch -p1 -d contrib/isajet781-for-darksusy < ${DS_PATCH_DIR}/patchISA.dif
+        #COMMAND patch -p2 -d src < ${DS_PATCH_DIR}/patchDS_OMP_src.dif
+        #COMMAND patch -p2 -d include < ${DS_PATCH_DIR}/patchDS_OMP_include.dif
  # FIXME DarkSUSY segfaults with -O2 setting
  #CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${GAMBIT_Fortran_FLAGS} FFLAGS=${GAMBIT_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${GAMBIT_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS}
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
@@ -282,7 +271,7 @@ ExternalProject_Add(fastsim
 add_extra_targets(fastsim ${fastsim_dir} null distclean)
 
 # Nulike
-set(nulike_ver "1.0.1")
+set(nulike_ver "1.0.2")
 set(nulike_location "http://www.hepforge.org/archive/nulike/nulike-${nulike_ver}.tar.gz")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/Backends/installed/nulike/${nulike_ver}")
@@ -290,7 +279,7 @@ set(nulike_short_dir "./Backends/installed/nulike/${nulike_ver}")
 set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   URL ${nulike_location}
-  URL_MD5 4240dad169ee5ccbde876ed708ac7801
+  URL_MD5 517a4928c947ec20870171d019d5fbee
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
