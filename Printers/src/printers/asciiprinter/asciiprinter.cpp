@@ -498,7 +498,7 @@ is a unique record for every rank/pointID pair.";
               else
               {
                 // print an entry from the results vector
-                my_fstream<<std::setw(colwidth)<<std::scientific<<(*results)[j]; //<<"\t";
+                my_fstream<<std::setw(colwidth+5)<<std::scientific<<(*results)[j]; //<<"\t";
               }
             }
             // Result printed

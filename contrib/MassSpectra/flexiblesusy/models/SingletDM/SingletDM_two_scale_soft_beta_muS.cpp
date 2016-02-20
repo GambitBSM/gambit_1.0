@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 29 Dec 2015 17:22:01
+// File generated at Sat 20 Feb 2016 16:21:18
 
 #include "SingletDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,7 +37,7 @@ double SingletDM_soft_parameters::calc_beta_muS_one_loop(const Soft_traces& soft
 
    double beta_muS;
 
-   beta_muS = Re(4*(LamSH*muH + 6*LamS*muS)*oneOver16PiSqr);
+   beta_muS = Re((-2*LamSH*muH + 6*LamS*muS)*oneOver16PiSqr);
 
 
    return beta_muS;
@@ -57,10 +57,10 @@ double SingletDM_soft_parameters::calc_beta_muS_two_loop(const Soft_traces& soft
 
    double beta_muS;
 
-   beta_muS = Re(twoLoop*(-24*LamSH*muH*traceYdAdjYd - 8*LamSH*muH*
-      traceYeAdjYe - 24*LamSH*muH*traceYuAdjYu + 4.8*LamSH*muH*Sqr(g1) + 24*
-      LamSH*muH*Sqr(g2) - 480*muS*Sqr(LamS) - 16*muH*Sqr(LamSH) - 8*muS*Sqr(
-      LamSH)));
+   beta_muS = Re(twoLoop*(12*LamSH*muH*traceYdAdjYd + 4*LamSH*muH*
+      traceYeAdjYe + 12*LamSH*muH*traceYuAdjYu - 2.4*LamSH*muH*Sqr(g1) - 12*
+      LamSH*muH*Sqr(g2) - 30*muS*Sqr(LamS) + 4*muH*Sqr(LamSH) - 2*muS*Sqr(LamSH
+      )));
 
 
    return beta_muS;

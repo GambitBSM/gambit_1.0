@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 29 Dec 2015 17:22:29
+// File generated at Sat 20 Feb 2016 16:21:44
 
 /**
  * @file SingletDM_mass_eigenstates.cpp
@@ -26,7 +26,7 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Tue 29 Dec 2015 17:22:29 with FlexibleSUSY
+ * This file was generated at Sat 20 Feb 2016 16:21:44 with FlexibleSUSY
  * 1.2.4 (git commit: unknown) and SARAH 4.5.8 .
  */
 
@@ -386,7 +386,7 @@ int CLASSNAME::solve_ewsb_tree_level()
 
    const double old_Lambda1 = Lambda1;
 
-   Lambda1 = Re((-2*muH)/Sqr(v));
+   Lambda1 = Re(muH/Sqr(v));
 
    const bool is_finite = IsFinite(Lambda1);
 
@@ -453,7 +453,7 @@ int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
 
    double Lambda1;
 
-   Lambda1 = Re((-2*(muH*v - tadpole[0]))/Power(v,3));
+   Lambda1 = Re((muH*v + 2*tadpole[0])/Power(v,3));
 
    const bool is_finite = IsFinite(Lambda1);
 
@@ -814,8 +814,8 @@ void CLASSNAME::run_to(double scale, double eps)
 
 double CLASSNAME::get_mass_matrix_Hp() const
 {
-   const double mass_matrix_Hp = Re(0.25*(4*muH + 2*Lambda1*Sqr(v) + Sqr(
-      g2)*Sqr(v)));
+   const double mass_matrix_Hp = Re(0.25*(-2*muH + 2*Lambda1*Sqr(v) + Sqr
+      (g2)*Sqr(v)));
 
    return mass_matrix_Hp;
 }
@@ -833,7 +833,7 @@ void CLASSNAME::calculate_MHp()
 
 double CLASSNAME::get_mass_matrix_ss() const
 {
-   const double mass_matrix_ss = Re(2*muS + LamSH*Sqr(v));
+   const double mass_matrix_ss = Re(muS + 0.5*LamSH*Sqr(v));
 
    return mass_matrix_ss;
 }
@@ -872,8 +872,8 @@ void CLASSNAME::calculate_MFv()
 
 double CLASSNAME::get_mass_matrix_Ah() const
 {
-   const double mass_matrix_Ah = Re(0.25*(2*(2*muH + Lambda1*Sqr(v)) +
-      Sqr(v)*Sqr(g2*Cos(ThetaW()) + 0.7745966692414834*g1*Sin(ThetaW()))));
+   const double mass_matrix_Ah = Re(0.25*(-2*(muH - Lambda1*Sqr(v)) + Sqr
+      (v)*Sqr(g2*Cos(ThetaW()) + 0.7745966692414834*g1*Sin(ThetaW()))));
 
    return mass_matrix_Ah;
 }
@@ -891,7 +891,7 @@ void CLASSNAME::calculate_MAh()
 
 double CLASSNAME::get_mass_matrix_hh() const
 {
-   const double mass_matrix_hh = Re(muH + 1.5*Lambda1*Sqr(v));
+   const double mass_matrix_hh = Re(0.5*(-muH + 3*Lambda1*Sqr(v)));
 
    return mass_matrix_hh;
 }
@@ -1066,7 +1066,7 @@ void CLASSNAME::calculate_MVWp()
 
 double CLASSNAME::get_ewsb_eq_hh_1() const
 {
-   double result = Re(muH*v + 0.5*Lambda1*Power(v,3));
+   double result = Re(-0.5*muH*v + 0.5*Lambda1*Power(v,3));
 
    return result;
 }
@@ -1160,7 +1160,7 @@ double CLASSNAME::CpHpconjHpssss() const
 {
    double result = 0.0;
 
-   result = -2*LamSH;
+   result = -LamSH;
 
    return result;
 }
@@ -1299,7 +1299,7 @@ double CLASSNAME::Cpsssshh() const
 {
    double result = 0.0;
 
-   result = -2*LamSH*v;
+   result = -(LamSH*v);
 
    return result;
 }
@@ -1308,7 +1308,7 @@ double CLASSNAME::CpssssAhAh() const
 {
    double result = 0.0;
 
-   result = -2*LamSH;
+   result = -LamSH;
 
    return result;
 }
@@ -1317,7 +1317,7 @@ double CLASSNAME::Cpsssshhhh() const
 {
    double result = 0.0;
 
-   result = -2*LamSH;
+   result = -LamSH;
 
    return result;
 }
@@ -1326,7 +1326,7 @@ double CLASSNAME::Cpssssssss() const
 {
    double result = 0.0;
 
-   result = -24*LamS;
+   result = -6*LamS;
 
    return result;
 }
@@ -1335,7 +1335,7 @@ double CLASSNAME::CpssssconjHpHp() const
 {
    double result = 0.0;
 
-   result = -2*LamSH;
+   result = -LamSH;
 
    return result;
 }
@@ -1389,7 +1389,7 @@ double CLASSNAME::CpAhAhssss() const
 {
    double result = 0.0;
 
-   result = -2*LamSH;
+   result = -LamSH;
 
    return result;
 }
@@ -1589,7 +1589,7 @@ double CLASSNAME::Cphhssss() const
 {
    double result = 0.0;
 
-   result = -2*LamSH*v;
+   result = -(LamSH*v);
 
    return result;
 }
@@ -1671,7 +1671,7 @@ double CLASSNAME::Cphhhhssss() const
 {
    double result = 0.0;
 
-   result = -2*LamSH;
+   result = -LamSH;
 
    return result;
 }

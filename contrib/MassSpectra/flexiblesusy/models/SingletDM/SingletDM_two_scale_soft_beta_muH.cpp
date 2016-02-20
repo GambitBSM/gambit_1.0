@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 29 Dec 2015 17:22:01
+// File generated at Sat 20 Feb 2016 16:21:19
 
 #include "SingletDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -40,7 +40,7 @@ double SingletDM_soft_parameters::calc_beta_muH_one_loop(const Soft_traces& soft
 
    double beta_muH;
 
-   beta_muH = Re(oneOver16PiSqr*(6*Lambda1*muH + 4*LamSH*muS + 6*muH*
+   beta_muH = Re(oneOver16PiSqr*(6*Lambda1*muH - 2*LamSH*muS + 6*muH*
       traceYdAdjYd + 2*muH*traceYeAdjYe + 6*muH*traceYuAdjYu - 0.9*muH*Sqr(g1)
       - 4.5*muH*Sqr(g2)));
 
@@ -73,8 +73,8 @@ double SingletDM_soft_parameters::calc_beta_muH_two_loop(const Soft_traces& soft
       (g1) + 36*Lambda1*muH*Sqr(g2) + 11.25*muH*traceYuAdjYu*Sqr(g2) + 1.125*
       muH*Sqr(g1)*Sqr(g2) + 0.75*muH*traceYeAdjYe*(-16*Lambda1 + 5*Sqr(g1) + 5*
       Sqr(g2)) + 40*muH*traceYuAdjYu*Sqr(g3) + 0.25*muH*traceYdAdjYd*(-144*
-      Lambda1 + 5*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3)) - 15*muH*Sqr(Lambda1) - 2
-      *muH*Sqr(LamSH) - 16*muS*Sqr(LamSH)));
+      Lambda1 + 5*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3)) - 15*muH*Sqr(Lambda1) -
+      0.5*muH*Sqr(LamSH) + 4*muS*Sqr(LamSH)));
 
 
    return beta_muH;

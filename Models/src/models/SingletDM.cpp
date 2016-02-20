@@ -54,7 +54,7 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
   tree_level_S_mass=myP.getValue("mS");
   Lambda_hS=myP.getValue("lambda_hS");
   
-  ms2=pow(tree_level_S_mass,2)-Lambda_hS*pow(246.2,2);
+  ms2=pow(tree_level_S_mass,2)-0.5*Lambda_hS*pow(246.2,2);
   
   targetP.setValue("lambda_hS",Lambda_hS);
   
@@ -76,10 +76,10 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
 
 
 #define MODEL  SingletDM_running
-#define PARENT SCDM
+#define PARENT SingletDMZ3
 
 // Translation function definition
-void MODEL_NAMESPACE::SingletDM_running_to_SCDM (const ModelParameters &myP, ModelParameters &targetP)
+void MODEL_NAMESPACE::SingletDM_running_to_SingletDMZ3 (const ModelParameters &myP, ModelParameters &targetP)
 {
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
    logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_running..."<<LogTags::info<<EOM;
@@ -101,7 +101,7 @@ void MODEL_NAMESPACE::SingletDM_running_to_SCDM (const ModelParameters &myP, Mod
    // Done! Check that everything is ok if desired.
    #ifdef SingletDM_DBUG
      std::cout << "SingletDM_running parameters:" << myP << std::endl;
-     std::cout << "SCDM parameters   :" << targetP << std::endl;
+     std::cout << "SingletDMZ3 parameters   :" << targetP << std::endl;
    #endif
 }
 

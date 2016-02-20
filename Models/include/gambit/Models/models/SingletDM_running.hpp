@@ -20,13 +20,13 @@
 #ifndef __SingletDM_running_hpp__
 #define __SingletDM_running_hpp__
 
-#include "gambit/Models/models/SCDM.hpp"
+#include "gambit/Models/models/SingletDMZ3.hpp"
 
 
 #define MODEL SingletDM_running
-#define PARENT SCDM
+#define PARENT SingletDMZ3
   START_MODEL
-  INTERPRET_AS_PARENT_FUNCTION(SingletDM_running_to_SCDM)
+  INTERPRET_AS_PARENT_FUNCTION(SingletDM_running_to_SingletDMZ3)
   DEFINEPARS(mS2, lambda_hS, lambda_S)
 #undef PARENT
 

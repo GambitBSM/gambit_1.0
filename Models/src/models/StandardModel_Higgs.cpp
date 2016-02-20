@@ -51,7 +51,7 @@ void MODEL_NAMESPACE::StandardModel_Higgs_to_StandardModel_Higgs_running (const 
   double tree_level_H_mass,mh2;
   tree_level_H_mass=myP.getValue("mH");
   
-  mh2=0.5*pow(tree_level_H_mass,2);
+  mh2=pow(tree_level_H_mass,2);
   
   
   

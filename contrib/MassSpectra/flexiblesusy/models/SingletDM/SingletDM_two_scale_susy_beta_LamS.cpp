@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Tue 29 Dec 2015 17:21:59
+// File generated at Sat 20 Feb 2016 16:21:17
 
 #include "SingletDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,7 +37,7 @@ double SingletDM_susy_parameters::calc_beta_LamS_one_loop(const Susy_traces& sus
 
    double beta_LamS;
 
-   beta_LamS = Re(2*oneOver16PiSqr*(36*Sqr(LamS) + Sqr(LamSH)));
+   beta_LamS = Re(2*oneOver16PiSqr*(9*Sqr(LamS) + Sqr(LamSH)));
 
 
    return beta_LamS;
@@ -57,8 +57,8 @@ double SingletDM_susy_parameters::calc_beta_LamS_two_loop(const Susy_traces& sus
 
    double beta_LamS;
 
-   beta_LamS = Re(-0.8*twoLoop*(4080*Power(LamS,3) + 20*Power(LamSH,3) +
-      100*LamS*Sqr(LamSH) + 15*traceYdAdjYd*Sqr(LamSH) + 5*traceYeAdjYe*Sqr(
+   beta_LamS = Re(-0.8*twoLoop*(255*Power(LamS,3) + 10*Power(LamSH,3) +
+      25*LamS*Sqr(LamSH) + 15*traceYdAdjYd*Sqr(LamSH) + 5*traceYeAdjYe*Sqr(
       LamSH) + 15*traceYuAdjYu*Sqr(LamSH) - 3*Sqr(g1)*Sqr(LamSH) - 15*Sqr(g2)*
       Sqr(LamSH)));
 

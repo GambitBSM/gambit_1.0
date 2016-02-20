@@ -33,7 +33,7 @@
 #include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 
-#include "gambit/SpecBit/SCDMSpec.hpp"
+#include "gambit/SpecBit/SingletDMZ3Spec.hpp"
 #include "gambit/SpecBit/SingletDMSpec.hpp"
 
 
@@ -302,7 +302,7 @@ namespace Gambit
       double mS2 = *Param.at("mS2");
       double lambda_hs = *Param.at("lambda_hS");
       double lambda_s  = *Param.at("lambda_S");
-      input.HiggsIN=-mH2;
+      input.HiggsIN=mH2;
       input.mS2Input=mS2;
       input.LamSHInput=lambda_hs;
       input.LamSInput=lambda_s;
@@ -310,16 +310,16 @@ namespace Gambit
     }
     
     template <class T>
-    void fill_SCDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    void fill_SingletDMZ3_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
       double mH2 = *Param.at("mH2");
       double mS2 = *Param.at("mS2");
       double lambda_hs = *Param.at("lambda_hS");
       double lambda_s  = *Param.at("lambda_S");
-      input.HiggsIN=-mH2;
+      input.HiggsIN=mH2;
       input.mS2Input=mS2;
-      input.Lambda2Input=lambda_hs;
-      input.Lambda3Input=lambda_s;
+      input.LamSHInput=lambda_hs;
+      input.LamSInput=lambda_s;
       input.QEWSB=173.15;  // scale where EWSB conditions are applied
     }
 
@@ -329,7 +329,7 @@ namespace Gambit
     void fill_extra_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
       double lambda_s= *Param.at("lambda_S");
-      input.Lambda3Input=lambda_s;
+      input.LamSInput=lambda_s;
     }
 
     void get_SingletDM_spectrum_pole(const Spectrum* &result)
@@ -340,22 +340,40 @@ namespace Gambit
       SingletDM_input_parameters input;
       fill_SingletDM_input(input,myPipe::Param);
       input.Qin=173.15;
-     // result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SCDMSpec<SingletDM_interface<ALGORITHM1>>,Problems<SingletDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+     // result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SingletDMZ3Spec<SingletDM_interface<ALGORITHM1>>,Problems<SingletDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       result = run_FS_spectrum_generator<SingletDM_interface<ALGORITHM1>,SingletDMSpec<SingletDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
     }
     
-    void get_SCDM_spectrum(const Spectrum* &result)
+    void get_SingletDMZ3_spectrum(const Spectrum* &result)
     {
       using namespace softsusy;
-      namespace myPipe = Pipes::get_SCDM_spectrum;
+      namespace myPipe = Pipes::get_SingletDMZ3_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-      SCDM_input_parameters input;
-      fill_SCDM_input(input,myPipe::Param);
+      SingletDMZ3_input_parameters input;
+      fill_SingletDMZ3_input(input,myPipe::Param);
       fill_extra_input(input,myPipe::Param);
       input.Qin=173.15;
-     // result = run_FS_spectrum_generator<SCDM_interface<ALGORITHM1>,SCDMSpec<SCDM_interface<ALGORITHM1>>,Problems<SCDM_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
-     result = run_FS_spectrum_generator<SCDM_interface<ALGORITHM1>,SCDMSpec<SCDM_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+     // result = run_FS_spectrum_generator<SingletDMZ3_interface<ALGORITHM1>,SingletDMZ3Spec<SingletDMZ3_interface<ALGORITHM1>>,Problems<SingletDMZ3_info::NUMBER_OF_PARTICLES>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
+     result = run_FS_spectrum_generator<SingletDMZ3_interface<ALGORITHM1>,SingletDMZ3Spec<SingletDMZ3_interface<ALGORITHM1>>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 
+    }
+
+
+    void get_pole_mh(double &result)
+    {
+      using namespace flexiblesusy;
+      using namespace softsusy;
+      namespace myPipe = Pipes::get_pole_mh;//get_SingletDM_spectrum;
+      using namespace Gambit;
+      using namespace SpecBit;
+      //const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+
+      const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
+      const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
+
+      result=spec->phys().get(Par::Pole_Mass,"h0");
+  
+      
     }
 
           
