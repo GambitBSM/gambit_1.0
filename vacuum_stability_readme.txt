@@ -4,16 +4,16 @@ j.mckay14@imperial.ac.uk
 
 The vacuum_stability functions can be run using
 
-gambit_SpecBit_SSDM.yaml
+gambit_SpecBit_SingletDM.yaml
 
 and reading the comments within.
 
 
-The new functions are contained within SpecBit_SSDM.cpp, these are:
+The new functions are contained within SpecBit_SingletDM.cpp and SpecBit_Extras, these are:
 
-Capability: SSDM_spectrum:
+Capability: SingletDM_spectrum:
 
--get_SSDM_spectrum
+-get_SingletDM_spectrum_pole
 returns a spectrum object through an interface with FlexibleSUSY, see the new header SSDMSpec.hpp
 for details, this is a cut down and modified version of MSSMSpec.hpp.  This spectrum object is intended to have
 the same available features as the existing SingletDM version which is just a simple container.
