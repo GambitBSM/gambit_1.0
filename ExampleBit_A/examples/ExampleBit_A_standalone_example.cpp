@@ -123,8 +123,8 @@ int main()
     // where PRI is a primary model.
     Models::CMSSM::Functown::NUHM1_parameters.resolveDependency(&Models::CMSSM::Functown::primary_parameters);
     local_xsection.resolveDependency(&Models::CMSSM::Functown::NUHM1_parameters);
-    nevents_dbl.resolveDependency(&local_xsection);
-    nevents_int.resolveDependency(&nevents_dbl);
+    nevents_pred.resolveDependency(&local_xsection);
+    nevents_pred_rounded.resolveDependency(&nevents_pred);
 
     // Resolve dependencies of nested functions on each other
     exampleCut.resolveDependency(&exampleEventGen);
@@ -147,12 +147,12 @@ int main()
     std::cout << ExampleBit_A::Pipes::function_pointer_retriever::BEreq::externalFunction.name() << std::endl;
 
     // Double-check which dependencies have been filled with what (not every combo is done)
-    std::cout << std::endl << "My function nevents_int has had its dependency on nevents filled by:" << endl;
-    std::cout << ExampleBit_A::Pipes::nevents_int::Dep::nevents.origin() << "::";
-    std::cout << ExampleBit_A::Pipes::nevents_int::Dep::nevents.name() << std::endl;
-    std::cout << std::endl << "My function nevents_dbl has had its dependency on xsection filled by:" << endl;
-    std::cout << ExampleBit_A::Pipes::nevents_dbl::Dep::xsection.origin() << "::";
-    std::cout << ExampleBit_A::Pipes::nevents_dbl::Dep::xsection.name() << std::endl;
+    std::cout << std::endl << "My function nevents_pred_rounded has had its dependency on nevents filled by:" << endl;
+    std::cout << ExampleBit_A::Pipes::nevents_pred_rounded::Dep::nevents.origin() << "::";
+    std::cout << ExampleBit_A::Pipes::nevents_pred_rounded::Dep::nevents.name() << std::endl;
+    std::cout << std::endl << "My function nevents_pred has had its dependency on xsection filled by:" << endl;
+    std::cout << ExampleBit_A::Pipes::nevents_pred::Dep::xsection.origin() << "::";
+    std::cout << ExampleBit_A::Pipes::nevents_pred::Dep::xsection.name() << std::endl;
     std::cout << std::endl << "My function local_xsection has had its dependency on MSSM parameters filled by:" << std::endl;
     std::cout << ExampleBit_A::Pipes::local_xsection::Dep::NUHM1_parameters.origin() << "::";
     std::cout << ExampleBit_A::Pipes::local_xsection::Dep::NUHM1_parameters.name() << std::endl;
@@ -164,7 +164,7 @@ int main()
     std::cout << ExampleBit_A::Pipes::exampleCut::Dep::event.name() << std::endl;
 
     // Set some module function options
-    nevents_int.setOption<double>("probability_of_validity", 0.1);
+    nevents_pred_rounded.setOption<double>("probability_of_validity", 0.1);
 
     // Start a loop over some low-E points in the primary model parameter space
     std::cout << "Starting model scan..." << std::endl << std::endl;
@@ -190,12 +190,12 @@ int main()
         eventLoopManager.reset_and_calculate();           // so could go anywhere.)
         Models::CMSSM::Functown::NUHM1_parameters.reset_and_calculate();
         local_xsection.reset_and_calculate();
-        nevents_dbl.reset_and_calculate();
-        nevents_int.reset_and_calculate();
+        nevents_pred.reset_and_calculate();
+        nevents_pred_rounded.reset_and_calculate();
 
         // Retrieve the (cached) results of the module functions.  The argument is the thread index; everything except '0' is just temporary data.
-        double r1 = nevents_dbl(0);
-        int r2 = nevents_int(0);
+        double r1 = nevents_pred(0);
+        int r2 = nevents_pred_rounded(0);
         std::cout << std::endl << "Retrieved results: " << r1 << ", " << r2 << std::endl << std::endl;
 
       }
