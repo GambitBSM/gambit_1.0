@@ -49,7 +49,7 @@ namespace Gambit
                     }
                     else
                     {
-                        scan_err << "fixed_value input for parameter " << names[0] << "is not a Scalar or Sequence" << scan_end;
+                        scan_err << "fixed_value input for parameter " << names[0] << " is neither scalar nor sequence" << scan_end;
                     }
                     
                 }
@@ -73,7 +73,7 @@ namespace Gambit
                 }
                 else
                 {
-                    scan_err << "fixed_value input for parameter " << names[0] << "is not a Scalar or Sequence" << scan_end;
+                    scan_err << "fixed_value input for parameter " << names[0] << " is neither scalar nor sequence" << scan_end;
                 }
             }
                 
