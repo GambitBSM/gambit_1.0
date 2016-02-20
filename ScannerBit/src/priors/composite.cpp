@@ -147,7 +147,7 @@ namespace Gambit
                     
                     param_names.push_back(mod + std::string("::") + par_name);
                     
-                    if (!model_options.getNode(mod, *par_it).IsMap())
+                    if (model_options.getNode(mod, *par_it).IsSequence() || model_options.getNode(mod, *par_it).IsScalar())
                     {
                         phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par_name, model_options.getNode(mod, *par_it)));
                     }
