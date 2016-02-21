@@ -12,14 +12,12 @@ Parameters:
 
   CMSSM:
     A0: [10.0, -100.0, 1]
-      #range: [-1000, 1000]
     M0:
       prior_type: log
       range: [0.001,1000]
     M12:
     SignMu:
       range: [-1, 1]
-      fixed_value: 1
     TanBeta:
       fixed_value: 1
 
