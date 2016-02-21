@@ -170,12 +170,20 @@ namespace Gambit {
         // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
-#ifdef WITH_MPI
-          GMPI::Comm comm;
-          int rank = comm.Get_rank();
-#else
           int rank = 0;
+#ifdef WITH_MPI
+          try
+          {
+            GMPI::Comm comm;
+            rank = comm.Get_rank();
+          }
+          catch(const std::exception& e)
+          {
+            // FIXME: Throw reasonable error here?
+            rank = 0;
+          }
 #endif
+
           // Set filename
           std::string fstr = "DarkBit_temp_";
           fstr += std::to_string(rank) + ".slha";

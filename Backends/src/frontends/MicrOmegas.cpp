@@ -46,11 +46,18 @@ BE_INI_FUNCTION
 
     std::string filename;
 
-#ifdef WITH_MPI
-    GMPI::Comm comm;
-    int rank = comm.Get_rank();
-#else
     int rank = 0;
+#ifdef WITH_MPI
+    try
+    {
+        GMPI::Comm comm;
+        rank = comm.Get_rank();
+    }
+    catch(const std::exception& e)
+    {
+        // FIXME: Throw reasonable error here?
+        rank = 0;
+    }
 #endif
 
     // Write out a SLHA file with a random file name;

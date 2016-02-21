@@ -18,6 +18,10 @@
 ///  \author Peter Athron  
 ///          (peter.athron@coepp.org.au)
 ///  \date 2015 
+//
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2016 Feb
 ///
 ///  *********************************************
 
@@ -210,7 +214,7 @@ namespace Gambit
         std::ostringstream err;
         str error = dlerror();
         Backends::backendInfo().dlerrors[be+ver] = error;
-        err << "Failed loading library from " << path << " due to error: " << endl
+        err << "Failed loading library from " << path << " due to: " << endl
             << error << endl
             << "All functions in this backend library will be disabled (i.e. given status = -1).";
         backend_warning().raise(LOCAL_INFO,err.str());
