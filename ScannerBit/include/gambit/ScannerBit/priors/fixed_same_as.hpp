@@ -26,13 +26,13 @@ namespace Gambit
 {
     namespace Priors
     {
-            //if the parameter has a fixed value
+        //if the parameter has a fixed value
         class FixedPrior : public BasePrior
         {
         private:
             std::vector<double> value;
             std::vector<std::string> names;
-            mutable size_t iter;
+            mutable int iter;
                 
         public:
             FixedPrior(const std::vector<std::string>& param, const Options& options) : names(param), iter(0)
@@ -51,7 +51,6 @@ namespace Gambit
                     {
                         scan_err << "fixed_value input for parameter " << names[0] << " is neither scalar nor sequence" << scan_end;
                     }
-                    
                 }
                 else
                 {
@@ -83,9 +82,10 @@ namespace Gambit
             {
                 for (auto it = names.begin(), end = names.end(); it != end; it++)
                 {
-                    outputMap[*it] = value[iter++];
-                    iter %= value.size();
+                    outputMap[*it] = value[iter];
                 }
+                
+                iter = (iter + 1)%value.size();
             }
         };
         
