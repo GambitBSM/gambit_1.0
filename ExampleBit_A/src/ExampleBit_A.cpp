@@ -76,16 +76,16 @@ namespace Gambit
 
     /// \name Module functions
     /// @{
-    void nevents_dbl  (double &result)    { static double count = 3.5; result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
-    void nevents_like (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
-    void identity     (str    &result)    { result = "turkion"; }
+    void nevents_pred      (double &result)    { static double count = 3.5; result = count++; cout << "My xsection dep: " << *Pipes::nevents_pred::Dep::xsection << endl;}
+    void nevents_like      (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
+    void particle_identity (str    &result)    { result = "fakion"; }
 
-    void nevents_int(int &result)
+    void nevents_pred_rounded(int &result)
     {
-      result = (int) (*Pipes::nevents_int::Dep::nevents);
+      result = (int) (*Pipes::nevents_pred_rounded::Dep::nevents);
       // Randomly raise some ficticious alarms about this point, with probability x,
       // where x is given by the input yaml option or a default of 0.5.
-      double x = 1.0-Pipes::nevents_int::runOptions->getValueOrDef<double>(0.5, "probability_of_validity");
+      double x = 1.0-Pipes::nevents_pred_rounded::runOptions->getValueOrDef<double>(0.5, "probability_of_validity");
       if (Random::draw() < x)
       {
         //Example of how to raise an error from a module function.
@@ -95,7 +95,7 @@ namespace Gambit
       }
     }
 
-    void test_xsection(double &result)
+    void test_sigma(double &result)
     {
        result = 1.; //trivial test
     }
@@ -120,9 +120,9 @@ namespace Gambit
 
 
     /// Example of interacting with models
-    void damu (double &result)
+    void example_damu (double &result)
     {
-      using namespace Pipes::damu;
+      using namespace Pipes::example_damu;
       std::cout << "In ExampleBit_A, function damu" << std::endl;
       logger() << "Is CMSSM being scanned? " << ModelInUse("CMSSM") << endl;
       logger() << "Is NUHM1 being scanned? " << ModelInUse("NUHM1") << endl;
@@ -141,9 +141,9 @@ namespace Gambit
 
     /// Likelihood function for fitting the population parameters of a
     /// normal distribution (with hard-coded "observations")
-    void normaldist_loglike (double &result)
+    void lnL_gaussian (double &result)
     {
-      using namespace Pipes::normaldist_loglike;
+      using namespace Pipes::lnL_gaussian;
 
       // Say we have a sample of 20 drawn from a normal distribution with
       // parameters muTrue and sigmaTrue. Let the sample mean and standard

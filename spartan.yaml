@@ -1,20 +1,12 @@
-# Ultra-minimal GAMBIT Initialization file (in YAML)
+# Ultra-minimal GAMBIT example initialization file in YAML.
 # Only needs example modules ExampleBit_A and ExampleBit_B,
 # plus example backends libfirst and libFortran.
 #
-# Don't commit modified versions of this file!
-# If you want to change it in order to test
-# your own modifications to the code, copy
-# it to spartan_personal.yaml, which will be
-# ignored by git.
-#
 # Pat Scott <p.scott@imperial.ac.uk>
 # Oct 2014
-#
 
-###################################
-# Input parameter declarations
-###################################
+
+#======== Input parameter declarations
 
 Parameters:
 
@@ -32,10 +24,7 @@ Parameters:
       fixed_value: 1
 
 
-
-##############################
-# Prior setup
-##############################
+#======== Prior setup
 
 Priors:
 
@@ -52,9 +41,8 @@ Priors:
         prior_type: log
         range: [100,2000]
 
-##############################
-# Printer setup
-##############################
+
+#======== Printer setup
 
 Printer:
 
@@ -69,9 +57,8 @@ Printer:
   options:
     output_file: "gambit_output.txt"
 
-##############################
-# Scanner setup
-##############################
+
+#======== Scanner setup
 
 Scanner:
 
@@ -113,28 +100,25 @@ Scanner:
           range: [-10, 10]
 
 
-###############################
-# Observables of interest
-###############################
+#======== Observables of interest
 
 ObsLikes:
 
-
   # Test CMSSM, ExampleBit_A and ExampleBit_B
   - purpose:      LogLike
-    capability:   lnL_ExampleBitB
+    capability:   Example_lnL_B
     type:         double
     function:     ""
     module:       ""
 
-  # Test array and -> operators in safety buckets.
-  - purpose:      Observable
-    capability:   ptrmeth_arr_tester
-
   # Test loop manager
   - purpose:      LogLike
-    capability:   nevents_like
+    capability:   Example_lnL_A
     type:         double
+
+  # Test array and -> operators in safety buckets.
+  - purpose:      Observable
+    capability:   ptr_arr_tests
 
   # Test vector output of printer
   - purpose:      Observable
@@ -143,12 +127,10 @@ ObsLikes:
 
   # Test passing of arrays to backends
   - purpose:      Observable
-    capability:   BE_Array_tester
+    capability:   test_BE_Array
 
 
-#########################
-# Auxiliary entries
-#########################
+#======== Rules section
 
 Rules:
 
@@ -159,11 +141,7 @@ Rules:
   - capability:    "nevents_postcuts"
     type: "int*"
     dependencies:
-    - {capability: "id", module: "ExampleBit_B"}
-
-  - capability:    "MSSM_parameters"
-    dependencies:
-    - {capability: "id", module: "ExampleBit_B"}
+    - {capability: "particle_id", module: "ExampleBit_B"}
 
   - capability:    "xsection"
     options:
@@ -174,9 +152,7 @@ Rules:
     - {function: "externalFunction2"}
 
 
-#########################
-# Logging setup
-#########################
+#======== Logging
 
 Logger:
 
@@ -196,17 +172,16 @@ Logger:
     [ExampleBit_A] : "ExampleBit_A.log"
     [ExampleBit_B] : "ExampleBit_B.log"
 
-###############################
-## Printer (output) setup
-###############################
 
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
+#======== Output 
+
+Printer:
+  printer: ascii
+  options:
+    output_file: "results.txt"
 
 
-##########################
-# Name/Value Section
-##########################
+#======== Global options
 
 KeyValues:
 
