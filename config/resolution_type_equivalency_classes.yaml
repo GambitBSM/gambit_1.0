@@ -34,8 +34,7 @@
 ["std::pair<double, double>", ddpair]
 
 # String-to-double map
-["std::map<std::string,double>", map_str_dbl]
-[map_str_dbl, "std::map<std::string,double>"]
+["std::map<std::string,double>", "std::map<str,double>", map_str_dbl]
 
 # Fortran data types
 [bool, Flogical, Flogical1]

@@ -257,10 +257,28 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  # Make sure to use v2.11.3 of FeynHiggs for everything
-  # does not work yet
+  # Make sure to use v2.11.3 of FeynHiggs for everything.
+  # Here is the current clunky way to do this:
+  - capability: FH_Precision
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  - capability: prec_HiggsMasses
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  - capability: Higgs_Couplings
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  - capability: FH_HiggsProd
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  - capability: FH_MSSMMasses
+    backends:
+    - {backend: FeynHiggs, version: 2.11.3}
+  # Here is the slick version that will be implemented in a future release:
   #- backend: FeynHiggs
   #  version: 2.11.3
+  # In practice, the easiest option is just to not install / nuke the versions you don't want to use, e.g.
+  #  make nuke-feynhiggs_2_11_2  
 
   # Choose to take FeynHiggs 2.11.3's prediction for the Higgs mass (rather then FlexibleSUSY's).
   # Choose to use the difference between the FeynHiggs and spectrum generator predictions, along
@@ -281,13 +299,6 @@ Rules:
     function: FH_h0_2_decays
   - capability: t_decay_rates
     function: FH_t_decays
-
-  # THIS RULE DIDN'T WORK, why? I nuked FeynHiggs 2.11.2 to solve the problem.
-  ## Use FeynHiggs version (2.11.3) for FHConstraints when running FH_PrecisionObs function from PrecisionBit
-  #- capability: FH_Precision
-  #  function: FH_PrecisionObs
-  #  backends:
-  #  - {capability: FHConstraints, backend: FeynHiggs, version: 2.11.3}
 
   # Choose to rescale signals in direct and indirect detection by the relic density fraction
   - capability: RD_fraction
@@ -333,7 +344,7 @@ Rules:
   - capability: ReconstructedEvent
     function: reconstructBuckFastEvent
     dependencies:
-    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
+    - {capability: "ConvertedScatteringEvent", function: "convertPythia8ParticleEvent"}
 
   - capability:  ColliderOperator
     function: operateLHCLoop
@@ -369,7 +380,7 @@ Rules:
 
   - capability: AnalysisNumbers
     dependencies:
-    - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
+    - {capability: "ReconstructedEvent", function: "reconstructBuckFastEvent"}
 
 Logger:
 
