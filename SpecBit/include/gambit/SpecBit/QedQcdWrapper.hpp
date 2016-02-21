@@ -31,35 +31,33 @@
 #define __QedQcdWrapper_hpp__
 
 #include "gambit/Elements/sminputs.hpp"
-#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spec.hpp"
 
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 
 namespace Gambit
 {
-
    namespace SpecBit
    {
+      class QedQcdWrapper;       
+   }
 
-      // Needed for typename aliases in Spec and MapTypes classes
-      struct QedQcdWrapperTraits
+   /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
+   template <>
+   struct SpecTraits<SpecBit::QedQcdWrapper> 
+   {
+      typedef softsusy::QedQcd Model;
+      typedef SMInputs         Input;
+   };
+     
+   namespace SpecBit
+   {   
+      class QedQcdWrapper : public Spec<QedQcdWrapper> 
       {
-         typedef softsusy::QedQcd Model;
-         typedef SMInputs         Input;
-      };
-       
-      class QedQcdWrapper : public Spec<QedQcdWrapper,QedQcdWrapperTraits> 
-      {
-         friend class RunparDer<QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
-         friend class PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
-   
          private:
-            typedef MapTypes<QedQcdWrapperTraits,MapTag::Get> MTget; 
-            typedef MapTypes<QedQcdWrapperTraits,MapTag::Set> MTset; 
-   
             // Keep copies of Model and Input objects internally
-            typename QedQcdWrapperTraits::Model qedqcd;
-            typename QedQcdWrapperTraits::Input sminputs;
+            Model qedqcd;
+            Input sminputs;
    
          public:
             // Constructors/destructors
@@ -68,9 +66,11 @@ namespace Gambit
             virtual ~QedQcdWrapper();        /***/
    
             // Functions to interface Model and Input objects with the base 'Spec' class
-            QedQcdWrapperTraits::Model& get_Model() { return qedqcd; }
-            QedQcdWrapperTraits::Input& get_Input() { return sminputs; }
- 
+            Model& get_Model() { return qedqcd; }
+            Input& get_Input() { return sminputs; }
+            const Model& get_Model() const { return qedqcd; }
+            const Input& get_Input() const { return sminputs; }
+
             virtual int get_index_offset() const;  /***/   
             virtual int get_numbers_stable_particles() const;  /***/
    
@@ -80,7 +80,7 @@ namespace Gambit
             /// RunningPars interface overrides
             virtual double GetScale() const;      /***/
             virtual void SetScale(double scale);  /***/
-            virtual void RunToScale(double);      /***/
+            virtual void RunToScaleOverride(double);      /***/
    
             /// Limits for running
             /// @{
@@ -95,20 +95,8 @@ namespace Gambit
             /// @}
    
             /// Map fillers
-            /// Used to initialise maps in the RunparDer and PhysDer classes
-            /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
-            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
-
-            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
-            static RunningGetterMaps runningpars_fill_getter_maps(); /*O*/
-            //static RunningSetterMaps runningpars_fill_setter_maps(); // We don't currently use this in this wrapper
- 
-            /// Phys parameter map fillers (access parameters via spectrum.phys())
-            static PhysGetterMaps    phys_fill_getter_maps(); /*O*/
-            static PhysSetterMaps    phys_fill_setter_maps(); /*O*/
+            static GetterMaps fill_getter_maps(); /*O*/
+            static SetterMaps fill_setter_maps(); /*O*/
     
       };
  

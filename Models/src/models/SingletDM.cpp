@@ -43,7 +43,7 @@ using namespace Gambit::Utils;
 void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP, ModelParameters &targetP)
 {
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
-   logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_running..."<<LogTags::info<<EOM;
+   logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_.."<<LogTags::info<<EOM;
   
 
   double tree_level_S_mass,Lambda_hS,ms2;

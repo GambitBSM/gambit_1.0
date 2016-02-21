@@ -51,12 +51,13 @@ Priors:
 
 Printer:
 
-  printer: hdf5
+  printer: ascii
 
   options:
-    output_file: "CMSSM.hdf5"
-    group: "/CMSSM"
-    delete_file_if_exists: true
+    output_file: "CMSSM.out"
+    #output_file: "CMSSM.hdf5"
+    #group: "/CMSSM"
+    #delete_file_if_exists: true
 
 Scanner:
 

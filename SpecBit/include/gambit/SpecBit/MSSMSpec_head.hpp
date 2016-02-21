@@ -30,40 +30,33 @@
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
 
-namespace Gambit {
-   namespace SpecBit {
-
+namespace Gambit 
+{
+   namespace SpecBit 
+   {
       template <class MI>  // "MI" for "Model_interface"
       class MSSMSpec;
- 
-      // For example of what kind of class MI needs to be, see
-      // SpecBit/include/model_files_and_boxes.hpp, 
-      // MODELNAME_interface class
+   } 
 
-      /// Specialisation of "traits" class used to inform Spec<T> class of what
-      /// "Model" and "Input" are for this derived class
+   // For example of what kind of class MI needs to be, see
+   // SpecBit/include/model_files_and_boxes.hpp, 
+   // MODELNAME_interface class
+
+   /// Specialisation of "traits" class used to inform Spec<T> class of what
+   /// "Model" and "Input" are for this derived class
+   template <>
+   template <class MI>
+   struct SpecTraits<SpecBit::MSSMSpec<MI>>
+   {
+      typedef typename MI::Model Model;
+      typedef DummyInput Input;
+   };
+
+   namespace SpecBit
+   {
       template <class MI>
-      struct MSSMSpecTraits
+      class MSSMSpec : public Spec<MSSMSpec<MI>>
       {
-         typedef typename MI::Model Model;
-         typedef DummyInput Input;
-      };
-
-      template <class MI>
-      class MSSMSpec : public Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>
-      {
-         friend class RunparDer<MSSMSpec<MI>,MSSMSpecTraits<MI>>;
-         friend class PhysDer  <MSSMSpec<MI>,MSSMSpecTraits<MI>>;
-        
-         public:
-            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Get> MTget; 
-            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Set> MTset; 
-
-            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-            typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
-   
          private:
             str backend_name;
             str backend_version;
@@ -71,11 +64,20 @@ namespace Gambit {
             virtual int get_index_offset() const {return index_offset;}
 
          public:
-            
-            /// Interface function overrides for RunningPars
+            /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
+            /// templated wrapper classes, so need to help them along:
+            typedef MSSMSpec<MI> Self;
+            typedef typename Self::MTget MTget; 
+            typedef typename Self::MTset MTset; 
+            typedef typename Self::GetterMaps GetterMaps;
+            typedef typename Self::SetterMaps SetterMaps;
+            typedef typename SpecTraits<Self>::Model Model;
+            typedef typename SpecTraits<Self>::Input Input;
+           
+            /// Interface function overrides
             virtual double GetScale() const;
             virtual void SetScale(double scale);           
-            virtual void RunToScale(double scale);
+            virtual void RunToScaleOverride(double scale);
 
             //constructors
             MSSMSpec(bool switch_index_convention=false);
@@ -93,8 +95,10 @@ namespace Gambit {
             virtual ~MSSMSpec();
 
             // Functions to interface Model and Input objects with the base 'Spec' class
-            typename MSSMSpecTraits<MI>::Model& get_Model() { return model_interface.model; }
-            typename MSSMSpecTraits<MI>::Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            Model& get_Model() { return model_interface.model; }
+            Input& get_Input() { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
+            const Model& get_Model() const { return model_interface.model; }
+            const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
             //some model independent stuff
             virtual double get_lsp_mass(int & particle_type, 
@@ -137,14 +141,8 @@ namespace Gambit {
             }
 
             /// Map filler overrides
-
-            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
-            static RunningGetterMaps runningpars_fill_getter_maps();
-            static RunningSetterMaps runningpars_fill_setter_maps();
- 
-            /// Phys parameter map fillers (access parameters via spectrum.phys())
-            static PhysGetterMaps    phys_fill_getter_maps();
-            static PhysSetterMaps    phys_fill_setter_maps(); // Currently unused
+            static GetterMaps fill_getter_maps();
+            static SetterMaps fill_setter_maps();
 
       };
 
