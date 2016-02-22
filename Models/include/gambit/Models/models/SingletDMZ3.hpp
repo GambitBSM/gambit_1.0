@@ -22,7 +22,7 @@
 
 #define MODEL SingletDMZ3
   START_MODEL
-  DEFINEPARS(mS2, lambda_hS,lambda_S,mu3)
+  DEFINEPARS(mS, lambda_hS,lambda_S,mu3)
 #undef MODEL
 
 #endif

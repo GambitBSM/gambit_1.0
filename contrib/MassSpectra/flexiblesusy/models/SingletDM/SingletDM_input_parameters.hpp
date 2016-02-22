@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:19
+// File generated at Mon 22 Feb 2016 16:41:46
 
 #ifndef SingletDM_INPUT_PARAMETERS_H
 #define SingletDM_INPUT_PARAMETERS_H
@@ -30,12 +30,12 @@ struct SingletDM_input_parameters {
    double HiggsIN;
    double LamSHInput;
    double LamSInput;
-   double mS2Input;
+   double muSInput;
    double QEWSB;
    double Qin;
 
    SingletDM_input_parameters()
-      : HiggsIN(0), LamSHInput(0), LamSInput(0), mS2Input(0), QEWSB(0), Qin(0)
+      : HiggsIN(0), LamSHInput(0), LamSInput(0), muSInput(0), QEWSB(0), Qin(0)
 
    {}
 };

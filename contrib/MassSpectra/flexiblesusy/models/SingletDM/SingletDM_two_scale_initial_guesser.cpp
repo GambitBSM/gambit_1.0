@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:21
+// File generated at Mon 22 Feb 2016 16:41:47
 
 #include "SingletDM_two_scale_initial_guesser.hpp"
 #include "SingletDM_two_scale_model.hpp"
@@ -88,14 +88,16 @@ void SingletDM_initial_guesser<Two_scale>::guess()
  * \code{.cpp}
    const auto LamSHInput = INPUTPARAMETER(LamSHInput);
    const auto LamSInput = INPUTPARAMETER(LamSInput);
-   const auto mS2Input = INPUTPARAMETER(mS2Input);
+   const auto muSInput = INPUTPARAMETER(muSInput);
    const auto HiggsIN = INPUTPARAMETER(HiggsIN);
 
    MODEL->set_v(Re(LowEnergyConstant(vev)));
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
-   MODEL->set_muS(Re(mS2Input));
+   MODEL->set_LamSH(Re(LamSHInput));
+   MODEL->set_LamS(Re(LamSInput));
+   MODEL->set_muS(Re(muSInput));
    MODEL->set_muH(Re(HiggsIN));
 
  * \endcode
@@ -131,14 +133,16 @@ void SingletDM_initial_guesser<Two_scale>::guess_susy_parameters()
    // apply user-defined initial guess at the low scale
    const auto LamSHInput = INPUTPARAMETER(LamSHInput);
    const auto LamSInput = INPUTPARAMETER(LamSInput);
-   const auto mS2Input = INPUTPARAMETER(mS2Input);
+   const auto muSInput = INPUTPARAMETER(muSInput);
    const auto HiggsIN = INPUTPARAMETER(HiggsIN);
 
    MODEL->set_v(Re(LowEnergyConstant(vev)));
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
-   MODEL->set_muS(Re(mS2Input));
+   MODEL->set_LamSH(Re(LamSHInput));
+   MODEL->set_LamS(Re(LamSInput));
+   MODEL->set_muS(Re(muSInput));
    MODEL->set_muH(Re(HiggsIN));
 
 }

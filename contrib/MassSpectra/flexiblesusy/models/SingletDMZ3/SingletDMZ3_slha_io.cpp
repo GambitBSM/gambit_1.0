@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:51
+// File generated at Mon 22 Feb 2016 17:30:33
 
 #include "SingletDMZ3_slha_io.hpp"
 #include "SingletDMZ3_input_parameters.hpp"
@@ -88,7 +88,7 @@ void SingletDMZ3_slha_io::set_minpar(const SingletDMZ3_input_parameters& input)
    minpar << FORMAT_ELEMENT(1, input.HiggsIN, "HiggsIN");
    minpar << FORMAT_ELEMENT(2, input.LamSHInput, "LamSHInput");
    minpar << FORMAT_ELEMENT(3, input.LamSInput, "LamSInput");
-   minpar << FORMAT_ELEMENT(4, input.mS2Input, "mS2Input");
+   minpar << FORMAT_ELEMENT(4, input.muSInput, "muSInput");
    minpar << FORMAT_ELEMENT(5, input.mu3Input, "mu3Input");
    slha_io.set_block(minpar);
 
@@ -156,11 +156,9 @@ void SingletDMZ3_slha_io::set_mass(const SingletDMZ3_physical& physical,
 
    if (write_sm_masses) {
       mass
-         << FORMAT_MASS(21, LOCALPHYSICAL(MVG), "VG")
          << FORMAT_MASS(12, LOCALPHYSICAL(MFv(0)), "Fv(1)")
          << FORMAT_MASS(14, LOCALPHYSICAL(MFv(1)), "Fv(2)")
          << FORMAT_MASS(16, LOCALPHYSICAL(MFv(2)), "Fv(3)")
-         << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
          << FORMAT_MASS(23, LOCALPHYSICAL(MVZ), "VZ")
          << FORMAT_MASS(1, LOCALPHYSICAL(MFd(0)), "Fd(1)")
          << FORMAT_MASS(3, LOCALPHYSICAL(MFd(1)), "Fd(2)")
@@ -171,6 +169,8 @@ void SingletDMZ3_slha_io::set_mass(const SingletDMZ3_physical& physical,
          << FORMAT_MASS(11, LOCALPHYSICAL(MFe(0)), "Fe(1)")
          << FORMAT_MASS(13, LOCALPHYSICAL(MFe(1)), "Fe(2)")
          << FORMAT_MASS(15, LOCALPHYSICAL(MFe(2)), "Fe(3)")
+         << FORMAT_MASS(21, LOCALPHYSICAL(MVG), "VG")
+         << FORMAT_MASS(22, LOCALPHYSICAL(MVP), "VP")
       ;
    }
 
@@ -315,7 +315,7 @@ void SingletDMZ3_slha_io::fill_drbar_parameters(SingletDMZ3_mass_eigenstates& mo
    model.set_muH(slha_io.read_entry("SM", 1));
    model.set_muS(slha_io.read_entry("MSOFT", 22));
    model.set_mu3(slha_io.read_entry("MSOFT", 22));
-   model.set_Lambda1(slha_io.read_entry("SM", 2));
+   model.set_LamH(slha_io.read_entry("SM", 2));
    model.set_LamSH(slha_io.read_entry("HDM", 2));
    model.set_LamS(slha_io.read_entry("HDM", 3));
 
@@ -355,7 +355,7 @@ void SingletDMZ3_slha_io::fill_minpar_tuple(SingletDMZ3_input_parameters& input,
    case 1: input.HiggsIN = value; break;
    case 2: input.LamSHInput = value; break;
    case 3: input.LamSInput = value; break;
-   case 4: input.mS2Input = value; break;
+   case 4: input.muSInput = value; break;
    case 5: input.mu3Input = value; break;
    default: WARNING("Unrecognized entry in block MINPAR: " << key); break;
    }
@@ -409,13 +409,11 @@ void SingletDMZ3_slha_io::fill_physical(SingletDMZ3_physical& physical) const
       LOCALPHYSICAL(Ue) = Ue;
    }
 
-   LOCALPHYSICAL(MVG) = slha_io.read_entry("MASS", 21);
    LOCALPHYSICAL(Mss) = slha_io.read_entry("MASS", 6666635);
    LOCALPHYSICAL(MFv)(0) = slha_io.read_entry("MASS", 12);
    LOCALPHYSICAL(MFv)(1) = slha_io.read_entry("MASS", 14);
    LOCALPHYSICAL(MFv)(2) = slha_io.read_entry("MASS", 16);
    LOCALPHYSICAL(Mhh) = slha_io.read_entry("MASS", 25);
-   LOCALPHYSICAL(MVP) = slha_io.read_entry("MASS", 22);
    LOCALPHYSICAL(MVZ) = slha_io.read_entry("MASS", 23);
    LOCALPHYSICAL(MFd)(0) = slha_io.read_entry("MASS", 1);
    LOCALPHYSICAL(MFd)(1) = slha_io.read_entry("MASS", 3);
@@ -426,6 +424,8 @@ void SingletDMZ3_slha_io::fill_physical(SingletDMZ3_physical& physical) const
    LOCALPHYSICAL(MFe)(0) = slha_io.read_entry("MASS", 11);
    LOCALPHYSICAL(MFe)(1) = slha_io.read_entry("MASS", 13);
    LOCALPHYSICAL(MFe)(2) = slha_io.read_entry("MASS", 15);
+   LOCALPHYSICAL(MVG) = slha_io.read_entry("MASS", 21);
+   LOCALPHYSICAL(MVP) = slha_io.read_entry("MASS", 22);
    LOCALPHYSICAL(MVWp) = slha_io.read_entry("MASS", 24);
 
 }

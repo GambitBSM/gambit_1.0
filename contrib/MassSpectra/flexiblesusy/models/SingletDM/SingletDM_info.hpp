@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:20
+// File generated at Mon 22 Feb 2016 16:41:46
 
 #ifndef SingletDM_INFO_H
 #define SingletDM_INFO_H
@@ -29,10 +29,10 @@ namespace SingletDM_info {
    enum Particles : unsigned {Hp, ss, Fv, Ah, hh, VZ, Fd, Fu, Fe, VG, VP, VWp,
       NUMBER_OF_PARTICLES};
 
-   enum Parameters : unsigned {g1, g2, g3, LamS, LamSH, Lambda1, Yu00, Yu01,
-      Yu02, Yu10, Yu11, Yu12, Yu20, Yu21, Yu22, Yd00, Yd01, Yd02, Yd10, Yd11, Yd12
-      , Yd20, Yd21, Yd22, Ye00, Ye01, Ye02, Ye10, Ye11, Ye12, Ye20, Ye21, Ye22,
-      muS, muH, v, NUMBER_OF_PARAMETERS};
+   enum Parameters : unsigned {g1, g2, g3, LamS, LamSH, LamH, Yu00, Yu01, Yu02,
+      Yu10, Yu11, Yu12, Yu20, Yu21, Yu22, Yd00, Yd01, Yd02, Yd10, Yd11, Yd12,
+      Yd20, Yd21, Yd22, Ye00, Ye01, Ye02, Ye10, Ye11, Ye12, Ye20, Ye21, Ye22, muS,
+      muH, v, NUMBER_OF_PARAMETERS};
 
    extern const double normalization_g1;
    extern const double normalization_g2;

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:20
+// File generated at Mon 22 Feb 2016 16:41:46
 
 #include "SingletDM_info.hpp"
 
@@ -39,7 +39,7 @@ namespace SingletDM_info {
       "\\nu", "A^0", "h", "Z", "d", "u", "e", "g", "\\gamma", "W^+"};
 
    const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
-      "LamS", "LamSH", "Lambda1", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)",
+      "LamS", "LamSH", "LamH", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)",
       "Yu(1,1)", "Yu(1,2)", "Yu(2,0)", "Yu(2,1)", "Yu(2,2)", "Yd(0,0)", "Yd(0,1)",
       "Yd(0,2)", "Yd(1,0)", "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)"
       , "Ye(0,0)", "Ye(0,1)", "Ye(0,2)", "Ye(1,0)", "Ye(1,1)", "Ye(1,2)",

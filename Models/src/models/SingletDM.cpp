@@ -50,17 +50,17 @@ void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP
    logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_running..."<<LogTags::info<<EOM;
   
 
-  double tree_level_S_mass,Lambda_hS,ms2;
-  tree_level_S_mass=myP.getValue("mS");
+  double Lambda_hS;
+  //tree_level_S_mass=myP.getValue("mS");
   Lambda_hS=myP.getValue("lambda_hS");
   
-  ms2=pow(tree_level_S_mass,2)-0.5*Lambda_hS*pow(246.2,2);
+  //ms2=pow(tree_level_S_mass,2)-0.5*Lambda_hS*pow(246.2,2);
   
   targetP.setValue("lambda_hS",Lambda_hS);
   
   targetP.setValue("lambda_S", 0 );
 
-  targetP.setValue("mS2", ms2 );
+  targetP.setValue("mS", myP.getValue("mS") );
 
 
   
@@ -85,7 +85,7 @@ void MODEL_NAMESPACE::SingletDM_running_to_SingletDMZ3 (const ModelParameters &m
    logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_running..."<<LogTags::info<<EOM;
   
 
-  double ms2=myP.getValue("mS2");
+//  double ms2=myP.getValue("mS2");
   double Lambda_hS=myP.getValue("lambda_hS");
   double Lambda_S=myP.getValue("lambda_S");
   
@@ -94,7 +94,7 @@ void MODEL_NAMESPACE::SingletDM_running_to_SingletDMZ3 (const ModelParameters &m
   
   targetP.setValue("lambda_S", Lambda_S );
 
-  targetP.setValue("mS2", ms2 );
+  targetP.setValue("mS", myP.getValue("mS") );
   
   targetP.setValue("mu3", 0 );
 
@@ -104,6 +104,8 @@ void MODEL_NAMESPACE::SingletDM_running_to_SingletDMZ3 (const ModelParameters &m
      std::cout << "SingletDMZ3 parameters   :" << targetP << std::endl;
    #endif
 }
+
+
 
 #undef PARENT
 #undef MODEL

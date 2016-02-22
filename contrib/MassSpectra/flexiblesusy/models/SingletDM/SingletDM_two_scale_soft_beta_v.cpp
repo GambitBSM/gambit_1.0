@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:19
+// File generated at Mon 22 Feb 2016 16:41:46
 
 #include "SingletDM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -70,8 +70,7 @@ double SingletDM_soft_parameters::calc_beta_v_two_loop(const Soft_traces& soft_t
       traceYeAdjYeYeAdjYe - 5400*traceYuAdjYuYuAdjYu + 2060*traceYuAdjYu*Sqr(g1
       ) + 6300*traceYuAdjYu*Sqr(g2) - 90*Sqr(g1)*Sqr(g2) + 60*traceYeAdjYe*(27*
       Sqr(g1) + 35*Sqr(g2)) + 16000*traceYuAdjYu*Sqr(g3) + 20*traceYdAdjYd*(43*
-      Sqr(g1) + 315*Sqr(g2) + 800*Sqr(g3)) + 1200*Sqr(Lambda1) + 200*Sqr(LamSH)
-      ));
+      Sqr(g1) + 315*Sqr(g2) + 800*Sqr(g3)) + 1200*Sqr(LamH) + 200*Sqr(LamSH)));
 
 
    return beta_v;

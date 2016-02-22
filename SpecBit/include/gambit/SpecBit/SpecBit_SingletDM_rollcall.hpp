@@ -70,6 +70,54 @@
 
   #undef CAPABILITY
 
+  #define CAPABILITY check_perturb
+  START_CAPABILITY
+
+    #define FUNCTION check_perturb_simple_SingletDM
+    START_FUNCTION(bool)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDM_running))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+
+    #define FUNCTION check_perturb_simple_SingletDMZ3
+    START_FUNCTION(bool)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running,SingletDMZ3)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDMZ3))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+
+    #define FUNCTION check_perturb_to_min_lambda_SingletDM
+    START_FUNCTION(bool)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+    DEPENDENCY(vacuum_stability, ddpair)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDM_running))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+
+    #define FUNCTION check_perturb_to_min_lambda_SingletDMZ3
+    START_FUNCTION(bool)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+    DEPENDENCY(vacuum_stability, ddpair)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running,SingletDMZ3)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+    MODEL_GROUP(singlet, (SingletDMZ3))
+    ALLOW_MODEL_COMBINATION(higgs, singlet)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
 
 
 

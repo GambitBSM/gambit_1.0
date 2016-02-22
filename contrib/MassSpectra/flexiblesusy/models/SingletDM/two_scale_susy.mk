@@ -23,7 +23,7 @@ LIBSingletDM_SRC += \
 	models/SingletDM/SingletDM_two_scale_susy_beta_g3.cpp \
 	models/SingletDM/SingletDM_two_scale_susy_beta_LamS.cpp \
 	models/SingletDM/SingletDM_two_scale_susy_beta_LamSH.cpp \
-	models/SingletDM/SingletDM_two_scale_susy_beta_Lambda1.cpp \
+	models/SingletDM/SingletDM_two_scale_susy_beta_LamH.cpp \
 	models/SingletDM/SingletDM_two_scale_susy_beta_Yu.cpp \
 	models/SingletDM/SingletDM_two_scale_susy_beta_Yd.cpp \
 	models/SingletDM/SingletDM_two_scale_susy_beta_Ye.cpp

@@ -235,7 +235,7 @@ namespace Gambit
             tmp_map["g1"]= &Model::get_g1;
             tmp_map["g2"]= &Model::get_g2;
             tmp_map["g3"]= &Model::get_g3;
-            tmp_map["Lambda1"]= &Model::get_Lambda1;
+            tmp_map["Lambda1"]= &Model::get_LamH;
            
             tmp_map["Lambda2"]= &Model::get_LamSH;
             tmp_map["lambda_hS"]= &Model::get_LamSH; // same naming convention as SingletDM
@@ -349,7 +349,7 @@ namespace Gambit
             tmp_map["g1"]= &Model::set_g1;
             tmp_map["g2"]= &Model::set_g2;
             tmp_map["g3"]= &Model::set_g3;
-            tmp_map["Lambda1"]= &Model::set_Lambda1;
+            tmp_map["Lambda1"]= &Model::set_LamH;
             tmp_map["Lambda2"]= &Model::set_LamSH;
             tmp_map["Lambda3"]= &Model::set_LamS;
 

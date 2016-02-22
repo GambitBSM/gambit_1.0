@@ -65,183 +65,41 @@ namespace Gambit
 
 
 
-    template <class T>
-    void fill_SingletDMZ3_input(T& input, const std::map<str, safe_ptr<double> >& Param )
-    {
-      double mH2 = *Param.at("mH2");
-      double mS2 = *Param.at("mS2");
-      double lambda_hs = *Param.at("lambda_hS");
-      double lambda_s= *Param.at("lambda_S");
-      
-      input.HiggsIN=mH2;//-pow(mH,2)/2;
-      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
-      input.LamSHInput=lambda_hs;
-      input.LamSInput=lambda_s;
-
-      input.QEWSB=173.15;  // scale where EWSB conditions are applied
-    }
-    
-    template <class T>
-    void fill_SingletDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
-    {
-      double mH2 = *Param.at("mH2");
-      double mS2 = *Param.at("mS2");
-      double lambda_hs = *Param.at("lambda_hS");
-      
-      
-      double lambda_s= *Param.at("lambda_S");
-      
-      input.LamSInput=lambda_s;
-      input.HiggsIN=mH2;//-pow(mH,2)/2;
-      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
-      input.LamSHInput=lambda_hs;
-      input.QEWSB=173.15;  // scale where EWSB conditions are applied
-    }
-
-
-//
-    template <class T>
-    bool check_perturb_func_SingletDMZ3(double scale,T& input,const SMInputs& sminputs)   //const Spectrum* fullspectrum)
-    {
-    using namespace flexiblesusy;
-    using namespace softsusy;
-    using namespace Gambit;
-    using namespace SpecBit;
-    //SMInputs sminputs = fullspectrum->get_SMInputs();
-    softsusy::QedQcd oneset;
-    setup_QedQcd(oneset,sminputs);
-    oneset.toMz();
-    
-    typename SingletDMZ3_interface<Two_scale>::SpectrumGenerator spectrum_generator;
-    input.Qin=scale;
-    spectrum_generator.run(oneset, input);
-    
-    std::ostringstream warnings;
-    const Problems<SingletDMZ3_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
-    bool error = problems.have_problem();
-    problems.print_warnings(warnings);
-    if (error==1)
-    {
-    // check for errors
-    std::ostringstream problems_str;
-    problems.print_problems(problems_str);
-    cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
-    }
-    return error;
-    }
-    
-    template <class T>
-    bool check_perturb_func_SingletDM(double scale,T& input,const SMInputs& sminputs)   //const Spectrum* fullspectrum)
-    {
-    using namespace flexiblesusy;
-    using namespace softsusy;
-    using namespace Gambit;
-    using namespace SpecBit;
-    //SMInputs sminputs = fullspectrum->get_SMInputs();
-    softsusy::QedQcd oneset;
-    setup_QedQcd(oneset,sminputs);
-    oneset.toMz();
-    
-    typename SingletDM_interface<Two_scale>::SpectrumGenerator spectrum_generator;
-    input.Qin=scale;
-    spectrum_generator.run(oneset, input);
-    
-    std::ostringstream warnings;
-    const Problems<SingletDM_info::NUMBER_OF_PARTICLES>& problems= spectrum_generator.get_problems();
-    bool error = problems.have_problem();
-    problems.print_warnings(warnings);
-    if (error==1)
-    {
-    // check for errors
-    std::ostringstream problems_str;
-    problems.print_problems(problems_str);
-    cout<< FORMAT_SPINFO(4,problems_str.str()) << endl;
-    }
-    return error;
-    }
-    
-    
-    
-
 //    template <class T>
-//    bool check_perturb_simple_func(T& input,double scale,const SMInputs& sminputs)
+//    void fill_SingletDMZ3_input(T& input, const std::map<str, safe_ptr<double> >& Param )
 //    {
-//    using namespace flexiblesusy;
-//    using namespace softsusy;
+//      double mH2 = *Param.at("mH2");
+//      double mS2 = *Param.at("mS2");
+//      double lambda_hs = *Param.at("lambda_hS");
+//      double lambda_s= *Param.at("lambda_S");
+//      
+//      input.HiggsIN=mH2;//-pow(mH,2)/2;
+//      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
+//      input.LamSHInput=lambda_hs;
+//      input.LamSInput=lambda_s;
 //
-//    using namespace Gambit;
-//    using namespace SpecBit;
-//    
-//    cout<< "checking perturbative up to high scale = " << scale << endl;
-//    //const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-//    
-//   // const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-//
-//
-////    SingletDMZ3_input_parameters input;
-//
-//    
-//    return check_perturb_func(scale,input,sminputs);
+//      input.QEWSB=173.15;  // scale where EWSB conditions are applied
 //    }
-    
-    
-    
-    
-    void check_perturb_simple_SingletDM(bool &error)
-    {
-    namespace myPipe = Pipes::check_perturb_simple_SingletDM;
-    const Options& runOptions=*myPipe::runOptions;
-    double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
-    const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+//    
+//    template <class T>
+//    void fill_SingletDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+//    {
+//      double mH2 = *Param.at("mH2");
+//      double mS2 = *Param.at("mS2");
+//      double lambda_hs = *Param.at("lambda_hS");
+//      
+//      
+//      double lambda_s= *Param.at("lambda_S");
+//      
+//      input.LamSInput=lambda_s;
+//      input.HiggsIN=mH2;//-pow(mH,2)/2;
+//      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
+//      input.LamSHInput=lambda_hs;
+//      input.QEWSB=173.15;  // scale where EWSB conditions are applied
+//    }
+//
 
-    SingletDM_input_parameters input;
-    fill_SingletDM_input(input,myPipe::Param);
-    error=check_perturb_func_SingletDM(scale,input,sminputs);
-    }
-    
-    void check_perturb_simple_SingletDMZ3(bool &error)
-    {
-    namespace myPipe = Pipes::check_perturb_simple_SingletDMZ3;
-    const Options& runOptions=*myPipe::runOptions;
-    double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
-    const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-
-    SingletDMZ3_input_parameters input;
-    fill_SingletDMZ3_input(input,myPipe::Param);
-    error=check_perturb_func_SingletDMZ3(scale,input,sminputs);
-    }
-    
-    
-    void check_perturb_to_min_lambda(bool &error)
-    {
-    using namespace flexiblesusy;
-    using namespace softsusy;
-    namespace myPipe = Pipes::check_perturb_to_min_lambda;
-    using namespace Gambit;
-    using namespace SpecBit;
-    ddpair age = *myPipe::Dep::vacuum_stability;
-    double scale=std::get<1>(age);
-    cout<< "checking perturbative up to high scale (of minimum lambda) = " << scale << endl;
-    const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-    
-   // const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-   // SingletDMZ3_input_parameters input;
-   // fill_SingletDMZ3_input(input,myPipe::Param);
-
-   // const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-
-
-    SingletDMZ3_input_parameters input;
-    fill_SingletDMZ3_input(input,myPipe::Param);
-
-    
-//>>>>>>> DarkBit_development:SpecBit/src/SpecBit_SSDM.cpp
-    
-    error=check_perturb_func_SingletDMZ3(scale,input,sminputs);
-    }
-
-
-
+//
     
     
     void shift(double &a, double &b, double &c, const double d)

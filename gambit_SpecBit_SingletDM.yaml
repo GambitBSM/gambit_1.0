@@ -61,12 +61,11 @@ Parameters:
       alpha1  :  0       # first Majorana CP-violating phase
       alpha2  :  0       # second CP-violating Majorana phase
 
-    StandardModel_Higgs:
+    StandardModel_Higgs_running:
       mH:
         range: [100, 150]
         prior_type: flat
-   #   vev: 246
-
+      QEWSB: 173
 
 
     SingletDM:
@@ -146,7 +145,7 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 1000
+      nlive: 500
       tol: 0.1
       outfile: 0
       root: "runs/SSDM/samples/native-"

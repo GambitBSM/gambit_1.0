@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:44
+// File generated at Mon 22 Feb 2016 16:42:09
 
 /**
  * @file SingletDM_mass_eigenstates.cpp
@@ -26,7 +26,7 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Sat 20 Feb 2016 16:21:44 with FlexibleSUSY
+ * This file was generated at Mon 22 Feb 2016 16:42:09 with FlexibleSUSY
  * 1.2.4 (git commit: unknown) and SARAH 4.5.8 .
  */
 
@@ -274,7 +274,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    SingletDM_mass_eigenstates* model = ewsb_args->model;
    const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
-   model->set_Lambda1(gsl_vector_get(x, 0));
+   model->set_LamH(gsl_vector_get(x, 0));
 
 
    if (ewsb_loop_order > 0)
@@ -362,7 +362,7 @@ int CLASSNAME::solve_ewsb_iteratively_with(
 {
    const int status = solver->solve(x_init);
 
-   Lambda1 = solver->get_solution(0);
+   LamH = solver->get_solution(0);
 
 
    return status;
@@ -384,14 +384,14 @@ int CLASSNAME::solve_ewsb_tree_level()
 {
    int error = 0;
 
-   const double old_Lambda1 = Lambda1;
+   const double old_LamH = LamH;
 
-   Lambda1 = Re(muH/Sqr(v));
+   LamH = Re((-2*muH)/Sqr(v));
 
-   const bool is_finite = IsFinite(Lambda1);
+   const bool is_finite = IsFinite(LamH);
 
    if (!is_finite) {
-      Lambda1 = old_Lambda1;
+      LamH = old_LamH;
       error = 1;
    }
 
@@ -425,7 +425,7 @@ int CLASSNAME::solve_ewsb()
 
 void CLASSNAME::ewsb_initial_guess(double x_init[number_of_ewsb_equations])
 {
-   x_init[0] = Lambda1;
+   x_init[0] = LamH;
 
 }
 
@@ -451,16 +451,16 @@ int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
       }
    }
 
-   double Lambda1;
+   double LamH;
 
-   Lambda1 = Re((muH*v + 2*tadpole[0])/Power(v,3));
+   LamH = Re((-2*(muH*v - tadpole[0]))/Power(v,3));
 
-   const bool is_finite = IsFinite(Lambda1);
+   const bool is_finite = IsFinite(LamH);
 
 
    if (is_finite) {
       error = GSL_SUCCESS;
-      ewsb_parameters[0] = Lambda1;
+      ewsb_parameters[0] = LamH;
 
    } else {
       error = GSL_EDOM;
@@ -490,16 +490,16 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
    SingletDM_mass_eigenstates* model = ewsb_args->model;
    const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
-   const double Lambda1 = gsl_vector_get(x, 0);
+   const double LamH = gsl_vector_get(x, 0);
 
-   model->set_Lambda1(Lambda1);
+   model->set_LamH(LamH);
 
 
    if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
 
    double ewsb_parameters[number_of_ewsb_equations] =
-      { Lambda1 };
+      { LamH };
 
    const int status = model->ewsb_step(ewsb_parameters);
 
@@ -593,7 +593,7 @@ double CLASSNAME::G0(double p, double m1, double m2) const
  */
 void CLASSNAME::calculate_DRbar_masses()
 {
-   const auto old_Lambda1 = Lambda1;
+   const auto old_LamH = LamH;
 
    solve_ewsb_tree_level();
 
@@ -610,7 +610,7 @@ void CLASSNAME::calculate_DRbar_masses()
    calculate_MFu();
    calculate_MFe();
 
-   Lambda1 = old_Lambda1;
+   LamH = old_LamH;
 
 }
 
@@ -814,8 +814,8 @@ void CLASSNAME::run_to(double scale, double eps)
 
 double CLASSNAME::get_mass_matrix_Hp() const
 {
-   const double mass_matrix_Hp = Re(0.25*(-2*muH + 2*Lambda1*Sqr(v) + Sqr
-      (g2)*Sqr(v)));
+   const double mass_matrix_Hp = Re(0.25*(4*muH + 2*LamH*Sqr(v) + Sqr(g2)
+      *Sqr(v)));
 
    return mass_matrix_Hp;
 }
@@ -872,8 +872,8 @@ void CLASSNAME::calculate_MFv()
 
 double CLASSNAME::get_mass_matrix_Ah() const
 {
-   const double mass_matrix_Ah = Re(0.25*(-2*(muH - Lambda1*Sqr(v)) + Sqr
-      (v)*Sqr(g2*Cos(ThetaW()) + 0.7745966692414834*g1*Sin(ThetaW()))));
+   const double mass_matrix_Ah = Re(0.25*(2*(2*muH + LamH*Sqr(v)) + Sqr(v
+      )*Sqr(g2*Cos(ThetaW()) + 0.7745966692414834*g1*Sin(ThetaW()))));
 
    return mass_matrix_Ah;
 }
@@ -891,7 +891,7 @@ void CLASSNAME::calculate_MAh()
 
 double CLASSNAME::get_mass_matrix_hh() const
 {
-   const double mass_matrix_hh = Re(0.5*(-muH + 3*Lambda1*Sqr(v)));
+   const double mass_matrix_hh = Re(muH + 1.5*LamH*Sqr(v));
 
    return mass_matrix_hh;
 }
@@ -1066,7 +1066,7 @@ void CLASSNAME::calculate_MVWp()
 
 double CLASSNAME::get_ewsb_eq_hh_1() const
 {
-   double result = Re(-0.5*muH*v + 0.5*Lambda1*Power(v,3));
+   double result = Re(muH*v + 0.5*LamH*Power(v,3));
 
    return result;
 }
@@ -1077,7 +1077,7 @@ double CLASSNAME::CpconjHpHphh() const
 {
    double result = 0.0;
 
-   result = -(Lambda1*v);
+   result = -(LamH*v);
 
    return result;
 }
@@ -1142,7 +1142,7 @@ double CLASSNAME::CpHpconjHpAhAh() const
 {
    double result = 0.0;
 
-   result = -Lambda1;
+   result = -LamH;
 
    return result;
 }
@@ -1151,7 +1151,7 @@ double CLASSNAME::CpHpconjHphhhh() const
 {
    double result = 0.0;
 
-   result = -Lambda1;
+   result = -LamH;
 
    return result;
 }
@@ -1169,7 +1169,7 @@ double CLASSNAME::CpHpconjHpconjHpHp() const
 {
    double result = 0.0;
 
-   result = -2*Lambda1;
+   result = -2*LamH;
 
    return result;
 }
@@ -1344,7 +1344,7 @@ double CLASSNAME::CpAhhhAh() const
 {
    double result = 0.0;
 
-   result = -(Lambda1*v);
+   result = -(LamH*v);
 
    return result;
 }
@@ -1371,7 +1371,7 @@ double CLASSNAME::CpAhAhAhAh() const
 {
    double result = 0.0;
 
-   result = -3*Lambda1;
+   result = -3*LamH;
 
    return result;
 }
@@ -1380,7 +1380,7 @@ double CLASSNAME::CpAhAhhhhh() const
 {
    double result = 0.0;
 
-   result = -Lambda1;
+   result = -LamH;
 
    return result;
 }
@@ -1398,7 +1398,7 @@ double CLASSNAME::CpAhAhconjHpHp() const
 {
    double result = 0.0;
 
-   result = -Lambda1;
+   result = -LamH;
 
    return result;
 }
@@ -1571,7 +1571,7 @@ double CLASSNAME::CphhAhAh() const
 {
    double result = 0.0;
 
-   result = -(Lambda1*v);
+   result = -(LamH*v);
 
    return result;
 }
@@ -1580,7 +1580,7 @@ double CLASSNAME::Cphhhhhh() const
 {
    double result = 0.0;
 
-   result = -3*Lambda1*v;
+   result = -3*LamH*v;
 
    return result;
 }
@@ -1635,7 +1635,7 @@ double CLASSNAME::CphhconjHpHp() const
 {
    double result = 0.0;
 
-   result = -(Lambda1*v);
+   result = -(LamH*v);
 
    return result;
 }
@@ -1653,7 +1653,7 @@ double CLASSNAME::CphhhhAhAh() const
 {
    double result = 0.0;
 
-   result = -Lambda1;
+   result = -LamH;
 
    return result;
 }
@@ -1662,7 +1662,7 @@ double CLASSNAME::Cphhhhhhhh() const
 {
    double result = 0.0;
 
-   result = -3*Lambda1;
+   result = -3*LamH;
 
    return result;
 }
@@ -1680,7 +1680,7 @@ double CLASSNAME::CphhhhconjHpHp() const
 {
    double result = 0.0;
 
-   result = -Lambda1;
+   result = -LamH;
 
    return result;
 }

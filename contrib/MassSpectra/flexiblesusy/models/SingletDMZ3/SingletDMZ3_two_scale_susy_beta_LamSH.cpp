@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:48
+// File generated at Mon 22 Feb 2016 17:30:31
 
 #include "SingletDMZ3_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -40,9 +40,9 @@ double SingletDMZ3_susy_parameters::calc_beta_LamSH_one_loop(const Susy_traces& 
 
    double beta_LamSH;
 
-   beta_LamSH = Re(0.1*LamSH*oneOver16PiSqr*(60*Lambda1 + 20*LamS + 20*
-      LamSH + 60*traceYdAdjYd + 20*traceYeAdjYe + 60*traceYuAdjYu - 9*Sqr(g1) -
-      45*Sqr(g2)));
+   beta_LamSH = Re(0.1*LamSH*oneOver16PiSqr*(60*LamH + 20*LamS + 20*LamSH
+      + 60*traceYdAdjYd + 20*traceYeAdjYe + 60*traceYuAdjYu - 9*Sqr(g1) - 45*
+      Sqr(g2)));
 
 
    return beta_LamSH;
@@ -67,15 +67,15 @@ double SingletDMZ3_susy_parameters::calc_beta_LamSH_two_loop(const Susy_traces& 
    double beta_LamSH;
 
    beta_LamSH = Re(0.0025*LamSH*twoLoop*(1671*Power(g1,4) - 3625*Power(g2
-      ,4) - 7200*Lambda1*LamSH - 2400*LamS*LamSH - 5400*traceYdAdjYdYdAdjYd -
-      8400*traceYdAdjYuYuAdjYd - 1800*traceYeAdjYeYeAdjYe - 14400*Lambda1*
-      traceYuAdjYu - 2400*LamSH*traceYuAdjYu - 5400*traceYuAdjYuYuAdjYu + 2880*
-      Lambda1*Sqr(g1) + 120*LamSH*Sqr(g1) + 1700*traceYuAdjYu*Sqr(g1) + 14400*
-      Lambda1*Sqr(g2) + 600*LamSH*Sqr(g2) + 4500*traceYuAdjYu*Sqr(g2) + 450*Sqr
-      (g1)*Sqr(g2) + 100*traceYeAdjYe*(-8*(6*Lambda1 + LamSH) + 15*Sqr(g1) + 15
-      *Sqr(g2)) + 16000*traceYuAdjYu*Sqr(g3) + 100*traceYdAdjYd*(5*Sqr(g1) + 45
-      *Sqr(g2) + 8*(-18*Lambda1 - 3*LamSH + 20*Sqr(g3))) - 6000*Sqr(Lambda1) -
-      1000*Sqr(LamS) - 1100*Sqr(LamSH)));
+      ,4) - 7200*LamH*LamSH - 2400*LamS*LamSH - 5400*traceYdAdjYdYdAdjYd - 8400
+      *traceYdAdjYuYuAdjYd - 1800*traceYeAdjYeYeAdjYe - 14400*LamH*traceYuAdjYu
+      - 2400*LamSH*traceYuAdjYu - 5400*traceYuAdjYuYuAdjYu + 2880*LamH*Sqr(g1)
+      + 120*LamSH*Sqr(g1) + 1700*traceYuAdjYu*Sqr(g1) + 14400*LamH*Sqr(g2) +
+      600*LamSH*Sqr(g2) + 4500*traceYuAdjYu*Sqr(g2) + 450*Sqr(g1)*Sqr(g2) + 100
+      *traceYeAdjYe*(-8*(6*LamH + LamSH) + 15*Sqr(g1) + 15*Sqr(g2)) + 16000*
+      traceYuAdjYu*Sqr(g3) + 100*traceYdAdjYd*(5*Sqr(g1) + 45*Sqr(g2) + 8*(-18*
+      LamH - 3*LamSH + 20*Sqr(g3))) - 6000*Sqr(LamH) - 1000*Sqr(LamS) - 1100*
+      Sqr(LamSH)));
 
 
    return beta_LamSH;

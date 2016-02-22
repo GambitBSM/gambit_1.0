@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:40:00
+// File generated at Mon 22 Feb 2016 17:30:58
 
 /**
  * @file SingletDMZ3_two_scale_model.cpp
@@ -26,7 +26,7 @@
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
  *
- * This file was generated at Sat 20 Feb 2016 22:40:00 with FlexibleSUSY
+ * This file was generated at Mon 22 Feb 2016 17:30:58 with FlexibleSUSY
  * 1.2.4 (git commit: unknown) and SARAH 4.5.8 .
  */
 

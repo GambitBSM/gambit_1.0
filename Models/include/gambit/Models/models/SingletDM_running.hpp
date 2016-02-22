@@ -27,7 +27,7 @@
 #define PARENT SingletDMZ3
   START_MODEL
   INTERPRET_AS_PARENT_FUNCTION(SingletDM_running_to_SingletDMZ3)
-  DEFINEPARS(mS2, lambda_hS, lambda_S)
+  DEFINEPARS(mS, lambda_hS, lambda_S)
 #undef PARENT
 
 #undef MODEL

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:19
+// File generated at Mon 22 Feb 2016 16:41:46
 
 #include "SingletDM_input_parameters.hpp"
 
@@ -29,7 +29,7 @@ std::ostream& operator<<(std::ostream& ostr, const SingletDM_input_parameters& i
    ostr << "HiggsIN = " << INPUT(HiggsIN) << ", ";
    ostr << "LamSHInput = " << INPUT(LamSHInput) << ", ";
    ostr << "LamSInput = " << INPUT(LamSInput) << ", ";
-   ostr << "mS2Input = " << INPUT(mS2Input) << ", ";
+   ostr << "muSInput = " << INPUT(muSInput) << ", ";
    ostr << "QEWSB = " << INPUT(QEWSB) << ", ";
    ostr << "Qin = " << INPUT(Qin) << ", ";
 

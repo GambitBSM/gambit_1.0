@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:51
+// File generated at Mon 22 Feb 2016 17:30:33
 
 #ifndef SingletDMZ3_SLHA_IO_H
 #define SingletDMZ3_SLHA_IO_H
@@ -190,7 +190,7 @@ void SingletDMZ3_slha_io::set_model_parameters(const SingletDMZ3_slha<T>& model)
       std::ostringstream block;
       block << "Block SM Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
             << FORMAT_ELEMENT(1, (MODELPARAMETER(muH)), "muH")
-            << FORMAT_ELEMENT(2, (MODELPARAMETER(Lambda1)), "Lambda1")
+            << FORMAT_ELEMENT(2, (MODELPARAMETER(LamH)), "LamH")
       ;
       slha_io.set_block(block);
    }

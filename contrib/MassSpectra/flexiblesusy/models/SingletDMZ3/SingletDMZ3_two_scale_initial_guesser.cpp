@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:52
+// File generated at Mon 22 Feb 2016 17:30:34
 
 #include "SingletDMZ3_two_scale_initial_guesser.hpp"
 #include "SingletDMZ3_two_scale_model.hpp"
@@ -88,7 +88,7 @@ void SingletDMZ3_initial_guesser<Two_scale>::guess()
  * \code{.cpp}
    const auto LamSHInput = INPUTPARAMETER(LamSHInput);
    const auto LamSInput = INPUTPARAMETER(LamSInput);
-   const auto mS2Input = INPUTPARAMETER(mS2Input);
+   const auto muSInput = INPUTPARAMETER(muSInput);
    const auto HiggsIN = INPUTPARAMETER(HiggsIN);
    const auto mu3Input = INPUTPARAMETER(mu3Input);
 
@@ -98,7 +98,7 @@ void SingletDMZ3_initial_guesser<Two_scale>::guess()
    calculate_Ye_DRbar();
    MODEL->set_LamSH(Re(LamSHInput));
    MODEL->set_LamS(Re(LamSInput));
-   MODEL->set_muS(Re(mS2Input));
+   MODEL->set_muS(Re(muSInput));
    MODEL->set_muH(Re(HiggsIN));
    MODEL->set_mu3(Re(mu3Input));
 
@@ -135,7 +135,7 @@ void SingletDMZ3_initial_guesser<Two_scale>::guess_susy_parameters()
    // apply user-defined initial guess at the low scale
    const auto LamSHInput = INPUTPARAMETER(LamSHInput);
    const auto LamSInput = INPUTPARAMETER(LamSInput);
-   const auto mS2Input = INPUTPARAMETER(mS2Input);
+   const auto muSInput = INPUTPARAMETER(muSInput);
    const auto HiggsIN = INPUTPARAMETER(HiggsIN);
    const auto mu3Input = INPUTPARAMETER(mu3Input);
 
@@ -145,7 +145,7 @@ void SingletDMZ3_initial_guesser<Two_scale>::guess_susy_parameters()
    calculate_Ye_DRbar();
    MODEL->set_LamSH(Re(LamSHInput));
    MODEL->set_LamS(Re(LamSInput));
-   MODEL->set_muS(Re(mS2Input));
+   MODEL->set_muS(Re(muSInput));
    MODEL->set_muH(Re(HiggsIN));
    MODEL->set_mu3(Re(mu3Input));
 

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:47
+// File generated at Mon 22 Feb 2016 17:30:30
 
 #include "SingletDMZ3_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -32,9 +32,9 @@ namespace flexiblesusy {
 
 SingletDMZ3_susy_parameters::SingletDMZ3_susy_parameters(const SingletDMZ3_input_parameters& input_)
    : Beta_function()
-   , g1(0), g2(0), g3(0), LamS(0), LamSH(0), Lambda1(0), Yu(Eigen::Matrix<
-   double,3,3>::Zero()), Yd(Eigen::Matrix<double,3,3>::Zero()), Ye(
-   Eigen::Matrix<double,3,3>::Zero())
+   , g1(0), g2(0), g3(0), LamS(0), LamSH(0), LamH(0), Yu(Eigen::Matrix<double,3
+   ,3>::Zero()), Yd(Eigen::Matrix<double,3,3>::Zero()), Ye(Eigen::Matrix<double
+   ,3,3>::Zero())
 
    , input(input_)
 {
@@ -45,13 +45,13 @@ SingletDMZ3_susy_parameters::SingletDMZ3_susy_parameters(
    double scale_, double loops_, double thresholds_,
    const SingletDMZ3_input_parameters& input_
    , double g1_, double g2_, double g3_, double LamS_, double LamSH_, double
-   Lambda1_, const Eigen::Matrix<double,3,3>& Yu_, const Eigen::Matrix<double,3
-   ,3>& Yd_, const Eigen::Matrix<double,3,3>& Ye_
+   LamH_, const Eigen::Matrix<double,3,3>& Yu_, const Eigen::Matrix<double,3,3>
+   & Yd_, const Eigen::Matrix<double,3,3>& Ye_
 
 )
    : Beta_function()
-   , g1(g1_), g2(g2_), g3(g3_), LamS(LamS_), LamSH(LamSH_), Lambda1(Lambda1_),
-   Yu(Yu_), Yd(Yd_), Ye(Ye_)
+   , g1(g1_), g2(g2_), g3(g3_), LamS(LamS_), LamSH(LamSH_), LamH(LamH_), Yu(Yu_
+   ), Yd(Yd_), Ye(Ye_)
 
    , input(input_)
 {
@@ -76,7 +76,7 @@ SingletDMZ3_susy_parameters SingletDMZ3_susy_parameters::calc_beta() const
    double beta_g3(calc_beta_g3_one_loop(TRACE_STRUCT));
    double beta_LamS(calc_beta_LamS_one_loop(TRACE_STRUCT));
    double beta_LamSH(calc_beta_LamSH_one_loop(TRACE_STRUCT));
-   double beta_Lambda1(calc_beta_Lambda1_one_loop(TRACE_STRUCT));
+   double beta_LamH(calc_beta_LamH_one_loop(TRACE_STRUCT));
    Eigen::Matrix<double,3,3> beta_Yu(calc_beta_Yu_one_loop(TRACE_STRUCT));
    Eigen::Matrix<double,3,3> beta_Yd(calc_beta_Yd_one_loop(TRACE_STRUCT));
    Eigen::Matrix<double,3,3> beta_Ye(calc_beta_Ye_one_loop(TRACE_STRUCT));
@@ -87,7 +87,7 @@ SingletDMZ3_susy_parameters SingletDMZ3_susy_parameters::calc_beta() const
       beta_g3 += calc_beta_g3_two_loop(TRACE_STRUCT);
       beta_LamS += calc_beta_LamS_two_loop(TRACE_STRUCT);
       beta_LamSH += calc_beta_LamSH_two_loop(TRACE_STRUCT);
-      beta_Lambda1 += calc_beta_Lambda1_two_loop(TRACE_STRUCT);
+      beta_LamH += calc_beta_LamH_two_loop(TRACE_STRUCT);
       beta_Yu += calc_beta_Yu_two_loop(TRACE_STRUCT);
       beta_Yd += calc_beta_Yd_two_loop(TRACE_STRUCT);
       beta_Ye += calc_beta_Ye_two_loop(TRACE_STRUCT);
@@ -99,7 +99,7 @@ SingletDMZ3_susy_parameters SingletDMZ3_susy_parameters::calc_beta() const
 
 
    return SingletDMZ3_susy_parameters(get_scale(), get_loops(), get_thresholds(), input,
-                    beta_g1, beta_g2, beta_g3, beta_LamS, beta_LamSH, beta_Lambda1, beta_Yu, beta_Yd, beta_Ye);
+                    beta_g1, beta_g2, beta_g3, beta_LamS, beta_LamSH, beta_LamH, beta_Yu, beta_Yd, beta_Ye);
 }
 
 void SingletDMZ3_susy_parameters::clear()
@@ -110,7 +110,7 @@ void SingletDMZ3_susy_parameters::clear()
    g3 = 0.;
    LamS = 0.;
    LamSH = 0.;
-   Lambda1 = 0.;
+   LamH = 0.;
    Yu = Eigen::Matrix<double,3,3>::Zero();
    Yd = Eigen::Matrix<double,3,3>::Zero();
    Ye = Eigen::Matrix<double,3,3>::Zero();
@@ -128,7 +128,7 @@ Eigen::ArrayXd SingletDMZ3_susy_parameters::get() const
    pars(2) = g3;
    pars(3) = LamS;
    pars(4) = LamSH;
-   pars(5) = Lambda1;
+   pars(5) = LamH;
    pars(6) = Yu(0,0);
    pars(7) = Yu(0,1);
    pars(8) = Yu(0,2);
@@ -169,7 +169,7 @@ void SingletDMZ3_susy_parameters::print(std::ostream& ostr) const
    ostr << "g3 = " << g3 << '\n';
    ostr << "LamS = " << LamS << '\n';
    ostr << "LamSH = " << LamSH << '\n';
-   ostr << "Lambda1 = " << Lambda1 << '\n';
+   ostr << "LamH = " << LamH << '\n';
    ostr << "Yu = " << Yu << '\n';
    ostr << "Yd = " << Yd << '\n';
    ostr << "Ye = " << Ye << '\n';
@@ -183,7 +183,7 @@ void SingletDMZ3_susy_parameters::set(const Eigen::ArrayXd& pars)
    g3 = pars(2);
    LamS = pars(3);
    LamSH = pars(4);
-   Lambda1 = pars(5);
+   LamH = pars(5);
    Yu(0,0) = pars(6);
    Yu(0,1) = pars(7);
    Yu(0,2) = pars(8);

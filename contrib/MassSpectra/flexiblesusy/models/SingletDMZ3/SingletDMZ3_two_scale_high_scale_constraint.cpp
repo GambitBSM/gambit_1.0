@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:51
+// File generated at Mon 22 Feb 2016 17:30:34
 
 #include "SingletDMZ3_two_scale_high_scale_constraint.hpp"
 #include "SingletDMZ3_two_scale_model.hpp"
@@ -113,7 +113,7 @@ bool SingletDMZ3_high_scale_constraint<Two_scale>::check_non_perturbative()
    const auto g3 = MODELPARAMETER(g3);
    const auto LamS = MODELPARAMETER(LamS);
    const auto LamSH = MODELPARAMETER(LamSH);
-   const auto Lambda1 = MODELPARAMETER(Lambda1);
+   const auto LamH = MODELPARAMETER(LamH);
    const auto Yu = MODELPARAMETER(Yu);
    const auto Yd = MODELPARAMETER(Yd);
    const auto Ye = MODELPARAMETER(Ye);
@@ -148,11 +148,11 @@ bool SingletDMZ3_high_scale_constraint<Two_scale>::check_non_perturbative()
    } else {
       model->get_problems().unflag_non_perturbative_parameter("LamSH");
    }
-   if (MaxAbsValue(Lambda1) > 3.5449077018110318) {
+   if (MaxAbsValue(LamH) > 3.5449077018110318) {
       problem = true;
-      model->get_problems().flag_non_perturbative_parameter("Lambda1", MaxAbsValue(Lambda1), model->get_scale(), 3.5449077018110318);
+      model->get_problems().flag_non_perturbative_parameter("LamH", MaxAbsValue(LamH), model->get_scale(), 3.5449077018110318);
    } else {
-      model->get_problems().unflag_non_perturbative_parameter("Lambda1");
+      model->get_problems().unflag_non_perturbative_parameter("LamH");
    }
    if (MaxAbsValue(Yu) > 3.5449077018110318) {
       problem = true;

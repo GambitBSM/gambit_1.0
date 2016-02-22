@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:40:00
+// File generated at Mon 22 Feb 2016 17:30:58
 
 #ifndef SingletDMZ3_PHYSICAL_H
 #define SingletDMZ3_PHYSICAL_H
@@ -36,17 +36,17 @@ struct SingletDMZ3_physical {
    void convert_to_slha(); ///< converts pole masses to SLHA convention
    void print(std::ostream&) const;
 
-   double MVG;
    double MHp;
    double Mss;
    Eigen::Array<double,3,1> MFv;
    double MAh;
    double Mhh;
-   double MVP;
    double MVZ;
    Eigen::Array<double,3,1> MFd;
    Eigen::Array<double,3,1> MFu;
    Eigen::Array<double,3,1> MFe;
+   double MVG;
+   double MVP;
    double MVWp;
 
    Eigen::Matrix<std::complex<double>,3,3> Vd;

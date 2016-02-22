@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:50
+// File generated at Mon 22 Feb 2016 17:30:33
 
 #ifndef SingletDMZ3_INPUT_PARAMETERS_H
 #define SingletDMZ3_INPUT_PARAMETERS_H
@@ -30,13 +30,13 @@ struct SingletDMZ3_input_parameters {
    double HiggsIN;
    double LamSHInput;
    double LamSInput;
-   double mS2Input;
+   double muSInput;
    double mu3Input;
    double QEWSB;
    double Qin;
 
    SingletDMZ3_input_parameters()
-      : HiggsIN(0), LamSHInput(0), LamSInput(0), mS2Input(0), mu3Input(0), QEWSB(0
+      : HiggsIN(0), LamSHInput(0), LamSInput(0), muSInput(0), mu3Input(0), QEWSB(0
    ), Qin(0)
 
    {}

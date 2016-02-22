@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:44
+// File generated at Mon 22 Feb 2016 16:42:09
 
 #include "SingletDM_input_parameters.hpp"
 #include "SingletDM_spectrum_generator.hpp"
@@ -40,7 +40,7 @@ void print_usage()
       "  --HiggsIN=<value>\n"
       "  --LamSHInput=<value>\n"
       "  --LamSInput=<value>\n"
-      "  --mS2Input=<value>\n"
+      "  --muSInput=<value>\n"
       "  --QEWSB=<value>\n"
       "  --Qin=<value>\n"
 
@@ -63,7 +63,7 @@ void set_command_line_parameters(int argc, char* argv[],
       if(Command_line_options::get_parameter_value(option, "--LamSInput=", input.LamSInput))
          continue;
 
-      if(Command_line_options::get_parameter_value(option, "--mS2Input=", input.mS2Input))
+      if(Command_line_options::get_parameter_value(option, "--muSInput=", input.muSInput))
          continue;
 
       if(Command_line_options::get_parameter_value(option, "--QEWSB=", input.QEWSB))

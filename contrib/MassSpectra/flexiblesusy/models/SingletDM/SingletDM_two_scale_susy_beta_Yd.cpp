@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 16:21:18
+// File generated at Mon 22 Feb 2016 16:41:45
 
 #include "SingletDM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -72,10 +72,10 @@ Eigen::Matrix<double,3,3> SingletDM_susy_parameters::calc_beta_Yd_two_loop(const
       + 2.125*traceYuAdjYu*Sqr(g1) + 5.625*traceYuAdjYu*Sqr(g2) - 1.35*Sqr(g1)
       *Sqr(g2) + 1.875*traceYeAdjYe*(Sqr(g1) + Sqr(g2)) + 20*traceYuAdjYu*Sqr(
       g3) + 2.066666666666667*Sqr(g1)*Sqr(g3) + 9*Sqr(g2)*Sqr(g3) + 0.625*
-      traceYdAdjYd*(Sqr(g1) + 9*Sqr(g2) + 32*Sqr(g3)) + 1.5*Sqr(Lambda1) + 0.25
-      *Sqr(LamSH)) + 0.0125*((-480*Lambda1 - 540*traceYdAdjYd - 180*
-      traceYeAdjYe - 540*traceYuAdjYu + 187*Sqr(g1) + 675*Sqr(g2) + 1280*Sqr(g3
-      ))*(Yd*Yd.adjoint()*Yd) + (300*traceYdAdjYd + 100*traceYeAdjYe + 300*
+      traceYdAdjYd*(Sqr(g1) + 9*Sqr(g2) + 32*Sqr(g3)) + 1.5*Sqr(LamH) + 0.25*
+      Sqr(LamSH)) + 0.0125*((-480*LamH - 540*traceYdAdjYd - 180*traceYeAdjYe -
+      540*traceYuAdjYu + 187*Sqr(g1) + 675*Sqr(g2) + 1280*Sqr(g3))*(Yd*
+      Yd.adjoint()*Yd) + (300*traceYdAdjYd + 100*traceYeAdjYe + 300*
       traceYuAdjYu - 79*Sqr(g1) + 45*Sqr(g2) - 1280*Sqr(g3))*(Yd*Yu.adjoint()*
       Yu) + 20*(6*(Yd*Yd.adjoint()*Yd*Yd.adjoint()*Yd) - 4*(Yd*Yd.adjoint()*Yd*
       Yu.adjoint()*Yu) - Yd*Yu.adjoint()*Yu*Yd.adjoint()*Yd + 11*(Yd*Yu.adjoint

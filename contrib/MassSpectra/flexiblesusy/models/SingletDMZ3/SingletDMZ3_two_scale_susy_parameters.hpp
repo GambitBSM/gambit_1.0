@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:47
+// File generated at Mon 22 Feb 2016 17:30:30
 
 #ifndef SingletDMZ3_TWO_SCALE_susy_parameters_H
 #define SingletDMZ3_TWO_SCALE_susy_parameters_H
@@ -40,8 +40,8 @@ class SingletDMZ3_susy_parameters : public Beta_function {
 public:
    explicit SingletDMZ3_susy_parameters(const SingletDMZ3_input_parameters& input_ = SingletDMZ3_input_parameters());
    SingletDMZ3_susy_parameters(double scale_, double loops_, double thresholds_, const SingletDMZ3_input_parameters& input_, double g1_, double g2_, double g3_, double LamS_, double LamSH_, double
-   Lambda1_, const Eigen::Matrix<double,3,3>& Yu_, const Eigen::Matrix<double,3
-   ,3>& Yd_, const Eigen::Matrix<double,3,3>& Ye_
+   LamH_, const Eigen::Matrix<double,3,3>& Yu_, const Eigen::Matrix<double,3,3>
+   & Yd_, const Eigen::Matrix<double,3,3>& Ye_
 );
    virtual ~SingletDMZ3_susy_parameters() {}
    virtual Eigen::ArrayXd beta() const;
@@ -60,7 +60,7 @@ public:
    void set_g3(double g3_) { g3 = g3_; }
    void set_LamS(double LamS_) { LamS = LamS_; }
    void set_LamSH(double LamSH_) { LamSH = LamSH_; }
-   void set_Lambda1(double Lambda1_) { Lambda1 = Lambda1_; }
+   void set_LamH(double LamH_) { LamH = LamH_; }
    void set_Yu(const Eigen::Matrix<double,3,3>& Yu_) { Yu = Yu_; }
    void set_Yu(int i, int k, double value) { Yu(i,k) = value; }
    void set_Yd(const Eigen::Matrix<double,3,3>& Yd_) { Yd = Yd_; }
@@ -73,7 +73,7 @@ public:
    double get_g3() const { return g3; }
    double get_LamS() const { return LamS; }
    double get_LamSH() const { return LamSH; }
-   double get_Lambda1() const { return Lambda1; }
+   double get_LamH() const { return LamH; }
    const Eigen::Matrix<double,3,3>& get_Yu() const { return Yu; }
    double get_Yu(int i, int k) const { return Yu(i,k); }
    const Eigen::Matrix<double,3,3>& get_Yd() const { return Yd; }
@@ -89,7 +89,7 @@ protected:
    double g3;
    double LamS;
    double LamSH;
-   double Lambda1;
+   double LamH;
    Eigen::Matrix<double,3,3> Yu;
    Eigen::Matrix<double,3,3> Yd;
    Eigen::Matrix<double,3,3> Ye;
@@ -132,9 +132,9 @@ private:
    double calc_beta_LamSH_one_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_LamSH_two_loop(const TRACE_STRUCT_TYPE&) const;
    double calc_beta_LamSH_three_loop(const TRACE_STRUCT_TYPE&) const;
-   double calc_beta_Lambda1_one_loop(const TRACE_STRUCT_TYPE&) const;
-   double calc_beta_Lambda1_two_loop(const TRACE_STRUCT_TYPE&) const;
-   double calc_beta_Lambda1_three_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamH_one_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamH_two_loop(const TRACE_STRUCT_TYPE&) const;
+   double calc_beta_LamH_three_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yu_one_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yu_two_loop(const TRACE_STRUCT_TYPE&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yu_three_loop(const TRACE_STRUCT_TYPE&) const;

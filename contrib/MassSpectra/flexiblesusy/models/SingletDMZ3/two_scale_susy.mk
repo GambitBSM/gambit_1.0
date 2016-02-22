@@ -23,7 +23,7 @@ LIBSingletDMZ3_SRC += \
 	models/SingletDMZ3/SingletDMZ3_two_scale_susy_beta_g3.cpp \
 	models/SingletDMZ3/SingletDMZ3_two_scale_susy_beta_LamS.cpp \
 	models/SingletDMZ3/SingletDMZ3_two_scale_susy_beta_LamSH.cpp \
-	models/SingletDMZ3/SingletDMZ3_two_scale_susy_beta_Lambda1.cpp \
+	models/SingletDMZ3/SingletDMZ3_two_scale_susy_beta_LamH.cpp \
 	models/SingletDMZ3/SingletDMZ3_two_scale_susy_beta_Yu.cpp \
 	models/SingletDMZ3/SingletDMZ3_two_scale_susy_beta_Yd.cpp \
 	models/SingletDMZ3/SingletDMZ3_two_scale_susy_beta_Ye.cpp

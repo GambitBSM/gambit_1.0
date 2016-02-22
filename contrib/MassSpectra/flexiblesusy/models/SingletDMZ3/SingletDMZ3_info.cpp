@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sat 20 Feb 2016 22:39:51
+// File generated at Mon 22 Feb 2016 17:30:33
 
 #include "SingletDMZ3_info.hpp"
 
@@ -29,17 +29,17 @@ namespace SingletDMZ3_info {
    const double normalization_g2 = 1;
    const double normalization_g3 = 1;
 
-   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 1, 3, 1
-      , 1, 1, 1, 3, 3, 3, 1};
+   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 3, 1, 1
+      , 1, 3, 3, 3, 1, 1, 1};
 
-   const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Hp", "ss", "Fv",
-      "Ah", "hh", "VP", "VZ", "Fd", "Fu", "Fe", "VWp"};
+   const char* particle_names[NUMBER_OF_PARTICLES] = {"Hp", "ss", "Fv", "Ah",
+      "hh", "VZ", "Fd", "Fu", "Fe", "VG", "VP", "VWp"};
 
-   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "g", "H^+", "S",
-      "\\nu", "A^0", "h", "\\gamma", "Z", "d", "u", "e", "W^+"};
+   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "H^+", "S",
+      "\\nu", "A^0", "h", "Z", "d", "u", "e", "g", "\\gamma", "W^+"};
 
    const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
-      "LamS", "LamSH", "Lambda1", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)",
+      "LamS", "LamSH", "LamH", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)",
       "Yu(1,1)", "Yu(1,2)", "Yu(2,0)", "Yu(2,1)", "Yu(2,2)", "Yd(0,0)", "Yd(0,1)",
       "Yd(0,2)", "Yd(1,0)", "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)"
       , "Ye(0,0)", "Ye(0,1)", "Ye(0,2)", "Ye(1,0)", "Ye(1,1)", "Ye(1,2)",
