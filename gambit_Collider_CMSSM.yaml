@@ -3,20 +3,6 @@ Parameters:
   #SM nuisance parameters fixed for now.
   StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
-  #Nuclear matrix parameters fixed for now.
-  nuclear_params_sigmas_sigmal:
-    sigmas:
-      fixed_value:  43.0
-    sigmal:
-      fixed_value:  58.0
-    deltau:
-      fixed_value:  0.842
-    deltad:
-      fixed_value: -0.427
-    deltas:
-      fixed_value: -0.085
-
-
   # Specify CMSSM parameter ranges and priors here
 
   CMSSM:
@@ -33,7 +19,6 @@ Parameters:
       range: [3.0, 70]
       prior_type: flat
     SignMu: 1
-
 
 Priors:
 
