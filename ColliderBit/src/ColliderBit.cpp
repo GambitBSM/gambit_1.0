@@ -3256,7 +3256,7 @@ namespace Gambit
       const SubSpectrum* spec = fullspectrum->get_HE();
       const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
 
-      result.Mh[0] = spec->phys().get(Par::Pole_Mass,25,0);
+      result.Mh[0] = spec->get(Par::Pole_Mass,25,0);
 
       result.deltaMh[0] = 0.; // Need to get theoretical error on mass
       result.hGammaTot[0] = decays->width_in_GeV;
@@ -3317,40 +3317,40 @@ namespace Gambit
       for(int i = 0; i < 3; i++)
       {
         // Higgs masses and errors
-        result.Mh[i] = spec->phys().get(Par::Pole_Mass,sHneut[i]);
+        result.Mh[i] = spec->get(Par::Pole_Mass,sHneut[i]);
         result.deltaMh[i] = 0.;
       }
 
       // invisible LSP?
-      double lsp_mass = spec->phys().get(Par::Pole_Mass,"~chi0_1");
+      double lsp_mass = spec->get(Par::Pole_Mass,"~chi0_1");
       int i_snu = 0;
       for(int i = 1; i <= 3; i++)
       {
-        if(spec->phys().get(Par::Pole_Mass,"~nu",i)  < lsp_mass)
+        if(spec->get(Par::Pole_Mass,"~nu",i)  < lsp_mass)
         {
           i_snu = i;
-          lsp_mass = spec->phys().get(Par::Pole_Mass,"~nu",i);
+          lsp_mass = spec->get(Par::Pole_Mass,"~nu",i);
         }
       }
 
       bool inv_lsp = true;
-      if(spec->phys().get(Par::Pole_Mass,"~chi+",1) < lsp_mass) inv_lsp = false;
-      if(spec->phys().get(Par::Pole_Mass,"~g") < lsp_mass) inv_lsp = false;
+      if(spec->get(Par::Pole_Mass,"~chi+",1) < lsp_mass) inv_lsp = false;
+      if(spec->get(Par::Pole_Mass,"~g") < lsp_mass) inv_lsp = false;
       if(inv_lsp)
       {
         for(int i = 1; i <= 6; i++)
         {
-          if(spec->phys().get(Par::Pole_Mass,"~d",i) < lsp_mass)
+          if(spec->get(Par::Pole_Mass,"~d",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys().get(Par::Pole_Mass,"~u",i) < lsp_mass)
+          if(spec->get(Par::Pole_Mass,"~u",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys().get(Par::Pole_Mass,"~e-",i) < lsp_mass)
+          if(spec->get(Par::Pole_Mass,"~e-",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
@@ -3401,7 +3401,7 @@ namespace Gambit
         }
       }
 
-      result.MHplus = spec->phys().get(Par::Pole_Mass,"H+");
+      result.MHplus = spec->get(Par::Pole_Mass,"H+");
       result.deltaMHplus = 0.;
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));

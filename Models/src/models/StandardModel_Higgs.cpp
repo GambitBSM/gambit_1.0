@@ -45,7 +45,7 @@ using namespace Gambit::Utils;
 void MODEL_NAMESPACE::StandardModel_Higgs_to_StandardModel_Higgs_running (const ModelParameters &myP, ModelParameters &targetP)
 {
   USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
-  logger()<<"Running interpret_as_parent calculations for SM_Higgs --> SM_Higgs_running..."<<LogTags::info<<EOM;
+  logger()<<"Running interpret_as_parent calculations for SM_Higgs --> SM_Higgs_.."<<LogTags::info<<EOM;
   
   double tree_level_H_mass,mh2;
   tree_level_H_mass=myP.getValue("mH");

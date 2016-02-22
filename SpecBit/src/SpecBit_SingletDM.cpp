@@ -210,9 +210,9 @@ namespace Gambit
       // (last parameter turns the 'safety' check for the override setter off, which allows
       //  us to set parameters that don't previously exist)
       
-      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+      ssdmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+      ssdmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+      ssdmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily

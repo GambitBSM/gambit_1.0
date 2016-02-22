@@ -50,11 +50,10 @@ void MODEL_NAMESPACE::MSSM63atMGUT_to_MSSM63atQ (const ModelParameters &myP, Mod
 
    // Make sure the high-scale value was correctly added to the spectrum wrapper object
    spec->get_HE();
-   spec->get_HE()->runningpars();
-   spec->get_HE()->runningpars().has(Par::mass1,"high_scale");
-   if( spec->get_HE()->runningpars().has(Par::mass1,"high_scale") )
+   spec->get_HE()->has(Par::mass1,"high_scale");
+   if( spec->get_HE()->has(Par::mass1,"high_scale") )
    {
-      targetP.setValue("Qin", spec->get_HE()->runningpars().get(Par::mass1,"high_scale") );
+      targetP.setValue("Qin", spec->get_HE()->get(Par::mass1,"high_scale") );
    } 
    else 
    {
