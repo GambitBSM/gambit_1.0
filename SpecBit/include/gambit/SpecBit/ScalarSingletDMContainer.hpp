@@ -38,8 +38,15 @@ namespace Gambit
          double get_HiggsVEV()        const { return HiggsVEV;      } 
          double get_SingletPoleMass() const { return SingletPoleMass; } 
          double get_lambda_hS()       const { return SingletLambda; } 
+
+         void set_HiggsPoleMass(double in)   { HiggsPoleMass=in; } 
+         void set_HiggsVEV(double in)        { HiggsVEV=in;      } 
+         void set_SingletPoleMass(double in) { SingletPoleMass=in; } 
+         void set_lambda_hS(double in)       { SingletLambda=in; } 
       };
-   
+  
+      /// Forward declare the wrapper class so that we can use it
+      /// as the template parameter for the SpecTraits specialisation. 
       class SingletDMContainer;  
    }
 
@@ -73,23 +80,39 @@ namespace Gambit
             const Model& get_Model() const { return model; }
             const Input& get_Input() const { return dummyinput; /*unused here, but needs to be defined for the interface*/ }
 
-            /// Map fillers
+            /// @{ Map fillers
             static GetterMaps fill_getter_maps()
             {
                GetterMaps map_collection; 
 
-               map_collection[Par::mass1].map0["vev"] = &Model::get_HiggsVEV;
+               map_collection[Par::mass1].map0["vev"]       = &Model::get_HiggsVEV;
+               map_collection[Par::mass1].map0["lambda_hS"] = &Model::get_lambda_hS;
 
-               map_collection[Par::Pole_Mass].map0["h0"]   = &Model::get_HiggsPoleMass;
-               map_collection[Par::Pole_Mass].map0["h0_1"] = &Model::get_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0["h0"]    = &Model::get_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0["h0_1"]  = &Model::get_HiggsPoleMass;
  
                map_collection[Par::Pole_Mass].map0["S"]       = &Model::get_SingletPoleMass; 
                map_collection[Par::Pole_Mass].map0["Singlet"] = &Model::get_SingletPoleMass; 
- 
-               map_collection[Par::mass1].map0["lambda_hS"] = &Model::get_lambda_hS;
-  
+   
                return map_collection;
             }
+
+            static SetterMaps fill_setter_maps()
+            {
+               SetterMaps map_collection; 
+
+               map_collection[Par::mass1].map0["vev"]       = &Model::set_HiggsVEV;
+               map_collection[Par::mass1].map0["lambda_hS"] = &Model::set_lambda_hS;
+
+               map_collection[Par::Pole_Mass].map0["h0"]    = &Model::set_HiggsPoleMass;
+               map_collection[Par::Pole_Mass].map0["h0_1"]  = &Model::set_HiggsPoleMass;
+ 
+               map_collection[Par::Pole_Mass].map0["S"]       = &Model::set_SingletPoleMass; 
+               map_collection[Par::Pole_Mass].map0["Singlet"] = &Model::set_SingletPoleMass; 
+   
+               return map_collection;
+            }
+            /// @}
 
         }; 
 
