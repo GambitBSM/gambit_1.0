@@ -72,9 +72,9 @@ namespace Gambit
           else step /= 10.;
         }
       }
-    
+
       double result = 0.5 * (1.0 - erf(p95 + (x - x95) / sigma / sqrt(2.)));
-    
+
       if (result < 0.0 or Utils::isnan(result))
       {
         cout << "result: " << result << endl;
@@ -100,7 +100,7 @@ namespace Gambit
     /// Analysis stuff
     std::vector<std::string> analysisNames;
     HEPUtilsAnalysisContainer globalAnalyses;
-    
+
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
@@ -126,7 +126,7 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // Nicely ask the entire loop to be quiet
-      std::cout.rdbuf(0); 
+      std::cout.rdbuf(0);
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -321,7 +321,7 @@ namespace Gambit
         if (runOptions->hasKey(*iter, pythiaConfigName))pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
 
       }
-      
+
       else if (*Loop::iteration == START_SUBPROCESS)
       {
         result.clear();
@@ -458,10 +458,10 @@ namespace Gambit
         }
 	return;
       }
-      
+
     }
-    
-    
+
+
 
     /// *** Hard Scattering Event Generators ***
 
@@ -521,8 +521,8 @@ namespace Gambit
 
         }
 
-        // Veto leptonic taus
-        if(p.idAbs()==15) {
+        // Find tau candidates
+        if (p.idAbs() == MCUtils::PID::TAU) {
           std::vector<int> tauDaughterList = p.daughterList();
           HEPUtils::P4 tmpMomentum;
           bool isGoodTau=true;
@@ -530,13 +530,15 @@ namespace Gambit
           for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
-            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
-                || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
-              isGoodTau=false;
-            if(!daughterID == MCUtils::PID::TAU)tmpMomentum+= mk_p4(pDaughter.p());
+            // Veto leptonic taus
+            /// @todo What's wrong with having a W daughter? Doesn't that just mark a final tau?
+            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON ||
+                daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
+              isGoodTau = false;
+            if (daughterID != MCUtils::PID::TAU) tmpMomentum += mk_p4(pDaughter.p());
           }
 
-          if(isGoodTau){
+          if (isGoodTau) {
             HEPUtils::Particle* tmpTau = new HEPUtils::Particle(mk_p4(p.p()), p.id());
             tauCandidates.push_back(tmpTau);
           }
@@ -560,7 +562,7 @@ namespace Gambit
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
-	const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
+        const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
 
         // Add prompt and invisible particles as individual particles
         if (prompt || !visible) {
@@ -575,7 +577,7 @@ namespace Gambit
 
       /// Jet finding
       /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
-      /// @todo choose jet algorithm via _settings?
+      /// @todo Choose jet algorithm via detector _settings? Run several algs?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
       std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
@@ -648,7 +650,7 @@ namespace Gambit
         const Pythia8::Particle& p = pevt[i];
 
         // Find last tau in prompt tau replica chains as a proxy for tau-tagging
-        if(p.idAbs()==15) {
+        if (p.idAbs() == MCUtils::PID::TAU) {
           std::vector<int> tauDaughterList = p.daughterList();
           HEPUtils::P4 tmpMomentum;
           bool isGoodTau=true;
@@ -656,13 +658,13 @@ namespace Gambit
           for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
-            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
-                || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
-              isGoodTau=false;
-            if(!daughterID == MCUtils::PID::TAU)tmpMomentum+= mk_p4(pDaughter.p());
+            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON ||
+                daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
+              isGoodTau = false;
+            if (daughterID != MCUtils::PID::TAU) tmpMomentum += mk_p4(pDaughter.p());
           }
 
-          if(isGoodTau){
+          if (isGoodTau) {
             HEPUtils::Particle* tmpTau = new HEPUtils::Particle(mk_p4(p.p()), p.id());
             tauCandidates.push_back(tmpTau);
           }
@@ -861,17 +863,17 @@ namespace Gambit
 
           const int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
 
-	  logger() << endl;                                                                                                                                                                                  
-          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;                                                                                                          
-          logger() << "  NEvents, not scaled to luminosity :" << endl;                                                                                                                                       
-          logger() << "    " << srData.n_signal << endl;                                                                                                                                                     
+	  logger() << endl;
+          logger() << "COLLIDER_RESULT " << srData.analysis_name << " " << srData.sr_label << endl;
+          logger() << "  NEvents, not scaled to luminosity :" << endl;
+          logger() << "    " << srData.n_signal << endl;
 	  logger() << "  NEvents, scaled  to luminosity :  " << endl;
 
 	  logger() << "    " << srData.n_signal_at_lumi << endl;
 
-          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;                                                                                                                                      
-          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "                                                                                                                     
-                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;  
+          logger() << "  NEvents (b [rel err], sb [rel err]):" << endl;
+          logger() << "    " << n_predicted_uncertain_b << " [" << uncertainty_b << "] "
+                   << n_predicted_uncertain_sb << " [" << uncertainty_sb << "]" << EOM;
 
           double llb_exp, llsb_exp, llb_obs, llsb_obs;
           // Use a log-normal distribution for the nuisance parameter (more correct)
@@ -917,7 +919,7 @@ namespace Gambit
       } // end ana loop
 
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
-      
+
       result = -total_dll_obs;
     }
 
@@ -1831,7 +1833,7 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
-    
+
       double max_mixing;
       const SubSpectrum* mssm = spec->get_HE();
       str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
@@ -1946,7 +1948,7 @@ namespace Gambit
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
-      
+
     }
 
     void ALEPH_Stau_Conservative_LLike(double& result)
@@ -2044,7 +2046,7 @@ namespace Gambit
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-    
+
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -2111,7 +2113,7 @@ namespace Gambit
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-    
+
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -2179,7 +2181,7 @@ namespace Gambit
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-      
+
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
