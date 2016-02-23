@@ -64,7 +64,7 @@ START_MODULE
     #define FUNCTION getPythiaFileReader
     START_FUNCTION(Gambit::ColliderBit::SpecializablePythia)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-  NEEDS_CLASSES_FROM(Pythia, default)
+    NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
 
