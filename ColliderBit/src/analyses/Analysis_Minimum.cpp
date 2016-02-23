@@ -38,7 +38,6 @@ namespace Gambit {
         HEPUtilsAnalysis::analyze(event);
 
         // Get the missing energy in the event
-        HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
         // Now define vectors of baseline objects,  including:
