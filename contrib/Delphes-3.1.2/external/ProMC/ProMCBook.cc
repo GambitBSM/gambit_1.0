@@ -3,10 +3,10 @@
 ** support, and with no warranty, express or implied, as to its usefulness for
 ** any purpose.
 **
-**  A library for HEP events storage and processing based on Google's ProtocolBuffers 
+**  A library for HEP events storage and processing based on Google's ProtocolBuffers
 **
 ** Author: S.Chekanov (ANL). chekanov@anl.gov
-** Copyright  March, 2013 
+** Copyright  March, 2013
 ** -------------------------------------------------------------------------*/
 
 
@@ -92,7 +92,7 @@ void ProMCBook::open(const char* filename, const char* option) {
 				// sentry=ss;
 				//ConstEntryPointer ent = zf.getEntry(ss, FileCollection::MATCH );
 				//if ( ent == 0 ) break;
-				//auto_ptr< istream > is( zf.getInputStream( ent ) ) ;
+				//unique_ptr< istream > is( zf.getInputStream( ent ) ) ;
 				//cout << "Contents of entry 1: " << ent->getName() << " :" << endl ;
 				//cout << is->rdbuf() ;
 				break;
@@ -103,10 +103,10 @@ void ProMCBook::open(const char* filename, const char* option) {
 		// calculate the total number of entries from the file
 		nev=nlength-metatext.size()-3; // 3 is the count for version,description,header
                 // this is intresting: to get promc_nevents, you must call previous entry promc_description
-                istream * stt = zfile->getInputStream( "promc_description", FileCollection::IGNORE ); 
+                istream * stt = zfile->getInputStream( "promc_description", FileCollection::IGNORE );
 		// ConstEntryPointer ent = zfile->getEntry( "promc_description", FileCollection::IGNORE ) ;
 		if ( stt != 0 ) {
-			// auto_ptr< istream > is( zfile->getInputStream( ent ) ) ;
+			// unique_ptr< istream > is( zfile->getInputStream( ent ) ) ;
 			//  cout << is->rdbuf() ;
 			 std::stringstream sout;
 			 sout << stt->rdbuf();
@@ -183,7 +183,7 @@ void ProMCBook::open(const char* filename, const char* option) {
 	/*
 	  try {
 	    zipios::ConstEntryPointer entry =inpzip->getNextEntry() ;
-	    if(entry->isValid()) { 
+	    if(entry->isValid()) {
 	          std::stringstream sout;
 	          sout << inpzip->rdbuf();
 	          header.ParseFromIstream(&sout);
@@ -219,7 +219,7 @@ unsigned int  ProMCBook::size()
 
 /**
  Get the next record.
- 
+
  @return 0 if the record was extracted OK. 6, or 7 if there is a problem
 
 **/
@@ -281,9 +281,9 @@ ProMCHeader ProMCBook::getHeader(){
 
 
 /**
- Get a data record (event) using a random access. 
+ Get a data record (event) using a random access.
  Use a key to extract the record. The key value
- runs from "0" to size()-1. 
+ runs from "0" to size()-1.
 
  @param key (long) of the record
  @return ProMCEvent record corresponding to this key.
@@ -300,7 +300,7 @@ ProMCEvent ProMCBook::event(long  idx){
 
   if (idx==-1) key="header";
 
-   
+
 
    try {
 
@@ -311,7 +311,7 @@ ProMCEvent ProMCBook::event(long  idx){
                 return eve;
               }  catch( ... ) {
                 cerr << "Unspecified exception caught in main for the key:" << key << endl ;
-                return eve; 
+                return eve;
               }
 }
 
@@ -358,9 +358,9 @@ ProMCEvent ProMCBook::get(){
 	//    std::istream *str = &zipstream;
 
 	    eve.ParseFromIstream(&input);
-	    
 
-	   } 
+
+	   }
 	*/
 
 	return eve;
@@ -379,7 +379,7 @@ void ProMCBook::clear()
 
 /**
  Set a header file.
- 
+
  @param h Header file.
 
 **/
@@ -441,7 +441,7 @@ void ProMCBook::setDescription( int requested_events, string  describe ) {
 
 /**
  Write an event.
- 
+
  @param eve Event to be written.
 
 **/
@@ -605,7 +605,3 @@ void ProMCBook::close() {
 		                inpzip->close(); };
 	clear();
 }
-
-
-
-
