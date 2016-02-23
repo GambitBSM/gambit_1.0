@@ -162,24 +162,24 @@ int main()
     // WARNING: DO NOT EDIT UNLESS YOU ARE AN EXPERT
 
     // Set up the LHC likelihood calculations
-    calc_LHC_LogLike.resolveDependency(&runAnalyses);
+    calc_LHC_LogLike.resolveDependency(&runATLASAnalyses);
     calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
-    runAnalyses.resolveDependency(&getAnalysisContainer);
-    runAnalyses.resolveDependency(&getPythiaFileReader);
-    runAnalyses.resolveDependency(&reconstructBuckFastEvent);
-    getAnalysisContainer.resolveDependency(&getPythiaFileReader);
-    reconstructBuckFastEvent.resolveDependency(&convertPythia8ParticleEvent);
-    reconstructBuckFastEvent.resolveDependency(&getBuckFast);
+    runATLASAnalyses.resolveDependency(&getATLASAnalysisContainer);
+    runATLASAnalyses.resolveDependency(&getPythiaFileReader);
+    runATLASAnalyses.resolveDependency(&smearEventATLAS);
+    getATLASAnalysisContainer.resolveDependency(&getPythiaFileReader);
+    smearEventATLAS.resolveDependency(&convertPythia8ParticleEvent);
+    smearEventATLAS.resolveDependency(&getBuckFastATLAS);
     convertPythia8ParticleEvent.resolveDependency(&generatePythia8Event);
     generatePythia8Event.resolveDependency(&getPythiaFileReader);
     getPythiaFileReader.resolveLoopManager(&operateLHCLoop);
-    getBuckFast.resolveLoopManager(&operateLHCLoop);
-    getAnalysisContainer.resolveLoopManager(&operateLHCLoop);
+    getBuckFastATLAS.resolveLoopManager(&operateLHCLoop);
+    getATLASAnalysisContainer.resolveLoopManager(&operateLHCLoop);
     generatePythia8Event.resolveLoopManager(&operateLHCLoop);
     convertPythia8ParticleEvent.resolveLoopManager(&operateLHCLoop);
-    reconstructBuckFastEvent.resolveLoopManager(&operateLHCLoop);
-    runAnalyses.resolveLoopManager(&operateLHCLoop);
-    std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFast, &getAnalysisContainer,&generatePythia8Event,&convertPythia8ParticleEvent,&reconstructBuckFastEvent,&runAnalyses);
+    smearEventATLAS.resolveLoopManager(&operateLHCLoop);
+    runATLASAnalyses.resolveLoopManager(&operateLHCLoop);
+    std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFastATLAS, &getATLASAnalysisContainer,&generatePythia8Event,&convertPythia8ParticleEvent,&smearEventATLAS,&runATLASAnalyses);
     operateLHCLoop.setNestedList(nested_functions);
           
     // ALEPH selectron limits
@@ -299,27 +299,27 @@ int main()
     std::cout << ColliderBit::Pipes::calc_LHC_LogLike::BEreq::lnlike_marg_poisson_lognormal_error.name() << std::endl;
 
     // Double-check which dependencies have been filled with what (not every combo is done)
-    std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on AnalysisNumbers filled by:" << endl;
-    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::AnalysisNumbers.origin() << "::";
-    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::AnalysisNumbers.name() << std::endl;
-    std::cout << std::endl << "My function runAnalyses has had its dependency on ReconstructedEvent filled by:" << endl;
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::ReconstructedEvent.origin() << "::";
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::ReconstructedEvent.name() << std::endl;
-    std::cout << std::endl << "My function runAnalyses has had its dependency on HardScatteringSim filled by:" << endl;
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::HardScatteringSim.origin() << "::";
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::HardScatteringSim.name() << std::endl;
-    std::cout << std::endl << "My function runAnalyses has had its dependency on AnalysisContainer filled by:" << endl;
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::AnalysisContainer.origin() << "::";
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::AnalysisContainer.name() << std::endl;
-    std::cout << std::endl << "My function getAnalysisContainer has had its dependency on HardScatteringSim filled by:" << endl;
-    std::cout << ColliderBit::Pipes::getAnalysisContainer::Dep::HardScatteringSim.origin() << "::";
-    std::cout << ColliderBit::Pipes::getAnalysisContainer::Dep::HardScatteringSim.name() << std::endl;
-    std::cout << std::endl << "My function reconstructBuckFastEvent has had its dependency on ConvertedScatteringEvent filled by:" << endl;
-    std::cout << ColliderBit::Pipes::reconstructBuckFastEvent::Dep::ConvertedScatteringEvent.origin() << "::";
-    std::cout << ColliderBit::Pipes::reconstructBuckFastEvent::Dep::ConvertedScatteringEvent.name() << std::endl;
-    std::cout << std::endl << "My function reconstructBuckFastEvent has had its dependency on SimpleSmearingSim filled by:" << endl;
-    std::cout << ColliderBit::Pipes::reconstructBuckFastEvent::Dep::SimpleSmearingSim.origin() << "::";
-    std::cout << ColliderBit::Pipes::reconstructBuckFastEvent::Dep::SimpleSmearingSim.name() << std::endl;
+    std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on ATLASAnalysisNumbers filled by:" << endl;
+    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::ATLASAnalysisNumbers.origin() << "::";
+    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::ATLASAnalysisNumbers.name() << std::endl;
+    std::cout << std::endl << "My function runATLASAnalyses has had its dependency on ATLASSmearedEvent filled by:" << endl;
+    std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.origin() << "::";
+    std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASSmearedEvent.name() << std::endl;
+    std::cout << std::endl << "My function runATLASAnalyses has had its dependency on HardScatteringSim filled by:" << endl;
+    std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::HardScatteringSim.origin() << "::";
+    std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::HardScatteringSim.name() << std::endl;
+    std::cout << std::endl << "My function runATLASAnalyses has had its dependency on ATLASAnalysisContainer filled by:" << endl;
+    std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASAnalysisContainer.origin() << "::";
+    std::cout << ColliderBit::Pipes::runATLASAnalyses::Dep::ATLASAnalysisContainer.name() << std::endl;
+    std::cout << std::endl << "My function getATLASAnalysisContainer has had its dependency on HardScatteringSim filled by:" << endl;
+    std::cout << ColliderBit::Pipes::getATLASAnalysisContainer::Dep::HardScatteringSim.origin() << "::";
+    std::cout << ColliderBit::Pipes::getATLASAnalysisContainer::Dep::HardScatteringSim.name() << std::endl;
+    std::cout << std::endl << "My function smearEventATLAS has had its dependency on ConvertedScatteringEvent filled by:" << endl;
+    std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::ConvertedScatteringEvent.origin() << "::";
+    std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::ConvertedScatteringEvent.name() << std::endl;
+    std::cout << std::endl << "My function smearEventATLAS has had its dependency on SimpleSmearingSim filled by:" << endl;
+    std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::SimpleSmearingSim.origin() << "::";
+    std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::SimpleSmearingSim.name() << std::endl;
     std::cout << std::endl << "My function convertPythia8ParticleEvent has had its dependency on HardScatteringEvent filled by:" << endl;
     std::cout << ColliderBit::Pipes::convertPythia8ParticleEvent::Dep::HardScatteringEvent.origin() << "::";
     std::cout << ColliderBit::Pipes::convertPythia8ParticleEvent::Dep::HardScatteringEvent.name() << std::endl;
@@ -334,7 +334,7 @@ int main()
     // First we have the LHC options
     std::vector<std::string> runTheseAnalyses;
     runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which LHC analyses to run
-    getAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
+    getATLASAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
 
     // The standalone Pythia instance is given a name
     // Can be set to anything, provided it matches the same name given below

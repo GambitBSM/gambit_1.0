@@ -83,10 +83,18 @@ START_MODULE
 
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
-    #define FUNCTION getBuckFast
-    START_FUNCTION(Gambit::ColliderBit::BuckFastSmear)
+    #define FUNCTION getBuckFastATLAS
+    START_FUNCTION(Gambit::ColliderBit::BuckFastSmearATLAS)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
+
+/** @TODO: BuckFastCMS...
+    #define FUNCTION getBuckFastCMS
+    START_FUNCTION(Gambit::ColliderBit::BuckFastSmearCMS)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    #undef FUNCTION
+  #undef CAPABILITY
+  **/
 
     #define FUNCTION getBuckFastIdentity
     START_FUNCTION(Gambit::ColliderBit::BuckFastIdentity)
@@ -97,14 +105,26 @@ START_MODULE
 
   /// Capability that holds list of analyses to run
   /// Eventually needs to be configurable from yaml file
-  #define CAPABILITY AnalysisContainer
+  #define CAPABILITY ATLASAnalysisContainer
   START_CAPABILITY
-    #define FUNCTION getAnalysisContainer
+    // TODO: When BuckFastCMS is ready, remove the CMS analyses from getATLASAnalysisContainer
+    #define FUNCTION getATLASAnalysisContainer
     START_FUNCTION(HEPUtilsAnalysisContainer)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
     #undef FUNCTION
   #undef CAPABILITY
+
+/** @TODO: BuckFastCMS...
+  #define CAPABILITY ATLASAnalysisContainer
+  START_CAPABILITY
+    #define FUNCTION getCMSAnalysisContainer
+    START_FUNCTION(HEPUtilsAnalysisContainer)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    #undef FUNCTION
+  #undef CAPABILITY
+    **/
 
 
   /// Event capabilities
@@ -152,9 +172,9 @@ START_MODULE
 */
 
   /// Detector simulators which directly produce the standard event format
+#ifndef EXCLUDE_DELPHES
   #define CAPABILITY ReconstructedEvent
   START_CAPABILITY
-#ifndef EXCLUDE_DELPHES
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
@@ -162,16 +182,34 @@ START_MODULE
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
     #undef FUNCTION
+  #undef CAPABILITY
 #endif // not defined EXCLUDE_DELPHES
 
-    #define FUNCTION reconstructBuckFastEvent
+  #define CAPABILITY ATLASSmearedEvent
+  START_CAPABILITY
+    #define FUNCTION smearEventATLAS
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
-    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmear)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmearATLAS)
     #undef FUNCTION
+  #undef CAPABILITY
 
-    #define FUNCTION reconstructBuckFastIdentityEvent
+/** TODO: BuckFastCMS...
+  #define CAPABILITY CMSSmearedEvent
+  START_CAPABILITY
+    #define FUNCTION smearEventCMS
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmearCMS)
+    #undef FUNCTION
+  #undef CAPABILITY
+    **/
+
+  #define CAPABILITY CopiedEvent
+  START_CAPABILITY
+    #define FUNCTION copyEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
@@ -181,23 +219,39 @@ START_MODULE
 
   // A capability that calculates the log likelihood
   // Runs all analyses and fills vector of analysis results
-  #define CAPABILITY AnalysisNumbers
+  #define CAPABILITY ATLASAnalysisNumbers
   START_CAPABILITY
-    #define FUNCTION runAnalyses
+    #define FUNCTION runATLASAnalyses
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
+    DEPENDENCY(ATLASSmearedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
-    DEPENDENCY(AnalysisContainer, HEPUtilsAnalysisContainer)
+    DEPENDENCY(ATLASAnalysisContainer, HEPUtilsAnalysisContainer)
     #undef FUNCTION
   #undef CAPABILITY
+
+/** @TODO: BuckFastCMS...
+  #define CAPABILITY CMSAnalysisNumbers
+  START_CAPABILITY
+    #define FUNCTION runCMSAnalyses
+    START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(CMSSmearedEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
+    DEPENDENCY(CMSAnalysisContainer, HEPUtilsAnalysisContainer)
+    #undef FUNCTION
+  #undef CAPABILITY
+    **/
 
   // Calculate the log likelihood from the analysis numbers
   #define CAPABILITY LHC_Combined_LogLike
   START_CAPABILITY
     #define FUNCTION calc_LHC_LogLike
     START_FUNCTION(double)
-    DEPENDENCY(AnalysisNumbers, ColliderLogLikes)
+    DEPENDENCY(ATLASAnalysisNumbers, ColliderLogLikes)
+/** @TODO: BuckFastCMS...
+    DEPENDENCY(CMSAnalysisNumbers, ColliderLogLikes)
+    **/
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_GROUP(lnlike_marg_poisson)
