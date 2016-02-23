@@ -238,12 +238,19 @@ namespace Gambit
                 std::string path = GAMBIT_DIR "/config/priors.dat";
                 YAML::Node node = YAML::LoadFile(path);
                 std::stringstream out;
+                
+                out << "\x1b[01m\x1b[04mPRIORS\x1b[0m\n" << std::endl;
+                out << node["priors"].as<std::string>() << "\n" << std::endl;
+                
                 if (node.IsMap())
                 {
                     for (auto it = node.begin(), end = node.end(); it != end; ++it)
                     {
-                        out << "\x1b[01m\x1b[04m" << it->first.as<std::string>() << "\x1b[0m\n" << std::endl;
-                        out << it->second.as<std::string>() << "\n" << std::endl;
+                        if (it->second.as<std::string>() != "priors")
+                        {
+                            out << "\x1b[01m\x1b[04m" << it->first.as<std::string>() << "\x1b[0m\n" << std::endl;
+                            out << it->second.as<std::string>() << "\n" << std::endl;
+                        }
                     }
                 }
                 

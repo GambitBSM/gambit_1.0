@@ -150,11 +150,13 @@ namespace Gambit
             double upper;
             double scale;
             double shift;
+            double scale_out;
+            double shift_out;
             
         public:
     
             // Constructor
-            RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(1), myparameter(param[0]), scale(1.0), shift(0.0)
+            RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(1), myparameter(param[0]), scale(1.0), shift(0.0), scale_out(1.0), shift_out(0.0)
             {
                 // Read the entries we need from the options
                 if ( not options.hasKey("range") )
@@ -179,6 +181,7 @@ namespace Gambit
                     if (options.getValue<std::string>("scale") == "degrees")
                     {
                         scale = 0.0174532925199;
+                        scale_out = scale;
                     }
                     else
                     {
@@ -191,6 +194,20 @@ namespace Gambit
                     shift = options.getValue<double>("shift");
                 }
                 
+                if (options.hasKey("output_scaled_values"))
+                {
+                    if(options.getValue<bool>("output_scaled_values"))
+                    {
+                        scale_out = 1.0;
+                        shift_out = 0.0;
+                    }
+                    else
+                    {
+                        scale_out = scale;
+                        shift_out = shift;
+                    }
+                }
+                
                 lower = T::limits(range.first*scale + shift);
                 upper = T::limits(range.second*scale + shift);
             }
@@ -199,10 +216,10 @@ namespace Gambit
             // (need to use vectors to be compatible with BasePrior virtual function)
             void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &output) const
             {
-                output[myparameter] = T::inv(unitpars[0]*(upper-lower) + lower);
+                output[myparameter] = (T::inv(unitpars[0]*(upper-lower) + lower)-shift_out)/scale_out;
             }
             
-            double operator()(const std::vector<double> &vec) {return T::prior(vec[0]*scale)/scale;}
+            double operator()(const std::vector<double> &vec) const {return T::prior(vec[0]*scale+shift)*scale;}
         };
         
         LOAD_PRIOR(log, RangePrior1D<logprior>)
