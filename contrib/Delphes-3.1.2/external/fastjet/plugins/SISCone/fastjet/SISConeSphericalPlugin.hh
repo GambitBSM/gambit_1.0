@@ -34,7 +34,7 @@ FASTJET_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 ///  - The IR safety of the split-merge step is _not_ guaranteed for
 ///    events consisting of two back-to-back identical heavy particles
 ///    that decay. This is because of potential degeneracies in the
-///    ordering for the split-merge step. 
+///    ordering for the split-merge step.
 ///
 ///    For moderate values of R the problem should not be too severe
 ///    (or may even be absent for some values of the overlap
@@ -54,7 +54,7 @@ FASTJET_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 ///  - the cone_radius (this should be self-explanatory!)
 ///
 ///  - the overlap_threshold is the parameter which dictates how much
-///    two jets must overlap (E_overlap/min(E1,E2)) if they are to be 
+///    two jets must overlap (E_overlap/min(E1,E2)) if they are to be
 ///    merged
 ///
 ///  - Not all particles are in stable cones in the first round of
@@ -69,7 +69,7 @@ FASTJET_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 ///    (default = 0) are discarded before each iteration of the
 ///    split-merge loop.
 ///
-/// One parameter governs some internal algorithmic shortcuts: 
+/// One parameter governs some internal algorithmic shortcuts:
 ///
 /// - if "caching" is turned on then the last event clustered by
 ///   siscone is stored -- if the current event is identical and the
@@ -101,13 +101,13 @@ public:
   };
 
 
-  /// Main constructor for the SISConeSpherical Plugin class.  
+  /// Main constructor for the SISConeSpherical Plugin class.
   ///
   ///
   SISConeSphericalPlugin (double cone_radius_in,
 			  double overlap_threshold_in,
 			  int    n_pass_max_in = 0,
-			  double protojet_Emin_in = 0.0, 
+			  double protojet_Emin_in = 0.0,
 			  bool   caching_in = false,
 			  SplitMergeScale  split_merge_scale_in = SM_Etilde,
 			  double split_merge_stopping_scale_in = 0.0){
@@ -143,10 +143,10 @@ public:
   void set_split_merge_use_E_weighted_splitting(bool val) {
     _use_E_weighted_splitting = val;}
 
-  /// overload the default as we don't provide support 
+  /// overload the default as we don't provide support
   /// for passive areas.
   virtual bool supports_ghosted_passive_areas() const {return true;}
-  
+
   // the things that are required by base class
   virtual std::string description () const;
   virtual void run_clustering(ClusterSequence &) const ;
@@ -159,11 +159,11 @@ private:
   SplitMergeScale _split_merge_scale;
   bool _use_E_weighted_splitting;
 
-  // part needed for the cache 
+  // part needed for the cache
   // variables for caching the results and the input
-  static std::auto_ptr<SISConeSphericalPlugin        > stored_plugin;
-  static std::auto_ptr<std::vector<PseudoJet>        > stored_particles;
-  static std::auto_ptr<siscone_spherical::CSphsiscone> stored_siscone;
+  static std::unique_ptr<SISConeSphericalPlugin        > stored_plugin;
+  static std::unique_ptr<std::vector<PseudoJet>        > stored_particles;
+  static std::unique_ptr<siscone_spherical::CSphsiscone> stored_siscone;
 };
 
 //======================================================================
@@ -173,7 +173,7 @@ private:
 class SISConeSphericalExtras : public SISConeBaseExtras {
 public:
   /// constructor
-  //  it just initialises the pass information 
+  //  it just initialises the pass information
   SISConeSphericalExtras(int nparticles)
     : SISConeBaseExtras(nparticles){}
 
@@ -192,4 +192,3 @@ private:
 FASTJET_END_NAMESPACE        // defined in fastjet/internal/base.hh
 
 #endif // __SISCONEPLUGIN_HH__
-
