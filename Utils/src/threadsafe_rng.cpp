@@ -42,7 +42,7 @@
 #include "gambit/Utils/threadsafe_rng.hpp"
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/tuple/to_seq.hpp>

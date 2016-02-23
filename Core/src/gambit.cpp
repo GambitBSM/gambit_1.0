@@ -60,6 +60,7 @@ void do_emergency_MPI_shutdown(GMPI::Comm& errorComm)
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
+  cout << std::setprecision(8);
 
   // FIXME this is to be shifted to ScannerBit
   #ifdef WITH_MPI

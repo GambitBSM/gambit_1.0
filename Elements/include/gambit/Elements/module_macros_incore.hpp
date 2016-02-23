@@ -48,6 +48,9 @@
 #ifndef __module_macros_incore_hpp__
 #define __module_macros_incore_hpp__
 
+/// Change this to 1 if you really don't care about parameter clashes.
+#define ALLOW_DUPLICATES_IN_PARAMS_MAP 0
+
 #include <map>
 
 #include "gambit/Elements/functors.hpp"
@@ -849,16 +852,21 @@
         for (std::map<str,double>::const_iterator it = model_safe_ptr->begin();\
          it != model_safe_ptr->end(); ++it)                                    \
         {                                                                      \
+          BOOST_PP_IIF(ALLOW_DUPLICATES_IN_PARAMS_MAP, ,                       \
           if (Pipes::FUNCTION::Param.find(it->first) ==                        \
               Pipes::FUNCTION::Param.end())                                    \
-          { /* Add a safe pointer to the value of this parameter to the map*/  \
+          )                                                                    \
+          {                                                                    \
+            /* Add a safe pointer to the value of this parameter to the map*/  \
             Pipes::FUNCTION::Param.insert(                                     \
              std::pair<str,safe_ptr<const double> >(it->first,                 \
              safe_ptr<const double>(&(it->second)))                            \
             );                                                                 \
           }                                                                    \
+          BOOST_PP_IIF(ALLOW_DUPLICATES_IN_PARAMS_MAP, ,                       \
           else                                                                 \
-          { /* This parameter already exists in the map! Fail. */              \
+          {                                                                    \
+            /* This parameter already exists in the map! Fail. */              \
             str errmsg = "Problem in " STRINGIFY(MODULE) "::resolve_";         \
             errmsg +=    "dependency, for model " STRINGIFY(MODEL)             \
                          " with function\n" STRINGIFY(FUNCTION) ".  Attempt "  \
@@ -869,6 +877,7 @@
                          "in common.\nProblem parameter: " + it->first;        \
             utils_error().raise(LOCAL_INFO,errmsg);                            \
           }                                                                    \
+          )                                                                    \
         }                                                                      \
       }                                                                        \
                                                                                \

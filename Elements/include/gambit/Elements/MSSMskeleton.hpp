@@ -17,7 +17,7 @@
 #ifndef __MSSMskeleton_hpp__
 #define __MSSMskeleton_hpp__
 
-#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spec.hpp"
 #include "gambit/Elements/SLHAskeleton.hpp"
 
 namespace Gambit
@@ -92,18 +92,20 @@ namespace Gambit
            /// @}
       };
 
-      /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class MSSMskeleton : public SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> > 
+      class MSSMskeleton;
+
+      /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
+      template <>
+      struct SpecTraits<MSSMskeleton> 
       {
-         friend class RunparDer<MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
-         friend class PhysDer  <MSSMskeleton,SLHAskeletonTraits<MSSMea> >;
+           typedef MSSMea     Model;
+           typedef DummyInput Input; // DummyInput is just an empty struct
+      };
 
+      /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class
+      class MSSMskeleton : public SLHAskeleton<MSSMskeleton> 
+      {
          private:
-
-            typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MTget; 
-
-            typedef MSSMea Model;
-
             /// Set pole mass uncertainties
             void set_pole_mass_uncertainties(double);
 
@@ -125,20 +127,11 @@ namespace Gambit
             virtual const std::map<int, int>& PDG_translator() const;
  
             /// Map fillers
-            /// Used to initialise maps in the RunparDer and PhysDer classes
+            /// Used to initialise maps in Spec class, accessed via SubSpectrum interface class
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
-            typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-            //typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-            typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-            //typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
 
-            /// Runnning parameter map fillers (access parameters via spectrum.runningpar)
-            static RunningGetterMaps runningpars_fill_getter_maps();
-            //static RunningSetterMaps runningpars_fill_setter_maps();
- 
-            /// Phys parameter map fillers (access parameters via spectrum.phys())
-            static PhysGetterMaps    phys_fill_getter_maps();
-            //static PhysSetterMaps    phys_fill_setter_maps();
+            static GetterMaps fill_getter_maps();
+            //static SetterMaps fill_setter_maps();
        };
 
 } // end Gambit namespace

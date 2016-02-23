@@ -31,6 +31,7 @@
 #include <sstream>
 
 #include "gambit/Utils/model_parameters.hpp"
+#include "gambit/Utils/local_info.hpp"
 
 namespace Gambit 
 {

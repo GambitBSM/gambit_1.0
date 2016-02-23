@@ -184,9 +184,9 @@ namespace Gambit
       // Add extra information about the scales used to the wrapper object
       // (last parameter turns the 'safety' check for the override setter off, which allows
       //  us to set parameters that don't previously exist)
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      mssmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+      mssmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 
       /// add theory errors
       static const MSSM_strs ms;
@@ -196,30 +196,30 @@ namespace Gambit
       static const std::vector<int> i1234   = initVector(1,2,3,4);
       static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error"
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error"
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, "~chi0", i1234, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_3, i123, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_3, i123, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_pred, false); // 3% theory "error"
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_pred, false); // 3% theory "error"
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_6, i123456, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_6, i123456, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, "~chi0", i1234, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, "~chi0", i1234, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_3, i123, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_3, i123, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, 0.03, ms.pole_mass_strs_1_2, i12, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  0.03, ms.pole_mass_strs_1_2, i12, false);
 
       /// do the Higgs mass seperately
       /// Default in most codes is 3 GeV,
       /// seems like an underestimate if the stop masses are heavy enough.
       /// (TODO: are we happy assigning the same for both higgses?)
       /// FIXME this does not work for the second higgs
-      double rd_mh = 3.0 / mssmspec.phys().get(Par::Pole_Mass, ms.h0, 1);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
-      mssmspec.phys().set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
+      double rd_mh = 3.0 / mssmspec.get(Par::Pole_Mass, ms.h0, 1);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_high, rd_mh, "h0", i12, false);
+      mssmspec.set_override_vector(Par::Pole_Mass_1srd_low,  rd_mh, "h0", i12, false);
 
       /// Save the input value of TanBeta
       if (input_Param.find("TanBeta") != input_Param.end())
       {
-        mssmspec.runningpars().set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", false);
+        mssmspec.set_override(Par::dimensionless, *input_Param.at("TanBeta"), "TanBeta_input", false);
       }
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
@@ -282,7 +282,7 @@ namespace Gambit
          slha_io.set_minpar(input);
          slha_io.set_extpar(input);
          slha_io.set_spectrum(mssmspec.model_interface.model);
-         slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
+         slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum->slha");
       #endif
 
       // Package pointer to QedQcd SubSpectrum object along with pointer to MSSM SubSpectrum object,
@@ -299,20 +299,32 @@ namespace Gambit
     Eigen::Matrix<double,3,3> fill_3x3_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
        Eigen::Matrix<double,3,3> output;
-       for(int i=0; i<3; ++i) { for(int j=0; j<3; ++j) {
+       for(int i=0; i<3; ++i) for(int j=0; j<3; ++j)
+       {
          std::stringstream parname;
          parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
-         /// TODO: Error checking...
          output(i,j) = *Param.at(parname.str());
-       }}
+       }
        return output;
     }
 
-    /// Helper function for filling MSSM78-compatible input parameter objects
-    template <class T>
-    void fill_MSSM78_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    /// As above, but for symmetric input (i.e. 6 entries, assumed to be the upper triangle)
+    Eigen::Matrix<double,3,3> fill_3x3_symmetric_parameter_matrix(const std::string& rootname, const std::map<str, safe_ptr<double> >& Param)
     {
+       Eigen::Matrix<double,3,3> output;
+       for(int i=0; i<3; ++i) for(int j=i; j<3; ++j)
+       {
+         std::stringstream parname;
+         parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
+         output(i,j) = *Param.at(parname.str());
+       }
+       return output;
+    }
 
+    /// Helper function for filling MSSM63-compatible input parameter objects
+    template <class T>
+    void fill_MSSM63_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    {
       //double valued parameters
       input.TanBeta     = *Param.at("TanBeta");
       input.SignMu      = *Param.at("SignMu");
@@ -322,12 +334,26 @@ namespace Gambit
       input.MassWBInput = *Param.at("M2");
       input.MassGInput  = *Param.at("M3");
 
+      // Sanity checks
+      if(input.TanBeta<0)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set TanBeta parameter to a negative value ("<<input.TanBeta<<")! This parameter must be positive. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+      if(input.SignMu!=-1 and input.SignMu!=1)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set SignMu parameter to a value that is not a sign! ("<<input.SignMu<<")! This parameter must be set to either 1 or -1. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+
       //3x3 matrices; filled with the help of a convenience function
-      input.mq2Input = fill_3x3_parameter_matrix("mq2", Param);
-      input.ml2Input = fill_3x3_parameter_matrix("ml2", Param);
-      input.md2Input = fill_3x3_parameter_matrix("md2", Param);
-      input.mu2Input = fill_3x3_parameter_matrix("mu2", Param);
-      input.me2Input = fill_3x3_parameter_matrix("me2", Param);
+      input.mq2Input = fill_3x3_symmetric_parameter_matrix("mq2", Param);
+      input.ml2Input = fill_3x3_symmetric_parameter_matrix("ml2", Param);
+      input.md2Input = fill_3x3_symmetric_parameter_matrix("md2", Param);
+      input.mu2Input = fill_3x3_symmetric_parameter_matrix("mu2", Param);
+      input.me2Input = fill_3x3_symmetric_parameter_matrix("me2", Param);
       input.Aeij = fill_3x3_parameter_matrix("Ae", Param);
       input.Adij = fill_3x3_parameter_matrix("Ad", Param);
       input.Auij = fill_3x3_parameter_matrix("Au", Param);
@@ -411,6 +437,20 @@ namespace Gambit
       input.SignMu  = *myPipe::Param["SignMu"];
       input.Azero   = *myPipe::Param["A0"];
 
+      // Sanity checks
+      if(input.TanBeta<0)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set TanBeta parameter to a negative value ("<<input.TanBeta<<")! This parameter must be positive. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+      if(input.SignMu!=-1 and input.SignMu!=1)
+      {
+         std::ostringstream msg;
+         msg << "Tried to set SignMu parameter to a value that is not a sign! ("<<input.SignMu<<")! This parameter must be set to either 1 or -1. Please check your inifile and try again.";
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+
       // Run spectrum generator
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
 
@@ -432,7 +472,7 @@ namespace Gambit
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSM_input_parameters input;
       input.Qin = *myPipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
-      fill_MSSM78_input(input,myPipe::Param);
+      fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }
@@ -444,7 +484,7 @@ namespace Gambit
       namespace myPipe = Pipes::get_MSSMatMGUT_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSMatMGUT_input_parameters input;
-      fill_MSSM78_input(input,myPipe::Param);
+      fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
     }
@@ -817,26 +857,26 @@ namespace Gambit
     void fill_map_from_MSSMspectrum(std::map<std::string,double>& specmap, const Spectrum* mssmspec)
     {
       /// Add everything... use metadata to loop when available.
-      #define ADD_ALL(PR,tag,strings)\
+      #define ADD_ALL(tag,strings)\
          for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
          {\
             std::ostringstream label;\
             label << *it <<" "<<STRINGIFY(tag);\
-            specmap[label.str()] = mssmspec->get_HE()->PR.get(Par::tag,*it);\
+            specmap[label.str()] = mssmspec->get_HE()->get(Par::tag,*it);\
          }
 
-      #define ADD_ALL1(PR,tag,strings,indices)\
+      #define ADD_ALL1(tag,strings,indices)\
          for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
          {\
             for(std::vector<int>::const_iterator it1=indices.begin(); it1!=indices.end(); ++it1)\
             {\
                std::ostringstream label;\
                label << *it <<"_"<<*it1<<" "<<STRINGIFY(tag);\
-               specmap[label.str()] = mssmspec->get_HE()->PR.get(Par::tag,*it,*it1);\
+               specmap[label.str()] = mssmspec->get_HE()->get(Par::tag,*it,*it1);\
             }\
          }
 
-      #define ADD_ALL2(PR,tag,strings,indices1,indices2)\
+      #define ADD_ALL2(tag,strings,indices1,indices2)\
          for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
          {\
             for(std::vector<int>::const_iterator it1=indices1.begin(); it1!=indices1.end(); ++it1)\
@@ -845,7 +885,7 @@ namespace Gambit
             {\
                std::ostringstream label;\
                label << *it <<"_("<<*it1<<","<<*it2<<") "<<STRINGIFY(tag);\
-               specmap[label.str()] = mssmspec->get_HE()->PR.get(Par::tag,*it,*it1,*it2);\
+               specmap[label.str()] = mssmspec->get_HE()->get(Par::tag,*it,*it1,*it2);\
             }\
             }\
          }
@@ -856,23 +896,23 @@ namespace Gambit
       static const std::vector<int> i1234   = initVector(1,2,3,4);
       static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
 
-      ADD_ALL (phys(),Pole_Mass,ms.pole_mass_strs)             // no-index strings
-      ADD_ALL1(phys(),Pole_Mass,ms.pole_mass_strs_1_2,i12)     // 1-index with two allowed values
-      ADD_ALL1(phys(),Pole_Mass,ms.pole_mass_strs_1_3,i123)    // 1-index with three allowed values
-      ADD_ALL1(phys(),Pole_Mass,ms.pole_mass_strs_1_4,i1234)   // 1-index with four allowed values
-      ADD_ALL1(phys(),Pole_Mass,ms.pole_mass_strs_1_6,i123456) // 1-index with six allowed values
+      ADD_ALL (Pole_Mass,ms.pole_mass_strs)             // no-index strings
+      ADD_ALL1(Pole_Mass,ms.pole_mass_strs_1_2,i12)     // 1-index with two allowed values
+      ADD_ALL1(Pole_Mass,ms.pole_mass_strs_1_3,i123)    // 1-index with three allowed values
+      ADD_ALL1(Pole_Mass,ms.pole_mass_strs_1_4,i1234)   // 1-index with four allowed values
+      ADD_ALL1(Pole_Mass,ms.pole_mass_strs_1_6,i123456) // 1-index with six allowed values
 
-      ADD_ALL2(phys(),Pole_Mixing,ms.pole_mixing_strs_2_6x6,i123456,i123456)
-      ADD_ALL2(phys(),Pole_Mixing,ms.pole_mixing_strs_2_4x4,i1234,i1234)
-      ADD_ALL2(phys(),Pole_Mixing,ms.pole_mixing_strs_2_3x3,i123,i123)
-      ADD_ALL2(phys(),Pole_Mixing,ms.pole_mixing_strs_2_2x2,i12,i12)
+      ADD_ALL2(Pole_Mixing,ms.pole_mixing_strs_2_6x6,i123456,i123456)
+      ADD_ALL2(Pole_Mixing,ms.pole_mixing_strs_2_4x4,i1234,i1234)
+      ADD_ALL2(Pole_Mixing,ms.pole_mixing_strs_2_3x3,i123,i123)
+      ADD_ALL2(Pole_Mixing,ms.pole_mixing_strs_2_2x2,i12,i12)
 
-      ADD_ALL (runningpars(),mass2,ms.mass2_strs)
-      ADD_ALL2(runningpars(),mass2,ms.mass2_strs_2_3x3,i123,i123)
-      ADD_ALL (runningpars(),mass1,ms.mass1_strs)
-      ADD_ALL2(runningpars(),mass1,ms.mass1_strs_2_3x3,i123,i123)
-      ADD_ALL (runningpars(),dimensionless,ms.dimensionless_strs)
-      ADD_ALL2(runningpars(),dimensionless,ms.dimensionless_strs_2_3x3,i123,i123)
+      ADD_ALL (mass2,ms.mass2_strs)
+      ADD_ALL2(mass2,ms.mass2_strs_2_3x3,i123,i123)
+      ADD_ALL (mass1,ms.mass1_strs)
+      ADD_ALL2(mass1,ms.mass1_strs_2_3x3,i123,i123)
+      ADD_ALL (dimensionless,ms.dimensionless_strs)
+      ADD_ALL2(dimensionless,ms.dimensionless_strs_2_3x3,i123,i123)
     }
 
 

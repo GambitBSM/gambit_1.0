@@ -84,7 +84,11 @@ namespace Gambit
       {
         const TH_Channel* channel = annProc.find(neutral_channels[i]);
 
-        if (channel != NULL)
+        if (channel == NULL or i == 26) // Channel 26 has not been implemented in DarkSUSY.
+        {
+          annihilation_bf[i] = 0.;
+        }
+        else
         {
           annihilation_bf[i] = channel->genRate->bind("v")->eval(0.);
           if (i == 10) // Add W- H+ for this channel
@@ -95,8 +99,6 @@ namespace Gambit
                 " That's some suspiciously severe CP violation yo.");
             annihilation_bf[i] += channel->genRate->bind("v")->eval(0.);
           }
-          // This channel has not been implemented in DarkSUSY.
-          if (i == 26) annihilation_bf[i] = 0.;
           annihilation_bf[i] /= *Dep::sigmav;
 
           // Check that having this channel turned on makes sense at all.
@@ -111,15 +113,9 @@ namespace Gambit
             }
             cout << "Sqrt(s) vs total mass of final states: " << 2 * *Dep::mwimp << " vs. " << mtot << endl;
             cout << "Branching fraction in v=0 limit: " << annihilation_bf[i] << endl << endl;
-            if (0.9 * mtot > 2 * *Dep::mwimp and annihilation_bf[i] > 0.0)
+            if (mtot > 2 * *Dep::mwimp and annihilation_bf[i] > 0.0)
              DarkBit_error().raise(LOCAL_INFO, "Channel is open in process catalog but should not be kinematically allowed.");
           #endif
-
-        }
-
-        else
-        {
-          annihilation_bf[i] = 0.;
         }
 
       }
@@ -148,9 +144,9 @@ namespace Gambit
       const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
       const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
       if (Hplus_decays != NULL and Hminus_decays == NULL) DarkBit_error().raise(
-          LOCAL_INFO, "H+ decays exists in process catalogue but not H-.");
+          LOCAL_INFO, "H+ decays exist in process catalogue but not H-.");
       if (Hplus_decays == NULL and Hminus_decays != NULL) DarkBit_error().raise(
-          LOCAL_INFO, "H- decays exists in process catalogue but not H+.");
+          LOCAL_INFO, "H- decays exist in process catalogue but not H+.");
 
       // Set the neutral Higgs decay branching fractions
       // FIXME needs to be fixed once BFs are available directly from TH_Process

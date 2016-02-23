@@ -2638,10 +2638,10 @@ namespace Gambit
 
       // Get the spectrum information
       const Spectrum* spec = *Dep::SingletDM_spectrum;
-      const RunningPars& extrapar = spec->get_HE()->runningpars();
+      const SubSpectrum* he = spec->get_HE();
       double mass = spec->get(Par::Pole_Mass,"S");
-      double lambda = extrapar.get(Par::mass1,"lambda_hS");
-      double v0 = extrapar.get(Par::mass1,"vev");
+      double lambda = he->get(Par::mass1,"lambda_hS");
+      double v0 = he->get(Par::mass1,"vev");
       double mhpole = spec->get(Par::Pole_Mass,"h0_1");
 
       // Add the h->SS width to the total
@@ -2711,7 +2711,7 @@ namespace Gambit
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
 
       // MSSM-specific
-      if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+      if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
       {
         mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 

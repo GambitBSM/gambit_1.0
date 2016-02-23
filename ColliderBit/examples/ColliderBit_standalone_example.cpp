@@ -163,7 +163,7 @@ int main()
 
     // Set up the LHC likelihood calculations
     calc_LHC_LogLike.resolveDependency(&runAnalyses);
-    calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_1::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
+    calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
     runAnalyses.resolveDependency(&getAnalysisContainer);
     runAnalyses.resolveDependency(&getPythiaFileReader);
     runAnalyses.resolveDependency(&reconstructBuckFastEvent);
@@ -363,7 +363,7 @@ int main()
     {
       
       // Call the initialisation functions for all backends that are in use. 
-      nulike_1_0_1_init.reset_and_calculate();
+      nulike_1_0_2_init.reset_and_calculate();
 
       
       // Call the LHC likelihood

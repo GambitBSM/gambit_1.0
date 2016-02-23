@@ -45,10 +45,10 @@ namespace Gambit
 
     /// \name Module functions
     /// @{
-    void exampleCharge    (int    &result) { result = 1; }
-    void identity         (str    &result) { result = "rabbiton"; }
-    void nevents          (int    &result) { result = 2; }
-    void lnL_ExampleBitB  (double &result) { result = *Pipes::lnL_ExampleBitB::Dep::nevents_postcuts; }
+    void q_example         (int    &result) { result = 1; }
+    void particle_identity (str    &result) { result = "examplon"; }
+    void event_count       (int    &result) { result = 2; }
+    void example_lnL       (double &result) { result = *Pipes::example_lnL::Dep::nevents_postcuts; }
      
     // Function that returns a vector of doubles, for testing printer
     void exampleVec (std::vector<double> &result) 
@@ -71,9 +71,9 @@ namespace Gambit
     }
 
     // Function that tests array and -> operators on deps and BE vars.
-    void ptrMethArrTester (int &result)
+    void ptrArrTester (int &result)
     {
-      using namespace Pipes::ptrMethArrTester;
+      using namespace Pipes::ptrArrTester;
       logger() << "\n  The size of the vector retrieved from test_vector dependency by vecTester is " << Dep::test_vector->size() << "."; 
       logger() << "\n  The size of the vector retrieved from test_vector backend requirement by vecTester is " << BEreq::test_vector->size() << ".";
       logger() << "\n  The second element of the array retrieved from SomeArray is " << (*BEreq::SomeArray)[1] << "." << EOM;
@@ -81,9 +81,9 @@ namespace Gambit
     }
  
 
-    void xsection (double &result) 
+    void sigma_example (double &result) 
     { 
-      using namespace Pipes::xsection;
+      using namespace Pipes::sigma_example;
       logger() << endl;
       logger() << "In ExampleBit_B, function xsection." << endl;
       if (runOptions->hasKey("scale"))
@@ -101,9 +101,9 @@ namespace Gambit
       result = 5.e10; 
     }
 
-    void nevents_postcuts (int &result)          
+    void predicted_events (int &result)          
     {
-      using namespace Pipes::nevents_postcuts;
+      using namespace Pipes::predicted_events;
  
       logger() << endl << "My dependency on nevents has been filled by " << 
        Dep::nevents.name() << " from " <<

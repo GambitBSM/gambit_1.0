@@ -30,21 +30,25 @@
 #ifndef __models_hpp__
 #define __models_hpp__
 
-#include <vector>
 #include <string>
+#include <vector>
+#include <set>
+#include <map>
 
-#include "gambit/Elements/functors.hpp"
-#include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/standalone_error_handlers.hpp"
+//#include "gambit/Elements/functors.hpp"
+//#include "gambit/Utils/util_types.hpp"
+//#include "gambit/Utils/standalone_error_handlers.hpp"
 
 namespace Gambit
 {
+  class primary_model_functor;
 
   namespace Models
   {
      
+    typedef std::string str;
     typedef std::vector<primary_model_functor*> primodel_vec;
-    typedef std::map<std::string, primary_model_functor *> activemodel_map;
+    typedef std::map<str, primary_model_functor *> activemodel_map;
 
     /// Models object that performs initialisation and checking operations
     /// on a primary_model_functor list.

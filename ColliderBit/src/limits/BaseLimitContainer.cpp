@@ -28,7 +28,7 @@ namespace Gambit
     BaseLimitContainer::~BaseLimitContainer()
     {
       // Clean up all the contours created when this object was constructed.
-      for (auto it = _limitContours.begin(); it != _limitContours.begin(); ++it)
+      for (auto it = _limitContours.begin(); it != _limitContours.end(); ++it)
       {
         delete it->second;
       }

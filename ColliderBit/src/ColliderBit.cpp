@@ -174,7 +174,6 @@ namespace Gambit
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
@@ -185,7 +184,6 @@ namespace Gambit
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
-          result.clear();
           print_pythia_banner = false;
         }
 
@@ -193,7 +191,7 @@ namespace Gambit
         slha.clear();
         spectrum.clear();
         slha = Dep::decay_rates->as_slhaea();
-        if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+        if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
         {
           // MSSM-specific
           spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
@@ -254,18 +252,19 @@ namespace Gambit
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0) {
+        if (omp_get_thread_num() == 0)
+        {
           code = -1;
           totalxsec = 0.;
-          while(true) {
+          while(true)
+          {
             std::getline(processLevelOutput, readline);
-            issPtr = new std::istringstream(readline);
-            issPtr->seekg(47, issPtr->beg);
-            (*issPtr) >> code;
-            if (!issPtr->good() && totalxsec > 0.) break;
-            (*issPtr) >> _junk >> xsec;
-            if (issPtr->good()) totalxsec += xsec;
-            delete issPtr;
+            std::istringstream issPtr(readline);
+            issPtr.seekg(47, issPtr.beg);
+            issPtr >> code;
+            if (!issPtr.good() && totalxsec > 0.) break;
+            issPtr >> _junk >> xsec;
+            if (issPtr.good()) totalxsec += xsec;
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -288,7 +287,6 @@ namespace Gambit
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
@@ -299,7 +297,6 @@ namespace Gambit
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
-          result.clear();
           print_pythia_banner = false;
         }
         // If there are no debug filenames set, look for them.
@@ -341,30 +338,34 @@ namespace Gambit
         if (omp_get_thread_num() == 0)
           logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
         pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
-        try {
+        try
+        {
           if (omp_get_thread_num() == 0)
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
           else
             result.init(pythia_doc_path, pythiaOptions);
-        } catch (SpecializablePythia::InitializationError &e) {
+        }
+        catch (SpecializablePythia::InitializationError &e)
+        {
           piped_invalid_point.request("Bad point: Pythia can't initialize");
           Loop::wrapup();
           return;
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0) {
+        if (omp_get_thread_num() == 0)
+        {
           code = -1;
           totalxsec = 0.;
-          while(true) {
+          while(true)
+          {
             std::getline(processLevelOutput, readline);
-            issPtr = new std::istringstream(readline);
-            issPtr->seekg(47, issPtr->beg);
-            (*issPtr) >> code;
-            if (!issPtr->good() && totalxsec > 0.) break;
-            (*issPtr) >> _junk >> xsec;
-            if (issPtr->good()) totalxsec += xsec;
-            delete issPtr;
+            std::istringstream issPtr(readline);
+            issPtr.seekg(47, issPtr.beg);
+            issPtr >> code;
+            if (!issPtr.good() && totalxsec > 0.) break;
+            issPtr >> _junk >> xsec;
+            if (issPtr.good()) totalxsec += xsec;
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -374,7 +375,6 @@ namespace Gambit
 
       }
     }
-
 
 
     /// *** Detector Simulators ***
@@ -456,7 +456,7 @@ namespace Gambit
           // Use improve_xsec to combine results from the same process type
           globalAnalyses.improve_xsec(result);
         }
-	return;
+        return;
       }
 
     }
@@ -3260,7 +3260,7 @@ namespace Gambit
       const SubSpectrum* spec = fullspectrum->get_HE();
       const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
 
-      result.Mh[0] = spec->phys().get(Par::Pole_Mass,25,0);
+      result.Mh[0] = spec->get(Par::Pole_Mass,25,0);
 
       result.deltaMh[0] = 0.; // Need to get theoretical error on mass
       result.hGammaTot[0] = decays->width_in_GeV;
@@ -3321,40 +3321,40 @@ namespace Gambit
       for(int i = 0; i < 3; i++)
       {
         // Higgs masses and errors
-        result.Mh[i] = spec->phys().get(Par::Pole_Mass,sHneut[i]);
+        result.Mh[i] = spec->get(Par::Pole_Mass,sHneut[i]);
         result.deltaMh[i] = 0.;
       }
 
       // invisible LSP?
-      double lsp_mass = spec->phys().get(Par::Pole_Mass,"~chi0_1");
+      double lsp_mass = spec->get(Par::Pole_Mass,"~chi0_1");
       int i_snu = 0;
       for(int i = 1; i <= 3; i++)
       {
-        if(spec->phys().get(Par::Pole_Mass,"~nu",i)  < lsp_mass)
+        if(spec->get(Par::Pole_Mass,"~nu",i)  < lsp_mass)
         {
           i_snu = i;
-          lsp_mass = spec->phys().get(Par::Pole_Mass,"~nu",i);
+          lsp_mass = spec->get(Par::Pole_Mass,"~nu",i);
         }
       }
 
       bool inv_lsp = true;
-      if(spec->phys().get(Par::Pole_Mass,"~chi+",1) < lsp_mass) inv_lsp = false;
-      if(spec->phys().get(Par::Pole_Mass,"~g") < lsp_mass) inv_lsp = false;
+      if(spec->get(Par::Pole_Mass,"~chi+",1) < lsp_mass) inv_lsp = false;
+      if(spec->get(Par::Pole_Mass,"~g") < lsp_mass) inv_lsp = false;
       if(inv_lsp)
       {
         for(int i = 1; i <= 6; i++)
         {
-          if(spec->phys().get(Par::Pole_Mass,"~d",i) < lsp_mass)
+          if(spec->get(Par::Pole_Mass,"~d",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys().get(Par::Pole_Mass,"~u",i) < lsp_mass)
+          if(spec->get(Par::Pole_Mass,"~u",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
           }
-          if(spec->phys().get(Par::Pole_Mass,"~e-",i) < lsp_mass)
+          if(spec->get(Par::Pole_Mass,"~e-",i) < lsp_mass)
           {
             inv_lsp = false;
             break;
@@ -3405,7 +3405,7 @@ namespace Gambit
         }
       }
 
-      result.MHplus = spec->phys().get(Par::Pole_Mass,"H+");
+      result.MHplus = spec->get(Par::Pole_Mass,"H+");
       result.deltaMHplus = 0.;
 
       const DecayTable::Entry* Hplus_decays = &(decaytable("H+"));

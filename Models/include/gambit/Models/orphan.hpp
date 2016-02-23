@@ -18,7 +18,10 @@
 #define __orphan_hpp__
 
 
-#include "gambit/Utils/util_types.hpp"
+//#include "gambit/Utils/util_types.hpp" // Obsolete dependence?
+
+#include <vector>
+#include <string>
 
 namespace Gambit
 {
@@ -29,7 +32,7 @@ namespace Gambit
     namespace PARENT
     {
       // Base lineage that all parentless models copy
-      const std::vector<str> lineage;
+      const std::vector<std::string> lineage;
     }
          
   }

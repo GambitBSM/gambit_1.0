@@ -37,7 +37,6 @@
 #ifndef __module_macros_inmodule_hpp__
 #define __module_macros_inmodule_hpp__
 
-#include "gambit/Elements/functors.hpp"
 #include "gambit/Elements/safety_bucket.hpp"
 #include "gambit/Elements/module_macros_common.hpp"
 #include "gambit/Utils/exceptions.hpp"

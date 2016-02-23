@@ -541,17 +541,17 @@ is a unique record for every rank/pointID pair.";
       addtobuffer(vdvalue,labels,IDcode,thread,pointID);       
     }
 
-    void asciiPrinter::print(int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    void asciiPrinter::_print(int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     { template_print(value,label,IDcode,thread,pointID); }
-    void asciiPrinter::print(double const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    void asciiPrinter::_print(double const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     { template_print(value,label,IDcode,thread,pointID); }
     #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
-    void asciiPrinter::print(unsigned int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    void asciiPrinter::_print(unsigned int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     { template_print(value,label,IDcode,thread,pointID); }
     #endif 
     // etc. as needed... 
 
-    void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    void asciiPrinter::_print(std::vector<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
       std::vector<std::string> labels;
       labels.reserve(value.size());
@@ -565,7 +565,7 @@ is a unique record for every rank/pointID pair.";
       addtobuffer(value,labels,IDcode,thread,pointID);
     }
    
-    void asciiPrinter::print(triplet<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    void asciiPrinter::_print(triplet<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
       std::vector<str> labels;
       std::vector<double> values;
@@ -580,7 +580,7 @@ is a unique record for every rank/pointID pair.";
       addtobuffer(values,labels,IDcode,thread,pointID);
     }
 
-    void asciiPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    void asciiPrinter::_print(ModelParameters const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
       std::map<std::string, double> parameter_map = value.getValues();
       std::vector<std::string> names;
