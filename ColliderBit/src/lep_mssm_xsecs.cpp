@@ -65,11 +65,11 @@ namespace Gambit
 
       // SM parameters
       const double mZ = spec->get(Par::Pole_Mass,23,0);
-      const double g2 = mssm->runningpars().get(Par::dimensionless,"g2");
-      const double sinW2 = mssm->runningpars().get(Par::dimensionless,"sinW2");
+      const double g2 = mssm->get(Par::dimensionless,"g2");
+      const double sinW2 = mssm->get(Par::dimensionless,"sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
       // MSSM parameters
-      const double tanb = mssm->runningpars().get(Par::dimensionless,"tanbeta");
+      const double tanb = mssm->get(Par::dimensionless,"tanbeta");
       
       // Get the mass eigenstate strings and 2x2 slepton generation mass mixing matrix
       str mass_es1, mass_es2;
@@ -102,10 +102,10 @@ namespace Gambit
       //const double m2 = spec->get(Par::Pole_Mass,Models::ParticleDB().get_antiparticle(mass_es2));
       // until then
       const double m2 = spec->get(Par::Pole_Mass,mass_es2);
-      std::pair<double,double> m1_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, mass_es1),
-                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  mass_es1));
-      std::pair<double,double> m2_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, mass_es2),
-                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  mass_es2));
+      std::pair<double,double> m1_uncerts(mssm->get(Par::Pole_Mass_1srd_high, mass_es1),
+                                          mssm->get(Par::Pole_Mass_1srd_low,  mass_es1));
+      std::pair<double,double> m2_uncerts(mssm->get(Par::Pole_Mass_1srd_high, mass_es2),
+                                          mssm->get(Par::Pole_Mass_1srd_low,  mass_es2));
 
       // If the final state is kinematically inaccessible *even* if both masses 
       // are 2simga lower than their central values, then return zero. 
@@ -122,7 +122,7 @@ namespace Gambit
                                    spec->get(Par::Pole_Mass,1000025,0), spec->get(Par::Pole_Mass,1000035,0) };
       // Get the 4x4 neutralino mixing matrix
       MixMatrix neutmix(4,std::vector<double>(4));
-      for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->phys().get(Par::Pole_Mixing,"~chi0",i+1,j+1);
+      for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->get(Par::Pole_Mixing,"~chi0",i+1,j+1);
 
       // Convert neutralino mixing matrix to BFM convention
       SLHA2BFM_NN(neutmix, tanb, sinW2);
@@ -160,12 +160,12 @@ namespace Gambit
 
       // SM parameters
       const double mZ = spec->get(Par::Pole_Mass,23,0);
-      const double g2 = mssm->runningpars().get(Par::dimensionless,"g2");
-      const double sinW2 = mssm->runningpars().get(Par::dimensionless,"sinW2");
+      const double g2 = mssm->get(Par::dimensionless,"g2");
+      const double sinW2 = mssm->get(Par::dimensionless,"sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
 
       // MSSM parameters
-      const double tanb = mssm->runningpars().get(Par::dimensionless,"tanbeta");
+      const double tanb = mssm->get(Par::dimensionless,"tanbeta");
       // Get the mass eigenstates best corresponding to ~eL and ~eR.
       const str mass_esL = slhahelp::mass_es_from_gauge_es("~e_L", mssm, tol, LOCAL_INFO, pt_error);
       const str mass_esR = slhahelp::mass_es_from_gauge_es("~e_R", mssm, tol, LOCAL_INFO, pt_error);
@@ -174,10 +174,10 @@ namespace Gambit
       // Get the neutralino masses
       const double m1 = spec->get(Par::Pole_Mass,id1,0); 
       const double m2 = spec->get(Par::Pole_Mass,id2,0); 
-      std::pair<double,double> m1_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, id1, 0),
-                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  id1, 0));
-      std::pair<double,double> m2_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, id2, 0),
-                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  id2, 0));
+      std::pair<double,double> m1_uncerts(mssm->get(Par::Pole_Mass_1srd_high, id1, 0),
+                                          mssm->get(Par::Pole_Mass_1srd_low,  id1, 0));
+      std::pair<double,double> m2_uncerts(mssm->get(Par::Pole_Mass_1srd_high, id2, 0),
+                                          mssm->get(Par::Pole_Mass_1srd_low,  id2, 0));
  
       // Just return zero if the final state is kinematically inaccessible
       // *even* if both masses are 2simga lower than their central values 
@@ -191,7 +191,7 @@ namespace Gambit
  
       // Get the 4x4 neutralino mixing matrix
       MixMatrix neutmix(4,std::vector<double>(4));
-      for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->phys().get(Par::Pole_Mixing,"~chi0",i+1,j+1);
+      for (int i=0; i<4; i++) for (int j=0; j<4; j++) neutmix[i][j] = mssm->get(Par::Pole_Mixing,"~chi0",i+1,j+1);
 
       // Convert neutralino mixing matrix to BFM convention
       SLHA2BFM_NN(neutmix, tanb, sinW2);
@@ -228,8 +228,8 @@ namespace Gambit
 
       // SM parameters
       const double mZ = spec->get(Par::Pole_Mass,23,0);
-      const double g2 = mssm->runningpars().get(Par::dimensionless,"g2");
-      const double sinW2 = mssm->runningpars().get(Par::dimensionless,"sinW2");
+      const double g2 = mssm->get(Par::dimensionless,"g2");
+      const double sinW2 = mssm->get(Par::dimensionless,"sinW2");
       const double alpha = 0.25*sinW2*g2*g2/pi; 
 
       // MSSM parameters
@@ -240,10 +240,10 @@ namespace Gambit
       // Get the chargino masses
       const double m1 = spec->get(Par::Pole_Mass,id1,0); 
       const double m2 = spec->get(Par::Pole_Mass,id2,0); 
-      std::pair<double,double> m1_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, id1, 0),
-                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  id1, 0));
-      std::pair<double,double> m2_uncerts(mssm->phys().get(Par::Pole_Mass_1srd_high, id2, 0),
-                                          mssm->phys().get(Par::Pole_Mass_1srd_low,  id2, 0));
+      std::pair<double,double> m1_uncerts(mssm->get(Par::Pole_Mass_1srd_high, id1, 0),
+                                          mssm->get(Par::Pole_Mass_1srd_low,  id1, 0));
+      std::pair<double,double> m2_uncerts(mssm->get(Par::Pole_Mass_1srd_high, id2, 0),
+                                          mssm->get(Par::Pole_Mass_1srd_low,  id2, 0));
 
       // Just return zero if the final state is kinematically inaccessible
       // *even* if both masses are 2simga lower than their central values 
@@ -260,8 +260,8 @@ namespace Gambit
       MixMatrix charginomixU(2,std::vector<double>(2));
       for (int i=0; i<2; i++) for (int j=0; j<2; j++)
       { 
-        charginomixV[i][j] = mssm->phys().get(Par::Pole_Mixing,"~chi+",i+1,j+1);
-        charginomixU[i][j] = mssm->phys().get(Par::Pole_Mixing,"~chi-",i+1,j+1);
+        charginomixV[i][j] = mssm->get(Par::Pole_Mixing,"~chi+",i+1,j+1);
+        charginomixU[i][j] = mssm->get(Par::Pole_Mixing,"~chi-",i+1,j+1);
       }
 
       // Convert chargino mixing matrices to BFM convention

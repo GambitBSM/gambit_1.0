@@ -5,13 +5,15 @@ Parameters:
 
   CMSSM:
     M0:
-      fixed_value: 100
+      range: [-100, 100]
     M12:
       fixed_value: 100
     SignMu:
       fixed_value: 1
     TanBeta:
       fixed_value: 3
+    A0:
+      fixed_value: 100
   
 Priors:
 

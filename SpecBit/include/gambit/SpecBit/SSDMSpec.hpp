@@ -32,7 +32,6 @@
 #include <memory>
 
 #include "gambit/cmake/cmake_variables.hpp"
-#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/SpecBit/SSDMSpec_head.hpp"   // "Header" declarations for SSDMSpec class
@@ -89,7 +88,7 @@ namespace Gambit
      
      
       template <class MI>
-      void SSDMSpec<MI>::RunToScale(double scale)
+      void SSDMSpec<MI>::RunToScaleOverride(double scale)
       {
         model_interface.model.run_to(scale);
       }
@@ -124,67 +123,26 @@ namespace Gambit
        return sthW2;
       }
       
-
-      
+      // Need wrapper functios for A0 and H+ getters, to retrieve only the 
+      // non-Goldstone entries. 
+      // Need to pass in the model object, since we won't have the 'this' pointer
       template <class Model>
-      void set_Mhh_pole_slha(Model& model,double mass)
+      double get_MAh_pole_slha(const Model& model)
       {
-        model.get_physical_slha().Mhh = mass;
+        return model.get_MAh_pole_slha();
       }
-
-
+     
       template <class Model>
-      void set_Mss_pole_slha(Model& model, double mass)
+      double get_Mss_pole_slha(const Model& model)
       {
-        model.get_physical_slha().Mss = mass;
+        return model.get_Mss_pole_slha();
       }
 
-      
-
-      template <class Model>
-      void set_neutral_goldstone_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MAh = mass;
-      }
-     
-           template <class Model>
-      void set_MAh_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MAh = mass;
-      }
-     
-     
-
-     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
-     template <class Model>
-     void set_MZ_pole_slha(Model& model, double mass)
-     {
-        model.get_physical_slha().MVZ = mass;
-     }
-
-     template <class Model>
-     void set_MW_pole_slha(Model& model, double mass)
-     {
-        model.get_physical_slha().MVWp = mass;
-     }
-
-     
-     template <class Model>
-     void set_MGluon(Model& model, double mass)
-     {
-        model.get_physical().MVG = mass;
-     }
-     
-     template <class Model>
-     void set_MPhoton(Model& model, double mass)
-     {
-        model.get_physical().MVP = mass;
-     }
-
+   
       template <class MI>
-      typename SSDMSpec<MI>::RunningGetterMaps SSDMSpec<MI>::runningpars_fill_getter_maps()
+      typename SSDMSpec<MI>::GetterMaps SSDMSpec<MI>::fill_getter_maps()
       {
-         typename SSDMSpec<MI>::RunningGetterMaps map_collection; 
+         typename SSDMSpec<MI>::GetterMaps map_collection; 
          typedef typename MI::Model Model;
 
          typedef typename MTget::FInfo1 FInfo1;
@@ -277,18 +235,124 @@ namespace Gambit
             map_collection[Par::mass_eigenstate].map1 = tmp_map;
          }
 
+         /// @{ Pole_Mass - Pole mass parameters
+         //
+         // Functions utilising the "plain-vanilla" function signature
+         // (Zero index member functions of model object)
+         {  
+            typename MTget::fmap0 tmp_map;
+                   
+            // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
+            // reinstating the Z and W getters as otherwise there is no
+            // point in having the setters!
+            tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
+            //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
+             tmp_map["g"] = &Model::get_MVG_pole_slha;
+
+
+            map_collection[Par::Pole_Mass].map0 = tmp_map;
+         } 
+
+         // Functions utilising the "extraM" function signature
+         // (Zero index, model object as argument)
+         {
+            typename MTget::fmap0_extraM tmp_map;
+        
+            // Using wrapper functions defined above
+            tmp_map["A0"] = &get_MAh_pole_slha<Model>;
+
+      
+            map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
+         }
+
+         // Functions utilising the one-index "plain-vanilla" function signature
+         // (One-index member functions of model object)
+         {  
+            typename MTget::fmap0 tmp_map;
+
+            tmp_map["S"] =  &Model::get_Mss_pole_slha;
+            tmp_map["Singlet"] =  &Model::get_Mss_pole_slha; // alternative naming convention as in SingletDM container
+            tmp_map["h0"] = &Model::get_Mhh_pole_slha;
+            tmp_map["h0_1"] = &Model::get_Mhh_pole_slha; //added to match SM Higgs container naming
+
+            tmp_map["A0"] = &Model::get_MAh_pole_slha;
+
+
+            map_collection[Par::Pole_Mass].map0 = tmp_map;
+         }
+ 
          return map_collection;
       } 
 
-      // Filler function for setter function pointer maps extractable from "runningpars" container
-      template <class MI>
-      typename SSDMSpec<MI>::RunningSetterMaps SSDMSpec<MI>::runningpars_fill_setter_maps()
+      /// Wrapper functions for setters
+      //
+      template <class Model>
+      void set_Mhh_pole_slha(Model& model,double mass)
       {
-         typename SSDMSpec<MI>::RunningSetterMaps map_collection; 
+        model.get_physical_slha().Mhh = mass;
+      }
+
+
+      template <class Model>
+      void set_Mss_pole_slha(Model& model, double mass)
+      {
+        model.get_physical_slha().Mss = mass;
+      }
+
+      
+
+      template <class Model>
+      void set_neutral_goldstone_pole_slha(Model& model, double mass)
+      {
+        model.get_physical_slha().MAh = mass;
+      }
+     
+           template <class Model>
+      void set_MAh_pole_slha(Model& model, double mass)
+      {
+        model.get_physical_slha().MAh = mass;
+      }
+     
+     
+
+     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
+     template <class Model>
+     void set_MZ_pole_slha(Model& model, double mass)
+     {
+        model.get_physical_slha().MVZ = mass;
+     }
+
+     template <class Model>
+     void set_MW_pole_slha(Model& model, double mass)
+     {
+        model.get_physical_slha().MVWp = mass;
+     }
+
+     
+     template <class Model>
+     void set_MGluon(Model& model, double mass)
+     {
+        model.get_physical().MVG = mass;
+     }
+     
+     template <class Model>
+     void set_MPhoton(Model& model, double mass)
+     {
+        model.get_physical().MVP = mass;
+     }
+
+      // Filler function for setter function pointer maps
+      template <class MI>
+      typename SSDMSpec<MI>::SetterMaps SSDMSpec<MI>::fill_setter_maps()
+      {
+         typename SSDMSpec<MI>::SetterMaps map_collection; 
          typedef typename MI::Model Model;
 
          typedef typename MTset::FInfo1 FInfo1;
          typedef typename MTset::FInfo2 FInfo2;
+
+         typedef typename MTset::FInfo1M FInfo1M;
+         typedef typename MTset::FInfo2M FInfo2M;
 
          // Can't use c++11 initialise lists, se have to initialise the index sets like this.
          static const int i01v[] = {0,1};
@@ -303,7 +367,7 @@ namespace Gambit
          static const int i012345v[] = {0,1,2,3,4,5};
          static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
          
-         /// @{ mass2 - mass dimension 2 parameters
+         /// mass2 - mass dimension 2 parameters
          //
          // Functions utilising the "plain-vanilla" function signature
          // (Zero index member functions of model object)
@@ -353,155 +417,36 @@ namespace Gambit
             map_collection[Par::dimensionless].map2 = tmp_map;
          }
 
+
+         /// Functions with intermediary wrappers
+         {  
+           typename MTset::fmap0_extraM tmp_map;
+           tmp_map["A0"] = &set_MAh_pole_slha<Model>;
+           tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
+   
+           /// the getters for these were removed but Pat last meeting
+           /// we agreed to add setters here unless I misunderstood.
+           /// need to discuss this
+           tmp_map["W+"] = &set_MW_pole_slha<Model>;
+           tmp_map["W-"] = &set_MW_pole_slha<Model>;
+           tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
+       
+           map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
+         }
+
+         {  
+           typename MTset::fmap0_extraM tmp_map;
+
+           tmp_map["h0"] = &set_Mhh_pole_slha<Model>;
+           tmp_map["s0"] = &set_Mss_pole_slha<Model>;
+           
+           map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
+         }
+ 
          return map_collection;
       } 
 
       /// @}
-
- 
-      // Need wrapper functios for A0 and H+ getters, to retrieve only the 
-      // non-Goldstone entries. 
-      // Need to pass in the model object, since we won't have the 'this' pointer
-      template <class Model>
-      double get_MAh_pole_slha(const Model& model)
-      {
-        return model.get_MAh_pole_slha();
-      }
-     
-      template <class Model>
-      double get_Mss_pole_slha(const Model& model)
-      {
-        return model.get_Mss_pole_slha();
-      }
-
-
-
-   
-      // Filler function for getter function pointer maps extractable from "phys" container
-      template <class MI>
-      typename SSDMSpec<MI>::PhysSetterMaps SSDMSpec<MI>::phys_fill_setter_maps()
-      {
-        typename SSDMSpec<MI>::PhysSetterMaps map_collection; 
-        typedef typename MI::Model Model;
-
-        typedef typename MTset::FInfo1M FInfo1M;
-        typedef typename MTset::FInfo2M FInfo2M;
-
-        // Can't use c++11 initialise lists,
-        // so have to initialise the index sets like this.
-        static const int i01v[] = {0,1};
-        static const std::set<int> i01(i01v, Utils::endA(i01v));
-
-        static const int i012v[] = {0,1,2};
-        static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-        static const int i0123v[] = {0,1,2,3};
-        static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
-
-        static const int i012345v[] = {0,1,2,3,4,5};
-        static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-
-        {  
-          typename MTset::fmap0_extraM tmp_map;
-          tmp_map["A0"] = &set_MAh_pole_slha<Model>;
-          tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
-   
-          /// the getters for these were removed but Pat last meeting
-          /// we agreed to add setters here unless I misunderstood.
-          /// need to discuss this
-          tmp_map["W+"] = &set_MW_pole_slha<Model>;
-          tmp_map["W-"] = &set_MW_pole_slha<Model>;
-          tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
-       
-          map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
-        }
-
-        {  
-          typename MTset::fmap0_extraM tmp_map;
-
-          tmp_map["h0"] = &set_Mhh_pole_slha<Model>;
-          tmp_map["s0"] = &set_Mss_pole_slha<Model>;
-          
-          map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
-        }
-
-   
-
-        return map_collection;
-      }
-
-      // Filler function for getter function pointer maps extractable from "phys" container
-      template <class MI>
-      typename SSDMSpec<MI>::PhysGetterMaps SSDMSpec<MI>::phys_fill_getter_maps()
-      {
-         typename SSDMSpec<MI>::PhysGetterMaps map_collection; 
-         typedef typename MI::Model Model;
-
-         typedef typename MTget::FInfo1 FInfo1;
-         typedef typename MTget::FInfo2 FInfo2;
-
-         // Can't use c++11 initialise lists, so have to initialise the index sets like this.
-         static const int i01v[] = {0,1};
-         static const std::set<int> i01(i01v, Utils::endA(i01v));
-
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-         static const int i0123v[] = {0,1,2,3};
-         static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
-
-         static const int i012345v[] = {0,1,2,3,4,5};
-         static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-         
-         /// @{ Pole_Mass - Pole mass parameters
-         //
-         // Functions utilising the "plain-vanilla" function signature
-         // (Zero index member functions of model object)
-         {  
-            typename MTget::fmap0 tmp_map;
-                   
-            // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
-            // reinstating the Z and W getters as otherwise there is no
-            // point in having the setters!
-            tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
-            //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
-             tmp_map["g"] = &Model::get_MVG_pole_slha;
-
-
-            map_collection[Par::Pole_Mass].map0 = tmp_map;
-         } 
-
-         // Functions utilising the "extraM" function signature
-         // (Zero index, model object as argument)
-         {
-            typename MTget::fmap0_extraM tmp_map;
-        
-            // Using wrapper functions defined above
-            tmp_map["A0"] = &get_MAh_pole_slha<Model>;
-
-      
-            map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
-         }
-
-         // Functions utilising the one-index "plain-vanilla" function signature
-         // (One-index member functions of model object)
-         {  
-            typename MTget::fmap0 tmp_map;
-
-            tmp_map["S"] =  &Model::get_Mss_pole_slha;
-            tmp_map["Singlet"] =  &Model::get_Mss_pole_slha; // alternative naming convention as in SingletDM container
-            tmp_map["h0"] = &Model::get_Mhh_pole_slha;
-            tmp_map["h0_1"] = &Model::get_Mhh_pole_slha; //added to match SM Higgs container naming
-
-            tmp_map["A0"] = &Model::get_MAh_pole_slha;
-
-
-            map_collection[Par::Pole_Mass].map0 = tmp_map;
-         }
- 
-
-         return map_collection;
-      }
 
   
    } // end SpecBit namespace 

@@ -17,7 +17,7 @@
 #ifndef __SLHAskeleton_hpp__
 #define __SLHAskeleton_hpp__
 
-#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spec.hpp"
 
 namespace Gambit
 {
@@ -51,47 +51,47 @@ namespace Gambit
            double getdata(const std::string& block, int i, int j) const;
       };
 
-      // Needed for typename aliases in Spec and MapTypes classes
-      
-      template<class DerivedModel>
-      struct SLHAskeletonTraits
+      template<class Derived> 
+      class SLHAskeleton : public Spec<Derived> 
       {
-         typedef DerivedModel Model;
-         typedef DummyInput   Input;
-      };
-      
-      template<class Derived, class DerivedTraits> 
-      class SLHAskeleton : public Spec<Derived,DerivedTraits> 
-      {
+         public:
+            // Grab typedefs from derived wrapper traits class 
+            // (only needed because this is a template class, and would have to
+            // qualify the name all over the place in order to use the equivalent
+            // typedef which is inherited from the base class)
+            typedef typename SpecTraits<Derived>::Model Model; 
+            typedef typename SpecTraits<Derived>::Input Input; 
+
          protected:
             // Store SLHAea object internally (via wrapper)
-            typename DerivedTraits::Model slhawrap;
+            Model slhawrap;
 
             // Dummy placeholder for potential Inputs object
-            DummyInput dummyinput;
+            Input dummyinput;
 
          public:
-            typedef MapTypes<DerivedTraits,MapTag::Get> MTget; 
+            typedef MapTypes<Derived,MapTag::Get> MTget; 
 
             // Constructors/destructors
             SLHAskeleton() 
               : slhawrap()
             {}
 
-            SLHAskeleton(const SLHAea::Coll& input)
-              : slhawrap(input)
+            SLHAskeleton(const SLHAea::Coll& input_slha)
+              : slhawrap(input_slha)
             {}
 
             virtual ~SLHAskeleton() {};
  
             // Functions to interface Model and Input objects with the base 'Spec' class
-            typename DerivedTraits::Model& get_Model() { return slhawrap; }
-            typename DerivedTraits::Input& get_Input() { return dummyinput; /*unused, but needs to be defined for the interface*/ }
+            // Need both const and non-const versions of it, so that wrapped objects cannot be modified
+            // if the wrapper is const
+            Model& get_Model() { return slhawrap; }
+            Input& get_Input() { return dummyinput; /*unused, but needs to be defined for the interface*/ }
+            const Model& get_Model() const { return slhawrap; }
+            const Input& get_Input() const { return dummyinput; /*unused, but needs to be defined for the interface*/ }
 
-            // virtual int get_index_offset() const; 
-            // virtual int get_numbers_stable_particles() const;
-
-            /// RunningPars interface overrides
+            /// @{ RunningPars interface overrides
             virtual double GetScale() const
             { 
                /// TODO: Currently assumes all blocks at same scale. Should at least check if this
@@ -117,14 +117,14 @@ namespace Gambit
                   "Call made to SetScale function of SLHAskeleton! This is currently not implemented!");
             }
 
-            virtual void RunToScale(double)
+            virtual void RunToScaleOverride(double)
             {
                utils_error().raise(LOCAL_INFO,
                   "Call made to RunToScale function of SLHAskeleton!  This is not allowed; this\n"
-                  "version of the SubSpectrum wrapper cannot perform RGE running.  It is just a\n"
+                  "version of the SubSpectrum wrapper cannot perform RGE   It is just a\n"
                   "simple box containing SLHA information read from a file or SLHAea object.\n");
             }
-
+            /// @}
 
          protected:
             /// Map fillers go in derived class
