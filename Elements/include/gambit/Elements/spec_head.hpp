@@ -92,12 +92,13 @@ namespace Gambit
    template<class Contents>
    class VerifyContents
    {
-      VerifyContents(const SubSpectrum* const spec)
-      {
-        Contents contents;
-        contents.verify_contents(spec); 
-      }
-   }
+      public:
+        VerifyContents(const SubSpectrum* const spec)
+        {
+          Contents contents;
+          contents.verify_contents(spec); 
+        }
+   };
 
    // CRTP used to allow access to some special data members of the derived class.
    // Various inherited classes are just used to factor out code, some of which

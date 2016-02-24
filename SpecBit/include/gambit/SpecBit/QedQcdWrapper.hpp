@@ -32,6 +32,7 @@
 
 #include "gambit/Elements/sminputs.hpp"
 #include "gambit/Elements/spec.hpp"
+#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
 
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 

@@ -26,6 +26,7 @@
 
 #include "gambit/Elements/spec.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
@@ -48,6 +49,7 @@ namespace Gambit
    template <class MI>
    struct SpecTraits<SpecBit::SSDMSpec<MI>> 
    {
+      typedef SpectrumContents::ScalarSingletDM Contents;
       typedef typename MI::Model Model;
       typedef DummyInput Input;
    };

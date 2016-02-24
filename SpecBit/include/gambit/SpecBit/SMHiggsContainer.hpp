@@ -20,6 +20,7 @@
 #define __SMHiggsContainer_hpp__
 
 #include "gambit/Elements/spec.hpp"
+#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit 
 {
@@ -43,6 +44,7 @@ namespace Gambit
    template <>
    struct SpecTraits<SpecBit::SMHiggsContainer> 
    {
+        typedef SpectrumContents::SMHiggs Contents;
         typedef SpecBit::SMHiggsModel Model;
         typedef DummyInput            Input; // DummyInput is just an empty struct
    };

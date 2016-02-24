@@ -23,12 +23,14 @@
 #ifndef __spectrum_helpers_hpp__
 #define __spectrum_helpers_hpp__
 
-#include <map>
 #include <string>
 #include <set>
+#include <vector>
+#include <map>
 
 namespace Gambit
 {
+   typedef std::string str;
 
    /// Helper function for checking if indices are valid
    inline bool within_bounds(const int i, const std::set<int> allowed)
