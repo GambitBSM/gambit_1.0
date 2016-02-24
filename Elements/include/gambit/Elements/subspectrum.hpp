@@ -163,6 +163,7 @@ namespace Gambit
    /// Virtual base class for interacting with spectrum generator output
    // Includes facilities for running RGEs
    // This is the interface class that most module-writers see
+   // BF: I think the inheritance from CommonAbstrat is not needed, CommonFuncs already inherits from it
    class SubSpectrum : public virtual CommonAbstract,
                        public virtual CommonFuncs
    {
