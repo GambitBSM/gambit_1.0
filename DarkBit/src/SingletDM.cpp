@@ -167,7 +167,7 @@ namespace Gambit
             pow(mf,2)/4/M_PI*Xf*pow(vf,3) * Dh2(s) * GeV2tocm3s1;
         }
 
-        /// Calculate <sigma v> for hh final states
+        /// Annihilation into hh
         double sv_hh(double lambda, double mass, double v)
         {
           double s = 4*mass*mass/(1-v*v/4);  // v is relative velocity
@@ -393,10 +393,10 @@ namespace Gambit
           {
             Funk::Funk kinematicFunction = Funk::funcM(singletDM,
                 &SingletDM::sv, channel[i], lambda, mS, Funk::var("v"));
-            TH_Channel channel(
+            TH_Channel new_channel(
                 Funk::vec<string>(p1[i], p2[i]), kinematicFunction
                 );
-            process_ann.channelList.push_back(channel);
+            process_ann.channelList.push_back(new_channel);
           }
           else
           {
