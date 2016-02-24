@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"

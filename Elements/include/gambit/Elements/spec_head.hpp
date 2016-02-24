@@ -26,6 +26,7 @@
 #define __spec_hpp__
 
 #include "gambit/Elements/subspectrum.hpp"
+#include "gambit/SpectrumContents/subspectrum_contents.hpp"
 
 // Particle database access
 #define PDB Models::ParticleDB()        
@@ -84,9 +85,20 @@ namespace Gambit
    /// Forward declarations related to FptrFinder class
    template<class,class> class SetMaps;
    template<class,class> class FptrFinder;  
-   template<class,class> class CallFcn;  
-  
-         
+   template<class,class> class CallFcn; 
+
+   /// Simpler helper class to run the verify_contents function only
+   /// once, the first time a particular wrapper class is constructed.
+   template<class Contents>
+   class VerifyContents
+   {
+      VerifyContents(const SubSpectrum* const spec)
+      {
+        Contents contents;
+        contents.verify_contents(spec); 
+      }
+   }
+
    // CRTP used to allow access to some special data members of the derived class.
    // Various inherited classes are just used to factor out code, some of which
    // doesn't need to be templated.
@@ -101,8 +113,9 @@ namespace Gambit
          /// Note: Wrapper need to define a specialisation of 
          /// SpecTraits, which typedefs Model and Input.
          /// "Grab" these typedefs here to simplify notation
-         typedef typename SpecTraits<D>::Model Model;
-         typedef typename SpecTraits<D>::Input Input;
+         typedef typename SpecTraits<D>::Contents Contents;
+         typedef typename SpecTraits<D>::Model    Model;
+         typedef typename SpecTraits<D>::Input    Input;
 
          typedef MapTypes<D,MapTag::Get> MTget; 
          typedef MapTypes<D,MapTag::Set> MTset; 
@@ -170,7 +183,11 @@ namespace Gambit
          
       public: 
 
-         /// Using default constructors
+         /// Constructor
+         /// This uses the "Contents" class to verify (once, not every construction)
+         /// that this wrapper provides all the basic functionality that it is
+         /// supposed to
+         Spec() { static VerifyContents<Contents> runonce(this); };
        
          /// Virtual destructor
          virtual ~Spec() {};

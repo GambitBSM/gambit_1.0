@@ -19,6 +19,7 @@
 
 #include "gambit/Elements/spec.hpp"
 #include "gambit/Elements/SLHAskeleton.hpp"
+#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit
 {
@@ -98,8 +99,9 @@ namespace Gambit
       template <>
       struct SpecTraits<MSSMskeleton> 
       {
-           typedef MSSMea     Model;
-           typedef DummyInput Input; // DummyInput is just an empty struct
+          typedef SpectrumContents::MSSM Contents;
+          typedef MSSMea     Model;
+          typedef DummyInput Input; // DummyInput is just an empty struct
       };
 
       /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class

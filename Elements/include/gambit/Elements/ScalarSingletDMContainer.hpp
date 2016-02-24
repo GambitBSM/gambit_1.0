@@ -20,6 +20,7 @@
 #define __SingletDMContainer_hpp__
 
 #include "gambit/Elements/spec.hpp"
+#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit
 {     
@@ -54,8 +55,9 @@ namespace Gambit
    template <>
    struct SpecTraits<Elements::SingletDMContainer> 
    {
-        typedef Elements::SingletDMModel Model;
-        typedef DummyInput              Input; // DummyInput is just an empty struct
+       typedef SpectrumContents::ScalarSingletDM Contents;
+       typedef Elements::SingletDMModel Model;
+       typedef DummyInput              Input; // DummyInput is just an empty struct
    };
 
    namespace Elements

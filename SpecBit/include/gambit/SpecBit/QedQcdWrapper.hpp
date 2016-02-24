@@ -46,6 +46,7 @@ namespace Gambit
    template <>
    struct SpecTraits<SpecBit::QedQcdWrapper> 
    {
+      typedef SpectrumContents::SM Contents;
       typedef softsusy::QedQcd Model;
       typedef SMInputs         Input;
    };
