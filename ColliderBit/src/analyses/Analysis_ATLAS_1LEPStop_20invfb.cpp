@@ -265,7 +265,7 @@ namespace Gambit {
 
         // Calculate common variables and cuts first
 
-        applyTightIDElectronSelection(signalElectrons);
+        ATLAS::applyTightIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();

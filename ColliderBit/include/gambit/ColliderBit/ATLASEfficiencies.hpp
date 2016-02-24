@@ -2,7 +2,6 @@
 
 // Functions that do super fast detector simulation based on four vector smearing
 // Note that the Delphes efficiency functions will eventually be replaced by paramterisations of the ATLAS reconstruction efficiencies
-// Written by Martin White, January 2015, martin.white@adelaide.edu.au
 
 #include <random>
 #include "gambit/ColliderBit/Utils.hpp"
@@ -12,13 +11,11 @@
 
 namespace Gambit {
   namespace ColliderBit {
+    namespace ATLAS {
 
 
     /// @name ATLAS detector efficiency functions
     //@{
-
-
-    /// @todo Make binned fns static to avoid re-creating
 
 
     inline void applyDelphesElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
@@ -175,7 +172,7 @@ namespace Gambit {
 
 
     inline void smearJets(std::vector<HEPUtils::Jet*>& jets) {
-      // Function that mimics the DELPHES muon momentum resolution
+      // Function that mimics the DELPHES jet momentum resolution
       // We need to smear pT, then recalculate E, then reset 4 vector
 
       std::random_device rd;
@@ -191,6 +188,7 @@ namespace Gambit {
         // Smear by a Gaussian centered on 1 with width given by the (fractional) resolution
         std::normal_distribution<> d(1.,resolution);
         double smear_factor = d(gen);
+        /// @todo Is this the best way to smear? Should we preserve the mean jet energy, or pT, or direction?
         jet->set_mom(HEPUtils::P4::mkXYZM(jet->mom().px()*smear_factor, jet->mom().py()*smear_factor, jet->mom().pz()*smear_factor, jet->mass()));
       }
     }
@@ -440,5 +438,6 @@ namespace Gambit {
     //@}
 
 
+    }
   }
 }

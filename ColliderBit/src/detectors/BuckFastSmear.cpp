@@ -5,46 +5,43 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    /// @name BuckFastSmear definitions.
-    //@{
-      void BuckFastSmear::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
-        /// Clone the input event.
-        eventIn.cloneTo(eventOut);
+    /// BuckFastSmear definitions
+    void BuckFastSmear::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
+      /// Clone the input event.
+      eventIn.cloneTo(eventOut);
 
-        // Electron smearing and efficiency
-        applyDelphesElectronTrackingEff(eventOut.electrons());
-        smearElectronEnergy(eventOut.electrons());
-        applyDelphesElectronEff(eventOut.electrons());
+      // Electron smearing and efficiency
+      ATLAS::applyDelphesElectronTrackingEff(eventOut.electrons());
+      ATLAS::smearElectronEnergy(eventOut.electrons());
+      ATLAS::applyDelphesElectronEff(eventOut.electrons());
 
-        // Muon smearing and efficiency
-        applyDelphesMuonTrackEff(eventOut.muons());
-        smearMuonMomentum(eventOut.muons());
-        applyDelphesMuonEff(eventOut.muons());
+      // Muon smearing and efficiency
+      ATLAS::applyDelphesMuonTrackEff(eventOut.muons());
+      ATLAS::smearMuonMomentum(eventOut.muons());
+      ATLAS::applyDelphesMuonEff(eventOut.muons());
 
-        // Apply hadronic tau BR * reco efficiency
-        //MJW remove for now
-        applyTauEfficiency(eventOut.taus());
-        //Smear taus
-        smearTaus(eventOut.taus());
+      // Apply hadronic tau BR * reco efficiency
+      //MJW remove for now
+      ATLAS::applyTauEfficiency(eventOut.taus());
+      //Smear taus
+      ATLAS::smearTaus(eventOut.taus());
 
-        // Smear jet momenta
-        smearJets(eventOut.jets());
+      // Smear jet momenta
+      ATLAS::smearJets(eventOut.jets());
 
-        // Unset b-tags outside |eta|=5 (same as DELPHES)
-        for (HEPUtils::Jet* j : eventOut.jets()) {
-          if (j->abseta() > 5.0) j->set_btag(false);
-        }
+      // Unset b-tags outside |eta|=5 (same as DELPHES)
+      /// @todo Surely we can't actually do b-tags outside |eta| < 2.5?
+      for (HEPUtils::Jet* j : eventOut.jets()) {
+        if (j->abseta() > 5.0) j->set_btag(false);
       }
-    //@}
+    }
 
 
-    /// @name BuckFastIdentity definitions.
-    //@{
-      void BuckFastIdentity::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
-        /// Clone the input event.
-        eventIn.cloneTo(eventOut);
-      }
-    //@}
+    /// BuckFastIdentity definition
+    void BuckFastIdentity::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
+      /// Clone the input event.
+      eventIn.cloneTo(eventOut);
+    }
 
 
   }
