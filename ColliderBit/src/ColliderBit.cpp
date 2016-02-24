@@ -96,7 +96,7 @@ namespace Gambit
     std::vector<std::string> pythiaNames, pythiaCommonOptions;
     std::vector<std::string>::const_iterator iter;
     bool eventsGenerated;
-    int pythiaConfigurations, pythiaNumber, nEvents;
+    int nEvents;
     /// Analysis stuff
     std::vector<std::string> analysisNamesATLAS;
     HEPUtilsAnalysisContainer globalAnalysesATLAS;
@@ -136,26 +136,17 @@ namespace Gambit
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
       {
         piped_invalid_point.check();
-        pythiaNumber = 0;
-        // Defaults to 1 if option unspecified
-        pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
-
-        while (pythiaNumber < pythiaConfigurations)
+        Loop::reset();
+        Loop::executeIteration(INIT);
+        currentEvent = 0;
+        #pragma omp parallel
         {
-          piped_invalid_point.check();
-          ++pythiaNumber;
-          Loop::reset();
-          Loop::executeIteration(INIT);
-          currentEvent = 0;
-          #pragma omp parallel
-          {
-            Loop::executeIteration(START_SUBPROCESS);
-            // main event loop
-            while(currentEvent<nEvents and not *Loop::done) {
-              Loop::executeIteration(currentEvent++);
-            }
-            Loop::executeIteration(END_SUBPROCESS);
+          Loop::executeIteration(START_SUBPROCESS);
+          // main event loop
+          while(currentEvent<nEvents and not *Loop::done) {
+            Loop::executeIteration(currentEvent++);
           }
+          Loop::executeIteration(END_SUBPROCESS);
         }
       }
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
@@ -215,13 +206,11 @@ namespace Gambit
 
       if (*Loop::iteration == INIT)
       {
-        std::string pythiaConfigName;
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName)) pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        if (runOptions->hasKey(*iter))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -312,15 +301,11 @@ namespace Gambit
 
       if (*Loop::iteration == INIT)
       {
-        std::string pythiaConfigName;
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
-
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-
+        if (runOptions->hasKey(*iter))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
