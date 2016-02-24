@@ -48,6 +48,8 @@ scanner_plugin(random_sampler, version(1, 0, 0))
                                 
                         }
                         LogLike(a);
+                        if (k%1000 == 0)
+                        std::cout << "points:  " << k << " / " << N << std::endl;
                 }
                 
                 return 0;

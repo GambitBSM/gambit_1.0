@@ -342,14 +342,6 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
                                                                                                             \
     inline YAML::Node get_inifile_node(std::string in)                                                      \
     {                                                                                                       \
-        if (!__gambit_plugin_namespace__::myData.node[in])                                                  \
-        {                                                                                                   \
-            scan_err << "Missing iniFile node \""<< in << "\" needed by a gambit plugin:  \n"               \
-                    << __gambit_plugin_namespace__::myData.print() << scan_end;                             \
-            YAML::Node node;                                                                                \
-            return node;                                                                                    \
-        }                                                                                                   \
-                                                                                                            \
         return __gambit_plugin_namespace__::myData.node[in];                                                \
     }                                                                                                       \
                                                                                                             \
@@ -362,6 +354,30 @@ namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_v
         }                                                                                                   \
                                                                                                             \
         return __gambit_plugin_namespace__::myData.node[in].as<T>();                                        \
+    }                                                                                                       \
+                                                                                                            \
+    template <>                                                                                             \
+    inline YAML::Node get_inifile_value<YAML::Node>(std::string in)                                         \
+    {                                                                                                       \
+        if (!__gambit_plugin_namespace__::myData.node[in])                                                  \
+        {                                                                                                   \
+            scan_err << "Missing iniFile node \""<< in << "\" needed by a gambit plugin:  \n"               \
+                    << __gambit_plugin_namespace__::myData.print() << scan_end;                             \
+            YAML::Node node;                                                                                \
+            return node;                                                                                    \
+        }                                                                                                   \
+        return __gambit_plugin_namespace__::myData.node[in];                                                \
+    }                                                                                                       \
+                                                                                                            \
+    template <>                                                                                             \
+    inline YAML::Node get_inifile_value<YAML::Node>(std::string in, YAML::Node defaults)                    \
+    {                                                                                                       \
+        if (!__gambit_plugin_namespace__::myData.node[in])                                                  \
+        {                                                                                                   \
+            return defaults;                                                                                \
+        }                                                                                                   \
+                                                                                                            \
+        return __gambit_plugin_namespace__::myData.node[in];                                                \
     }                                                                                                       \
                                                                                                             \
     template <typename T>                                                                                   \

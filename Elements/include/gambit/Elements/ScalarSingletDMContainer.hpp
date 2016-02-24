@@ -23,7 +23,7 @@
 
 namespace Gambit
 {     
-   namespace SpecBit
+   namespace Elements
    {
       /// Simple extension of the SMHiggsContainer "model object"
       /// to include scalar singlet DM parameters
@@ -52,13 +52,13 @@ namespace Gambit
 
    /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
    template <>
-   struct SpecTraits<SpecBit::SingletDMContainer> 
+   struct SpecTraits<Elements::SingletDMContainer> 
    {
-        typedef SpecBit::SingletDMModel Model;
+        typedef Elements::SingletDMModel Model;
         typedef DummyInput              Input; // DummyInput is just an empty struct
    };
 
-   namespace SpecBit
+   namespace Elements
    { 
       class SingletDMContainer : public Spec<SingletDMContainer> 
       {
@@ -116,7 +116,7 @@ namespace Gambit
 
         }; 
 
-   } // end SpecBit namespace
+   } // end Elements namespace
 } // end Gambit namespace
 
 #endif
