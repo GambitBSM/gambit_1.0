@@ -1723,7 +1723,7 @@ namespace Gambit
 
         // Without inifile entry, just match any capability-type pair exactly.
         if ( std::find(reqs.begin(), reqs.end(), (*itf)->quantity()) != reqs.end()
-        // With inifile entry, we also check capability, type, function name and module name.
+        // With inifile entry, we also check capability, type, function name and backend name.
         and ( entryExists ? backendFuncMatchesIniEntry(*itf, *reqEntry, *boundTEs) : true ) )
         {
 
