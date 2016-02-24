@@ -48,15 +48,10 @@ BE_INI_FUNCTION
 
     int rank = 0;
 #ifdef WITH_MPI
-    try
+    if(GMPI::Is_initialized())
     {
         GMPI::Comm comm;
         rank = comm.Get_rank();
-    }
-    catch(const std::exception& e)
-    {
-        // FIXME: Throw reasonable error here?
-        rank = 0;
     }
 #endif
 

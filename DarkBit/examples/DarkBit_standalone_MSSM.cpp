@@ -75,7 +75,7 @@ int main()
   // ---- Initialise (or disable) logging ----
 
   std::map<std::string, std::string> loggerinfo;
-  std::string prefix("runs/DarkBit_standalone/logs/");
+  std::string prefix("runs/DarkBit_standalone_MSSM/logs/");
   Utils::ensure_path_exists(prefix);
 
   loggerinfo["Core, Error"] = prefix+"core_errors.log";
@@ -137,6 +137,15 @@ int main()
   // Initialize DarkSUSY backend
   DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
   DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+  logger() << "DarkSUSY..." << EOM;
+  logger() << "DarkSUSY..." << EOM;
+  logger() << "DarkSUSY..." << EOM;
+  logger() << "DarkSUSY..." << EOM;
+  logger() << "DarkSUSY..." << EOM;
+  logger() << "DarkSUSY..." << EOM;
+  logger() << "DarkSUSY..." << EOM;
+  logger() << "DarkSUSY..." << EOM;
+  logger() << "DarkSUSY..." << EOM;
   DarkSUSY_5_1_3_init.reset_and_calculate();
   DarkSUSY_PointInit_MSSM.notifyOfModel("MSSM30atQ");
   DarkSUSY_PointInit_MSSM.resolveDependency(&createSpectrum);
@@ -150,7 +159,17 @@ int main()
   DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dswwidth);
   DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mssmpar);
   DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
+  logger() << "Initializing DarkSUSY..." << EOM;
+  logger() << "Initializing DarkSUSY..." << EOM;
+  logger() << "Initializing DarkSUSY..." << EOM;
+  logger() << "Initializing DarkSUSY..." << EOM;
+  logger() << "Initializing DarkSUSY..." << EOM;
+  logger() << "Initializing DarkSUSY..." << EOM;
+  logger() << "Initializing DarkSUSY..." << EOM;
+  logger() << "Initializing DarkSUSY..." << EOM;
+  logger() << "Initializing DarkSUSY..." << EOM;
   DarkSUSY_PointInit_MSSM.reset_and_calculate();
+  logger() << "...done" << EOM;
 
   // Initialize DDCalc0 backend
   Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);  // FIXME: Isn't there a smarter way?
