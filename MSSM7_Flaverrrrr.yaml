@@ -284,26 +284,17 @@ Rules:
       ms_central: 95.E-03
       ms_error: 5.E-03
 
-  - capability: AnalysisContainer
-    function: getAnalysisContainer
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
     options:  
-      analysisNames: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
-
-  - capability: DetectorSim
-    function: getDelphes
-    options:
-      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
   - capability: SimpleSmearingSim
-    function: getBuckFast
-    options:
-      buckFastOption: "BuckFastSmear"
+    function: getBuckFastATLAS
  
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
-  
+  - capability: ConvertedScatteringEvent
+    function: convertPythia8ParticleEvent
+
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
@@ -335,10 +326,6 @@ Rules:
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
-
-  - capability: AnalysisNumbers
-    dependencies:
-    - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
 
 Logger:
 

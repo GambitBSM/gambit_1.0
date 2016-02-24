@@ -139,31 +139,16 @@ Rules:
   - capability: decay_rates
     function: all_decays
 
-  - capability: AnalysisContainer
-    function: getAnalysisContainer
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
     options:  
-      analysisNames: ["ATLAS_0LEP_20invfb", "ATLAS_1LEPStop_20invfb"]
-
-  - capability: DetectorSim
-    function: getDelphes
-    options:
-      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb", "ATLAS_1LEPStop_20invfb"]
 
   - capability: SimpleSmearingSim
-    function: getBuckFast
-    options:
+    function: getBuckFastATLAS
  
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
-    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
-
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastIdentityEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
-    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
+  - capability: ConvertedScatteringEvent
+    function: convertPythia8ParticleEvent
 
   - capability:  ColliderOperator
     function: operateLHCLoop
@@ -209,11 +194,6 @@ Rules:
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 
-  - capability: AnalysisNumbers
-    dependencies:
-    - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
-    #- {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastIdentityEvent"}
-    
 #########################
 # Logging setup
 #########################
