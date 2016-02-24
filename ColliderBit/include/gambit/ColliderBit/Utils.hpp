@@ -8,7 +8,7 @@ namespace Gambit {
 
 
     /// Return a random true/false at a success rate given by a number
-    inline bool random_bool(double eff, double x) {
+    inline bool random_bool(double eff) {
       /// @todo Handle out-of-range eff values
       return HEPUtils::rand01() < eff;
     }
@@ -16,17 +16,13 @@ namespace Gambit {
 
     /// Return a random true/false at a success rate given by a 1D efficiency map
     inline bool random_bool(const HEPUtils::BinnedFn1D<double>& effmap, double x) {
-      const double eff = effmap.get_at(x);
-      /// @todo Handle out-of-range x and eff values
-      return HEPUtils::rand01() < eff;
+      return random_bool( effmap.get_at(x) );
     }
 
 
     /// Return a random true/false at a success rate given by a 2D efficiency map
     inline bool random_bool(const HEPUtils::BinnedFn2D<double>& effmap, double x, double y) {
-      const double eff = effmap.get_at(x, y);
-      /// @todo Handle out-of-range x,y and eff values
-      return HEPUtils::rand01() < eff;
+      return random_bool( effmap.get_at(x, y) );
     }
 
 
