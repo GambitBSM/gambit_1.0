@@ -21,10 +21,11 @@ namespace Gambit {
     inline void applyDelphesElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
       // Function that mimics the DELPHES electron tracking efficiency
 
-      static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0,1.5,2.5,10.}}, {{0,0.1,1.0,100,10000}},
+      static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 10.}}, //< |eta|
+                                                        {{0, 0.1, 1.0, 100, 10000}}, //< pT
                                                         {{0., 0.73, 0.95, 0.99,
                                                           0., 0.5,  0.83, 0.90,
-                                                          0., 0.,   0.,   0.}});
+                                                              0., 0.,   0.,   0.}});
 
       // Loop over the electrons and only keep those that pass the random efficiency cut
       /// @todo Replace by filter_if + lambda

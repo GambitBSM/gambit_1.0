@@ -2,43 +2,62 @@
 
 /// @file Functions that do super fast CMS detector simulation based on four vector smearing
 
-#include <random>
 #include "gambit/ColliderBit/Utils.hpp"
+
 #include "HEPUtils/MathUtils.h"
 #include "HEPUtils/BinnedFn.h"
 #include "HEPUtils/Event.h"
+
+#include <random>
+#include <algorithm>
 
 namespace Gambit {
   namespace ColliderBit {
     namespace CMS {
 
 
-      /// @name CMS detector efficiency functions
-      //@{
-
-
-      inline void applyDelphesElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
-        // Function that mimics the DELPHES electron tracking efficiency
-
-        static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0,1.5,2.5,10.}}, {{0,0.1,1.0,100,10000}},
-                                                          {{0., 0.73, 0.95, 0.99,
-                                                                0., 0.5,  0.83, 0.90,
-                                                                0., 0.,   0.,   0.}});
-
-        // Loop over the electrons and only keep those that pass the random efficiency cut
-        /// @todo Replace by filter_if + lambda
-        std::vector<HEPUtils::Particle*> survivors;
-        for (HEPUtils::Particle* e : electrons) {
-          // std::cout << e->abseta() << " " << e->pT() << std::endl;
-          if (random_bool(_elTrackEff2d, e->abseta(), e->pT())) survivors.push_back(e); else delete e;
-        }
-        electrons = survivors;
+      /// Utility function for filtering a supplied particle vector by sampling wrt a binned 2D efficiency map in |eta| and pT
+      inline void _filtereff_etapt(std::vector<HEPUtils::Particle*>& particles, const HEPUtils::BinnedFn2D<double>& eff_etapt) {
+        /// @todo This would be nice and efficient, but how to call delete without smart pointers?
+        // std::remove_if(particles.begin(), particles.end(),
+        //                [](const HEPUtils::Particle* p) { random_bool(eff_etapt, p->abseta(), p->pT()); }
+        //                );
+        std::vector<HEPUtils::Particle*> survivors; survivors.reserve(particles.size());
+        for (HEPUtils::Particle* p : particles)
+          if (random_bool(eff_etapt, p->abseta(), p->pT())) survivors.push_back(p);
+          else delete p;
+        particles = survivors; /// @todo Something efficient with std::move?
       }
 
 
+      /// @name CMS detector efficiency functions
+      /// @todo Reduce duplication via standard filtering functions and infrastructure sharing with ATLASEfficiencies functions
+      //@{
+
+
+      /// Function that mimics the DELPHES electron tracking efficiency
+      inline void applyDelphesElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
+        static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 100.}}, //< |eta|
+                                                          {{0, 0.1, 1.0, 100000}}, //< pT
+                                                          {{0., 0.70, 0.95, // |eta| 0.1-1.5
+                                                            0., 0.60, 0.85, // |eta| 1.5-2.5
+                                                            0., 0.,   0.}}); // |eta| > 2.5
+        _filtereff_etapt(electrons, _elTrackEff2d);
+        // // Loop over the electrons and only keep those that pass the random efficiency cut
+        // /// @todo Replace by filter_if + lambda
+        // std::vector<HEPUtils::Particle*> survivors;
+        // for (HEPUtils::Particle* e : electrons) {
+        //   // std::cout << e->abseta() << " " << e->pT() << std::endl;
+        //   if (random_bool(_elTrackEff2d, e->abseta(), e->pT())) survivors.push_back(e); else delete e;
+        // }
+        // electrons = survivors;
+      }
+
+
+      /// @brief Function that mimics the DELPHES electron efficiency
+      ///
+      /// Should be applied after the electron energy smearing
       inline void applyDelphesElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
-        // Function that mimics the DELPHES electron efficiency
-        // Should be applied after the electron energy smearing
 
         static HEPUtils::BinnedFn2D<double> _elEff2d({{0,1.5,2.5,10.}}, {{0,10.,10000.}},
                                                      {{0., 0.95, 0., 0.85, 0.,0.}});
