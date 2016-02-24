@@ -96,10 +96,14 @@ namespace Gambit
     std::vector<std::string> pythiaNames, pythiaCommonOptions;
     std::vector<std::string>::const_iterator iter;
     bool eventsGenerated;
-    int pythiaConfigurations, pythiaNumber, nEvents;
+    int nEvents;
     /// Analysis stuff
-    std::vector<std::string> analysisNames;
-    HEPUtilsAnalysisContainer globalAnalyses;
+    std::vector<std::string> analysisNamesATLAS;
+    HEPUtilsAnalysisContainer globalAnalysesATLAS;
+/** @TODO: BuckFastCMS...
+    std::vector<std::string> analysisNamesCMS;
+    HEPUtilsAnalysisContainer globalAnalysesCMS;
+    **/
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -132,26 +136,17 @@ namespace Gambit
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
       {
         piped_invalid_point.check();
-        pythiaNumber = 0;
-        // Defaults to 1 if option unspecified
-        pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
-
-        while (pythiaNumber < pythiaConfigurations)
+        Loop::reset();
+        Loop::executeIteration(INIT);
+        currentEvent = 0;
+        #pragma omp parallel
         {
-          piped_invalid_point.check();
-          ++pythiaNumber;
-          Loop::reset();
-          Loop::executeIteration(INIT);
-          currentEvent = 0;
-          #pragma omp parallel
-          {
-            Loop::executeIteration(START_SUBPROCESS);
-            // main event loop
-            while(currentEvent<nEvents and not *Loop::done) {
-              Loop::executeIteration(currentEvent++);
-            }
-            Loop::executeIteration(END_SUBPROCESS);
+          Loop::executeIteration(START_SUBPROCESS);
+          // main event loop
+          while(currentEvent<nEvents and not *Loop::done) {
+            Loop::executeIteration(currentEvent++);
           }
+          Loop::executeIteration(END_SUBPROCESS);
         }
       }
       // Nicely thank the loop for being quiet, and restore everyone's vocal cords
@@ -211,13 +206,11 @@ namespace Gambit
 
       if (*Loop::iteration == INIT)
       {
-        std::string pythiaConfigName;
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName)) pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        if (runOptions->hasKey(*iter))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -308,15 +301,11 @@ namespace Gambit
 
       if (*Loop::iteration == INIT)
       {
-        std::string pythiaConfigName;
-        // Setup new Pythia
-        pythiaConfigName = "pythiaOptions_" + std::to_string(pythiaNumber);
-
         // Get pythia options
         // If the SpecializablePythia specialization is hard-coded, okay with no options.
         pythiaCommonOptions.clear();
-        if (runOptions->hasKey(*iter, pythiaConfigName))pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
-
+        if (runOptions->hasKey(*iter))
+          pythiaCommonOptions = runOptions->getValue<std::vector<std::string>>(*iter);
       }
 
       else if (*Loop::iteration == START_SUBPROCESS)
@@ -394,10 +383,9 @@ namespace Gambit
 #endif // not defined EXCLUDE_DELPHES
 
 
-    void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result)
+    void getBuckFastATLAS(Gambit::ColliderBit::BuckFastSmearATLAS &result)
     {
-      using namespace Pipes::getBuckFast;
-      std::string buckFastOption;
+      using namespace Pipes::getBuckFastATLAS;
       if (*Loop::iteration == INIT)
       {
         result.clear();
@@ -408,10 +396,24 @@ namespace Gambit
     }
 
 
+/** @TODO: BuckFastCMS...
+    void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
+    {
+      using namespace Pipes::getBuckFastCMS;
+      if (*Loop::iteration == INIT)
+      {
+        result.clear();
+        // Setup new BuckFast
+        // @note There's really nothing to do. BuckFast doesn't even have class variables.
+        result.init();
+      }
+    }
+    **/
+
+
     void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
     {
       using namespace Pipes::getBuckFastIdentity;
-      std::string buckFastOption;
       if (*Loop::iteration == INIT)
       {
         result.clear();
@@ -425,12 +427,12 @@ namespace Gambit
 
     /// *** Initialization for analyses ***
 
-    void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
-      using namespace Pipes::getAnalysisContainer;
+    void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+      using namespace Pipes::getATLASAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
-        GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-        globalAnalyses.clear();
-        globalAnalyses.init(analysisNames);
+        GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
+        globalAnalysesATLAS.clear();
+        globalAnalysesATLAS.init(analysisNamesATLAS);
         return;
       }
 
@@ -439,7 +441,7 @@ namespace Gambit
         // Each thread gets its own Analysis container.
         // Thus, their initialization is *after* INIT, within omp parallel.
         result.clear();
-        result.init(analysisNames);
+        result.init(analysisNamesATLAS);
         return;
       }
 
@@ -452,15 +454,52 @@ namespace Gambit
         // Combine results from the threads together
         #pragma omp critical (access_globalAnalyses)
         {
-          globalAnalyses.add(result);
+          globalAnalysesATLAS.add(result);
           // Use improve_xsec to combine results from the same process type
-          globalAnalyses.improve_xsec(result);
+          globalAnalysesATLAS.improve_xsec(result);
         }
         return;
       }
 
     }
 
+/** TODO: BuckFastCMS...
+    void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+      using namespace Pipes::getCMSAnalysisContainer;
+      if (*Loop::iteration == BASE_INIT) {
+        GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
+        globalAnalysesCMS.clear();
+        globalAnalysesCMS.init(analysisNamesCMS);
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS)
+      {
+        // Each thread gets its own Analysis container.
+        // Thus, their initialization is *after* INIT, within omp parallel.
+        result.clear();
+        result.init(analysisNamesCMS);
+        return;
+      }
+
+      if (*Loop::iteration == END_SUBPROCESS && eventsGenerated)
+      {
+        const double xs_fb = Dep::HardScatteringSim->xsec_pb() * 1000.;
+        const double xserr_fb = Dep::HardScatteringSim->xsecErr_pb() * 1000.;
+        result.add_xsec(xs_fb, xserr_fb);
+
+        // Combine results from the threads together
+        #pragma omp critical (access_globalAnalyses)
+        {
+          globalAnalysesCMS.add(result);
+          // Use improve_xsec to combine results from the same process type
+          globalAnalysesCMS.improve_xsec(result);
+        }
+        return;
+      }
+
+    }
+    **/
 
 
     /// *** Hard Scattering Event Generators ***
@@ -775,17 +814,27 @@ namespace Gambit
     }
 #endif // not defined EXCLUDE_DELPHES
 
-    void reconstructBuckFastEvent(HEPUtils::Event& result) {
-      using namespace Pipes::reconstructBuckFastEvent;
+    void smearEventATLAS(HEPUtils::Event& result) {
+      using namespace Pipes::smearEventATLAS;
       if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
       (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
     }
 
+/** TODO: BuckFastCMS...
+    void smearEventCMS(HEPUtils::Event& result) {
+      using namespace Pipes::smearEventCMS;
+      if (*Loop::iteration <= BASE_INIT) return;
+      result.clear();
 
-    void reconstructBuckFastIdentityEvent(HEPUtils::Event& result) {
-      using namespace Pipes::reconstructBuckFastIdentityEvent;
+      (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
+    }
+    **/
+
+
+    void copyEvent(HEPUtils::Event& result) {
+      using namespace Pipes::copyEvent;
       if (*Loop::iteration <= BASE_INIT) return;
       result.clear();
 
@@ -796,14 +845,14 @@ namespace Gambit
 
     /// *** Analysis Accumulators ***
 
-    void runAnalyses(ColliderLogLikes& result)
+    void runATLASAnalyses(ColliderLogLikes& result)
     {
-      using namespace Pipes::runAnalyses;
+      using namespace Pipes::runATLASAnalyses;
       if (*Loop::iteration == FINALIZE && eventsGenerated) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        globalAnalyses.scale();
-        for (auto anaPtr = globalAnalyses.analyses.begin(); anaPtr != globalAnalyses.analyses.end(); ++anaPtr)
+        globalAnalysesATLAS.scale();
+        for (auto anaPtr = globalAnalysesATLAS.analyses.begin(); anaPtr != globalAnalysesATLAS.analyses.end(); ++anaPtr)
           result.push_back((*anaPtr)->get_results());
         return;
       }
@@ -811,7 +860,7 @@ namespace Gambit
       if (*Loop::iteration <= BASE_INIT) return;
 
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
-      Dep::AnalysisContainer->analyze(*Dep::ReconstructedEvent);
+      Dep::ATLASAnalysisContainer->analyze(*Dep::ATLASSmearedEvent);
     }
 
 
@@ -831,7 +880,12 @@ namespace Gambit
         result = 0.;
         return;
       }
-      ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
+      ColliderLogLikes analysisResults = (*Dep::ATLASAnalysisNumbers);
+/** @TODO: BuckFastCMS...
+      ColliderLogLikes analysisResultsATLAS = (*Dep::ATLASAnalysisNumbers);
+      ColliderLogLikes analysisResultsCMS = (*Dep::CMSAnalysisNumbers);
+// Also, whatever it takes to combine those together into one analysisResults...
+**/
 
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;

@@ -5,8 +5,15 @@ namespace Gambit {
   namespace ColliderBit {
 
 
+    /// BuckFastIdentity definition
+    void BuckFastIdentity::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
+      /// Clone the input event.
+      eventIn.cloneTo(eventOut);
+    }
+
+
     /// BuckFastSmear definitions
-    void BuckFastSmear::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
+    void BuckFastSmearATLAS::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
       /// Clone the input event.
       eventIn.cloneTo(eventOut);
 
@@ -37,11 +44,10 @@ namespace Gambit {
     }
 
 
-    /// BuckFastIdentity definition
-    void BuckFastIdentity::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
-      /// Clone the input event.
-      eventIn.cloneTo(eventOut);
-    }
+    // /// BuckFastSmearCMS definition
+    // void BuckFastSmearCMS::processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) const {
+    //   // TODO
+    // }
 
 
   }
