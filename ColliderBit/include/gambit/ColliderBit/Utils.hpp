@@ -7,6 +7,13 @@ namespace Gambit {
   namespace ColliderBit {
 
 
+    /// Return a random true/false at a success rate given by a number
+    inline bool random_bool(double eff, double x) {
+      /// @todo Handle out-of-range eff values
+      return HEPUtils::rand01() < eff;
+    }
+
+
     /// Return a random true/false at a success rate given by a 1D efficiency map
     inline bool random_bool(const HEPUtils::BinnedFn1D<double>& effmap, double x) {
       const double eff = effmap.get_at(x);
