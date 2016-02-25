@@ -255,7 +255,7 @@ namespace Gambit {
         RemoveLeptonsMllLt12(signalMuons);
         JetLeptonOverlapRemoval(signalJets,signalTaus,0.2);
 
-        applyTightIDElectronSelection(signalElectrons);
+        ATLAS::applyTightIDElectronSelection(signalElectrons);
 
         int numElectrons=signalElectrons.size();
         int numMuons=signalMuons.size();
@@ -821,7 +821,7 @@ namespace Gambit {
 
 
       void add(BaseAnalysis* other) {
-        // The base class add function handles the signal region vector and total # events. 
+        // The base class add function handles the signal region vector and total # events.
         HEPUtilsAnalysis::add(other);
 
         Analysis_ATLAS_2LEPEW_20invfb* specificOther

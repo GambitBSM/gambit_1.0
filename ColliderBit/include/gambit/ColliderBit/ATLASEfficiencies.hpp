@@ -2,7 +2,6 @@
 
 // Functions that do super fast detector simulation based on four vector smearing
 // Note that the Delphes efficiency functions will eventually be replaced by paramterisations of the ATLAS reconstruction efficiencies
-// Written by Martin White, January 2015, martin.white@adelaide.edu.au
 
 #include <random>
 #include "gambit/ColliderBit/Utils.hpp"
@@ -12,22 +11,21 @@
 
 namespace Gambit {
   namespace ColliderBit {
+    namespace ATLAS {
 
 
     /// @name ATLAS detector efficiency functions
     //@{
 
 
-    /// @todo Make binned fns static to avoid re-creating
-
-
     inline void applyDelphesElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
       // Function that mimics the DELPHES electron tracking efficiency
 
-      static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0,1.5,2.5,10.}}, {{0,0.1,1.0,100,10000}},
+      static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 10.}}, //< |eta|
+                                                        {{0, 0.1, 1.0, 100, 10000}}, //< pT
                                                         {{0., 0.73, 0.95, 0.99,
                                                           0., 0.5,  0.83, 0.90,
-                                                          0., 0.,   0.,   0.}});
+                                                              0., 0.,   0.,   0.}});
 
       // Loop over the electrons and only keep those that pass the random efficiency cut
       /// @todo Replace by filter_if + lambda
@@ -175,7 +173,7 @@ namespace Gambit {
 
 
     inline void smearJets(std::vector<HEPUtils::Jet*>& jets) {
-      // Function that mimics the DELPHES muon momentum resolution
+      // Function that mimics the DELPHES jet momentum resolution
       // We need to smear pT, then recalculate E, then reset 4 vector
 
       std::random_device rd;
@@ -191,6 +189,7 @@ namespace Gambit {
         // Smear by a Gaussian centered on 1 with width given by the (fractional) resolution
         std::normal_distribution<> d(1.,resolution);
         double smear_factor = d(gen);
+        /// @todo Is this the best way to smear? Should we preserve the mean jet energy, or pT, or direction?
         jet->set_mom(HEPUtils::P4::mkXYZM(jet->mom().px()*smear_factor, jet->mom().py()*smear_factor, jet->mom().pz()*smear_factor, jet->mass()));
       }
     }
@@ -440,5 +439,6 @@ namespace Gambit {
     //@}
 
 
+    }
   }
 }

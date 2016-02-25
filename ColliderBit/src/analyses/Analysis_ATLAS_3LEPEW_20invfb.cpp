@@ -233,7 +233,7 @@ namespace Gambit {
         //cout << "AFTER REMOVAL nele nmuo njet " << signalElectrons.size() << " " << signalMuons.size() << " " << signalJets.size() << endl;
 
         //Now apply the tight electron selection
-        applyTightIDElectronSelection(signalElectrons);
+        ATLAS::applyTightIDElectronSelection(signalElectrons);
 
         int numElectrons=signalElectrons.size();
         int numMuons=signalMuons.size();

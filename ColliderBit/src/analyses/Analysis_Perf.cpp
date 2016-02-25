@@ -215,7 +215,7 @@ namespace Gambit {
 
 
         // Do further electron selection
-        applyMediumIDElectronSelection(signalElectrons);
+        ATLAS::applyMediumIDElectronSelection(signalElectrons);
 
         // We now have the signal electrons, muons and jets; fill the histograms
 
