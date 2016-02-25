@@ -18,8 +18,8 @@ namespace Gambit {
     //@{
 
 
-    inline void applyDelphesElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
-      // Function that mimics the DELPHES electron tracking efficiency
+      /// Function that mimics the DELPHES electron tracking efficiency
+    inline void applyElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
 
       static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 10.}}, //< |eta|
                                                         {{0, 0.1, 1.0, 100, 10000}}, //< pT
@@ -38,7 +38,7 @@ namespace Gambit {
     }
 
 
-    inline void applyDelphesElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
+    inline void applyElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
       // Function that mimics the DELPHES electron efficiency
       // Should be applied after the electron energy smearing
 
@@ -55,7 +55,7 @@ namespace Gambit {
     }
 
 
-    inline void applyDelphesMuonTrackEff(std::vector<HEPUtils::Particle*>& muons) {
+    inline void applyMuonTrackEff(std::vector<HEPUtils::Particle*>& muons) {
 
       static HEPUtils::BinnedFn2D<double> _muTrackEff2d({{0,1.5,2.5,10.}}, {{0,0.1,1.0,10000.}},
                                                         {{0., 0.75, 0.99,
@@ -73,7 +73,7 @@ namespace Gambit {
     }
 
 
-    inline void applyDelphesMuonEff(std::vector<HEPUtils::Particle*>& muons) {
+    inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
 
       static HEPUtils::BinnedFn2D<double> _muEff2d({{0,1.5,2.7,10.}}, {{0,10.0,10000.}},
                                                    {{0., 0.95, 0.,0.85,0.,0.}});
