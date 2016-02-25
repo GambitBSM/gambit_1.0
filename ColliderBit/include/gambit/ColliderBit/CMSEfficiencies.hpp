@@ -88,38 +88,35 @@ namespace Gambit {
         std::random_device rd;
         std::mt19937 gen(rd());
 
-        static HEPUtils::BinnedFn2D<double> coeffE2({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
-                                                    {{0.,0.015*0.015,0.005*0.005,
-                                                          0.005*0.005,0.005*0.005,0.005*0.005,
-                                                          0.107*0.107,0.107*0.107,0.107*0.107}});
-
-        static HEPUtils::BinnedFn2D<double> coeffE({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
-                                                   {{0.,0.,0.05*0.05,
-                                                         0.05*0.05,0.05*0.05,0.05*0.05,
-                                                         2.08*2.08,2.08*2.08,2.08*2.08}});
-
-        static HEPUtils::BinnedFn2D<double> coeffC({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
-                                                   {{0.,0.,0.25*0.25,
-                                                         0.25*0.25,0.25*0.25,0.25*0.25,
-                                                         0.,0.,0.}});
-
         // Now loop over the electrons and smear the 4-vectors
         for (HEPUtils::Particle* e : electrons) {
 
-          // Look up / calculate resolution
-          const double c1 = coeffE2.get_at(e->abseta(), e->pT());
-          const double c2 = coeffE.get_at(e->abseta(), e->pT());
-          const double c3 = coeffC.get_at(e->abseta(), e->pT());
-          const double resolution = sqrt(c1*HEPUtils::sqr(e->E()) + c2*e->E() + c3);
+          // Calculate resolution
+          // for pT > 1, E resolution = |eta| < 0.5 -> sqrt(0.06^2 + pt^2*1.3e-3^2)
+          //                            |eta| < 1.5 -> sqrt(0.10^2 + pt^2*1.7e-3^2)
+          //                            |eta| < 0.5 -> sqrt(0.25^2 + pt^2*3.1e-3^2)
+          double resolution = 0;
+          if (e->pT() > 0.1 && abseta < 2.5) {
+            const double abseta = e->abseta();
+            if (abseta < 0.5) {
+              resolution = add_quad(0.06, 1.3e-3 * e->pT());
+            } else if (abseta < 1.5) {
+              resolution = add_quad(0.10, 1.7e-3 * e->pT());
+            } else { // still |eta| < 2.5
+              resolution = add_quad(0.25, 3.1e-3 * e->pT());
+            }
+          }
 
           // Smear by a Gaussian centered on the current energy, with width given by the resolution
-          std::normal_distribution<> d(e->E(), resolution);
-          double smeared_E = d(gen);
-          if (smeared_E < 0) smeared_E = 0;
-          // double smeared_pt = smeared_E/cosh(e->eta()); ///< @todo Should be cosh(|eta|)?
-          // std::cout << "BEFORE eta " << electron->eta() << std::endl;
-          e->set_mom(HEPUtils::P4::mkEtaPhiME(e->eta(), e->phi(), e->mass(), smeared_E));
-          // std::cout << "AFTER eta " << electron->eta() << std::endl;
+          if (resolution > 0) {
+            std::normal_distribution<> d(e->E(), resolution);
+            double smeared_E = d(gen);
+            if (smeared_E < 0) smeared_E = 0;
+            // double smeared_pt = smeared_E/cosh(e->eta()); ///< @todo Should be cosh(|eta|)?
+            // std::cout << "BEFORE eta " << electron->eta() << std::endl;
+            e->set_mom(HEPUtils::P4::mkEtaPhiME(e->eta(), e->phi(), e->mass(), smeared_E));
+            // std::cout << "AFTER eta " << electron->eta() << std::endl;
+          }
         }
       }
 

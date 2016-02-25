@@ -62,7 +62,25 @@ namespace Gambit {
 
       /// @brief Randomly filter the supplied particle list by parameterised tau efficiency
       inline void applyTauEfficiency(std::vector<HEPUtils::Particle*>& taus) {
-        filtereff(taus, 0.4);
+        filtereff(taus, 0.4); /// @todo Update to mean ATLAS performance, which is now 65%? See below
+
+        /// @todo Update to this:
+        // set DeltaR 0.2
+        // set DeltaRTrack 0.2
+        // set TrackPTMin 1.0
+        // set TauPTMin 1.0
+        // set TauEtaMax 2.5
+        // # instructions: {n-prongs} {eff}
+        // # 1 - one prong efficiency
+        // # 2 - two or more efficiency
+        // # -1 - one prong mistag rate
+        // # -2 - two or more mistag rate
+        // set BitNumber 0
+        // # taken from ATL-PHYS-PUB-2015-045 (medium working point)
+        // add EfficiencyFormula {1} {0.70}
+        // add EfficiencyFormula {2} {0.60}
+        // add EfficiencyFormula {-1} {0.02}
+        // add EfficiencyFormula {-2} {0.01}
       }
 
 
@@ -74,20 +92,23 @@ namespace Gambit {
         std::random_device rd;
         std::mt19937 gen(rd());
 
-        static HEPUtils::BinnedFn2D<double> coeffE2({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
-                                                    {{0.,0.015*0.015,0.005*0.005,
-                                                          0.005*0.005,0.005*0.005,0.005*0.005,
-                                                          0.107*0.107,0.107*0.107,0.107*0.107}});
+        static HEPUtils::BinnedFn2D<double> coeffE2({{0, 2.5, 3., 5.}}, //< |eta|
+                                                    {{0, 0.1, 25., 100000.}}, //< pT
+                                                    {{0.,          0.015*0.015, 0.005*0.005,
+                                                      0.005*0.005, 0.005*0.005, 0.005*0.005,
+                                                      0.107*0.107, 0.107*0.107, 0.107*0.107}});
 
-        static HEPUtils::BinnedFn2D<double> coeffE({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
-                                                   {{0.,0.,0.05*0.05,
-                                                         0.05*0.05,0.05*0.05,0.05*0.05,
-                                                         2.08*2.08,2.08*2.08,2.08*2.08}});
+        static HEPUtils::BinnedFn2D<double> coeffE({{0, 2.5, 3., 5.}}, //< |eta|
+                                                   {{0, 0.1, 25., 100000.}}, //< pT
+                                                   {{0.,        0.,        0.05*0.05,
+                                                     0.05*0.05, 0.05*0.05, 0.05*0.05,
+                                                     2.08*2.08, 2.08*2.08, 2.08*2.08}});
 
-        static HEPUtils::BinnedFn2D<double> coeffC({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
-                                                   {{0.,0.,0.25*0.25,
-                                                         0.25*0.25,0.25*0.25,0.25*0.25,
-                                                         0.,0.,0.}});
+        static HEPUtils::BinnedFn2D<double> coeffC({{0, 2.5, 3., 5.}}, //< |eta|
+                                                   {{0, 0.1, 25., 100000.}}, //< pT
+                                                   {{0.,       0.,       0.25*0.25,
+                                                     0.25*0.25,0.25*0.25,0.25*0.25,
+                                                     0.,       0.,       0.}});
 
         // Now loop over the electrons and smear the 4-vectors
         for (HEPUtils::Particle* e : electrons) {
