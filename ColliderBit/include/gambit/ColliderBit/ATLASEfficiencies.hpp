@@ -1,7 +1,6 @@
 #pragma once
 
 // Functions that do super fast detector simulation based on four vector smearing
-// Note that the Delphes efficiency functions will eventually be replaced by paramterisations of the ATLAS reconstruction efficiencies
 
 #include <random>
 #include "gambit/ColliderBit/Utils.hpp"
@@ -18,7 +17,7 @@ namespace Gambit {
       //@{
 
 
-      /// Function that mimics the DELPHES electron tracking efficiency
+      /// @brief Randomly filter the supplied particle list by parameterised electron tracking efficiency
       inline void applyElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
         static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 10.}}, //< |eta|
                                                           {{0, 0.1, 1.0, 100, 10000}}, //< pT
@@ -29,7 +28,7 @@ namespace Gambit {
       }
 
 
-      /// @brief Function that mimics the DELPHES electron efficiency
+      /// @brief Randomly filter the supplied particle list by parameterised electron efficiency
       ///
       /// Should be applied after the electron energy smearing
       inline void applyElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
@@ -41,6 +40,7 @@ namespace Gambit {
       }
 
 
+      /// @brief Randomly filter the supplied particle list by parameterised muon tracking efficiency
       inline void applyMuonTrackEff(std::vector<HEPUtils::Particle*>& muons) {
         static HEPUtils::BinnedFn2D<double> _muTrackEff2d({{0,1.5,2.5,10.}}, {{0,0.1,1.0,10000.}},
                                                           {{0., 0.75, 0.99,
@@ -50,6 +50,7 @@ namespace Gambit {
       }
 
 
+      /// @brief Randomly filter the supplied particle list by parameterised muon efficiency
       inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
         static HEPUtils::BinnedFn2D<double> _muEff2d({{0,1.5,2.7,10.}}, {{0,10.0,10000.}},
                                                      {{0., 0.95,
@@ -59,11 +60,13 @@ namespace Gambit {
       }
 
 
+      /// @brief Randomly filter the supplied particle list by parameterised tau efficiency
       inline void applyTauEfficiency(std::vector<HEPUtils::Particle*>& taus) {
         filtereff(taus, 0.4);
       }
 
 
+      /// @brief Randomly smear the supplied electrons' momenta by parameterised resolutions
       inline void smearElectronEnergy(std::vector<HEPUtils::Particle*>& electrons) {
         // Function that mimics the DELPHES electron energy resolution
         // We need to smear E, then recalculate pT, then reset 4 vector
@@ -107,6 +110,7 @@ namespace Gambit {
       }
 
 
+      /// @brief Randomly smear the supplied muons' momenta by parameterised resolutions
       inline void smearMuonMomentum(std::vector<HEPUtils::Particle*>& muons) {
         // Function that mimics the DELPHES muon momentum resolution
         // We need to smear pT, then recalculate E, then reset 4 vector
@@ -134,6 +138,7 @@ namespace Gambit {
       }
 
 
+      /// @brief Randomly smear the supplied jets' momenta by parameterised resolutions
       inline void smearJets(std::vector<HEPUtils::Jet*>& jets) {
         // Function that mimics the DELPHES jet momentum resolution
         // We need to smear pT, then recalculate E, then reset 4 vector
@@ -156,6 +161,8 @@ namespace Gambit {
         }
       }
 
+
+      /// @brief Randomly smear the supplied taus' momenta by parameterised resolutions
       inline void smearTaus(std::vector<HEPUtils::Particle*>& taus) {
         // Function that applies jet energy scale to hadronic taus
         // We need to smear pT, then recalculate E, then reset 4 vector
@@ -179,12 +186,13 @@ namespace Gambit {
       }
 
 
-      /// Efficiency function for Medium ID electrons
+      ////////////////////////////
+
+
+      /// @brief Efficiency function for Medium ID electrons
       ///
       /// Numbers digitised from 8 TeV note (ATLAS-CONF-2014-032)
       inline void applyMediumIDElectronSelection(std::vector<HEPUtils::Particle*>& electrons) {
-
-        /// @todo Avoid re-building these big binned functions every time this is called: use statics and initialise the BinnedFn1Ds only once. C++11 would help...
 
         const static double binedges_E10_15_list[] = {0., 0.0494681, 0.453578, 1.10675, 1.46298, 1.78963, 2.2766, 2.5};
         const static std::vector<double>  binedges_E10_15(binedges_E10_15_list, binedges_E10_15_list+8);
@@ -289,12 +297,10 @@ namespace Gambit {
       }
 
 
-      /// Efficiency function for Tight ID electrons
+      /// @brief Efficiency function for Tight ID electrons
       ///
       /// Numbers digitised from 8 TeV note (ATLAS-CONF-2014-032)
       inline void applyTightIDElectronSelection(std::vector<HEPUtils::Particle*>& electrons) {
-
-        /// @todo Avoid re-building these big binned functions every time this is called: use statics and initialise the BinnedFn1Ds only once. C++11 would help...
 
         const static double binedges_E10_15_list[] = {0., 0.0485903, 0.458914, 1.10009, 1.46117, 1.78881, 2.27013, 2.5};
         const static std::vector<double>  binedges_E10_15(binedges_E10_15_list, binedges_E10_15_list+8);
