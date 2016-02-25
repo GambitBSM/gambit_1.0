@@ -16,71 +16,50 @@ namespace Gambit {
     namespace CMS {
 
 
-      /// Utility function for filtering a supplied particle vector by sampling wrt an efficiency scalar
-      /// @todo Move to CB/Utils.hpp?
-      inline void _filtereff(std::vector<HEPUtils::Particle*>& particles, double eff) {
-        std::remove_if(particles.begin(), particles.end(),
-                       [](const HEPUtils::Particle* p) {
-                         const bool kill = !random_bool(eff);
-                         if (kill) delete p;
-                         return kill;
-                       } );
-
-
-      /// Utility function for filtering a supplied particle vector by sampling wrt a binned 2D efficiency map in |eta| and pT
-      /// @todo Move to CB/Utils.hpp?
-      inline void _filtereff_etapt(std::vector<HEPUtils::Particle*>& particles, const HEPUtils::BinnedFn2D<double>& eff_etapt) {
-        std::remove_if(particles.begin(), particles.end(),
-                       [](const HEPUtils::Particle* p) {
-                         const bool kill = !random_bool(eff_etapt, p->abseta(), p->pT());
-                         if (kill) delete p;
-                         return kill;
-                       } );
-      }
-
-
       /// @name CMS detector efficiency functions
       /// @todo Reduce duplication via standard filtering functions and infrastructure sharing with ATLASEfficiencies functions
       //@{
 
 
       /// Function that mimics the DELPHES electron tracking efficiency
-      inline void applyDelphesElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
+      inline void applyElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
         static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 100.}}, //< |eta|
                                                           {{0, 0.1, 1.0, 100000}}, //< pT
                                                           {{0., 0.70, 0.95, // |eta| 0.1-1.5
                                                             0., 0.60, 0.85, // |eta| 1.5-2.5
                                                             0., 0.,   0.}}); // |eta| > 2.5
-        _filtereff_etapt(electrons, _elTrackEff2d);
+        filtereff_etapt(electrons, _elTrackEff2d);
       }
 
 
       /// @brief Function that mimics the DELPHES electron efficiency
       ///
       /// @note Should be applied after the electron energy smearing
-      inline void applyDelphesElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
+      inline void applyElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
         /// @note Eff values currently identical to those in ATLAS (AB, 2016-01-24)
         static HEPUtils::BinnedFn2D<double> _elEff2d({{0, 1.5, 2.5, 100.}}, //< |eta|
                                                      {{0, 10., 100000.}}, //< pT
                                                      {{0., 0.95, // |eta| 0.1-1.5
                                                        0., 0.85, // |eta| 1.5-2.5
                                                        0., 0.}}); // |eta| > 2.5
-        _filtereff_etapt(electrons, _elEff2d);
+        filtereff_etapt(electrons, _elEff2d);
       }
 
 
-      inline void applyDelphesMuonTrackEff(std::vector<HEPUtils::Particle*>& muons) {
+      /// @brief Function that mimics the DELPHES muon tracking efficiency
+      inline void applyMuonTrackEff(std::vector<HEPUtils::Particle*>& muons) {
         /// @note Eff values currently identical to those in ATLAS (AB, 2016-01-24)
         static HEPUtils::BinnedFn2D<double> _muTrackEff2d({{0, 1.5, 2.5, 100.}}, //< |eta|
                                                           {{0, 0.1, 1.0, 100000.}}, //< pT
                                                           {{0, 0.75, 0.99, // |eta| 0.1-1.5
                                                             0, 0.70, 0.98, // |eta| 1.5-2.5
                                                             0, 0,    0}}); // |eta| > 2.5
-        _filtereff_etapt(muons, _muTrackEff2d);
+        filtereff_etapt(muons, _muTrackEff2d);
       }
 
 
-      inline void applyDelphesMuonEff(std::vector<HEPUtils::Particle*>& muons) {
+      /// @brief Function that mimics the DELPHES muon efficiency
+      inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
         std::remove_if(muons.begin(), muons.end(),
                        [](const HEPUtils::Particle* p) {
                          if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
@@ -92,7 +71,7 @@ namespace Gambit {
 
 
       inline void applyTauEfficiency(std::vector<HEPUtils::Particle*>& taus) {
-        _filtereff(taus, 0.6);
+        filtereff(taus, 0.6);
       }
 
 

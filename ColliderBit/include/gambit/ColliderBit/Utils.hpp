@@ -26,6 +26,30 @@ namespace Gambit {
     }
 
 
+
+    /// Utility function for filtering a supplied particle vector by sampling wrt an efficiency scalar
+    inline void filtereff(std::vector<HEPUtils::Particle*>& particles, double eff) {
+      std::remove_if(particles.begin(), particles.end(),
+                     [&](const HEPUtils::Particle* p) {
+                       const bool kill = !random_bool(eff);
+                       if (kill) delete p;
+                       return kill;
+                     } );
+    }
+
+
+    /// Utility function for filtering a supplied particle vector by sampling wrt a binned 2D efficiency map in |eta| and pT
+    inline void filtereff_etapt(std::vector<HEPUtils::Particle*>& particles, const HEPUtils::BinnedFn2D<double>& eff_etapt) {
+      std::remove_if(particles.begin(), particles.end(),
+                     [&](const HEPUtils::Particle* p) {
+                       const bool kill = !random_bool(eff_etapt, p->abseta(), p->pT());
+                       if (kill) delete p;
+                       return kill;
+                     } );
+    }
+
+
+
     /// Randomly get a tag result (can be anything) from a 2D |eta|-pT efficiency map
     /// @todo Also need 1D? Sampling in what variable?
     inline bool has_tag(const HEPUtils::BinnedFn2D<double>& effmap, double eta, double pt) {

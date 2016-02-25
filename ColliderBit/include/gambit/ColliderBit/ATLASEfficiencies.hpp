@@ -20,85 +20,47 @@ namespace Gambit {
 
       /// Function that mimics the DELPHES electron tracking efficiency
       inline void applyElectronTrackingEff(std::vector<HEPUtils::Particle*>& electrons) {
-
         static HEPUtils::BinnedFn2D<double> _elTrackEff2d({{0, 1.5, 2.5, 10.}}, //< |eta|
                                                           {{0, 0.1, 1.0, 100, 10000}}, //< pT
                                                           {{0., 0.73, 0.95, 0.99,
                                                             0., 0.5,  0.83, 0.90,
                                                             0., 0.,   0.,   0.}});
-
-        // Loop over the electrons and only keep those that pass the random efficiency cut
-        /// @todo Replace by filter_if + lambda
-        std::vector<HEPUtils::Particle*> survivors;
-        for (HEPUtils::Particle* e : electrons) {
-          // std::cout << e->abseta() << " " << e->pT() << std::endl;
-          if (random_bool(_elTrackEff2d, e->abseta(), e->pT())) survivors.push_back(e); else delete e;
-        }
-        electrons = survivors;
+        filtereff_etapt(electrons, _elTrackEff2d);
       }
 
 
+      /// @brief Function that mimics the DELPHES electron efficiency
+      ///
+      /// Should be applied after the electron energy smearing
       inline void applyElectronEff(std::vector<HEPUtils::Particle*>& electrons) {
-        // Function that mimics the DELPHES electron efficiency
-        // Should be applied after the electron energy smearing
-
         static HEPUtils::BinnedFn2D<double> _elEff2d({{0,1.5,2.5,10.}}, {{0,10.,10000.}},
-                                                     {{0., 0.95, 0., 0.85, 0.,0.}});
-
-        // Now loop over the electrons and only keep those that pass the random efficiency cut
-        /// @todo Replace by filter_if + lambda
-        std::vector<HEPUtils::Particle*> survivors;
-        for (HEPUtils::Particle* e : electrons) {
-          if (random_bool(_elEff2d, e->abseta(), e->pT())) survivors.push_back(e); else delete e;
-        }
-        electrons = survivors;
+                                                     {{0., 0.95,
+                                                       0., 0.85,
+                                                       0.,0.}});
+        filtereff_etapt(electrons, _elEff2d);
       }
 
 
       inline void applyMuonTrackEff(std::vector<HEPUtils::Particle*>& muons) {
-
         static HEPUtils::BinnedFn2D<double> _muTrackEff2d({{0,1.5,2.5,10.}}, {{0,0.1,1.0,10000.}},
                                                           {{0., 0.75, 0.99,
-                                                                0.,0.70,0.98,
-                                                                0.,0.,0.}});
-
-        // Now loop over the muons and only keep those that pass the random efficiency cut
-        /// @todo Replace by filter_if + lambda
-        std::vector<HEPUtils::Particle*> survivors;
-        for (HEPUtils::Particle* mu : muons) {
-          // std::cout << "MUON PT " << mu_pt << " ETA " << mu_eta << " trackeff " << _muTrackEff2d.get_at(fabs(mu_eta), fabs(mu_pt)) << std::endl;
-          if (random_bool(_muTrackEff2d, mu->abseta(), mu->pT())) survivors.push_back(mu); else delete mu;
-        }
-        muons = survivors;
+                                                            0.,0.70,0.98,
+                                                            0.,0.,0.}});
+        filtereff_etapt(muons, _muTrackEff2d);
       }
 
 
       inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
-
         static HEPUtils::BinnedFn2D<double> _muEff2d({{0,1.5,2.7,10.}}, {{0,10.0,10000.}},
-                                                     {{0., 0.95, 0.,0.85,0.,0.}});
-
-        // Now loop over the muons and only keep those that pass the random efficiency cut
-        /// @todo Replace by filter_if + lambda
-        std::vector<HEPUtils::Particle*> survivors;
-        for (HEPUtils::Particle* mu : muons) {
-          //std::cout << "MUON PT " << mu_pt << " ETA " << mu_eta << " eff " << _muEff2d.get_at(fabs(mu_eta), fabs(mu_pt)) << std::endl;
-          if (random_bool(_muEff2d, mu->abseta(), mu->pT())) survivors.push_back(mu); else delete mu;
-        }
-        muons = survivors;
+                                                     {{0., 0.95,
+                                                       0.,0.85,
+                                                       0.,0.}});
+        filtereff_etapt(muons, _muEff2d);
       }
 
 
       inline void applyTauEfficiency(std::vector<HEPUtils::Particle*>& taus) {
-
-        static HEPUtils::BinnedFn2D<double> _tauEff2d({{0,10.}}, {{0,10000.}}, {{0.4}});
-
-        /// @todo Replace by filter_if + lambda
-        std::vector<HEPUtils::Particle*> survivors;
-        for (HEPUtils::Particle* tau : taus) {
-          if (random_bool(_tauEff2d, tau->abseta(), tau->pT())) survivors.push_back(tau); else delete tau;
-        }
-        taus = survivors;
+        filtereff(taus, 0.4);
       }
 
 
