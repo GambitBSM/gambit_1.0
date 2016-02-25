@@ -666,8 +666,8 @@ namespace Gambit {
          double result(-1); // should not be returned in this state
          if(ff->error_code==0)
          {
-            const Model& model = ff->const_fakethis->model();
-            const Input& input = ff->const_fakethis->input();
+            const Model& model = ff->const_fakethis->get_Model();
+            const Input& input = ff->const_fakethis->get_Input();
             switch( ff->whichiter )
             {
                // Override retrieval cases
@@ -790,8 +790,8 @@ namespace Gambit {
                errmsg << "Error! 'Setter' version of FptrFinder tried to use non-const 'fakethis' pointer, but the pointer was not initialised! This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Setter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
                 utils_error().forced_throw(LOCAL_INFO,errmsg.str());                 
             }
-            Model& model = ff->fakethis->model();
-            Input& input = ff->fakethis->input();
+            Model& model = ff->fakethis->get_Model();
+            Input& input = ff->fakethis->get_Input();
             switch( ff->whichiter )
             {
                // Override retrieval cases

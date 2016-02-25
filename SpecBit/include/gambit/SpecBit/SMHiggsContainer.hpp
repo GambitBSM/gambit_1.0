@@ -44,6 +44,7 @@ namespace Gambit
    template <>
    struct SpecTraits<SpecBit::SMHiggsContainer> 
    {
+        static std::string name() { return "SMHiggsContainer"; }
         typedef SpectrumContents::SMHiggs Contents;
         typedef SpecBit::SMHiggsModel Model;
         typedef DummyInput            Input; // DummyInput is just an empty struct

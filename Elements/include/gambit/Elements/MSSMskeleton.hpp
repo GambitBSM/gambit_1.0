@@ -99,6 +99,7 @@ namespace Gambit
       template <>
       struct SpecTraits<MSSMskeleton> 
       {
+          static std::string name() { return "MSSMskeleton"; }
           typedef SpectrumContents::MSSM Contents;
           typedef MSSMea     Model;
           typedef DummyInput Input; // DummyInput is just an empty struct

@@ -69,7 +69,7 @@ namespace Gambit
       // Default constructor
       template <class MI>
       MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
-         : index_offset(switch_index_convention ? 0 : -1)
+        : index_offset(switch_index_convention ? 0 : -1)
       {}
 
       template <class MI>

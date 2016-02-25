@@ -74,11 +74,11 @@ namespace Gambit
 
             // Constructors/destructors
             SLHAskeleton() 
-              : slhawrap()
+             : slhawrap()
             {}
 
             SLHAskeleton(const SLHAea::Coll& input_slha)
-              : slhawrap(input_slha)
+             : slhawrap(input_slha)
             {}
 
             virtual ~SLHAskeleton() {};

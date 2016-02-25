@@ -49,6 +49,7 @@ namespace Gambit
    template <class MI>
    struct SpecTraits<SpecBit::SSDMSpec<MI>> 
    {
+      static std::string name() { return "SSDMSpec"; }
       typedef SpectrumContents::ScalarSingletDM Contents;
       typedef typename MI::Model Model;
       typedef DummyInput Input;
@@ -64,8 +65,7 @@ namespace Gambit
             str backend_name;
             str backend_version;
             int index_offset;
-            virtual int get_index_offset() const {return index_offset;}
-
+   
          public:
             /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
             /// templated wrapper classes, so need to help them along:
@@ -78,6 +78,7 @@ namespace Gambit
             typedef typename SpecTraits<Self>::Input Input;
 
             /// Interface function overrides
+            virtual int get_index_offset() const {return index_offset;}
             virtual double GetScale() const;
             virtual void SetScale(double scale);           
             virtual void RunToScaleOverride(double scale);

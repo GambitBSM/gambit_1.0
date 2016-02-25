@@ -34,34 +34,6 @@
 namespace Gambit
 {
 
-   /// Implementations (overrides) of the virtual getters/setters found in CommonAbstract.
-   /// These now need to be templated so that they know details of the derived spectrum object.
-   template <class HostSpec>
-   class CommonTemplateFuncs: public virtual CommonFuncs
-   {
-      public:
-
-        /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-        bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-        double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-        bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-        double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-        bool   has(const Par::Tags, const str&, int, int) const;
-        double get(const Par::Tags, const str&, int, int) const;
-
-        /* Setter declarations, for setting parameters in a derived model object,
-           and for overriding model object values with values stored outside
-           the model object (for when values cannot be inserted back into the
-           model object)
-           Note; these are NON-CONST */
-        void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
-        void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
-        void set(const Par::Tags, const double, const str&, int, int);
-   };
- 
-   /// =====================================================
-   
-     
    /// Need to forward declare Spec class
    template <class>
    class Spec;
@@ -104,8 +76,7 @@ namespace Gambit
    // Various inherited classes are just used to factor out code, some of which
    // doesn't need to be templated.
    template <class DerivedSpec>
-   class Spec : public SubSpectrum,
-                public CommonTemplateFuncs<Spec<DerivedSpec>>
+   class Spec : public SubSpectrum
    { 
       public:
          typedef DerivedSpec D;
@@ -120,6 +91,25 @@ namespace Gambit
 
          typedef MapTypes<D,MapTag::Get> MTget; 
          typedef MapTypes<D,MapTag::Set> MTset; 
+
+         std::string getName() const { return SpecTraits<D>::name(); };
+
+         /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
+         bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
+         double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, int, int) const;
+         double get(const Par::Tags, const str&, int, int) const;
+
+         /* Setter declarations, for setting parameters in a derived model object,
+            and for overriding model object values with values stored outside
+            the model object (for when values cannot be inserted back into the
+            model object)
+            Note; these are NON-CONST */
+         void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
+         void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
+         void set(const Par::Tags, const double, const str&, int, int);
 
          /// @{ Default (empty) map filler functions
          /// Override as needed in derived classes

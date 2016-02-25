@@ -43,7 +43,7 @@ namespace Gambit
 
    /// Helper macro for throwing errors in base class versions of virtual functions
    #define vfcn_error(local_info) \
-     utils_error().forced_throw(local_info,"This virtual function (of SubSpectrum object) has not been overridden in the derived class!")
+     utils_error().forced_throw(local_info,"This virtual function (of SubSpectrum object) has not been overridden in the derived class! (name = "+getName()+")")
    
    class SubSpectrum;
  
@@ -62,13 +62,33 @@ namespace Gambit
       typename MapTypes::fmap2_extraI map2_extraI;
    };
 
-   /// Interface to getter and setter functions, factored out for slightly esoteric reasons.
-   class CommonAbstract
-   { 
+   /// Definition of struct to hold various override values for a given ParamTag
+   struct OverrideMaps
+   {    
+      std::map<str,double>                             m0; // No indices
+      std::map<str,std::map<int,double>>               m1; // One index
+      std::map<str,std::map<int,std::map<int,double>>> m2; // Two indices
+      /* e.g. retrieve like this: contents = m2[name][i][j]; */
+   };
+
+  
+   /// Helper getter and checker functions for Spec class, just factored out into their own class.
+   /// i.e. the PDG overloads, and functions which handle the override maps.
+   class CommonFuncs
+   {
       public:
-         /// Constructors/destructors
-         CommonAbstract() {}
-         virtual ~CommonAbstract() {}     
+ 
+         /// Map of override maps
+         std::map<Par::Tags,OverrideMaps> override_maps;
+
+         /// Initialiser function for override_maps
+         static std::map<Par::Tags,OverrideMaps> create_override_maps();
+
+         /// @{ Constructors/destructors
+         CommonFuncs() : override_maps(create_override_maps()) {}      
+         virtual ~CommonFuncs() {}
+         /// @}
+
 
          /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
          /* note: set check_antiparticle = SafeBool(false) to disable matching on antiparticle entries */
@@ -87,40 +107,6 @@ namespace Gambit
          virtual void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true)) = 0;
          virtual void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true)) = 0;
          virtual void set(const Par::Tags, const double, const str&, int, int) = 0;
-   };
-   
-  
-   /// Definition of struct to hold various override values for a given ParamTag
-   struct OverrideMaps
-   {    
-      std::map<str,double>                             m0; // No indices
-      std::map<str,std::map<int,double>>               m1; // One index
-      std::map<str,std::map<int,std::map<int,double>>> m2; // Two indices
-      /* e.g. retrieve like this: contents = m2[name][i][j]; */
-   };
-
-  
-   /// Helper getter and checker functions for Spec class, just factored out into their own class.
-   /// i.e. the PDG overloads, and functions which handle the override maps.
-   class CommonFuncs: public virtual CommonAbstract
-   {
-      public:
-         /// Need to explicitly introduce the functions from CommonAbstract into this
-         /// context, since otherwise they get hidden by the ones with the same name
-         /// declared here
-         using CommonAbstract::has;
-         using CommonAbstract::get;
- 
-         /// Map of override maps
-         std::map<Par::Tags,OverrideMaps> override_maps;
-
-         /// Initialiser function for override_maps
-         static std::map<Par::Tags,OverrideMaps> create_override_maps();
-
-         /// @{ Constructors/destructors
-         CommonFuncs() : override_maps(create_override_maps()) {}      
-         virtual ~CommonFuncs() {}
-         /// @}
 
          /* The parameter overrides are handled entirely by this base class, so
             they are not virtual.  */
@@ -163,15 +149,15 @@ namespace Gambit
    /// Virtual base class for interacting with spectrum generator output
    // Includes facilities for running RGEs
    // This is the interface class that most module-writers see
-   // BF: I think the inheritance from CommonAbstrat is not needed, CommonFuncs already inherits from it
-   class SubSpectrum : public virtual CommonAbstract,
-                       public virtual CommonFuncs
+   class SubSpectrum : public CommonFuncs
    {
       private:
          const std::map<int, int> empty_map;
-     
-      public:
    
+      public:
+         /// Get name
+         virtual std::string getName() const = 0;
+ 
          /// Clone the SubSpectrum object
          virtual std::unique_ptr<SubSpectrum> clone() const = 0;
       
@@ -188,7 +174,8 @@ namespace Gambit
          virtual const std::map<int, int>& PDG_translator() const { return empty_map; }
 
          /// Get integer offset convention used by internal model class (needed by getters which take indices) 
-         virtual int get_index_offset() const { vfcn_error(LOCAL_INFO); return 0; }
+         /// By default assume no offset
+         virtual int get_index_offset() const { return 0; }
       
          /// Constructors/destructors
          virtual ~SubSpectrum() {} 
@@ -225,10 +212,6 @@ namespace Gambit
     
          /// Functions to be overridden in classes derived from Spec<Derived> 
          /// (i.e. the final wrappers)
-         /// Not actually called via SubSpectrum object directly; call via 
-         /// SubSpectrum.runningpars()
-         /// These virtual functions are here just to simplify the wrapper definitions.
-         /// TODO: Can we hide these from the user? Currently won't compile unless these are public, but can perhaps add more friend declarations and make protected.
 
          /// Run spectrum to new scale
          virtual void RunToScaleOverride(double) { vfcn_error(LOCAL_INFO); }

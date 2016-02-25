@@ -68,6 +68,7 @@ namespace Gambit
       template <>
       struct SpecTraits<SMskeleton> 
       {
+          static std::string name() { return "SMskeleton"; }
           typedef SpectrumContents::SM Contents;
           typedef SMea     Model;
           typedef DummyInput Input; // DummyInput is just an empty struct

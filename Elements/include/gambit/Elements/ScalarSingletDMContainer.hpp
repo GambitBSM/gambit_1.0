@@ -55,6 +55,7 @@ namespace Gambit
    template <>
    struct SpecTraits<Elements::SingletDMContainer> 
    {
+       static std::string name() { return "SingletDMContainer"; }
        typedef SpectrumContents::ScalarSingletDM Contents;
        typedef Elements::SingletDMModel Model;
        typedef DummyInput              Input; // DummyInput is just an empty struct
