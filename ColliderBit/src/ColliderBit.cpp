@@ -43,6 +43,16 @@
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
 
+#ifndef FJCORE
+#define FJNS fastjet
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
+#else
+#include "fjcore.hh"
+#define FJNS fjcore
+#endif
+
+
 //#define DUMP_LIMIT_PLOT_DATA
 
 namespace Gambit
@@ -533,7 +543,7 @@ namespace Gambit
       /// Get the next event from Pythia8
       const Pythia8::Event& pevt = *Dep::HardScatteringEvent;
 
-      std::vector<fastjet::PseudoJet> bhadrons; //< for input to FastJet b-tagging
+      std::vector<FJNS::PseudoJet> bhadrons; //< for input to FastJet b-tagging
       std::vector<HEPUtils::Particle*> bpartons;
       std::vector<HEPUtils::Particle*> tauCandidates;
       HEPUtils::P4 pout; //< Sum of momenta outside acceptance
@@ -585,7 +595,7 @@ namespace Gambit
       }
 
       // Loop over final state particles for jet inputs and MET
-      std::vector<fastjet::PseudoJet> jetparticles;
+      std::vector<FJNS::PseudoJet> jetparticles;
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
@@ -617,9 +627,9 @@ namespace Gambit
       /// Jet finding
       /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
       /// @todo Choose jet algorithm via detector _settings? Run several algs?
-      const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
-      fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
+      const FJNS::JetDefinition jet_def(FJNS::antikt_algorithm, 0.4);
+      FJNS::ClusterSequence cseq(jetparticles, jet_def);
+      std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
 
       /// Do jet b-tagging, etc. and add to the Event
       /// @todo Use ghost tagging?
@@ -710,7 +720,7 @@ namespace Gambit
         }
       }
 
-      std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
+      std::vector<FJNS::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
       HEPUtils::P4 pout; //< Sum of momenta outside acceptance
 
       // Make a single pass over the event to gather final leptons, partons, and photons
@@ -742,7 +752,7 @@ namespace Gambit
         /// @todo Only include hadronic tau fraction?
         // if (visible && (isFinalParton(i, pevt) || isFinalTau(i, pevt))) {
         if (visible && p.idAbs() != MCUtils::PID::MUON) {
-          fastjet::PseudoJet pj = mk_pseudojet(p.p());
+          FJNS::PseudoJet pj = mk_pseudojet(p.p());
           pj.set_user_index(std::abs(p.id()));
           jetparticles.push_back(pj);
         }
@@ -752,15 +762,15 @@ namespace Gambit
       /// Jet finding
       /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
       /// @todo choose jet algorithm via _settings?
-      const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
-      fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
+      const FJNS::JetDefinition jet_def(FJNS::antikt_algorithm, 0.4);
+      FJNS::ClusterSequence cseq(jetparticles, jet_def);
+      std::vector<FJNS::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
       // Add to the event, with b-tagging info"
-      for (const fastjet::PseudoJet& pj : pjets) {
+      for (const FJNS::PseudoJet& pj : pjets) {
         // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
         /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
         const bool isB = HEPUtils::any(pj.constituents(),
-                 [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
+                 [](const FJNS::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
 
         bool isTau=false;
