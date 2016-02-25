@@ -81,40 +81,41 @@ namespace Gambit {
 
 
       /// @brief Randomly smear the supplied electrons' momenta by parameterised resolutions
+      ///
+      /// Function that mimics the DELPHES electron energy resolution.
+      /// We need to smear E, then recalculate pT, then reset the 4-vector.
       inline void smearElectronEnergy(std::vector<HEPUtils::Particle*>& electrons) {
-        // Function that mimics the DELPHES electron energy resolution
-        // We need to smear E, then recalculate pT, then reset 4 vector
 
         std::random_device rd;
         std::mt19937 gen(rd());
 
         // Now loop over the electrons and smear the 4-vectors
-        for (HEPUtils::Particle* e : electrons) {
+        for (HEPUtils::Particle* p : electrons) {
 
           // Calculate resolution
-          // for pT > 1, E resolution = |eta| < 0.5 -> sqrt(0.06^2 + pt^2*1.3e-3^2)
-          //                            |eta| < 1.5 -> sqrt(0.10^2 + pt^2*1.7e-3^2)
-          //                            |eta| < 0.5 -> sqrt(0.25^2 + pt^2*3.1e-3^2)
+          // for pT > 0.1 GeV, E resolution = |eta| < 0.5 -> sqrt(0.06^2 + pt^2 * 1.3e-3^2)
+          //                                  |eta| < 1.5 -> sqrt(0.10^2 + pt^2 * 1.7e-3^2)
+          //                                  |eta| < 2.5 -> sqrt(0.25^2 + pt^2 * 3.1e-3^2)
           double resolution = 0;
-          if (e->pT() > 0.1 && abseta < 2.5) {
-            const double abseta = e->abseta();
+          const double abseta = p->abseta();
+          if (p->pT() > 0.1 && abseta < 2.5) {
             if (abseta < 0.5) {
-              resolution = add_quad(0.06, 1.3e-3 * e->pT());
+              resolution = add_quad(0.06, 1.3e-3 * p->pT());
             } else if (abseta < 1.5) {
-              resolution = add_quad(0.10, 1.7e-3 * e->pT());
+              resolution = add_quad(0.10, 1.7e-3 * p->pT());
             } else { // still |eta| < 2.5
-              resolution = add_quad(0.25, 3.1e-3 * e->pT());
+              resolution = add_quad(0.25, 3.1e-3 * p->pT());
             }
           }
 
           // Smear by a Gaussian centered on the current energy, with width given by the resolution
           if (resolution > 0) {
-            std::normal_distribution<> d(e->E(), resolution);
+            std::normal_distribution<> d(p->E(), resolution);
             double smeared_E = d(gen);
             if (smeared_E < 0) smeared_E = 0;
             // double smeared_pt = smeared_E/cosh(e->eta()); ///< @todo Should be cosh(|eta|)?
             // std::cout << "BEFORE eta " << electron->eta() << std::endl;
-            e->set_mom(HEPUtils::P4::mkEtaPhiME(e->eta(), e->phi(), e->mass(), smeared_E));
+            e->set_mom(HEPUtils::P4::mkEtaPhiME(p->eta(), p->phi(), p->mass(), smeared_E));
             // std::cout << "AFTER eta " << electron->eta() << std::endl;
           }
         }
@@ -122,29 +123,40 @@ namespace Gambit {
 
 
       /// @brief Randomly smear the supplied muons' momenta by parameterised resolutions
+      ///
+      /// Function that mimics the DELPHES muon momentum resolution.
+      /// We need to smear pT, then recalculate E, then reset the 4-vector.
       inline void smearMuonMomentum(std::vector<HEPUtils::Particle*>& muons) {
-        // Function that mimics the DELPHES muon momentum resolution
-        // We need to smear pT, then recalculate E, then reset 4 vector
 
         std::random_device rd;
         std::mt19937 gen(rd());
 
-        static HEPUtils::BinnedFn2D<double> _muEff({{0,1.5,2.5}}, {{0,0.1,1.,10.,200.,10000.}},
-                                                   {{0.,0.03,0.02,0.03,0.05,
-                                                         0.,0.04,0.03,0.04,0.05}});
-
         // Now loop over the muons and smear the 4-vectors
-        for (HEPUtils::Particle* mu : muons) {
-          // Look up resolution
-          const double resolution = _muEff.get_at(mu->abseta(), mu->pT());
+        for (HEPUtils::Particle* p : muons) {
 
-          // Smear by a Gaussian centered on the current energy, with width given by the resolution
-          std::normal_distribution<> d(mu->pT(), resolution*mu->pT());
+          // Calculate resolution
+          // for pT > 0.1 GeV, mom resolution = |eta| < 0.5 -> sqrt(0.01^2 + pt^2 * 2.0e-4^2)
+          //                                    |eta| < 1.5 -> sqrt(0.02^2 + pt^2 * 3.0e-4^2)
+          //                                    |eta| < 2.5 -> sqrt(0.05^2 + pt^2 * 2.6e-4^2)
+          double resolution = 0;
+          const double abseta = p->abseta();
+          if (p->pT() > 0.1 && abseta < 2.5) {
+            if (abseta < 0.5) {
+              resolution = add_quad(0.01, 2.0e-4 * p->pT());
+            } else if (abseta < 1.5) {
+              resolution = add_quad(0.02, 3.0e-4 * p->pT());
+            } else { // still |eta| < 2.5... but isn't CMS' mu acceptance < 2.4?
+              resolution = add_quad(0.05, 2.6e-4 * p->pT());
+            }
+          }
+
+          // Smear by a Gaussian centered on the current pT, with width given by the resolution
+          std::normal_distribution<> d(p->pT(), resolution*p->pT());
           double smeared_pt = d(gen);
           if (smeared_pt < 0) smeared_pt = 0;
           // const double smeared_E = smeared_pt*cosh(mu->eta()); ///< @todo Should be cosh(|eta|)?
           // std::cout << "Muon pt " << mu_pt << " smeared " << smeared_pt << endl;
-          mu->set_mom(HEPUtils::P4::mkEtaPhiMPt(mu->eta(), mu->phi(), mu->mass(), smeared_pt));
+          p->set_mom(HEPUtils::P4::mkEtaPhiMPt(p->eta(), p->phi(), p->mass(), smeared_pt));
         }
       }
 
