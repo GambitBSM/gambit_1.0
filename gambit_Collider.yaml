@@ -119,8 +119,8 @@ Rules:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
 
-  - capability: unimproved_MSSM_spectrum 
-    function: get_MSSMatQ_spectrum  
+  - capability: unimproved_MSSM_spectrum
+    function: get_MSSMatQ_spectrum
     options:
       invalid_point_fatal: true
 
@@ -135,18 +135,18 @@ Rules:
 
   - capability: Hplus_decay_rates
     function: Hplus_decays
-      
+
   - capability: decay_rates
     function: all_decays
 
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
-    options:  
+    options:
       analysisNamesATLAS: ["ATLAS_0LEP_20invfb", "ATLAS_1LEPStop_20invfb"]
 
   - capability: SimpleSmearingSim
     function: getBuckFastATLAS
- 
+
   - capability: ConvertedScatteringEvent
     function: convertPythia8ParticleEvent
 
@@ -164,8 +164,8 @@ Rules:
       Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV: ["PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
-                             "PartonLevel:FSR = off",
-                             "HadronLevel:all = off"]
+                             "PartonLevel:FSR = on",
+                             "HadronLevel:all = on"]
 
   - capability: LHC_Combined_LogLike
     backends:
