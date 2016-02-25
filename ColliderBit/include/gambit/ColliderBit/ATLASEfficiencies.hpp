@@ -160,22 +160,20 @@ namespace Gambit {
 
 
       /// @brief Randomly smear the supplied jets' momenta by parameterised resolutions
+      ///
+      /// Function that mimics the DELPHES jet momentum resolution.
+      /// We need to smear pT, then recalculate E, then reset the 4-vector.
       inline void smearJets(std::vector<HEPUtils::Jet*>& jets) {
-        // Function that mimics the DELPHES jet momentum resolution
-        // We need to smear pT, then recalculate E, then reset 4 vector
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
-
-        static HEPUtils::BinnedFn2D<double> _jetRes({{0,10.}}, {{0,10000.}}, {{0.03}});
+        // Const resolution for now
+        const double resolution = 0.03;
 
         // Now loop over the jets and smear the 4-vectors
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<> d(1., resolution);
         for (HEPUtils::Jet* jet : jets) {
-          // Look up resolution
-          double resolution = _jetRes.get_at(jet->abseta(), jet->pT());
-
           // Smear by a Gaussian centered on 1 with width given by the (fractional) resolution
-          std::normal_distribution<> d(1.,resolution);
           double smear_factor = d(gen);
           /// @todo Is this the best way to smear? Should we preserve the mean jet energy, or pT, or direction?
           jet->set_mom(HEPUtils::P4::mkXYZM(jet->mom().px()*smear_factor, jet->mom().py()*smear_factor, jet->mom().pz()*smear_factor, jet->mass()));
@@ -184,25 +182,23 @@ namespace Gambit {
 
 
       /// @brief Randomly smear the supplied taus' momenta by parameterised resolutions
+      ///
+      /// We need to smear pT, then recalculate E, then reset the 4-vector.
+      /// Same as for jets, but on a vector of particles. (?)
       inline void smearTaus(std::vector<HEPUtils::Particle*>& taus) {
-        // Function that applies jet energy scale to hadronic taus
-        // We need to smear pT, then recalculate E, then reset 4 vector
-        // Basically the same function as above, except it takes a vector of particles
 
+        // Const resolution for now
+        const double resolution = 0.03;
+
+        // Now loop over the jets and smear the 4-vectors
         std::random_device rd;
         std::mt19937 gen(rd());
-
-        static HEPUtils::BinnedFn2D<double> _jetRes({{0,10.}}, {{0,10000.}}, {{0.03}});
-
-        // Now loop over the taus and smear the 4-vectors
-        for (HEPUtils::Particle* tau : taus) {
-          // Look up resolution
-          double resolution = _jetRes.get_at(tau->abseta(), tau->pT());
-
+        std::normal_distribution<> d(1., resolution);
+        for (HEPUtils::Particle* p : taus) {
           // Smear by a Gaussian centered on 1 with width given by the (fractional) resolution
-          std::normal_distribution<> d(1.,resolution);
           double smear_factor = d(gen);
-          tau->set_mom(HEPUtils::P4::mkXYZM(tau->mom().px()*smear_factor, tau->mom().py()*smear_factor, tau->mom().pz()*smear_factor, tau->mass()));
+          /// @todo Is this the best way to smear? Should we preserve the mean jet energy, or pT, or direction?
+          p->set_mom(HEPUtils::P4::mkXYZM(p->mom().px()*smear_factor, p->mom().py()*smear_factor, p->mom().pz()*smear_factor, p->mass()));
         }
       }
 
