@@ -38,13 +38,12 @@ Priors:
 
 Printer:
 
-  printer: ascii
+  printer: hdf5
 
   options:
-    output_file: "CMSSM.out"
-    #output_file: "CMSSM.hdf5"
-    #group: "/CMSSM"
-    #delete_file_if_exists: true
+    output_file: "CMSSM.hdf5"
+    group: "/CMSSM"
+    delete_file_if_exists: true
 
 Scanner:
 
@@ -120,8 +119,8 @@ ObsLikes:
     - purpose:    LogLike
       capability: b2sll_LL
 
-    - purpose:    LogLike
-      capability: LHC_Combined_LogLike
+    #- purpose:    LogLike
+    #  capability: LHC_Combined_LogLike
 
     - purpose:    Observable
       capability: SLHA1_violation
