@@ -6,16 +6,6 @@
 #include "HEPUtils/FastJet.h"
 #include "MCUtils/PIDUtils.h"
 
-#ifndef FJCORE
-#define FJNS fastjet
-#include "fastjet/PseudoJet.hh"
-#include "fastjet/ClusterSequence.hh"
-#else
-#include "fjcore.hh"
-#define FJNS fjcore
-#endif
-
-
 namespace Gambit {
   namespace ColliderBit {
 

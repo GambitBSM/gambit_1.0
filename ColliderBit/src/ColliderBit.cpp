@@ -42,16 +42,7 @@
 #include "gambit/Elements/mssm_slhahelp.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/ColliderBit/lep_mssm_xsecs.hpp"
-
-#ifndef FJCORE
-#define FJNS fastjet
-#include "fastjet/PseudoJet.hh"
-#include "fastjet/ClusterSequence.hh"
-#else
-#include "fjcore.hh"
-#define FJNS fjcore
-#endif
-
+#include "HEPUtils/FastJet.h"
 
 //#define DUMP_LIMIT_PLOT_DATA
 
