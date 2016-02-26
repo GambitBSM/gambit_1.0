@@ -43,12 +43,12 @@ namespace Gambit {
       }
 
       /// @todo This is better... but segfaults?
-      std::remove_if(particles.begin(), particles.end(),
-                     [&](const HEPUtils::Particle* p) {
-                       const bool kill = !random_bool(eff_etapt, p->abseta(), p->pT());
-                       if (kill) delete p;
-                       return kill;
-                     } );
+      // std::remove_if(particles.begin(), particles.end(),
+      //                [&](const HEPUtils::Particle* p) {
+      //                  const bool kill = !random_bool(eff_etapt, p->abseta(), p->pT());
+      //                  if (kill) delete p;
+      //                  return kill;
+      //                } );
     }
 
 
