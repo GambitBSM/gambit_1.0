@@ -8,10 +8,12 @@ namespace Gambit {
 
 
     /// Return a random true/false at a success rate given by a number
-    inline bool random_bool(double eff) {
-      /// @todo Handle out-of-range eff values
-      return HEPUtils::rand01() < eff;
-    }
+    // inline
+    bool random_bool(double eff);
+    // {
+    //   /// @todo Handle out-of-range eff values
+    //   return HEPUtils::rand01() < eff;
+    // }
 
 
     /// Return a random true/false at a success rate given by a 1D efficiency map
@@ -28,25 +30,29 @@ namespace Gambit {
 
 
     /// Utility function for filtering a supplied particle vector by sampling wrt an efficiency scalar
-    inline void filtereff(std::vector<HEPUtils::Particle*>& particles, double eff) {
-      std::remove_if(particles.begin(), particles.end(),
-                     [&](const HEPUtils::Particle* p) {
-                       const bool kill = !random_bool(eff);
-                       if (kill) delete p;
-                       return kill;
-                     } );
-    }
+    //inline
+    void filtereff(std::vector<HEPUtils::Particle*>& particles, double eff);
+    // {
+    //   std::remove_if(particles.begin(), particles.end(),
+    //                  [&](const HEPUtils::Particle* p) {
+    //                    const bool kill = !random_bool(eff);
+    //                    if (kill) delete p;
+    //                    return kill;
+    //                  } );
+    // }
 
 
     /// Utility function for filtering a supplied particle vector by sampling wrt a binned 2D efficiency map in |eta| and pT
-    inline void filtereff_etapt(std::vector<HEPUtils::Particle*>& particles, const HEPUtils::BinnedFn2D<double>& eff_etapt) {
-      std::remove_if(particles.begin(), particles.end(),
-                     [&](const HEPUtils::Particle* p) {
-                       const bool kill = !random_bool(eff_etapt, p->abseta(), p->pT());
-                       if (kill) delete p;
-                       return kill;
-                     } );
-    }
+    //inline
+    void filtereff_etapt(std::vector<HEPUtils::Particle*>& particles, const HEPUtils::BinnedFn2D<double>& eff_etapt);
+    // {
+    //   std::remove_if(particles.begin(), particles.end(),
+    //                  [&](const HEPUtils::Particle* p) {
+    //                    const bool kill = !random_bool(eff_etapt, p->abseta(), p->pT());
+    //                    if (kill) delete p;
+    //                    return kill;
+    //                  } );
+    // }
 
 
 
