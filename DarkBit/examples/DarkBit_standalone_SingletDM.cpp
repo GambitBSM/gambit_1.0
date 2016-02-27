@@ -18,8 +18,8 @@
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
-#include "gambit/Elements/MSSMskeleton.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 
 // Only needed here
 #include "gambit/Utils/util_functions.hpp"
@@ -48,7 +48,7 @@ namespace Gambit
       static Spectrum mySpec;
       std::string inputFileName = "input.slha";
 
-      Elements::SingletDMModel singletmodel;
+      Models::SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = 123; // *myPipe::Param.at("mH");
       singletmodel.HiggsVEV        = 123; // 1. / sqrt(sqrt(2.)*sminputs.GF);
       singletmodel.SingletPoleMass = 123; // *myPipe::Param.at("mS");

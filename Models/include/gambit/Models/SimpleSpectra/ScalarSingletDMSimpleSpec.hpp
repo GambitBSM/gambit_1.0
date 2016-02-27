@@ -16,17 +16,17 @@
 ///
 ///  *********************************************
 
-#ifndef __SingletDMContainer_hpp__
-#define __SingletDMContainer_hpp__
+#ifndef __ScalarSingletDMSimpleSpec_hpp__
+#define __ScalarSingletDMSimpleSpec_hpp__
 
 #include "gambit/Elements/spec.hpp"
-#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit
 {     
-   namespace Elements
+   namespace Models
    {
-      /// Simple extension of the SMHiggsContainer "model object"
+      /// Simple extension of the SMHiggsSimpleSpec "model object"
       /// to include scalar singlet DM parameters
       struct SingletDMModel
       {
@@ -48,22 +48,22 @@ namespace Gambit
   
       /// Forward declare the wrapper class so that we can use it
       /// as the template parameter for the SpecTraits specialisation. 
-      class SingletDMContainer;  
+      class ScalarSingletDMSimpleSpec;  
    }
 
    /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
    template <>
-   struct SpecTraits<Elements::SingletDMContainer> 
+   struct SpecTraits<Models::ScalarSingletDMSimpleSpec> 
    {
-       static std::string name() { return "SingletDMContainer"; }
-       typedef SpectrumContents::ScalarSingletDM Contents;
-       typedef Elements::SingletDMModel Model;
-       typedef DummyInput              Input; // DummyInput is just an empty struct
+      static std::string name() { return "ScalarSingletDMSimpleSpec"; }
+      typedef SpectrumContents::ScalarSingletDM Contents;
+      typedef Models::SingletDMModel Model;
+      typedef DummyInput              Input; // DummyInput is just an empty struct
    };
 
-   namespace Elements
+   namespace Models
    { 
-      class SingletDMContainer : public Spec<SingletDMContainer> 
+      class ScalarSingletDMSimpleSpec : public Spec<ScalarSingletDMSimpleSpec> 
       {
          private:
             Model model;
@@ -71,7 +71,7 @@ namespace Gambit
 
          public:
             /// @{ Constructors/destructors
-            SingletDMContainer(const Model& m)
+            ScalarSingletDMSimpleSpec(const Model& m)
              : model(m)
              , dummyinput()
             {}
@@ -119,7 +119,7 @@ namespace Gambit
 
         }; 
 
-   } // end Elements namespace
+   } // end Models namespace
 } // end Gambit namespace
 
 #endif

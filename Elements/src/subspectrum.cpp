@@ -27,38 +27,35 @@
 
 namespace Gambit
 {
+   /// @{ SubSpectrum member function definitions
 
-  /// Dump out spectrum information to an SLHA file (if possible)
-  void SubSpectrum::getSLHA(const str& filename) const
-  {
-    std::ofstream ofs(filename);
-    if (ofs)
-    {
-      ofs << getSLHAea();
-    }
-    else
-    {
-      utils_error().raise(LOCAL_INFO,"Could not open file '"+filename+
-       "' for writing. Please check that the path exists!");
-    }
-    ofs.close();
-  }
+   /// Dump out spectrum information to an SLHA file (if possible)
+   void SubSpectrum::getSLHA(const str& filename) const
+   {
+     std::ofstream ofs(filename);
+     if (ofs)
+     {
+       ofs << getSLHAea();
+     }
+     else
+     {
+       utils_error().raise(LOCAL_INFO,"Could not open file '"+filename+
+        "' for writing. Please check that the path exists!");
+     }
+     ofs.close();
+   }
 
-  /// Get spectrum information in SLHAea format (if possible)
-  SLHAstruct SubSpectrum::getSLHAea() const
-  {
-    SLHAstruct slha;
-    this->add_to_SLHAea(slha);
-    add_MODSEL_disclaimer(slha, "spectrum");
-    return slha;
-  }
-
-  /// Member functions of SubSpectrum helper classes
-
-   /// @{ CommonFuncs member function definitions
+   /// Get spectrum information in SLHAea format (if possible)
+   SLHAstruct SubSpectrum::getSLHAea() const
+   {
+     SLHAstruct slha;
+     this->add_to_SLHAea(slha);
+     add_MODSEL_disclaimer(slha, "spectrum");
+     return slha;
+   }
 
    /// Initialiser function for empty map of override maps
-   std::map<Par::Tags,OverrideMaps> CommonFuncs::create_override_maps()
+   std::map<Par::Tags,OverrideMaps> SubSpectrum::create_override_maps()
    {
       std::map<Par::Tags,OverrideMaps> tmp;
       std::vector<Par::Tags> all = Par::get_all();
@@ -72,21 +69,21 @@ namespace Gambit
    /// @{ PDB getter/checker overloads
 
    /* Input PDG code plus context integer as separate arguments */
-   bool CommonFuncs::has(const Par::Tags partype, 
+   bool SubSpectrum::has(const Par::Tags partype, 
                         const int pdg_code, const int context, SafeBool check_antiparticle) const
    {
       return has( partype, std::make_pair(pdg_code,context), check_antiparticle );
    }
 
    /* Input PDG code plus context integer as separate arguments */
-   double CommonFuncs::get(const Par::Tags partype, 
+   double SubSpectrum::get(const Par::Tags partype, 
                         const int pdg_code, const int context, SafeBool check_antiparticle) const
    {
       return get( partype, std::make_pair(pdg_code,context), check_antiparticle );
    }
 
    /* Input PDG code plus context integer as pair */
-   bool CommonFuncs::has(const Par::Tags partype, 
+   bool SubSpectrum::has(const Par::Tags partype, 
                         const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
    {
       /* If there is a short name, then retrieve that plus the index */      
@@ -101,7 +98,7 @@ namespace Gambit
    }
 
    /* Input PDG code plus context integer as pair */
-   double CommonFuncs::get(const Par::Tags partype, 
+   double SubSpectrum::get(const Par::Tags partype, 
                         const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
    {
       /* If there is a short name, then retrieve that plus the index */      
@@ -116,14 +113,14 @@ namespace Gambit
    }
 
    /* Input short name plus index as pair */
-   bool CommonFuncs::has(const Par::Tags partype, 
+   bool SubSpectrum::has(const Par::Tags partype, 
                         const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
    {
       return has( partype, shortpr.first, shortpr.second, check_antiparticle);
    }
 
    /* Input short name plus index as pair */
-   double CommonFuncs::get(const Par::Tags partype, 
+   double SubSpectrum::get(const Par::Tags partype, 
                         const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
    {
       return get( partype, shortpr.first, shortpr.second, check_antiparticle);
@@ -133,7 +130,7 @@ namespace Gambit
 
    /// @{ Parameter override functions
 
-   void CommonFuncs::set_override(const Par::Tags partype,
+   void SubSpectrum::set_override(const Par::Tags partype,
                       const double value, const str& name, bool safety)
    {   
       bool done = false;                  
@@ -197,7 +194,7 @@ namespace Gambit
       }
    }
 
-   void CommonFuncs::set_override(const Par::Tags partype,
+   void SubSpectrum::set_override(const Par::Tags partype,
                       const double value, const str& name, int i, bool safety)
    {                                         
       bool done = false;                  
@@ -261,7 +258,7 @@ namespace Gambit
       }
    }
 
-   void CommonFuncs::set_override(const Par::Tags partype,
+   void SubSpectrum::set_override(const Par::Tags partype,
                       const double value, const str& name, int i, int j, bool safety)
    {                                         
       if( safety and not has(partype,name,i,j) )
@@ -278,18 +275,18 @@ namespace Gambit
    /// PDB overloads of set_override functions
 
    /* Input short name plus index pair */
-   void CommonFuncs::set_override(const Par::Tags partype, const double value, const std::pair<str,int> shortpr, const bool safety)
+   void SubSpectrum::set_override(const Par::Tags partype, const double value, const std::pair<str,int> shortpr, const bool safety)
    {
       set_override(partype, value, shortpr.first, shortpr.second, safety);
    }
 
    /* Input PDG code plus context integer */
-   void CommonFuncs::set_override(const Par::Tags partype, const double value, const int PDGcode, const int context, const bool safety)
+   void SubSpectrum::set_override(const Par::Tags partype, const double value, const int PDGcode, const int context, const bool safety)
    {
       set_override(partype, value, std::make_pair(PDGcode,context), safety);
    }
 
-   void CommonFuncs::set_override(const Par::Tags partype, const double value, const std::pair<int,int> pdgpr, const bool safety)
+   void SubSpectrum::set_override(const Par::Tags partype, const double value, const std::pair<int,int> pdgpr, const bool safety)
    {
       /* If there is a short name, then retrieve that plus the index */      
       if( Models::ParticleDB().has_short_name(pdgpr) )                       
@@ -307,7 +304,7 @@ namespace Gambit
    /* Helpers for override functions which take parameter names and indices as vectors, and
       loop over them, to make it easy to set many parameters to the same value.
       No two-index versions at the moment, but could be added if needed. */
-   void CommonFuncs::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, bool safety)
+   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, bool safety)
    {
       for(std::vector<str>::const_iterator it = params.begin();
     it != params.end(); ++it)
@@ -316,7 +313,7 @@ namespace Gambit
   }
    }
 
-   void CommonFuncs::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const std::vector<int> indices, bool safety)
+   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const std::vector<int> indices, bool safety)
    {
       for(std::vector<str>::const_iterator it = params.begin(); it != params.end(); ++it)
       {
@@ -327,20 +324,63 @@ namespace Gambit
       }
    }
 
-   void CommonFuncs::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const int i, bool safety)
+   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const std::vector<str>& params, const int i, bool safety)
    {
       std::vector<int> indices;
       indices.push_back(i);
       this->set_override_vector(tag,value,params,indices,safety);    
    }
 
-   void CommonFuncs::set_override_vector(const Par::Tags tag, const double value, const str& par, const std::vector<int> indices, bool safety)
+   void SubSpectrum::set_override_vector(const Par::Tags tag, const double value, const str& par, const std::vector<int> indices, bool safety)
    {
       std::vector<str> params;
       params.push_back(par);
       this->set_override_vector(tag,value,params,indices,safety);    
    }
 
+   void SubSpectrum::RunToScale(double scale, int behave)
+   {
+      if(behave==0 or behave==1) 
+      {
+         if(scale < hard_lower() or scale > hard_upper()) {
+            if(behave==1) {
+               std::ostringstream msg;
+               msg << "RGE running requested outside hard limits! This is forbidden with behave=1. Set behave=0 (default) to automatically stop running at soft limits, or behave=2 to force running to requested scale (may trigger errors from underlying RGE code!)." << std::endl;
+               msg << "  Requested : "<< scale << std::endl;
+               msg << "  hard_upper: "<< hard_upper() << std::endl;
+               msg << "  hard_lower: "<< hard_lower() << std::endl;
+               utils_error().raise(LOCAL_INFO, msg.str());
+            } else { // behave==0
+               if     (scale < soft_lower()) { scale=soft_lower(); } 
+               else if(scale > soft_upper()) { scale=soft_upper(); }
+               else {
+                 // Hard limits must be outside soft limits; this is a bug in the derived Spectum object
+                 std::ostringstream msg;
+                 msg << "RGE running requested outside hard limits, but within soft limits! The soft limits should always be within the hard limits, so this is a bug in the derived SubSpectrum object being accessed. I cannot tell you which class this is though; check the dependency graph to see which ones are being created, and if necessary consult your debugger." << std::endl;
+                 msg << "  Requested : "<< scale << std::endl;
+                 msg << "  hard_upper: "<< hard_upper() << std::endl;
+                 msg << "  soft_upper: "<< soft_upper() << std::endl;
+                 msg << "  soft_lower: "<< soft_lower() << std::endl;
+                 msg << "  hard_lower: "<< hard_lower() << std::endl;
+                 utils_error().raise(LOCAL_INFO, msg.str());
+               } 
+            }
+         } else if(scale < soft_lower() or scale > soft_upper()) {
+            if(behave==1) {
+               std::ostringstream msg;
+               msg << "RGE running requested outside soft limits! Accuracy may be low. Note: Set behave=2 to suppress this warning, or behave=0 (default) to automatically stop running when soft limit is hit." << std::endl;
+               msg << "  Requested : "<< scale << std::endl;
+               msg << "  soft_upper: "<< soft_upper() << std::endl;
+               msg << "  soft_lower: "<< soft_lower() << std::endl;
+               utils_warning().raise(LOCAL_INFO, msg.str());
+            } else { // behave==0
+               if(scale < soft_lower()) scale=soft_lower();
+               if(scale > soft_upper()) scale=soft_upper();
+            }
+         }
+      }
+      RunToScaleOverride(scale);
+   }
 
 
    /// @}

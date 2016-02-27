@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/SMskeleton.hpp" 
+#include "gambit/Models/SimpleSpectra/SMSimpleSpec.hpp" 
 #include "gambit/Utils/util_functions.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
@@ -95,34 +95,34 @@ namespace Gambit
       /// @}
 
 
-      /// @{ Member functions for SMskeleton class
+      /// @{ Member functions for SMSimpleSpec class
 
       /// @{ Constructors 
  
       /// Default Constructor
-      SMskeleton::SMskeleton() 
+      SMSimpleSpec::SMSimpleSpec() 
       {}
 
       /// Constructor via SLHAea object
-      SMskeleton::SMskeleton(const SLHAea::Coll& input)
-        : SLHAskeleton(input)
+      SMSimpleSpec::SMSimpleSpec(const SLHAea::Coll& input)
+        : SLHASimpleSpec(input)
       {}
 
       /// Copy constructor: needed by clone function.
-      SMskeleton::SMskeleton(const SMskeleton& other)
-        : SLHAskeleton(other)
+      SMSimpleSpec::SMSimpleSpec(const SMSimpleSpec& other)
+        : SLHASimpleSpec(other)
       {} 
 
       /// @}  
        
       /// Hardcoded to return SLHA2 defined scale of light quark MSbar masses in SMINPUTS block (2 GeV)
-      double SMskeleton::GetScale() const { return 2; }
+      double SMSimpleSpec::GetScale() const { return 2; }
       
       /// @}
       
       // Map fillers
 
-      SMskeleton::GetterMaps SMskeleton::fill_getter_maps()
+      SMSimpleSpec::GetterMaps SMSimpleSpec::fill_getter_maps()
       {
          GetterMaps map_collection; 
 

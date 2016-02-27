@@ -72,7 +72,7 @@ namespace Gambit {
         std::vector<SpectrumParameter> all_parameters_with_tag_and_shape(Par::Tags tag, std::vector<int>& shape) const; 
 
         /// Function to verify that a SubSpectrum wrapper contains everything that this class says it should
-        void verify_contents(const SubSpectrum* const spec) const;
+        void verify_contents(const SubSpectrum& spec) const;
    };
 
 }

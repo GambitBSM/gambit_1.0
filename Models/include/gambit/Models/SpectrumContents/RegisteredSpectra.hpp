@@ -19,7 +19,7 @@
 #ifndef __registeredspectra_hpp__ 
 #define __registeredspectra_hpp__ 
 
-#include "gambit/SpectrumContents/subspectrum_contents.hpp"
+#include "gambit/Models/SpectrumContents/subspectrum_contents.hpp"
 
 /// Just declare the classes here; should be defined in source files
 

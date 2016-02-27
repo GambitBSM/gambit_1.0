@@ -20,7 +20,7 @@
 #ifndef __scalar_singlet_DM_contents_hpp__ 
 #define __scalar_singlet_DM_contents_hpp__ 
 
-#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit {
 

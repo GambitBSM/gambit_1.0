@@ -20,7 +20,7 @@
 #ifndef __SM_Higgs_contents_hpp__ 
 #define __SM_Higgs_contents_hpp__ 
 
-#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit {
 
