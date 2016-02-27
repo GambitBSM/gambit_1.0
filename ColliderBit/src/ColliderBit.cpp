@@ -3302,7 +3302,7 @@ namespace Gambit
       #define PDB Models::ParticleDB()
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::Higgs_couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
 
       std::vector<std::string> sHneut;
       sHneut.push_back("h0_1");

@@ -1,14 +1,14 @@
 Parameters:
 
-  #SM nuisance parameters fixed for now.
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  #SM nuisance parameters.
+  StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
 
-  #Nuclear matrix parameters fixed for now.
+  #Nuclear matrix parameters.
   nuclear_params_sigmas_sigmal:
     sigmas:
-      fixed_value:  43.0
+      range:  [19, 67] 
     sigmal:
-      fixed_value:  58.0
+      range:  [31, 85]
     deltau:
       fixed_value:  0.842
     deltad:
@@ -18,13 +18,13 @@ Parameters:
 
   CMSSM:
     M0:
-      range: [100, 5000]
+      range: [50, 10000]
       prior_type: log
     M12:
-      range: [100, 5000]
+      range: [50, 10000]
       prior_type: log
     A0:
-      range: [-7000, 7000]
+      range: [-10000, 10000]
       prior_type: flat
     TanBeta:
       range: [3.0, 70]
@@ -53,15 +53,8 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 4000
-      tol: 0.5
-      mmodal: 1
-      # write native MultiNest ascii output files?
-      outfile: 1
-      # No options to set, but still need the nodes at the moment...
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
+      nlive: 20000
+      tol: 0.0001
 
 ObsLikes:
 
@@ -122,6 +115,12 @@ ObsLikes:
     #- purpose:    LogLike
     #  capability: LHC_Combined_LogLike
 
+    - purpose:    LogLike
+      capability: LHC_Higgs_LogLike
+
+    - purpose:    LogLike
+      capability: LEP_Higgs_LogLike
+
     - purpose:    Observable
       capability: SLHA1_violation
 
@@ -170,33 +169,32 @@ ObsLikes:
     - purpose:    LogLike
       capability: OPAL_Neutralino_Hadronic_LLike
 
-    - purpose:    LogLike
-      capability: HB_LEP_lnL
 
-    - purpose:    LogLike
-      capability: HS_LHC_lnL
+    - purpose:    Observable
+      capability: MSSM_spectrum
+      type:       map_str_dbl
 
+    - purpose:    Observable
+      capability: RD_oh2
+      
+    - purpose:    Observable
+      capability: mwimp
+      
+    - purpose:    Observable
+      capability: sigmav
 
-    - capability: RD_oh2
-      purpose:    Observable
+    - purpose:    Observable
+      capability: sigma_SI_p
 
-    - capability: mwimp
-      purpose:    Observable
+    - purpose:    Observable
+      capability: sigma_SI_n
 
-    - capability: sigmav
-      purpose:    Observable
+    - purpose:    Observable
+      capability: sigma_SD_p
 
-    - capability: sigma_SI_p
-      purpose:    Observable
+    - purpose:    Observable
+      capability: sigma_SD_n
 
-    - capability: sigma_SI_n
-      purpose:    Observable
-
-    - capability: sigma_SD_p
-      purpose:    Observable
-
-    - capability: sigma_SD_n
-      purpose:    Observable
 
     # Missing:
     # CMB+HESS likelihoods
@@ -204,16 +202,17 @@ ObsLikes:
 
 Rules:
 
-  # Choose to implement the relic density as an upper bound, not a detection
+  # Choose to implement the relic density likelihood as an upper bound, not a detection
   - capability: lnL_oh2
     function: lnL_oh2_upperlimit
 
-  # Use the DarkBit native relic density calculator
-  #- capability: RD_oh2
-  #  function: RD_oh2_general
+  # Choose to rescale signals in direct and indirect detection by the relic density fraction
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
 
-  # Use DarkSUSY or MicrOmegas for the relic density?
+  # Use DarkSUSY, MicrOmegas or the DarkBit native calculator for the relic density?
   - capability: RD_oh2
+    #function: RD_oh2_general
     #function: RD_oh2_DarkSUSY
     function: RD_oh2_MicrOmegas
     options:
@@ -229,7 +228,7 @@ Rules:
   - capability: SimYieldTable
     function: SimYieldTable_DarkSUSY
 
-  # Choose to function for calculating direct detection couplings
+  # Use DarkSUSY or MicrOmegas for calculating direct detection couplings
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY
     function: DD_couplings_MicrOmegas
@@ -257,7 +256,7 @@ Rules:
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  # Make sure to use v2.11.3 of FeynHiggs for everything.
+  # Make sure to use the latest version (2.11.3) of FeynHiggs for everything.
   # Here is the current clunky way to do this:
   - capability: FH_Precision
     backends:
@@ -299,10 +298,6 @@ Rules:
     function: FH_h0_2_decays
   - capability: t_decay_rates
     function: FH_t_decays
-
-  # Choose to rescale signals in direct and indirect detection by the relic density fraction
-  - capability: RD_fraction
-    function: RD_fraction_from_oh2
 
   # Nuclear Parameter Likelihoods (All values in MeV)
   - capability: lnL_SI_nuclear_parameters
@@ -401,7 +396,7 @@ KeyValues:
     prefer_model_specific_functions: true
 
   likelihood:
-    model_invalid_for_lnlike_below: -5e5
+    model_invalid_for_lnlike_below: -1e4
     debug: true
 
   default_output_path: "runs/CMSSM/"
