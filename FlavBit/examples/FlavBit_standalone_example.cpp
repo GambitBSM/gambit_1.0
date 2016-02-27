@@ -102,7 +102,7 @@ int main()
     SI_FlavBit_fill.resolveBackendReq(&Backends::SuperIso_3_4::Functown::Init_param);
     SI_FlavBit_fill.resolveBackendReq(&Backends::SuperIso_3_4::Functown::slha_adjust);
 
-    //b2sll_measurements depends on:
+    // b2sll_measurements depends on:
     //   - FlavBit_fill
     //   - BRBKstarmumu_11_25
     //   - BRBKstarmumu_25_40
@@ -122,6 +122,39 @@ int main()
     b2sll_measurements.resolveDependency(&SI_BRBKstarmumu_17_19);
     b2sll_measurements.resolveDependency(&Debug);
     b2sll_measurements.resolveDependency(&Debug_LL);
+
+    // Now resolve dependencies of the BKstar mu mu measurements
+    // Each depends on:
+    // - FlavBit_fill
+    // - Debug_Cap
+    // - Debug_Cap_LL
+    // Each has a BE requirement on:
+    // - SI_BRBKstarmumu_CONV (from SuperIso)
+
+    SI_BRBKstarmumu_11_25.resolveDependency(&SI_FlavBit_fill);
+    SI_BRBKstarmumu_11_25.resolveDependency(&Debug);
+    SI_BRBKstarmumu_11_25.resolveDependency(&Debug_LL);
+    SI_BRBKstarmumu_11_25.resolveBackendReq(&Backends::SuperIso_3_4::Functown::SI_BRBKstarmumu_CONV);
+    SI_BRBKstarmumu_25_40.resolveDependency(&SI_FlavBit_fill);
+    SI_BRBKstarmumu_25_40.resolveDependency(&Debug);
+    SI_BRBKstarmumu_25_40.resolveDependency(&Debug_LL);
+    SI_BRBKstarmumu_25_40.resolveBackendReq(&Backends::SuperIso_3_4::Functown::SI_BRBKstarmumu_CONV);
+    SI_BRBKstarmumu_40_60.resolveDependency(&SI_FlavBit_fill);
+    SI_BRBKstarmumu_40_60.resolveDependency(&Debug);
+    SI_BRBKstarmumu_40_60.resolveDependency(&Debug_LL);
+    SI_BRBKstarmumu_40_60.resolveBackendReq(&Backends::SuperIso_3_4::Functown::SI_BRBKstarmumu_CONV);
+    SI_BRBKstarmumu_60_80.resolveDependency(&SI_FlavBit_fill);
+    SI_BRBKstarmumu_60_80.resolveDependency(&Debug);
+    SI_BRBKstarmumu_60_80.resolveDependency(&Debug_LL);
+    SI_BRBKstarmumu_60_80.resolveBackendReq(&Backends::SuperIso_3_4::Functown::SI_BRBKstarmumu_CONV);
+    SI_BRBKstarmumu_15_17.resolveDependency(&SI_FlavBit_fill);
+    SI_BRBKstarmumu_15_17.resolveDependency(&Debug);
+    SI_BRBKstarmumu_15_17.resolveDependency(&Debug_LL);
+    SI_BRBKstarmumu_15_17.resolveBackendReq(&Backends::SuperIso_3_4::Functown::SI_BRBKstarmumu_CONV);
+    SI_BRBKstarmumu_17_19.resolveDependency(&SI_FlavBit_fill);
+    SI_BRBKstarmumu_17_19.resolveDependency(&Debug);
+    SI_BRBKstarmumu_17_19.resolveDependency(&Debug_LL);
+    SI_BRBKstarmumu_17_19.resolveBackendReq(&Backends::SuperIso_3_4::Functown::SI_BRBKstarmumu_CONV);
     
     // Double-check which backend requirements have been filled with what
     std::cout << std::endl << "My function SI_FlavBit_fill  has had its backend requirement on Init_param filled by:" << std::endl;
@@ -131,66 +164,57 @@ int main()
     std::cout << FlavBit::Pipes::SI_FlavBit_fill::BEreq::slha_adjust.origin() << "::";
     std::cout << FlavBit::Pipes::SI_FlavBit_fill::BEreq::slha_adjust.name() << std::endl;
     
-    // Double-check which dependencies have been filled with what (not every combo is done)
-    /*std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on AnalysisNumbers filled by:" << endl;
-    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::AnalysisNumbers.origin() << "::";
-    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::AnalysisNumbers.name() << std::endl;
-    std::cout << std::endl << "My function runAnalyses has had its dependency on ReconstructedEvent filled by:" << endl;
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::ReconstructedEvent.origin() << "::";
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::ReconstructedEvent.name() << std::endl;
-    std::cout << std::endl << "My function runAnalyses has had its dependency on HardScatteringSim filled by:" << endl;
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::HardScatteringSim.origin() << "::";
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::HardScatteringSim.name() << std::endl;
-    std::cout << std::endl << "My function runAnalyses has had its dependency on AnalysisContainer filled by:" << endl;
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::AnalysisContainer.origin() << "::";
-    std::cout << ColliderBit::Pipes::runAnalyses::Dep::AnalysisContainer.name() << std::endl;
-    std::cout << std::endl << "My function getAnalysisContainer has had its dependency on HardScatteringSim filled by:" << endl;
-    std::cout << ColliderBit::Pipes::getAnalysisContainer::Dep::HardScatteringSim.origin() << "::";
-    std::cout << ColliderBit::Pipes::getAnalysisContainer::Dep::HardScatteringSim.name() << std::endl;
-    std::cout << std::endl << "My function reconstructBuckFastEvent has had its dependency on ConvertedScatteringEvent filled by:" << endl;
-    std::cout << ColliderBit::Pipes::reconstructBuckFastEvent::Dep::ConvertedScatteringEvent.origin() << "::";
-    std::cout << ColliderBit::Pipes::reconstructBuckFastEvent::Dep::ConvertedScatteringEvent.name() << std::endl;
-    std::cout << std::endl << "My function reconstructBuckFastEvent has had its dependency on SimpleSmearingSim filled by:" << endl;
-    std::cout << ColliderBit::Pipes::reconstructBuckFastEvent::Dep::SimpleSmearingSim.origin() << "::";
-    std::cout << ColliderBit::Pipes::reconstructBuckFastEvent::Dep::SimpleSmearingSim.name() << std::endl;
-    std::cout << std::endl << "My function convertPythia8ParticleEvent has had its dependency on HardScatteringEvent filled by:" << endl;
-    std::cout << ColliderBit::Pipes::convertPythia8ParticleEvent::Dep::HardScatteringEvent.origin() << "::";
-    std::cout << ColliderBit::Pipes::convertPythia8ParticleEvent::Dep::HardScatteringEvent.name() << std::endl;
-    std::cout << std::endl << "My function generatePythia8Event has had its dependency on HardScatteringSim filled by:" << endl;
-    std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.origin() << "::";
-    std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.name() << std::endl;*/
-    
-    // Set Module function options here
-    // User can edit this section to configure ColliderBit
-    // See the ColiderBit manual for available options
-    
-    // TO DO: Need a way of handling pythia options (they are not currently being used).
-    // This requires handling nested yaml options 
-    
-    // First we have the LHC options
-    /*std::vector<std::string> runTheseAnalyses;
-    runTheseAnalyses.push_back("ATLAS_0LEP_20invfb");  // specify which LHC analyses to run
-    getAnalysisContainer.setOption<std::vector<std::string>>("analysisNames",runTheseAnalyses);
+    // Double-check which dependencies have been filled with whatever (not every combination is shown)
+    std::cout << std::endl << "My function b2sll_likelihood has had its dependency on FlavBit_fill filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::FlavBit_fill.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::FlavBit_fill.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_likelihood has had its dependency on b2sll_M filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::b2sll_M.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::b2sll_M.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_likelihood has had its dependency on Debug_Cap filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::Debug_Cap.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::Debug_Cap.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_likelihood has had its dependency on Debug_Cap_LL filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::Debug_Cap_LL.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_likelihood::Dep::Debug_Cap_LL.name() << std::endl;
 
-    std::cout << "Here a" << std::endl;
+    std::cout << std::endl << "My function SI_FlavBit_fill has had its dependency on MSSM_spectrum filled by:" << endl;
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::Dep::MSSM_spectrum.origin() << "::";
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::Dep::MSSM_spectrum.name() << std::endl;
+    std::cout << std::endl << "My function SI_FlavBit_fill has had its dependency on Debug_Cap filled by:" << endl;
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::Dep::Debug_Cap.origin() << "::";
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::Dep::Debug_Cap.name() << std::endl;
+    std::cout << std::endl << "My function SI_FlavBit_fill has had its dependency on Debug_Cap_LL filled by:" << endl;
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::Dep::Debug_Cap_LL.origin() << "::";
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::Dep::Debug_Cap_LL.name() << std::endl;
     
-    std::vector<std::string> inputFiles;
-    inputFiles.push_back(inputFileName); // specify the input SLHA filename(s)
-    std::vector<std::string> pythiaOptions; // use this vector to store Pythia options
-    pythiaOptions.push_back("PartonLevel:MPI = off");
-    pythiaOptions.push_back("PartonLevel:ISR = on");
-    pythiaOptions.push_back("PartonLevel:FSR = on");
-    pythiaOptions.push_back("HadronLevel:all = on");
-    pythiaOptions.push_back("TauDecays:mode = 0");
-    getPythiaFileReader.setOption<std::string>("Pythia_doc_path","Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"); // specify the Pythia xml file location
-    getPythiaFileReader.setOption<std::vector<std::string>>("SLHA_filenames",inputFiles);
-
-    std::cout << "Here b" << std::endl;
-    
-    std::vector<std::string> pythiaNames;
-    pythiaNames.push_back("Pythia_SUSY_LHC_8TeV");
-    operateLHCLoop.setOption<std::vector<std::string>>("pythiaNames",pythiaNames);
-    operateLHCLoop.setOption<int>("nEvents",10000.); // specify the number of simulated LHC events*/
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on FlavBit_fill filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::FlavBit_fill.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::FlavBit_fill.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_11_25 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_11_25.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_11_25.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_25_40 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_25_40.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_25_40.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_40_60 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_40_60.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_40_60.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_60_80 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_60_80.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_60_80.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_15_17 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_15_17.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_15_17.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on BRBKstarmumu_17_19 filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_17_19.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::BRBKstarmumu_17_19.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on Debug_Cap filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::Debug_Cap.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::Debug_Cap.name() << std::endl;
+    std::cout << std::endl << "My function b2sll_measurements has had its dependency on Debug_Cap_LL filled by:" << endl;
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::Debug_Cap_LL.origin() << "::";
+    std::cout << FlavBit::Pipes::b2sll_measurements::Dep::Debug_Cap_LL.name() << std::endl;
     
     // Start running here
     
@@ -198,49 +222,24 @@ int main()
       
       // Call the initialisation functions for all backends that are in use. 
       //nulike_1_0_2_init.reset_and_calculate();
+      SuperIso_3_4_init.reset_and_calculate();
 
-      /*
-      // Call the LHC likelihood
-      operateLHCLoop.reset_and_calculate();
-      calc_LHC_LogLike.reset_and_calculate();
-      
-      // Retrieve and print the LHC likelihood
-      double loglike = calc_LHC_LogLike(0);
-      std::cout << "LHC log likelihood is " << loglike << std::endl;
-      */
+      // Now call the module functions in an appropriate order
+      createSpectrum.reset_and_calculate();
+      Debug.reset_and_calculate();
+      Debug_LL.reset_and_calculate();
+      SI_FlavBit_fill.reset_and_calculate();
+      SI_BRBKstarmumu_11_25.reset_and_calculate();
+      SI_BRBKstarmumu_25_40.reset_and_calculate();
+      SI_BRBKstarmumu_40_60.reset_and_calculate();
+      SI_BRBKstarmumu_60_80.reset_and_calculate();
+      SI_BRBKstarmumu_15_17.reset_and_calculate();
+      SI_BRBKstarmumu_17_19.reset_and_calculate();
+      b2sll_likelihood.reset_and_calculate();
+     
+      double loglike = b2sll_likelihood(0);
+      std::cout << "b2sll log likelihood is " << loglike << std::endl;
 
-      // Call the ALEPH slepton likelihoods
-      /*createSpectrum.reset_and_calculate();
-      createDecays.reset_and_calculate();
-      createZDecays.reset_and_calculate();
-      createSelDecays.reset_and_calculate();
-      createSerDecays.reset_and_calculate();
-      createSmulDecays.reset_and_calculate();
-      createSmurDecays.reset_and_calculate();
-      createStau1Decays.reset_and_calculate();
-      createStau2Decays.reset_and_calculate();
-      LEP208_SLHA1_convention_xsec_selselbar.reset_and_calculate();
-      LEP208_SLHA1_convention_xsec_smulsmulbar.reset_and_calculate();
-      LEP208_SLHA1_convention_xsec_serserbar.reset_and_calculate();
-      LEP208_SLHA1_convention_xsec_smursmurbar.reset_and_calculate();
-      LEP208_SLHA1_convention_xsec_stau1stau1bar.reset_and_calculate();
-      LEP208_SLHA1_convention_xsec_stau2stau2bar.reset_and_calculate();
-      LEP205_SLHA1_convention_xsec_selselbar.reset_and_calculate();
-      LEP205_SLHA1_convention_xsec_smulsmulbar.reset_and_calculate();
-      LEP205_SLHA1_convention_xsec_serserbar.reset_and_calculate();
-      LEP205_SLHA1_convention_xsec_smursmurbar.reset_and_calculate();
-      LEP205_SLHA1_convention_xsec_stau1stau1bar.reset_and_calculate();
-      LEP205_SLHA1_convention_xsec_stau2stau2bar.reset_and_calculate();
-      
-      ALEPH_Selectron_Conservative_LLike.reset_and_calculate();
-      ALEPH_Smuon_Conservative_LLike.reset_and_calculate();
-      ALEPH_Stau_Conservative_LLike.reset_and_calculate();
-      L3_Selectron_Conservative_LLike.reset_and_calculate();
-      L3_Smuon_Conservative_LLike.reset_and_calculate();
-      L3_Stau_Conservative_LLike.reset_and_calculate();*/
-
-      //std::cout << "ALEPH slepton log likes " << ALEPH_Selectron_Conservative_LLike(0) << " " << ALEPH_Smuon_Conservative_LLike(0) << " " << ALEPH_Stau_Conservative_LLike(0) << std::endl;
-      //std::cout << "L3 slepton log likes " << L3_Selectron_Conservative_LLike(0) << " " << L3_Smuon_Conservative_LLike(0) << " " << L3_Stau_Conservative_LLike(0) << std::endl;
       
     }
   }
