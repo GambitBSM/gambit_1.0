@@ -90,6 +90,28 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ColliderBit/" AND (";${GAMBIT_BITS};" MATCHES "
   endif()
 endif()
 
+# Add the FlavBit_standalone executable
+if(EXISTS "${PROJECT_SOURCE_DIR}/FlavBit/" AND (";${GAMBIT_BITS};" MATCHES ";FlavBit;"))
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    set(FlavBit_XTRA ${flexiblesusy_LDFLAGS})
+  endif()
+  if (NOT EXCLUDE_DELPHES)
+    set(FlavBit_XTRA ${FlavBit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  endif()
+  add_gambit_executable(FlavBit_standalone "${FlavBit_XTRA}"
+                        SOURCES ${PROJECT_SOURCE_DIR}/FlavBit/examples/FlavBit_standalone_example.cpp
+                                ${PROJECT_SOURCE_DIR}/FlavBit/examples/standalone_functors.cpp
+                                $<TARGET_OBJECTS:FlavBit>
+                                ${GAMBIT_ALL_COMMON_OBJECTS}
+  )
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    add_dependencies(FlavBit_standalone flexiblesusy)
+  endif()
+  if (NOT EXCLUDE_DELPHES)
+    add_dependencies(FlavBit_standalone delphes)
+  endif()
+endif()
+
 # Add the ScannerBit standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   if(EXISTS "${PROJECT_SOURCE_DIR}/Elements/") 
