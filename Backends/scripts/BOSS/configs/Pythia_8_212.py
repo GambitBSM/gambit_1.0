@@ -35,7 +35,6 @@ header_files_to = '../../../Backends/installed/Pythia/8.212/include'
 src_files_to    = '../../../Backends/installed/Pythia/8.212/src'
 
 
-
 load_classes = [
     'Pythia8::AlphaEM',
     'Pythia8::AlphaStrong',
@@ -76,6 +75,9 @@ load_functions = [
 ]
 
 ditch = ['Pythia8::Pythia::initSLHA']
+
+
+auto_detect_stdlib_paths = False
 
 
 load_parent_classes    = False

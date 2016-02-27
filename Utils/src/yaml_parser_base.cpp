@@ -196,37 +196,52 @@ namespace Gambit
       {
          prefix = logNode["default_output_path"].as<std::string>()+"/";
       }
-      YAML::Node redir = logNode["redirection"];
+
       // map storing info used to set up logger objects
       std::map<std::set<std::string>,std::string> loggerinfo;
-      for(YAML::const_iterator it=redir.begin(); it!=redir.end(); ++it) 
+      if(logNode["redirection"])
       {
-          std::set<std::string> tags;
-          std::string filename;
-          // Iterate through tags and add them to the set 
-          YAML::Node yamltags = it->first;
-          for(YAML::const_iterator it2=yamltags.begin();it2!=yamltags.end();++it2)         
-          {
-            tags.insert( it2->as<std::string>() );
-          }
-          filename = (it->second).as<std::string>();
+         YAML::Node redir = logNode["redirection"];
+         for(YAML::const_iterator it=redir.begin(); it!=redir.end(); ++it) 
+         {
+             std::set<std::string> tags;
+             std::string filename;
+             // Iterate through tags and add them to the set 
+             YAML::Node yamltags = it->first;
+             for(YAML::const_iterator it2=yamltags.begin();it2!=yamltags.end();++it2)         
+             {
+               tags.insert( it2->as<std::string>() );
+             }
+             filename = (it->second).as<std::string>();
     
-          // Add entry to the loggerinfo map
-          if((filename=="stdout") or (filename=="stderr"))
-          {
-            // Special cases to trigger redirection to standard output streams
-            loggerinfo[tags] = filename;
-          }
-          else
-          {
-            // The logger won't be able to create the log files if the prefix 
-            // directory doesn't exist, so let us now make sure that it does
-            loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
-          }
+             // Add entry to the loggerinfo map
+             if((filename=="stdout") or (filename=="stderr"))
+             {
+               // Special cases to trigger redirection to standard output streams
+               loggerinfo[tags] = filename;
+             }
+             else
+             {
+               // The logger won't be able to create the log files if the prefix 
+               // directory doesn't exist, so let us now make sure that it does
+               loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
+             }
+         }
       }
+      else
+      {
+         // Use default log file only
+         std::set<std::string> tags;
+         std::string filename;
+         tags.insert("Default");
+         filename = "default.log"; 
+         loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
+     }
       // Initialise global LogMaster object
       if(logNode["separate_file_per_process"])
          logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>());
+      if(logNode["log_debug_messages"])
+         logger().set_log_debug_messages(logNode["log_debug_messages"].as<bool>());
       logger().initialise(loggerinfo);
 
       // Parse the Parameters node and expand out some shorthand syntax

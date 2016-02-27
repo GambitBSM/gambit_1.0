@@ -26,6 +26,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual bool& isSUSY_ref__BOSS() =0;
     
             public:
+                using Pythia8::Abstract_CoupSM::pointerAssign__BOSS;
                 virtual void pointerAssign__BOSS(Abstract_Couplings*) =0;
                 virtual Abstract_Couplings* pointerCopy__BOSS() =0;
     

@@ -2254,7 +2254,7 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
 
     # Avoid including intel headers when in "gnu mode" by
     # temporarily unsetting some environment variables
-    if cfg.castxml_cc_id  == 'gnu':
+    if 'gnu' in cfg.castxml_cc_id:
         temp_env_vars = {}
         for var_name in ['CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH']:
             try:
@@ -2292,21 +2292,33 @@ def castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_
     proc, output, timed_out = shelltimeout.shrun(castxml_cmd, timeout_limit, use_exec=True, poll_interval=poll_interval)
 
     # Reset environment variables
-    if cfg.castxml_cc_id  == 'gnu':
+    if 'gnu' in cfg.castxml_cc_id:
         for var_name, value in temp_env_vars.items():
             os.environ[var_name] = value
 
     # Check for timeout or error
     did_fail = False
     if timed_out:
-        print '  ERROR: castxml timed out.'
+        print '  ERROR: CastXML timed out.'
         did_fail = True
     elif proc.returncode != 0:        
-        print '  ERROR: castxml failed.'
-        did_fail = True
+        print '  ERROR: CastXML failed.'
+	did_fail = True
+        # Get error message
+        for line in output.splitlines():
+            if 'error:' in line:
+                print '  ERROR: ' + line
+                break
 
+    # If it fails with icpc, try again with g++.
+    if ("gnu" in cfg.castxml_cc_id) and ("icpc" in cfg.castxml_cc) and did_fail:
+        print
+        print '  Will retry with --castxml-cc=g++'
+        print
+        cfg.castxml_cc = 'g++'
+        castxmlRunner(input_file_path, include_paths_list, xml_output_path, timeout_limit=timeout_limit, poll_interval=poll_interval)
     # Print error report
-    if did_fail:
+    elif did_fail:
         print
         print 'START CASTXML OUTPUT'
         print '--------------------'
@@ -2837,26 +2849,9 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
     # verbose mode to print the header search paths.
     command = 'echo "#include <iostream>" | ' + cfg.castxml_cc + ' -v -x c++ -c -'
 
-    # Avoid including intel headers when in "gnu mode" by
-    # temporarily unsetting some environment variables
-    if cfg.castxml_cc_id  == 'gnu':
-        temp_env_vars = {}
-        for var_name in ['CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH']:
-            try:
-                if 'intel' in os.environ[var_name].lower():
-                    temp_env_vars[var_name] = str(os.environ[var_name])
-                    os.environ[var_name] = ''
-            except KeyError:
-                pass
-
     # Run command
     print '  Runing command: ' + command
     proc, output, timed_out = shelltimeout.shrun(command, timeout_limit, use_exec=True, poll_interval=poll_interval)
-
-    # Reset environment variables
-    if cfg.castxml_cc_id  == 'gnu':
-        for var_name, value in temp_env_vars.items():
-            os.environ[var_name] = value
 
     # Check for timeout or error
     did_fail = False
@@ -2897,7 +2892,26 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
     else:
         for line in output_lines[start_i+1:end_i]:
             std_include_paths.append( line.strip().split()[0] )
-        print '  Identified %i standard include paths.' % len(std_include_paths)
+
+        # print '  Identified %i standard include paths:' % len(std_include_paths)
+        # for path in std_include_paths:
+        #     print '  - ' + path
+        # print
+
+        # Filter out Intel-specific paths to avoid conflict with gnu headers
+        if (cfg.castxml_cc_id == 'gnu') or (cfg.castxml_cc_id == 'gnu-c'):
+
+            len_before_filter = len(std_include_paths)
+            std_include_paths = [path for path in std_include_paths if 'intel' not in path]
+            len_after_filter = len(std_include_paths)
+
+            if len_after_filter < len_before_filter:
+                print '  (Filtered out Intel paths to avoid conflicts with gcc headers.)'
+                print 
+
+        print '  Identified %i standard include paths:' % len(std_include_paths)
+        for path in std_include_paths:
+            print '  - ' + path
         print
 
     # Set global list 

@@ -174,6 +174,19 @@ else()
   message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
 endif()
 
+# Check for yaml-cpp
+# Ben: Commented out for now because we are using a contrib yaml-cpp, but perhaps
+# we want to modify this so that users can use a custom yaml-cpp install instead
+# if they desire (with some restriction; version must be greater than 0.5.3 due
+# to memory leak bug in earlier versions.)
+# Actually might not need the set C_FLAGS etc, I didn't check what happens if
+# you remove them.
+#find_package(yaml-cpp REQUIRED)
+#if (YAMLCPP_FOUND)
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${YamlCpp_C_FLAGS}")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${YamlCpp_CXX_FLAGS}")
+#endif()
+
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
 
@@ -318,6 +331,10 @@ foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
+
+# MJW adds this to get ColliderBit_standalone compiled
+# It is probably naughty
+set(SPEC_BIT_OBJECTS "$<TARGET_OBJECTS:SpecBit>")
 
 # Add the executables
 include(cmake/executables.cmake)
