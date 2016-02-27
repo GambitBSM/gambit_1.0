@@ -381,7 +381,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION FH_HiggsProd
     START_FUNCTION(fh_HiggsProd)
-    DEPENDENCY(Higgs_Couplings, fh_Couplings)
+    //DEPENDENCY(Higgs_Couplings, fh_Couplings)
     BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
     BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
@@ -413,9 +413,9 @@ START_MODULE
   #undef CAPABILITY 
 
   // Get a LEP chisq from HiggsBounds
-  #define CAPABILITY HB_LEP_lnL
+  #define CAPABILITY LEP_Higgs_LogLike
   START_CAPABILITY
-    #define FUNCTION HB_LEP_lnL
+    #define FUNCTION calc_HB_LEP_LogLike
     START_FUNCTION(double)
     DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
        BACKEND_REQ(HiggsBounds_neutral_input_part, (libhiggsbounds), void, 
@@ -436,9 +436,9 @@ START_MODULE
   #undef CAPABILITY
 
   // Get an LHC chisq from HiggsSignals
-  #define CAPABILITY HS_LHC_lnL
+  #define CAPABILITY LHC_Higgs_LogLike
     START_CAPABILITY
-      #define FUNCTION HS_LHC_lnL
+      #define FUNCTION calc_HS_LHC_LogLike
       START_FUNCTION(double)
       DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
          BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 

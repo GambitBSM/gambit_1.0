@@ -3515,7 +3515,7 @@ namespace Gambit
       }
 
       // higgs to higgs + V xsection ratios
-      // retrive SMInputs dependency
+      // retrive SMINPUTS dependency
       const SMInputs& sminputs = *Dep::SMINPUTS;
 
       double norm = sminputs.GF*sqrt(2.)*sminputs.mZ*sminputs.mZ;
@@ -3558,9 +3558,9 @@ namespace Gambit
     }
 
     /// Get a LEP chisq from HiggsBounds
-    void HB_LEP_lnL(double &result)
+    void calc_HB_LEP_LogLike(double &result)
     {
-      using namespace Pipes::HB_LEP_lnL;
+      using namespace Pipes::calc_HB_LEP_LogLike;
 
       hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
 
@@ -3614,9 +3614,9 @@ namespace Gambit
     }
 
     /// Get an LHC chisq from HiggsSignals
-    void HS_LHC_lnL(double &result)
+    void calc_HS_LHC_LogLike(double &result)
     {
-      using namespace Pipes::HS_LHC_lnL;
+      using namespace Pipes::calc_HS_LHC_LogLike;
 
       hb_ModelParameters ModelParam = *Dep::HB_ModelParameters;
 
