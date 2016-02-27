@@ -3302,7 +3302,7 @@ namespace Gambit
       #define PDB Models::ParticleDB()
 
       // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::Higgs_couplings;
+      fh_Couplings FH_input = *Dep::Higgs_Couplings;
 
       std::vector<std::string> sHneut;
       sHneut.push_back("h0_1");
@@ -3515,8 +3515,8 @@ namespace Gambit
       }
 
       // higgs to higgs + V xsection ratios
-      // retrive SMInputs dependency
-      const SMInputs& sminputs = *Dep::SM_inputs;
+      // retrive SMINPUTS dependency
+      const SMInputs& sminputs = *Dep::SMINPUTS;
 
       double norm = sminputs.GF*sqrt(2.)*sminputs.mZ*sminputs.mZ;
       for(int i = 0; i < 3; i++)
