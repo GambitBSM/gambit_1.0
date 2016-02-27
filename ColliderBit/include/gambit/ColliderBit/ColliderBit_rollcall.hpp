@@ -402,7 +402,7 @@ START_MODULE
     // MSSM Higgs model parameters
     #define FUNCTION MSSMHiggs_ModelParameters
     START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SM_inputs, SMInputs)
+    DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(decay_rates, DecayTable)
     DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency 

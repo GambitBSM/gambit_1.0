@@ -170,9 +170,10 @@ ObsLikes:
       capability: OPAL_Neutralino_Hadronic_LLike
 
 
-    - purpose:    Observable
-      capability: MSSM_spectrum
-      type:       map_str_dbl
+    # Buggy
+    #- purpose:    Observable
+    #  capability: MSSM_spectrum
+    #  type:       map_str_dbl
 
     - purpose:    Observable
       capability: RD_oh2
