@@ -101,10 +101,8 @@ namespace Gambit
     /// Analysis stuff
     std::vector<std::string> analysisNamesATLAS;
     HEPUtilsAnalysisContainer globalAnalysesATLAS;
-/** @TODO: BuckFastCMS...
     std::vector<std::string> analysisNamesCMS;
     HEPUtilsAnalysisContainer globalAnalysesCMS;
-    **/
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -397,7 +395,6 @@ namespace Gambit
     }
 
 
-/** @TODO: BuckFastCMS...
     void getBuckFastCMS(Gambit::ColliderBit::BuckFastSmearCMS &result)
     {
       using namespace Pipes::getBuckFastCMS;
@@ -409,7 +406,6 @@ namespace Gambit
         result.init();
       }
     }
-    **/
 
 
     void getBuckFastIdentity(Gambit::ColliderBit::BuckFastIdentity &result)
@@ -464,7 +460,6 @@ namespace Gambit
 
     }
 
-/** TODO: BuckFastCMS...
     void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getCMSAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
@@ -500,7 +495,6 @@ namespace Gambit
       }
 
     }
-    **/
 
 
     /// *** Hard Scattering Event Generators ***
@@ -823,7 +817,6 @@ namespace Gambit
       (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
     }
 
-/** TODO: BuckFastCMS...
     void smearEventCMS(HEPUtils::Event& result) {
       using namespace Pipes::smearEventCMS;
       if (*Loop::iteration <= BASE_INIT) return;
@@ -831,7 +824,6 @@ namespace Gambit
 
       (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
     }
-    **/
 
 
     void copyEvent(HEPUtils::Event& result) {
@@ -866,6 +858,26 @@ namespace Gambit
 
 
 
+    void runCMSAnalyses(ColliderLogLikes& result)
+    {
+      using namespace Pipes::runCMSAnalyses;
+      if (*Loop::iteration == FINALIZE && eventsGenerated) {
+        // The final iteration: get log likelihoods for the analyses
+        result.clear();
+        globalAnalysesCMS.scale();
+        for (auto anaPtr = globalAnalysesCMS.analyses.begin(); anaPtr != globalAnalysesCMS.analyses.end(); ++anaPtr)
+          result.push_back((*anaPtr)->get_results());
+        return;
+      }
+
+      if (*Loop::iteration <= BASE_INIT) return;
+
+      // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
+      Dep::CMSAnalysisContainer->analyze(*Dep::CMSSmearedEvent);
+    }
+
+
+
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
     void calc_LHC_LogLike(double& result) {
       using namespace Pipes::calc_LHC_LogLike;
@@ -882,11 +894,8 @@ namespace Gambit
         return;
       }
       ColliderLogLikes analysisResults = (*Dep::ATLASAnalysisNumbers);
-/** @TODO: BuckFastCMS...
-      ColliderLogLikes analysisResultsATLAS = (*Dep::ATLASAnalysisNumbers);
-      ColliderLogLikes analysisResultsCMS = (*Dep::CMSAnalysisNumbers);
-// Also, whatever it takes to combine those together into one analysisResults...
-**/
+      analysisResults.insert(analysisResults.end(),
+              Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
 
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;

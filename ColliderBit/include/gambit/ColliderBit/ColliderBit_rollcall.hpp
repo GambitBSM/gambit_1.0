@@ -88,13 +88,10 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
 
-/** @TODO: BuckFastCMS...
     #define FUNCTION getBuckFastCMS
     START_FUNCTION(Gambit::ColliderBit::BuckFastSmearCMS)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
-  #undef CAPABILITY
-  **/
 
     #define FUNCTION getBuckFastIdentity
     START_FUNCTION(Gambit::ColliderBit::BuckFastIdentity)
@@ -107,7 +104,6 @@ START_MODULE
   /// Eventually needs to be configurable from yaml file
   #define CAPABILITY ATLASAnalysisContainer
   START_CAPABILITY
-    // TODO: When BuckFastCMS is ready, remove the CMS analyses from getATLASAnalysisContainer
     #define FUNCTION getATLASAnalysisContainer
     START_FUNCTION(HEPUtilsAnalysisContainer)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
@@ -115,8 +111,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-/** @TODO: BuckFastCMS...
-  #define CAPABILITY ATLASAnalysisContainer
+  #define CAPABILITY CMSAnalysisContainer
   START_CAPABILITY
     #define FUNCTION getCMSAnalysisContainer
     START_FUNCTION(HEPUtilsAnalysisContainer)
@@ -124,7 +119,6 @@ START_MODULE
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
     #undef FUNCTION
   #undef CAPABILITY
-    **/
 
 
   /// Event capabilities
@@ -195,7 +189,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-/** TODO: BuckFastCMS...
   #define CAPABILITY CMSSmearedEvent
   START_CAPABILITY
     #define FUNCTION smearEventCMS
@@ -205,7 +198,6 @@ START_MODULE
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmearCMS)
     #undef FUNCTION
   #undef CAPABILITY
-    **/
 
   #define CAPABILITY CopiedEvent
   START_CAPABILITY
@@ -230,7 +222,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-/** @TODO: BuckFastCMS...
   #define CAPABILITY CMSAnalysisNumbers
   START_CAPABILITY
     #define FUNCTION runCMSAnalyses
@@ -241,7 +232,6 @@ START_MODULE
     DEPENDENCY(CMSAnalysisContainer, HEPUtilsAnalysisContainer)
     #undef FUNCTION
   #undef CAPABILITY
-    **/
 
   // Calculate the log likelihood from the analysis numbers
   #define CAPABILITY LHC_Combined_LogLike
@@ -249,9 +239,7 @@ START_MODULE
     #define FUNCTION calc_LHC_LogLike
     START_FUNCTION(double)
     DEPENDENCY(ATLASAnalysisNumbers, ColliderLogLikes)
-/** @TODO: BuckFastCMS...
     DEPENDENCY(CMSAnalysisNumbers, ColliderLogLikes)
-    **/
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_GROUP(lnlike_marg_poisson)

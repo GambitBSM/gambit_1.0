@@ -19,7 +19,6 @@ namespace Gambit {
       //@}
     };
 
-/** @TODO:
     /// @brief Simple CMS smearing functions as a detector pseudo-simulation.
     struct BuckFastSmearCMS : BaseDetector<HEPUtils::Event, HEPUtils::Event> {
       /// @name Event detection simulation.
@@ -33,7 +32,6 @@ namespace Gambit {
         ~BuckFastSmearCMS() { }
       //@}
     };
-    **/
 
     /// @brief Simple smearing functions as a detector pseudo-simulation.
     struct BuckFastIdentity : BaseDetector<HEPUtils::Event, HEPUtils::Event> {
