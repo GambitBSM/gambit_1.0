@@ -1,7 +1,7 @@
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
 ///  
-///  Example of GAMBIT ColliderBit standalone
+///  Example of GAMBIT FlavBit standalone
 ///  main program.
 ///
 ///  *********************************************
@@ -63,7 +63,7 @@ int main()
     loggerinfo["Core, Error"] = prefix+"core_errors.log";
     loggerinfo["Default"]     = prefix+"default.log";
     loggerinfo["Warning"]     = prefix+"warnings.log";
-    loggerinfo["ColliderBit, Info"] = prefix+"ColliderBit_info.log";
+    loggerinfo["FlavBit, Info"] = prefix+"FlavBit_info.log";
     
     // Initialise global LogMaster object
     logger().initialise(loggerinfo);
@@ -99,8 +99,8 @@ int main()
     SI_FlavBit_fill.resolveDependency(&createSpectrum);
     SI_FlavBit_fill.resolveDependency(&Debug);
     SI_FlavBit_fill.resolveDependency(&Debug_LL);
-    SI_FlavBit_fill.resolveDependency(&Backends::SuperIso_3_4::Functown::Init_param);
-    SI_FlavBit_fill.resolveDependency(&Backends::SuperIso_3_4::Functown::slha_adjust);
+    SI_FlavBit_fill.resolveBackendReq(&Backends::SuperIso_3_4::Functown::Init_param);
+    SI_FlavBit_fill.resolveBackendReq(&Backends::SuperIso_3_4::Functown::slha_adjust);
 
     //b2sll_measurements depends on:
     //   - FlavBit_fill
@@ -124,12 +124,15 @@ int main()
     b2sll_measurements.resolveDependency(&Debug_LL);
     
     // Double-check which backend requirements have been filled with what
-    /*std::cout << std::endl << "My function calc_LHC_LogLike has had its backend requirement on lnlike_marg_poisson filled by:" << std::endl;
-    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::BEreq::lnlike_marg_poisson_lognormal_error.origin() << "::";
-    std::cout << ColliderBit::Pipes::calc_LHC_LogLike::BEreq::lnlike_marg_poisson_lognormal_error.name() << std::endl;
+    std::cout << std::endl << "My function SI_FlavBit_fill  has had its backend requirement on Init_param filled by:" << std::endl;
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::BEreq::Init_param.origin() << "::";
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::BEreq::Init_param.name() << std::endl;
+    std::cout << std::endl << "My function SI_FlavBit_fill  has had its backend requirement on slha_adjust filled by:" << std::endl;
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::BEreq::slha_adjust.origin() << "::";
+    std::cout << FlavBit::Pipes::SI_FlavBit_fill::BEreq::slha_adjust.name() << std::endl;
     
     // Double-check which dependencies have been filled with what (not every combo is done)
-    std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on AnalysisNumbers filled by:" << endl;
+    /*std::cout << std::endl << "My function calc_LHC_LogLike has had its dependency on AnalysisNumbers filled by:" << endl;
     std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::AnalysisNumbers.origin() << "::";
     std::cout << ColliderBit::Pipes::calc_LHC_LogLike::Dep::AnalysisNumbers.name() << std::endl;
     std::cout << std::endl << "My function runAnalyses has had its dependency on ReconstructedEvent filled by:" << endl;
