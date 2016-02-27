@@ -1703,7 +1703,7 @@ namespace Gambit
       std::vector<functor *> disabledVertexCandidates;
 
       // Loop over all existing backend vertices, and make a list of
-      // functors that are available and fulfill the backend dependency requirement
+      // functors that are available and fulfill the backend requirement
       for (std::vector<functor *>::const_iterator
           itf  = boundCore->getBackendFunctors().begin();
           itf != boundCore->getBackendFunctors().end();
