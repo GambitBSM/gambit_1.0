@@ -26,7 +26,7 @@
 #define __spec_hpp__
 
 #include "gambit/Elements/subspectrum.hpp"
-#include "gambit/SpectrumContents/subspectrum_contents.hpp"
+#include "gambit/Models/SpectrumContents/subspectrum_contents.hpp"
 
 // Particle database access
 #define PDB Models::ParticleDB()        
@@ -65,7 +65,7 @@ namespace Gambit
    class VerifyContents
    {
       public:
-        VerifyContents(const SubSpectrum* const spec)
+        VerifyContents(const SubSpectrum& spec)
         {
           Contents contents;
           contents.verify_contents(spec); 
@@ -78,7 +78,10 @@ namespace Gambit
    template <class DerivedSpec>
    class Spec : public SubSpectrum
    { 
-      public:
+     template <class,class>
+     friend class FptrFinder;
+ 
+     public:
          typedef DerivedSpec D;
          typedef Spec<D> Self;
 
@@ -123,9 +126,16 @@ namespace Gambit
             std::map<Par::Tags,MapCollection<MTset>> tmp;
             return tmp;
          }
-         /// @}
+
+         /// Get integer offset convention used by internal model class (needed by getters which take indices) 
+         /// By default assume no offset. Overrride as needed in derived class.
+         static int index_offset() { return 0; } 
+
 
       private:
+         /// Function to retrieve the possibly overridden index offset from the derived class via CRTP
+         static int get_index_offset() { return D::index_offset(); }
+
          /// @{ Functions to ensure that all the possible tags exist in the final map, 
          ///    even if no getters/setters are stored under those tags.
        
@@ -177,8 +187,8 @@ namespace Gambit
          /// Constructor
          /// This uses the "Contents" class to verify (once, not every construction)
          /// that this wrapper provides all the basic functionality that it is
-         /// supposed to
-         Spec() { static VerifyContents<Contents> runonce(this); };
+         /// supposed to.
+         Spec() { static VerifyContents<Contents> runonce(*this); };
        
          /// Virtual destructor
          virtual ~Spec() {};

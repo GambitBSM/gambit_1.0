@@ -74,7 +74,6 @@ namespace Gambit
 
       /// Currently unused virtual functions
       ///     @{
-      int QedQcdWrapper::get_index_offset() const {return 0;}   
       int QedQcdWrapper::get_numbers_stable_particles() const {return -1;} 
       ///     @}
 

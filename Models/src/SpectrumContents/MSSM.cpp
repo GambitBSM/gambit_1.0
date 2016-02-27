@@ -19,7 +19,7 @@
 #ifndef __mssmcontents_hpp__ 
 #define __mssmcontents_hpp__ 
 
-#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit {
 
@@ -87,7 +87,7 @@ namespace Gambit {
      addParameter(Par::Pole_Mixing, "~d",    m6x6); 
      addParameter(Par::Pole_Mixing, "~u",    m6x6);
      addParameter(Par::Pole_Mixing, "~e-",   m6x6);
-     addParameter(Par::Pole_Mixing, "~nu",   m6x6);
+     addParameter(Par::Pole_Mixing, "~nu",   m3x3);
      addParameter(Par::Pole_Mixing, "~chi0", m4x4); 
      addParameter(Par::Pole_Mixing, "~chi-", m2x2); 
      addParameter(Par::Pole_Mixing, "~chi+", m2x2); 

@@ -27,7 +27,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
-#include "gambit/Elements/MSSMskeleton.hpp"
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
@@ -525,7 +525,7 @@ namespace Gambit
     }
 
     /// Get an MSSMSpectrum object from an SLHA file
-    /// Wraps it up in MSSMskeleton; i.e. no RGE running possible.
+    /// Wraps it up in MSSMSimpleSpec; i.e. no RGE running possible.
     /// This is mainly for testing against benchmark points, but may be a useful last
     /// resort for interacting with "difficult" spectrum generators.
     void get_MSSM_spectrum_from_SLHAfile(const Spectrum* &result)
@@ -569,7 +569,7 @@ namespace Gambit
 
       // Create Spectrum object from the slhaea object
       static Spectrum matched_spectra;
-      matched_spectra = spectrum_from_SLHAea<MSSMskeleton>(input_slha);
+      matched_spectra = spectrum_from_SLHAea<MSSMSimpleSpec>(input_slha);
       result = &matched_spectra;
 
       // No sneaking in charged LSPs via SLHA, jävlar.

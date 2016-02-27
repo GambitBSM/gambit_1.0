@@ -20,7 +20,7 @@
 #ifndef __mssmcontents_hpp__ 
 #define __mssmcontents_hpp__ 
 
-#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit {
 

@@ -2,7 +2,9 @@
 //   *********************************************
 ///  \file
 ///
-//
+///  Helper base class for simple subspectrum
+///  wrappers that want to use SLHAea features
+///
 ///  *********************************************
 ///
 ///  Authors: 
@@ -14,8 +16,8 @@
 ///
 ///  *********************************************
 
-#ifndef __SLHAskeleton_hpp__
-#define __SLHAskeleton_hpp__
+#ifndef __SLHASimpleSpec_hpp__
+#define __SLHASimpleSpec_hpp__
 
 #include "gambit/Elements/spec.hpp"
 
@@ -52,7 +54,7 @@ namespace Gambit
       };
 
       template<class Derived> 
-      class SLHAskeleton : public Spec<Derived> 
+      class SLHASimpleSpec : public Spec<Derived> 
       {
          public:
             // Grab typedefs from derived wrapper traits class 
@@ -73,15 +75,15 @@ namespace Gambit
             typedef MapTypes<Derived,MapTag::Get> MTget; 
 
             // Constructors/destructors
-            SLHAskeleton() 
+            SLHASimpleSpec() 
              : slhawrap()
             {}
 
-            SLHAskeleton(const SLHAea::Coll& input_slha)
+            SLHASimpleSpec(const SLHAea::Coll& input_slha)
              : slhawrap(input_slha)
             {}
 
-            virtual ~SLHAskeleton() {};
+            virtual ~SLHASimpleSpec() {};
  
             // Functions to interface Model and Input objects with the base 'Spec' class
             // Need both const and non-const versions of it, so that wrapped objects cannot be modified
@@ -114,13 +116,13 @@ namespace Gambit
               // this is actually a bit of a drag since one should go through all the blocks
               // that have Q defined and set them accordingly. Leave for now.
                utils_error().raise(LOCAL_INFO,
-                  "Call made to SetScale function of SLHAskeleton! This is currently not implemented!");
+                  "Call made to SetScale function of SLHASimpleSpec! This is currently not implemented!");
             }
 
             virtual void RunToScaleOverride(double)
             {
                utils_error().raise(LOCAL_INFO,
-                  "Call made to RunToScale function of SLHAskeleton!  This is not allowed; this\n"
+                  "Call made to RunToScale function of SLHASimpleSpec!  This is not allowed; this\n"
                   "version of the SubSpectrum wrapper cannot perform RGE   It is just a\n"
                   "simple box containing SLHA information read from a file or SLHAea object.\n");
             }

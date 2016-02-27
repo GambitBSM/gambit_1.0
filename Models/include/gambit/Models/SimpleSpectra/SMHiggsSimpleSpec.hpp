@@ -16,11 +16,11 @@
 ///
 ///  *********************************************
 
-#ifndef __SMHiggsContainer_hpp__
-#define __SMHiggsContainer_hpp__
+#ifndef __SMHiggsSimpleSpec_hpp__
+#define __SMHiggsSimpleSpec_hpp__
 
 #include "gambit/Elements/spec.hpp"
-#include "gambit/SpectrumContents/RegisteredSpectra.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit 
 {
@@ -37,14 +37,14 @@ namespace Gambit
          double get_HiggsVEV()       const { return HiggsVEV;      } 
       };
 
-      class SMHiggsContainer;
+      class SMHiggsSimpleSpec;
    }
 
    /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
    template <>
-   struct SpecTraits<SpecBit::SMHiggsContainer> 
+   struct SpecTraits<SpecBit::SMHiggsSimpleSpec> 
    {
-        static std::string name() { return "SMHiggsContainer"; }
+        static std::string name() { return "SMHiggsSimpleSpec"; }
         typedef SpectrumContents::SMHiggs Contents;
         typedef SpecBit::SMHiggsModel Model;
         typedef DummyInput            Input; // DummyInput is just an empty struct
@@ -53,7 +53,7 @@ namespace Gambit
    namespace SpecBit 
    {
       /// SubSpectrum wrapper class for the SM Higgs sector
-      class SMHiggsContainer : public Spec<SMHiggsContainer> 
+      class SMHiggsSimpleSpec : public Spec<SMHiggsSimpleSpec> 
       {
          private:
             /// Store the struct containing the parameters plus get/set functions
@@ -64,7 +64,7 @@ namespace Gambit
 
          public:
             /// Constructor
-            SMHiggsContainer(const Model& m)
+            SMHiggsSimpleSpec(const Model& m)
               : model(m)
               , input()
             {}
