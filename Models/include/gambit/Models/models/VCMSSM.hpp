@@ -24,7 +24,7 @@
 #define MODEL VCMSSM
 #define PARENT CMSSM
   START_MODEL
-  DEFINEPARS(M0,M12,A0)
+  DEFINEPARS(M0,M12,A0,SignMu)
   INTERPRET_AS_PARENT_FUNCTION(VCMSSM_to_CMSSM)
   // Translation functions defined in VCMSSM.cpp
 #undef PARENT

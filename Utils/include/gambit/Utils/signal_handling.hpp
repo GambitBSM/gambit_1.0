@@ -35,6 +35,8 @@
 #include <signal.h>
 #include <setjmp.h>     /* jmp_buf, setjmp, longjmp */
 #include "yaml-cpp/yaml.h"
+#include "exceptions.hpp"
+#include "local_info.hpp"
 
 namespace Gambit
 {

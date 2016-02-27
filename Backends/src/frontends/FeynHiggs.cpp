@@ -28,7 +28,8 @@ BE_INI_FUNCTION
 
   // Scan-level initialisation
   static bool scan_level = true;
-  if(scan_level){
+  if(scan_level)
+  {
     // initialize FeynHiggs flags
     int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
     int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
@@ -57,12 +58,17 @@ BE_INI_FUNCTION
   const SubSpectrum* spec = fullspectrum->get_HE();
   SLHAea::Coll slhaea = fullspectrum->getSLHAea();
 
+  if (slhaea.find("SPINFO") == slhaea.end())
+  {
+    cout << slhaea << endl;
+    backend_error().raise(LOCAL_INFO, "SPINFO block missing from SLHAea object.");
+  }
   SLHAea::Block spinfo = slhaea.at("SPINFO");
   std::vector<std::string> k3(1, "3");
   std::vector<std::string> k4(1, "4");
-
-  if(spinfo.find(k3) != spinfo.end() || spinfo.find(k4) != spinfo.end()){
-    // throw an error?
+  if(spinfo.find(k3) != spinfo.end() || spinfo.find(k4) != spinfo.end())
+  {
+    backend_error().raise(LOCAL_INFO, "Entry 3 or 4 missing in SPINFO block.");
   }
 
   //

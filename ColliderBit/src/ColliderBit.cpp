@@ -172,7 +172,6 @@ namespace Gambit
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
@@ -183,7 +182,6 @@ namespace Gambit
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
-          result.clear();
           print_pythia_banner = false;
         }
 
@@ -191,7 +189,7 @@ namespace Gambit
         slha.clear();
         spectrum.clear();
         slha = Dep::decay_rates->as_slhaea();
-        if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+        if (ModelInUse("MSSM63atQ") or ModelInUse("MSSM63atMGUT"))
         {
           // MSSM-specific
           spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
@@ -252,18 +250,19 @@ namespace Gambit
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0) {
+        if (omp_get_thread_num() == 0)
+        {
           code = -1;
           totalxsec = 0.;
-          while(true) {
+          while(true)
+          {
             std::getline(processLevelOutput, readline);
-            issPtr = new std::istringstream(readline);
-            issPtr->seekg(47, issPtr->beg);
-            (*issPtr) >> code;
-            if (!issPtr->good() && totalxsec > 0.) break;
-            (*issPtr) >> _junk >> xsec;
-            if (issPtr->good()) totalxsec += xsec;
-            delete issPtr;
+            std::istringstream issPtr(readline);
+            issPtr.seekg(47, issPtr.beg);
+            issPtr >> code;
+            if (!issPtr.good() && totalxsec > 0.) break;
+            issPtr >> _junk >> xsec;
+            if (issPtr.good()) totalxsec += xsec;
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -286,7 +285,6 @@ namespace Gambit
       // variables for xsec veto
       std::stringstream processLevelOutput;
       std::string _junk, readline;
-      std::istringstream* issPtr;
       int code;
       double xsec, totalxsec;
 
@@ -297,7 +295,6 @@ namespace Gambit
         {
           pythia_doc_path = runOptions->getValue<std::string>("Pythia_doc_path");
           result.banner(pythia_doc_path);
-          result.clear();
           print_pythia_banner = false;
         }
         // If there are no debug filenames set, look for them.
@@ -339,30 +336,34 @@ namespace Gambit
         if (omp_get_thread_num() == 0)
           logger() << "Reading SLHA file: " << filenames.at(fileCounter) << EOM;
         pythiaOptions.push_back("SLHA:file = " + filenames.at(fileCounter));
-        try {
+        try
+        {
           if (omp_get_thread_num() == 0)
             result.init(pythia_doc_path, pythiaOptions, processLevelOutput);
           else
             result.init(pythia_doc_path, pythiaOptions);
-        } catch (SpecializablePythia::InitializationError &e) {
+        }
+        catch (SpecializablePythia::InitializationError &e)
+        {
           piped_invalid_point.request("Bad point: Pythia can't initialize");
           Loop::wrapup();
           return;
         }
 
         // xsec veto
-        if (omp_get_thread_num() == 0) {
+        if (omp_get_thread_num() == 0)
+        {
           code = -1;
           totalxsec = 0.;
-          while(true) {
+          while(true)
+          {
             std::getline(processLevelOutput, readline);
-            issPtr = new std::istringstream(readline);
-            issPtr->seekg(47, issPtr->beg);
-            (*issPtr) >> code;
-            if (!issPtr->good() && totalxsec > 0.) break;
-            (*issPtr) >> _junk >> xsec;
-            if (issPtr->good()) totalxsec += xsec;
-            delete issPtr;
+            std::istringstream issPtr(readline);
+            issPtr.seekg(47, issPtr.beg);
+            issPtr >> code;
+            if (!issPtr.good() && totalxsec > 0.) break;
+            issPtr >> _junk >> xsec;
+            if (issPtr.good()) totalxsec += xsec;
           }
 
           /// @todo Remove the hard-coded 20.7 inverse femtobarns! This needs to be analysis-specific
@@ -372,7 +373,6 @@ namespace Gambit
 
       }
     }
-
 
 
     /// *** Detector Simulators ***
@@ -454,7 +454,7 @@ namespace Gambit
           // Use improve_xsec to combine results from the same process type
           globalAnalyses.improve_xsec(result);
         }
-	return;
+        return;
       }
       
     }
@@ -1829,9 +1829,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+    
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
+      str ser_string = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
+      const double mass_seL=spec->get(Par::Pole_Mass,sel_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,ser_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1842,7 +1847,6 @@ namespace Gambit
 
       // se_L, se_L
       xsecLimit = limitContainer.limitAverage(mass_seL, mass_neut1, mZ);
-
       xsecWithError = *Dep::LEP208_xsec_selselbar;
       xsecWithError.upper *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
       xsecWithError.central *= pow(Dep::selectron_l_decay_rates->BF("~chi0_1", "e-"), 2);
@@ -1873,7 +1877,7 @@ namespace Gambit
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
-
+      
     }
 
     void ALEPH_Smuon_Conservative_LLike(double& result)
@@ -1892,9 +1896,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
+      str smur_string = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
+      const double mass_smuL=spec->get(Par::Pole_Mass,smul_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,smur_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -1905,7 +1914,6 @@ namespace Gambit
 
       // smu_L, smu_L
       xsecLimit = limitContainer.limitAverage(mass_smuL, mass_neut1, mZ);
-
       xsecWithError = *Dep::LEP208_xsec_smulsmulbar;
       xsecWithError.upper *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
       xsecWithError.central *= pow(Dep::smuon_l_decay_rates->BF("~chi0_1", "mu-"), 2);
@@ -1936,7 +1944,7 @@ namespace Gambit
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.central - xsecWithError.lower);
       }
-
+      
     }
 
     void ALEPH_Stau_Conservative_LLike(double& result)
@@ -1955,9 +1963,14 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
+      str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
+      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
@@ -2018,13 +2031,18 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str sel_string = slhahelp::mass_es_from_gauge_es("~e_L", max_mixing, mssm);
+      str ser_string = slhahelp::mass_es_from_gauge_es("~e_R", max_mixing, mssm);
+      const double mass_seL=spec->get(Par::Pole_Mass,sel_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_seL = spec->get(Par::Pole_Mass,1000011, 0);
-      const double mass_seR = spec->get(Par::Pole_Mass,2000011, 0);
+      const double mass_seR = spec->get(Par::Pole_Mass,ser_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+    
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -2081,13 +2099,17 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      double max_mixing;
+      const SubSpectrum* mssm = spec->get_HE();
+      str smul_string = slhahelp::mass_es_from_gauge_es("~mu_L", max_mixing, mssm);
+      str smur_string = slhahelp::mass_es_from_gauge_es("~mu_R", max_mixing, mssm);
+      const double mass_smuL=spec->get(Par::Pole_Mass,smul_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_smuL = spec->get(Par::Pole_Mass,1000013, 0);
-      const double mass_smuR = spec->get(Par::Pole_Mass,2000013, 0);
+      const double mass_smuR = spec->get(Par::Pole_Mass,smur_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+    
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:
@@ -2144,13 +2166,18 @@ namespace Gambit
       using std::log;
 
       const Spectrum *spec = *Dep::MSSM_spectrum;
+      const SubSpectrum* mssm = spec->get_HE();
+      const static double tol = runOptions->getValueOrDef<double>(1e-5, "gauge_mixing_tolerance");
+      const static bool pterror = runOptions->getValueOrDef<bool>(false, "gauge_mixing_tolerance_invalidates_point_only");
+      str stau1_string = slhahelp::mass_es_closest_to_family("~tau_1", mssm,tol,LOCAL_INFO,pterror);
+      str stau2_string = slhahelp::mass_es_closest_to_family("~tau_2", mssm,tol,LOCAL_INFO,pterror);
+      const double mass_stau1=spec->get(Par::Pole_Mass,stau1_string);
       const double mass_neut1 = spec->get(Par::Pole_Mass,1000022, 0);
-      const double mass_stau1 = spec->get(Par::Pole_Mass,1000015, 0);
-      const double mass_stau2 = spec->get(Par::Pole_Mass,2000015, 0);
+      const double mass_stau2 = spec->get(Par::Pole_Mass,stau2_string);
       const double mZ = spec->get(Par::Pole_Mass,23, 0);
       triplet<double> xsecWithError;
       double xsecLimit;
-
+      
       result = 0;
       // Due to the nature of the analysis details of the model independent limit in
       // the paper, the best we can do is to try these two processes individually:

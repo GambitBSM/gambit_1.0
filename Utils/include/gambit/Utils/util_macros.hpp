@@ -21,6 +21,8 @@
 
 #include "gambit/Utils/boost_fallbacks.hpp"
 #include "gambit/Utils/cats.hpp"
+#include "gambit/Utils/stringify.hpp"  // stringification macro
+#include "gambit/Utils/local_info.hpp" // Local information macro.
 
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
@@ -29,10 +31,7 @@
 #include <boost/preprocessor/arithmetic/sub.hpp>
 #include <boost/preprocessor/punctuation/comma.hpp>
 #include <boost/preprocessor/punctuation/paren.hpp>
-#include <boost/current_function.hpp> 
 
-/// \name Local information macro.
-#define LOCAL_INFO std::string("line ") + STRINGIFY(__LINE__) + " in function " + BOOST_CURRENT_FUNCTION + " of " + __FILE__
 
 /// \name Compile-time error macro.
 #define FAIL(x) static_assert(false,"GAMBIT precompiler error: " x);
@@ -45,15 +44,6 @@
 /// @{
 #define DUMMY
 #define DUMMYARG(...)
-/// @}
-
-/// \name Stringification macros
-/// @{
-#define STRINGIFY(X) STRINGIFY2(X)
-#define STRINGIFY2(X) #X
-/// Stringification macros that can stringify arguments with commas
-#define SAFE_STRINGIFY(...) SAFE_STRINGIFY2(__VA_ARGS__)
-#define SAFE_STRINGIFY2(...) #__VA_ARGS__
 /// @}
 
 /// \name Macro returning only the first argument passed

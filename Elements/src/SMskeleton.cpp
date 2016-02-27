@@ -14,13 +14,8 @@
 ///
 ///  *********************************************
 
-/// @{ Need these just so I can use SpecBit_error() etc.
-///    Is there no more "lightweight" way to do this?
-#include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/SpecBit/SpecBit_rollcall.hpp"
-/// @}
-
 #include "gambit/Elements/SMskeleton.hpp" 
+#include "gambit/Utils/util_functions.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
@@ -88,6 +83,8 @@ namespace Gambit
       // allow it as a non-standard entry in SMINPUTS. Here we will stick to
       // SLHA.
       double SMea::get_MW_pole()        const { return getdata("MASS",24); }
+
+      double SMea::get_sinthW2_pole()   const { return (1.0 - Utils::sqr(get_MW_pole()) / Utils::sqr(get_MZ_pole())); }
       
       /// Running masses
       //  Only available for light quarks
@@ -154,24 +151,34 @@ namespace Gambit
 
          /// Filler for Pole_mass map (from Model object)
          {
-            MTget::fmap0 tmp_map;
-         
-            addtomap(("Z0", "Z"),       &SMea::get_MZ_pole );      
-            addtomap(("W+", "W-", "W"), &SMea::get_MW_pole );
-            addtomap(("t", "tbar", "u_3", "ubar_3"), &SMea::get_Mtop_pole );    
-            addtomap(("b", "bbar", "d_3", "dbar_3"), &SMea::get_MbMb      );
-            addtomap(("c", "cbar", "u_2", "ubar_2"), &SMea::get_McMc      );
-            addtomap(("tau+","tau-","tau","e+_3","e-_3"),         &SMea::get_Mtau_pole      );
-            addtomap(("mu-", "mu+", "mu", "e-_2", "e+_2", "e_2"), &SMea::get_Mmuon_pole     );
-            addtomap(("e-",  "e+",  "e",  "e-_1", "e+_1", "e_1"), &SMea::get_Melectron_pole );
-            addtomap(("nu_1", "nubar_1"), &SMea::get_Mnu1_pole );
-            addtomap(("nu_2", "nubar_2"), &SMea::get_Mnu2_pole );
-            addtomap(("nu_3", "nubar_3"), &SMea::get_Mnu3_pole );
+            { //local scoping block
+              MTget::fmap0 tmp_map;
+           
+              addtomap(("Z0", "Z"),       &SMea::get_MZ_pole );      
+              addtomap(("W+", "W-", "W"), &SMea::get_MW_pole );
+              addtomap(("t", "tbar", "u_3", "ubar_3"), &SMea::get_Mtop_pole );    
+              addtomap(("b", "bbar", "d_3", "dbar_3"), &SMea::get_MbMb      );
+              addtomap(("c", "cbar", "u_2", "ubar_2"), &SMea::get_McMc      );
+              addtomap(("tau+","tau-","tau","e+_3","e-_3"),         &SMea::get_Mtau_pole      );
+              addtomap(("mu-", "mu+", "mu", "e-_2", "e+_2", "e_2"), &SMea::get_Mmuon_pole     );
+              addtomap(("e-",  "e+",  "e",  "e-_1", "e+_1", "e_1"), &SMea::get_Melectron_pole );
+              addtomap(("nu_1", "nubar_1"), &SMea::get_Mnu1_pole );
+              addtomap(("nu_2", "nubar_2"), &SMea::get_Mnu2_pole );
+              addtomap(("nu_3", "nubar_3"), &SMea::get_Mnu3_pole );
+  
+              tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
+              tmp_map["g"]     = &SMea::get_MGluon_pole;  
+  
+              map_collection[Par::Pole_Mass].map0 = tmp_map;
+            }
 
-            tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
-            tmp_map["g"]     = &SMea::get_MGluon_pole;  
-
-            map_collection[Par::Pole_Mass].map0 = tmp_map;
+            { //local scoping block
+              MTget::fmap0 tmp_map;
+  
+              tmp_map["sinW2"] = &SMea::get_sinthW2_pole;
+  
+              map_collection[Par::Pole_Mixing].map0 = tmp_map;
+            }
          }
          return map_collection;
       }

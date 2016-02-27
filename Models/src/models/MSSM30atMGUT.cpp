@@ -3,7 +3,7 @@
 ///
 ///  MSSMD30atMGUT translation function definitions
 ///
-///  Specialisation of MSSM78atMGUT with all 
+///  Specialisation of MSSM63atMGUT with all 
 ///  off-diagonal m and A terms set to zero.
 ///
 ///  *********************************************
@@ -24,7 +24,7 @@
 
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Models/model_helpers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
 #include "gambit/Models/models/MSSM30atMGUT.hpp"
@@ -36,9 +36,9 @@
 using namespace Gambit::Utils;
 
 #define MODEL MSSM30atMGUT
-  void MODEL_NAMESPACE::MSSM30atMGUT_to_MSSM78atMGUT (const ModelParameters &myP, ModelParameters &targetP)
+  void MODEL_NAMESPACE::MSSM30atMGUT_to_MSSM63atMGUT (const ModelParameters &myP, ModelParameters &targetP)
   {
-     logger()<<"Running interpret_as_parent calculations for MSSM30atMGUT --> MSSM78atMGUT..."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for MSSM30atMGUT --> MSSM63atMGUT..."<<LogTags::info<<EOM;
     
      targetP.setValue("TanBeta", myP["TanBeta"] );
      targetP.setValue("SignMu",  myP["SignMu"] );
@@ -54,72 +54,77 @@ using namespace Gambit::Utils;
 
      // RH squark soft masses
      // Off-diagonal elements set to zero
+     // Only upper diagonal needed (symmetric)
      targetP.setValue("mq2_11",  myP["mq2_1"] );
      targetP.setValue("mq2_12",  0. );
      targetP.setValue("mq2_13",  0. );
 
-     targetP.setValue("mq2_21",  0. );
+     //targetP.setValue("mq2_21",  0. );
      targetP.setValue("mq2_22",  myP["mq2_2"] );
      targetP.setValue("mq2_23",  0. );
 
-     targetP.setValue("mq2_31",  0. );
-     targetP.setValue("mq2_32",  0. );
+     //targetP.setValue("mq2_31",  0. );
+     //targetP.setValue("mq2_32",  0. );
      targetP.setValue("mq2_33",  myP["mq2_2"] );
 
      // RH slepton soft masses
      // Off-diagonal elements set to zero
+     // Only upper diagonal needed (symmetric)
      targetP.setValue("ml2_11",  myP["ml2_1"] );
      targetP.setValue("ml2_12",  0. );
      targetP.setValue("ml2_13",  0. );
 
-     targetP.setValue("ml2_21",  0. );
+     //targetP.setValue("ml2_21",  0. );
      targetP.setValue("ml2_22",  myP["ml2_2"] );
      targetP.setValue("ml2_23",  0. );
 
-     targetP.setValue("ml2_31",  0. );
-     targetP.setValue("ml2_32",  0. );
+     //targetP.setValue("ml2_31",  0. );
+     //targetP.setValue("ml2_32",  0. );
      targetP.setValue("ml2_33",  myP["ml2_3"] );
 
      // LH down-type slepton soft masses
      // Off-diagonal elements set to zero
+     // Only upper diagonal needed (symmetric)
      targetP.setValue("md2_11",  myP["md2_1"] );
      targetP.setValue("md2_12",  0. );
      targetP.setValue("md2_13",  0. );
 
-     targetP.setValue("md2_21",  0. );
+     //targetP.setValue("md2_21",  0. );
      targetP.setValue("md2_22",  myP["md2_2"] );
      targetP.setValue("md2_23",  0. );
 
-     targetP.setValue("md2_31",  0. );
-     targetP.setValue("md2_32",  0. );
+     //targetP.setValue("md2_31",  0. );
+     //targetP.setValue("md2_32",  0. );
      targetP.setValue("md2_33",  myP["md2_3"] );
 
      // LH up-type slepton soft masses
      // Off-diagonal elements set to zero
+     // Only upper diagonal needed (symmetric)
      targetP.setValue("mu2_11",  myP["mu2_1"] );
      targetP.setValue("mu2_12",  0. );
      targetP.setValue("mu2_13",  0. );
 
-     targetP.setValue("mu2_21",  0. );
+     //targetP.setValue("mu2_21",  0. );
      targetP.setValue("mu2_22",  myP["mu2_2"] );
      targetP.setValue("mu2_23",  0. );
 
-     targetP.setValue("mu2_31",  0. );
-     targetP.setValue("mu2_32",  0. );
+     //targetP.setValue("mu2_31",  0. );
+     //targetP.setValue("mu2_32",  0. );
      targetP.setValue("mu2_33",  myP["mu2_3"] );
 
      // LH charged slepton soft masses
      // Off-diagonal elements set to zero
+     // Only upper diagonal needed (symmetric)
      targetP.setValue("me2_11",  myP["me2_1"] );
      targetP.setValue("me2_12",  0. );
      targetP.setValue("me2_13",  0. );
 
-     targetP.setValue("me2_21",  0. );
+     //targetP.setValue("me2_21",  0. );
      targetP.setValue("me2_22",  myP["me2_2"] );
      targetP.setValue("me2_23",  0. );
 
-     targetP.setValue("me2_31",  0. );
-     targetP.setValue("me2_32",  0. );
+     //targetP.setValue("me2_31",  0. );
+     //targetP.setValue("me2_32",  0. );
      targetP.setValue("me2_33",  myP["me2_3"] );
 
      // slepton trilinear couplings
@@ -169,7 +174,7 @@ using namespace Gambit::Utils;
      // Whew, done!
      #ifdef MSSM30atMGUT_DBUG
        std::cout << "MSSM30atMGUT parameters:" << myP << std::endl;
-       std::cout << "MSSM78atMGUT parameters:" << targetP << std::endl;
+       std::cout << "MSSM63atMGUT parameters:" << targetP << std::endl;
      #endif
   }
 

@@ -39,7 +39,8 @@
 #endif
 
 #include "gambit/Utils/exceptions.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Utils/local_info.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Utils/factory_registry.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
 

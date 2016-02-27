@@ -163,6 +163,9 @@ namespace Gambit
    // Includes facilities for running RGEs
    class SubSpectrum
    {
+      private:
+         const std::map<int, int> empty_map;
+     
       public:
    
          /// Clone the SubSpectrum object
@@ -177,6 +180,9 @@ namespace Gambit
          /// Add spectrum information to an SLHAea object (if possible)
          virtual void add_to_SLHAea(SLHAstruct&) const {}
    
+         /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+         virtual const std::map<int, int>& PDG_translator() const { return empty_map; }
+
          /// Get integer offset convention used by internal model class (needed by getters which take indices) 
          virtual int get_index_offset() const { vfcn_error(LOCAL_INFO); return 0; }
       
@@ -967,8 +973,15 @@ namespace Gambit
 
    /// Dummy classes to satisfy template parameters for Spec class in cases when those objects
    /// are not needed by the getters.
+   /// @{
    class DummyModel {};
    class DummyInput {};
+   struct DummyTraits
+   {
+     typedef DummyModel Model;
+     typedef DummyInput Input;
+   };
+   /// @}
   
 } // end namespace Gambit
 

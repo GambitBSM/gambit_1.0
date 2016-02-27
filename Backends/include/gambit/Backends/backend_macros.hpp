@@ -45,7 +45,7 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Elements/module_macros_incore.hpp"
 #include "gambit/Elements/functors.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/ini_functions.hpp"
 #include "gambit/Backends/common_macros.hpp"
 #ifndef STANDALONE

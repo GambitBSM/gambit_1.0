@@ -32,7 +32,7 @@
 #include "gambit/Printers/VertexBufferNumeric1D.hpp"
 #include "gambit/Printers/printers/hdf5printer/DataSetInterfaceScalar.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"

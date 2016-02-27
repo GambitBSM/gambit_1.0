@@ -344,8 +344,8 @@ namespace Gambit {
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
            
              //std::cout << "Posterior output: i="<<i<<", rank="<<myrank<<", pointID="<<pointID<<std::endl;
-             //txt_stream->print( myrank,  "MPIrank", myrank, pointID);
-             //txt_stream->print( pointID, "pointID", myrank, pointID);
+             txt_stream->print( myrank,  "MPIrank", myrank, pointID);
+             txt_stream->print( pointID, "pointID", myrank, pointID);
              //txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   myrank, pointID);
              txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", myrank, pointID);
              // Put rest of parameters into a vector for printing all together
@@ -361,8 +361,8 @@ namespace Gambit {
           {
              myrank  = physLive[(nPar-2)*nlive + i]; //MPI rank number stored in second last entry of cube
              pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
-             //live_stream->print( myrank,  "MPIrank",  myrank, pointID);
-             //live_stream->print( pointID, "pointID", myrank, pointID);
+             live_stream->print( myrank,  "MPIrank",  myrank, pointID);
+             live_stream->print( pointID, "pointID", myrank, pointID);
              //live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", myrank, pointID);
              live_stream->print( true, "LastLive", myrank, pointID); // Flag which points were the last live set
              // Put rest of parameters into a vector for printing all together

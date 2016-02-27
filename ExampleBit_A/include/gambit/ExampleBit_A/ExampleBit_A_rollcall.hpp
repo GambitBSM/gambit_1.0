@@ -36,6 +36,34 @@
 START_MODULE
 
 
+  #define CAPABILITY nevents                // A physical observable or likelihood that this module can calculate.  There may be one or more
+  START_CAPABILITY                          // functions in this module that can calculate this particular thing in different ways.
+
+    #define FUNCTION nevents_dbl            // Name of an observable function: floating-point number of events in some hypothetical process
+    START_FUNCTION(double)                  // Declare that this function calculates the nevents observable as a double precision variable
+    DEPENDENCY(xsection, double)            // Dependencies: Number of events depends on cross-section
+    #undef FUNCTION
+
+    #define FUNCTION nevents_int            // Name of an observable function: integral number of events in some hypothetical process
+    START_FUNCTION(int)                     // Declare that this function calculates the nevents observable as an integer variable
+    DEPENDENCY(nevents, double)             // Dependencies: Integral number of events depends on floating-point nevents
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
+  #define CAPABILITY nevents_like           // Another physical observable or likelihood that this module can calculate
+  START_CAPABILITY
+
+    #define FUNCTION nevents_like           // Likelihood: Likelihood of seeing number of events
+    START_FUNCTION(double)                  // Function calculates the nevents_like likelihood as a double precision variable
+    DEPENDENCY(nevents, double)             // Dependency: Likelihood calculation requires number of events
+    DEPENDENCY(eventAccumulation, int)      // Depends on the accumulated events that pass the make-believe cuts in the make-believe event loop
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
   #define CAPABILITY eventLoopManagement
   START_CAPABILITY
 
@@ -74,65 +102,6 @@ START_MODULE
 
   #undef CAPABILITY
 
-  #define CAPABILITY xsection               // For testing nevents
-  START_CAPABILITY
-
-     #define FUNCTION test_xsection
-     START_FUNCTION(double)
-     #undef FUNCTION
-
-  #undef CAPABILITY
-
-
-  #define CAPABILITY nevents                // A physical observable or likelihood that this module can calculate.  There may be one or more
-  START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
-
-    #define FUNCTION nevents_dbl            // Name of an observable function: floating-point number of events in some hypothetical process
-    START_FUNCTION(double)                  // Declare that this function calculates the nevents observable as a double precision variable
-    DEPENDENCY(xsection, double)            // Dependencies: Number of events depends on cross-section
-    #undef FUNCTION
-
-    #define FUNCTION nevents_int            // Name of an observable function: integral number of events in some hypothetical process
-    START_FUNCTION(int)                     // Declare that this function calculates the nevents observable as an integer variable
-    DEPENDENCY(nevents, double)             // Dependencies: Integral number of events depends on floating-point nevents
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-
-  #define CAPABILITY nevents_like           // A physical observable or likelihood that this module can calculate
-  START_CAPABILITY
-
-    #define FUNCTION nevents_like           // Likelihood: Likelihood of seeing number of events
-    START_FUNCTION(double)                  // Function calculates the nevents_like likelihood as a double precision variable
-    DEPENDENCY(nevents, double)             // Dependency: Likelihood calculation requires number of events
-    DEPENDENCY(eventAccumulation, int)      // Depends on the accumulated events that pass the make-believe cuts in the make-believe event loop
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-
-  #define CAPABILITY fast_sim_init                // calling fastsim
-  START_CAPABILITY
-    #define FUNCTION fast_sim_init                // calling fastsim
-      START_FUNCTION(double)                      // returns the number of events for now
-      BACKEND_REQ(fast_sim_init, (), int, (int))
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  #define CAPABILITY function_pointer
-  START_CAPABILITY
-
-    #define FUNCTION function_pointer_retriever
-    START_FUNCTION(fptr)
-    BACKEND_GROUP(external_funcs)
-    BACKEND_REQ_FROM_GROUP(external_funcs, externalFunction, (), double, (int&))
-    BACKEND_REQ_FROM_GROUP(external_funcs, externalComplicatedFunction, (), double, (int&, const double&))
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
 
   #define CAPABILITY id                     // A physical observable or likelihood that this module can calculate
   START_CAPABILITY
@@ -143,40 +112,59 @@ START_MODULE
 
   #undef CAPABILITY
 
-  #define CAPABILITY damu                   // Muon (g-2) anomalous contribution
-  START_CAPABILITY
 
+  // Mock muon (g-2) anomalous contribution; an example of how to interact with models
+  #define CAPABILITY damu                   
+  START_CAPABILITY
     #define FUNCTION damu
     START_FUNCTION(double)
-    ALLOW_MODELS(test_parent_I, NormalDist)
-
-      #define CONDITIONAL_DEPENDENCY xsection   // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
+    // Function must be used with one model from group1 (NormalDist) and one from group2 (CMSSM or SingletDM)
+    ALLOW_MODEL_DEPENDENCE(NormalDist, SingletDM, CMSSM)
+    MODEL_GROUP(group1, (NormalDist))
+    MODEL_GROUP(group2, (CMSSM, SingletDM))
+    MODEL_GROUP(group3, (CMSSM, NormalDist))
+    ALLOW_MODEL_COMBINATION(group1, group2)     
+      // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
+      #define CONDITIONAL_DEPENDENCY xsection   
       START_CONDITIONAL_DEPENDENCY(double)
-      ACTIVATE_FOR_MODELS(CMSSM_I)
+      ACTIVATE_FOR_MODELS(CMSSM)
       #undef CONDITIONAL_DEPENDENCY
-
     #undef FUNCTION
-
   #undef CAPABILITY
 
 
-  #define CAPABILITY normaldist_loglike   // Test likelihood: normal distribution
+  // Test function for fulfilling the dependency of nevents
+  #define CAPABILITY xsection               
   START_CAPABILITY
+     #define FUNCTION test_xsection
+     START_FUNCTION(double)
+     #undef FUNCTION
+  #undef CAPABILITY
 
+
+  // A test likelihood: normal distribution
+  #define CAPABILITY normaldist_loglike     
+  START_CAPABILITY
     #define FUNCTION normaldist_loglike
     START_FUNCTION(double)
     ALLOW_MODELS(NormalDist)
-    /// Need to move these into a different test function; I want to actually use this one :)
-    //ALLOW_MODEL_DEPENDENCE(NormalDist, SingletDM, CMSSM_demo)
-    //MODEL_GROUP(group1, (NormalDist))
-    //MODEL_GROUP(group2, (CMSSM_demo, SingletDM))
-    //MODEL_GROUP(group3, (CMSSM_demo, NormalDist))
-    //ALLOW_MODEL_COMBINATION(group1, group2)    
     #undef FUNCTION
-
   #undef CAPABILITY
 
 
+  // Tester that shows how to retrieve pointers to backend functions
+  #define CAPABILITY function_pointer
+  START_CAPABILITY
+    #define FUNCTION function_pointer_retriever
+    START_FUNCTION(fptr)
+    BACKEND_GROUP(external_funcs)
+    BACKEND_REQ_FROM_GROUP(external_funcs, externalFunction, (), double, (int&))
+    BACKEND_REQ_FROM_GROUP(external_funcs, externalComplicatedFunction, (), double, (int&, const double&))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  // Tester for Fortran array overlay classes
   #define CAPABILITY doFarrayStuff
   START_CAPABILITY
     #define FUNCTION do_Farray_stuff
@@ -215,6 +203,7 @@ START_MODULE
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
+
 
   // Tester for C/C++ backend array interfaces
   #define CAPABILITY BE_Array_tester

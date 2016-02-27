@@ -20,13 +20,15 @@
 #
 #************************************************
 
-set(source_files src/log.cpp
+set(source_files src/logger.cpp
                  src/logging.cpp
+                 src/logmaster.cpp
 )
 
-set(header_files include/gambit/Logs/log.hpp
-                 include/gambit/Logs/log_tags.hpp
+set(header_files include/gambit/Logs/log_tags.hpp
+                 include/gambit/Logs/logger.hpp
                  include/gambit/Logs/logging.hpp
+                 include/gambit/Logs/logmaster.hpp
 )
 
 add_gambit_library(Logs OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

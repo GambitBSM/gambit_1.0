@@ -39,8 +39,8 @@
 
 // Printable types
 #ifndef STANDALONE
-   // If we are in a main gambit executable, we need to know all the potentially printable types.
-   #include "gambit/Elements/all_functor_types.hpp"
+   // If we are in a main gambit executable, we need to know all the GAMBIT printable types
+   #include "gambit/Elements/printable_types.hpp"
 #else
    // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
    #include "gambit/ScannerBit/printable_types.hpp"
@@ -114,8 +114,26 @@ namespace Gambit
         }
         bool is_auxilliary_printer() { return is_aux; }
 
+         
+        // Printer dispatch function. This is defined already
+        // in the BaseBasePrinter class, but I think I need it
+        // here as well so that that BasePrinter version can 
+        // detect the new virtual function overloads which exist
+        // in this class.
+        template<typename T>
+        void print(T const& in, const std::string& label,
+                   const int vertexID, const uint rank,
+                   const ulong pointID)
+        {
+          _print(in, label, vertexID, rank, pointID);
+        }
 
-        // We need to have a virtual print method for EVERY type we ever want to print (i.e. for every type that can be held in the 'myValue' data member of a module functor). Generate these using a macro.
+      protected:
+        using BaseBasePrinter::_print; //unhide the default function in the base class
+
+        // We need to have a virtual print method for every type that we want to
+        // be able to print. The list of these types is maintained in 
+        // "gambit/Elements/printable_types.hpp"
         // Run the macro; add all the print functions
         ADD_VIRTUAL_PRINTS(PRINTABLE_TYPES)
 

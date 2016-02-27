@@ -19,7 +19,7 @@
 #include <omp.h>
 #include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Utils/mpiwrapper.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "yaml-cpp/yaml.h"
 
 namespace Gambit

@@ -54,17 +54,7 @@ namespace Gambit
    Spectrum spectrum_from_SLHA(str slha)
    {
      // Read the SLHA file in to an SLHAea object
-     SLHAstruct slhaea;
-     std::ifstream ifs(slha.c_str());
-     if (!ifs.good())
-     {
-       std::ostringstream err;
-       err << "ERROR: SLHA file " << slha << " not found.";
-       utils_error().raise(LOCAL_INFO,err.str());
-     }
-     ifs >> slhaea;
-     ifs.close();
-      
+     SLHAstruct slhaea = read_SLHA(slha);      
      // Create the final object from the SLHAea object
      return spectrum_from_SLHAea<HE>(slhaea);
    }

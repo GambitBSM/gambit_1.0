@@ -49,7 +49,8 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/model_parameters.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp" 
+#include "gambit/Logs/logmaster.hpp" // Need full declaration of LogMaster class
 
 /// Decay rate of average runtime estimate [(number of functor evaluations)^-1]
 #define FUNCTORS_FADE_RATE 0.01
@@ -96,7 +97,7 @@ namespace Gambit
       /// @{
       virtual double getRuntimeAverage();
       virtual double getInvalidationRate();
-      virtual void setFadeRate();
+      virtual void setFadeRate(double);
       virtual void notifyOfInvalidation(const str&);
       virtual void reset();
       /// @}
