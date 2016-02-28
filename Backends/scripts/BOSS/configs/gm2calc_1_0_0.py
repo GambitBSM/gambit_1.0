@@ -74,23 +74,21 @@ source_extension = '.cpp'
 
 indent = 3
 
-extra_output_dir       = 'BOSS_output'
-abstr_header_prefix    = 'abstract_'
-wrapper_header_prefix  = 'wrapper_'
-factory_file_prefix    = 'factory_'
-function_files_prefix  = 'function_'
+extra_output_dir = 'BOSS_output'
 
 
 # ~~~~~ Information about other known types ~~~~~
 
 known_classes = { 
-    "Eigen::Matrix<double,2,2,0,2,2>" : "<Eigen/Core>",
-    "Eigen::Matrix<double,3,3,0,3,3>" : "<Eigen/Core>",
-    "Eigen::Matrix<double,4,4,0,4,4>" : "<Eigen/Core>",
-    "Eigen::Array<double,1,1,0,1,1>"  : "<Eigen/Core>",
-    "Eigen::Array<double,2,1,0,2,1>"  : "<Eigen/Core>",
-    "Eigen::Array<double,4,1,0,4,1>"  : "<Eigen/Core>",
-    "Eigen::Matrix<std::complex<double>,2,2,0,2,2>" : "<Eigen/Core>",
-    "Eigen::Matrix<std::complex<double>,4,4,0,4,4>" : "<Eigen/Core>",
+    "Eigen::Matrix" : "<Eigen/Core>",
+    "Eigen::Array" : "<Eigen/Core>",
+    # "Eigen::Matrix<double,2,2,0,2,2>" : "<Eigen/Core>",
+    # "Eigen::Matrix<double,3,3,0,3,3>" : "<Eigen/Core>",
+    # "Eigen::Matrix<double,4,4,0,4,4>" : "<Eigen/Core>",
+    # "Eigen::Array<double,1,1,0,1,1>"  : "<Eigen/Core>",
+    # "Eigen::Array<double,2,1,0,2,1>"  : "<Eigen/Core>",
+    # "Eigen::Array<double,4,1,0,4,1>"  : "<Eigen/Core>",
+    # "Eigen::Matrix<std::complex<double>,2,2,0,2,2>" : "<Eigen/Core>",
+    # "Eigen::Matrix<std::complex<double>,4,4,0,4,4>" : "<Eigen/Core>",
 }
 
