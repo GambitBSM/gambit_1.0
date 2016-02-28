@@ -35,8 +35,7 @@ input_files = [
 ]
 include_paths = [
     '../../../Backends/installed/gm2calc/1.0.0/src', 
-    '/usr/include/eigen3',
-    # '/usr/include',
+    '../../../contrib/eigen3'
 ]
 base_paths = ['../../../Backends/installed/gm2calc/1.0.0']
 
@@ -44,12 +43,12 @@ header_files_to = '../../../Backends/installed/gm2calc/1.0.0/src'
 src_files_to    = '../../../Backends/installed/gm2calc/1.0.0/src'
 
 load_classes = [
-    'gm2calc::MSSMNoFV_onshell_susy_parameters',
     'gm2calc::MSSMNoFV_onshell',
     'gm2calc::MSSMNoFV_onshell_mass_eigenstates',
-    'gm2calc::MSSMNoFV_onshell_problems',
     'gm2calc::MSSMNoFV_onshell_soft_parameters',
+    'gm2calc::MSSMNoFV_onshell_susy_parameters',
     'gm2calc::MSSMNoFV_onshell_physical',
+    'gm2calc::MSSMNoFV_onshell_problems',
 ]
 
 load_functions = [
@@ -82,13 +81,5 @@ extra_output_dir = 'BOSS_output'
 known_classes = { 
     "Eigen::Matrix" : "<Eigen/Core>",
     "Eigen::Array" : "<Eigen/Core>",
-    # "Eigen::Matrix<double,2,2,0,2,2>" : "<Eigen/Core>",
-    # "Eigen::Matrix<double,3,3,0,3,3>" : "<Eigen/Core>",
-    # "Eigen::Matrix<double,4,4,0,4,4>" : "<Eigen/Core>",
-    # "Eigen::Array<double,1,1,0,1,1>"  : "<Eigen/Core>",
-    # "Eigen::Array<double,2,1,0,2,1>"  : "<Eigen/Core>",
-    # "Eigen::Array<double,4,1,0,4,1>"  : "<Eigen/Core>",
-    # "Eigen::Matrix<std::complex<double>,2,2,0,2,2>" : "<Eigen/Core>",
-    # "Eigen::Matrix<std::complex<double>,4,4,0,4,4>" : "<Eigen/Core>",
 }
 

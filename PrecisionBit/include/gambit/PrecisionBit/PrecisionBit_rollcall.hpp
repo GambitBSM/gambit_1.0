@@ -132,9 +132,9 @@ START_MODULE
   #undef CAPABILITY 
 
   // Muon g-2
-  #define CAPABILITY gm2_muon
+  #define CAPABILITY a_mu_SUSY
   START_CAPABILITY
-    #define FUNCTION gm2_muon
+    #define FUNCTION a_mu_SUSY
     START_FUNCTION(double)
     NEEDS_CLASSES_FROM(gm2calc, default)
     BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, 

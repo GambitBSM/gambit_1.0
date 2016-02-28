@@ -517,6 +517,30 @@ ExternalProject_Add(higgssignals
 add_extra_targets(higgssignals ${higgssignals_dir} ${backend_download}/${higgssignals_dl} hyperclean)
 
 
+# gm2calc
+set(gm2calc_dir "${PROJECT_SOURCE_DIR}/Backends/installed/gm2calc/1.0.0")
+set(gm2calc_dl "gm2calc-1.0.0.tar.gz")
+ExternalProject_Add(gm2calc
+  URL http://www.hepforge.org/archive/gm2calc/${gm2calc_dl}
+  URL_MD5 309e38ac04c933884b7b950fae920412
+  DOWNLOAD_DIR ${backend_download}
+  SOURCE_DIR ${gm2calc_dir}
+  BUILD_IN_SOURCE 1
+  DOWNLOAD_ALWAYS 0
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} sharedlib
+  INSTALL_COMMAND ""
+)
+ExternalProject_Add_Step(gm2calc apply_hacks
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calcHacks/Makefile ${gm2calc_dir}/Makefile
+  COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/PrecisionBit/gm2calcHacks/module.mk ${gm2calc_dir}/src/module.mk
+  DEPENDEES download
+  DEPENDERS patch
+)
+BOSS_backend(gm2calc gm2calc 1.0.0)
+add_extra_targets(gm2calc ${gm2calc_dir} ${backend_download}/${gm2calc_dl} clean)
+
+
 set_target_properties(darksusy
                       darksusy_5_1_1
                       micromegas
@@ -533,6 +557,7 @@ set_target_properties(darksusy
                       gamlike
                       nulike
                       fastsim
+                      gm2calc
                       PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends
@@ -547,6 +572,7 @@ add_custom_target(backends
                   susyhit
                   pythia
                   nulike
+                  gm2calc
                  )
 
 add_custom_target(backends-nonfree DEPENDS ddcalc gamlike) #fastsim
@@ -569,4 +595,5 @@ add_custom_target(clean-backends
                   clean-nulike
                   clean-delphes
                   clean-flexiblesusy
+                  clean-gm2calc
                  )

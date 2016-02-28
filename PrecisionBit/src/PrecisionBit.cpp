@@ -624,10 +624,10 @@ namespace Gambit
     }
 
 
-    /// Testing gm2calc backend
-    void gm2_muon(double &result)
+    /// Test function for gm2calc backend (simple copy/paste from gm2calc manual.)
+    void a_mu_SUSY(double &result)
     {
-      using namespace Pipes::gm2_muon;
+      using namespace Pipes::a_mu_SUSY;
 
       gm2calc::MSSMNoFV_onshell model;
 
@@ -658,7 +658,6 @@ namespace Gambit
 
       result = BEreq::calculate_amu_1loop(model) 
                + BEreq::calculate_amu_2loop(model);
-
       return;
     }
 
