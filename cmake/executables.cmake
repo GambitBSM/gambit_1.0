@@ -128,16 +128,24 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/DarkBit/" AND ";${GAMBIT_BITS};" MATCHES ";Dark
   if (NOT EXCLUDE_DELPHES)
     set(DarkBit_XTRA ${DarkBit_XTRA} ${DELPHES_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
   endif()
-  add_gambit_executable(DarkBit_standalone "${DarkBit_XTRA}"
-                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_example.cpp
+  add_gambit_executable(DarkBit_standalone_MSSM "${DarkBit_XTRA}"
+                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_MSSM.cpp
+                                ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
+                                $<TARGET_OBJECTS:DarkBit>
+                                ${GAMBIT_ALL_COMMON_OBJECTS}
+  )
+  add_gambit_executable(DarkBit_standalone_SingletDM "${DarkBit_XTRA}"
+                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_SingletDM.cpp
                                 ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
                                 $<TARGET_OBJECTS:DarkBit>
                                 ${GAMBIT_ALL_COMMON_OBJECTS}
   )
   if (NOT EXCLUDE_FLEXIBLESUSY)
-    add_dependencies(DarkBit_standalone flexiblesusy)
+    add_dependencies(DarkBit_standalone_MSSM flexiblesusy)
+    add_dependencies(DarkBit_standalone_SingletDM flexiblesusy)
   endif()
   if (NOT EXCLUDE_DELPHES)
-    add_dependencies(DarkBit_standalone delphes)
+    add_dependencies(DarkBit_standalone_MSSM delphes)
+    add_dependencies(DarkBit_standalone_SingletDM delphes)
   endif()
 endif()

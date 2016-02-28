@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Utils/version.hpp"
 #include "gambit/Utils/util_functions.hpp"
@@ -53,24 +52,24 @@ namespace Gambit
       // file. It is nice to keep them seperate from the class declaration though.
       //
 
+      // Set index offset from interface class
+      template <class MI>
+      const int MSSMSpec<MI>::_index_offset = MI::index_offset;
+
       // NOTE!! mi is COPIED into the object, so when we get the reference to the
       // actual Model object to store in 'model', we need to use the copy inside
       // the object. So also need to make sure 'model_interface' is initialised first
       // (i.e. it should be declared first)
       template <class MI>
-      MSSMSpec<MI>::MSSMSpec(MI mi, str be_name, str be_version, bool switch_index_convention)
+      MSSMSpec<MI>::MSSMSpec(MI mi, str be_name, str be_version)
          : backend_name(be_name)
          , backend_version(be_version)
-         , index_offset(-1)
          , model_interface(mi)
-      {
-         if (switch_index_convention) index_offset = 0;
-      }
+      {}
 
       // Default constructor
       template <class MI>
-      MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
-         : index_offset(switch_index_convention ? 0 : -1)
+      MSSMSpec<MI>::MSSMSpec()
       {}
 
       template <class MI>
