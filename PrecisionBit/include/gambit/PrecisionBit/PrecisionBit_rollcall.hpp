@@ -26,6 +26,10 @@
 ///          (christophersrogan@gmail.com)
 ///  \date 2015 Apr
 ///
+///  \author Anders Kvellestad
+///          (anders.kvellestad@nordita.org)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 
@@ -123,6 +127,21 @@ START_MODULE
                                                         Farray<Fdouble,1,35>&,
                                                         Farray<Fdouble,1,35>&))
     BACKEND_OPTION( (SUSYPOPE, 0.2), (libSUSYPOPE) )
+    ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
+    #undef FUNCTION
+  #undef CAPABILITY 
+
+  // Muon g-2
+  #define CAPABILITY gm2_muon
+  START_CAPABILITY
+    #define FUNCTION gm2_muon
+    START_FUNCTION(double)
+    NEEDS_CLASSES_FROM(gm2calc, default)
+    BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, 
+                             (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
+    BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, 
+                             (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
+    BACKEND_OPTION( (gm2calc), (libgm2calc) )
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
