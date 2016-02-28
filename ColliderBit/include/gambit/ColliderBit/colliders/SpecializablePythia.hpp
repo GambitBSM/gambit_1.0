@@ -63,6 +63,17 @@ namespace Gambit
         /// @brief Create a useless Pythia instance just to print the banner
         void banner(const std::string pythiaDocPath) { Pythia8::Pythia myPythia(pythiaDocPath); }
 
+        /// @brief Initialize with no settings (error): override version
+        void init() { std::cout<<"No settings given to Pythia!\n\n"; throw InitializationError(); }
+
+        /// @brief Initialize from some external settings: override version
+        void init(const std::vector<std::string>& externalSettings) {
+          std::string docPath = externalSettings.back();
+          std::vector<std::string> settings(externalSettings);
+          settings.pop_back();
+          init(docPath, settings);
+        }
+
         /// @brief Initialize from some external settings
         void init(const std::string pythiaDocPath,
                   const std::vector<std::string>& externalSettings,

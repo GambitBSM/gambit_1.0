@@ -132,6 +132,7 @@ namespace Gambit
             {
                 parameters = convert_to_map(prior.getParameters());
                 purpose_index["Likelihood"] = typeid(double (const std::vector<double> &));
+                purpose_index["LogLike"] = typeid(double (const std::vector<double> &));
                 purpose_index["Observable"] = typeid(std::vector<double> (const std::vector<double> &));
                 purpose_index["Prior"] = typeid(void (const std::vector<double> &, std::unordered_map<std::string, double> &));
             }
@@ -139,6 +140,12 @@ namespace Gambit
             void * operator() (const std::string &purpose) const
             {
                 auto it = names.find(purpose);
+                std::string purpose_i = purpose;
+                
+                if (purpose_index.find(purpose) == purpose_index.end())
+                {
+                    purpose_i = "Likelihood";
+                }
                 
                 if (it == names.end())
                 {
@@ -146,11 +153,11 @@ namespace Gambit
                 }
                 else if (it->second.size() == 1)
                 {
-                    return __functions__.at(purpose_index.at(purpose))(parameters.at(it->second.at(0).second), prior, it->second.at(0).first);
+                    return __functions__.at(purpose_index.at(purpose_i))(parameters.at(it->second.at(0).second), prior, it->second.at(0).first);
                 }
                 else if (it->second.size() > 1)
                 {
-                    return __multi_functions__.at(purpose_index.at(purpose))(parameters, prior, it->second);
+                    return __multi_functions__.at(purpose_index.at(purpose_i))(parameters, prior, it->second);
                 }
                 else
                 {

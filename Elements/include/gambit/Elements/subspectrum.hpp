@@ -2,9 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Some member function definitions from classes
-///  in SubSpectrumDecl. Include this file to
-///  use SubSpectrum objects.
+///  Abstract class for accessing general spectrum information.
 ///
 ///  *********************************************
 ///
@@ -17,568 +15,208 @@
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2014, 2015 Jan - Jul 
+///  \date 2014, 2015 Jan - Jul
 ///
 ///  *********************************************
 
-#ifndef __SubSpectrum_hpp__
-#define __SubSpectrum_hpp__
+#ifndef __subspectrum_hpp__
+#define __subspectrum_hpp__
 
+#include <map>
+#include <set>
+#include <cfloat>
+#include <sstream>
+
+#include "gambit/Utils/cats.hpp"
 #include "gambit/Utils/safebool.hpp"
-#include "gambit/Elements/subspectrum_head.hpp"
-#include "gambit/Elements/spec_fptrfinder.hpp"
-
-namespace Gambit {
-
-   /// @{ CommonFuncs member function definitions
-
-   /// @{ PDB getter/checker overloads
-
-   /* Input PDG code plus context integer as separate arguments */
-   template <class PT>
-   bool CommonFuncs<PT>::has(const PT partype, 
-                        const int pdg_code, const int context, SafeBool check_antiparticle) const
-   {
-      return has( partype, std::make_pair(pdg_code,context), check_antiparticle );
-   }
-
-   /* Input PDG code plus context integer as separate arguments */
-   template <class PT>
-   double CommonFuncs<PT>::get(const PT partype, 
-                        const int pdg_code, const int context, SafeBool check_antiparticle) const
-   {
-      return get( partype, std::make_pair(pdg_code,context), check_antiparticle );
-   }
-
-   /* Input PDG code plus context integer as pair */
-   template <class PT>
-   bool CommonFuncs<PT>::has(const PT partype, 
-                        const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
-   {
-      /* If there is a short name, then retrieve that plus the index */      
-      if( Models::ParticleDB().has_short_name(pdgpr) )                       
-      {                                                                      
-        return has( partype, Models::ParticleDB().short_name_pair(pdgpr), check_antiparticle );
-      }                                                                      
-      else /* Use the long name with no index instead */                     
-      {                                                                      
-        return has( partype, Models::ParticleDB().long_name(pdgpr), check_antiparticle );      
-      }                                                                      
-   }
-
-   /* Input PDG code plus context integer as pair */
-   template <class PT>
-   double CommonFuncs<PT>::get(const PT partype, 
-                        const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
-   {
-      /* If there is a short name, then retrieve that plus the index */      
-      if( Models::ParticleDB().has_short_name(pdgpr) )                       
-      {                                                                      
-        return get( partype, Models::ParticleDB().short_name_pair(pdgpr), check_antiparticle );
-      }                                                                      
-      else /* Use the long name with no index instead */                     
-      {                                                                      
-        return get( partype, Models::ParticleDB().long_name(pdgpr), check_antiparticle );      
-      }                                                                      
-   }
-
-   /* Input short name plus index as pair */
-   template <class PT>
-   bool CommonFuncs<PT>::has(const PT partype, 
-                        const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
-   {
-      return has( partype, shortpr.first, shortpr.second, check_antiparticle);
-   }
-
-   /* Input short name plus index as pair */
-   template <class PT>
-   double CommonFuncs<PT>::get(const PT partype, 
-                        const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
-   {
-      return get( partype, shortpr.first, shortpr.second, check_antiparticle);
-   }
-
-   /// @}
-
-   /// @{ Parameter override functions
-
-   template <class PT>
-   void CommonFuncs<PT>::set_override(const PT partype,
-                      const double value, const str& name, bool safety)
-   {   
-      bool done = false;                  
-      // No index input; check if direct string exists in map
-      // If not, try to use particle database to convert to short
-      // name plus index and try that. 
-      // Otherwise, add new entry only if safety=false
-      if( has(partype,name,SafeBool(false)) ) // Don't match on antiparticle; want to override particle if no antiparticle match is found
-      {
-         get_override_maps.at(partype).m0[name] = value;
-         done = true;
-      }
-      else if( Models::ParticleDB().has_short_name(name) )
-      {
-         std::pair<str, int> p = Models::ParticleDB().short_name_pair(name);
-         if( has(partype,p.first,p.second,SafeBool(false)) )
-         {
-            get_override_maps.at(partype).m1[p.first][p.second] = value;
-            done = true;
-         }
-      }
-
-      // If no match, try antiparticle
-      // Note, if safety is off, missing "name" will be added instead of checking for antiparticle match
-      if(safety and not done)
-      {
-        if(Models::ParticleDB().has_particle(name) and 
-           Models::ParticleDB().has_antiparticle(name)) 
-        {  
-           std::string antiname = Models::ParticleDB().get_antiparticle(name);
-           // Repeat the logic above
-           if( has(partype,antiname,SafeBool(false)) )
-           {
-              get_override_maps.at(partype).m0[antiname] = value;
-              done = true;
-           }
-           else if( Models::ParticleDB().has_short_name(antiname) )
-           {
-              std::pair<str, int> p = Models::ParticleDB().short_name_pair(antiname);
-              if( has(partype,p.first,p.second,SafeBool(false)) )
-              {
-                 get_override_maps.at(partype).m1[p.first][p.second] = value;
-                 done = true;
-              }
-           }
-        }
-      }
-
-      // If none of that worked, either throw an error or add the new key
-      if(safety and not done)
-      {                                      
-        std::ostringstream errmsg;           
-        errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
-        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
-        errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
-        utils_error().forced_throw(LOCAL_INFO,errmsg.str());
-      }
-      else
-      {  
-        get_override_maps.at(partype).m0[name] = value;
-      }
-   }
-
-   template <class PT>
-   void CommonFuncs<PT>::set_override(const PT partype,
-                      const double value, const str& name, int i, bool safety)
-   {                                         
-      bool done = false;                  
-      // One index input; check if direct string plus index exists in map
-      // If not, try to use particle database to convert to long name
-      // and try that. 
-      // Otherwise, add new entry only if safety=false
-      if( has(partype,name,i,SafeBool(false)) ) // Don't match anti-particle; will check that if other matching fails
-      {
-         get_override_maps.at(partype).m1[name][i] = value;
-         done = true;
-      }
-      else if( Models::ParticleDB().has_particle(std::make_pair(name, i)) )
-      {
-         str longname = Models::ParticleDB().long_name(name,i);
-         if( has(partype,longname,SafeBool(false)) )
-         {
-            get_override_maps.at(partype).m0[longname] = value;
-            done = true;
-         }
-      }
-
-      // If no match, try antiparticle
-      // Note, if safety is off, missing "name" will be added instead of checking for antiparticle match
-      if(safety and not done)
-      {
-        if(Models::ParticleDB().has_particle(name) and 
-           Models::ParticleDB().has_antiparticle(name)) 
-        {  
-           std::string antiname = Models::ParticleDB().get_antiparticle(name);
-           // Repeat the logic above
-           if( has(partype,antiname,i,false) ) // Don't match anti-particle; will check that if other matching fails
-           {
-              get_override_maps.at(partype).m1[antiname][i] = value;
-              done = true;
-           }
-           else if( Models::ParticleDB().has_particle(std::make_pair(antiname, i)) )
-           {
-              str longname = Models::ParticleDB().long_name(antiname,i);
-              if( has(partype,longname,SafeBool(false)) )
-              {
-                 get_override_maps.at(partype).m0[longname] = value;
-                 done = true;
-              }
-           }
-         }
-      }
-
-      // If none of that worked, either throw an error or add the new key
-      if( safety and not done )
-      {                                      
-        std::ostringstream errmsg;           
-        errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
-        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and index '"<<i<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
-        errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
-        utils_error().forced_throw(LOCAL_INFO,errmsg.str());
-      }
-      else
-      {
-        get_override_maps.at(partype).m1[name][i] = value;
-      }
-   }
-
-   template <class PT>
-   void CommonFuncs<PT>::set_override(const PT partype,
-                      const double value, const str& name, int i, int j, bool safety)
-   {                                         
-      if( safety and not has(partype,name,i,j) )
-      {                                      
-        std::ostringstream errmsg;           
-        errmsg << "Error setting override value in SubSpectrum object!" << std::endl;
-        errmsg << "No "<<Par::toString.at(partype)<<" with string reference '"<<name<<"' and indices '"<<i<<","<<j<<"' exists in the "<<classname<<" component of the wrapped spectrum!" <<std::endl;
-        errmsg << "If you intended to add this value to the spectrum without overriding anything, please call this function with the optional 'safety' boolean parameter set to 'false'. It can then be later retrieved using the normal getters with the same name used here." << std::endl;
-        utils_error().forced_throw(LOCAL_INFO,errmsg.str());
-      }
-      get_override_maps.at(partype).m2[name][i][j] = value;
-   }
-
-   /// PDB overloads of set_override functions
-
-   /* Input short name plus index pair */
-   template <class PT>
-   void CommonFuncs<PT>::set_override(const PT partype, const double value, const std::pair<str,int> shortpr, const bool safety)
-   {
-      set_override(partype, value, shortpr.first, shortpr.second, safety);
-   }
-
-   /* Input PDG code plus context integer */
-   template <class PT>
-   void CommonFuncs<PT>::set_override(const PT partype, const double value, const int PDGcode, const int context, const bool safety)
-   {
-      set_override(partype, value, std::make_pair(PDGcode,context), safety);
-   }
-
-   template <class PT>
-   void CommonFuncs<PT>::set_override(const PT partype, const double value, const std::pair<int,int> pdgpr, const bool safety)
-   {
-      /* If there is a short name, then retrieve that plus the index */      
-      if( Models::ParticleDB().has_short_name(pdgpr) )                       
-      {                                                                      
-        return set_override(partype, value, Models::ParticleDB().short_name_pair(pdgpr), safety);
-      }                                                                      
-      else /* Use the long name with no index instead (will throw error if name not in PDB) */                     
-      {                                                                      
-        return set_override(partype, value, Models::ParticleDB().long_name(pdgpr), safety);      
-      }                                                                      
-   }
-
-   /// @{ Vector override functions
-
-   /* Helpers for override functions which take parameter names and indices as vectors, and
-      loop over them, to make it easy to set many parameters to the same value.
-      No two-index versions at the moment, but could be added if needed. */
-   template <class PT>
-   void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const std::vector<str>& params, bool safety)
-   {
-      for(std::vector<str>::const_iterator it = params.begin();
-    it != params.end(); ++it)
-  {
-          this->set_override(tag, value, *it, safety);
-  }
-   }
-
-   template <class PT>
-   void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const std::vector<str>& params, const std::vector<int> indices, bool safety)
-   {
-      for(std::vector<str>::const_iterator it = params.begin(); it != params.end(); ++it)
-      {
-         for(std::vector<int>::const_iterator i = indices.begin(); i != indices.end() ; ++i)
-         {
-            this->set_override(tag, value, *it, *i, safety);
-         }
-      }
-   }
-
-   template <class PT>
-   void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const std::vector<str>& params, const int i, bool safety)
-   {
-      std::vector<int> indices;
-      indices.push_back(i);
-      this->set_override_vector(tag,value,params,indices,safety);    
-   }
-
-   template <class PT>
-   void CommonFuncs<PT>::set_override_vector(const PT tag, const double value, const str& par, const std::vector<int> indices, bool safety)
-   {
-      std::vector<str> params;
-      params.push_back(par);
-      this->set_override_vector(tag,value,params,indices,safety);    
-   }
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Elements/slhaea_helpers.hpp"
+#include "gambit/Elements/spectrum_helpers.hpp"
+#include "gambit/Models/partmap.hpp"
 
 
+// Particle database access
+#define PDB Models::ParticleDB()        
 
-   /// @}
+namespace Gambit
+{
 
-
-   /// @}
+   /// Helper macro for throwing errors in base class versions of virtual functions
+   #define vfcn_error(local_info) \
+     utils_error().forced_throw(local_info,"This virtual function (of SubSpectrum object) has not been overridden in the derived class! (name = "+getName()+")")
+   
+   class SubSpectrum;
  
-   /// @}
-
-   /// @{ CommonDer member function definitions
-
-   /// @{ No indices
-   template <class PhysOrRun, class PT>
-   bool CommonDer<PhysOrRun,PT>::has(const PT partype, const str& name, SafeBool check_antiparticle) const
+   /// Struct to hold collections of function pointer maps to be filled by derived classes
+   template <class MapTypes>
+   struct MapCollection
    {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTget MTget;
-      /// TODO: Could avoid dismantling the MapCollection struct by just letting the
-      ///       SetMaps class do it, but one step at a time...
-      ///       Could also reduce duplication between getter and checker functions by making the 
-      ///       'has' function take an optional argument to return an FptrFinder, which can then
-      ///       just be used to call the found function.
+      typename MapTypes::fmap0        map0;
+      typename MapTypes::fmap0_extraM map0_extraM;
+      typename MapTypes::fmap0_extraI map0_extraI;
+      typename MapTypes::fmap1        map1;    
+      typename MapTypes::fmap1_extraM map1_extraM;
+      typename MapTypes::fmap1_extraI map1_extraI;
+      typename MapTypes::fmap2        map2;    
+      typename MapTypes::fmap2_extraM map2_extraM;
+      typename MapTypes::fmap2_extraI map2_extraI;
+   };
 
-      /// Need to access members of the derived class, so cast "this" pointer to the derived type
-      const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
+   /// Definition of struct to hold various override values for a given ParamTag
+   struct OverrideMaps
+   {    
+      std::map<str,double>                             m0; // No indices
+      std::map<str,std::map<int,double>>               m1; // One index
+      std::map<str,std::map<int,std::map<int,double>>> m2; // Two indices
+      /* e.g. retrieve like this: contents = m2[name][i][j]; */
+   };
 
-      /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
-                              .omap0(  overridecoll.m0 ) 
-                              .omap1( overridecoll.m1 )
-                              .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 )
-                              .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
-      return finder.find(name,true,check_antiparticle);                                             
-   }                                                                        
+  
 
-   template <class PhysOrRun, class PT>
-   double CommonDer<PhysOrRun,PT>::get(const PT partype, const str& name, SafeBool check_antiparticle) const
+   /// Virtual base class for interacting with spectrum generator output
+   // Includes facilities for running RGEs
+   // This is the interface class that most module-writers see
+   class SubSpectrum
    {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTget MTget;
-      const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-
-      /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
-                              .omap0(  overridecoll.m0 ) 
-                              .omap1( overridecoll.m1 )
-                              .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 )
-                              .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
-      if( finder.find(name,true,check_antiparticle) ){ return finder.callfcn(); }
-      finder.raise_error(LOCAL_INFO);
-      return 0;
-   }                                                                        
  
-   template <class PhysOrRun, class PT>
-   void CommonDer<PhysOrRun,PT>::set(const PT partype, const double set_value, const str& name, SafeBool check_antiparticle)
-   {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTset MTset;
-      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+      public:
+         /// @{ Constructors/destructors
+	 SubSpectrum() : override_maps(create_override_maps()) {}      
+	 virtual ~SubSpectrum() {} 
+	 /// @}
 
-      /* Before trying to set parameter, check if there is an override defined
-         for it, so that we can warn people that the value they are trying to
-         set will be masked by the override */
-      const OverrideMaps overridecoll = derivedthis->get_override_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Set> override_finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
-                              .omap0( overridecoll.m0 ) 
-                              .omap1( overridecoll.m1 )
-                              .override_only(true); // switch to permit search of only override maps
-      if( override_finder.find(name,true,check_antiparticle) )
-      { 
-        std::ostringstream errmsg;           
-        errmsg << "Warning from SubSpectrum object while trying to manually set a parameter!" << std::endl;
-        errmsg << "An override entry was detected for "<<Par::toString.at(partype)<<" with string reference '"<<name<<"'. The override value will hide the value I have been instructed to set." <<std::endl;
-        utils_warning().raise(LOCAL_INFO,errmsg.str());
-      }
-      // else no problem
+         /// @{ Main public interface functions
 
-      /* Create finder object, tell it what maps to search, and do the search */
-      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Set> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
-                              .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 )
-                              .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
-      if( finder.find(name,true,check_antiparticle) ){ finder.callfcn(set_value); }
-      else { finder.raise_error(LOCAL_INFO); }
-   }                                                                        
-   /// @}
-   /// @{ One index
-   template <class PhysOrRun, class PT>
-   bool CommonDer<PhysOrRun,PT>::has(const PT partype, const str& name, int i, SafeBool check_antiparticle) const
-   {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTget MTget;
-      const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-
-      /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
-                              .omap0( overridecoll.m0 ) 
-                              .omap1( overridecoll.m1 )
-                              .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 )
-                              .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
-      return finder.find(name,i,true,check_antiparticle);                                             
-   }                                                                        
-
-   template <class PhysOrRun, class PT>
-   double CommonDer<PhysOrRun,PT>::get(const PT partype, const str& name, int i, SafeBool check_antiparticle) const
-   {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTget MTget;
-      const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-
-      /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
-                              .omap0( overridecoll.m0 ) 
-                              .omap1( overridecoll.m1 )
-                              .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
-                              .map1(  mapcoll.map1 )
-                              .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
-     if( finder.find(name,i,true,check_antiparticle) ){ return finder.callfcn(); }
-     finder.raise_error(LOCAL_INFO);
-     return 0;
-   }                                                                        
+	 /// Get name
+         virtual std::string getName() const = 0;
  
-   template <class PhysOrRun, class PT>
-   void CommonDer<PhysOrRun,PT>::set(const PT partype, const double set_value, const str& name, int i, SafeBool check_antiparticle)
-   {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTset MTset;
-      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+         /// Clone the SubSpectrum object
+         virtual std::unique_ptr<SubSpectrum> clone() const = 0;
+      
+         /// Dump out spectrum information to an SLHA file (if possible)
+         virtual void getSLHA(const str&) const;
 
-      /* Before trying to set parameter, check if there is an override defined
-         for it, so that we can warn people that the value they are trying to
-         set will be masked by the override */
-      const OverrideMaps overridecoll = derivedthis->get_override_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Set> override_finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
-                              .omap0( overridecoll.m0 ) 
-                              .omap1( overridecoll.m1 )
-                              .override_only(true); // switch to permit search of only override maps
-      if( override_finder.find(name,i,true,check_antiparticle) )
-      { 
-        std::ostringstream errmsg;           
-        errmsg << "Warning from SubSpectrum object while trying to manually set a parameter!" << std::endl;
-        errmsg << "An override entry was detected for "<<Par::toString.at(partype)<<" with string reference '"<<name<<"', index '"<<i<<"'. The override value will hide the value I have been instructed to set." <<std::endl;
-        utils_warning().raise(LOCAL_INFO,errmsg.str());
-      }
-      // else no problem
+         /// Get spectrum information in SLHAea format (if possible)
+         virtual SLHAstruct getSLHAea() const;
 
-      /* Create finder object, tell it what maps to search, and do the search */
-      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Set> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
-                              .map0(  mapcoll.map0 )       
-                              .map0M( mapcoll.map0_extraM )
-                              .map0I( mapcoll.map0_extraI )
-                              .map1( mapcoll.map1 ) 
-                              .map1M( mapcoll.map1_extraM )
-                              .map1I( mapcoll.map1_extraI );
-     if( finder.find(name,i,true,check_antiparticle) ){ finder.callfcn(set_value); }
-      else { finder.raise_error(LOCAL_INFO); }
-   }                                                                        
+         /// Add spectrum information to an SLHAea object (if possible)
+         virtual void add_to_SLHAea(SLHAstruct&) const {}
+         
+         /// There may be more than one *new* stable particle
+         ///  this method will tell you how many.
+         /// If more than zero you probbaly *need* to know what model
+         ///  you are working on, so we don't give all stable particles
+         virtual int get_numbers_stable_particles() const { vfcn_error(LOCAL_INFO); return -1; }  
+     
+         /// Limits to RGE running; warning/error raised if running beyond these is attempted.
+         /// If these aren't overridden in the derived class then effectively no limit on running will exist.
+         /// These are public so that module writers can use them to check what the limits are.
+         virtual double hard_upper() const {return DBL_MAX;}
+         virtual double soft_upper() const {return DBL_MAX;}
+         virtual double soft_lower() const {return 0.;}
+         virtual double hard_lower() const {return 0.;}
+    
+         /// @{ Functions to be overridden in classes derived from Spec<Derived> 
+         /// (i.e. the final wrappers)
 
-   /// @}
-   /// @{ Two indices
+         /// Run spectrum to new scale
+         virtual void RunToScaleOverride(double) { vfcn_error(LOCAL_INFO); }
+         /// Returns the renormalisation scale of parameters
+         virtual double GetScale() const { vfcn_error(LOCAL_INFO); return -1;}
+         /// Manually set the renormalisation scale of parameters 
+         /// somewhat dangerous to allow this but may be needed
+         virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
 
-   template <class PhysOrRun, class PT>
-   bool CommonDer<PhysOrRun,PT>::has(const PT partype, const str& name, int i, int j) const
-   {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTget MTget;
-      const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-
-      /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
-                              .omap2( overridecoll.m2 )
-                              .map2( mapcoll.map2 )
-                              .map2M( mapcoll.map2_extraM )
-                              .map2I( mapcoll.map2_extraI );
-     return finder.find(name,i,j);
-   }                                                                        
-
-   template <class PhysOrRun, class PT>
-   double CommonDer<PhysOrRun,PT>::get(const PT partype, const str& name, int i, int j) const
-   {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTget MTget;
-      const PhysOrRun* derivedthis = static_cast<const PhysOrRun*>(this); 
-
-      /* Create finder object, tell it what maps to search, and do the search */
-      const OverrideMaps         overridecoll = derivedthis->get_override_maps.at(partype);
-      const MapCollection<MTget> mapcoll      = derivedthis->getter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Get> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Get>(Par::toString.at(partype),derivedthis)
-                              .omap2( overridecoll.m2 )
-                              .map2( mapcoll.map2 )
-                              .map2M( mapcoll.map2_extraM )
-                              .map2I( mapcoll.map2_extraI );
-      if( finder.find(name,i,j) ){ return finder.callfcn(); }
-      finder.raise_error(LOCAL_INFO);
-      return 0;
-   }                                                                        
+         /// @}
  
-   template <class PhysOrRun, class PT>
-   void CommonDer<PhysOrRun,PT>::set(const PT partype, const double set_value, const str& name, int i, int j)
-   {
-      typedef typename PhysOrRun::DT DT;
-      typedef typename PhysOrRun::MTset MTset;
-      PhysOrRun* derivedthis = static_cast<PhysOrRun*>(this); 
+         /// Run spectrum to a new scale
+         /// This function is a wrapper for RunToScaleOverride which automatically checks limits and
+         /// raises warnings.
+         // Behaviour modified by "behave" integer:
+         // behave = 0  -- If running beyond soft limit requested, halt at soft limit
+         //                (assumes hard limits outside of soft limits; but this is not enforced)
+         // behave = 1  -- If running beyond soft limit requested, throw warning
+         //                  "           "   hard limit     "    , throw error
+         // behave = anything else -- Ignore limits and attempt running to requested scale 
+         void RunToScale(double scale, int behave = 0);
+         
+         /// Getters/Setters etc.        
 
-      /* Create finder object, tell it what maps to search, and do the search */
-      const MapCollection<MTset> mapcoll = derivedthis->setter_maps.at(partype);
-      FptrFinder<DT,PhysOrRun,MapTag::Set> finder =                                
-                       SetMaps<DT,PhysOrRun,MapTag::Set>(Par::toString.at(partype),derivedthis)
-                              .map2( mapcoll.map2 )
-                              .map2M( mapcoll.map2_extraM )
-                              .map2I( mapcoll.map2_extraI );
-      if( finder.find(name,i,j) ){ finder.callfcn(set_value); }
-      else { finder.raise_error(LOCAL_INFO); }
-   }                                                                        
+         /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
+         /* note: set check_antiparticle = SafeBool(false) to disable matching on antiparticle entries */
+         virtual bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const = 0;
+         virtual bool   has(const Par::Tags, const str&, int, int) const = 0;
+         virtual double get(const Par::Tags, const str&, int, int) const = 0;
 
-   /// @}
+         /* Setter declarations, for setting parameters in a derived model object,
+            and for overriding model object values with values stored outside
+            the model object (for when values cannot be inserted back into the
+            model object)
+            Note; these are NON-CONST */
+         virtual void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true)) = 0;
+         virtual void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true)) = 0;
+         virtual void set(const Par::Tags, const double, const str&, int, int) = 0;
 
-   /// @}
+         /* The parameter overrides are handled entirely by this base class, so
+            they are not virtual.  */
+         void set_override(const Par::Tags, const double, const str&, const bool safety = true);
+         void set_override(const Par::Tags, const double, const str&, const int, const bool safety = true);
+         void set_override(const Par::Tags, const double, const str&, const int, const int, const bool safety = true);
 
-}
+         /* Helpers for override functions which take parameter names and indices as vectors, and
+            loop over them, to make it easy to set many parameters to the same value.
+            No two-index versions at the moment, but could be added if needed. */
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, bool safety = true);
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const std::vector<int>, bool safety = true);
+         void set_override_vector(const Par::Tags, const double, const std::vector<str>&, const int, bool safety = true);
+         void set_override_vector(const Par::Tags, const double, const str&, const std::vector<int>, bool safety = true);
+
+         /* Overloads of getter/checker functions to allow access using PDG codes */
+         /* as defined in Models/src/particle_database.cpp */
+         /* These don't have to be virtual; they just call the virtual functions in the end. */
+         bool   has(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         double get(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         bool   has(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         double get(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         bool   has(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+         double get(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+
+         /// @{ PDB overloads for setters
+
+         /* Input PDG code plus context integer */
+         void set_override(const Par::Tags, const double, const int, const int,     const bool safety = true);  
+         void set_override(const Par::Tags, const double, const std::pair<int,int>, const bool safety = true);
+
+         /* Input short name plus index */
+         void set_override(const Par::Tags, const double, const std::pair<str,int>, const bool safety = true);
+
+         /// @}
+
+         /// TODO: extra PDB overloads to handle all the one and two index cases (well all the ones that are feasible...)
+
+
+         /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+         virtual const std::map<int, int>& PDG_translator() const { return empty_map; }
+
+     private:
+
+         const std::map<int, int> empty_map;
+
+         /// Initialiser function for override_maps
+         static std::map<Par::Tags,OverrideMaps> create_override_maps();
+
+     protected:
+         /// Map of override maps
+         std::map<Par::Tags,OverrideMaps> override_maps;
+
+   };
+  
+} // end namespace Gambit
+
+// Undef the various helper macros to avoid contaminating other files
+#undef PDB
 
 #endif

@@ -105,6 +105,36 @@ BE_INI_FUNCTION
 
     }
 
+    // Initialization of local DM halo parameters.
+    if (ModelInUse("LocalHalo")) {
+      double rho0 = *Param["rho0"];
+      double vrot = *Param["vrot"];
+      double vearth = *Param["vearth"];
+      double vd_3d = sqrt(3./2.)*(*Param["v0"]);
+      double vesc = *Param["vesc"];
+
+      dshmcom->rho0 = rho0;
+      dshmcom->rhox = rho0;
+      dshmcom->v_sun = vrot;
+      dshmcom->v_earth = vearth;
+
+      dshmframevelcom->v_obs = vrot;
+
+      dshmisodf->vd_3d = vd_3d;
+      dshmisodf->vgalesc = vesc;
+
+      dshmnoclue->vobs = vrot;
+
+      logger() << "Updating DarkSUSY halo parameters:" << EOM;
+      logger() << "    rho0 [GeV/cm^3] = " << rho0 << EOM;
+      logger() << "    rho0_eff [GeV/cm^3] = " << rho0 << EOM;
+      logger() << "    v_sun [km/s]  = " << vrot<< EOM;
+      logger() << "    v_earth [km/s]  = " << vearth << EOM;
+      logger() << "    v_obs [km/s]  = " << vrot << EOM;
+      logger() << "    vd_3d [km/s]  = " << vd_3d << EOM;
+      logger() << "    v_esc [km/s]  = " << vesc << EOM;
+    }
+
 }
 END_BE_INI_FUNCTION
 
@@ -182,14 +212,23 @@ BE_NAMESPACE
     int istat = 0;
     const char object[3] = "su";
     double result = 1e-30 * dsntmuonyield(pow(10.0,log10E),10.0,object[0],3,1,ptype,istat);
-    if (istat == 1)
+    if ((istat bitand 1) == 1)
     {
-      if (not piped_warnings.inquire()) // Don't bother re-raising this warning if it's already been done since the last .check().
+      if (not piped_warnings.inquire()) // Don't bother re-raising a warning if it's already been done since the last .check().
         piped_warnings.request(LOCAL_INFO, "Neutrino yield from Sun is lower bound; likelihood will be conservative.");
     }
-    else if (istat > 1)
+    if ((istat bitand 4) == 4)
     {
-      piped_errors.request(LOCAL_INFO, "Inaccessible final state requested in neutrino flux calculation.");
+      if (not piped_warnings.inquire()) // Don't bother re-raising a warning if it's already been done since the last .check().
+        piped_warnings.request(LOCAL_INFO, "DarkSUSY's dswayiled_int didn't converge. This occasionally happens "
+                                           "due to finite statistics in the nu yield tables from Pythia. "
+                                           "This is benign (the missing integrals are always negligible).");
+    }    
+    if (istat > 4)
+    {
+      std::ostringstream err;
+      err << "Error from DarkSUSY::dswayield functions in neutrino flux calculation.  istat = " << istat;      
+      piped_errors.request(LOCAL_INFO, err.str());
     }
     return result;
   }

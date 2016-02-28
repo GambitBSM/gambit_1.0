@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/MSSMskeleton.hpp" 
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp" 
 #include "gambit/Utils/util_functions.hpp" 
 #include "gambit/Utils/variadic_functions.hpp" 
 #include "gambit/Logs/logger.hpp"
@@ -25,15 +25,6 @@ using namespace SLHAea;
 
 namespace Gambit
 {
-
-      /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MTget; 
-      //typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Set> MTset; 
-
-      typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-      //typedef std::map<Par::Phys,MapCollection<MTset>> PhysSetterMaps; 
-      typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
-      //typedef std::map<Par::Running,MapCollection<MTset>> RunningSetterMaps; 
 
       /// Helper function for sorting int, double pairs according to the double
       bool orderer (std::pair<int, double> a, std::pair<int, double> b) { return a.second < b.second; }
@@ -66,7 +57,7 @@ namespace Gambit
           {
             utils_error().raise(LOCAL_INFO, "SLHA file appears to be neither SLHA1 nor SLHA2.");
           }
-          logger() << "SLHA for setting up skeleton spectrum is SLHA1.  You old dog." << EOM;
+          logger() << "SLHA for setting up simple spectrum is SLHA1.  You old dog." << EOM;
 
           //Looks like it is SLHA1, so convert it to SLHA2.
           int lengths[4] = {6, 6, 6, 3};
@@ -128,7 +119,7 @@ namespace Gambit
 
         }
 
-        else logger() << "SLHA for setting up skeleton spectrum is SLHA2.  *living in the future*" << EOM;       
+        else logger() << "SLHA for setting up simple spectrum is SLHA2.  *living in the future*" << EOM;       
 
       }
 
@@ -257,27 +248,26 @@ namespace Gambit
       /// @}
 
 
-      /// @{ Member functions for MSSMskeleton class
+      /// @{ Member functions for MSSMSimpleSpec class
 
       /// @{ Constructors 
  
       /// Default Constructor
-      MSSMskeleton::MSSMskeleton(double uncert) 
-        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >()
+      MSSMSimpleSpec::MSSMSimpleSpec(double uncert) 
       {
         set_pole_mass_uncertainties(uncert);
       }
 
       /// Constructor via SLHAea object
-      MSSMskeleton::MSSMskeleton(const SLHAea::Coll& input, double uncert)
-        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >(input)
+      MSSMSimpleSpec::MSSMSimpleSpec(const SLHAea::Coll& input, double uncert)
+        : SLHASimpleSpec(input)
       {
         set_pole_mass_uncertainties(uncert);
       }
 
       /// Copy constructor: needed by clone function.
-      MSSMskeleton::MSSMskeleton(const MSSMskeleton& other, double uncert)
-        : SLHAskeleton<MSSMskeleton,SLHAskeletonTraits<MSSMea> >(other)
+      MSSMSimpleSpec::MSSMSimpleSpec(const MSSMSimpleSpec& other, double uncert)
+        : SLHASimpleSpec(other)
       {
         set_pole_mass_uncertainties(uncert);
       }
@@ -285,19 +275,19 @@ namespace Gambit
       /// @}  
 
       /// Ofset from user-input indices (user assumes 1,2,3 indexed, e.g. use offset=-1 for zero-indexing)
-      int MSSMskeleton::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions.
+      int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions.
 
       /// Retrieve SLHAea object
-      SLHAea::Coll MSSMskeleton::getSLHAea() const { return slhawrap.getSLHAea(); } 
+      SLHAea::Coll MSSMSimpleSpec::getSLHAea() const { return slhawrap.getSLHAea(); } 
 
       /// Add SLHAea object to another
-      void MSSMskeleton::add_to_SLHAea(SLHAea::Coll& slha) const { return slhawrap.add_to_SLHAea(slha); } 
+      void MSSMSimpleSpec::add_to_SLHAea(SLHAea::Coll& slha) const { return slhawrap.add_to_SLHAea(slha); } 
 
       /// Retrieve the PDG translation map
-      const std::map<int, int>& MSSMskeleton::PDG_translator() const { return slhawrap.PDG_translator(); }
+      const std::map<int, int>& MSSMSimpleSpec::PDG_translator() const { return slhawrap.PDG_translator(); }
 
       /// Set pole mass uncertainties
-      void MSSMskeleton::set_pole_mass_uncertainties(double uncert)
+      void MSSMSimpleSpec::set_pole_mass_uncertainties(double uncert)
       {
         const std::vector<int> i12        = initVector(1,2);
         const std::vector<int> i123       = initVector(1,2,3);
@@ -307,30 +297,41 @@ namespace Gambit
         const std::vector<str> sbosons2   = initVector<str>("~chi+","~chi-","h0"); 
         const std::vector<str> sfermions1 = initVector<str>("~u","~d","~e-","~ubar","~dbar","~e+");
         const std::vector<str> sfermions2 = initVector<str>("~nu","~nubar");
-        phys().set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions1, i123456, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sfermions1, i123456, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions2, i123, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sfermions2, i123, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_high, uncert, sbosons1, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons1, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_high, uncert, sbosons2, i12, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons2, i12, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_high, uncert, "~chi0", i1234, false);
-        phys().set_override_vector(Par::Pole_Mass_1srd_low,  uncert, "~chi0", i1234, false);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions1, i123456, false);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sfermions1, i123456, false);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sfermions2, i123, false);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sfermions2, i123, false);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sbosons1, false);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons1, false);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, sbosons2, i12, false);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, sbosons2, i12, false);
+        set_override_vector(Par::Pole_Mass_1srd_high, uncert, "~chi0", i1234, false);
+        set_override_vector(Par::Pole_Mass_1srd_low,  uncert, "~chi0", i1234, false);
       } 
 
       // Map fillers    
 
-      RunningGetterMaps MSSMskeleton::runningpars_fill_getter_maps()
+      MSSMSimpleSpec::GetterMaps MSSMSimpleSpec::fill_getter_maps()
       {
-         RunningGetterMaps map_collection; 
+         GetterMaps map_collection; 
          
+         typedef MTget::FInfo1 FInfo1;
          typedef MTget::FInfo2 FInfo2;
+   
+         // Can't use c++11 initialiser lists, se have to initialise the index sets like this.
+         static const int i12v[] = {1,2};
+         static const std::set<int> i12(i12v, Utils::endA(i12v));
 
-         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
          static const int i123v[] = {1,2,3};
          static const std::set<int> i123(i123v, Utils::endA(i123v));
+
+         static const int i1234v[] = {1,2,3,4};
+         static const std::set<int> i1234(i1234v, Utils::endA(i1234v));
+
+         static const int i123456v[] = {1,2,3,4,5,6};
+         static const std::set<int> i123456(i123456v, Utils::endA(i123456v));
  
+         // Running parameters
          {
             MTget::fmap0 tmp_map;
             tmp_map["BMu"] = &Model::get_BMu;
@@ -383,28 +384,8 @@ namespace Gambit
             tmp_map["Ye"]= FInfo2( &Model::get_Ye, i123, i123);
             map_collection[Par::dimensionless].map2 = tmp_map;
          }
-         return map_collection;
-      }
-     
-      PhysGetterMaps MSSMskeleton::phys_fill_getter_maps()
-      {
-         PhysGetterMaps map_collection; 
 
-         typedef MTget::FInfo1 FInfo1;
-         typedef MTget::FInfo2 FInfo2;
-   
-         static const int i12v[] = {1,2};
-         static const std::set<int> i12(i12v, Utils::endA(i12v));
-
-         static const int i123v[] = {1,2,3};
-         static const std::set<int> i123(i123v, Utils::endA(i123v));
-
-         static const int i1234v[] = {1,2,3,4};
-         static const std::set<int> i1234(i1234v, Utils::endA(i1234v));
-
-         static const int i123456v[] = {1,2,3,4,5,6};
-         static const std::set<int> i123456(i123456v, Utils::endA(i123456v));
-
+         // "Physical" parameters
          {
             MTget::fmap0 tmp_map;
             tmp_map["~g"] = &Model::get_MGlu_pole; 
@@ -446,8 +427,10 @@ namespace Gambit
             tmp_map["~chi+"] = FInfo2( &Model::get_UP_pole_slha, i12, i12);
             map_collection[Par::Pole_Mixing].map2 = tmp_map;
          }
+
          return map_collection;
       }
+     
       
 } // end Gambit namespace
 

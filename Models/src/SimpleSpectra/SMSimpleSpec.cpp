@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/SMskeleton.hpp" 
+#include "gambit/Models/SimpleSpectra/SMSimpleSpec.hpp" 
 #include "gambit/Utils/util_functions.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
@@ -36,11 +36,6 @@ using namespace SLHAea;
 
 namespace Gambit
 {
-
-      /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
-      typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-      typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
 
       /// @{ Member functions for SLHAeaModel class
            
@@ -100,39 +95,38 @@ namespace Gambit
       /// @}
 
 
-      /// @{ Member functions for SMskeleton class
+      /// @{ Member functions for SMSimpleSpec class
 
       /// @{ Constructors 
  
       /// Default Constructor
-      SMskeleton::SMskeleton() 
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >()
+      SMSimpleSpec::SMSimpleSpec() 
       {}
 
       /// Constructor via SLHAea object
-      SMskeleton::SMskeleton(const SLHAea::Coll& input)
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >(input)
+      SMSimpleSpec::SMSimpleSpec(const SLHAea::Coll& input)
+        : SLHASimpleSpec(input)
       {}
 
       /// Copy constructor: needed by clone function.
-      SMskeleton::SMskeleton(const SMskeleton& other)
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >(other)
+      SMSimpleSpec::SMSimpleSpec(const SMSimpleSpec& other)
+        : SLHASimpleSpec(other)
       {} 
 
       /// @}  
        
       /// Hardcoded to return SLHA2 defined scale of light quark MSbar masses in SMINPUTS block (2 GeV)
-      double SMskeleton::GetScale() const { return 2; }
+      double SMSimpleSpec::GetScale() const { return 2; }
       
       /// @}
       
       // Map fillers
 
-      RunningGetterMaps SMskeleton::runningpars_fill_getter_maps()
+      SMSimpleSpec::GetterMaps SMSimpleSpec::fill_getter_maps()
       {
-         RunningGetterMaps map_collection; 
+         GetterMaps map_collection; 
 
-         /// Filler for mass1 map 
+         /// Fill for mass1 map 
          {
             MTget::fmap0 tmp_map;
 
@@ -142,14 +136,8 @@ namespace Gambit
  
             map_collection[Par::mass1].map0 = tmp_map;
          }
-         return map_collection;
-      }
 
-      PhysGetterMaps SMskeleton::phys_fill_getter_maps()
-      {
-         PhysGetterMaps map_collection; 
-
-         /// Filler for Pole_mass map (from Model object)
+         /// Fill Pole_mass map (from Model object)
          {
             { //local scoping block
               MTget::fmap0 tmp_map;
@@ -180,6 +168,7 @@ namespace Gambit
               map_collection[Par::Pole_Mixing].map0 = tmp_map;
             }
          }
+
          return map_collection;
       }
 

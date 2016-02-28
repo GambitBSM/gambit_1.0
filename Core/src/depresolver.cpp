@@ -113,16 +113,13 @@ namespace Gambit
 
     // Check whether quantity matches observableType
     // Matches capability and type
-    bool quantityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable)
+    bool quantityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable, const Utils::type_equivalency & eq)
     {
       // Compares dependency specifications of rules entries or observable
       // entries with capability (capabilities have to be unique for these
-      // lists))
-      // FIXME: Add type equivalence stuff
-      if ( stringComp( observable.capability, quantity.first ) and
-           stringComp( observable.type, quantity.second ))
-          return true;
-      else return false;
+      // lists)
+      return ( stringComp( observable.capability, quantity.first ) and
+               typeComp  ( observable.type,       quantity.second, eq ));
     }
 
     // Check whether quantity matches observableType
@@ -131,21 +128,29 @@ namespace Gambit
     {
       // Compares dependency specifications of rules entries or observable
       // entries with capability (capabilities have to be unique for these
-      // lists))
-      if ( stringComp( observable.capability, quantity.first ) ) return true;
-      else return false;
+      // lists)
+      return ( stringComp( observable.capability, quantity.first ) );
     }
 
-    // Check whether functor matches observableType
+    // Check whether functor matches ObservableType
     // Matches capability, type, function and module name
-    bool funcMatchesIniEntry(functor *f, const IniParser::ObservableType &e, const Utils::type_equivalency & eq)
+    bool moduleFuncMatchesIniEntry(functor *f, const IniParser::ObservableType &e, const Utils::type_equivalency & eq)
     {
-      if (     stringComp( e.capability, (*f).capability() )
-           and typeComp( e.type, (*f).type(), eq)
-           and stringComp( e.function, (*f).name() )
-           and stringComp( e.module, (*f).origin() ) )
-           return true;
-      else return false;
+      return (e.capability != "" ? stringComp(e.capability, f->capability()) : true)
+         and (e.type       != "" ? typeComp  (e.type,       f->type(), eq)   : true)
+         and (e.function   != "" ? stringComp(e.function,   f->name())       : true)
+         and (e.module     != "" ? stringComp(e.module,     f->origin())     : true);
+    }
+
+    // Check whether functor matches ObservableType
+    // Matches capability, type, function and backend name
+    bool backendFuncMatchesIniEntry(functor *f, const IniParser::ObservableType &e, const Utils::type_equivalency & eq)
+    {
+      return (e.capability != "" ? stringComp(e.capability, f->capability()) : true)
+         and (e.type       != "" ? typeComp  (e.type,       f->type(), eq)   : true)
+         and (e.function   != "" ? stringComp(e.function,   f->name())       : true)
+         and (e.backend    != "" ? stringComp(e.backend,    f->origin())     : true)
+         and (e.version    != "" ? stringComp(e.version,    f->version())    : true);
     }
 
     // Get entry level relevant for options
@@ -611,7 +616,7 @@ namespace Gambit
         //      threads other than the main one need to be accessed with
         //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter,pointID);
+        if (not typeComp(masterGraph[*it]->type(),  "void", *boundTEs, false)) masterGraph[*it]->print(boundPrinter,pointID);
         //masterGraph[*it]->print(boundPrinter,pointID); // (module) functors now avoid trying to print void types by themselves.
       }
     }
@@ -899,7 +904,7 @@ namespace Gambit
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
-        if ( funcMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) )
+        if ( moduleFuncMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) )
         {
           cout << "Getting option from: " << it->capability << " " << it->type << endl;
           for (auto jt = it->options.begin(); jt != it->options.end(); ++jt)
@@ -959,11 +964,10 @@ namespace Gambit
       {
         // Match capabilities and types (no type comparison when no types are
         // given; this can only apply to output nodes).
-        if ( masterGraph[*vi]->capability() == quantity.first and
-             (masterGraph[*vi]->type() == quantity.second or
-              quantity.second == "" or quantity.second == "*") and
-             *vi != toVertex  // No self-resolution
-           )
+        if ( stringComp(masterGraph[*vi]->capability(), quantity.first) and
+             *vi != toVertex and // No self-resolution
+             ( quantity.second == "" or quantity.second == "*" or
+               typeComp(masterGraph[*vi]->type(), quantity.second, *boundTEs, false) ) )
         {
           // Add vertex to appropriate candidate list
           if (masterGraph[*vi]->status() > 0)
@@ -1010,7 +1014,7 @@ namespace Gambit
         {
           {
             // Evaluate "dependencies" section
-            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and
+            if (moduleFuncMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and
                 (it->capability != "" or it->function != "" or
                  it->type != "" or it->module != ""))
             {
@@ -1018,7 +1022,7 @@ namespace Gambit
                   it2 = (*it).dependencies.begin();
                   it2 != (*it).dependencies.end(); ++it2)
               {
-                if (quantityMatchesIniEntry(quantity, *it2) and
+                if (quantityMatchesIniEntry(quantity, *it2, *boundTEs) and
                     (it2->capability != "" or it2->type != "") and
                     (it2->function != "" or it2->module != ""))
                 {
@@ -1029,7 +1033,7 @@ namespace Gambit
               }
             }
             // Evaluate "functionChain:" section
-            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and
+            if (moduleFuncMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and
                 it->capability != "" and
                 it->function == "" and
                 (*it).functionChain.size() > 1)
@@ -1047,7 +1051,7 @@ namespace Gambit
               }
             }
             // Evaluate second order rules
-            if (quantityMatchesIniEntry(quantity, *it) and
+            if (quantityMatchesIniEntry(quantity, *it, *boundTEs) and
                 it->dependencies.size()==0 and
                 (it->capability != "" or it->type != "") and
                 (it->function != "" or it->module != ""))
@@ -1066,7 +1070,7 @@ namespace Gambit
         for (IniParser::ObservablesType::const_iterator it =
             entries.begin(); it != entries.end(); ++it)
         {
-          if (quantityMatchesIniEntry(quantity, *it) and
+          if (quantityMatchesIniEntry(quantity, *it, *boundTEs) and
               (it->capability != "" or it->type != "") and
               (it->function != "" or it->module != ""))
           {
@@ -1080,7 +1084,7 @@ namespace Gambit
         for (IniParser::ObservablesType::const_iterator it =
             entries2.begin(); it != entries2.end(); ++it)
         {
-          if (quantityMatchesIniEntry(quantity, *it) and
+          if (quantityMatchesIniEntry(quantity, *it, *boundTEs) and
               it->dependencies.size()==0 and
               (it->capability != "" or it->type != "") and
               (it->function != "" or it->module != ""))
@@ -1241,11 +1245,12 @@ namespace Gambit
           // Without inifile entry, just match capabilities and types (no type
           // comparison when no types are given; this should only happen for
           // output nodes)
-          if ( ( masterGraph[*vi]->capability() == quantity.first and
-                ( masterGraph[*vi]->type() == quantity.second  or quantity.second == "" ) )
+          if ( ( stringComp(masterGraph[*vi]->capability(), quantity.first) and
+                 ( quantity.second == "" or quantity.second == "*" or
+                   typeComp(masterGraph[*vi]->type(), quantity.second, *boundTEs, false) ) )
           // with inifile entry, we check capability, type, function name and
           // module name.
-            and ( entryExists ? funcMatchesIniEntry(masterGraph[*vi], *depEntry, *boundTEs) : true ) )
+            and ( entryExists ? moduleFuncMatchesIniEntry(masterGraph[*vi], *depEntry, *boundTEs) : true ) )
           {
             // Add to vertex candidate list
             vertexCandidates.push_back(*vi);
@@ -1315,8 +1320,8 @@ namespace Gambit
         else
         {
             errmsg += "I found too many module functions that provide ";
-            errmsg += quantity.first + " (" + quantity.second + ") ["
-                + depEntry->function + ", " + depEntry->module + "]"
+            errmsg += quantity.first + " (" + quantity.second + ") \n"
+                + "\nneeded by " + depEntry->module + "::" + depEntry->function
                 +  "\nCheck your inifile for typos, your modules for consistency, etc.";
         }
         if ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
@@ -1544,7 +1549,7 @@ namespace Gambit
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
-        if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
+        if ( moduleFuncMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
         {
           auxEntryCandidates.push_back(&(*it));
         }
@@ -1703,23 +1708,23 @@ namespace Gambit
       std::vector<functor *> disabledVertexCandidates;
 
       // Loop over all existing backend vertices, and make a list of
-      // functors that are available and fulfill the backend dependency requirement
+      // functors that are available and fulfill the backend requirement
       for (std::vector<functor *>::const_iterator
           itf  = boundCore->getBackendFunctors().begin();
           itf != boundCore->getBackendFunctors().end();
           ++itf)
       {
-        const IniParser::ObservableType * depEntry = NULL;
+        const IniParser::ObservableType * reqEntry = NULL;
         bool entryExists = false;
 
         // Find relevant iniFile entry from Rules section
-        if ( auxEntry != NULL ) depEntry = findIniEntry((*itf)->quantity(), (*auxEntry).backends, "backend");
-        if ( auxEntry != NULL and depEntry != NULL) entryExists = true;
+        if ( auxEntry != NULL ) reqEntry = findIniEntry((*itf)->quantity(), (*auxEntry).backends, "backend");
+        if ( reqEntry != NULL) entryExists = true;
 
         // Without inifile entry, just match any capability-type pair exactly.
         if ( std::find(reqs.begin(), reqs.end(), (*itf)->quantity()) != reqs.end()
-        // With inifile entry, we also check capability, type, function name and module name.
-        and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry, *boundTEs) : true ) )
+        // With inifile entry, we also check capability, type, function name and backend name.
+        and ( entryExists ? backendFuncMatchesIniEntry(*itf, *reqEntry, *boundTEs) : true ) )
         {
 
           // Has the backend vertex already been disabled by the backend system?
@@ -1843,7 +1848,8 @@ namespace Gambit
       {
         std::ostringstream errmsg;
         errmsg
-          << "Found no candidates for backend requirements (capability, type):\n"
+          << "Found no candidates for backend requirements of "
+          << masterGraph[vertex]->origin() << "::" << masterGraph[vertex]->name() << ":\n"
           << reqs << "\nfrom group: " << group;
         if (disabledVertexCandidates.size() != 0)
         {
@@ -1905,9 +1911,10 @@ namespace Gambit
         else  // If not, the game is up.
         {
           str errmsg = "Found too many candidates for backend requirement ";
-          if (reqs.size() == 1) errmsg += reqs.begin()->first + " (" + reqs.begin()->second + ")...";
-          else errmsg += "group " + group + ".";
-          errmsg += "\nViable candidates are:\n" + printGenericFunctorList(vertexCandidates);
+          if (reqs.size() == 1) errmsg += reqs.begin()->first + " (" + reqs.begin()->second + ")";
+          else errmsg += "group " + group;
+          errmsg += " of module function " + masterGraph[vertex]->origin() + "::" + masterGraph[vertex]->name()
+           + "\nViable candidates are:\n" + printGenericFunctorList(vertexCandidates);
           dependency_resolver_error().raise(LOCAL_INFO,errmsg);
         }
       }

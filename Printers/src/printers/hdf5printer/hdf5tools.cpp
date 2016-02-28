@@ -20,6 +20,7 @@
 ///  *********************************************
 
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
+#include "gambit/Utils/local_info.hpp"
 #include "gambit/Logs/logger.hpp"
 
 #include <stdio.h>

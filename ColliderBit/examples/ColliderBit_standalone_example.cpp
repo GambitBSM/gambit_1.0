@@ -17,8 +17,8 @@
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
-#include "gambit/Elements/MSSMskeleton.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 
 using namespace ColliderBit::Accessors;     // Helper functions that provide some info about the module
 using namespace ColliderBit::Functown;      // Functors wrapping the module's actual module functions
@@ -46,7 +46,7 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(const Spectrum *& outSpec){
       static Spectrum mySpec;
-      mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);     
+      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
       outSpec = &mySpec;
     }
     
@@ -181,7 +181,7 @@ int main()
     // Set up the LHC likelihood calculations
     // WARNING: DO NOT EDIT UNLESS YOU ARE AN EXPERT
     calc_LHC_LogLike.resolveDependency(&runAnalyses);
-    calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_1::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
+    calc_LHC_LogLike.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_lnpiln); //treat systematics with a log normal distribution
     runAnalyses.resolveDependency(&getAnalysisContainer);
     runAnalyses.resolveDependency(&getPythiaFileReader);
     runAnalyses.resolveDependency(&reconstructBuckFastEvent);
@@ -384,7 +384,7 @@ int main()
     {
       
       // Call the initialisation functions for all backends that are in use. 
-      nulike_1_0_1_init.reset_and_calculate();
+      nulike_1_0_2_init.reset_and_calculate();
 
       /*
       // Call the LHC likelihood
