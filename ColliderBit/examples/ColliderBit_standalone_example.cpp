@@ -168,18 +168,16 @@ int main()
     runATLASAnalyses.resolveDependency(&getPythiaFileReader);
     runATLASAnalyses.resolveDependency(&smearEventATLAS);
     getATLASAnalysisContainer.resolveDependency(&getPythiaFileReader);
-    smearEventATLAS.resolveDependency(&convertPythia8ParticleEvent);
+    smearEventATLAS.resolveDependency(&generatePythia8Event);
     smearEventATLAS.resolveDependency(&getBuckFastATLAS);
-    convertPythia8ParticleEvent.resolveDependency(&generatePythia8Event);
     generatePythia8Event.resolveDependency(&getPythiaFileReader);
     getPythiaFileReader.resolveLoopManager(&operateLHCLoop);
     getBuckFastATLAS.resolveLoopManager(&operateLHCLoop);
     getATLASAnalysisContainer.resolveLoopManager(&operateLHCLoop);
     generatePythia8Event.resolveLoopManager(&operateLHCLoop);
-    convertPythia8ParticleEvent.resolveLoopManager(&operateLHCLoop);
     smearEventATLAS.resolveLoopManager(&operateLHCLoop);
     runATLASAnalyses.resolveLoopManager(&operateLHCLoop);
-    std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFastATLAS, &getATLASAnalysisContainer,&generatePythia8Event,&convertPythia8ParticleEvent,&smearEventATLAS,&runATLASAnalyses);
+    std::vector<functor*> nested_functions = initVector<functor*>(&getPythiaFileReader, &getBuckFastATLAS, &getATLASAnalysisContainer, &generatePythia8Event, &smearEventATLAS, &runATLASAnalyses);
     operateLHCLoop.setNestedList(nested_functions);
           
     // ALEPH selectron limits
@@ -315,14 +313,11 @@ int main()
     std::cout << ColliderBit::Pipes::getATLASAnalysisContainer::Dep::HardScatteringSim.origin() << "::";
     std::cout << ColliderBit::Pipes::getATLASAnalysisContainer::Dep::HardScatteringSim.name() << std::endl;
     std::cout << std::endl << "My function smearEventATLAS has had its dependency on ConvertedScatteringEvent filled by:" << endl;
-    std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::ConvertedScatteringEvent.origin() << "::";
-    std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::ConvertedScatteringEvent.name() << std::endl;
+    std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::HardScatteringEvent.origin() << "::";
+    std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::HardScatteringEvent.name() << std::endl;
     std::cout << std::endl << "My function smearEventATLAS has had its dependency on SimpleSmearingSim filled by:" << endl;
     std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::SimpleSmearingSim.origin() << "::";
     std::cout << ColliderBit::Pipes::smearEventATLAS::Dep::SimpleSmearingSim.name() << std::endl;
-    std::cout << std::endl << "My function convertPythia8ParticleEvent has had its dependency on HardScatteringEvent filled by:" << endl;
-    std::cout << ColliderBit::Pipes::convertPythia8ParticleEvent::Dep::HardScatteringEvent.origin() << "::";
-    std::cout << ColliderBit::Pipes::convertPythia8ParticleEvent::Dep::HardScatteringEvent.name() << std::endl;
     std::cout << std::endl << "My function generatePythia8Event has had its dependency on HardScatteringSim filled by:" << endl;
     std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.origin() << "::";
     std::cout << ColliderBit::Pipes::generatePythia8Event::Dep::HardScatteringSim.name() << std::endl;
