@@ -21,6 +21,9 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
+// FIXME Delete this when done testing the file locking
+#include "gambit/Utils/file_lock.hpp"
+
 
 using namespace Gambit;
 using namespace LogTags;
@@ -143,6 +146,16 @@ int main(int argc, char* argv[])
 
     // Initialise the random number generator, letting the RNG class choose its own default.
     Random::create_rng_engine(iniFile.getValueOrDef<str>("default", "rng"));
+
+    /// @{ TODO TEMPORARY!!! JUST TESTING OUT FILE LOCKING
+    {
+      Utils::FileLock mylock("lock_in_gambitcpp");
+      mylock.get_lock();
+      std::cout << "lock turned on!" << std::endl;
+      mylock.release_lock();
+      std::cout << "lock turned off!" << std::endl;
+    }
+    /// @}
 
     // Determine selected model(s)
     std::set<str> selectedmodels = iniFile.getModelNames();
