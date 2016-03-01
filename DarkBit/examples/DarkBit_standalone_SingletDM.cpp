@@ -138,7 +138,7 @@ int main()
   // ---- Initialize backends ----
 
 //  // Initialize nulike backend
-//  Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);  // FIXME: Not nice; Q: Alternatives?
+//  Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);
 //  nulike_1_0_2_init.reset_and_calculate();
   
   // Initialize gamLike backend
@@ -169,7 +169,7 @@ int main()
 //  DarkSUSY_PointInit_MSSM.reset_and_calculate();
 
   // Initialize DDCalc0 backend
-  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);  // FIXME: Isn't there a smarter way?
+  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
   DDCalc0_0_0_init.notifyOfModel("LocalHalo");
   DDCalc0_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DDCalc0_0_0_init.resolveDependency(&RD_fraction_fixed);
