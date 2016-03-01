@@ -30,7 +30,6 @@ namespace Gambit
     {
       using std::ostringstream;
       using std::set;        
-      using std::cout;
       using std::endl;
       using std::pair;
 
@@ -490,7 +489,6 @@ namespace Gambit
       DecayTable::DecayTable(const TH_ProcessCatalog &cat,
           const SimYieldTable &tab, set<string> disabledList)
       {
-        //std::cout << "DecayTable initialization" << std::endl;
         set<string> finalStates;
         // Register all decaying particles and their decays
         for(vector<TH_Process>::const_iterator it = cat.processList.begin();
@@ -500,9 +498,7 @@ namespace Gambit
           if(it->isAnnihilation) continue;
 
           string pID = it->particle1ID;
-          //std::cout << "Final state of interest: " << pID << std::endl;
           if(it->genRateTotal->hasArgs()) continue;
-          // std::cout << "Address of genRateTotal: " << it->genRateTotal << std::endl;
           double m = cat.getParticleProperty(pID).mass;
           double width = it->genRateTotal->bind()->eval();
           bool stable = ((it->channelList).size()<1);
@@ -548,7 +544,6 @@ namespace Gambit
             entry.stable = true;
           }          
           addEntry(pID,entry);
-          // std::cout << "Add entry for: " << table.begin()->first << std::endl;
         }
         // Flag channels where all final final states are stable as endpoints.
         // Loop over all particles
@@ -588,7 +583,6 @@ namespace Gambit
         {
           if(!hasEntry(*it))
           {
-            // std::cout << "register: " << *it << std::endl;
             double m = cat.getParticleProperty(*it).mass;
             addEntry(*it,m,true);
           }
@@ -641,49 +635,50 @@ namespace Gambit
       }
       void DecayTable::printTable() const
       {
-        cout << "DecayTable printout:" << endl;
+        // FXIMEW
+        logger() << "DecayTable printout:" << endl;
         for(unordered_map<string,DecayTableEntry>::const_iterator 
             it = table.begin(); it != table.end(); ++it)
         {
-          cout << "Particle: " <<(it->first) << endl;
-          cout << "Set stable: " << (it->second).stable << endl;
-          cout << "Mass: " <<(it->second).m << endl;
-          cout << "Total width: " << (it->second.getTotalWidth())<< endl;
-          cout << "Enabled branching ratio: " 
+          logger() << "Particle: " <<(it->first) << endl;
+          logger() << "Set stable: " << (it->second).stable << endl;
+          logger() << "Mass: " <<(it->second).m << endl;
+          logger() << "Total width: " << (it->second.getTotalWidth())<< endl;
+          logger() << "Enabled branching ratio: " 
             << (it->second.getEnabledBranching()) << endl;
-          cout << "Enabled decays:" << endl;
+          logger() << "Enabled decays:" << endl;
           int ctr = 0;
           for(vector<const TH_Channel*>::const_iterator 
               it2 = (it->second.enabledDecays).begin();
               it2 != (it->second.enabledDecays).end(); ++it2)
           {
-            cout << ctr << "   ";
+            logger() << ctr << "   ";
             for(vector<string>::const_iterator 
                 it3 = ((*it2)->finalStateIDs).begin();
                 it3 != ((*it2)->finalStateIDs).end(); ++it3)
             {
-              cout << *it3 << ", ";
+              logger() << *it3 << ", ";
             }
             ctr++;
-            cout << "Width: " << getWidth(*it2) << endl;
+            logger() << "Width: " << getWidth(*it2) << endl;
           }
-          cout << "Disabled decays:" << endl;
+          logger() << "Disabled decays:" << endl;
           ctr = 0;
           for(vector<const TH_Channel*>::const_iterator 
               it2 = (it->second.disabledDecays).begin();
               it2 != (it->second.disabledDecays).end(); ++it2)
           {
-            cout << ctr << "   ";
+            logger() << ctr << "   ";
             for(vector<string>::const_iterator 
                 it3 = ((*it2)->finalStateIDs).begin();
                 it3 != ((*it2)->finalStateIDs).end(); ++it3)
             {
-              cout << *it3 << ", ";
+              logger() << *it3 << ", ";
             }
             ctr++;
-            cout << "Width: " << getWidth(*it2) << endl;
+            logger() << "Width: " << getWidth(*it2) << endl;
           }
-          cout << endl;
+          logger() << endl;
         } 
       }
 
@@ -872,20 +867,20 @@ namespace Gambit
       }
       void ChainParticle::printChain() const
       {
-        cout << "*********************" << endl;
-        cout << "Decay chain printout:" << endl;
-        cout << "---------------------" << endl;
-        cout << "Generation " << chainGeneration << ":" << endl;
-        cout << "0  " << pID << ", p = " << p_Lab() << 
+        logger() << "*********************" << endl;
+        logger() << "Decay chain printout:" << endl;
+        logger() << "---------------------" << endl;
+        logger() << "Generation " << chainGeneration << ":" << endl;
+        logger() << "0  " << pID << ", p = " << p_Lab() << 
           ", Weight: " << weight  << endl;
-        cout << "---------------------" << endl;
+        logger() << "---------------------" << endl;
         if(nChildren>0)
         {
           bool run = false;
           int gen = chainGeneration+1;
           do
           {
-            cout << "Generation " << gen <<":" << endl;
+            logger() << "Generation " << gen <<":" << endl;
             run= false;
             for(int i=0;i<nChildren;i++)
             {
@@ -896,7 +891,7 @@ namespace Gambit
               run = more || run;
             }
             gen++;
-            cout << "---------------------" << endl;
+            logger() << "---------------------" << endl;
           }
           while(run);
         }
@@ -918,9 +913,9 @@ namespace Gambit
         for(vector<int>::const_iterator it=ancestry.begin();
             it!=ancestry.end(); ++it)
         {
-          cout << *it << "  ";
+          logger() << *it << "  ";
         }
-        cout << pID  << ", p = " << p_Lab() << ", Weight: " << weight  << endl;
+        logger() << pID  << ", p = " << p_Lab() << ", Weight: " << weight  << endl;
         if(nChildren>0) return true;
         return false;
       }

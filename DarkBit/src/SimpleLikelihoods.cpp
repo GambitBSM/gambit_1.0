@@ -95,6 +95,7 @@ namespace Gambit {
       // Integate spectrum 
       // (the zero velocity limit of the differential annihilation
       // cross-section as function of individual final state photons)
+      // FIXME: Clean this up?
       //std::ofstream os;
       //os.open("test.dat");
       //(*Dep::GA_AnnYield)->writeToFile(Funk::logspace(-1., 5., 10000), os);

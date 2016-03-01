@@ -42,7 +42,7 @@
     - Completion neutrino yields [Pat]
 
 3. DM halo parametrization
-    - Halo catalogue [Christoph]
+    - Halo catalog [Christoph]
     - J-values for dwarf likelihoods [Jonathan]
     - Necessary BaseFunction extensions [Jonathan]
     - SuperHealpix [?]

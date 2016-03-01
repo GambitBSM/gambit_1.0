@@ -103,7 +103,7 @@ namespace Gambit
           {
             channel = annProc.find(adhoc_chan);
             if (channel == NULL) DarkBit_error().raise(LOCAL_INFO,
-                "W+H- exists in process catalogue but not W-H+."
+                "W+H- exists in process catalog but not W-H+."
                 " That's some suspiciously severe CP violation yo.");
             annihilation_bf[i] += channel->genRate->bind("v")->eval(0.);
           }
@@ -144,7 +144,7 @@ namespace Gambit
           particleProperties.end()) ? its[3]->second.mass : 0.;
 
       // Find out which Higgs exist and have decay data in the process
-      // catalogue.
+      // catalog.
       const TH_Process* h0_decays[3];
       h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_2");
       h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_1");
@@ -152,9 +152,9 @@ namespace Gambit
       const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
       const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
       if (Hplus_decays != NULL and Hminus_decays == NULL) DarkBit_error().raise(
-          LOCAL_INFO, "H+ decays exist in process catalogue but not H-.");
+          LOCAL_INFO, "H+ decays exist in process catalog but not H-.");
       if (Hplus_decays == NULL and Hminus_decays != NULL) DarkBit_error().raise(
-          LOCAL_INFO, "H- decays exist in process catalogue but not H+.");
+          LOCAL_INFO, "H- decays exist in process catalog but not H+.");
 
       // Set the neutral Higgs decay branching fractions
       // FIXME needs to be fixed once BFs are available directly from TH_Process
@@ -189,7 +189,7 @@ namespace Gambit
               {
                 channel = h0_decays[i]->find(adhoc_chan);
                 if (channel == NULL) DarkBit_error().raise(LOCAL_INFO,
-                    "W+H- exists in process catalogue but not W-H+."
+                    "W+H- exists in process catalog but not W-H+."
                     " That's some suspiciously severe CP violation yo.");
                 Higgs_decay_BFs_neutral[j][i]
                   += channel->genRate->bind()->eval();
@@ -531,11 +531,13 @@ namespace Gambit
                *Dep::IC79WL_loglike - *Dep::IC79WL_bgloglike +
                *Dep::IC79WH_loglike - *Dep::IC79WH_bgloglike;
       if (result > 0.0) result = 0.0;
-      //cout << "IC likelihood: " << result << endl;
-      //cout << "IC79SL contribution: " << *Dep::IC79SL_loglike - *Dep::IC79SL_bgloglike << endl;
-      //cout << "IC79WL contribution: " << *Dep::IC79WL_loglike - *Dep::IC79WL_bgloglike << endl;
-      //cout << "IC79WH contribution: " << *Dep::IC79WH_loglike - *Dep::IC79WH_bgloglike << endl;
-      //cout << "IC22   contribution: " << *Dep::IC22_loglike   - *Dep::IC22_bgloglike   << endl;
+#ifdef DARKBIT_DEBUG
+      cout << "IC likelihood: " << result << endl;
+      cout << "IC79SL contribution: " << *Dep::IC79SL_loglike - *Dep::IC79SL_bgloglike << endl;
+      cout << "IC79WL contribution: " << *Dep::IC79WL_loglike - *Dep::IC79WL_bgloglike << endl;
+      cout << "IC79WH contribution: " << *Dep::IC79WH_loglike - *Dep::IC79WH_bgloglike << endl;
+      cout << "IC22   contribution: " << *Dep::IC22_loglike   - *Dep::IC22_bgloglike   << endl;
+#endif
     }
   }
 }

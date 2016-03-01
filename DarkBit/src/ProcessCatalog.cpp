@@ -3,7 +3,7 @@
 ///  \file
 ///
 ///  Implementation file for DarkBit Process
-///  Catalogue constituents types.
+///  Catalog constituents types.
 ///
 ///  *********************************************
 ///
@@ -17,8 +17,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
-
-#include "gambit/DarkBit/ProcessCatalogue.hpp"
+#include "gambit/DarkBit/ProcessCatalog.hpp"
 
 namespace Gambit {
   namespace DarkBit {
@@ -26,8 +25,7 @@ namespace Gambit {
     // TH_ParticleProperty definitions
 
     TH_ParticleProperty::TH_ParticleProperty(double mass, unsigned int spin2)
-      : mass(mass),
-      spin2(spin2)
+      : mass(mass), spin2(spin2)
     {}
 
 
@@ -35,27 +33,24 @@ namespace Gambit {
 
     /// Constructor
     TH_Channel::TH_Channel(std::vector<str> finalStateIDs, Funk::Funk genRate)
-      :  finalStateIDs(finalStateIDs), 
-      nFinalStates(finalStateIDs.size()),
+      :  finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
       genRate(genRate)
     {
       if ( nFinalStates < 2 )
       {
-        std::cout << 
-          "ERROR: Need at least two final state particles. " << std::endl;
-        exit(1);
+        DarkBit_error().raise(LOCAL_INFO, "ERROR: Need at least two final state particles.");
       }
     }
 
     /// Print information about this channel.
     void TH_Channel::printChannel() const
     {
-      std::cout << "Channel: ";
+      logger() << "Channel: ";
       for ( auto it = finalStateIDs.begin(); it != finalStateIDs.end(); it++ )
       {
-        std::cout << *it << " ";
+        logger() << *it << " ";
       }
-      std::cout << std::endl;
+      logger() << std::endl;
     }
 
     /*! \brief Indicate whether or not the final states of this channel contain
@@ -133,7 +128,7 @@ namespace Gambit {
 
     // TH_ProcessCatalog definitions
 
-    /// Retrieve a specific process from the catalogue
+    /// Retrieve a specific process from the catalog
     TH_Process TH_ProcessCatalog::getProcess(str id1, str id2) const
     {
       const TH_Process* temp = find(id1, id2);
@@ -145,7 +140,7 @@ namespace Gambit {
       return *temp;
     }
 
-    /// Check for a specific process in the catalogue
+    /// Check for a specific process in the catalog
     const TH_Process* TH_ProcessCatalog::find(str id1, str id2) const
     {
       for (std::vector<TH_Process>::const_iterator it = processList.begin();
@@ -157,7 +152,7 @@ namespace Gambit {
     }
 
     /*! \brief Retrieve properties of a given particle involved in one or more
-     * processes in this catalogue
+     * processes in this catalog
      */
     TH_ParticleProperty TH_ProcessCatalog::getParticleProperty(str id) const
     {

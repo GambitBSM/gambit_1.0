@@ -34,14 +34,15 @@ namespace Gambit
                         std::vector<std::string> excludeDecays)
       {
         if(importedDecays.count(pID) == 1) return;
-        //std::cout << "Importing decay information for: " << pID << std::endl;
+#ifdef DARKBIT_DEBUG
+        std::cout << "Importing decay information for: " << pID << std::endl;
+#endif
         importedDecays.insert(pID);        
         const double m_init = catalog.getParticleProperty(pID).mass;
         const DecayTable::Entry* entry;
         try{entry = &(tbl->at(pID));} 
         catch(const std::out_of_range& oor)
         {
-          //std::cout << "no decays exist." << std::endl;
           return;
         }     
         double totalWidth = entry->width_in_GeV;
@@ -56,7 +57,6 @@ namespace Gambit
             if(bFraction>minBranching)
             {
               std::vector<std::string> pIDs;
-              //std::cout << "  ";
               double m_final = 0;
               for(auto pit = fState_it->first.begin();
                   pit != fState_it->first.end(); ++pit)
@@ -64,12 +64,10 @@ namespace Gambit
                 std::string name = Models::ParticleDB().long_name(*pit);
                 m_final += catalog.getParticleProperty(name).mass;
                 pIDs.push_back(name);
-                //std::cout << name << "\t";
               } 
               double partialWidth = totalWidth * bFraction;        
               if(m_final<=m_init)
               {
-                //std::cout<< bFraction << std::endl;   
                 process.channelList.push_back(
                     TH_Channel(pIDs, Funk::cnst(partialWidth)));
                 // Recursively import decays of final states (for cascades)
@@ -79,8 +77,6 @@ namespace Gambit
                     ImportDecays(*f_it, catalog, importedDecays, tbl, minBranching, excludeDecays);
                 }
               }
-              //else
-              //  std::cout<< "kin. closed" << std::endl;   
             }
           }
           catalog.processList.push_back(process);          

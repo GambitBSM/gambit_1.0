@@ -333,5 +333,3 @@ namespace Gambit
 }
 
 #endif // defined __decay_chain_hpp__
-
-

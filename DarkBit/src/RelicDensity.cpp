@@ -66,9 +66,11 @@ namespace Gambit {
           RD_coannihilating_particle(DSpart->kn(1), 
           myintdof->kdof(DSpart->kn(1)),mymspctm->mass(DSpart->kn(1))));
 
+#ifdef DARKBIT_DEBUG
       std::cout << "WIMP : "<< DSpart->kn(1) << " " <<
           myintdof->kdof(DSpart->kn(1)) << " " << mymspctm->mass(DSpart->kn(1)) 
           << std::endl;
+#endif
 
       // FIXME: eventually, this function should not be BE-dependent anymore
       // and instead depend on the process catalog! The use of any 
@@ -166,7 +168,7 @@ namespace Gambit {
       TH_ParticleProperty DMproperty = 
               (*Dep::TH_ProcessCatalog).getParticleProperty(DMid);
 
-      // get thresholds & resonances from process catalogue
+      // get thresholds & resonances from process catalog
       result.resonances = annihilation.thresholdResonances.resonances;
       result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
 
@@ -176,12 +178,13 @@ namespace Gambit {
       result.coannihilatingParticles.push_back(
           RD_coannihilating_particle(100,1+DMproperty.spin2,DMproperty.mass));
       // FIXME: coannihilation thresholds have to be added once they are included
-      // in the process catalogue
+      // in the process catalog
       
-//      std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
-
-//      std::cout << "Test : " << BEreq::particle_code("d_3")
-//      << " " << BEreq::particle_code("u_3") << std::endl;
+#ifdef DARKBIT_DEBUG
+      std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
+      std::cout << "Test : " << BEreq::particle_code("d_3")
+      << " " << BEreq::particle_code("u_3") << std::endl;
+#endif
       
 
     } // function RD_spectrum_from_ProcessCatalog
@@ -309,7 +312,7 @@ namespace Gambit {
     } // function RD_eff_annrate_SUSY
 
 
-    /*! \brief Infer Weff from process catalogue.
+    /*! \brief Infer Weff from process catalog.
     */
     // Carries pointer to Weff
     DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)
@@ -352,7 +355,7 @@ namespace Gambit {
       // RD_thresholds_resonances.
       RD_spectrum_type myRDspec = *Dep::RD_spectrum_ordered;
       if (myRDspec.coannihilatingParticles.empty()){
-        std::cout << "ERROR in RD_oh2_general: No DM particle!";
+        DarkBit_error().raise(LOCAL_INFO, "ERROR in RD_oh2_general: No DM particle!");
       }
       double mwimp=myRDspec.coannihilatingParticles[0].mass;
 
@@ -455,8 +458,10 @@ namespace Gambit {
         if (widthheavyHiggs<0.1) 
           (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
+#ifdef DARKBIT_DEBUG
         for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
+#endif
 
         // tabulate invariant rate
         logger() << "Tabulating RD_eff_annrate..." << std::endl;
@@ -495,8 +500,10 @@ namespace Gambit {
 
       logger() << "RD_oh2_general: oh2 =" << result << std::endl;
       
+#ifdef DARKBIT_DEBUG
       std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
       std::cout << "Oh2     = " << result << std::endl << std::endl;
+#endif
       
 
     } // function RD_oh2_general

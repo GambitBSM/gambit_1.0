@@ -219,7 +219,7 @@ namespace Gambit {
 
     //////////////////////////////////////////////////////////////////////////
     //
-    //      General catalogue for annihilation/decay process definition
+    //      General catalog for annihilation/decay process definition
     //
     //////////////////////////////////////////////////////////////////////////
 
@@ -248,20 +248,21 @@ namespace Gambit {
       double result = IBfunc(IBch,x,y);          
       setMassesForIB(false);
 
-      /*
-         logger() << "  x, y = " << x << ", " << y << std::endl;
-         logger() << "  E, E1, E2 = " << Eg << ", " << E1 << ", " 
+#ifdef DARKBIT_DEBUG
+      std::cout << "  x, y = " << x << ", " << y << std::endl;
+      std::cout << "  E, E1, E2 = " << Eg << ", " << E1 << ", " 
            << E2 << std::endl;
-         logger() << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", " 
+      std::cout << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", " 
            << m_2 << std::endl;
-         logger() << "  IBfunc = " << result << std::endl;
-      */
+      std::cout << "  IBfunc = " << result << std::endl;
+#endif
+
       // M_DM^-2 is from the Jacobi determinant
       return std::max(0., result) / (M_DM*M_DM);
     }
 
 
-    /*! \brief Initialization of Process Catalogue based on DarkSUSY
+    /*! \brief Initialization of Process Catalog based on DarkSUSY
      *         calculations.
      */
     void TH_ProcessCatalog_MSSM(DarkBit::TH_ProcessCatalog &result)
@@ -570,7 +571,6 @@ namespace Gambit {
 
       auto excludeDecays = Funk::vec<std::string>("Z0", "W+", "W-");
 
-      //std::cout << "Importing decays..." << std::endl;
       // Import relevant decays
       using DarkBit_utils::ImportDecays;
       if(annFinalStates.count("H+") == 1) 

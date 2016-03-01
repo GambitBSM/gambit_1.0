@@ -71,7 +71,7 @@ namespace Gambit {
      * Structure
      * ---------
      *
-     * 1) Go through process catalogue and find all final states that require
+     * 1) Go through process catalog and find all final states that require
      * to be calculated in the cascade code.  To this end, check whether
      * two-body channels are tabulated for two-body final states, and whether
      * one-particle spectra exist for one-particle final states.
@@ -163,10 +163,11 @@ namespace Gambit {
      */
     Funk::Funk boost_dNdE(Funk::Funk dNdE, double gamma, double mass)
     {
-      if ( gamma < 1 + .01 )  // FIXME:  Change threshold via ini-file
+      if ( gamma < 1.0 + .02 )  // FIXME: What number to use?
       {
-       /* DarkBit_error().raise(LOCAL_INFO, 
-            "boost_dNdE: Requested Lorentz boost with gamma < 1");*/
+        if (gamma < 1.0)
+          DarkBit_error().raise(LOCAL_INFO, 
+            "boost_dNdE: Requested Lorentz boost with gamma < 1");
         return dNdE;
       }
       double betaGamma = sqrt(gamma*gamma-1);
@@ -180,12 +181,29 @@ namespace Gambit {
         ->set_epsabs(0)->set_epsrel(1e-4)->set("Ep", Funk::var("E"));
     }
 
+    // FIXME: Update description
     /*! \brief General routine to derive annihilation yield.
      *
      * Depends on:
      * - SimYieldTable
      * - TH_ProcessCatalog
      * - cascadeMC_gammaSpectra
+     */
+    /*! \brief Calculates annihilation spectra for general process catalogs,
+     *        directly using DarkSUSY as a backend.
+     *
+     * This function returns 
+     *
+     *   dN/dE*(sv)/mDM**2 (E, v)  [cm^3/s/GeV^3]
+     *
+     * the energy spectrum of photons times sigma*v/m^2, as function of
+     * energy (GeV) and velocity (c).  By default, only the v=0 component
+     * is calculated.  
+     *
+     * The return type is a GAMBIT Base Function object as function which
+     * is only defined for v=0.
+     *
+     * NOTE: This function will be completely replaced by GA_AnnYield_General
      */
     void GA_AnnYield_General(Funk::Funk &result)
     {
@@ -212,33 +230,6 @@ namespace Gambit {
       // Loop over all channels for that process
       Funk::Funk Yield = Funk::zero("v", "E");
 
-      /*
-      // Dump spectra to file(?)
-      bool debug = runOptions->getValueOrDef<bool>(false, "debug_dump_spectra");
-      std::string filename = runOptions->getValueOrDef<std::string>("Gamma_debug_spectra",
-      "debug_spectrum_file");
-      std::ofstream os;
-      if(debug) 
-      {
-        os.open(filename);
-        if(!os)
-        {
-          logger() << "Warning: spectrum debug file not open for writing." << std::endl;
-          debug=false;
-        }
-        else
-        {
-          os << "# Gamma ray spectra dNdE [1/GeV]\n";
-        }
-      }
-      // Grid for spectrum to be dumped
-      double x_min = 
-        runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
-      double x_max = 
-        runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
-      int n = runOptions->getValueOrDef<double>(26, "GA_AnnYield", "nbins");
-      std::vector<double> x = Funk::logspace(log10(x_min), log10(x_max), n);
-      */
       
       // Adding known two-body channels
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
@@ -294,57 +285,49 @@ namespace Gambit {
             spec1 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]), gamma1, 0.0);
           }
 
-          //std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
-          /*  
           
-          //std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
-          
-          if(debug)
-          {
-            Funk::Funk chnSpec = (Funk::zero("v", "E") 
-              +  spec0 
-              +  spec1)-> set("v", 0.);
-            std::vector<double> y = chnSpec->bind("E")->vect(x);
-            os << it->finalStateIDs[0] << it->finalStateIDs[1] << ":\n";
-            os << "  E: [";
-            for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
-              os << *it2 << ", ";
-            os  << "]\n";
-            os << "  dNdE: [";
-            for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
-              os << *it2 << ", ";
-            os  << "]\n";
-          }
-          */
+#ifdef DARKBIT_DEBUG
+          std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
+          std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
+          Funk::Funk chnSpec = (Funk::zero("v", "E") 
+            +  spec0 
+            +  spec1)-> set("v", 0.);
+          std::vector<double> y = chnSpec->bind("E")->vect(x);
+          os << it->finalStateIDs[0] << it->finalStateIDs[1] << ":\n";
+          os << "  E: [";
+          for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
+            os << *it2 << ", ";
+          os  << "]\n";
+          os << "  dNdE: [";
+          for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
+            os << *it2 << ", ";
+          os  << "]\n";
+#endif
 
           Yield = Yield + (spec0 + spec1) * it->genRate;
 
         }
       }
           
-      /*
-      if(debug)
+#ifdef DARKBIT_DEBUG
+      std::vector<std::string> test1 = initVector<std::string> ("h0_1_test","h0_2_test","h0_2_test","h0_1_test","WH_test", "A0_test", "h0_1_test", "W+");
+      std::vector<std::string> test2 = initVector<std::string> ("A0_test",  "A0_test",  "Z0_test",  "Z0_test",  "WH_test", "Z0_test", "h0_2_test", "W-");
+    
+      for(size_t i=0; i<test1.size();i++)
       {
-          
-        std::vector<std::string> test1 = initVector<std::string> ("h0_1_test","h0_2_test","h0_2_test","h0_1_test","WH_test", "A0_test", "h0_1_test", "W+");
-        std::vector<std::string> test2 = initVector<std::string> ("A0_test",  "A0_test",  "Z0_test",  "Z0_test",  "WH_test", "Z0_test", "h0_2_test", "W-");
-      
-        for(size_t i=0; i<test1.size();i++)
-        {
-            Funk::Funk chnSpec = (*Dep::SimYieldTable)(test1[i], test2[i], "gamma", Ecm);
-            std::vector<double> y = chnSpec->bind("E")->vect(x);
-            os << test1[i] << test2[i] << ":\n";
-            os << "  E: [";
-            for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
-              os << *it2 << ", ";
-            os  << "]\n";
-            os << "  dNdE: [";
-            for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
-              os << *it2 << ", ";
-            os  << "]\n";
-        }
-      } 
-      */
+          Funk::Funk chnSpec = (*Dep::SimYieldTable)(test1[i], test2[i], "gamma", Ecm);
+          std::vector<double> y = chnSpec->bind("E")->vect(x);
+          os << test1[i] << test2[i] << ":\n";
+          os << "  E: [";
+          for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
+            os << *it2 << ", ";
+          os  << "]\n";
+          os << "  dNdE: [";
+          for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
+            os << *it2 << ", ";
+          os  << "]\n";
+      }
+#endif
       
       // Adding three-body final states
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
@@ -379,208 +362,31 @@ namespace Gambit {
               mass, m1, m2);
           Funk::Funk dsigmavde = it->genRate->gsl_integration(
               "E1", E1_low, E1_high);
-          /*
-          if(debug)
-          {
-            Funk::Funk chnSpec = (Funk::zero("v", "E") + dsigmavde)-> set("v", 0.);
-            std::vector<double> y = chnSpec->bind("E")->vect(x);
-            os << it->finalStateIDs[0] << it->finalStateIDs[1] << it->finalStateIDs[2] << ":\n";
-            os << "  E: [";
-            for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
-              os << *it2 << ", ";
-            os  << "]\n";
-            os << "  dNdE: [";
-            for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
-              os << *it2 << ", ";
-            os  << "]\n";
-          }
-          */
+
+#ifdef DARKBIT_DEBUG
+          Funk::Funk chnSpec = (Funk::zero("v", "E") + dsigmavde)-> set("v", 0.);
+          std::vector<double> y = chnSpec->bind("E")->vect(x);
+          os << it->finalStateIDs[0] << it->finalStateIDs[1] << it->finalStateIDs[2] << ":\n";
+          os << "  E: [";
+          for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
+            os << *it2 << ", ";
+          os  << "]\n";
+          os << "  dNdE: [";
+          for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
+            os << *it2 << ", ";
+          os  << "]\n";
+#endif
+
           Yield = Yield + dsigmavde;
         }
       }
-      //if(debug) os.close();
+#ifdef DARKBIT_DEBUG
+      if(debug) os.close();
+#endif
+
       result = Yield/(mass*mass);
-
     }
 
-    /*! \brief Calculates annihilation spectra for general process catalogs,
-     *        directly using DarkSUSY as a backend.
-     *
-     * This function returns 
-     *
-     *   dN/dE*(sv)/mDM**2 (E, v)  [cm^3/s/GeV^3]
-     *
-     * the energy spectrum of photons times sigma*v/m^2, as function of
-     * energy (GeV) and velocity (c).  By default, only the v=0 component
-     * is calculated.  
-     *
-     * The return type is a GAMBIT Base Function object as function which
-     * is only defined for v=0.
-     *
-     * NOTE: This function will be completely replaced by GA_AnnYield_General
-     */
-
-    /*
-    // DEPRECATED!!!
-    // TODO: Delete
-    void GA_AnnYield_DarkSUSY(Funk::Funk &result)
-    {
-      using namespace Pipes::GA_AnnYield_DarkSUSY;
-
-      std::string DMid = *Dep::DarkMatter_ID;
-
-      ////////////////////
-      // 1) Initialization
-      ////////////////////
-
-      // Grid and energy range used in interpolating functions.
-      double Emin, Emax; 
-      // Energy range from ini-file options
-      Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");
-      Emax = runOptions->getValueOrDef<double>(1e4,  "Emax");
-      //int n = 230*log10(Emax/Emin);  // 1% energy resolution must be enough
-      int n = 10*log10(Emax/Emin);  // 10% energy resolution must be enough
-      std::vector<double> xgrid = Funk::logspace(-1., 3., n);
-      std::vector<double> ygrid(n);
-
-      // Get annihilation process from process catalog
-      TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-
-      // Get particle mass from process catalog
-      double mass = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
-
-
-      ///////////////////////////////////////////////////////////
-      // 2) Construction of "model-independent" two-body spectrum
-      ///////////////////////////////////////////////////////////
-
-      // Loop over all channels for that process
-
-      Funk::Funk DiffYield2Body = Funk::zero("E", "v");
-
-      for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
-          it != annProc.channelList.end(); ++it)
-      {
-        int flag = 0;
-        int ch = 0;
-        int yieldk = 152;
-        double sigmav;
-        if ( it->nFinalStates == 2 )
-        {
-
-          // if (Channel exists in SimYieldTable then readout
-          //              else determine from cascade routine
-          //              else error: unsupported)
-          // TODO: implement above, delete block below            
-
-          // Find channel
-          if      ( it->isChannel("Z0"    , "Z0"     )) ch = 12;
-          else if ( it->isChannel("W+"    , "W-"     )) ch = 13;
-          else if ( it->isChannel("nu_e"  , "nubar_e"  )) ch = 14;
-          else if ( it->isChannel("e+"    , "e-"     )) ch = 15;
-          else if ( it->isChannel("nu_mu" , "nubar_mu" )) ch = 16;
-          else if ( it->isChannel("mu+"   , "mu-"    )) ch = 17;
-          else if ( it->isChannel("nu_tau", "nubar_tau")) ch = 18;
-          else if ( it->isChannel("tau+"  , "tau-"   )) ch = 19;
-          else if ( it->isChannel("u"     , "ubar"   )) ch = 20;
-          else if ( it->isChannel("d"     , "dbar"   )) ch = 21;
-          else if ( it->isChannel("c"     , "cbar"   )) ch = 22;
-          else if ( it->isChannel("s"     , "sbar"   )) ch = 23;
-          else if ( it->isChannel("t"     , "tbar"   )) ch = 24;
-          else if ( it->isChannel("b"     , "bbar"   )) ch = 25;
-          else if ( it->isChannel("g"     , "g"      )) ch = 26;
-          else
-          {
-            logger() << "ERROR: Unsupported two-body final state." << std::endl;
-            exit(1);
-          }
-
-          // (sv)(v=0) for two-body final state
-          sigmav = it->genRate->bind("v")->eval(0.);
-          DiffYield2Body = DiffYield2Body + 
-            Funk::func(BEreq::dshayield.pointer(), mass,
-                Funk::var("E"), ch, yieldk, flag) * sigmav;
-        }
-      }
-
-
-      /////////////////////////////
-      // 3) Three-body final states
-      /////////////////////////////
-
-      Funk::Funk DiffYield3Body = Funk::zero("E", "v");  // Initial spectrum = 0
-
-      // Loop over all channels for that process
-      for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
-          it != annProc.channelList.end(); ++it)
-      {
-        double m1,m2;
-        if ( it->nFinalStates == 3 )
-        {
-          // Find channel
-
-          //                if channel=("gamma",X,Y)  m1=mass(X), m2=mass(Y) 
-          // TODO: replace the following block by the above line      
-
-          // it-> channelContains("gamma")          
-          //                it->FinalStateIDs[0]=="gamma"
-
-          if      ( it->isChannel("gamma", "W+"    , "W-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass;  }   
-          else if ( it->isChannel("gamma", "W+"    , "H-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H-"  ).mass;  }   
-          else if ( it->isChannel("gamma", "W-"    , "H+"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H+"  ).mass;  }   
-          else if ( it->isChannel("gamma", "H+"    , "H-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("H+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H-"  ).mass;  }     
-          else if ( it->isChannel("gamma", "e+"    , "e-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("e+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("e-"  ).mass;  }   
-          else if ( it->isChannel("gamma", "mu+"   , "mu-"    )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("mu+" ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("mu-" ).mass;  }   
-          else if ( it->isChannel("gamma", "tau+"  , "tau-"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("tau+").mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("tau-").mass;  }   
-          else if ( it->isChannel("gamma", "u"     , "ubar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("u"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("ubar").mass;  }   
-          else if ( it->isChannel("gamma", "d"     , "dbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("d"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("dbar").mass;  }   
-          else if ( it->isChannel("gamma", "c"     , "cbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("c"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("cbar").mass;  }   
-          else if ( it->isChannel("gamma", "s"     , "sbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("s"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("sbar").mass;  }   
-          else if ( it->isChannel("gamma", "t"     , "tbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("t"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("tbar").mass;  }   
-          else if ( it->isChannel("gamma", "b"     , "bbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("b"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("bbar").mass;  }   
-          else
-          {
-            logger() << "ERROR: Unsupported three-body final state." 
-              << std::endl;
-            exit(1);
-          }
-          // Generate photon spectrum in v=0 limit from primary photon.
-          // (we just ignore the contributions from the second and third
-          // particle and integrate out the corresponding kinematical
-          // variable).
-          Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"),
-              mass, m1, m2);
-          Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"),
-              mass, m1, m2);
-          Funk::Funk dsigmavde = it->genRate->gsl_integration(
-              "E1", E1_low, E1_high);
-          DiffYield3Body = DiffYield3Body + dsigmavde;
-
-             logger() << "Test output three-body annihilation:" << std::endl;
-             it->printChannel();
-             logger() << "  m1  = " << m1 << std::endl;
-             logger() << "  m2  = " << m2 << std::endl;
-             logger() << "  mDM = " << mass << std::endl;
-             logger() << "Boundaries (E=10 GeV):" << std::endl;
-             logger() << "  E1 = " << E1_low->eval("E", 10) << std::endl;
-             logger() << "  E2 = " << E1_high->eval("E", 10) << std::endl;
-             logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
-             logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
-             logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
-             logger() << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
-        }
-      }
-      logger() << "Yield calculated!" << endl;
-      // Resample function
-      //DiffYield3Body = DiffYield3Body->tabulate(xgrid);
-
-      // Sum two- and three-body spectra, devide by mass squared, fix valid
-      // range, and add additional parameter for velocity (though the result is
-      // velocity independent).
-      // TODO: Add validity range
-      result = (DiffYield2Body + DiffYield3Body)/(mass*mass);
-    }
-    */
 
     /// SimYieldTable based on DarkSUSY tabulated results.
     void SimYieldTable_DarkSUSY(SimYieldTable& result)
@@ -592,6 +398,7 @@ namespace Gambit {
       {
         int flag = 0;      // some flag
         int yieldk = 152;  // gamma ray yield
+        // FIXME: What to do with this variable?
         //int ch = 0;        // channel information  //bjf> unused variable
         Funk::Funk dNdE;
         

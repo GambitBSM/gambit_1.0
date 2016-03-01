@@ -60,7 +60,7 @@
 
 #include "gambit/DarkBit/decay_chain.hpp"
 #include "gambit/DarkBit/SimpleHist.hpp"
-#include "gambit/DarkBit/ProcessCatalogue.hpp"
+#include "gambit/DarkBit/ProcessCatalog.hpp"
 #include "gambit/Elements/funktions.hpp"
 
 #include <boost/enable_shared_from_this.hpp>
@@ -80,136 +80,6 @@ namespace Gambit
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
 
-    /*
-    // Integration limits for E1 for the DS gamma 3-body decays.
-    class DSg3_IntLims_E1 : public intLimitFunc
-    {
-        public:
-            // Constructor
-            DSg3_IntLims_E1(double M_DM,double m1,double m2) : M_DM(M_DM), m1(m1), m2(m2){}
-            void operator ()(double &x0, double &x1, bool &allowed, std::map<unsigned int,double> args)
-            {
-                // First, check if the argument list contains argument 0
-                // Argument indices correspond to the indices you would use if passing the arguments to the function (to be integrated) without any integrals.
-                if (!argInList(args,0))
-                {
-                    std::cout << "Error: Argument 0 not found in argument list" << std::endl;
-                }
-                // Calculate the integration limits on the DS kinematic variable y (see dsIBf_intdy)
-                double Eg = args[0];
-                double x = Eg/M_DM;
-                // Check if kinematic constraints are satisfied
-                if((1.-pow(m1+m2,2)/(4*M_DM*M_DM))<=x)
-                {
-                    allowed = false;
-                    return;
-                }
-                double eta = pow(m1/M_DM,2);
-                double diffeta=pow(m2/M_DM,2);
-                diffeta   = 0.25*(eta-diffeta);
-                double f1 = 0.25*eta + diffeta*x/(2*(1-x));
-                double f2 = sqrt(pow(1+diffeta/(1-x),2)-eta/(1-x));
-                double aint = f1 + 0.5*(1-f2)*x;
-                double bint = f1 + 0.5*(1+f2)*x;
-                // Now convert these limits to limits on E1
-                double f3 = pow(0.5*m2/M_DM,2);
-                x0 = M_DM*(1-x+aint-f3);
-                x1 = M_DM*(1-x+bint-f3);
-                allowed = true;
-            }
-        private:
-            double M_DM, m1, m2;
-    };
-    */
-
-    /*
-    class DSgamma3bdyKinFunc : public BF::BaseFunction
-    {
-      typedef double(*BEptr)(int&, double&, double&);
-      public:
-        DSgamma3bdyKinFunc(int IBch, double M_DM, double m_1, double m_2, BEptr IBfunc, double sigmav_norm)
-        : BaseFunction("DSgamma3bdyKinFunc", 2), IBfunc(IBfunc), sigmav_norm(sigmav_norm), M_DM(M_DM), m_1(m_1), m_2(m_2), IBch(IBch)
-        {
-            if(IBfunc == NULL)
-            {
-                std::cout << "Error: No function pointer passed to DSgamma3bdyKinFunc" << std::endl;
-                exit(1);
-                // TODO: Throw error
-            }
-        }
-        double value(const BFargVec &args)
-        {
-            double Eg = args[0]; // Photon energy
-            double E1 = args[1];
-            double E2 = 2*M_DM - Eg - E1;  
-            double p12 = E1*E1-m_1*m_1;
-            double p22 = E2*E2-m_2*m_2;
-            double p22min = Eg*Eg+p12-2*Eg*sqrt(p12);
-            double p22max = Eg*Eg+p12+2*Eg*sqrt(p12);
-            // Check if the process is kinematically allowed
-            if((E1 < m_1) || (E2 < m_2) || (p22<p22min) || (p22>p22max))
-            {
-                return 0;
-            }
-            double x = Eg/M_DM;
-            double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);        
-            double result = IBfunc(IBch,x,y);          
-            return sigmav_norm * result / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
-        }
-      private:
-        BEptr IBfunc;
-        double sigmav_norm;
-        double M_DM;
-        double m_1;        
-        double m_2;
-        int IBch;
-    };
-    */
-
-    /*
-    /// Dark matter particle identity
-    class DarkMatter_ID_type
-    {
-      public:
-        DarkMatter_ID_type() {};
-        DarkMatter_ID_type(std::vector<std::string> ids)
-        {
-          for (auto it = ids.begin(); it != ids.end(); it++)
-          {
-            particle_ids.insert(*it);
-          }
-        }
-
-        void add_id(std::string id)
-        {
-          particle_ids.insert(id);
-        }
-
-        bool isDM(std::string id)
-        {
-          return (particle_ids.count(id) == 1);
-        }
-
-        std::vector<std::string> getList()
-        {
-          return std::vector<std::string>(particle_ids.begin(), particle_ids.end());
-        }
-
-        std::string singleID() const
-        {
-          if ( particle_ids.size() > 1 )
-          {
-            std::cout << "WARNING: Accessing multi-component DM state with single component routines." << std::endl;
-            exit(1);
-            // FIXME: Is there a more elegant way to exit?
-          }
-          return *particle_ids.begin();
-        }
-
-      private:
-        std::set<std::string> particle_ids;
-    };
-    */
 
     // A simple example
     struct Wstruct
@@ -620,6 +490,7 @@ namespace Gambit
             {
                 if ( hasChannel(p1, p2) )
                 {
+                    // FIXMEW
                     std::cout << "WARNING: Channel already exists.  Ignoring." << std::endl;
                     return;
                 }
@@ -664,6 +535,7 @@ namespace Gambit
                 int index = findChannel(p1, p2, finalState);
                 if ( index == -1 )
                 {
+                    // FIXMEW
                     std::cout << "WARNING: Channel not known.  Returning dummy." << std::endl;
                     return dummy_channel;
                 }
@@ -685,6 +557,7 @@ namespace Gambit
                 int index = findChannel(p1, p2, finalState);
                 if ( index == -1 )
                 {
+                    // FIXMEW
                     std::cout << "WARNING: Channel not known.  Returning zero." << std::endl;
                     return Funk::zero("E", "Ecm");
                 }
@@ -717,96 +590,3 @@ namespace Gambit
 }
 
 #endif // defined __DarkBit_types_hpp__
-
-
-
-// Old code
-
-    // TODO:
-    // - add access functions
-    // - add ini functions
-    // TODO later:
-    // - select convention for energy dependence
-    // - select relevant particle properties
-
-//    struct Decay
-//    {
-//      public:
-//        // Renormalize branching fractions to sum up to one
-//        void normalize()
-//        {
-//          double sum = 0;
-//          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
-//              != BRmap.end(); it++)
-//          {
-//            sum += it->second;
-//          }
-//          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
-//              != BRmap.end(); it++)
-//          {
-//            it->second = it->second/sum;
-//          }
-//        }
-//
-//        // Set branching fraction
-//        void set(std::string key, double BR)
-//        {
-//          if (BR >= 0)
-//          {
-//            BRmap[key] = BR;
-//          }
-//          else
-//          {
-//            std::cout << "DarkBit WARNING: I am ignoring a negative value for BR " 
-//            << key << " :" << BR << " !" << std::endl;
-//          }
-//        }
-//
-//        // Get list of non-zero branching fraction keys
-//        std::vector<std::string> getBRlist() const
-//        {
-//          std::vector<std::string> list;
-//          for (std::map<std::string, double>::const_iterator it = BRmap.begin(); it
-//              != BRmap.end(); it++)
-//          {
-//            list.push_back(it->first);
-//          }
-//          return list;
-//        }
-//
-//        // Read branching fraction
-//        double get(std::string key) const
-//        {
-//          std::map<std::string, double>::const_iterator it = BRmap.find(key);
-//          if (it != BRmap.end())
-//          {
-//            return it->second;
-//          }
-//          else
-//          {
-//            return 0;  // Returns zero by default
-//          }
-//        }
-//
-//        // Check whether normalized
-//        bool isNormalized() 
-//        {
-//          double sum = 0;
-//          for (std::map<std::string, double>::iterator it = BRmap.begin(); it
-//              != BRmap.end(); it++)
-//          {
-//            sum += it->second;
-//          }
-//          return (std::abs(sum-1) < 1e-6);
-//        }
-//
-//        // DM mass
-//        double DMmass;
-//
-//        // Annihilation cross-section averaged over relative velocity
-//        double sigmaV;
-//
-//      private:
-//        // Map with branching ratios
-//        std::map<std::string, double> BRmap;
-//    };

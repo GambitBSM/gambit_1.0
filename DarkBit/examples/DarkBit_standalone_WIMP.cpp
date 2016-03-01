@@ -18,6 +18,9 @@
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
+#include <boost/multi_array.hpp>
+#include <iostream>
+#include <fstream>
 
 // Only needed here
 #include "gambit/Utils/util_functions.hpp"
@@ -29,6 +32,33 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 QUICK_FUNCTION(DarkBit, TH_ProcessCatalog, OLD_CAPABILITY, TH_ProcessCatalog_WIMP, DarkBit::TH_ProcessCatalog, ())
 QUICK_FUNCTION(DarkBit, DarkMatter_ID, OLD_CAPABILITY, DarkMatter_ID_WIMP, std::string, ())
 QUICK_FUNCTION(DarkBit, DD_couplings, OLD_CAPABILITY, DD_couplings_WIMP, DarkBit::DD_couplings, ())
+
+double mWIMP_global;
+double sv_global;
+
+
+void dump_array_to_file(
+    const std::string & filename, const boost::multi_array<double, 2> & a,
+    const std::vector<double> & x, const std::vector<double> & y)
+{
+  std::fstream file;
+  file.open(filename, std::ios_base::out);
+  file << "0.0 ";
+  for (size_t i = 0; i < x.size(); i++)
+    file << x[i] << " ";
+  file << std::endl;
+  for (size_t j = 0; j < y.size(); j++)
+  {
+    file << y[j] << " ";
+    for (size_t i = 0; i < x.size(); i++)
+    {
+      file << a[i][j] << " ";
+    }
+    file << std::endl;
+  }
+  file.close();
+}
+
 
 namespace Gambit
 {
@@ -53,11 +83,13 @@ namespace Gambit
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(Mass, spinX2)));    
 
-      // double lambda = he->get(Par::mass1,"lambda_hS");
-      // double v = he->get(Par::mass1,"vev");
-      double mWIMP= 100.0;
-      double sv = 3e-26;
+      double mWIMP= mWIMP_global;
+      double sv = sv_global;
 
+      // FIXME: Use various channels include 3-body and complicated cascade
+      // decay
+      // FIXME: Check stability of codes w.r.t. extreme parameters
+      // FIXME: Test all input possible for this function
       addParticle("Z0", 91.2,  2)
       addParticle("tau+", 1.8,  1)
       addParticle("tau-", 1.8,  1)
@@ -176,39 +208,35 @@ int main()
 
   // Set identifier for DM particle
   // FIXME: Needed?
-  DarkMatter_ID_WIMP.reset_and_calculate();
 
   // Set up process catalog based on DarkSUSY annihilation rates
-  TH_ProcessCatalog_WIMP.reset_and_calculate();
 
   // Assume for direct and indirect detection likelihoods that dark matter
   // density is always the measured one (despite relic density results)
-  RD_fraction_fixed.reset_and_calculate();
 
 
   // ---- Gamma-ray yields ----
 
   // Initialize tabulated gamma-ray yields
+  // FIXME: Use three different simyieldtables
   SimYieldTable_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshayield);
-  SimYieldTable_DarkSUSY.reset_and_calculate();
 
   // Collect missing final states for simulation in cascade MC
   GA_missingFinalStates.resolveDependency(&TH_ProcessCatalog_WIMP);
   GA_missingFinalStates.resolveDependency(&SimYieldTable_DarkSUSY);
   GA_missingFinalStates.resolveDependency(&DarkMatter_ID_WIMP);
-  GA_missingFinalStates.reset_and_calculate();
 
   // Infer for which type of final states particles MC should be performed
   cascadeMC_FinalStates.setOption<std::vector<std::string>>("cMC_finalStates", Funk::vec((std::string)"gamma"));
-  cascadeMC_FinalStates.reset_and_calculate();
 
   // Collect decay information for cascade MC
   cascadeMC_DecayTable.resolveDependency(&TH_ProcessCatalog_WIMP);
   cascadeMC_DecayTable.resolveDependency(&SimYieldTable_DarkSUSY);
-  cascadeMC_DecayTable.reset_and_calculate();
 
   // Set up MC loop manager for cascade MC
-  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
+  // FIXME: Systematically test accuracy and dependence on setup parameters
+  // FIXME: Add maximum width for energy bins
+  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 1);
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
   cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
@@ -230,6 +258,7 @@ int main()
 
   // Generate histogram for cascade MC
   //cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 280);
+  // FIXME: Check dependence on histogram parameters
   cascadeMC_Histograms.resolveDependency(&cascadeMC_InitialState);
   cascadeMC_Histograms.resolveDependency(&cascadeMC_GenerateChain);
   cascadeMC_Histograms.resolveDependency(&TH_ProcessCatalog_WIMP);
@@ -239,49 +268,44 @@ int main()
   //cascadeMC_Histograms.reset_and_calculate();
 
   // Check convergence of cascade MC
+  // FIXME: Test dynamic convergence criteria for cascade routines
   cascadeMC_EventCount.resolveDependency(&cascadeMC_InitialState);
   cascadeMC_EventCount.resolveLoopManager(&cascadeMC_LoopManager);
   //cascadeMC_EventCount.reset_and_calculate();
 
   // Start cascade MC loop
-  cascadeMC_LoopManager.reset_and_calculate();
 
   // Infer gamma-ray spectra for recorded MC results
   cascadeMC_gammaSpectra.resolveDependency(&GA_missingFinalStates);
   cascadeMC_gammaSpectra.resolveDependency(&cascadeMC_FinalStates);
   cascadeMC_gammaSpectra.resolveDependency(&cascadeMC_Histograms);
   cascadeMC_gammaSpectra.resolveDependency(&cascadeMC_EventCount);
-  cascadeMC_gammaSpectra.reset_and_calculate();
 
   // Calculate total gamma-ray yield (cascade MC + tabulated results)
   GA_AnnYield_General.resolveDependency(&TH_ProcessCatalog_WIMP);
   GA_AnnYield_General.resolveDependency(&SimYieldTable_DarkSUSY);
   GA_AnnYield_General.resolveDependency(&DarkMatter_ID_WIMP);
   GA_AnnYield_General.resolveDependency(&cascadeMC_gammaSpectra);
-  GA_AnnYield_General.reset_and_calculate();
 
+  // FIXME: Extend existing gamma-ray spectrum dumper
   dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
-  dump_GammaSpectrum.reset_and_calculate();
 
   // Calculate Fermi LAT dwarf likelihood
+  // FIXME: Check whether Fermi lat limits can be reproduced
   lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
   lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_fixed);
   lnL_FermiLATdwarfs_gamLike.resolveBackendReq(&Backends::gamLike_1_0_0::Functown::lnL);
-  lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
 
 
   // -- Calculate relic density --
   RD_eff_annrate_from_ProcessCatalog.notifyOfModel("SingletDM");
   RD_eff_annrate_from_ProcessCatalog.resolveDependency(&TH_ProcessCatalog_WIMP);
   RD_eff_annrate_from_ProcessCatalog.resolveDependency(&DarkMatter_ID_WIMP);
-  RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
 
   RD_spectrum_from_ProcessCatalog.resolveDependency(&TH_ProcessCatalog_WIMP);
   RD_spectrum_from_ProcessCatalog.resolveDependency(&DarkMatter_ID_WIMP);
-  RD_spectrum_from_ProcessCatalog.reset_and_calculate();
 
   RD_spectrum_ordered_func.resolveDependency(&RD_spectrum_from_ProcessCatalog);
-  RD_spectrum_ordered_func.reset_and_calculate();
 
   RD_oh2_general.resolveDependency(&RD_spectrum_ordered_func);
   RD_oh2_general.resolveDependency(&RD_eff_annrate_from_ProcessCatalog);
@@ -299,7 +323,6 @@ int main()
   RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rddof);
   RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::rderrors);
   RD_oh2_general.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DSparticle_code);
-  RD_oh2_general.reset_and_calculate();
 
 
   // ---- Calculate direct detection constraints ----
@@ -310,19 +333,58 @@ int main()
   SetWIMP_DDCalc0.resolveDependency(&DarkMatter_ID_WIMP);
   SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_SetWIMP_mG);
   SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_GetWIMP_msigma);
-  SetWIMP_DDCalc0.reset_and_calculate();
 
   // Calculate direct detection rates for LUX 2013
   CalcRates_LUX_2013_DDCalc0.resolveDependency(&SetWIMP_DDCalc0);
   CalcRates_LUX_2013_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates);
-  CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
 
   // Calculate direct detection likelihood for LUX 2013
   LUX_2013_LogLikelihood_DDCalc0.resolveDependency(&CalcRates_LUX_2013_DDCalc0);
   LUX_2013_LogLikelihood_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_LogLikelihood);
-  LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
 
-  std::cout << LUX_2013_LogLikelihood_DDCalc0(0) << std::endl;
+  int mBins = 10;
+  int svBins = 20;
+  std::vector<double> m_list = Funk::logspace(0.5, 3.0, mBins);
+  std::vector<double> sv_list = Funk::logspace(-27.0, -24.0, svBins);
+  boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
+  boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
+
+  for (size_t i = 0; i < m_list.size(); i++)
+  {
+    for (size_t j = 0; j < sv_list.size(); j++)
+    {
+      mWIMP_global = m_list[i];
+      sv_global = sv_list[j];
+      std::cout << "Parameters: " << mWIMP_global << " " << sv_global << std::endl;
+      DarkMatter_ID_WIMP.reset_and_calculate();
+      TH_ProcessCatalog_WIMP.reset_and_calculate();
+      RD_fraction_fixed.reset_and_calculate();
+      SimYieldTable_DarkSUSY.reset_and_calculate();
+      GA_missingFinalStates.reset_and_calculate();
+      cascadeMC_FinalStates.reset_and_calculate();
+      cascadeMC_DecayTable.reset_and_calculate();
+      cascadeMC_LoopManager.reset_and_calculate();
+      cascadeMC_gammaSpectra.reset_and_calculate();
+      GA_AnnYield_General.reset_and_calculate();
+      //dump_GammaSpectrum.reset_and_calculate();
+      lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
+      double lnL = lnL_FermiLATdwarfs_gamLike(0);
+      std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
+      lnL_array[i][j] = lnL;
+      RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
+      RD_spectrum_from_ProcessCatalog.reset_and_calculate();
+      RD_spectrum_ordered_func.reset_and_calculate();
+      RD_oh2_general.reset_and_calculate();
+      double oh2 = RD_oh2_general(0);
+      oh2_array[i][j] = oh2;
+//    SetWIMP_DDCalc0.reset_and_calculate();
+//    CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
+//    LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
+    }
+  }
+
+  dump_array_to_file("Fermi_table.dat", lnL_array, m_list, sv_list);
+  dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
 
   return 0;
 }

@@ -249,7 +249,7 @@ namespace Gambit
       return f_vs_mass;
     }
 
-    /// Set up process catalogue for Singlet DM.
+    /// Set up process catalog for Singlet DM.
     void TH_ProcessCatalog_SingletDM(DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_SingletDM;
@@ -362,7 +362,6 @@ namespace Gambit
         runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
 
       // Import relevant decays (only Higgs and subsequent decays)
-      std::cout << "Importing decays..." << std::endl;
       using DarkBit_utils::ImportDecays;
       ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching, Funk::vec<std::string>("Z0", "W+", "W-"));
 
