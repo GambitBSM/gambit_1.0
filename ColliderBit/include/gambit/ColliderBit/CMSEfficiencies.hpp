@@ -95,11 +95,11 @@ namespace Gambit {
           const double abseta = p->abseta();
           if (p->pT() > 0.1 && abseta < 2.5) {
             if (abseta < 0.5) {
-              resolution = add_quad(0.06, 1.3e-3 * p->pT());
+              resolution = HEPUtils::add_quad(0.06, 1.3e-3 * p->pT());
             } else if (abseta < 1.5) {
-              resolution = add_quad(0.10, 1.7e-3 * p->pT());
+              resolution = HEPUtils::add_quad(0.10, 1.7e-3 * p->pT());
             } else { // still |eta| < 2.5
-              resolution = add_quad(0.25, 3.1e-3 * p->pT());
+              resolution = HEPUtils::add_quad(0.25, 3.1e-3 * p->pT());
             }
           }
 
@@ -110,7 +110,7 @@ namespace Gambit {
             if (smeared_E < 0) smeared_E = 0;
             // double smeared_pt = smeared_E/cosh(e->eta()); ///< @todo Should be cosh(|eta|)?
             // std::cout << "BEFORE eta " << electron->eta() << std::endl;
-            e->set_mom(HEPUtils::P4::mkEtaPhiME(p->eta(), p->phi(), p->mass(), smeared_E));
+            p->set_mom(HEPUtils::P4::mkEtaPhiME(p->eta(), p->phi(), p->mass(), smeared_E));
             // std::cout << "AFTER eta " << electron->eta() << std::endl;
           }
         }
@@ -137,11 +137,11 @@ namespace Gambit {
           const double abseta = p->abseta();
           if (p->pT() > 0.1 && abseta < 2.5) {
             if (abseta < 0.5) {
-              resolution = add_quad(0.01, 2.0e-4 * p->pT());
+              resolution = HEPUtils::add_quad(0.01, 2.0e-4 * p->pT());
             } else if (abseta < 1.5) {
-              resolution = add_quad(0.02, 3.0e-4 * p->pT());
+              resolution = HEPUtils::add_quad(0.02, 3.0e-4 * p->pT());
             } else { // still |eta| < 2.5... but isn't CMS' mu acceptance < 2.4?
-              resolution = add_quad(0.05, 2.6e-4 * p->pT());
+              resolution = HEPUtils::add_quad(0.05, 2.6e-4 * p->pT());
             }
           }
 
