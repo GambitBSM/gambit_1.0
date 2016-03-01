@@ -498,12 +498,11 @@ namespace Gambit
         {
           // Only interested in decay processes
           if(it->isAnnihilation) continue;
-          if(it->genRateTotal->hasArgs()) continue;
 
           string pID = it->particle1ID;
-          //std::cout << "Address of genRateTotal: " << it->genRateTotal 
-          //  << std::endl;
-          // std::cout << "Final state of interest: " << pID << std::endl;
+          //std::cout << "Final state of interest: " << pID << std::endl;
+          if(it->genRateTotal->hasArgs()) continue;
+          // std::cout << "Address of genRateTotal: " << it->genRateTotal << std::endl;
           double m = cat.getParticleProperty(pID).mass;
           double width = it->genRateTotal->bind()->eval();
           bool stable = ((it->channelList).size()<1);

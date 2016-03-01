@@ -172,11 +172,12 @@ namespace Gambit {
       double betaGamma = sqrt(gamma*gamma-1);
       Funk::Funk E = Funk::var("E");
       Funk::Funk Ep = Funk::var("Ep");
-      Funk::Funk halfBox_int = betaGamma*sqrt(Ep*Ep-mass*mass);
-      Funk::Funk halfBox_bound = betaGamma*sqrt(E*E-mass*mass);
-      Funk::Funk integrand = (dNdE->set("E", Ep)/(2*halfBox_int));
+      Funk::Funk halfBox_int = betaGamma*sqrt(E*E-mass*mass);
+      Funk::Funk halfBox_bound = betaGamma*sqrt(Ep*Ep-mass*mass);
+      Funk::Funk integrand = dNdE/(2*halfBox_int);
       // FIXME: Use a more thought-out accuracy condition
-      return integrand->gsl_integration("Ep", E*gamma-halfBox_bound, E*gamma+halfBox_bound)->set_epsabs(1000);
+      return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
+        ->set_epsabs(0)->set_epsrel(1e-4)->set("Ep", Funk::var("E"));
     }
 
     /*! \brief General routine to derive annihilation yield.
@@ -259,7 +260,7 @@ namespace Gambit {
           Funk::Funk E = Funk::var("E");
           Yield = Yield + 
             2*it->genRate*exp(-pow((E-mass)/line_width/E,2)/2)
-            /E/sqrt(2*M_PI)/line_width/E;
+            /E/sqrt(2*M_PI)/line_width;
         }
         else if ( it->nFinalStates == 2 )
         {

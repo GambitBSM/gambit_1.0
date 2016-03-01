@@ -101,7 +101,7 @@ int main()
   logger()<<"Running DarkBit standalone example"<<LogTags::info<<EOM;
 
 
-    // ---- Initialize models ----
+  // ---- Initialize models ----
 
   // Initialize LocalHalo model
   ModelParameters* SingletDM_primary_parameters = Models::SingletDM::Functown::primary_parameters.getcontentsPtr();

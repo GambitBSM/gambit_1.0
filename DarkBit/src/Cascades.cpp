@@ -40,11 +40,19 @@ namespace Gambit {
       using namespace Pipes::cascadeMC_FinalStates;  
       list = runOptions->getValueOrDef<std::vector<std::string> >(
           list,"cMC_finalStates");       
+      /* DEBUG
+      std::cout << "Final states to generate:" << std::endl;
+      for(size_t i=0; i < list.size(); i++)
+      {
+        std::cout << list[i] << std::endl;
+      }
+      */
     }     
 
     // Print list of final states for debug purposes
     void cascadeMC_printFinalStates(bool &dummy)
     {
+      // FIXME:  Remove this one
       dummy=true;
       using namespace Pipes::cascadeMC_printFinalStates;     
       const std::vector<std::string> &list = *Dep::cascadeMC_FinalStates;
@@ -97,9 +105,9 @@ namespace Gambit {
       using namespace Pipes::cascadeMC_LoopManager;     
       std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
       // Get YAML options
-      int cMC_minEvents = runOptions->getValueOrDef<int>(100, "cMC_minEvents");
-      int cMC_maxEvents = 
-        runOptions->getValueOrDef<int>(10000, "cMC_maxEvents");
+      int cMC_minEvents = runOptions->getValueOrDef<int>(2, "cMC_minEvents");
+      int cMC_maxEvents = runOptions->getValueOrDef<int>(10000, "cMC_maxEvents");
+
 
       // Initialization run
       Loop::executeIteration(MC_INIT);
@@ -107,7 +115,7 @@ namespace Gambit {
       // Check whether there is anything to do
       if ( chainList.size() == 0 ) 
       {
-        //std::cout << "Nothing to do." << std::endl;
+        //std::cout << "Cascades: Nothing to do." << std::endl;
         return;
       }
 
@@ -505,6 +513,8 @@ namespace Gambit {
                 return;
               }
             }
+            // FIXME: What happens for single particle endpoints without
+            // tabulated spectra?
           }
           // Analyze multiparticle endpoints (the endpoint particle is here the
           // parent of final state particles).
@@ -643,17 +653,24 @@ namespace Gambit {
           std::vector<double> E = hist.getBinCenters();
           std::vector<double> dN_dE = hist.getBinValues();
           // Normalize to per-event spectrum
-          //int i = 0;
+          int i = 0;
           for (std::vector<double>::iterator it2=dN_dE.begin();
               it2!=dN_dE.end();++it2)
           {
             *it2 /= eventCounts.at(*it);
-            *it2 += 1e-50;  // Quasi zero
+            // FIXME: *it2 += 1e-50;  // Quasi zero
             // FIXME: Show spectrum only for debug purposes                 
-            //std::cout << E[i] << " " << *it2 << std::endl;    
-            //i++;                                       
+            std::cout << E[i] << " " << *it2 << std::endl;    
+            i++;                                       
           }
-          spectra[*it] = Funk::Funk(new Funk::FunkInterp("E", E, dN_dE, "log"));
+          // FIXME: Default values provide 1-2% accuracy for singular integrals
+          spectra[*it] = Funk::Funk(new Funk::FunkInterp("E", E, dN_dE, "lin"));
+
+          for (size_t i = 1; i<E.size()-1; i++)
+          {
+            if (dN_dE[i]/(dN_dE[i-1]+dN_dE[i+1]+dN_dE[i]*1e-3) > 1e2)
+              spectra[*it]->set_singularity("E", E[i], (E[i+1]-E[i])/10);
+          }
         }
         else
         {
@@ -661,7 +678,7 @@ namespace Gambit {
           spectra[*it] = Funk::zero("E");
         }
       }
-    }         
+    }
 
     // Function requesting and returning gamma ray spectra from cascade decays.
     void cascadeMC_gammaSpectra(std::map<std::string, Funk::Funk> &spectra)
@@ -671,7 +688,7 @@ namespace Gambit {
       cascadeMC_fetchSpectra(spectra, "gamma", *Dep::GA_missingFinalStates,
           *Dep::cascadeMC_FinalStates, *Dep::cascadeMC_Histograms,
           *Dep::cascadeMC_EventCount);
-    }    
+    }
 
 
     void cascadeMC_PrintResult(bool &dummy)
