@@ -20,6 +20,7 @@
 #include "gambit/Utils/statistics.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Elements/numerical_constants.hpp"
+#include "gambit/Utils/local_info.hpp"
 
 namespace Gambit
 {
