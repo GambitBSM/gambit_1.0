@@ -16,6 +16,7 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2013 Apr
 ///        2015 Mar, Aug
+///        2016 Feb
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -37,7 +38,7 @@
 
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/DarkSUSY.hpp"
-#include "gambit/Utils/mpiwrapper.hpp"
+#include "gambit/Utils/file_lock.hpp"
 
 #define square(x) ((x) * (x))  // square a number
 
@@ -62,31 +63,12 @@ BE_INI_FUNCTION
   if (scan_level)
   {
 
-    int rank = 0;
-    int totprocs = 1;
-
-    #ifdef WITH_MPI
-    if(GMPI::Is_initialized())
-    {
-      GMPI::Comm comm;
-      rank = comm.Get_rank();
-      totprocs = comm.Get_size();
-    }
-    #endif
-
     // Do the call to dsinit one-by-one for each MPI process, as DarkSUSY loads up
     // HiggsBounds, which writes files at init then reads them back in later.
-    for (int i = 0; i < totprocs; i++)
-    {
-      if (i == rank) dsinit();
-      #ifdef WITH_MPI
-      if (totprocs > 1)
-      {
-        GMPI::Comm comm;
-        comm.Barrier();
-      }
-      #endif
-    }
+    Utils::FileLock mylock("DarkSUSY_" STRINGIFY(SAFE_VERSION) "_init_lock");
+    mylock.get_lock();
+    dsinit();
+    mylock.release_lock();
 
     dsrdinit();
 
