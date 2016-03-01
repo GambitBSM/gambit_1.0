@@ -1,5 +1,6 @@
 #include "gambit/ColliderBit/detectors/BuckFastSmear.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
+#include "gambit/ColliderBit/CMSEfficiencies.hpp"
 
 namespace Gambit {
   namespace ColliderBit {
@@ -51,23 +52,22 @@ namespace Gambit {
       eventIn.cloneTo(eventOut);
 
       // Electron smearing and efficiency
-      ATLAS::applyElectronTrackingEff(eventOut.electrons());
-      ATLAS::smearElectronEnergy(eventOut.electrons());
-      ATLAS::applyElectronEff(eventOut.electrons());
+      CMS::applyElectronTrackingEff(eventOut.electrons());
+      CMS::smearElectronEnergy(eventOut.electrons());
+      CMS::applyElectronEff(eventOut.electrons());
 
       // Muon smearing and efficiency
-      ATLAS::applyMuonTrackEff(eventOut.muons());
-      ATLAS::smearMuonMomentum(eventOut.muons());
-      ATLAS::applyMuonEff(eventOut.muons());
+      CMS::applyMuonTrackEff(eventOut.muons());
+      CMS::smearMuonMomentum(eventOut.muons());
+      CMS::applyMuonEff(eventOut.muons());
 
-      // Apply hadronic tau BR * reco efficiency
-      //MJW remove for now
-      ATLAS::applyTauEfficiency(eventOut.taus());
+      // Apply hadronic tau reco efficiency *in the analyses* -- it's specific to LHC run & working-point
+      //CMS::applyTauEfficiency(eventOut.taus());
       //Smear taus
-      ATLAS::smearTaus(eventOut.taus());
+      CMS::smearTaus(eventOut.taus());
 
       // Smear jet momenta
-      ATLAS::smearJets(eventOut.jets());
+      CMS::smearJets(eventOut.jets());
 
       // Unset b-tags outside |eta|=5
       /// @todo Same as DELPHES... but surely we can't actually do b-tags outside |eta| < 2.5? (or even less, due to jet radius)
