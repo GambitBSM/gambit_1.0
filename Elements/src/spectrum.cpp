@@ -28,6 +28,10 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 May 
 ///
+///  \author Abram Krislock
+///          (a.m.b.krislock@fys.uio.no)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 #include "gambit/Elements/spectrum.hpp"
@@ -257,6 +261,54 @@ namespace Gambit
 
    /// @}
 
+   /// @{ Getters which first check the sanity of the thing they are returning
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const std::string& mass) const
+   {
+      double result = get(partype, mass);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const std::string& mass, const int index) const
+   {
+      double result = get(partype, mass, index);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const int pdg_code, const int context) const
+   {
+      double result = get(partype, pdg_code, context);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const std::pair<int,int> pdgpr) const
+   {
+      double result = get(partype, pdgpr);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const std::pair<str,int> shortpr) const
+   {
+      double result = get(partype, shortpr);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   /// @}
  
    /// SLHAea object getter
    /// First constructs an SLHAea object from the SMINPUTS object, then adds the info from
