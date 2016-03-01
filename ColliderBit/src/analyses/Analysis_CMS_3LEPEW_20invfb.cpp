@@ -123,6 +123,7 @@ namespace Gambit {
         for (HEPUtils::Particle* tau : event->taus()) {
           if (tau->pT() > 20. && fabs(tau->eta()) < 2.4) signalTaus.push_back(tau);
         }
+        ATLAS::applyTauEfficiencyR1(signalTaus);
 
         vector<HEPUtils::Jet*> signalJets;
         vector<HEPUtils::Jet*> bJets;

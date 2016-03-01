@@ -18,18 +18,19 @@ namespace Gambit {
       eventIn.cloneTo(eventOut);
 
       // Electron smearing and efficiency
+      /// @todo Run-dependence?
       ATLAS::applyElectronTrackingEff(eventOut.electrons());
       ATLAS::smearElectronEnergy(eventOut.electrons());
       ATLAS::applyElectronEff(eventOut.electrons());
 
       // Muon smearing and efficiency
+      /// @todo Run-dependence?
       ATLAS::applyMuonTrackEff(eventOut.muons());
       ATLAS::smearMuonMomentum(eventOut.muons());
       ATLAS::applyMuonEff(eventOut.muons());
 
-      // Apply hadronic tau BR * reco efficiency
-      //MJW remove for now
-      ATLAS::applyTauEfficiency(eventOut.taus());
+      // Apply hadronic tau reco efficiency *in the analyses* -- it's specific to LHC run & working-point
+      //ATLAS::applyTauEfficiency(eventOut.taus());
       //Smear taus
       ATLAS::smearTaus(eventOut.taus());
 

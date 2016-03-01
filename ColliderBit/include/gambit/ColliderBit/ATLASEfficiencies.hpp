@@ -59,28 +59,33 @@ namespace Gambit {
         filtereff_etapt(muons, _muEff2d);
       }
 
+      /// @brief Randomly filter the supplied particle list by parameterised Run 1 tau efficiency
+      /// @note From Delphes 3.1.2; https://cds.cern.ch/record/1233743/files/ATL-PHYS-PUB-2010-001.pdf is more accurate and has pT-dependence
+      inline void applyTauEfficiencyR1(std::vector<HEPUtils::Particle*>& taus) {
+        filtereff(taus, 0.40);
+      }
 
-      /// @brief Randomly filter the supplied particle list by parameterised tau efficiency
-      inline void applyTauEfficiency(std::vector<HEPUtils::Particle*>& taus) {
-        filtereff(taus, 0.4); /// @todo Update to mean ATLAS performance, which is now 65%? See below
-
-        /// @todo Update to this:
-        // set DeltaR 0.2
-        // set DeltaRTrack 0.2
-        // set TrackPTMin 1.0
-        // set TauPTMin 1.0
-        // set TauEtaMax 2.5
-        // # instructions: {n-prongs} {eff}
-        // # 1 - one prong efficiency
-        // # 2 - two or more efficiency
-        // # -1 - one prong mistag rate
-        // # -2 - two or more mistag rate
-        // set BitNumber 0
-        // # taken from ATL-PHYS-PUB-2015-045 (medium working point)
-        // add EfficiencyFormula {1} {0.70}
-        // add EfficiencyFormula {2} {0.60}
-        // add EfficiencyFormula {-1} {0.02}
-        // add EfficiencyFormula {-2} {0.01}
+      /// @brief Randomly filter the supplied particle list by parameterised Run 2 tau efficiency
+      /// @note From Delphes 3.3.2 & ATL-PHYS-PUB-2015-045, 60% for 1-prong, 70% for 2-prong.
+      inline void applyTauEfficiencyR2(std::vector<HEPUtils::Particle*>& taus) {
+        filtereff(taus, 0.65);
+        // Delphes 3.3.2 config:
+        //   set DeltaR 0.2
+        //   set DeltaRTrack 0.2
+        //   set TrackPTMin 1.0
+        //   set TauPTMin 1.0
+        //   set TauEtaMax 2.5
+        //   # instructions: {n-prongs} {eff}
+        //   # 1 - one prong efficiency
+        //   # 2 - two or more efficiency
+        //   # -1 - one prong mistag rate
+        //   # -2 - two or more mistag rate
+        //   set BitNumber 0
+        //   # taken from ATL-PHYS-PUB-2015-045 (medium working point)
+        //   add EfficiencyFormula {1} {0.70}
+        //   add EfficiencyFormula {2} {0.60}
+        //   add EfficiencyFormula {-1} {0.02}
+        //   add EfficiencyFormula {-2} {0.01}
       }
 
 

@@ -224,18 +224,16 @@ namespace Gambit {
         }
 
         vector<HEPUtils::Jet*> signalJets;
-
         for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) signalJets.push_back(jet);
-
           //if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
         }
 
         vector<HEPUtils::Particle*> signalTaus;
-
         for (HEPUtils::Particle* tau : event->taus()) {
-          if (tau->pT() > 20. && fabs(tau->eta()) < 2.5) signalTaus.push_back(tau);
+          if (tau->pT() > 20. && tau->abseta() < 2.5) signalTaus.push_back(tau);
         }
+        ATLAS::applyTauEfficiencyR1(signalTaus);
 
         // Overlap removal
 

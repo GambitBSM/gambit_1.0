@@ -71,16 +71,17 @@ namespace Gambit {
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineElectrons;
         for (HEPUtils::Particle* electron : event->electrons()) {
-          if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
+          if (electron->pT() > 10. && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
         }
         vector<HEPUtils::Particle*> baselineMuons;
         for (HEPUtils::Particle* muon : event->muons()) {
-          if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
+          if (muon->pT() > 10. && muon->abseta() < 2.4) baselineMuons.push_back(muon);
         }
         vector<HEPUtils::Particle*> baselineTaus;
         for (HEPUtils::Particle* tau : event->taus()) {
-          if (tau->pT() > 10. && fabs(tau->eta()) < 2.47) baselineTaus.push_back(tau);
+          if (tau->pT() > 10. && tau->abseta() < 2.47) baselineTaus.push_back(tau);
         }
+        ATLAS::applyTauEfficiencyR1(baselineTaus);
 
         vector<HEPUtils::Jet*> baselineJets;
         vector<HEPUtils::Jet*> bJets;

@@ -209,10 +209,10 @@ namespace Gambit {
         }
 
         vector<HEPUtils::Particle*> signalTaus;
-
         for (HEPUtils::Particle* tau : event->taus()) {
           if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
         }
+        ATLAS::applyTauEfficiencyR1(signalTaus);
 
         // Overlap removal
 

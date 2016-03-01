@@ -207,12 +207,13 @@ namespace Gambit {
           }
         }
 
-        // Taus
+        // Hadronic taus
         vector<HEPUtils::Particle*> signalTaus;
         for (HEPUtils::Particle* tau : event->taus()) {
-          if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
+          if (tau->pT() > 20. && tau->abseta() < 2.47) signalTaus.push_back(tau);
         }
-
+        // Apply Run 2 medium hadronic tau efficiency
+        ATLAS::applyTauEfficiencyR2(signalTaus);
 
         // Do further electron selection
         ATLAS::applyMediumIDElectronSelection(signalElectrons);
