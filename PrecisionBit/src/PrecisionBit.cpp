@@ -687,11 +687,17 @@ namespace Gambit
       /// need to hook up errors properly
       /// check for problems 
       if( model.get_problems().have_problem() == true) {
-	std::cout << model.get_problems().get_problems()  << std::endl;
+        std::ostringstream err;
+        err << "gm2calc routine convert_to_onshell raised error: "
+	    << model.get_problems().get_problems() << ".";
+        invalid_point().raise(err.str());
       }
       /// check for warnings
       if( model.get_problems().have_warning() == true) {
-	std::cout << model.get_problems().get_warnings()  << std::endl;
+	std::ostringstream err;
+	err << "gm2calc routine convert_to_onshell raised warning: "
+	    << model.get_problems().get_warnings() << ".";
+        invalid_point().raise(err.str());	
       }
 
       // convert DR-bar parameters to on-shell
