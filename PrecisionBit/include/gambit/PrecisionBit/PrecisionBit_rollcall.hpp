@@ -147,6 +147,21 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
+  // Muon g-2 -- Using the C interface to gm2calc
+  #define CAPABILITY a_mu_SUSY_c
+  START_CAPABILITY
+    #define FUNCTION a_mu_SUSY_c
+    START_FUNCTION(double)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    BACKEND_REQ(gm2calc_mssmnofv_new, (libgm2calc), gm2calc_c::MSSMNoFV_onshell*, ())
+    BACKEND_REQ(gm2calc_mssmnofv_set_MSvmL_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
+    BACKEND_REQ(gm2calc_mssmnofv_free, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_OPTION( (gm2calc_c), (libgm2calc) )
+    ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
+    #undef FUNCTION
+  #undef CAPABILITY 
+
+
 
 #undef MODULE
 

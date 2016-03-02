@@ -713,5 +713,27 @@ namespace Gambit
       return;
     }
 
+
+    /// Test function for the backend to the C version of gm2calc
+    void a_mu_SUSY_c(double &result)
+    {
+      using namespace Pipes::a_mu_SUSY_c;
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+
+      // Example of how to use the C backend:
+      // Note the extra ".pointer()" for functions that take the pointer "model" as input.
+      // Alsom, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
+
+      gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
+
+      BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, mssm->get(Par::Pole_Mass, "~nu", 2));
+
+      BEreq::gm2calc_mssmnofv_free.pointer()(model);
+
+      // Dummy result
+      result = 1.234;
+      return;
+    }
+
   }
 }

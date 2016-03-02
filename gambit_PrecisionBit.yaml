@@ -69,6 +69,8 @@ ObsLikes:
     capability:  lnL_deltarho
   - purpose:    Observable
     capability: a_mu_SUSY
+  - purpose:    Observable
+    capability: a_mu_SUSY_c
     
 
 Rules:
