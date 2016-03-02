@@ -143,12 +143,12 @@ namespace Gambit
         void _print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(triplet<double> const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void _print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
 
         // Scanner-unfriendly print functions
         #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
         // unsigned int is chosen somewhat arbitrarily just to demonstrate this requirement. Will be more important if other
         // fancier types need to be disabled.
+        void _print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(unsigned int const&,        const std::string& label, const int IDcode, const uint rank, const ulong pointID); 
         #endif      
 
@@ -158,6 +158,18 @@ namespace Gambit
         template<class T>
         void template_print(T const&, const std::string&, const int, const uint, const ulong);
 
+        /// @{ Retrieval interface
+
+        /// Get iterator-like object for retrieving all the rank/ptID pairs
+        /// (which can then be used to retrieve other things)
+        EntryGetter getAllPoints();
+ 
+        /// Scanner-friendly retrieval functions
+        double      _retrieve(const std::string& label, const uint rank, const ulong pointID);
+        map_str_dbl _retrieve(const std::string& label, const uint rank, const ulong pointID);
+
+        /// @}
+         
       private:
         /// Output file
         std::string output_file;

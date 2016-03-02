@@ -526,13 +526,13 @@ is a unique record for every rank/pointID pair.";
     }
  
  
-    // PRINT FUNCTIONS
+    /// @{ PRINT FUNCTIONS
     //----------------------------
     // Need to define one of these for every type we want to print!
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
    
-    // Template for print functions of "easy" types
+    /// Template for print functions of "easy" types
     template<class T>
     void asciiPrinter::template_print(T const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
@@ -598,6 +598,34 @@ is a unique record for every rank/pointID pair.";
       addtobuffer(vdvalue,names,IDcode,thread,pointID);
     }
      
+    /// @}
+
+    /// ptID pair iterator retrieval function
+    EntryGetter getAllPoints()
+    {
+       std::unique_ptr<EntryGetterInterface_asciiPrinter> 
+          interface(new EntryGetterInterface_asciiPrinter(***someargs***));
+     
+       return EntryGetter(interface);
+    }
+  
+    double asciiPrinter::_retrieve(const std::string& label, const uint rank, const ulong pointID)
+    {
+      /// Get labelled quantity out of correct place in output file
+
+      /// return it
+    }
+
+    /// @{ Retrieval functions
+    double asciiPrinter::_retrieve(const std::string& label, const uint rank, const ulong pointID)
+    {
+      /// Get labelled quantity out of correct place in output file
+
+      /// return it
+    }
+
+    /// @}
+
   } // end namespace printers
 } // end namespace Gambit
 

@@ -43,7 +43,12 @@
    #include "gambit/Elements/printable_types.hpp"
 #else
    // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
-   #include "gambit/ScannerBit/printable_types.hpp"
+   //#include "gambit/ScannerBit/printable_types.hpp"
+
+   // Already dealt with in basebaseprinter? Can possibly do this to deal with
+   // lack of new types, rest will be inherited anyway.
+   #define PRINTABLE_TYPES (double)
+   #define RETRIEVABLE_TYPES (double)
 #endif
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
