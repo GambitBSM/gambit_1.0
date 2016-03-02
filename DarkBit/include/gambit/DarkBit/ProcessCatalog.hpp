@@ -111,7 +111,7 @@ namespace Gambit
         /// Energy dependence of final state particles. Includes v_rel ("v") as last argument in case of annihilation
         /// \TODO: Implement checks on TH_Channel::genRate
         // FIXME: Add description about kinematical variables
-        Funk::Funk genRate;
+        Funk::Funk genRate = Funk::zero("dummyArgument");
     };
 
     /// A container for a single process.
@@ -157,9 +157,9 @@ namespace Gambit
         /// List of resonances and thresholds \TODO rename thresholdResonances to TH_resonances_thresholds
         TH_resonances_thresholds thresholdResonances;
 
-        /// Total decay rate or sigmav. \TODO implement TH_Process::genRateTotal
+        /// Additional decay rate or sigmav (in addition to above channels)
         // FIXME: Add detailed description
-        Funk::Funk genRateTotal;
+        Funk::Funk genRateMisc;
     };
 
     /// A container holding all annihilation and decay initial states relevant for DarkBit.
@@ -176,6 +176,9 @@ namespace Gambit
 
         /// Retrieve properties of a given particle involved in one or more processes in this catalog
         TH_ParticleProperty getParticleProperty(str) const;
+
+        /// Validate kinematics and entries
+        void validate();
 
         // FIXME: Implement hasParticleProperty ?
 

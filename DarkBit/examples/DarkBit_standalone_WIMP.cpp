@@ -123,15 +123,12 @@ namespace Gambit
 
       TH_Channel dec_channel(Funk::vec<string>("gamma", "gamma"), Funk::cnst(1.));
       process_dec.channelList.push_back(dec_channel);
-      process_dec.genRateTotal = Funk::cnst(1.);
 
       TH_Channel dec_channel1(Funk::vec<string>("phi2", "phi2"), Funk::cnst(1.));
       process_dec1.channelList.push_back(dec_channel1);
-      process_dec1.genRateTotal = Funk::cnst(1.);
 
       TH_Channel dec_channel2(Funk::vec<string>("gamma", "gamma"), Funk::cnst(1.));
       process_dec2.channelList.push_back(dec_channel2);
-      process_dec2.genRateTotal = Funk::cnst(1.);
 
       process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
       auto p1 = Funk::vec<string>("gamma", "gamma", "phi", "phi1");
@@ -142,7 +139,7 @@ namespace Gambit
           double mtot_final = 
             catalog.getParticleProperty(p1[i]).mass +
             catalog.getParticleProperty(p2[i]).mass;
-          if ( mWIMP*2 > mtot_final )
+          if ( mWIMP*2 > mtot_final * 0)
           {
             Funk::Funk kinematicFunction = (Funk::one("v")+pow(Funk::var("v"), 2)*b)*sv*brList[i];
             TH_Channel new_channel(
@@ -160,7 +157,6 @@ namespace Gambit
 
       auto E = Funk::var("E");
       Funk::Funk kinematicFunction = Funk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[4];
-      // FIXME: Second gamma is silently ignored
       TH_Channel new_channel(Funk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
       process_ann.channelList.push_back(new_channel);
 
@@ -168,6 +164,8 @@ namespace Gambit
       catalog.processList.push_back(process_dec);
       catalog.processList.push_back(process_dec1);
       catalog.processList.push_back(process_dec2);
+
+      catalog.validate();
 
       result = catalog;
     } // function TH_ProcessCatalog_WIMP

@@ -49,7 +49,7 @@ namespace Gambit
         if(totalWidth>0)
         {
           TH_Process process(pID);
-          process.genRateTotal = Funk::cnst(totalWidth);
+          process.genRateMisc = Funk::cnst(0.);
           for(auto fState_it = entry->channels.begin();
               fState_it!= entry->channels.end(); ++fState_it)
           {

@@ -38,7 +38,7 @@ namespace Gambit {
     {
       if ( nFinalStates < 2 )
       {
-        DarkBit_error().raise(LOCAL_INFO, "ERROR: Need at least two final state particles.");
+        DarkBit_error().raise(LOCAL_INFO, "Need at least two final state particles.");
       }
     }
 
@@ -91,14 +91,16 @@ namespace Gambit {
     TH_Process::TH_Process(str particle1ID)
       : isAnnihilation (false), 
       particle1ID    (particle1ID), 
-      particle2ID    ("")
+      particle2ID    (""),
+      genRateMisc    (Funk::zero())
     {}
 
     /// Constructor for annihilation process
     TH_Process::TH_Process(str particle1ID, str particle2ID)
       : isAnnihilation (true),
       particle1ID(particle1ID),
-      particle2ID(particle2ID)
+      particle2ID(particle2ID),
+      genRateMisc(Funk::zero("v"))
     {
       if (particle1ID.compare(particle2ID) > 0)
       {
@@ -164,6 +166,108 @@ namespace Gambit {
             " in particleProperties of TH_ProcessCatalog.");
       }
       return it->second;
+    }
+
+    void TH_ProcessCatalog::validate()
+    {
+      for (auto it = processList.begin(); it != processList.end(); it++)
+      {
+        std::string processname;
+
+        if (it->isAnnihilation) // Annihilation
+        {
+          double E_in = getParticleProperty(it->particle1ID).mass;
+          E_in += getParticleProperty(it->particle2ID).mass;
+
+          if ((it->genRateMisc->getNArgs() != 1) or not(it->genRateMisc->hasArg("v")))
+            DarkBit_error().raise(LOCAL_INFO, 
+                "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
+                "  genRateMisc must have relative velocity v as only argument.");
+          for (auto it2 = it->channelList.begin(); it2 != it->channelList.end(); it2++)
+          {
+            double E_out = 0;
+            std::string outstring = "";
+            for (size_t i = 0; i < it2->finalStateIDs.size(); i++)
+            {
+              E_out += getParticleProperty(it2->finalStateIDs[i]).mass;
+              outstring += it2->finalStateIDs[i] + " ";
+            }
+            std::cout << outstring << std::endl;
+            if (it2->nFinalStates != it2->finalStateIDs.size())
+              DarkBit_error().raise(LOCAL_INFO, 
+                  "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
+                  "  inconsistent nFinalStates entry for final states " + outstring);
+            if ((it2->finalStateIDs.size() < 2) or (it2->finalStateIDs.size() > 3))
+              DarkBit_error().raise(LOCAL_INFO, 
+                "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
+                "  number of final states not supported for annihilation into " + outstring);
+            if (it2->finalStateIDs.size() == 2)
+              if ((it2->genRate->getNArgs() != 1) or not it2->genRate->hasArg("v"))
+                DarkBit_error().raise(LOCAL_INFO, 
+                  "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
+                  "  genRate must have relative velocity v as only argument for annihilation into " + outstring);
+            if (it2->finalStateIDs.size() == 3)
+              if (it2->genRate->getNArgs() != 3 or not it2->genRate->hasArg("E") or not it2->genRate->hasArg("E1") or not it2->genRate->hasArg("v"))
+                DarkBit_error().raise(LOCAL_INFO, 
+                  "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
+                  "  genRate must have three arguments (v, E and E1) for annihilation into " + outstring);
+            if ((it2->finalStateIDs.size() == 3) and E_out > E_in)
+              DarkBit_error().raise(LOCAL_INFO, 
+                "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
+                "  three-body final states kinematically not allowed for v=0 for annihilation into " + outstring);
+            if (E_out > E_in)  // Test whether channels kinematically closed for v=0 are indeed closed
+              // FIXME: Implement this also for three-body final states
+            {
+              double v_min = sqrt(1-1/pow(E_out/E_in,2));
+              if ( it2->genRate->bind("v")->eval(v_min*0.999) != 0 )
+                DarkBit_error().raise(LOCAL_INFO, 
+                  "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
+                  "  genRate must be zero for values of v that are below kinematic threshold for annihilation into " + outstring);
+            }
+          }
+        }
+        else // Decay
+        {
+          double E_in = getParticleProperty(it->particle1ID).mass;
+
+          if (it->genRateMisc->getNArgs() != 0)
+            DarkBit_error().raise(LOCAL_INFO, 
+                "Invalid TH_ProcessCatalog decay entry for " + it->particle1ID + "\n"
+                "  genRateMisc must have zero arguments.");
+          for (auto it2 = it->channelList.begin(); it2 != it->channelList.end(); it2++)
+          {
+            double E_out = 0;
+            std::string outstring = "";
+            for (size_t i = 0; i < it2->finalStateIDs.size(); i++)
+            {
+              E_out += getParticleProperty(it2->finalStateIDs[i]).mass;
+              outstring += it2->finalStateIDs[i] + " ";
+            }
+            if (it2->nFinalStates != it2->finalStateIDs.size())
+              DarkBit_error().raise(LOCAL_INFO, 
+                  "Invalid TH_ProcessCatalog decay entry for " + it->particle1ID + "\n"
+                  "  inconsistent nFinalStates entry for final states " + outstring);
+            if ((it2->finalStateIDs.size() < 2) or (it2->finalStateIDs.size() > 3))
+              DarkBit_error().raise(LOCAL_INFO, 
+                "Invalid TH_ProcessCatalog decay entry for " + it->particle1ID + "\n"
+                "  number of final states not supported for decay into " + outstring);
+            if (it2->finalStateIDs.size() == 2)
+              if (it2->genRate->getNArgs() != 0)
+                DarkBit_error().raise(LOCAL_INFO, 
+                  "Invalid TH_ProcessCatalog decay entry for " + it->particle1ID + "\n"
+                  "  genRate must have zero arguments for decay into " + outstring);
+            if (it2->finalStateIDs.size() == 3)
+              if (it2->genRate->getNArgs() != 2 or not it2->genRate->hasArg("E") or not it2->genRate->hasArg("E1"))
+                DarkBit_error().raise(LOCAL_INFO, 
+                  "Invalid TH_ProcessCatalog decay entry for " + it->particle1ID + "\n"
+                  "  genRate must have two arguments (E and E1) for decay into " + outstring);
+            if (E_out > E_in)
+              DarkBit_error().raise(LOCAL_INFO, 
+                "Invalid TH_ProcessCatalog decay entry for " + it->particle1ID + "\n"
+                "  kinematically forbidden decay into " + outstring);
+          }
+        }
+      }
     }
   } // namespace DarkBit
 } // namespace Gambit

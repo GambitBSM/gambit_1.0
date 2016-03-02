@@ -498,20 +498,20 @@ namespace Gambit
           if(it->isAnnihilation) continue;
 
           string pID = it->particle1ID;
-          if(it->genRateTotal->hasArgs()) continue;
           double m = cat.getParticleProperty(pID).mass;
-          double width = it->genRateTotal->bind()->eval();
+          // FIXME: What to do with genRateTotal???
+          //double width = it->genRateTotal->bind()->eval();
           bool stable = ((it->channelList).size()<1);
           if(disabledList.count(pID)==1) stable = true;
           // If tabulated spectra exist for decays of this particle, consider
           // it stable for the purpose of decay chain generation.
           if(tab.hasAnyChannel(pID)) stable = true;  
-          if(!stable and (width <=0.0))
-          {
-             piped_warnings.request(LOCAL_INFO,
-               "Unstable particle "+pID+" with zero width in decay table. Treating it as stable in cascade decays.");             
-             stable = true;
-          }           
+//          if(!stable and (width <=0.0))
+//          {
+//             piped_warnings.request(LOCAL_INFO,
+//               "Unstable particle "+pID+" with zero width in decay table. Treating it as stable in cascade decays.");             
+//             stable = true;
+//          }           
           // Create DecayTableEntry and insert decay channels
           DecayTableEntry entry(pID,m,stable);
           for(vector<TH_Channel>::const_iterator it2 = (
@@ -536,7 +536,8 @@ namespace Gambit
           }
           // Use specified total width (instead of summing widths of registered
           // channels).
-          entry.forceTotalWidth(true,width);
+          // FIXME: What to do with genRateTotal ???
+          // entry.forceTotalWidth(true,width);
           if(!stable and entry.enabledDecays.size() == 0)
           {
             piped_warnings.request(LOCAL_INFO,
