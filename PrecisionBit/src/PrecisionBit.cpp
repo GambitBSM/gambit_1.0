@@ -639,8 +639,12 @@ namespace Gambit
       /// gambit indices start from 1, hence the offsets here
       model.get_physical().MSvmL = mssm->get(Par::Pole_Mass, "~nu", 2); // 1L
       str msm1, msm2;
-      //PA: todo: decide how whetehr to add add extra argumenets to check if flavour violation is too large
-      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm);
+      // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
+      // If we get a successful convergence to the pole mass scheme in the end it's OK  
+      const static double tol = runOptions->getValueOrDef<double>(1e-1, "off_diagonal_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol,
+					LOCAL_INFO, pt_error);
       model.get_physical().MSm(0)  =  mssm->get(Par::Pole_Mass, msm1); // 1L
       model.get_physical().MSm(1)  =  mssm->get(Par::Pole_Mass, msm2); // 1L
       
@@ -697,6 +701,7 @@ namespace Gambit
 	std::ostringstream err;
 	err << "gm2calc routine convert_to_onshell raised warning: "
 	    << model.get_problems().get_warnings() << ".";
+	/// may want to handle this in less harsh way
         invalid_point().raise(err.str());	
       }
 
