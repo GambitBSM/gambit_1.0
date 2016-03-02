@@ -178,7 +178,7 @@ namespace Gambit {
       Funk::Funk integrand = dNdE/(2*halfBox_int);
       // FIXME: Use a more thought-out accuracy condition
       return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
-        ->set_epsabs(0)->set_epsrel(1e-4)->set("Ep", Funk::var("E"));
+        ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", Funk::var("E"));
     }
 
     // FIXME: Update description
@@ -235,6 +235,7 @@ namespace Gambit {
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
+        // Check whether two-body final state is in SimYield table
         if ( it->nFinalStates == 2 and 
             Dep::SimYieldTable->hasChannel(
               it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
@@ -243,16 +244,7 @@ namespace Gambit {
             it->genRate*(*Dep::SimYieldTable)(
                 it->finalStateIDs[0], it->finalStateIDs[1], "gamma", Ecm);
         }
-        // FIXME: Implement missing Z gamma final state
-        else if ( it->nFinalStates == 2 
-            and it->finalStateIDs[0] == "gamma" 
-            and it->finalStateIDs[1] == "gamma" )
-        {
-          Funk::Funk E = Funk::var("E");
-          Yield = Yield + 
-            2*it->genRate*exp(-pow((E-mass)/line_width/E,2)/2)
-            /E/sqrt(2*M_PI)/line_width;
-        }
+        // Deal with composite final states
         else if ( it->nFinalStates == 2 )
         {
           Funk::Funk spec0 = Funk::zero("E");
@@ -266,18 +258,34 @@ namespace Gambit {
           double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
           double E1 = Ecm-E0; 
 
+          // Final state particle one
+          // Tabulated spectrum available?
           if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
           {
             spec0 = (*Dep::SimYieldTable)(it->finalStateIDs[0], "gamma")->set("Ecm",E0);
           }
+          // Gamma-ray line?
+          else if ( it->finalStateIDs[0] == "gamma" )
+          {
+            Funk::Funk E = Funk::var("E");
+            spec0 = exp(-pow((E-E0)/line_width/E0,2)/2)/E0/sqrt(2*M_PI)/line_width;
+          }
+          // MC spectra available?
           else if ( Dep::cascadeMC_gammaSpectra->count(it->finalStateIDs[0]) )
           {
             double gamma0 = E0/m0;
             spec0 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[0]), gamma0, 0.0);
           }        
+
+          // Final state particle two
           if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
           {
             spec1 = (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma")->set("Ecm",E1);
+          }
+          else if ( it->finalStateIDs[1] == "gamma" )
+          {
+            Funk::Funk E = Funk::var("E");
+            spec1 = exp(-pow((E-E1)/line_width/E1,2)/2)/E1/sqrt(2*M_PI)/line_width;
           }
           else if ( Dep::cascadeMC_gammaSpectra->count(it->finalStateIDs[1]) )
           {
@@ -285,7 +293,6 @@ namespace Gambit {
             spec1 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]), gamma1, 0.0);
           }
 
-          
 #ifdef DARKBIT_DEBUG
           std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
           std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
@@ -305,9 +312,8 @@ namespace Gambit {
 #endif
 
           Yield = Yield + (spec0 + spec1) * it->genRate;
-
         }
-      }
+      } // End adding two-body final states
           
 #ifdef DARKBIT_DEBUG
       std::vector<std::string> test1 = initVector<std::string> ("h0_1_test","h0_2_test","h0_2_test","h0_1_test","WH_test", "A0_test", "h0_1_test", "W+");
@@ -330,9 +336,11 @@ namespace Gambit {
 #endif
       
       // Adding three-body final states
+      // FIXME: For now only primary gamma-ray lines are supported
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
+        // Implement tabulated three-body final states
         /*
            if ( it->nFinalStates == 3
            and Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma")
@@ -350,8 +358,14 @@ namespace Gambit {
            Yield = Yield + convspec(spec0, spec1, spec2, dNdE1dE2);
            }
         */
+
         if ( it->nFinalStates == 3 and it->finalStateIDs[0] == "gamma" )
         {
+          if ( it->finalStateIDs[1] == "gamma" or it->finalStateIDs[2] == "gamma")
+          {
+            // FIXME: Implement correct treatment
+            DarkBit_warning().raise(LOCAL_INFO, "Second and/or third primary gamma rays in three-body final states ignored.");
+          }
           double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(
               it->finalStateIDs[1]).mass;
           double m2 = (*Dep::TH_ProcessCatalog).getParticleProperty(

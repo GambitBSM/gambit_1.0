@@ -651,7 +651,6 @@ namespace Gambit {
               it2!=dN_dE.end();++it2)
           {
             *it2 /= eventCounts.at(*it);
-            // FIXME: *it2 += 1e-50;  // Quasi zero
 #ifdef DARKBIT_DEBUG
             std::cout << E[i] << " " << *it2 << std::endl;    
 #endif
@@ -662,8 +661,14 @@ namespace Gambit {
 
           for (size_t i = 1; i<E.size()-1; i++)
           {
-            if (dN_dE[i]/(dN_dE[i-1]+dN_dE[i+1]+dN_dE[i]*1e-3) > 1e2)
-              spectra[*it]->set_singularity("E", E[i], (E[i+1]-E[i])/10);
+            if (dN_dE[i]/(dN_dE[i-1]+dN_dE[i+1]+dN_dE[i]*1e-4) > 1e2)
+            {
+#ifdef DARKBIT_DEBUG
+              std::cout << "Set singularity at " << E[i] << " with width "
+                << E[i+1]-E[i] << endl;
+#endif
+              spectra[*it]->set_singularity("E", E[i], (E[i+1]-E[i]));
+            }
           }
         }
         else

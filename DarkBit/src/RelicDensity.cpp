@@ -335,8 +335,8 @@ namespace Gambit {
           Weff = Weff + 
             it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
+        // FIXME: Does not work for three-body final states
         result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
-
       } // function RD_eff_annrate_from_ProcessCatalog
 
 

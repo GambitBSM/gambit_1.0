@@ -33,13 +33,9 @@ QUICK_FUNCTION(DarkBit, TH_ProcessCatalog, OLD_CAPABILITY, TH_ProcessCatalog_WIM
 QUICK_FUNCTION(DarkBit, DarkMatter_ID, OLD_CAPABILITY, DarkMatter_ID_WIMP, std::string, ())
 QUICK_FUNCTION(DarkBit, DD_couplings, OLD_CAPABILITY, DD_couplings_WIMP, DarkBit::DD_couplings, ())
 
-double mWIMP_global;
-double sv_global;
-
-
-void dump_array_to_file(
-    const std::string & filename, const boost::multi_array<double, 2> & a,
-    const std::vector<double> & x, const std::vector<double> & y)
+void dump_array_to_file(const std::string & filename, const
+    boost::multi_array<double, 2> & a, const std::vector<double> & x, const
+    std::vector<double> & y)
 {
   std::fstream file;
   file.open(filename, std::ios_base::out);
@@ -59,11 +55,30 @@ void dump_array_to_file(
   file.close();
 }
 
+void dumpSpectrum(std::string filename, double mWIMP, double sv, std::vector<double> brList)
+{
+  DarkMatter_ID_WIMP.reset_and_calculate();
+  TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", brList);
+  TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", mWIMP);
+  TH_ProcessCatalog_WIMP.setOption<double>("sv", sv);
+  TH_ProcessCatalog_WIMP.reset_and_calculate();
+  RD_fraction_fixed.reset_and_calculate();
+  SimYieldTable_DarkSUSY.reset_and_calculate();
+  GA_missingFinalStates.reset_and_calculate();
+  cascadeMC_FinalStates.reset_and_calculate();
+  cascadeMC_DecayTable.reset_and_calculate();
+  cascadeMC_LoopManager.reset_and_calculate();
+  cascadeMC_gammaSpectra.reset_and_calculate();
+  GA_AnnYield_General.reset_and_calculate();
+  dump_GammaSpectrum.setOption<std::string>("filename", filename);
+  dump_GammaSpectrum.reset_and_calculate();
+}
 
 namespace Gambit
 {
   namespace DarkBit
   {
+    
     void TH_ProcessCatalog_WIMP(DarkBit::TH_ProcessCatalog& result)
     {
       using namespace Pipes::TH_ProcessCatalog_WIMP;
@@ -74,6 +89,8 @@ namespace Gambit
       TH_ProcessCatalog catalog;
       TH_Process process_ann((string)"WIMP", (string)"WIMP");
       TH_Process process_dec((string)"phi");
+      TH_Process process_dec1((string)"phi1");
+      TH_Process process_dec2((string)"phi2");
 
       ///////////////////////////////////////
       // Import particle masses and couplings
@@ -83,19 +100,24 @@ namespace Gambit
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(Mass, spinX2)));    
 
-      double mWIMP= mWIMP_global;
-      double sv = sv_global;
+      double mWIMP = runOptions->getValue<double>("mWIMP");
+      double sv = runOptions->getValue<double>("sv");
+      double b = 0;  // defined as sv(v) = sv(v=0) + b*(sv=0)*v**2
+      auto brList = runOptions->getValue<std::vector<double>>("brList");
 
       // FIXME: Use various channels include 3-body and complicated cascade
       // decay
       // FIXME: Check stability of codes w.r.t. extreme parameters
       // FIXME: Test all input possible for this function
+      addParticle("gamma", 0.0,  2)
       addParticle("Z0", 91.2,  2)
       addParticle("tau+", 1.8,  1)
       addParticle("tau-", 1.8,  1)
-      addParticle("gamma", 0.0,  2)
-      addParticle("phi", 99.0,  0)
+
       addParticle("WIMP", mWIMP,  0)
+      addParticle("phi", 50.0,  0)
+      addParticle("phi1", 99.9,  0)
+      addParticle("phi2", 49.9,  0)
 
       #undef addParticle
 
@@ -103,22 +125,26 @@ namespace Gambit
       process_dec.channelList.push_back(dec_channel);
       process_dec.genRateTotal = Funk::cnst(1.);
 
+      TH_Channel dec_channel1(Funk::vec<string>("phi2", "phi2"), Funk::cnst(1.));
+      process_dec1.channelList.push_back(dec_channel1);
+      process_dec1.genRateTotal = Funk::cnst(1.);
+
+      TH_Channel dec_channel2(Funk::vec<string>("gamma", "gamma"), Funk::cnst(1.));
+      process_dec2.channelList.push_back(dec_channel2);
+      process_dec2.genRateTotal = Funk::cnst(1.);
+
       process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
-      auto channel = Funk::vec<string>("ZZ", "tautau", "gammagamma", "phiphi");
-      auto p1 = Funk::vec<string>("Z0", "tau+", "gamma", "phi");
-      auto p2 = Funk::vec<string>("Z0", "tau-", "gamma", "phi");
-      auto svList= Funk::vec<double>(0.0, 0.0, 0.3, 0.7);
+      auto p1 = Funk::vec<string>("gamma", "gamma", "phi", "phi1");
+      auto p2 = Funk::vec<string>("Z0", "gamma", "phi", "phi1");
       {
-        for ( unsigned int i = 0; i < channel.size(); i++ )
+        for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
           double mtot_final = 
             catalog.particleProperties.at(p1[i]).mass +
             catalog.particleProperties.at(p2[i]).mass;
-          if ( mWIMP*2 > mtot_final*0.5 )
+          if ( mWIMP*2 > mtot_final )
           {
-            double a = 1;
-            double b = 0;
-            Funk::Funk kinematicFunction = (Funk::one("v")*a+pow(Funk::var("v"), 2)*b)*sv*svList[i];
+            Funk::Funk kinematicFunction = (Funk::one("v")+pow(Funk::var("v"), 2)*b)*sv*brList[i];
             TH_Channel new_channel(
                 Funk::vec<string>(p1[i], p2[i]), kinematicFunction
                 );
@@ -132,8 +158,16 @@ namespace Gambit
         }
       }
 
+      auto E = Funk::var("E");
+      Funk::Funk kinematicFunction = Funk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[4];
+      // FIXME: Second gamma is silently ignored
+      TH_Channel new_channel(Funk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
+      process_ann.channelList.push_back(new_channel);
+
       catalog.processList.push_back(process_ann);
       catalog.processList.push_back(process_dec);
+      catalog.processList.push_back(process_dec1);
+      catalog.processList.push_back(process_dec2);
 
       result = catalog;
     } // function TH_ProcessCatalog_WIMP
@@ -236,7 +270,7 @@ int main()
   // Set up MC loop manager for cascade MC
   // FIXME: Systematically test accuracy and dependence on setup parameters
   // FIXME: Add maximum width for energy bins
-  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 1);
+  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
   cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
@@ -257,7 +291,7 @@ int main()
   //cascadeMC_GenerateChain.reset_and_calculate();
 
   // Generate histogram for cascade MC
-  //cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 280);
+  cascadeMC_Histograms.setOption<int>("cMC_NhistBins", 600);
   // FIXME: Check dependence on histogram parameters
   cascadeMC_Histograms.resolveDependency(&cascadeMC_InitialState);
   cascadeMC_Histograms.resolveDependency(&cascadeMC_GenerateChain);
@@ -349,13 +383,22 @@ int main()
   boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
   boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
 
+  // Spectral tests
+  dumpSpectrum("dNdE1.dat", 100., 3e-26, Funk::vec<double>(0., 0., 0., 1., 0.));
+  dumpSpectrum("dNdE2.dat", 100., 3e-26, Funk::vec<double>(0., 0., 1., 0., 0.));
+  dumpSpectrum("dNdE3.dat", 100., 3e-26, Funk::vec<double>(0., 1., 0., 0., 0.));
+  dumpSpectrum("dNdE4.dat", 100., 3e-26, Funk::vec<double>(1., 0., 0., 0., 0.));
+  dumpSpectrum("dNdE5.dat", 100., 3e-26, Funk::vec<double>(0., 0., 0., 0., 1.));
+  exit(1);
+
+  // Systematic parameter maps
   for (size_t i = 0; i < m_list.size(); i++)
   {
     for (size_t j = 0; j < sv_list.size(); j++)
     {
-      mWIMP_global = m_list[i];
-      sv_global = sv_list[j];
-      std::cout << "Parameters: " << mWIMP_global << " " << sv_global << std::endl;
+      TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+      TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
+      std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
       DarkMatter_ID_WIMP.reset_and_calculate();
       TH_ProcessCatalog_WIMP.reset_and_calculate();
       RD_fraction_fixed.reset_and_calculate();
@@ -371,12 +414,12 @@ int main()
       double lnL = lnL_FermiLATdwarfs_gamLike(0);
       std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
       lnL_array[i][j] = lnL;
-      RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
-      RD_spectrum_from_ProcessCatalog.reset_and_calculate();
-      RD_spectrum_ordered_func.reset_and_calculate();
-      RD_oh2_general.reset_and_calculate();
-      double oh2 = RD_oh2_general(0);
-      oh2_array[i][j] = oh2;
+      //RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
+      //RD_spectrum_from_ProcessCatalog.reset_and_calculate();
+      //RD_spectrum_ordered_func.reset_and_calculate();
+      //RD_oh2_general.reset_and_calculate();
+      //double oh2 = RD_oh2_general(0);
+      //oh2_array[i][j] = oh2;
 //    SetWIMP_DDCalc0.reset_and_calculate();
 //    CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
 //    LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
