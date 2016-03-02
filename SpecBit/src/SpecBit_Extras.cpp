@@ -12,18 +12,10 @@
 ///
 ///  Authors (add name and date if you modify):
 ///
-///  \author Ben Farmer
-///          (benjamin.farmer@fysik.su.se)
-///    \date 2014 Sep - Dec, 2015 Jan - Mar
-///  
-///  \author Christopher Rogan
-///          (christophersrogan@gmail.com)
-///  \date 2015 Apr
-///
 ///  \author James McKay
 ///           (j.mckay14@imperial.ac.uk)
 ///
-///  \date 2015 Nov
+///  \date 2015 Nov - 2016 Mar
 ///
 ///  *********************************************
 
@@ -37,9 +29,6 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-//#include "gambit/SpecBit/SMskeleton.hpp"
-//#include "gambit/SpecBit/SingletDMZ3skeleton.hpp" does not exist
-//#include "gambit/SpecBit/SingletDMZ3Spec.hpp"
 
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
@@ -62,45 +51,6 @@ namespace Gambit
     using namespace LogTags;
     using namespace flexiblesusy;
 
-
-
-
-//    template <class T>
-//    void fill_SingletDMZ3_input(T& input, const std::map<str, safe_ptr<double> >& Param )
-//    {
-//      double mH2 = *Param.at("mH2");
-//      double mS2 = *Param.at("mS2");
-//      double lambda_hs = *Param.at("lambda_hS");
-//      double lambda_s= *Param.at("lambda_S");
-//      
-//      input.HiggsIN=mH2;//-pow(mH,2)/2;
-//      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
-//      input.LamSHInput=lambda_hs;
-//      input.LamSInput=lambda_s;
-//
-//      input.QEWSB=173.15;  // scale where EWSB conditions are applied
-//    }
-//    
-//    template <class T>
-//    void fill_SingletDM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
-//    {
-//      double mH2 = *Param.at("mH2");
-//      double mS2 = *Param.at("mS2");
-//      double lambda_hs = *Param.at("lambda_hS");
-//      
-//      
-//      double lambda_s= *Param.at("lambda_S");
-//      
-//      input.LamSInput=lambda_s;
-//      input.HiggsIN=mH2;//-pow(mH,2)/2;
-//      input.mS2Input=mS2;//pow(mS,2)-lambda_hs*15;
-//      input.LamSHInput=lambda_hs;
-//      input.QEWSB=173.15;  // scale where EWSB conditions are applied
-//    }
-//
-
-//
-    
     
     void shift(double &a, double &b, double &c, const double d)
     {
@@ -108,54 +58,67 @@ namespace Gambit
         b=c;
         c=d;
     }
-
-
-    void find_min_lambda(std::pair<double, double>& age_pair)
+    
+    bool check_perturb(const Spectrum*  spec,double scale)
+    {
+    using namespace flexiblesusy;
+    using namespace Gambit;
+    using namespace SpecBit;
+    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
+    SingletDM -> RunToScale(scale);
+    double lambda1 = SingletDM->runningpars().get(Par::dimensionless,"Lambda1");
+    double lambda2 = SingletDM->runningpars().get(Par::dimensionless,"Lambda2");
+    double lambda3 = SingletDM->runningpars().get(Par::dimensionless,"Lambda3");
+    bool perturbative = lambda1 < 3.5449077018110318 && lambda2 < 3.5449077018110318 && lambda3 < 3.5449077018110318;
+    return perturbative;
+    }
+    
+    double run_lambda(const Spectrum*  spec,double scale)
+    {
+    using namespace flexiblesusy;
+    using namespace Gambit;
+    using namespace SpecBit;
+    std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE(); // clone the original spectrum incase the running takes the spectrum
+                                                                // into a non-perturbative scale and thus the spectrum is no longer reliable
+    SingletDM -> RunToScale(scale);
+    double lambda1 = SingletDM->runningpars().get(Par::dimensionless,"Lambda1");
+    return lambda1;
+    }
+    
+    void find_min_lambda(triplet<double>& age_pair)
     {
       using namespace flexiblesusy;
       using namespace softsusy;
       namespace myPipe = Pipes::find_min_lambda;//get_SingletDM_spectrum;
       using namespace Gambit;
       using namespace SpecBit;
-      //const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-
       const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
-      const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
-     
-      cout<<"Scalar pole mass:" << endl;
-      cout<<spec->phys().get(Par::Pole_Mass,"S")  <<endl;
-      cout<<"Higgs pole mass:" << endl;
-      cout<<spec->phys().get(Par::Pole_Mass,"h0")  <<endl;
-
-      //SMInputs sminputs = fullspectrum->get_SMInputs();
-      std::unique_ptr<SubSpectrum> SM = fullspectrum->clone_HE(); // COPIES Spectrum object
+      // const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
+      //std::unique_ptr<SubSpectrum> SingletDM = fullspectrum->clone_HE(); // COPIES Spectrum object
       //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();
-  
-      SM -> RunToScale(MZ);
-      //double LamZ =SM->runningpars().get(Par::dimensionless,"Lambda1");
-      //
+      //SingletDM -> RunToScale(MZ); // example of alternative way to run couplings, now using run_lambda subroutine above
+
+      bool perturbative;
 
 
       double u_1=1;
       double u_2=10;
-      double u_3=20;
+      double u_3=12;
       double lambda_1,lambda_2,lambda_3;
 
       // fit parabola (in log space) to 3 trial points and use this to estimate the minimum, zooming in on the region of interest
       for (int i=1;i<3;i++)
       {
-      SM -> RunToScale(pow(10,u_1));
-      lambda_1 =SM->runningpars().get(Par::dimensionless,"Lambda1");
-      SM -> RunToScale(pow(10,u_2));
-      lambda_2 =SM->runningpars().get(Par::dimensionless,"Lambda1");
-      SM -> RunToScale(pow(10,u_3));
-      lambda_3 =SM->runningpars().get(Par::dimensionless,"Lambda1");
+
+      lambda_1 = run_lambda(fullspectrum, pow(10,u_1));
+      lambda_2 = run_lambda(fullspectrum, pow(10,u_2));
+      lambda_3 = run_lambda(fullspectrum, pow(10,u_3));
+      
       double min_u= (lambda_1*(pow(u_2,2)-pow(u_3,2))  - lambda_2*(pow(u_1,2)-pow(u_3,2)) + lambda_3*(pow(u_1,2)-pow(u_2,2)));
       min_u=(min_u/( lambda_1*(u_2-u_3)+ lambda_2*(u_3-u_1)  +lambda_3*(u_1-u_2)))/2;
       u_1=min_u-2/(pow(float(i),0.01));
       u_2=min_u;
       u_3=min_u+2/(pow(float(i),0.01));
-      SM = fullspectrum->clone_HE(); // clone the original spectrum incase the above calcuations have run into a non-perturbative scale and thus the spectrum is no longer reliable
       }
       // run downhill minimization routine to find exact minimum
       double ax=pow(10,u_1);
@@ -172,9 +135,7 @@ namespace Gambit
       double a=(ax < cx ? ax : cx);
       double b=(ax > cx ? ax : cx);
       x=w=v=bx;
-      SM -> RunToScale(x);
-      fw=fv=fx =SM->runningpars().get(Par::dimensionless,"Lambda1");
-      
+      fw=fv=fx =run_lambda(fullspectrum,x);
       
       for (int iter=0;iter<ITMAX;iter++)
       {                            //  Main program loop.
@@ -211,8 +172,7 @@ namespace Gambit
           }
           u=(abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
         
-          SM -> RunToScale(u);
-          fu =SM->runningpars().get(Par::dimensionless,"Lambda1");
+          fu = run_lambda(fullspectrum,u);
         
         
         
@@ -264,11 +224,13 @@ namespace Gambit
       else
       {
         LB=1.22e19;
-        lifetime=std::numeric_limits<double>::infinity();
+        lifetime=1e300;
         //stability=0; // stable
       }
-      age_pair = std::make_pair (lifetime,LB);
-    
+      perturbative=check_perturb(fullspectrum,LB);
+      cout << "perturbative = " << perturbative << endl;
+      double perturb=float(perturbative);
+      age_pair = triplet<double>(lifetime,LB,perturb);
      
     }
 
@@ -277,25 +239,34 @@ namespace Gambit
     {
       namespace myPipe = Pipes::get_expected_lifetime;//
       using namespace Gambit;
-      ddpair age = *myPipe::Dep::vacuum_stability;
-      lifetime=std::get<0>(age)*(6.5821195e-16)/(31536000);// gives expected lifetime in units of years
+      triplet<double> age = *myPipe::Dep::vacuum_stability;
+      if (age.central==1e300){lifetime=1e300;}else{
+      lifetime=age.central*(6.5821195e-16)/(31536000);}// gives expected lifetime in units of years
     }
     
-//    void default_scale(std::pair<double, double>& age_pair)
-//    {
-//      namespace myPipe = Pipes::default_scale;//
-//      using namespace Gambit;
-//      age_pair = std::make_pair (0,1.22e19);
-//    }
 
 
     void get_likelihood(double &result)
     {
       namespace myPipe = Pipes::get_likelihood;//
       using namespace Gambit;
-      ddpair age = *myPipe::Dep::vacuum_stability;
-      result=((- ( 1 / ( std::get<0>(age) ) ) * exp(140) * (1/ (1.2e19) ) )  ); // log of the likelihood
+      triplet<double> age = *myPipe::Dep::vacuum_stability;
+      result=((- ( 1 / ( age.central ) ) * exp(140) * (1/ (1.2e19) ) )  ); // log of the likelihood
     }
+    
+    
+    void check_perturb_min_lambda(double &result)
+    {
+      namespace myPipe = Pipes::get_likelihood;//
+      using namespace Gambit;
+      triplet<double> age = *myPipe::Dep::vacuum_stability;
+      result=age.lower;
+    }
+
+    
+  
+    
+    
     
 
   } // end namespace SpecBit

@@ -68,13 +68,15 @@ Parameters:
       QEWSB: 173
 
 
-    SingletDM:
+    SingletDMZ3:
       mS:
         range: [100, 600]
         prior_type: flat
       lambda_hS:
         range: [0.01, 0.15]
         prior_type: flat
+      lambda_S: 0
+      mu3: 0
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -145,7 +147,7 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 500
+      nlive: 5000
       tol: 0.1
       outfile: 0
       root: "runs/SSDM/samples/native-"
@@ -175,14 +177,16 @@ ObsLikes:
 #    - capability: vacuum_stability
 #      purpose: Observable
 #      function: find_min_lambda
-    - capability: SingletDM_pole_masses
+    - capability: SingletDM_pole_mh
       purpose: Observable
 
     - capability: VS_likelihood
       purpose: LogLike
 
-#    - capability: check_perturb
-#      purpose: Observable
+    - capability: check_perturb
+      purpose: Observable
+      options:
+        set_high_scale: 1e6
 
 
     - capability: SingletDM_spectrum
@@ -206,8 +210,8 @@ Rules:
      # options:
      #   set_high_scale: 10000  #option can be used with check_perturb_simple only
 
-    - capability: SingletDM_spectrum
-      function: get_SingletDM_spectrum_pole
+  #  - capability: SingletDM_spectrum
+  #    function: get_SingletDM_spectrum_pole
 
 #########################
 # Logging setup
