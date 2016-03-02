@@ -23,6 +23,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/PrecisionBit/PrecisionBit_rollcall.hpp"
 #include "gambit/Utils/statistics.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
 
 //#define PRECISIONBIT_DEBUG
 
@@ -628,34 +629,74 @@ namespace Gambit
     void a_mu_SUSY(double &result)
     {
       using namespace Pipes::a_mu_SUSY;
-
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
       gm2calc::MSSMNoFV_onshell model;
 
       const Eigen::Matrix<double,3,3> UnitMatrix = Eigen::Matrix<double,3,3>::Identity();
-
+      
+      // fill pole masses
+      /// note: that the indices start from 0 in gm2calc,
+      /// gambit indices start from 1, hence the offsets here
+      model.get_physical().MSvmL = mssm->get(Par::Pole_Mass, "~nu", 2); // 1L
+      str msm1, msm2;
+      //PA: todo: decide how whetehr to add add extra argumenets to check if flavour violation is too large
+      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm);
+      model.get_physical().MSm(0)  =  mssm->get(Par::Pole_Mass, msm1); // 1L
+      model.get_physical().MSm(1)  =  mssm->get(Par::Pole_Mass, msm2); // 1L
+      
+      model.get_physical().MChi(0) = mssm->get(Par::Pole_Mass, "~chi0", 1); // 1L
+      model.get_physical().MChi(1) =  mssm->get(Par::Pole_Mass, "~chi0", 2); // 1L
+      model.get_physical().MChi(2) = mssm->get(Par::Pole_Mass, "~chi0", 3); // 1L
+      model.get_physical().MChi(3) = mssm->get(Par::Pole_Mass, "~chi0", 4); // 1L
+      
+      model.get_physical().MCha(0) =  mssm->get(Par::Pole_Mass, "~chi+", 1); // 1L
+      model.get_physical().MCha(1) =  mssm->get(Par::Pole_Mass, "~chi+", 2); // 1L
+      model.get_physical().MAh(1)  = mssm->get(Par::Pole_Mass, "A0"); // 2L
+      
       // fill DR-bar parameters
-      model.set_TB(10);
-      model.set_Ae(1,1,0);
+      double A_mu = mssm->get(Par::mass1, "TYe", 2, 2)
+	/ mssm->get(Par::dimensionless, "Ye", 2, 2);
+      double A_tau = mssm->get(Par::mass1, "TYe", 3, 3)
+	/ mssm->get(Par::dimensionless, "Ye", 3, 3);
+      double A_t = mssm->get(Par::mass1, "TYu", 3, 3)
+	/ mssm->get(Par::dimensionless, "Yu", 3, 3);
+      double A_b = mssm->get(Par::mass1, "TYd", 3, 3)
+	/ mssm->get(Par::dimensionless, "Yd", 3, 3);
+      model.set_TB(mssm->get(Par::dimensionless,"tanbeta"));
+      model.set_Mu(mssm->get(Par::mass1, "Mu"));
+      model.set_MassB(mssm->get(Par::mass1, "M1"));
+      model.set_MassWB(mssm->get(Par::mass1, "M2"));
+      model.set_MassG(mssm->get(Par::mass1, "M3"));
+      for(int i = 1; i<=3; i++) {
+	for(int j = 1; j<=3; j++) {	
+	  model.set_mq2(i-1,j-1, mssm->get(Par::mass2, "mq2", i, j)); 
+	  model.set_ml2(i-1,j-1, mssm->get(Par::mass2, "ml2", i, j)); 
+	  model.set_md2(i-1,j-1, mssm->get(Par::mass2, "md2", i, j)); 
+	  model.set_mu2(i-1,j-1, mssm->get(Par::mass2, "mu2", i, j)); 
+	  model.set_me2(i-1,j-1, mssm->get(Par::mass2, "me2", i, j)); 
+	}
+      }
+      model.set_Au(2, 2, A_t);                   // 2L
+      model.set_Ad(2, 2, A_b);                   // 2L
+      model.set_Ae(1,1, A_mu);
+      model.set_Ae(2, 2, A_tau);                   // 2L
+      model.set_scale(mssm->GetScale());                   // 2L
+     
+      // convert DR-bar parameters to on-shell
+      model.convert_to_onshell();
+      /// need to hook up errors properly
+      /// check for problems 
+      if( model.get_problems().have_problem() == true) {
+	std::cout << model.get_problems().get_problems()  << std::endl;
+      }
+      /// check for warnings
+      if( model.get_problems().have_warning() == true) {
+	std::cout << model.get_problems().get_warnings()  << std::endl;
+      }
 
-      // fill on-shell parameters
-      model.set_Mu(350);
-      model.set_MassB(150);
-      model.set_MassWB(300);
-      model.set_MassG(1000);
-      model.set_mq2(500 * 500 * UnitMatrix);
-      model.set_ml2(500 * 500 * UnitMatrix);
-      model.set_md2(500 * 500 * UnitMatrix);
-      model.set_mu2(500 * 500 * UnitMatrix);
-      model.set_me2(500 * 500 * UnitMatrix);
-      model.set_Au(2,2,0);
-      model.set_Ad(2,2,0);
-      model.set_Ae(2,2,0);
-      model.set_MA0(1500);
-      model.set_scale(454.7);
-
-      // calculate mass spectrum
-      model.calculate_masses();
-
+      // convert DR-bar parameters to on-shell
+      model.convert_to_onshell();
+   
       result = BEreq::calculate_amu_1loop(model) 
                + BEreq::calculate_amu_2loop(model);
       return;
