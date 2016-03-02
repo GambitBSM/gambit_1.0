@@ -294,7 +294,7 @@ namespace Gambit {
   
       const double gammaBeta = gamma*beta;              
       // Mass of final state squared
-      const double m = catalog.particleProperties.at(finalState).mass;
+      const double m = catalog.getParticleProperty(finalState).mass;
       const double msq = m*m;
       // Get histogram edges
       double histEmin, histEmax;

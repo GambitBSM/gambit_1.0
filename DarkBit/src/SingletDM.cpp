@@ -385,8 +385,8 @@ namespace Gambit
         for ( unsigned int i = 0; i < channel.size(); i++ )
         {
           double mtot_final = 
-            catalog.particleProperties.at(p1[i]).mass +
-            catalog.particleProperties.at(p2[i]).mass;
+            catalog.getParticleProperty(p1[i]).mass +
+            catalog.getParticleProperty(p2[i]).mass;
           // Include final states that are open for T~m/20
           // FIXME: Is threshold sufficient?
           if ( mS*2 > mtot_final*0.5 )

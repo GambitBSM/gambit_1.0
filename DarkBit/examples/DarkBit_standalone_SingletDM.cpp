@@ -96,7 +96,7 @@ int main()
   logger().initialise(loggerinfo);
 
   model_warning().set_fatal(true);
-  DarkBit::DarkBit_error().set_fatal(false);
+  DarkBit::DarkBit_error().set_fatal(true);
 
   logger()<<"Running DarkBit standalone example"<<LogTags::info<<EOM;
 

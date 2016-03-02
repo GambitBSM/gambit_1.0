@@ -140,8 +140,8 @@ namespace Gambit
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
           double mtot_final = 
-            catalog.particleProperties.at(p1[i]).mass +
-            catalog.particleProperties.at(p2[i]).mass;
+            catalog.getParticleProperty(p1[i]).mass +
+            catalog.getParticleProperty(p2[i]).mass;
           if ( mWIMP*2 > mtot_final )
           {
             Funk::Funk kinematicFunction = (Funk::one("v")+pow(Funk::var("v"), 2)*b)*sv*brList[i];
@@ -204,7 +204,7 @@ int main()
   logger().initialise(loggerinfo);
 
   model_warning().set_fatal(true);
-  DarkBit::DarkBit_error().set_fatal(false);
+  DarkBit::DarkBit_error().set_fatal(true);
 
   logger()<<"Running DarkBit standalone example"<<LogTags::info<<EOM;
 
