@@ -274,11 +274,29 @@ namespace Gambit
     }
   }
 
+  /// Make sure no NaNs have been passed to the DecayTable by nefarious backends
+  void DecayTable::Entry::check_BF_validity(double BF, double error, std::multiset< std::pair<int,int> >& key) const
+  {
+    if (Utils::isnan(BF) or Utils::isnan(error))
+    {
+      std::ostringstream msg;
+      msg << "NaN detected in attempt to set decay table branching fraction. " << endl
+          << "Final states are: " << endl;
+      for(auto it = key.begin(); it !=key.end(); ++it)
+      {
+        msg << "  " << Models::ParticleDB().long_name(*it) << endl;
+      }
+      msg << "BF: " << BF << endl << "error: " << error;
+      utils_error().raise(LOCAL_INFO, msg.str());
+    }
+  }
+
   /// Set branching fraction for decay to a given final state. 1. PDG-context integer pairs (vector)
   void DecayTable::Entry::set_BF(double BF, double error, const std::vector<std::pair<int,int> >& daughters)
   {
     std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
     check_particles_exist(key);
+    check_BF_validity(BF, error, key);
     channels[key] = std::pair<double, double>(BF, error);
   }
 
@@ -288,6 +306,7 @@ namespace Gambit
     std::multiset< std::pair<int,int> > key;
     for (auto p = daughters.begin(); p != daughters.end(); ++p) key.insert(Models::ParticleDB().pdg_pair(*p));
     check_particles_exist(key);
+    check_BF_validity(BF, error, key);
     channels[key] = std::pair<double, double>(BF, error);
   }
 

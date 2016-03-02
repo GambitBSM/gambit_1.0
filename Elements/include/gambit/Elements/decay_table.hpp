@@ -99,6 +99,9 @@ namespace Gambit
           /// Make sure all particles listed in a set are actually known to the GAMBIT particle database
           void check_particles_exist(std::multiset< std::pair<int,int> >&) const;
 
+          /// Make sure no NaNs have been passed to the DecayTable by nefarious backends
+          void check_BF_validity(double, double, std::multiset< std::pair<int,int> >&) const;
+
           /// Construct a set of particles from a variadic list of full names or short names and indices 
           /// @{
           /// Base function version
@@ -149,6 +152,7 @@ namespace Gambit
             std::pair<int,int> particles[] = {p1, args...};
             std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             check_particles_exist(key);
+            check_BF_validity(BF, error, key);
             channels[key] = std::pair<double, double>(BF, error);
           }
 
@@ -157,6 +161,7 @@ namespace Gambit
           {
             std::multiset< std::pair<int,int> > key;
             construct_key(key, p1, args...);
+            check_BF_validity(BF, error, key);
             channels[key] = std::pair<double, double>(BF, error);
           }
           /// @}
