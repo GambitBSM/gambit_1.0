@@ -228,13 +228,24 @@ namespace Gambit {
       const double Ecm = 2*mass;
 
       // Loop over all channels for that process
-      Funk::Funk Yield = Funk::zero("v", "E");
-
+      Funk::Funk Yield = Funk::zero("E");
       
-      // Adding known two-body channels
+      // Adding two-body channels
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
+        double m0 = (*Dep::TH_ProcessCatalog).getParticleProperty(
+            it->finalStateIDs[0]).mass;
+        double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(
+            it->finalStateIDs[1]).mass;
+
+        // Ignore channels that are kinematically closed for v=0
+        if ( m0 + m1 > Ecm )
+          continue;
+
+        double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
+        double E1 = Ecm-E0; 
+
         // Check whether two-body final state is in SimYield table
         if ( it->nFinalStates == 2 and 
             Dep::SimYieldTable->hasChannel(
@@ -249,14 +260,6 @@ namespace Gambit {
         {
           Funk::Funk spec0 = Funk::zero("E");
           Funk::Funk spec1 = Funk::zero("E");        
-
-          double m0 = (*Dep::TH_ProcessCatalog).getParticleProperty(
-              it->finalStateIDs[0]).mass;
-          double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(
-              it->finalStateIDs[1]).mass;
-              
-          double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
-          double E1 = Ecm-E0; 
 
           // Final state particle one
           // Tabulated spectrum available?

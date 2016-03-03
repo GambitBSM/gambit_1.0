@@ -29,6 +29,8 @@ using namespace DarkBit::Functown;     // Functors wrapping the module's actual 
 using namespace DarkBit::Accessors;    // Helper functions that provide some info about the module
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
+// FIXME: Make sure to have meaningful error messages when backends are not correctly loaded 
+
 QUICK_FUNCTION(DarkBit, TH_ProcessCatalog, OLD_CAPABILITY, TH_ProcessCatalog_WIMP, DarkBit::TH_ProcessCatalog, ())
 QUICK_FUNCTION(DarkBit, DarkMatter_ID, OLD_CAPABILITY, DarkMatter_ID_WIMP, std::string, ())
 QUICK_FUNCTION(DarkBit, DD_couplings, OLD_CAPABILITY, DD_couplings_WIMP, DarkBit::DD_couplings, ())
@@ -96,9 +98,9 @@ namespace Gambit
       // Import particle masses and couplings
       ///////////////////////////////////////
       
-      #define addParticle(Name, Mass, spinX2)                                   \
-       catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-       (Name , TH_ParticleProperty(Mass, spinX2)));    
+#define addParticle(Name, Mass, spinX2)                                        \
+      catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
+      (Name , TH_ParticleProperty(Mass, spinX2)));    
 
       double mWIMP = runOptions->getValue<double>("mWIMP");
       double sv = runOptions->getValue<double>("sv");
@@ -115,11 +117,10 @@ namespace Gambit
       addParticle("tau-", 1.8,  1)
 
       addParticle("WIMP", mWIMP,  0)
-      addParticle("phi", 50.0,  0)
+      addParticle("phi",  59.0,  0)
       addParticle("phi1", 99.9,  0)
       addParticle("phi2", 49.9,  0)
-
-      #undef addParticle
+#undef addParticle
 
       TH_Channel dec_channel(Funk::vec<string>("gamma", "gamma"), Funk::cnst(1.));
       process_dec.channelList.push_back(dec_channel);
