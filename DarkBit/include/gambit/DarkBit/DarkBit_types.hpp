@@ -465,10 +465,16 @@ namespace Gambit
         SimYieldChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
             dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) 
         {
-           dNdE_bound = dNdE->bind("E", "Ecm");
+// FIXME: Make optional
+// #ifdef DARBIT_DEBUG
+            auto error = Funk::throwError("Energy out of range");
+            auto Ecm = Funk::var("Ecm");
+            this->dNdE = Funk::ifelse(Ecm - Ecm_min, Funk::ifelse(Ecm_max - Ecm, dNdE, error), error);
+// #endif
+            dNdE_bound = dNdE->bind("E", "Ecm");
         }
         Funk::Funk dNdE;       
-        Funk::BoundFunk dNdE_bound; // Pre-bound version for use in cascade decays
+        Funk::BoundFunk dNdE_bound;  // Pre-bound version for use in e.g. cascade decays
         std::string p1;
         std::string p2;
         std::string finalState;

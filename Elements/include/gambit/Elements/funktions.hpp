@@ -9,7 +9,7 @@
  *  v0.1 Dec 2014
  *  v0.2 Mar 2015 - Completely rewritten internal structure
  *
- *  Christoph Weniger, created Dec 2014
+ *  Christoph Weniger, created Dec 2014, edited until Mar 2016
  *  <c.weniger@uva.nl>
  *  Lars A. Dal, updated Apr, Jun 2015
  *  <l.a.dal@fys.uio.no>
@@ -1271,11 +1271,15 @@ namespace Funk
                 return functions[2]->value(data,bindID);
             }
     };
-    Funk ifelse(Funk f, Funk g, Funk h) { return Funk(new FunkIfElse(f, g, h)); }
-    Funk ifelse(Funk f, double g, Funk h) { return Funk(new FunkIfElse(f, cnst(g), h)); }
-    Funk ifelse(Funk f, double g, double h) { return Funk(new FunkIfElse(f, cnst(g), cnst(h))); }
-    Funk ifelse(Funk f, Funk g, double h) { return Funk(new FunkIfElse(f, g, cnst(h))); }
+    inline Funk ifelse(Funk f, Funk g, Funk h) { return Funk(new FunkIfElse(f, g, h)); }
+    inline Funk ifelse(Funk f, double g, Funk h) { return Funk(new FunkIfElse(f, cnst(g), h)); }
+    inline Funk ifelse(Funk f, double g, double h) { return Funk(new FunkIfElse(f, cnst(g), cnst(h))); }
+    inline Funk ifelse(Funk f, Funk g, double h) { return Funk(new FunkIfElse(f, g, cnst(h))); }
 
+
+    //
+    // Throw errors when called
+    //
 
     class ThrowError: public FunkBase
     {
@@ -1291,7 +1295,7 @@ namespace Funk
         private:
             std::string msg;  // Error message to throw when function is called
     };
-    Funk throwError(std::string msg) { return Funk(new ThrowError(msg)); }
+    inline Funk throwError(std::string msg) { return Funk(new ThrowError(msg)); }
 
 
     //

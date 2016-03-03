@@ -178,6 +178,9 @@ namespace Gambit {
         {
           double E_in = getParticleProperty(it->particle1ID).mass;
           E_in += getParticleProperty(it->particle2ID).mass;
+#ifdef DARKBIT_DEBUG
+          std::cout << E_in << std::endl;
+#endif
 
           if ((it->genRateMisc->getNArgs() != 1) or not(it->genRateMisc->hasArg("v")))
             DarkBit_error().raise(LOCAL_INFO, 
@@ -192,7 +195,9 @@ namespace Gambit {
               E_out += getParticleProperty(it2->finalStateIDs[i]).mass;
               outstring += it2->finalStateIDs[i] + " ";
             }
-            std::cout << outstring << std::endl;
+#ifdef DARKBIT_DEBUG
+            std::cout << outstring << " --- " << E_out << std::endl;
+#endif
             if (it2->nFinalStates != it2->finalStateIDs.size())
               DarkBit_error().raise(LOCAL_INFO, 
                   "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
@@ -268,6 +273,9 @@ namespace Gambit {
           }
         }
       }
+#ifdef DARKBIT_DEBUG
+      std::cout << "Validation OK." << std::endl;
+#endif
     }
   } // namespace DarkBit
 } // namespace Gambit

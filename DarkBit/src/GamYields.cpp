@@ -412,15 +412,18 @@ namespace Gambit {
       {
         int flag = 0;      // some flag
         int yieldk = 152;  // gamma ray yield
-        // FIXME: What to do with this variable?
-        //int ch = 0;        // channel information  //bjf> unused variable
         Funk::Funk dNdE;
         
-// FIXME: Fix neutrino channels
-#define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                                                    \
-        dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), ch, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  \
-        result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
-        ADD_CHANNEL(12, "Z0", "Z0", "gamma", 0., 10000.)
+#define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                \
+        dNdE = Funk::func_fromThreadsafe(                             \
+            BEreq::dshayield.pointer(), Funk::var("mwimp"),           \
+            Funk::var("E"), ch, yieldk, flag)->set("mwimp",           \
+            Funk::var("Ecm")/2);                                      \
+        result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  
+
+        // specifies also center of mass energy range
+        // FIXME: Update energy validty ranges
+        ADD_CHANNEL(12, "Z0", "Z0", "gamma", 91.2*2, 10000.)
         ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
         ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 10000.)
         ADD_CHANNEL(15, "e+", "e-", "gamma", 0., 10000.)
@@ -436,6 +439,7 @@ namespace Gambit {
         ADD_CHANNEL(25, "b", "bbar", "gamma", 0., 10000.)
         ADD_CHANNEL(26, "g", "g", "gamma", 0., 10000.)
         
+// FIXME: Fix neutrino channels
         /*
         ADD_CHANNEL(2, "h0_1_test", "h0_2_test", "gamma", 0., 10000.)      // FIXME: Remove.        
         ADD_CHANNEL(5, "h0_2_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.
@@ -448,8 +452,9 @@ namespace Gambit {
 #undef ADD_CHANNEL
 
         // Add approximations for single-particle cases.
+        // FIXME: Update energy validty ranges
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 12, yieldk, flag);
-        result.addChannel(dNdE/2, "Z0", "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, "Z0", "gamma", 91.2, 10000.);
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 13, yieldk, flag);
         result.addChannel(dNdE/2, "W+", "gamma", 0., 10000.);
         result.addChannel(dNdE/2, "W-", "gamma", 0., 10000.);
@@ -478,6 +483,7 @@ namespace Gambit {
         Funk::Funk dNdE_b = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
                               Funk::var("mwimp"), Funk::var("E"), 25, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  
                   
+        // FIXME: Update energy validty ranges
         result.addChannel(0.5*(dNdE_u+dNdE_d), "u", "dbar", "gamma", 0., 10000.); 
         result.addChannel(0.5*(dNdE_u+dNdE_s), "u", "sbar", "gamma", 0., 10000.); 
         result.addChannel(0.5*(dNdE_u+dNdE_b), "u", "bbar", "gamma", 0., 10000.); 
@@ -518,6 +524,7 @@ namespace Gambit {
 #define ADD_CHANNEL(inP, P1, P2, FINAL, EcmMin, EcmMax)                                                   \
         dNdE = Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), Funk::var("Ecm"), Funk::var("E"), inP, outN)/Funk::var("E"); \
         result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
+        // FIXME: Update energy validty ranges
         ADD_CHANNEL(0, "g", "g", "gamma", 0., 10000.)
         ADD_CHANNEL(1, "d", "dbar", "gamma", 0., 10000.)
         ADD_CHANNEL(2, "u", "ubar", "gamma", 0., 10000.)
@@ -539,6 +546,7 @@ namespace Gambit {
             Funk::zero("Ecm", "E"), "nu_tau", "nubar_tau", "gamma", 0., 10000.);
             
         // Add approximations for single-particle cases.
+        // FIXME: Update energy validty ranges
         dNdE = (Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), Funk::var("_Ecm"), Funk::var("E"), 8, outN) 
                /Funk::var("E"))->set("_Ecm", Funk::var("Ecm")*2);
         result.addChannel(dNdE/2, "mu+", "gamma", 0., 10000.);
@@ -575,6 +583,7 @@ namespace Gambit {
         Funk::Funk dNdE_t = Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), 
                               Funk::var("Ecm"), Funk::var("E"), 6, outN)/Funk::var("E");
                   
+        // FIXME: Update energy validty ranges
         result.addChannel(0.5*(dNdE_u+dNdE_d), "u", "dbar", "gamma", 0., 10000.); 
         result.addChannel(0.5*(dNdE_u+dNdE_s), "u", "sbar", "gamma", 0., 10000.); 
         result.addChannel(0.5*(dNdE_u+dNdE_b), "u", "bbar", "gamma", 0., 10000.); 
@@ -636,6 +645,7 @@ namespace Gambit {
 
       if ( not initialized )
       {
+        // FIXME: Implemented PPPC4 tables
         std::string filename = "DarkBit/data/AtProductionNoEW_gammas.dat";
         PPPC_gam_object = PPPC_interpolation(filename);
         initialized = true;
