@@ -286,7 +286,9 @@ namespace Gambit
       {
         msg << "  " << Models::ParticleDB().long_name(*it) << endl;
       }
-      msg << "BF: " << BF << endl << "error: " << error;
+      msg << "BF: " << BF << endl << "error: " << error << endl;
+      msg << "Total width (GeV): " << width_in_GeV << " +" << positive_error << " -" << negative_error << endl;
+      msg << "Decay calculator: " << calculator << " " << calculator_version;
       utils_error().raise(LOCAL_INFO, msg.str());
     }
   }
