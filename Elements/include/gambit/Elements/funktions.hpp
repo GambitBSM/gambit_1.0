@@ -1251,6 +1251,50 @@ namespace Funk
 
 
     //
+    // Basic if..else clause
+    //
+
+    class FunkIfElse: public FunkBase
+    {
+        public:
+            FunkIfElse(Funk f, Funk g, Funk h)
+            {
+                functions = vec(f, g, h);
+                singularities = joinSingl(joinSingl(f->getSingl(), g->getSingl()), h->getSingl());
+                arguments = joinArgs(joinArgs(f->getArgs(), g->getArgs()), h->getArgs());
+            }
+            double value(const std::vector<double> & data, size_t bindID)
+            {
+              if ( functions[0]->value(data,bindID) >= 0. )
+                return functions[1]->value(data,bindID);
+              else
+                return functions[2]->value(data,bindID);
+            }
+    };
+    Funk ifelse(Funk f, Funk g, Funk h) { return Funk(new FunkIfElse(f, g, h)); }
+    Funk ifelse(Funk f, double g, Funk h) { return Funk(new FunkIfElse(f, cnst(g), h)); }
+    Funk ifelse(Funk f, double g, double h) { return Funk(new FunkIfElse(f, cnst(g), cnst(h))); }
+    Funk ifelse(Funk f, Funk g, double h) { return Funk(new FunkIfElse(f, g, cnst(h))); }
+
+
+    class ThrowError: public FunkBase
+    {
+        public:
+            ThrowError(std::string msg) : msg(msg)
+            {
+            }
+            double value(const std::vector<double> & data, size_t bindID)
+            {
+              throw std::invalid_argument("Funk::ThrowError says: " + msg);
+            }
+
+        private:
+            std::string msg;  // Error message to throw when function is called
+    };
+    Funk throwError(std::string msg) { return Funk(new ThrowError(msg)); }
+
+
+    //
     // GSL integration
     //
 
