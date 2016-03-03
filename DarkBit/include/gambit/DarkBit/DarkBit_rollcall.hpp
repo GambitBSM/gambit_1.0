@@ -92,6 +92,19 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Function to initialize LocalHalo model in DarkSUSY
+  #define CAPABILITY DarkSUSY_PointInit_LocalHalo
+  START_CAPABILITY
+    #define FUNCTION DarkSUSY_PointInit_LocalHalo_func
+      START_FUNCTION(bool)
+      DEPENDENCY(RD_fraction, double)
+      ALLOW_MODELS(LocalHalo)
+      BACKEND_REQ(dshmcom,(),DS_HMCOM)
+      BACKEND_REQ(dshmisodf,(),DS_HMISODF)
+      BACKEND_REQ(dshmframevelcom,(),DS_HMFRAMEVELCOM)
+      BACKEND_REQ(dshmnoclue,(),DS_HMNOCLUE)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Relic density -----------------------------------------
 
@@ -1012,12 +1025,13 @@ START_MODULE
     #define FUNCTION capture_rate_Sun_constant_xsec
       START_FUNCTION(double)
       BACKEND_REQ(capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
-      BACKEND_REQ(dshmcom, (DarkSUSY), DS_HMCOM)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(sigma_SI_p, double)
       DEPENDENCY(sigma_SD_p, double)
-      DEPENDENCY(RD_fraction, double)
-      ALLOW_MODELS(LocalHalo)
+        #define CONDITIONAL_DEPENDENCY DarkSUSY_PointInit_LocalHalo
+        START_CONDITIONAL_DEPENDENCY(bool)
+        ACTIVATE_FOR_BACKEND(capture_rate_Sun, DarkSUSY)
+        #undef CONDITIONAL_DEPENDENCY
     #undef FUNCTION
   #undef CAPABILITY
   

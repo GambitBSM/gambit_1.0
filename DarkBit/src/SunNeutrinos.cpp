@@ -38,12 +38,11 @@ namespace Gambit
     {
       using namespace Pipes::capture_rate_Sun_constant_xsec;
 
-      // Set local DM density based on calculated relic density.
-
-      double rho0_eff = (*Dep::RD_fraction)*(*Param["rho0"]);
-      BEreq::dshmcom->rhox = rho0_eff;
-      logger() << "Updating DarkSUSY halo parameters:" << EOM;
-      logger() << "  rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+      if (BEreq::capture_rate_Sun.origin()=="DarkSUSY")
+        if(*Dep::DarkSUSY_PointInit_LocalHalo)
+          cout << "Local Halo correctly initialized in DarkSUSY!" << endl;
+        else
+          DarkBit_error().raise(LOCAL_INFO,"DarkSUSY halo model not initialized!");
 
       // Here we assume that the proton and neutron scattering cross-sections
       // are the same.
@@ -538,6 +537,46 @@ namespace Gambit
       cout << "IC79WH contribution: " << *Dep::IC79WH_loglike - *Dep::IC79WH_bgloglike << endl;
       cout << "IC22   contribution: " << *Dep::IC22_loglike   - *Dep::IC22_bgloglike   << endl;
 #endif
+    }
+
+    /// Function to set Local Halo Parameters in DarkSUSY
+    void DarkSUSY_PointInit_LocaHalo_func(bool &result)
+    {
+        using namespace Pipes::DarkSUSY_PointInit_LocalHalo_func;
+
+          double rho0 = *Param["rho0"];
+          double rho0_eff = (*Dep::RD_fraction)*(*Param["rho0"]);
+          double vrot = *Param["vrot"];
+          double vearth = *Param["vearth"];
+          double vd_3d = sqrt(3./2.)*(*Param["v0"]);
+          double vesc = *Param["vesc"];
+
+
+          BEreq::dshmcom->rho0 = rho0;
+          BEreq::dshmcom->rhox = rho0;
+          BEreq::dshmcom->v_sun = vrot;
+          BEreq::dshmcom->v_earth = vearth;
+          BEreq::dshmcom->rhox = rho0_eff;
+
+          BEreq::dshmframevelcom->v_obs = vrot;
+
+          BEreq::dshmisodf->vd_3d = vd_3d;
+          BEreq::dshmisodf->vgalesc = vesc;
+
+          BEreq::dshmnoclue->vobs = vrot;
+
+          logger() << "Updating DarkSUSY halo parameters:" << EOM;
+          logger() << "    rho0 [GeV/cm^3] = " << rho0 << EOM;
+          logger() << "    rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+          logger() << "    v_sun [km/s]  = " << vrot<< EOM;
+          logger() << "    v_earth [km/s]  = " << vearth << EOM;
+          logger() << "    v_obs [km/s]  = " << vrot << EOM;
+          logger() << "    vd_3d [km/s]  = " << vd_3d << EOM;
+          logger() << "    v_esc [km/s]  = " << vesc << EOM;
+
+          result = true;
+
+          return;
     }
   }
 }
