@@ -137,6 +137,7 @@ START_MODULE
     #define FUNCTION a_mu_SUSY
     START_FUNCTION(double)
     NEEDS_CLASSES_FROM(gm2calc, default)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, 
                              (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
     BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, 
