@@ -244,7 +244,7 @@ namespace Gambit {
           continue;
 
         double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
-        double E1 = Ecm-E0; 
+        double E1 = Ecm-E0;
 
         // Check whether two-body final state is in SimYield table
         if ( it->nFinalStates == 2 and 
@@ -283,7 +283,7 @@ namespace Gambit {
           // Final state particle two
           if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
           {
-            spec1 = (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma")->set("Ecm",E1);
+            spec1 = (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma")->set("Ecm", E1);
           }
           else if ( it->finalStateIDs[1] == "gamma" )
           {

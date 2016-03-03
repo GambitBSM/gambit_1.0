@@ -115,11 +115,13 @@ namespace Gambit
       addParticle("Z0", 91.2,  2)
       addParticle("tau+", 1.8,  1)
       addParticle("tau-", 1.8,  1)
+      addParticle("b", 4.9,  1)
+      addParticle("bbar", 4.9,  1)
 
       addParticle("WIMP", mWIMP,  0)
       addParticle("phi",  59.0,  0)
-      addParticle("phi1", 99.9,  0)
-      addParticle("phi2", 49.9,  0)
+      addParticle("phi1", 99.99,  0)
+      addParticle("phi2", 49.99,  0)
 #undef addParticle
 
       TH_Channel dec_channel(Funk::vec<string>("gamma", "gamma"), Funk::cnst(1.));
@@ -132,8 +134,8 @@ namespace Gambit
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
-      auto p1 = Funk::vec<string>("gamma", "gamma", "phi", "phi1");
-      auto p2 = Funk::vec<string>("Z0", "gamma", "phi", "phi1");
+      auto p1 = Funk::vec<string>("b", "gamma", "gamma", "phi", "phi1");
+      auto p2 = Funk::vec<string>("bbar", "Z0", "gamma", "phi", "phi1");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
@@ -156,10 +158,13 @@ namespace Gambit
         }
       }
 
-      auto E = Funk::var("E");
-      Funk::Funk kinematicFunction = Funk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[4];
-      TH_Channel new_channel(Funk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
-      process_ann.channelList.push_back(new_channel);
+      if ( brList[5] > 0 )
+      {
+        auto E = Funk::var("E");
+        Funk::Funk kinematicFunction = Funk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[5];
+        TH_Channel new_channel(Funk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
+        process_ann.channelList.push_back(new_channel);
+      }
 
       catalog.processList.push_back(process_ann);
       catalog.processList.push_back(process_dec);
@@ -269,7 +274,7 @@ int main()
   // Set up MC loop manager for cascade MC
   // FIXME: Systematically test accuracy and dependence on setup parameters
   // FIXME: Add maximum width for energy bins
-  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
+  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10);
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
   cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
@@ -375,28 +380,32 @@ int main()
   LUX_2013_LogLikelihood_DDCalc0.resolveDependency(&CalcRates_LUX_2013_DDCalc0);
   LUX_2013_LogLikelihood_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_LogLikelihood);
 
-  int mBins = 10;
-  int svBins = 20;
-  std::vector<double> m_list = Funk::logspace(0.5, 3.0, mBins);
-  std::vector<double> sv_list = Funk::logspace(-27.0, -24.0, svBins);
-  boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
-  boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
 
   // Spectral tests
-  dumpSpectrum("dNdE1.dat", 100., 3e-26, Funk::vec<double>(0., 0., 0., 1., 0.));
-  dumpSpectrum("dNdE2.dat", 100., 3e-26, Funk::vec<double>(0., 0., 1., 0., 0.));
-  dumpSpectrum("dNdE3.dat", 100., 3e-26, Funk::vec<double>(0., 1., 0., 0., 0.));
-  dumpSpectrum("dNdE4.dat", 100., 3e-26, Funk::vec<double>(1., 0., 0., 0., 0.));
-  dumpSpectrum("dNdE5.dat", 100., 3e-26, Funk::vec<double>(0., 0., 0., 0., 1.));
-  exit(1);
+  std::cout << "Producing test spectra." << std::endl;
+  double mass = 100.;
+  double sv = 3e-26;
+  dumpSpectrum("dNdE1.dat", mass, sv, Funk::vec<double>(0., 1., 0., 0., 0., 0.));
+  dumpSpectrum("dNdE2.dat", mass, sv, Funk::vec<double>(0., 0., 1., 0., 0., 0.));
+  dumpSpectrum("dNdE3.dat", mass, sv, Funk::vec<double>(0., 0., 0., 1., 0., 0.));
+  dumpSpectrum("dNdE4.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 1., 0.));
+  dumpSpectrum("dNdE5.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 0., 1.));
 
   // Systematic parameter maps
+  std::cout << "Producing test maps." << std::endl;
+  int mBins = 10;
+  int svBins = 20;
+  std::vector<double> m_list = Funk::logspace(1.0, 3.0, mBins);
+  std::vector<double> sv_list = Funk::logspace(-28.0, -24.0, svBins);
+  boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
+  boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
   for (size_t i = 0; i < m_list.size(); i++)
   {
     for (size_t j = 0; j < sv_list.size(); j++)
     {
       TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
       TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
+      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
       std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
       DarkMatter_ID_WIMP.reset_and_calculate();
       TH_ProcessCatalog_WIMP.reset_and_calculate();
@@ -413,12 +422,12 @@ int main()
       double lnL = lnL_FermiLATdwarfs_gamLike(0);
       std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
       lnL_array[i][j] = lnL;
-      //RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
-      //RD_spectrum_from_ProcessCatalog.reset_and_calculate();
-      //RD_spectrum_ordered_func.reset_and_calculate();
-      //RD_oh2_general.reset_and_calculate();
-      //double oh2 = RD_oh2_general(0);
-      //oh2_array[i][j] = oh2;
+      RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
+      RD_spectrum_from_ProcessCatalog.reset_and_calculate();
+      RD_spectrum_ordered_func.reset_and_calculate();
+      RD_oh2_general.reset_and_calculate();
+      double oh2 = RD_oh2_general(0);
+      oh2_array[i][j] = oh2;
 //    SetWIMP_DDCalc0.reset_and_calculate();
 //    CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
 //    LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
