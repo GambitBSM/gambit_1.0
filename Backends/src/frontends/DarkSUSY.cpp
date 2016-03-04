@@ -31,7 +31,7 @@
 ///
 ///  \author Joakim Edsjo
 ///          (edsjo@fysik.su.se)
-///  \date 2015 Aug
+///  \date 2015 Aug, 2016 Mar
 ///
 ///  *********************************************
 
@@ -45,7 +45,7 @@
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE
 {
-  const double min_chi01_width = 1.e-10;
+  const double min_chi01_rwidth = 5.e-3; // 0.5%  to avoid numerical problems
   const std::vector<str> IBfinalstate = initVector<str>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
   std::vector<double> DSparticle_mass;
   std::vector<double> GAMBITparticle_mass;
@@ -650,7 +650,7 @@ BE_NAMESPACE
     widths->width(DSpart->ksqd(6)) = myDecays.at(std::pair<int,int>(2000005,0)).width_in_GeV;
 
     // Set up neutralino widths.  Give the lightest some small nonzero width to avoid internal numerical issues in DS.
-    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_width);
+    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_rwidth * to<double>(mySLHA.at("MASS").at(1000022).at(1))); 
     widths->width(DSpart->kn(2)) = myDecays.at(std::pair<int,int>(1000023,0)).width_in_GeV;
     widths->width(DSpart->kn(3)) = myDecays.at(std::pair<int,int>(1000025,0)).width_in_GeV;
     widths->width(DSpart->kn(4)) = myDecays.at(std::pair<int,int>(1000035,0)).width_in_GeV;
@@ -667,9 +667,10 @@ BE_NAMESPACE
 
     #ifdef DARKSUSY_DEBUG
       // Spit out spectrum and width files for debug purposes
-      int u = 6;
-      dswspectrum(u);
-      dswwidth(u);
+      int u1 = 49;
+      int u2 = 50;
+      dswspectrum(u1);
+      dswwidth(u2);
     #endif
 
     return 0;  // everything OK (hah. maybe.)
