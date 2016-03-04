@@ -135,8 +135,6 @@ int main()
   MicrOmegas_3_6_9_2_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
-  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
-  DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   logger() << "DarkSUSY..." << EOM;
   logger() << "DarkSUSY..." << EOM;
   logger() << "DarkSUSY..." << EOM;
@@ -171,13 +169,23 @@ int main()
   DarkSUSY_PointInit_MSSM.reset_and_calculate();
   logger() << "...done" << EOM;
 
+  // Initialize DarkSUSY Local Halo Model
+
+  DarkSUSY_PointInit_LocalHalo_func.notifyOfModel("LocalHalo");
+  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
+  DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
+
   // Initialize DDCalc0 backend
   Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
   DDCalc0_0_0_init.notifyOfModel("LocalHalo");
   DDCalc0_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DDCalc0_0_0_init.resolveDependency(&RD_fraction_fixed);
   DDCalc0_0_0_init.reset_and_calculate();
-
 
   // ---- Relic density ----
 
@@ -362,13 +370,11 @@ int main()
   // ---- IceCube limits ----
 
   // Infer WIMP capture rate in Sun
-  capture_rate_Sun_constant_xsec.notifyOfModel("LocalHalo");
   capture_rate_Sun_constant_xsec.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   capture_rate_Sun_constant_xsec.resolveDependency(&mwimp_generic);
   capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SI_p_simple);
   capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SD_p_simple);
-  capture_rate_Sun_constant_xsec.resolveDependency(&RD_fraction_fixed);
-  capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
+  capture_rate_Sun_constant_xsec.resolveDependency(&DarkSUSY_PointInit_LocalHalo_func);
   capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsntcapsuntab);
   capture_rate_Sun_constant_xsec.reset_and_calculate();
 
