@@ -59,13 +59,14 @@ namespace Gambit {
 
       /// @brief Randomly filter the supplied particle list by parameterised muon efficiency
       inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
-        std::remove_if(muons.begin(), muons.end(),
+        muons.erase(std::remove_if(muons.begin(), muons.end(),
                        [](const HEPUtils::Particle* p) {
                          if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
                          const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
                          if (HEPUtils::rand01() > eff) { delete p; return true; }
                          return false;
-                       } );
+                                  } ),
+                   muons.end());
       }
 
 
