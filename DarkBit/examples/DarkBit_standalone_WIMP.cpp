@@ -184,10 +184,13 @@ namespace Gambit
 
     void DD_couplings_WIMP(DarkBit::DD_couplings& result)
     {
-      result.gps = 1.;
-      result.gns = 1.;
-      result.gpa = 0.;  // Only SI cross-section
-      result.gna = 0.;
+      using namespace Pipes::DD_couplings_WIMP;
+      result.gps = runOptions->getValueOrDef<double>(0., "gps");
+      result.gns = runOptions->getValueOrDef<double>(0., "gns");
+      result.gpa = runOptions->getValueOrDef<double>(0., "gpa");
+      result.gna = runOptions->getValueOrDef<double>(0., "gna");
+      std::cout << "DD_coupling says" << std::endl;
+      std::cout << result.gps << std::endl;
     }
   }
 }
@@ -368,7 +371,8 @@ int main()
 
   // Push WIMP paramters to DDCalc0 backend
   SetWIMP_DDCalc0.resolveDependency(&DD_couplings_WIMP);  // Use DarkSUSY parameters
-  SetWIMP_DDCalc0.resolveDependency(&TH_ProcessCatalog_WIMP);  // FIXME: Why this dependency?
+  // FIXME: Remove TH_ProcessCatalog_WIMP dependence - This should be really not necessary
+  SetWIMP_DDCalc0.resolveDependency(&TH_ProcessCatalog_WIMP);  
   SetWIMP_DDCalc0.resolveDependency(&DarkMatter_ID_WIMP);
   SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_SetWIMP_mG);
   SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_GetWIMP_msigma);
@@ -381,7 +385,13 @@ int main()
   LUX_2013_LogLikelihood_DDCalc0.resolveDependency(&CalcRates_LUX_2013_DDCalc0);
   LUX_2013_LogLikelihood_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_LogLikelihood);
 
+  // Set generic WIMP mass object
+  mwimp_generic.resolveDependency(&TH_ProcessCatalog_WIMP);
+  mwimp_generic.resolveDependency(&DarkMatter_ID_WIMP);
+  sigma_SI_p_simple.resolveDependency(&DD_couplings_WIMP);
+  sigma_SI_p_simple.resolveDependency(&mwimp_generic);
 
+/*
   // Spectral tests
   std::cout << "Producing test spectra." << std::endl;
   double mass = 100.;
@@ -391,8 +401,10 @@ int main()
   dumpSpectrum("dNdE3.dat", mass, sv, Funk::vec<double>(0., 0., 0., 1., 0., 0.));
   dumpSpectrum("dNdE4.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 1., 0.));
   dumpSpectrum("dNdE5.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 0., 1.));
+*/
 
-  // Systematic parameter maps
+/*
+  // Systematic parameter maps annihilation
   std::cout << "Producing test maps." << std::endl;
   int mBins = 40;
   int svBins = 20;
@@ -435,9 +447,48 @@ int main()
 //    LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
     }
   }
-
   dump_array_to_file("Fermi_table.dat", lnL_array, m_list, sv_list);
   dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
+*/
+
+  // Systematic parameter maps scattering
+  std::cout << "Producing test maps." << std::endl;
+  int mBins = 40;
+  int sBins = 40;
+  std::vector<double> m_list = Funk::logspace(0.0, 4.0, mBins);
+  std::vector<double> s_list = Funk::logspace(-10, -6, sBins);
+  boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
+  boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
+  TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
+  TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
+  for (size_t i = 0; i < m_list.size(); i++)
+  {
+    for (size_t j = 0; j < s_list.size(); j++)
+    {
+      TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+      std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+      DarkMatter_ID_WIMP.reset_and_calculate();
+      TH_ProcessCatalog_WIMP.reset_and_calculate();
+      RD_fraction_fixed.reset_and_calculate();
+      DDCalc0_0_0_init.reset_and_calculate();
+      DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
+      DD_couplings_WIMP.setOption<double>("gns", 0.);
+      DD_couplings_WIMP.setOption<double>("gpa", 0.);
+      DD_couplings_WIMP.setOption<double>("gna", 0.);
+      DD_couplings_WIMP.reset_and_calculate();
+      mwimp_generic.reset_and_calculate();
+      sigma_SI_p_simple.reset_and_calculate();
+      double sigma_SI_p = sigma_SI_p_simple(0);
+      std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
+      SetWIMP_DDCalc0.reset_and_calculate();
+      CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
+      LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
+      double lnL = LUX_2013_LogLikelihood_DDCalc0(0);
+      std::cout << "LUX2013 lnL = " << lnL << std::endl;
+      lnL_array[i][j] = lnL;
+    }
+  }
+  dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
 
   return 0;
 }
