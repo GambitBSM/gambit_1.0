@@ -144,14 +144,48 @@ namespace Gambit
 
     };
 
-    /// Map in which to keep factory functions for the printers (printer_creators)
+    /// BASE READER CLASS
+    class BaseReader: public BaseBaseReader
+    {
+      public:
+        BaseReader() {}
+    
+        /// Destructor
+        virtual ~BaseReader() {}
+
+        // retrieve function dispatch
+        template<typename T>
+        void retrieve(const std::string& label, const uint rank, const ulong pointID, T& out)
+        {
+          _retrieve(label, rank, pointID, out);
+        }
+    
+      protected:
+        using BaseBaseReader::_retrieve; //unhide the default function in the base class
+    
+        // We need to have a virtual 'retrieve' method for every type that we want to
+        // be able to retrieve. The list of these types is maintained in 
+        // "gambit/Elements/printable_types.hpp"
+        // Run the macro; add all the print functions
+        ADD_VIRTUAL_RETRIEVALS(RETRIEVABLE_TYPES) 
+    
+    };
+
+
+    /// Maps in which to keep factory functions for the printers (printer_creators)
+    /// and readers (reader_creators)
     // (uses the same machinery as in priors.hpp)
+    // Note: Arguments to e.g printer_creators need to match constructor for printer object
+    // e.g. printer_creators.at(tag)(args...)
+    // (this is set up by the typedef)
     registry
     {
-            typedef BasePrinter* create_printer_function(const Options&, BasePrinter* const&); //arguments need to match constructor for printer object
+            typedef BasePrinter* create_printer_function(const Options&, BasePrinter* const&); 
             reg_elem <create_printer_function> printer_creators;
+ 
+            typedef BaseReader* create_reader_function(const Options&);
+            reg_elem <create_reader_function> reader_creators;
     }
-
 
   } //end namespace Printers
 } // end namespace Gambit

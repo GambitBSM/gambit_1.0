@@ -158,18 +158,6 @@ namespace Gambit
         template<class T>
         void template_print(T const&, const std::string&, const int, const uint, const ulong);
 
-        /// @{ Retrieval interface
-
-        /// Get iterator-like object for retrieving all the rank/ptID pairs
-        /// (which can then be used to retrieve other things)
-        EntryGetter getAllPoints();
- 
-        /// Scanner-friendly retrieval functions
-        double      _retrieve(const std::string& label, const uint rank, const ulong pointID);
-        map_str_dbl _retrieve(const std::string& label, const uint rank, const ulong pointID);
-
-        /// @}
-         
       private:
         /// Output file
         std::string output_file;
@@ -223,6 +211,7 @@ namespace Gambit
         /// Record a set of labels for each printer item: used to write "info" file explain what is in each column
         std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
         bool info_file_written = false; // Flag to let us know that the info file has been written
+
     };
 
     // Register printer so it can be constructed via inifile instructions
