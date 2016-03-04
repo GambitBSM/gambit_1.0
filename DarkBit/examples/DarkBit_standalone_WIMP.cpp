@@ -158,10 +158,11 @@ namespace Gambit
         }
       }
 
-      if ( brList[5] > 0 )
+      if ( brList[5] > 0. )
       {
         auto E = Funk::var("E");
         Funk::Funk kinematicFunction = Funk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[5];
+        // FIXME: Include second gamma in AnnYield (currently ignored)
         TH_Channel new_channel(Funk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
         process_ann.channelList.push_back(new_channel);
       }
@@ -393,7 +394,7 @@ int main()
 
   // Systematic parameter maps
   std::cout << "Producing test maps." << std::endl;
-  int mBins = 10;
+  int mBins = 40;
   int svBins = 20;
   std::vector<double> m_list = Funk::logspace(1.0, 3.0, mBins);
   std::vector<double> sv_list = Funk::logspace(-28.0, -24.0, svBins);
@@ -406,6 +407,7 @@ int main()
       TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
       TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
       TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
+      //TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(0., 0., 1., 0., 0., 0.));
       std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
       DarkMatter_ID_WIMP.reset_and_calculate();
       TH_ProcessCatalog_WIMP.reset_and_calculate();

@@ -128,6 +128,8 @@ namespace Gambit {
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
+      // FIXME: Make sure that gamLike also gets the lines properly resolved
+
       result += BEreq::lnL(1, x, y);
 
       logger() << "GamLike likelihood is lnL = " << result << std::endl;
@@ -144,6 +146,7 @@ namespace Gambit {
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
+      // FIXME: Provide more detailed spectrum (higher resolution of line features)
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
