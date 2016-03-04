@@ -37,17 +37,17 @@
 
 namespace Funk {class FunkPlain;}
 
-#define DEF_FUNKTRAIT(C)                         \
-  class C {                                      \
-    public:                                      \
-      static Funk::FunkPlain* ptr;               \
-      static void set(Funk::FunkPlain* new_ptr)  \
-      {                                          \
-        delete ptr;                              \
-        ptr = new_ptr;                           \
-      }                                          \
-  };                                             \
-  Funk::FunkPlain* C::ptr = NULL;
+#define DEF_FUNKTRAIT(C)                          \
+class C {                                         \
+    public:                                       \
+        static Funk::FunkPlain* ptr;              \
+        static void set(Funk::FunkPlain* new_ptr) \
+        {                                         \
+            delete ptr;                           \
+            ptr = new_ptr;                        \
+        }                                         \
+};                                                \
+Funk::FunkPlain* C::ptr = NULL;
 
 // Extensions
 #include <gsl/gsl_integration.h>
@@ -261,11 +261,15 @@ namespace Funk
             virtual void resolve(std::map<std::string, size_t> datamap, size_t & datalen, size_t bindID, std::map<std::string,size_t> &argmap);
 
 
+            // Singularities handling
             Singularities getSingl() { return singularities; }
             Funk set_singularity(std::string arg, Funk pos, Funk width);
             Funk set_singularity(std::string arg, double pos, Funk width);
             Funk set_singularity(std::string arg, Funk pos, double width);
             Funk set_singularity(std::string arg, double pos, double width);
+
+            // Print message
+            Funk print(std::string arg);
 
 
             //
@@ -1299,6 +1303,33 @@ namespace Funk
 
 
     //
+    // Prints message when called
+    //
+
+    class Bottle: public FunkBase
+    {
+        public:
+            Bottle(Funk f, std::string msg) : msg(msg)
+            {
+                functions = vec(f);
+                singularities = f->getSingl();
+                arguments = f->getArgs();
+            }
+            double value(const std::vector<double> & data, size_t bindID)
+            {
+              std::cout << "Funk::Message says:\n" << msg << std::endl;
+              return functions[0]->value(data, bindID);
+            }
+
+        private:
+            std::string msg;  // Message in the bottle
+    };
+    //inline Funk print(std::string msg) { return Funk(new Bottle(msg)); }
+    inline Funk FunkBase::print(std::string msg)
+    { return Funk(new Bottle(shared_from_this(), msg)); };
+
+
+    //
     // GSL integration
     //
 
@@ -1414,6 +1445,7 @@ namespace Funk
                     double x0 = functions[1]->value(data, bindID);
                     double x1 = functions[2]->value(data, bindID);
                     if ( my_singularities.size() == 0 )
+                        // FIXME: Catch errors
                         gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
                     else
                     {
@@ -1435,6 +1467,7 @@ namespace Funk
                         std::sort(ranges.begin(), ranges.end());
                         for ( auto it = ranges.begin(); it != ranges.end()-1; ++it )
                         {
+                            // FIXME: Catch errors
                             gsl_integration_qags(this, *it, *(it+1), epsabs, epsrel, limit, gsl_workspace, &result, &error);
                             s += result;
                         }
