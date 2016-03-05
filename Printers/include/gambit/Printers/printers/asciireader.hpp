@@ -62,6 +62,9 @@ namespace Gambit {
          std::string           current_line;
      };
 
+    // Register reader so it can be constructed via inifile instructions
+    // First argument is string label for inifile access, second is class from which to construct printer
+    LOAD_READER(ascii, asciiReader)
   }
 }
 

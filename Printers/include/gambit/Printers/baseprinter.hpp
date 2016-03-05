@@ -54,6 +54,9 @@
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
 #define LOAD_PRINTER(tag, ...) REGISTER(printer_creators, tag, __VA_ARGS__)
 
+// This macro registers each reader so that they can be constructed automatically from inifile instructions
+#define LOAD_READER(tag, ...) REGISTER(reader_creators, tag, __VA_ARGS__)
+
 // Code!
 namespace Gambit
 {

@@ -114,6 +114,16 @@ namespace Gambit
     {
        DBUG( std::cout << "PrinterManager: Creating printer read stream of type \"" << tag << "\" with name \"" << readstreamname << "\"" << std::endl; )
        std::string whichreader = options.getValueOrDef<std::string>(tag,"type");
+       if(reader_creators.find(whichreader)==reader_creators.end())
+       {
+         std::ostringstream os;
+         os << "PrinterManager: Tried to construct reader with name '"<<readstreamname<<"' as reader-type '"<<whichreader<<"', but this is not a valid reader type! Please choose one of the following:"<<std::endl;
+         for (auto it = reader_creators.begin(); it != reader_creators.end(); ++it)
+         {
+            os << "  " << it->first << std::endl;
+         }
+         printer_error().raise(LOCAL_INFO,os.str());
+       }
        readers[readstreamname] = reader_creators.at(whichreader)(options);
     }
 
