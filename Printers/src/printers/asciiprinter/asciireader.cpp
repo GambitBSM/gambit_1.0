@@ -24,15 +24,28 @@
 namespace Gambit {
   namespace Printers {
 
+    /// Helper function for map lookup
+    uint safe_col_lookup(const std::string& key, const std::map<std::string,uint>& colmap, std::string fname)
+    {
+      auto it = colmap.find(key);
+      if(it==colmap.end())
+      {
+         std::ostringstream err;
+         err << "Error! asciiReader could not locate the required entry '"<<key<<"' in the info file '"<<fname<<"'. Please check that the supplied filename is a valid 'info' file produced by asciiPrinter in a previous scan." << std::endl;
+         printer_error().raise(LOCAL_INFO,err.str());
+      }
+      return it->second;
+    }
+
     /// @{ Members of 'asciiReader'
 
     /// Constructor
     asciiReader::asciiReader(const Options& options)
-      : infoFile_name(options.getValue<std::string>("info_filename"))
-      , dataFile_name(options.getValue<std::string>("data_filename"))
-      , column_map(get_column_info(infoFile_name))
-      , col_rank(column_map.at("MPIrank"))
-      , col_ptID(column_map.at("pointID"))
+      : infoFile_name( options.getValue<std::string>("info_filename") )
+      , dataFile_name( options.getValue<std::string>("data_filename") )
+      , column_map( get_column_info(infoFile_name) )
+      , col_rank( safe_col_lookup("MPIrank", column_map, infoFile_name) )
+      , col_ptID( safe_col_lookup("pointID", column_map, infoFile_name) )
       , current_row(0)
     {
       logger() << LogTags::info << "asciiReader: Constructing 'asciiReader' for performing retrieval from previous output. File to be accessed is:"<<std::endl;
@@ -55,6 +68,9 @@ namespace Gambit {
     /// Check for end of input (or otherwise unreadable state)
     bool asciiReader::asciiReader::eoi()
     {
+      //bool tmp = !dataFile;
+      //std::cout << "eoi()? " << tmp << std::endl;
+      //if(!dataFile) { std::cout << "At end of file!" << std::endl; }
       return !dataFile;
     } 
     /// @}
@@ -87,9 +103,12 @@ namespace Gambit {
          std::istringstream iss(line);
          iss >> garbage; // First column is the just the word 'Column'
          iss >> col_index; // Column index (I think the trailing colon will get ignored, so this is ok)
+         iss >> garbage; // The colon
          iss >> std::ws; // Consume whitespace
          getline(iss, description); // Put rest of line into the 'description' string.
          column_map[description] = col_index-1; // convert to zero-indexed format
+         /// DEBUGGING
+         //std::cout << " From '"<<line<<"' extracted description '"<<description<<"' and index '"<<col_index-1<<"'"<<std::endl;
       }
       infoFile.close();
 
@@ -202,7 +221,7 @@ namespace Gambit {
 
     /// Everything is a string in the output file, so use this as the 'master' retrieve function, and the others
     /// just wrap it in various ways
-    void asciiReader::_retrieve(const std::string& label, const uint rank, const ulong pointID, std::string& out)
+    void asciiReader::_retrieve(std::string& out, const std::string& label, const uint rank, const ulong pointID)
     {
       /// Advance read-head position until the target point is found (or throw an error if it cannot be found)
       /// Will be fastest if we are already at the right position or only have to go forward a small number of slots
@@ -248,11 +267,11 @@ namespace Gambit {
       /// done!
     }
 
-    void asciiReader::_retrieve(const std::string& label, const uint rank, const ulong pointID, double& out)
+    void asciiReader::_retrieve(double& out, const std::string& label, const uint rank, const ulong pointID)
     {
       /// Get requested quantity as a string, then convert it to a double
       std::string temp_out;
-      _retrieve(label, rank, pointID, temp_out);
+      _retrieve(temp_out, label, rank, pointID);
       std::istringstream iss(temp_out);
       iss >> out;
       if(!iss)
@@ -312,10 +331,11 @@ namespace Gambit {
     ///Note:
     ///label=("#"+func_capability+" @"+origin_name+"::"+func_name)
     ///
-    void asciiReader::_retrieve(const std::string& modelname, const uint rank, const ulong pointID, ModelParameters& out)
+    void asciiReader::_retrieve(ModelParameters& out, const std::string& modelname, const uint rank, const ulong pointID)
     {
+      //std::cout<<"Attempting to retrieve ModelParameters for model '"<<modelname<<"'"<<std::endl;
       /// Work out all the output labels which correspond to the input modelname
-      bool found_at_least_one = false;
+      bool found_at_least_one(false);
       for(std::map<std::string,uint>::const_iterator 
           it = column_map.begin();
           it!= column_map.end(); ++it)
@@ -327,8 +347,9 @@ namespace Gambit {
           out._definePar(param_name);
           // Get the corresponding value out of the data file
           double value; // *output* of retrieve function
-          _retrieve(it->first, rank, pointID, value);
+          _retrieve(value, it->first, rank, pointID);
           out.setValue(param_name, value);
+          //std::cout<<"Extracted parameter "<<param_name<<", value="<<value<<std::endl;
           found_at_least_one = true;
         }
       }
@@ -342,6 +363,11 @@ namespace Gambit {
       }
       /// done!
     }
+
+    void asciiReader::_retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID)
+    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); }
+    void asciiReader::_retrieve(map_str_dbl& out,        const std::string& label, const uint rank, const ulong pointID)
+    { printer_error().raise(LOCAL_INFO,"NOT YET IMPLEMENTED"); }
 
     /// @}
 

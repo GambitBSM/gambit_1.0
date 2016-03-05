@@ -63,20 +63,26 @@ scanner_plugin(reweight, version(1, 0, 0))
 
     // Loop over the old points
     std::pair<uint,ulong> current_point = reader->get_next_point();
-    while(not reader->eoi()); // while not end of input
+    int loopi = 0; // DEBUG
+    std::cout << "Starting loop over old points" << std::endl;
+    while(not reader->eoi()) // while not end of input
     {
+      // DEBUG
+      std::cout << "loop "<<loopi<<std::endl;
+      loopi++;
+
       // Get the ID information for the current point
       uint  MPIrank = current_point.first;
       ulong pointID = current_point.second;
  
       // Get the previously computed likelihood value for this point
       double old_LogL;
-      reader->retrieve(old_loglike_label, MPIrank, pointID, old_LogL) ;
+      reader->retrieve(old_LogL, old_loglike_label, MPIrank, pointID) ;
 
       // Extract the model parameters
       ModelParameters params;
       std::string modelname = "NormalDist"; // Get this somehow...
-      reader->retrieve(modelname, MPIrank, pointID, params);
+      reader->retrieve(params, modelname, MPIrank, pointID);
 
       /// TODO: somehow need to feed these parameters back into Gambit.
       /// This is currently pretty tricky, because:
@@ -140,6 +146,7 @@ scanner_plugin(reweight, version(1, 0, 0))
       /// Go to next point
       reader->get_next_point();
     } 
+    std::cout << "Done!" << std::endl;
 
     return 0;
   }

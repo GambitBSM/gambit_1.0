@@ -211,9 +211,9 @@ namespace Gambit
         ///
         /// Note, cannot overload based on return type, so need to use an "out" parameter
         template<typename T>
-        void retrieve(const std::string& label, const uint rank, const ulong pointID, T& out)
+        void retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
-          _retrieve(label, rank, pointID, out);
+          _retrieve(out, label, rank, pointID);
         }
 
       protected:
@@ -221,7 +221,7 @@ namespace Gambit
         /// function matching the type of the attempted retrieval is
         /// found.        
         template<typename T>
-        T _retrieve(const std::string& label, const uint rank, const ulong pointID, T& out)
+        void _retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
           std::ostringstream err;                               
                                                                 
@@ -246,10 +246,11 @@ namespace Gambit
 
         // Virtual retrieval methods for base printer classes
         #define VRETRIEVE(r,data,elem)            \
-        void _retrieve(const std::string& label,  \
+        virtual void _retrieve(elem& /*output*/,  \
+                       const std::string& label,  \
                        const uint /*rank*/,       \
-                       const ulong /*pointID*/,   \
-                       elem& /*output*/)             \
+                       const ulong /*pointID*/    \
+                       )                          \
         {                                                         \
           std::ostringstream err;                                 \
                                                                   \

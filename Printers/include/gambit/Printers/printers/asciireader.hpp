@@ -26,7 +26,7 @@ namespace Gambit {
   namespace Printers {
 
      /// Derived EntryGetterInterface class for accessing asciiPrinter output points
-     class asciiReader : BaseReader
+     class asciiReader : public BaseReader
      {
        public:
          asciiReader(const Options& options);
@@ -43,11 +43,11 @@ namespace Gambit {
          /// @{ Base class virtual interface functions
          virtual std::pair<uint, ulong> get_next_point(); // Get next rank/ptID pair in data file
          virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
-         void _retrieve(const std::string& label, const uint rank, const ulong pointID, std::string& out);
-         void _retrieve(const std::string& label, const uint rank, const ulong pointID, double& out);
-         void _retrieve(const std::string& label, const uint rank, const ulong pointID, std::vector<double>& out);
-         void _retrieve(const std::string& label, const uint rank, const ulong pointID, map_str_dbl& out);
-         void _retrieve(const std::string& label, const uint rank, const ulong pointID, ModelParameters& out);
+         void _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
+         void _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);
+         void _retrieve(std::vector<double>& out,const std::string& label, const uint rank, const ulong pointID);
+         void _retrieve(map_str_dbl& out,        const std::string& label, const uint rank, const ulong pointID);
+         void _retrieve(ModelParameters& out,    const std::string& label, const uint rank, const ulong pointID);
          /// @}
 
        private:
