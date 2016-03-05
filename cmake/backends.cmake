@@ -328,7 +328,7 @@ set(nulike_short_dir "./Backends/installed/nulike/${nulike_ver}")
 set(nulikeFFLAGS "${GAMBIT_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   URL ${nulike_location}
-  URL_MD5 517a4928c947ec20870171d019d5fbee
+  URL_MD5 e4f68df1b53e93854dc10a2d28b8b67f
   DOWNLOAD_DIR ${backend_download}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
