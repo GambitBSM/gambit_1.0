@@ -144,7 +144,7 @@ scanner_plugin(reweight, version(1, 0, 0))
       ///  observable metadata from the output files.
 
       /// Go to next point
-      reader->get_next_point();
+      current_point = reader->get_next_point();
     } 
     std::cout << "Done!" << std::endl;
 
