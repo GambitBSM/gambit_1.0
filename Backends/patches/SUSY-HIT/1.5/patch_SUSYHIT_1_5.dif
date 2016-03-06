@@ -1,0 +1,739 @@
+Binary files SUSY-HIT_1_5_pristine/._bsg.f and installed/SUSY-HIT/1.5/._bsg.f differ
+Binary files SUSY-HIT_1_5_pristine/._hdecay.f and installed/SUSY-HIT/1.5/._hdecay.f differ
+diff -rupN SUSY-HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
+--- SUSY-HIT_1_5_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-06 18:56:05.858991658 +0000
+@@ -164,7 +164,7 @@ c end change susyhit
+       COMMON/SLHA_vals_HDEC/islhai,islhao
+ 
+       CALL READ_HDEC(TGBET,AMABEG,AMAEND,NMA)
+-      if(islhao.ne.1) then
++      if(islhao.eq.0) then                       !Modified by GAMBIT.
+          CALL HEAD_HDEC(TGBET,AMABEG)
+       endif
+ 
+@@ -182,7 +182,7 @@ c       CALL WRITE_HDEC(TGBET)
+ c end change susyhit
+  9999  CONTINUE
+ 
+-      CALL CLOSE_HDEC
++      if(islhao.eq.0) CALL CLOSE_HDEC            !Modified by GAMBIT.
+ 
+ c change susyhit
+ c      STOP
+@@ -327,8 +327,8 @@ c -- given by the slhaspectrum.in file -
+ c -- parameters to be defined which are not given by the --
+ c -- slhaspectrum.in file --
+ 
+-      islhai  = 1
+-      islhao  = 1
++      islhai  = 2                                !Modified by GAMBIT.
++      islhao  = 2                                !Modified by GAMBIT.
+       ihiggs  = 5
+       imodel  = 1
+       nnlo    = 1
+@@ -350,11 +350,13 @@ c -- initialization of the check array -
+          check(i1) = 0
+       end do
+ 
+-      if(islhai.eq.1) then
++      if(islhai.ge.1) then                       !Added by GAMBIT.
++        if(islhai.eq.1) then
+ c change susyhit
+          open(ninlha,file='slhaspectrum.in')
+ c end change susyhit
+          call SLHA_read_leshouches_HDEC(ninlha)
++        endif                                    !Added by GAMBIT.
+ 
+ c -- G_F --
+          if(smval(2).ne.0.D0) then
+@@ -503,8 +505,9 @@ c -- the mass mb(mb)_MSbar --
+       fmtau = amtau
+       fms = ams
+       fmc = amc
++      if(ishai.eq.2) fmb = massval(34)           !Added by GAMBIT.
+ c -- calculation of the mb pole mass from mb(mb)_MSbar --
+-      if(smval(5).ne.0.D0) then
++      if(smval(5).ne.0.D0 .and. ishai.ne.2) then !Modified by GAMBIT.
+        del = 1.d-10
+        mbl = mbmsbar
+        mbu = 2*mbmsbar
+@@ -2342,7 +2345,7 @@ c ----------------------------- c
+ 
+        close(nout)
+ 
+-      else
++      elseif (islhao .eq. 0) then                !Modified by GAMBIT.
+ 
+       IF(IHIGGS.EQ.0)THEN
+       WRITE(NSA,20)AMSM,SMBRB,SMBRL,SMBRM,SMBRS,SMBRC,SMBRT
+@@ -5620,8 +5623,8 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        WHHSB(I,J)=3*GF*AMZ**4/2.D0/DSQRT(2.D0)/PI*GHBB(I,J)**2*
+      .       LAMB_HDEC(AMSB(I)**2/AMH**2,AMSB(J)**2/AMH**2)/AMH
+      .      *SUSY
+-       write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1,
+-     .           WHHSB(I,J)/SUSY,WHHSB(I,J)
++c       write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1, !Commented out by GAMBIT
++c     .           WHHSB(I,J)/SUSY,WHHSB(I,J)                    !Commented out by GAMBIT
+ c      write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1
+       ELSE
+       WHHSB(I,J)=0.D0
+Binary files SUSY-HIT_1_5_pristine/._hgaga.f and installed/SUSY-HIT/1.5/._hgaga.f differ
+Binary files SUSY-HIT_1_5_pristine/._lightst3bod.f and installed/SUSY-HIT/1.5/._lightst3bod.f differ
+diff -rupN SUSY-HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bod.f
+--- SUSY-HIT_1_5_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-06 18:56:05.858991658 +0000
+@@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision sdgf,amz,amw,pi,g2
+       double precision width_bchiW, width_jchiw, width_tot3bod
+       double precision amt, amb, amtau, mfd(3), mfu(3), mfe(3)
+-      double precision DcharL(3,6,2), EcharR(3,6,2), 
++      double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2), ccharl(3,6,2), fcharr(3,6,2)
+       double precision gneutul(3,4,6), 
+      . gneutur(3,4,6), gneutdl(3,4,6), gneutdr(3,4,6)
+@@ -251,7 +251,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+      . stbchiwchib, stbchiwbt, stbchiwchit
+       double precision xmuw, xmut(3), xmub, xmuneut, xmuchar(2),
+      . xmusb(6)
+-      double precision DcharL(3,6,2), EcharR(3,6,2), 
++      double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2), ccharl(3,6,2), fcharr(3,6,2)
+       double precision gneutul(3,4,6), 
+      . gneutur(3,4,6), gneutdl(3,4,6), gneutdr(3,4,6)
+@@ -560,7 +560,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+      . stjchiwchib, stjchiwbt, stjchiwchit
+       double precision xmuw, xmut(3), xmub, xmuneut, xmuchar(2),
+      . xmusb(6)
+-      double precision DcharL(3,6,2), EcharR(3,6,2), 
++      double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2), ccharl(3,6,2), fcharr(3,6,2)
+       double precision gneutul(3,4,6), 
+      . gneutur(3,4,6), gneutdl(3,4,6), gneutdr(3,4,6)
+Binary files SUSY-HIT_1_5_pristine/._lightst4bod.f and installed/SUSY-HIT/1.5/._lightst4bod.f differ
+diff -rupN SUSY-HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bod.f
+--- SUSY-HIT_1_5_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-06 18:56:05.866995658 +0000
+@@ -34,7 +34,7 @@ c----- end ramona added
+      .msd2(3,3), td(3,3), tu(3,3),
+      . usqmix(6,6), dsqmix(6,6)
+       double precision sinbeta,alsew,g2ew,g1ew, time
+-      double precision sigma, DcharL(3,6,2), EcharR(3,6,2), 
++      double precision sigma, DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision sigbtau
+       double precision mfin(100),pfout(4,100), etot,  wt, ampwchabtau
+@@ -532,7 +532,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -1715,7 +1715,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -2942,7 +2942,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -3429,7 +3429,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -3917,7 +3917,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -4418,7 +4418,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -4793,7 +4793,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -5866,7 +5866,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -7156,7 +7156,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup, zwi2
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -7591,7 +7591,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup, zwi2
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -8102,7 +8102,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup, zwi2
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -8616,7 +8616,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup, zwi2
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+diff -rupN SUSY-HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
+--- SUSY-HIT_1_5_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/makefile	2016-03-06 18:56:05.826975659 +0000
+@@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
+ OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
+ OBJS3 = susylha.o hgaga.o hdecay.o
+ 
+-FC=gfortran
++FF=gfortran
++
++FC=$(FF)
++FFLAGS= -O2 -fPIC
+ 
+ .f.o: 
+-	$(FC) -c -finit-local-zero -fbacktrace -fno-align-commons $*.f
++	$(FC) $(FFLAGS) -c -finit-local-zero -fbacktrace -fno-align-commons $*.f
+ 
+ susyhit:$(OBJS1) $(OBJS2) $(OBJS3) 
+ 	$(FC) $(OBJS1) $(OBJS2) $(OBJS3) -o run
+ 
++libsusyhit.so:$(OBJS1) $(OBJS2) $(OBJS3)
++	$(FC) -shared -o $@ $(OBJS1) $(OBJS2) $(OBJS3)
++
+ clean: 
+-	rm -f *.o
+\ No newline at end of file
++	rm -f *.o
+Binary files SUSY-HIT_1_5_pristine/._makefile and installed/SUSY-HIT/1.5/._makefile differ
+Binary files SUSY-HIT_1_5_pristine/._sdecay.f and installed/SUSY-HIT/1.5/._sdecay.f differ
+diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
+--- SUSY-HIT_1_5_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-06 19:18:36.016188480 +0000
+@@ -98,7 +98,12 @@ c  file.]
+ c                                                                      c
+ c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
+ 
+-      program sdecay
++      !Added by GAMBIT to make 100% sure 'unlikely' matches the fortran value.
++      double precision function s_hit_unlikely()
++        s_hit_unlikely = -123456789D0
++      end
++
++      subroutine sdecay                          !Modified by GAMBIT.
+ 
+       implicit double precision (a-h,m,o-z)
+       double precision neutwchar,neutzneut,neuthcchar,neuthlneut,
+@@ -117,6 +122,7 @@ c cccccccccccccccccccccccccccccccccccccc
+      .       aeval(3,3),yuval(3,3),ydval(3,3),yeval(3,3),qvalue(1:22),
+      .       extval(0:100),m_softval(1:100)
+       double precision nl,nq
++      logical qcdcorrstok(2),qcdcorrsbok(2),qcdcorrchok(2),qcdcorrglok!Added by GAMBIT
+       integer nx1t,ny1t,nnlo,imod(1:2)
+ c--- ramona chnaged on 6/6/13 size of array check
+       integer check(1:30)
+@@ -448,7 +454,7 @@ c -- useful when SDECAY is linked to oth
+       COMMON/SD_stoploop/brgamma,brgammaup,brgammagluino
+       COMMON/SD_stop4body/brgamma4bod,brgammaup4bod,brgammagluino4bod,
+      .          br4bodoffshelltau
+-      COMMON/SD_stopwidth/stoptot4
++      COMMON/SD_stopwidth/stoptot4,stoptot       !Modified by GAMBIT
+       COMMON/SD_sbot2body/brsb1neutt,brsb2neutt,brsb1chart,brsb2chart,
+      .          brsb1hcst,brsb2hcst,brsb1wst,brsb2wst,brsb1glui,
+      .          brsb2glui,brsb2hl,brsb2hh,brsb2ha,brsb2zbot
+@@ -514,6 +520,8 @@ c----- if iflag3bod2bod=2 2 body decay s
+ c----- end ramona added
+ 
+ 
++      if (.false.) then                          !Added by GAMBIT.
++
+       open(ninshs,file='susyhit.in',status='unknown')
+ 
+ c -- read in susyhit.in --
+@@ -553,6 +561,14 @@ c-----ramona chnaged 7/6/13
+       print*, "output only in SLHA2 format"
+       flagoutput=1d0
+       flagshsin=2d0
++      endif                                      !Added by GAMBIT.
++
++      else                                       !Added by GAMBIT.
++
++        flagshsin=0d0                            !Added by GAMBIT.
++        flagoutput=2d0                           !Added by GAMBIT.
++        i4bod=1                                  !Added by GAMBIT.
++
+       endif
+ c---- end ramona chnaged
+ c -- The following flags are not read in any more but hard-coded for - c
+@@ -747,7 +763,11 @@ c -- the 2-body decays and 2-body total
+          do i=1,2,1
+             chartot2nlo(i) = chartot2lo(i)+qcdcharst1(i)+qcdcharst2(i)+
+      .           qcdcharsb1(i)+qcdcharsb2(i)+2.D0*(qcdcharsupl(i)+
+-     .           qcdcharsupr(i)+qcdcharsdownl(i)+qcdcharsdownr(i)) 
++     .           qcdcharsupr(i)+qcdcharsdownl(i)+qcdcharsdownr(i))
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++            qcdcorrchok(i) = chartot2nlo(i) .ge. 0.D0
++            if (.not.qcdcorrchok(i)) chartot2nlo(i) =
++     .       chartot2lo(i) / (2.D0 - chartot2nlo(i) / chartot2lo(i)) 
+          end do
+       endif
+ 
+@@ -821,6 +841,46 @@ c ------------------------ the total wid
+ 
+ c -------------------- the chargino branching ratios ----------------- c
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      do i=1,2,1
++         if(.not.qcdcorrchok(i)) then
++            brcharst1(i)    = charst1(i)/chartot2lo(i)
++            brcharst2(i)    = charst2(i)/chartot2lo(i)
++            brcharsb1(i)    = charsb1(i)/chartot2lo(i)
++            brcharsb2(i)    = charsb2(i)/chartot2lo(i)
++            brcharsupl(i)   = charsupl(i)/chartot2lo(i)
++            brcharsupr(i)   = charsupr(i)/chartot2lo(i)
++            brcharsdownl(i) = charsdownl(i)/chartot2lo(i)
++            brcharsdownr(i) = charsdownr(i)/chartot2lo(i)
++            brcharsnel(i)   = charsnel(i)/chartot2lo(i)
++            brcharsn1(i)    = charsn1(i)/chartot2lo(i)
++            brcharsn2(i)    = charsn2(i)/chartot2lo(i)
++            brcharsell(i)   = charsell(i)/chartot2lo(i)
++            brcharselr(i)   = charselr(i)/chartot2lo(i)
++            brcharstau1(i)  = charstau1(i)/chartot2lo(i)
++            brcharstau2(i)  = charstau2(i)/chartot2lo(i)
++            do j=1,4,1
++               brcharhcneut(i,j) = charhcneut(i,j)/chartot2lo(i)
++               brcharwneut(i,j)  = charwneut(i,j)/chartot2lo(i)
++            end do
++        endif
++      end do
++      if(.not.qcdcorrchok(2)) then
++         brcharzchic  = char2zchic1/chartot2lo(2)
++         brcharhlchic = char2hlchic1/chartot2lo(2)
++         brcharhhchic = char2hhchic1/chartot2lo(2)
++         brcharhachic = char2hachic1/chartot2lo(2)
++      endif
++
++      if(flagnlspgmsb.eq.1.D0) then
++         do i=1,2,1
++            if(.not.qcdcorrchok(i)) then
++               brcharwgravitino(i)  = charwgravitino(i)/chartot2lo(i)
++               brcharhcgravitino(i) = charhcgravitino(i)/chartot2lo(i)
++            endif
++         end do
++      endif
++
+ c -- for the 2-body decays --
+ 
+       if(flagqcd.eq.1.D0)  then
+@@ -837,6 +897,7 @@ c -- for the 2-body decays --
+       endif
+ 
+       do i=1,2,1
++         if(qcdcorrchok(i)) then                                     !Added by GAMBIT
+          brcharst1(i)    = charst1(i)/chartot(i)
+          brcharst2(i)    = charst2(i)/chartot(i)
+          brcharsb1(i)    = charsb1(i)/chartot(i)
+@@ -852,20 +913,27 @@ c -- for the 2-body decays --
+          brcharselr(i)   = charselr(i)/chartot(i)
+          brcharstau1(i)  = charstau1(i)/chartot(i)
+          brcharstau2(i)  = charstau2(i)/chartot(i)
++         endif                                                       !Added by GAMBIT
+          do j=1,4,1
++         if(qcdcorrchok(i)) then                                     !Added by GAMBIT
+             brcharhcneut(i,j) = charhcneut(i,j)/chartot(i)
+             brcharwneut(i,j)  = charwneut(i,j)/chartot(i)
++         endif                                                       !Added by GAMBIT
+          end do
+       end do
++      if(qcdcorrchok(2)) then                                        !Added by GAMBIT
+       brcharzchic  = char2zchic1/chartot(2)
+       brcharhlchic = char2hlchic1/chartot(2)
+       brcharhhchic = char2hhchic1/chartot(2)
+       brcharhachic = char2hachic1/chartot(2)
++      endif                                                          !Added by GAMBIT
+ 
+       if(flagnlspgmsb.eq.1.D0) then
+          do i=1,2,1
++         if(qcdcorrchok(i)) then                                     !Added by GAMBIT
+             brcharwgravitino(i)  = charwgravitino(i)/chartot(i)
+             brcharhcgravitino(i) = charhcgravitino(i)/chartot(i)
++         endif                                                       !Added by GAMBIT
+          end do
+       endif
+ 
+@@ -1307,6 +1375,11 @@ c -- the 2-body decays and 2-body total
+      .                   +2.D0*qcdgsupr+2.D0*qcdgsdownl+2.D0*qcdgsdownr)
+      .            + gluitot2lo
+ 
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++      qcdcorrglok = gluitot2nlo .ge. 0.D0
++      if (.not.qcdcorrglok) gluitot2nlo =
++     . gluitot2lo / (2.D0 - gluitot2nlo / gluitot2lo)
++
+       if(flagqcd.eq.0.D0) then
+          gluitot2 = gluitot2lo
+       elseif(flagqcd.eq.1.D0) then
+@@ -1380,6 +1453,18 @@ c ------------------------ the total wid
+ 
+ c -------------------- the gluino branching ratios ------------------- c
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrglok) then
++        brgst1    = gst1/gluitot2lo
++        brgst2    = gst2/gluitot2lo
++        brgsb1    = gsb1/gluitot2lo
++        brgsb2    = gsb2/gluitot2lo
++        brgsupl   = gsupl/gluitot2lo
++        brgsupr   = gsupr/gluitot2lo
++        brgsdownl = gsdownl/gluitot2lo
++        brgsdownr = gsdownr/gluitot2lo
++      endif
++
+ c -- for the 2-body decays --
+ 
+       if(flagqcd.eq.1.D0) then
+@@ -1393,14 +1478,14 @@ c -- for the 2-body decays --
+          gsdownr = gsdownr+qcdgsdownr
+       endif
+ 
+-      brgst1    = gst1/gluitot
+-      brgst2    = gst2/gluitot
+-      brgsb1    = gsb1/gluitot
+-      brgsb2    = gsb2/gluitot
+-      brgsupl   = gsupl/gluitot
+-      brgsupr   = gsupr/gluitot
+-      brgsdownl = gsdownl/gluitot
+-      brgsdownr = gsdownr/gluitot
++      if (qcdcorrglok) brgst1    = gst1/gluitot      !Modified by GAMBIT
++      if (qcdcorrglok) brgst2    = gst2/gluitot      !Modified by GAMBIT
++      if (qcdcorrglok) brgsb1    = gsb1/gluitot      !Modified by GAMBIT
++      if (qcdcorrglok) brgsb2    = gsb2/gluitot      !Modified by GAMBIT
++      if (qcdcorrglok) brgsupl   = gsupl/gluitot     !Modified by GAMBIT
++      if (qcdcorrglok) brgsupr   = gsupr/gluitot     !Modified by GAMBIT
++      if (qcdcorrglok) brgsdownl = gsdownl/gluitot   !Modified by GAMBIT
++      if (qcdcorrglok) brgsdownr = gsdownr/gluitot   !Modified by GAMBIT
+ 
+       if(flagnlspgmsb.eq.1.D0) then
+          brggravgl = ggravgl/gluitot
+@@ -1714,6 +1799,14 @@ c -- the 2-body decays and 2-body total
+      .            qcdst2hl+qcdst2hh+qcdst2ha+qcdst2ztop+qcdst2wsb(1)+
+      .            qcdst2wsb(2)
+ 
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++      do i = 1,2,1
++         qcdcorrstok(i) = stoptot2nlo(i) .ge. 0.D0
++         if (.not.qcdcorrstok(i)) stoptot2nlo(i) =
++     .    stoptot2lo(i) / (2.D0 - stoptot2nlo(i) / stoptot2lo(i))
++      enddo
++
++
+       if(flagqcd.eq.0.D0) then
+          do i=1,2,1
+             stoptot2(i) = stoptot2lo(i)
+@@ -1818,7 +1911,8 @@ c ------------------------ the total wid
+             if(stoptotmulti(1).ne.0.D0) then
+                stoptot(1) = stoptotmulti(1)+stoptotrad(1)
+             else
+-               stoptot(1) = sigma4bodtot+stoptotrad(1)
++               stoptot(1) = stoptotrad(1)
++               if (sigma4bodtot.gt.0.D0) stoptot(1) = stoptot(1) + sigma4bodtot
+             endif
+          else
+             stoptot(1) = stoptot2(1)
+@@ -1837,6 +1931,39 @@ c ------------------------ the total wid
+ 
+ c ---------------------- the stop branching ratios ------------------- c
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrstok(1)) then
++
++        do i=1,4,1
++           brst1neutt(i) = st1neutt(i)/stoptot2lo(1)
++        end do
++        do i=1,2,1
++           brst1charb(i) = st1charb(i)/stoptot2lo(1)
++           brst1hcsb(i)  = st1hcsb(i)/stoptot2lo(1)
++           brst1wsb(i)   = st1wsb(i)/stoptot2lo(1)
++        end do
++        brst1glui = st1glui/stoptot2lo(1)
++
++      endif
++
++      if(.not.qcdcorrstok(2)) then
++
++        do i=1,4,1
++           brst2neutt(i) = st2neutt(i)/stoptot2lo(2)
++        end do
++        do i=1,2,1
++           brst2charb(i) = st2charb(i)/stoptot2lo(2)
++           brst2hcsb(i)  = st2hcsb(i)/stoptot2lo(2)
++           brst2wsb(i)   = st2wsb(i)/stoptot2lo(2)
++        end do
++        brst2glui = st2glui/stoptot2lo(2)
++        brst2hl   = st2hl/stoptot2lo(2)
++        brst2hh   = st2hh/stoptot2lo(2)
++        brst2ha   = st2ha/stoptot2lo(2)
++        brst2ztop = st2ztop/stoptot2lo(2)
++
++      endif
++
+ c -- for the 2-body decays --
+ 
+       if(flagqcd.eq.1.D0) then
+@@ -1861,23 +1988,23 @@ c -- for the 2-body decays --
+       endif
+ 
+       do i=1,4,1
+-         brst1neutt(i) = st1neutt(i)/stoptot(1)
+-         brst2neutt(i) = st2neutt(i)/stoptot(2)
++         if(qcdcorrstok(1)) brst1neutt(i) = st1neutt(i)/stoptot(1)   !Modified by GAMBIT
++         if(qcdcorrstok(2)) brst2neutt(i) = st2neutt(i)/stoptot(2)   !Modified by GAMBIT
+       end do
+       do i=1,2,1
+-         brst1charb(i) = st1charb(i)/stoptot(1)
+-         brst1hcsb(i)  = st1hcsb(i)/stoptot(1)
+-         brst1wsb(i)   = st1wsb(i)/stoptot(1)
+-         brst2charb(i) = st2charb(i)/stoptot(2)
+-         brst2hcsb(i)  = st2hcsb(i)/stoptot(2)
+-         brst2wsb(i)   = st2wsb(i)/stoptot(2)
+-      end do
+-      brst1glui = st1glui/stoptot(1)
+-      brst2glui = st2glui/stoptot(2)
+-      brst2hl   = st2hl/stoptot(2)
+-      brst2hh   = st2hh/stoptot(2)
+-      brst2ha   = st2ha/stoptot(2)
+-      brst2ztop = st2ztop/stoptot(2)
++         if(qcdcorrstok(1)) brst1charb(i) = st1charb(i)/stoptot(1)   !Modified by GAMBIT
++         if(qcdcorrstok(1)) brst1hcsb(i)  = st1hcsb(i)/stoptot(1)    !Modified by GAMBIT
++         if(qcdcorrstok(1)) brst1wsb(i)   = st1wsb(i)/stoptot(1)     !Modified by GAMBIT
++         if(qcdcorrstok(2)) brst2charb(i) = st2charb(i)/stoptot(2)   !Modified by GAMBIT
++         if(qcdcorrstok(2)) brst2hcsb(i)  = st2hcsb(i)/stoptot(2)    !Modified by GAMBIT
++         if(qcdcorrstok(2)) brst2wsb(i)   = st2wsb(i)/stoptot(2)     !Modified by GAMBIT
++      end do
++      if(qcdcorrstok(1)) brst1glui = st1glui/stoptot(1)              !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2glui = st2glui/stoptot(2)              !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2hl   = st2hl/stoptot(2)                !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2hh   = st2hh/stoptot(2)                !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2ha   = st2ha/stoptot(2)                !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2ztop = st2ztop/stoptot(2)              !Modified by GAMBIT
+ 
+ c -- for the 3-body and loop decays --
+ 
+@@ -2043,6 +2170,14 @@ c -- the 2-body decays and 2-body total
+      .               qcdsb2hcst(2)+qcdsb2hl+qcdsb2hh+qcdsb2ha +
+      .               qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)
+ 
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++      do i = 1,2,1
++         qcdcorrsbok(i) = sbottot2nlo(i) .ge. 0.D0
++         if (.not.qcdcorrsbok(i)) sbottot2nlo(i) =
++     .    sbottot2lo(i) / (2.D0 - sbottot2nlo(i) / sbottot2lo(2))
++      enddo
++
++
+       if(flagqcd.eq.0.D0) then
+          do i=1,2,1
+             sbottot2(i) = sbottot2lo(i)
+@@ -2101,6 +2236,39 @@ c ------------------------ the total wid
+ 
+ c --------------------- the sbottom branching ratios ----------------- c
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrsbok(1)) then
++
++        do i=1,4,1
++           brsb1neutt(i) = sb1neutt(i)/sbottot2lo(1)
++        end do
++        do i=1,2,1
++           brsb1chart(i) = sb1chart(i)/sbottot2lo(1)
++           brsb1hcst(i)  = sb1hcst(i)/sbottot2lo(1)
++           brsb1wst(i)   = sb1wst(i)/sbottot2lo(1)
++        end do
++        brsb1glui = sb1glui/sbottot2lo(1)
++
++      endif
++
++      if(.not.qcdcorrsbok(2)) then
++
++        do i=1,4,1
++           brsb2neutt(i) = sb2neutt(i)/sbottot2lo(2)
++        end do
++        do i=1,2,1
++           brsb2chart(i) = sb2chart(i)/sbottot2lo(2)
++           brsb2hcst(i)  = sb2hcst(i)/sbottot2lo(2)
++           brsb2wst(i)   = sb2wst(i)/sbottot2lo(2)
++        end do
++        brsb2glui = sb2glui/sbottot2lo(2)
++        brsb2hl   = sb2hl/sbottot2lo(2)
++        brsb2hh   = sb2hh/sbottot2lo(2)
++        brsb2ha   = sb2ha/sbottot2lo(2)
++        brsb2zbot = sb2zbot/sbottot2lo(2)
++
++      endif
++
+ c -- for the 2-body decays --
+ 
+       if(flagqcd.eq.1.D0) then
+@@ -2125,23 +2293,23 @@ c -- for the 2-body decays --
+       endif
+ 
+       do i=1,4,1
+-         brsb1neutt(i)=sb1neutt(i)/sbottot2(1)
+-         brsb2neutt(i)=sb2neutt(i)/sbottot2(2)
++         if(qcdcorrsbok(1)) brsb1neutt(i)=sb1neutt(i)/sbottot2(1)    !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2neutt(i)=sb2neutt(i)/sbottot2(2)    !Modified by GAMBIT
+       end do
+       do i=1,2,1
+-         brsb1chart(i) = sb1chart(i)/sbottot2(1)
+-         brsb2chart(i) = sb2chart(i)/sbottot2(2)
+-         brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)
+-         brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)
+-         brsb1wst(i)   = sb1wst(i)/sbottot2(1)
+-         brsb2wst(i)   = sb2wst(i)/sbottot2(2)
+-      end do
+-      brsb1glui = sb1glui/sbottot2(1)
+-      brsb2glui = sb2glui/sbottot2(2)
+-      brsb2hl   = sb2hl/sbottot2(2)
+-      brsb2hh   = sb2hh/sbottot2(2)
+-      brsb2ha   = sb2ha/sbottot2(2)
+-      brsb2zbot = sb2zbot/sbottot2(2)
++         if(qcdcorrsbok(1)) brsb1chart(i) = sb1chart(i)/sbottot2(1)  !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2chart(i) = sb2chart(i)/sbottot2(2)  !Modified by GAMBIT
++         if(qcdcorrsbok(1)) brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)   !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)   !Modified by GAMBIT
++         if(qcdcorrsbok(1)) brsb1wst(i)   = sb1wst(i)/sbottot2(1)    !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2wst(i)   = sb2wst(i)/sbottot2(2)    !Modified by GAMBIT
++      end do
++      if(qcdcorrsbok(1)) brsb1glui = sb1glui/sbottot2(1)             !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2glui = sb2glui/sbottot2(2)             !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2hl   = sb2hl/sbottot2(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2hh   = sb2hh/sbottot2(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2ha   = sb2ha/sbottot2(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2zbot = sb2zbot/sbottot2(2)             !Modified by GAMBIT
+ 
+ c -- for the 3-body decays --
+ 
+@@ -2533,8 +2701,8 @@ c --------------------------------------
+ 
+ 
+ c---- ramona chnaged 27/5/13--- flavour violation only with SLHA Output so far
+-      if((flagoutput.eq.1.D0).or.(ifavvio.eq.1)) then
+-!      if(flagoutput.eq.1.D0) then
++c      if((flagoutput.eq.1.D0).or.(ifavvio.eq.1)) then !Commented out by GAMBIT.
++      if(flagoutput.eq.1.D0) then                !Reinstated by GAMBIT.
+ c---- end ramona changed
+ c ------------------ output a la Les Houches accord ------------------ c
+ 
+@@ -8392,7 +8560,7 @@ c      write(nout,102) bhcgd(2),2,ic2,ig
+ 
+ c ---------------- output not a la Les Houches accord ---------------- c
+ 
+-      else
++      elseif(flagoutput.eq.0.D0) then            !Modified by GAMBIT.
+ 
+       write(21,*)
+       write(21,*) "                              ======================"
+@@ -12190,7 +12358,7 @@ c -- mb(mb)_MSbar --
+          call SD_runmbmb(amzp,runmbz)
+       endif
+ 
+-      if(flagshsin.eq.1.D0) then
++      if(flagshsin.le.1.D0) then                 !Modified by GAMBIT.
+          samb = massval(34)
+       endif
+ 
+@@ -37107,14 +37275,14 @@ c --------------------------------------
+       AXX=SD_AX(xmu1,xmu2,xmu3)
+       BXX=SD_BX(xmu1,xmu2,xmu3)
+ 
+-      CALL SD_GAUS(NX,AXX,BXX,RX,WX)
++      CALL SD_GAUS(NX,AXX,BXX,RX,WX,1000)
+       SX=0.D0
+       DO  1 K=1,NX
+          X=RX(K)
+          AYX=SD_AY(xmu1,xmu2,xmu3,X)
+          BYX=SD_BY(xmu1,xmu2,xmu3,X)
+ 
+-         CALL SD_GAUS(NY,AYX,BYX,RY,WY)
++         CALL SD_GAUS(NY,AYX,BYX,RY,WY,1000)
+          SY=0.D0
+          DO 2 J=1,NY
+ 
+@@ -37129,7 +37297,7 @@ c --------------------------------------
+ 
+ c -------------------------------------------------------------------- c
+ 
+-      SUBROUTINE SD_GAUS(N,A,B,X,W)
++      SUBROUTINE SD_GAUS(N,A,B,X,W,LENGTH)
+ C     GAUSS-LEGENDRE INTEGRATION FROM A TO B (WEIGHT = 1.)
+ C     CALCULATES GAUSSIAN POINTS X AND WEIGHTS W
+ C                      FOR N=4,6,8,12,16,24,32 ;
+@@ -37138,7 +37306,7 @@ C     THE INTERVAL [A,B] AND N INTO CORR
+ C     N MUST BE EVEN AND >= 4,IF IT IS NOT,IT IS CHANGED !
+ C
+       IMPLICIT REAL*8 (A-H,O-Z)
+-      DIMENSION XG(16,7),DG(16,7),YG(16),EG(16),X(1),W(1),NI(7),NG(7)
++      DIMENSION XG(16,7),DG(16,7),YG(16),EG(16),X(LENGTH),W(LENGTH),NI(7),NG(7)
+       DATA NBEG,NA,NI,NG /9*0,4,6,8,12,16,24,32/
+       DATA XG/ .43056815579702629D 0, .16999052179242813D 0, 14*0.D0,
+      X         .46623475710157601D 0, .33060469323313226D 0,
+Binary files SUSY-HIT_1_5_pristine/._slhaspectrum.in and installed/SUSY-HIT/1.5/._slhaspectrum.in differ
+Binary files SUSY-HIT_1_5_pristine/._suspect2.f and installed/SUSY-HIT/1.5/._suspect2.f differ
+Binary files SUSY-HIT_1_5_pristine/._suspect2_lha.in and installed/SUSY-HIT/1.5/._suspect2_lha.in differ
+Binary files SUSY-HIT_1_5_pristine/._susyhit.in and installed/SUSY-HIT/1.5/._susyhit.in differ
+Binary files SUSY-HIT_1_5_pristine/._susylha.f and installed/SUSY-HIT/1.5/._susylha.f differ
+Binary files SUSY-HIT_1_5_pristine/._twoloophiggs.f and installed/SUSY-HIT/1.5/._twoloophiggs.f differ
+Binary files SUSY-HIT_1_5_pristine/._Xvegas.f and installed/SUSY-HIT/1.5/._Xvegas.f differ
