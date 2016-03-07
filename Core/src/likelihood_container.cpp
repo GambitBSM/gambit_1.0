@@ -270,19 +270,6 @@ namespace Gambit
     if (debug) cout << "log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
 
-    #ifdef WITH_MPI
-    /// Check for shutdown signals from other processes
-    if(errorComm.Iprobe(MPI_ANY_SOURCE, errorComm.mytag))
-    {
-      int tmp_buf;
-      MPI_Status msg_status;
-      errorComm.Recv(&tmp_buf, 1, MPI_ANY_SOURCE, errorComm.mytag, &msg_status);
-      // Set flag to begin emergency shutdown
-      signaldata().set_shutdown_begun(1);
-      logger() << LogTags::core << LogTags::info << "Received emergency shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
-    }
-    #endif
-
     /// Check once more for signals to abort run
     signaldata().check_for_shutdown_signal();
 

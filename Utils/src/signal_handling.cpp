@@ -64,7 +64,7 @@ namespace Gambit
    /// Add signal to record
    void SignalData::add_signal(int sig)
    {
-     //std::cerr << " Adding signal " << sig << std::endl; // debugging
+     std::cerr << " Adding signal " << sig << std::endl; // debugging
      if(N_signals<MAX_SIGNALS) {
         received_signals[N_signals] = sig;
         N_signals+=1;
@@ -124,8 +124,7 @@ namespace Gambit
      // sleep setup
      bool timedout = false;
      std::chrono::seconds timeout(5); // FIXME: replace with estimated plugin evaluation time
-     GMPI::Comm shutdownComm; // FIXME: create new communicator group to avoid tag clashes
-     if( shutdownComm.BarrierWithTimeout(timeout, 9999, std::cerr) )
+     if( signalComm->BarrierWithTimeout(timeout, 9999, std::cerr) )
               timedout = true; // Barrier timed out waiting for some process to enter
      // else the barrier succeed in synchronising all processes
      logger() << "Synchronised? " << !timedout << EOM;
@@ -181,6 +180,38 @@ namespace Gambit
         }
      }
 
+     #ifdef WITH_MPI
+     /// Check for shutdown signals from other processes
+     if(signalComm->Iprobe(MPI_ANY_SOURCE, signalComm->mytag))
+     {
+       int code;
+       MPI_Status msg_status;
+       signalComm->Recv(&code, 1, MPI_ANY_SOURCE, signalComm->mytag, &msg_status);
+
+       // Check what code was received and use it to determined what kind of shutdown to do
+       if(code==SOFT_SHUTDOWN)
+       {
+         set_shutdown_begun();
+         logger() << LogTags::core << LogTags::info << "Received SOFT shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
+       }
+       else if(code==EMERGENCY_SHUTDOWN)
+       {
+         set_shutdown_begun(1); // '1' argument means emergency set also.
+         logger() << LogTags::core << LogTags::info << "Received EMERGENCY shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
+       }
+       else
+       {
+         std::ostringstream ss;
+         ss << "Received UNRECOGNISED shutdown signal from process with rank " << msg_status.MPI_SOURCE<<". Performing emergnecy shutdown, but please note that this indicates a ***BUG*** somewhere in the signal handling code!!!";
+         std::cout << ss.str() << std::endl;
+         logger() << LogTags::core << LogTags::info << ss.str() << EOM;
+         set_shutdown_begun(1); // '1' argument means emergency set also.
+       }
+
+       // Set flag to begin emergency shutdown
+     }
+     #endif
+
      if(shutdownBegun)
      {
        std::ostringstream ss;
@@ -188,6 +219,26 @@ namespace Gambit
        ss << display_received_signals();
        std::cerr << ss.str();
        logger() << ss.str() << EOM;
+       #ifdef WITH_MPI
+       // Broadcast shutdown message to all processes
+       int shutdown_code;
+       std::string shutdown_name;
+       if(emergency)
+       {
+         shutdown_code = EMERGENCY_SHUTDOWN;
+         shutdown_name = "EMERGENCY";
+       }
+       else
+       {
+         shutdown_code = SOFT_SHUTDOWN;
+         shutdown_name = "SOFT";
+       }
+       /// This is basically the same function used in gambit.cpp ("broadcast_shutdown_signal"), would be good to unify the two.
+       MPI_Request req_null = MPI_REQUEST_NULL;
+       signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
+       logger() << LogTags::core << LogTags::info << shutdown_name<<" shutdown signal broadcast to all processes" << EOM;
+       #endif
+       // Go to emergency shutdown routine if needed
        check_for_emergency_shutdown_signal();
        // If no exception thrown due to emergency shutdown signal,
        // attempt to synchronise all processes at a timed barrier,
@@ -240,12 +291,41 @@ namespace Gambit
       return inside_omp_block;
    }
 
+   #ifdef WITH_MPI
+   /// Report if MPI communicator object is prepared
+   bool SignalData::comm_ready() { return _comm_rdy; }
+
+   /// Set the MPI communicator object for the session
+   /// Can be run multiple times, but I would not advise doing that.
+   void SignalData::set_MPI_comm(GMPI::Comm* comm)
+   {
+       signalComm = comm;
+       _comm_rdy = true;
+   }
+   #endif
+
    /// @}
 
    /// Retrieve global instance of signal handler options struct
    SignalData& signaldata()
    {
      static SignalData data;
+     #ifdef WITH_MPI
+     // If we are using MPI, it is required that the signaldata object be initialised with a communicator object
+     // This 'ifdef' block ensures that this happens, or else throws an error.
+     static int access_count = 0;
+     if(access_count==0){ access_count += 1; }
+     else if(access_count==1)
+     {
+       // Check that communicator object has been initialised
+       if(not data.comm_ready())
+       {
+          std::ostringstream errmsg;
+          errmsg << "Error retrieving global SignalData object! An MPI communicator has not been provided to this object! Please provide one via the 'set_MPI_comm' the first time that 'signaldata()' is called."; 
+          utils_error().raise(LOCAL_INFO, errmsg.str());
+       }
+     }
+     #endif
      return data;
    }
 
