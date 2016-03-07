@@ -787,7 +787,7 @@ BE_NAMESPACE
 /* PS: I have made the mods requested, but these functions cannot work as designed,
  * because DarkBit::TH_ParticleProperty is a module type, not a backend type.
  * Make it a backend type or move these functions back into DarkBit.
- *
+ * FIXME
   void registerMassesForIB(
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
@@ -802,6 +802,7 @@ BE_NAMESPACE
 */
 
   //PS: this can't compile anyway, as particleProperties is not defined
+  //FIXME
   void setMassesForIB(bool set)
   {
     if (set)

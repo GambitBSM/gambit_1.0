@@ -48,7 +48,7 @@ namespace Gambit
       static Spectrum mySpec;
       std::string inputFileName = "input.slha";
 
-      Elements::SingletDMModel singletmodel;
+      Models::SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = 125.; // *myPipe::Param.at("mH");
       singletmodel.HiggsVEV        = 246.; // 1. / sqrt(sqrt(2.)*sminputs.GF);
       singletmodel.SingletPoleMass = 100.; // *myPipe::Param.at("mS");
