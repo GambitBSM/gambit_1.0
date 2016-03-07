@@ -2430,7 +2430,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2462,7 +2461,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2494,7 +2492,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2554,7 +2551,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2583,7 +2579,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2612,7 +2607,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2668,7 +2662,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2694,7 +2687,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2753,7 +2745,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2782,7 +2773,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2837,7 +2827,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2862,7 +2851,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2934,7 +2922,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       // ALSO, total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
       totalBR = decays->at("W+").BF("hadron", "hadron");
@@ -2946,7 +2933,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -2981,7 +2967,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       // ALSO, total up all channels which look like hadronic W* decays
       // Total up the hadronic W decays first...
       totalBR = decays->at("W+").BF("hadron", "hadron");
@@ -2993,7 +2978,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -3052,7 +3036,6 @@ namespace Gambit
       totalBR += decays->at("W+").BF("tau+", "nu_tau");
       totalBR = decays->at("~chi+_1").BF("~chi0_1", "W+") * totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       totalBR += decays->at("~chi+_1").BF("~chi0_1", "e+", "nu_e");
       totalBR += decays->at("~chi+_1").BF("~chi0_1", "mu+", "nu_mu");
       totalBR += decays->at("~chi+_1").BF("~chi0_1", "tau+", "nu_tau");
@@ -3066,7 +3049,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -3101,7 +3083,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -3170,7 +3151,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -3202,7 +3182,6 @@ namespace Gambit
       xsecWithError.central *= pow(totalBR, 2);
       xsecWithError.lower *= pow(totalBR, 2);
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -3259,7 +3238,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -3285,7 +3263,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
@@ -3311,7 +3288,6 @@ namespace Gambit
       xsecWithError.central *= totalBR;
       xsecWithError.lower *= totalBR;
 
-      if (Utils::isnan(totalBR)) ColliderBit_error().raise(LOCAL_INFO, "BF nan!");
       if (xsecWithError.central < xsecLimit)
       {
         result += limitLike(xsecWithError.central, xsecLimit, xsecWithError.upper - xsecWithError.central);
