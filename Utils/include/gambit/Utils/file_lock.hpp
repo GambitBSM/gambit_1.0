@@ -47,8 +47,11 @@ namespace Gambit {
       class FileLock
       {
         private:
-          /// Static variable for the lock-file prefix path, i.e. where to store the lock file (allow setting via YAML?)
+          /// Static variable for the lock-file prefix path, i.e. where to store the lock file
           static const std::string lock_prefix;
+
+          /// Static variable for the lock-file extension
+          static const std::string lock_suffix;
 
           /// Name for the managed lock file
           const std::string my_lock_fname;

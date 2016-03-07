@@ -50,12 +50,13 @@ namespace Gambit {
 
       /// @{ Members of FileLock class
 
-      /// Initialise prefix path name to lock files
-      const std::string FileLock::lock_prefix("scratch/locks/LOCK_FILE_");
+      /// Initialise prefix path name to lock files, and extension
+      const std::string FileLock::lock_prefix("scratch/locks/");
+      const std::string FileLock::lock_suffix(".lock");
 
       /// Constructor
       FileLock::FileLock(const std::string& fname)
-       : my_lock_fname(ensure_path_exists(lock_prefix + fname))
+       : my_lock_fname(ensure_path_exists(lock_prefix + fname + lock_suffix))
        , fd(open(my_lock_fname.c_str(), O_RDWR | O_CREAT, 0666)) // last argument is permissions, in case file has to be created.
       {
         /// Should check for errors opening the file. List of error codes is kind of long though, let people look it up themselves for now...
