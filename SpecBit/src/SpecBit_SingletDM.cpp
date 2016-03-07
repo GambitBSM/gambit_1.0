@@ -24,8 +24,8 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-#include "gambit/SpecBit/SMHiggsContainer.hpp"
-#include "gambit/Elements/ScalarSingletDMContainer.hpp"
+#include "gambit/Models/SimpleSpectra/SMHiggsSimpleSpec.hpp"
+#include "gambit/Models/SimpleSpectra/ScalarSingletDMSimpleSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 #include "gambit/SpecBit/SSDMSpec.hpp"
 
@@ -67,14 +67,14 @@ namespace Gambit
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Initialise an object to carry the Singlet plus Higgs sector information
-      Elements::SingletDMModel singletmodel;
+      Models::SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = *myPipe::Param.at("mH");
       singletmodel.HiggsVEV        = 1. / sqrt(sqrt(2.)*sminputs.GF);
       singletmodel.SingletPoleMass = *myPipe::Param.at("mS");
       singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
 
       // Create a SubSpectrum object to wrap the EW sector information
-      Elements::SingletDMContainer singletspec(singletmodel);
+      Models::ScalarSingletDMSimpleSpec singletspec(singletmodel);
 
       // Create full Spectrum object from components above
       // Note: SubSpectrum objects cannot be copied, but Spectrum

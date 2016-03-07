@@ -10,7 +10,7 @@
 ///   
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 June 2013
+///  \date 2013 June
 ///
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)

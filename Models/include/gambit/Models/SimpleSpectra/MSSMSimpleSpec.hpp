@@ -14,11 +14,12 @@
 ///
 ///  *********************************************
 
-#ifndef __MSSMskeleton_hpp__
-#define __MSSMskeleton_hpp__
+#ifndef __MSSMSimpleSpec_hpp__
+#define __MSSMSimpleSpec_hpp__
 
 #include "gambit/Elements/spec.hpp"
-#include "gambit/Elements/SLHAskeleton.hpp"
+#include "gambit/Models/SimpleSpectra/SLHASimpleSpec.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit
 {
@@ -92,18 +93,20 @@ namespace Gambit
            /// @}
       };
 
-      class MSSMskeleton;
+      class MSSMSimpleSpec;
 
       /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
       template <>
-      struct SpecTraits<MSSMskeleton> 
+      struct SpecTraits<MSSMSimpleSpec> 
       {
-           typedef MSSMea     Model;
-           typedef DummyInput Input; // DummyInput is just an empty struct
+          static std::string name() { return "MSSMSimpleSpec"; }
+          typedef SpectrumContents::MSSM Contents;
+          typedef MSSMea     Model;
+          typedef DummyInput Input; // DummyInput is just an empty struct
       };
 
       /// MSSM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class MSSMskeleton : public SLHAskeleton<MSSMskeleton> 
+      class MSSMSimpleSpec : public SLHASimpleSpec<MSSMSimpleSpec> 
       {
          private:
             /// Set pole mass uncertainties
@@ -113,13 +116,13 @@ namespace Gambit
             /// Constructors.
             /// The optional double uncert is the uncertainty to assign to pole masses (default is 3%).
             /// @{
-            MSSMskeleton(double uncert = 0.03);
-            MSSMskeleton(const SLHAstruct&, double uncert = 0.03);
-            MSSMskeleton(const MSSMskeleton&, double uncert = 0.03);
+            MSSMSimpleSpec(double uncert = 0.03);
+            MSSMSimpleSpec(const SLHAstruct&, double uncert = 0.03);
+            MSSMSimpleSpec(const MSSMSimpleSpec&, double uncert = 0.03);
             /// @}
 
             /// Destructor
-            virtual ~MSSMskeleton() {};
+            virtual ~MSSMSimpleSpec() {};
 
             virtual int get_index_offset() const;
             virtual SLHAstruct getSLHAea() const;

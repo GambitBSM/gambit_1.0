@@ -14,11 +14,12 @@
 ///
 ///  *********************************************
 
-#ifndef __SMskeleton_hpp__
-#define __SMskeleton_hpp__
+#ifndef __SMSimpleSpec_hpp__
+#define __SMSimpleSpec_hpp__
 
 #include "gambit/Elements/spec.hpp"
-#include "gambit/Elements/SLHAskeleton.hpp"
+#include "gambit/Models/SimpleSpectra/SLHASimpleSpec.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 namespace Gambit
 {
@@ -61,26 +62,28 @@ namespace Gambit
            /// @}
       };
 
-      class SMskeleton;
+      class SMSimpleSpec;
 
       /// Specialisation of traits class needed to inform base spectrum class of the Model and Input types
       template <>
-      struct SpecTraits<SMskeleton> 
+      struct SpecTraits<SMSimpleSpec> 
       {
-           typedef SMea     Model;
-           typedef DummyInput Input; // DummyInput is just an empty struct
+          static std::string name() { return "SMSimpleSpec"; }
+          typedef SpectrumContents::SM Contents;
+          typedef SMea     Model;
+          typedef DummyInput Input; // DummyInput is just an empty struct
       };
 
       /// SM specialisation of SLHAea object wrapper version of SubSpectrum class
-      class SMskeleton : public SLHAskeleton<SMskeleton> 
+      class SMSimpleSpec : public SLHASimpleSpec<SMSimpleSpec> 
       {
         
          public:
             // Constructors/destructors
-            SMskeleton();
-            SMskeleton(const SLHAea::Coll&);
-            SMskeleton(const SMskeleton&);
-            virtual ~SMskeleton() {};
+            SMSimpleSpec();
+            SMSimpleSpec(const SLHAea::Coll&);
+            SMSimpleSpec(const SMSimpleSpec&);
+            virtual ~SMSimpleSpec() {};
 
             virtual double GetScale() const;
             

@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/MSSMskeleton.hpp" 
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp" 
 #include "gambit/Utils/util_functions.hpp" 
 #include "gambit/Utils/variadic_functions.hpp" 
 #include "gambit/Logs/logger.hpp"
@@ -57,7 +57,7 @@ namespace Gambit
           {
             utils_error().raise(LOCAL_INFO, "SLHA file appears to be neither SLHA1 nor SLHA2.");
           }
-          logger() << "SLHA for setting up skeleton spectrum is SLHA1.  You old dog." << EOM;
+          logger() << "SLHA for setting up simple spectrum is SLHA1.  You old dog." << EOM;
 
           //Looks like it is SLHA1, so convert it to SLHA2.
           int lengths[4] = {6, 6, 6, 3};
@@ -119,7 +119,7 @@ namespace Gambit
 
         }
 
-        else logger() << "SLHA for setting up skeleton spectrum is SLHA2.  *living in the future*" << EOM;       
+        else logger() << "SLHA for setting up simple spectrum is SLHA2.  *living in the future*" << EOM;       
 
       }
 
@@ -248,27 +248,26 @@ namespace Gambit
       /// @}
 
 
-      /// @{ Member functions for MSSMskeleton class
+      /// @{ Member functions for MSSMSimpleSpec class
 
       /// @{ Constructors 
  
       /// Default Constructor
-      MSSMskeleton::MSSMskeleton(double uncert) 
-        : SLHAskeleton<MSSMskeleton>()
+      MSSMSimpleSpec::MSSMSimpleSpec(double uncert) 
       {
         set_pole_mass_uncertainties(uncert);
       }
 
       /// Constructor via SLHAea object
-      MSSMskeleton::MSSMskeleton(const SLHAea::Coll& input, double uncert)
-        : SLHAskeleton<MSSMskeleton>(input)
+      MSSMSimpleSpec::MSSMSimpleSpec(const SLHAea::Coll& input, double uncert)
+        : SLHASimpleSpec(input)
       {
         set_pole_mass_uncertainties(uncert);
       }
 
       /// Copy constructor: needed by clone function.
-      MSSMskeleton::MSSMskeleton(const MSSMskeleton& other, double uncert)
-        : SLHAskeleton<MSSMskeleton>(other)
+      MSSMSimpleSpec::MSSMSimpleSpec(const MSSMSimpleSpec& other, double uncert)
+        : SLHASimpleSpec(other)
       {
         set_pole_mass_uncertainties(uncert);
       }
@@ -276,19 +275,19 @@ namespace Gambit
       /// @}  
 
       /// Ofset from user-input indices (user assumes 1,2,3 indexed, e.g. use offset=-1 for zero-indexing)
-      int MSSMskeleton::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions.
+      int MSSMSimpleSpec::get_index_offset() const {return 0.;} // we use indices starting from 1 in this file, matching user assumptions.
 
       /// Retrieve SLHAea object
-      SLHAea::Coll MSSMskeleton::getSLHAea() const { return slhawrap.getSLHAea(); } 
+      SLHAea::Coll MSSMSimpleSpec::getSLHAea() const { return slhawrap.getSLHAea(); } 
 
       /// Add SLHAea object to another
-      void MSSMskeleton::add_to_SLHAea(SLHAea::Coll& slha) const { return slhawrap.add_to_SLHAea(slha); } 
+      void MSSMSimpleSpec::add_to_SLHAea(SLHAea::Coll& slha) const { return slhawrap.add_to_SLHAea(slha); } 
 
       /// Retrieve the PDG translation map
-      const std::map<int, int>& MSSMskeleton::PDG_translator() const { return slhawrap.PDG_translator(); }
+      const std::map<int, int>& MSSMSimpleSpec::PDG_translator() const { return slhawrap.PDG_translator(); }
 
       /// Set pole mass uncertainties
-      void MSSMskeleton::set_pole_mass_uncertainties(double uncert)
+      void MSSMSimpleSpec::set_pole_mass_uncertainties(double uncert)
       {
         const std::vector<int> i12        = initVector(1,2);
         const std::vector<int> i123       = initVector(1,2,3);
@@ -312,7 +311,7 @@ namespace Gambit
 
       // Map fillers    
 
-      MSSMskeleton::GetterMaps MSSMskeleton::fill_getter_maps()
+      MSSMSimpleSpec::GetterMaps MSSMSimpleSpec::fill_getter_maps()
       {
          GetterMaps map_collection; 
          
