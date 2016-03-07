@@ -64,7 +64,7 @@ namespace Gambit {
       // Muon smearing and efficiency
       CMS::applyMuonTrackEff(eventOut.muons());
       CMS::smearMuonMomentum(eventOut.muons());
-      ATLAS::applyMuonEff(eventOut.muons());
+      CMS::applyMuonEff(eventOut.muons());
 
       // Apply hadronic tau BR * reco efficiency
       //MJW remove for now
