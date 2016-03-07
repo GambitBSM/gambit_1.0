@@ -467,7 +467,9 @@ namespace Gambit
         {
 // FIXME: Make optional
 // #ifdef DARBIT_DEBUG
-            auto error = Funk::throwError("Energy out of range");
+            auto error = Funk::throwError(
+                "SimYieldChannel for "+p1+" "+p2+" final state(s): Requested center-of-mass energy out of range."
+                );
             auto Ecm = Funk::var("Ecm");
             this->dNdE = Funk::ifelse(Ecm - Ecm_min, Funk::ifelse(Ecm_max - Ecm, dNdE, error), error);
 // #endif

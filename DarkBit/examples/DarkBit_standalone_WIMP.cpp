@@ -29,6 +29,8 @@ using namespace DarkBit::Functown;     // Functors wrapping the module's actual 
 using namespace DarkBit::Accessors;    // Helper functions that provide some info about the module
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
+// FIXME: Make sure to have meaningful error messages when backends are not correctly loaded 
+
 QUICK_FUNCTION(DarkBit, TH_ProcessCatalog, OLD_CAPABILITY, TH_ProcessCatalog_WIMP, DarkBit::TH_ProcessCatalog, ())
 QUICK_FUNCTION(DarkBit, DarkMatter_ID, OLD_CAPABILITY, DarkMatter_ID_WIMP, std::string, ())
 QUICK_FUNCTION(DarkBit, DD_couplings, OLD_CAPABILITY, DD_couplings_WIMP, DarkBit::DD_couplings, ())
@@ -96,9 +98,9 @@ namespace Gambit
       // Import particle masses and couplings
       ///////////////////////////////////////
       
-      #define addParticle(Name, Mass, spinX2)                                   \
-       catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-       (Name , TH_ParticleProperty(Mass, spinX2)));    
+#define addParticle(Name, Mass, spinX2)                                        \
+      catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
+      (Name , TH_ParticleProperty(Mass, spinX2)));    
 
       double mWIMP = runOptions->getValue<double>("mWIMP");
       double sv = runOptions->getValue<double>("sv");
@@ -113,13 +115,14 @@ namespace Gambit
       addParticle("Z0", 91.2,  2)
       addParticle("tau+", 1.8,  1)
       addParticle("tau-", 1.8,  1)
+      addParticle("b", 4.9,  1)
+      addParticle("bbar", 4.9,  1)
 
       addParticle("WIMP", mWIMP,  0)
-      addParticle("phi", 50.0,  0)
-      addParticle("phi1", 99.9,  0)
-      addParticle("phi2", 49.9,  0)
-
-      #undef addParticle
+      addParticle("phi",  59.0,  0)
+      addParticle("phi1", 99.99,  0)
+      addParticle("phi2", 49.99,  0)
+#undef addParticle
 
       TH_Channel dec_channel(Funk::vec<string>("gamma", "gamma"), Funk::cnst(1.));
       process_dec.channelList.push_back(dec_channel);
@@ -131,8 +134,8 @@ namespace Gambit
       process_dec2.channelList.push_back(dec_channel2);
 
       process_ann.thresholdResonances.threshold_energy.push_back(2*mWIMP); 
-      auto p1 = Funk::vec<string>("gamma", "gamma", "phi", "phi1");
-      auto p2 = Funk::vec<string>("Z0", "gamma", "phi", "phi1");
+      auto p1 = Funk::vec<string>("b", "gamma", "gamma", "phi", "phi1");
+      auto p2 = Funk::vec<string>("bbar", "Z0", "gamma", "phi", "phi1");
       {
         for ( unsigned int i = 0; i < brList.size()-1; i++ )
         {
@@ -155,10 +158,14 @@ namespace Gambit
         }
       }
 
-      auto E = Funk::var("E");
-      Funk::Funk kinematicFunction = Funk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[4];
-      TH_Channel new_channel(Funk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
-      process_ann.channelList.push_back(new_channel);
+      if ( brList[5] > 0. )
+      {
+        auto E = Funk::var("E");
+        Funk::Funk kinematicFunction = Funk::one("v", "E1")/(pow(E-50, 2)+1)*sv*brList[5];
+        // FIXME: Include second gamma in AnnYield (currently ignored)
+        TH_Channel new_channel(Funk::vec<string>("gamma", "gamma", "Z0"), kinematicFunction);
+        process_ann.channelList.push_back(new_channel);
+      }
 
       catalog.processList.push_back(process_ann);
       catalog.processList.push_back(process_dec);
@@ -177,10 +184,13 @@ namespace Gambit
 
     void DD_couplings_WIMP(DarkBit::DD_couplings& result)
     {
-      result.gps = 1.;
-      result.gns = 1.;
-      result.gpa = 0.;  // Only SI cross-section
-      result.gna = 0.;
+      using namespace Pipes::DD_couplings_WIMP;
+      result.gps = runOptions->getValueOrDef<double>(0., "gps");
+      result.gns = runOptions->getValueOrDef<double>(0., "gns");
+      result.gpa = runOptions->getValueOrDef<double>(0., "gpa");
+      result.gna = runOptions->getValueOrDef<double>(0., "gna");
+      std::cout << "DD_coupling says" << std::endl;
+      std::cout << result.gps << std::endl;
     }
   }
 }
@@ -268,7 +278,7 @@ int main()
   // Set up MC loop manager for cascade MC
   // FIXME: Systematically test accuracy and dependence on setup parameters
   // FIXME: Add maximum width for energy bins
-  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10000);
+  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 10);
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
   cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
@@ -361,7 +371,8 @@ int main()
 
   // Push WIMP paramters to DDCalc0 backend
   SetWIMP_DDCalc0.resolveDependency(&DD_couplings_WIMP);  // Use DarkSUSY parameters
-  SetWIMP_DDCalc0.resolveDependency(&TH_ProcessCatalog_WIMP);  // FIXME: Why this dependency?
+  // FIXME: Remove TH_ProcessCatalog_WIMP dependence - This should be really not necessary
+  SetWIMP_DDCalc0.resolveDependency(&TH_ProcessCatalog_WIMP);  
   SetWIMP_DDCalc0.resolveDependency(&DarkMatter_ID_WIMP);
   SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_SetWIMP_mG);
   SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_GetWIMP_msigma);
@@ -374,28 +385,41 @@ int main()
   LUX_2013_LogLikelihood_DDCalc0.resolveDependency(&CalcRates_LUX_2013_DDCalc0);
   LUX_2013_LogLikelihood_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_LogLikelihood);
 
-  int mBins = 10;
+  // Set generic WIMP mass object
+  mwimp_generic.resolveDependency(&TH_ProcessCatalog_WIMP);
+  mwimp_generic.resolveDependency(&DarkMatter_ID_WIMP);
+  sigma_SI_p_simple.resolveDependency(&DD_couplings_WIMP);
+  sigma_SI_p_simple.resolveDependency(&mwimp_generic);
+
+/*
+  // Spectral tests
+  std::cout << "Producing test spectra." << std::endl;
+  double mass = 100.;
+  double sv = 3e-26;
+  dumpSpectrum("dNdE1.dat", mass, sv, Funk::vec<double>(0., 1., 0., 0., 0., 0.));
+  dumpSpectrum("dNdE2.dat", mass, sv, Funk::vec<double>(0., 0., 1., 0., 0., 0.));
+  dumpSpectrum("dNdE3.dat", mass, sv, Funk::vec<double>(0., 0., 0., 1., 0., 0.));
+  dumpSpectrum("dNdE4.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 1., 0.));
+  dumpSpectrum("dNdE5.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 0., 1.));
+*/
+
+/*
+  // Systematic parameter maps annihilation
+  std::cout << "Producing test maps." << std::endl;
+  int mBins = 40;
   int svBins = 20;
-  std::vector<double> m_list = Funk::logspace(0.5, 3.0, mBins);
-  std::vector<double> sv_list = Funk::logspace(-27.0, -24.0, svBins);
+  std::vector<double> m_list = Funk::logspace(1.0, 3.0, mBins);
+  std::vector<double> sv_list = Funk::logspace(-28.0, -24.0, svBins);
   boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
   boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
-
-  // Spectral tests
-  dumpSpectrum("dNdE1.dat", 100., 3e-26, Funk::vec<double>(0., 0., 0., 1., 0.));
-  dumpSpectrum("dNdE2.dat", 100., 3e-26, Funk::vec<double>(0., 0., 1., 0., 0.));
-  dumpSpectrum("dNdE3.dat", 100., 3e-26, Funk::vec<double>(0., 1., 0., 0., 0.));
-  dumpSpectrum("dNdE4.dat", 100., 3e-26, Funk::vec<double>(1., 0., 0., 0., 0.));
-  dumpSpectrum("dNdE5.dat", 100., 3e-26, Funk::vec<double>(0., 0., 0., 0., 1.));
-  exit(1);
-
-  // Systematic parameter maps
   for (size_t i = 0; i < m_list.size(); i++)
   {
     for (size_t j = 0; j < sv_list.size(); j++)
     {
       TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
       TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
+      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
+      //TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(0., 0., 1., 0., 0., 0.));
       std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
       DarkMatter_ID_WIMP.reset_and_calculate();
       TH_ProcessCatalog_WIMP.reset_and_calculate();
@@ -412,20 +436,59 @@ int main()
       double lnL = lnL_FermiLATdwarfs_gamLike(0);
       std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
       lnL_array[i][j] = lnL;
-      //RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
-      //RD_spectrum_from_ProcessCatalog.reset_and_calculate();
-      //RD_spectrum_ordered_func.reset_and_calculate();
-      //RD_oh2_general.reset_and_calculate();
-      //double oh2 = RD_oh2_general(0);
-      //oh2_array[i][j] = oh2;
+      RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
+      RD_spectrum_from_ProcessCatalog.reset_and_calculate();
+      RD_spectrum_ordered_func.reset_and_calculate();
+      RD_oh2_general.reset_and_calculate();
+      double oh2 = RD_oh2_general(0);
+      oh2_array[i][j] = oh2;
 //    SetWIMP_DDCalc0.reset_and_calculate();
 //    CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
 //    LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
     }
   }
-
   dump_array_to_file("Fermi_table.dat", lnL_array, m_list, sv_list);
   dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
+*/
+
+  // Systematic parameter maps scattering
+  std::cout << "Producing test maps." << std::endl;
+  int mBins = 40;
+  int sBins = 40;
+  std::vector<double> m_list = Funk::logspace(0.0, 4.0, mBins);
+  std::vector<double> s_list = Funk::logspace(-10, -6, sBins);
+  boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
+  boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
+  TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
+  TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
+  for (size_t i = 0; i < m_list.size(); i++)
+  {
+    for (size_t j = 0; j < s_list.size(); j++)
+    {
+      TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+      std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+      DarkMatter_ID_WIMP.reset_and_calculate();
+      TH_ProcessCatalog_WIMP.reset_and_calculate();
+      RD_fraction_fixed.reset_and_calculate();
+      DDCalc0_0_0_init.reset_and_calculate();
+      DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
+      DD_couplings_WIMP.setOption<double>("gns", 0.);
+      DD_couplings_WIMP.setOption<double>("gpa", 0.);
+      DD_couplings_WIMP.setOption<double>("gna", 0.);
+      DD_couplings_WIMP.reset_and_calculate();
+      mwimp_generic.reset_and_calculate();
+      sigma_SI_p_simple.reset_and_calculate();
+      double sigma_SI_p = sigma_SI_p_simple(0);
+      std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
+      SetWIMP_DDCalc0.reset_and_calculate();
+      CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
+      LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
+      double lnL = LUX_2013_LogLikelihood_DDCalc0(0);
+      std::cout << "LUX2013 lnL = " << lnL << std::endl;
+      lnL_array[i][j] = lnL;
+    }
+  }
+  dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
 
   return 0;
 }

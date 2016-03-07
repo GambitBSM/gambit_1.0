@@ -181,7 +181,7 @@ namespace Gambit {
         ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", Funk::var("E"));
     }
 
-    // FIXME: Update description
+    // FIXME: Update description and v=0 properties
     /*! \brief General routine to derive annihilation yield.
      *
      * Depends on:
@@ -228,16 +228,34 @@ namespace Gambit {
       const double Ecm = 2*mass;
 
       // Loop over all channels for that process
-      Funk::Funk Yield = Funk::zero("v", "E");
+      Funk::Funk Yield = Funk::zero("E", "v");
 
-      
-      // Adding known two-body channels
+      // Adding two-body channels
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
+        // Here only take care of two-body final states
+        if (it->nFinalStates != 2) continue;
+        
+        // Get final state masses
+        double m0 = (*Dep::TH_ProcessCatalog).getParticleProperty(
+            it->finalStateIDs[0]).mass;
+        double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(
+            it->finalStateIDs[1]).mass;
+
+        // Ignore channels that are kinematically closed for v=0
+        if ( m0 + m1 > Ecm ) continue;
+
+        // Ignore channels with 0 BR in v=0 limit
+        // FIXME: Improve Funktions error message when wrong number of
+        // arguments is bound
+        if (it->genRate->bind("v")->eval(0.) <= 0.) continue;
+
+        double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
+        double E1 = Ecm-E0;
+
         // Check whether two-body final state is in SimYield table
-        if ( it->nFinalStates == 2 and 
-            Dep::SimYieldTable->hasChannel(
+        if ( Dep::SimYieldTable->hasChannel(
               it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
         {
           Yield = Yield +
@@ -245,18 +263,10 @@ namespace Gambit {
                 it->finalStateIDs[0], it->finalStateIDs[1], "gamma", Ecm);
         }
         // Deal with composite final states
-        else if ( it->nFinalStates == 2 )
+        else
         {
           Funk::Funk spec0 = Funk::zero("E");
           Funk::Funk spec1 = Funk::zero("E");        
-
-          double m0 = (*Dep::TH_ProcessCatalog).getParticleProperty(
-              it->finalStateIDs[0]).mass;
-          double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(
-              it->finalStateIDs[1]).mass;
-              
-          double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
-          double E1 = Ecm-E0; 
 
           // Final state particle one
           // Tabulated spectrum available?
@@ -280,7 +290,7 @@ namespace Gambit {
           // Final state particle two
           if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
           {
-            spec1 = (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma")->set("Ecm",E1);
+            spec1 = (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma")->set("Ecm", E1);
           }
           else if ( it->finalStateIDs[1] == "gamma" )
           {
@@ -336,10 +346,14 @@ namespace Gambit {
 #endif
       
       // Adding three-body final states
+      // FIXME: Check whether three-body processes are actually open at v=0
       // FIXME: For now only primary gamma-ray lines are supported
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
+        // Here only take care of three-body final states
+        if (it->nFinalStates != 3) continue;
+
         // Implement tabulated three-body final states
         /*
            if ( it->nFinalStates == 3
@@ -359,7 +373,7 @@ namespace Gambit {
            }
         */
 
-        if ( it->nFinalStates == 3 and it->finalStateIDs[0] == "gamma" )
+        if ( it->finalStateIDs[0] == "gamma" )
         {
           if ( it->finalStateIDs[1] == "gamma" or it->finalStateIDs[2] == "gamma")
           {
@@ -453,6 +467,7 @@ namespace Gambit {
 
         // Add approximations for single-particle cases.
         // FIXME: Update energy validty ranges
+        // FIXME: We could actually use boosted rest-frame spectra instead -- discuss
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 12, yieldk, flag);
         result.addChannel(dNdE/2, "Z0", "gamma", 91.2, 10000.);
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 13, yieldk, flag);
