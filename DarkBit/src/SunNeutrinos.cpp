@@ -540,7 +540,7 @@ namespace Gambit
     }
 
     /// Function to set Local Halo Parameters in DarkSUSY
-    void DarkSUSY_PointInit_LocaHalo_func(bool &result)
+    void DarkSUSY_PointInit_LocalHalo_func(bool &result)
     {
         using namespace Pipes::DarkSUSY_PointInit_LocalHalo_func;
 
