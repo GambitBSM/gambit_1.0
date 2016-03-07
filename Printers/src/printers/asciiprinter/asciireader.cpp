@@ -57,12 +57,19 @@ namespace Gambit {
       dataFile.open(dataFile_name);
     }
 
+    // Get current rank/ptID pair in data file
+    // Make sure get_next_point has been called first! Otherwise we may not have a current point to get
+    std::pair<uint, ulong> asciiReader::get_current_point()
+    {
+      return current_point;
+    }
+
     /// Get next rank/ptID pair
     std::pair<uint, ulong> asciiReader::get_next_point()
     {
       next_row();
       // Point will get returned, but check eoi() before using it! If eoi() then we didn't actually get a new point, this should still just be the previous point.
-      return current_point;
+      return get_current_point();
     }
  
     /// Check for end of input (or otherwise unreadable state)

@@ -42,6 +42,7 @@ namespace Gambit {
    
          /// @{ Base class virtual interface functions
          virtual std::pair<uint, ulong> get_next_point(); // Get next rank/ptID pair in data file
+         virtual std::pair<uint, ulong> get_current_point(); // Get current rank/ptID pair in data file
          virtual bool eoi(); // Check if 'current point' is past the end of the data file (and thus invalid!)
          void _retrieve(std::string& out,        const std::string& label, const uint rank, const ulong pointID);
          void _retrieve(double& out,             const std::string& label, const uint rank, const ulong pointID);

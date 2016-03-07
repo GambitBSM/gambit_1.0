@@ -193,6 +193,7 @@ namespace Gambit
       public:
         virtual ~BaseBaseReader() {};
 
+        virtual std::pair<uint, ulong> get_current_point() = 0; // Get current rank/ptID pair (i.e. whatever get_next_point() last output)
         virtual std::pair<uint, ulong> get_next_point() = 0; // Get next rank/ptID pair in data file
         virtual bool eoi() = 0; // Check if 'current point' is past the end of the data file (and thus invalid!)
 
@@ -214,6 +215,14 @@ namespace Gambit
         void retrieve(T& out, const std::string& label, const uint rank, const ulong pointID)
         {
           _retrieve(out, label, rank, pointID);
+        }
+
+        /// Overload for 'retrieve' that uses the current point as the input for rank/pointID
+        template<typename T>
+        void retrieve(T& out, const std::string& label)
+        {
+          std::pair<uint, ulong> pt = get_current_point();
+          retrieve(out, label, pt.first, pt.second);
         }
 
       protected:

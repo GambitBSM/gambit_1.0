@@ -35,6 +35,43 @@ struct reweightScanData
   Printers::BaseBaseReader* reader;
 };
 
+// The prior transformation used by the 'reweight' scanner plugin
+// This is used instead of a normal prior, to transfer parameter
+// values out of the old output into the ModelParameters
+scanner_plugin(reweight_prior, version(1, 0, 0))
+{
+  //int plugin_main
+
+  void transform(const std::vector<double> &unitPars, std::unordered_map<std::string,double> &outputMap)
+  {
+    std::cout << "Running prior plugin for 'reweight' scanner" << std::endl;
+
+    // Inspect what we actually get from the outputMap
+    for(auto it=outputMap.begin(); it!=outputMap.end(); ++it)
+    {
+       std::cout << it->first << ": " << it->second << std::endl;
+    } 
+
+    // // Get pont reader (which should be created by the 'reweight' scanner plugin
+    // Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
+
+    // // Extract the model parameters
+    // ModelParameters params;
+    // std::string modelname = "NormalDist"; // Get this somehow...
+    // reader->retrieve(params, modelname);
+
+  }
+
+  // Seems to be possible to have other functions?
+  // Like for priors, can have the 'transform' function, and also the 'operator()' function which returns the tranformed parameters?
+  // Need both of those for doing the transform.
+  // Transformation from unit hypercube to my_ranges:
+  //void transform(const std::vector<double> &unitPars, std::unordered_map<std::string,double> &outputMap) const
+
+  // actually I don't remember what the 'operator()' function is for, the tranform function already does everything?
+}
+
+// The reweigher Scanner plugin
 scanner_plugin(reweight, version(1, 0, 0))
 {
   reqd_inifile_entries("old_LogLike"); // label for loglike entry in info file
@@ -71,18 +108,19 @@ scanner_plugin(reweight, version(1, 0, 0))
       std::cout << "loop "<<loopi<<std::endl;
       loopi++;
 
+      // NOTE: don't need this anymore, reader can figure it out automatically
       // Get the ID information for the current point
-      uint  MPIrank = current_point.first;
-      ulong pointID = current_point.second;
+      //uint  MPIrank = current_point.first;
+      //ulong pointID = current_point.second;
  
       // Get the previously computed likelihood value for this point
       double old_LogL;
-      reader->retrieve(old_LogL, old_loglike_label, MPIrank, pointID) ;
+      reader->retrieve(old_LogL, old_loglike_label);
 
       // Extract the model parameters
       ModelParameters params;
       std::string modelname = "NormalDist"; // Get this somehow...
-      reader->retrieve(params, modelname, MPIrank, pointID);
+      reader->retrieve(params, modelname);
 
       /// TODO: somehow need to feed these parameters back into Gambit.
       /// This is currently pretty tricky, because:
@@ -107,6 +145,9 @@ scanner_plugin(reweight, version(1, 0, 0))
        
       /// For now just output to screen so we can see if the extraction
       /// is working:
+      std::pair<uint,ulong> current_point = reader->get_current_point();
+      uint  MPIrank = current_point.first;
+      ulong pointID = current_point.second;
       std::cout << "Retrieved parameters for model '"<<modelname<<"' at point:" << std::endl;
       std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
       const std::vector<std::string> names = params.getKeys();
