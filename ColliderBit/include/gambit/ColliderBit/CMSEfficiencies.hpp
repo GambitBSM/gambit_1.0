@@ -61,31 +61,14 @@ namespace Gambit {
       inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
         if (muons.empty()) return;
 
-        /// @todo Criminally inefficient -- use remove_if!
-        std::vector<HEPUtils::Particle*> todel;
-        for (HEPUtils::Particle* p : muons) {
-          if (p->abseta() > 2.4 || p->pT() < 10) { todel.push_back(p); continue; }
-          const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
-          if (HEPUtils::rand01() > eff) todel.push_back(p);
-        }
-        for (HEPUtils::Particle* p : todel) {
-          delete p;
-          muons.erase(std::find(muons.begin(), muons.end(), p));
-        }
-
-        /// @todo Segfaults on some systems? Works for AB with GCC 5.2.1. Reinstate
-        // //std::cerr << "BEFORE: #mu = " << muons.size() << std::endl;
-        // muons.erase(std::remove_if(muons.begin(), muons.end(),
-        //                            [](const HEPUtils::Particle* p) {
-        //                              std::cerr << "Testing muon " << p << std::endl;
-        //                              if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
-        //                              const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
-        //                              if (HEPUtils::rand01() > eff) { delete p; return true; }
-        //                              std::cerr << "Keeping muon " << p << std::endl;
-        //                              return false;
-        //                            } ),
-        //             muons.end());
-        // //std::cerr << "AFTER: #mu = " << muons.size() << std::endl << std::endl;
+        muons.erase(std::remove_if(muons.begin(), muons.end(),
+                                   [](const HEPUtils::Particle* p) {
+                                     if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
+                                     const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
+                                     if (HEPUtils::rand01() > eff) { delete p; return true; }
+                                     return false;
+                                   } ),
+                    muons.end());
       }
 
 
