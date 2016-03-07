@@ -1,8 +1,6 @@
-Binary files SUSY-HIT_1_5_pristine/._bsg.f and installed/SUSY-HIT/1.5/._bsg.f differ
-Binary files SUSY-HIT_1_5_pristine/._hdecay.f and installed/SUSY-HIT/1.5/._hdecay.f differ
-diff -rupN SUSY-HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
---- SUSY-HIT_1_5_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-06 18:56:05.858991658 +0000
+diff -rupN SUSY-HIT_1_5_unpatched/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
+--- SUSY-HIT_1_5_unpatched/hdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-06 22:36:59.479975311 +0000
 @@ -164,7 +164,7 @@ c end change susyhit
        COMMON/SLHA_vals_HDEC/islhai,islhao
  
@@ -78,11 +76,9 @@ diff -rupN SUSY-HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
  c      write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1
        ELSE
        WHHSB(I,J)=0.D0
-Binary files SUSY-HIT_1_5_pristine/._hgaga.f and installed/SUSY-HIT/1.5/._hgaga.f differ
-Binary files SUSY-HIT_1_5_pristine/._lightst3bod.f and installed/SUSY-HIT/1.5/._lightst3bod.f differ
-diff -rupN SUSY-HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bod.f
---- SUSY-HIT_1_5_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-06 18:56:05.858991658 +0000
+diff -rupN SUSY-HIT_1_5_unpatched/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bod.f
+--- SUSY-HIT_1_5_unpatched/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-06 22:36:59.479975311 +0000
 @@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
        double precision sdgf,amz,amw,pi,g2
        double precision width_bchiW, width_jchiw, width_tot3bod
@@ -110,10 +106,9 @@ diff -rupN SUSY-HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bo
       . cchaneutL(4,2), cchaneutR(4,2), ccharl(3,6,2), fcharr(3,6,2)
        double precision gneutul(3,4,6), 
       . gneutur(3,4,6), gneutdl(3,4,6), gneutdr(3,4,6)
-Binary files SUSY-HIT_1_5_pristine/._lightst4bod.f and installed/SUSY-HIT/1.5/._lightst4bod.f differ
-diff -rupN SUSY-HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bod.f
---- SUSY-HIT_1_5_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-06 18:56:05.866995658 +0000
+diff -rupN SUSY-HIT_1_5_unpatched/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bod.f
+--- SUSY-HIT_1_5_unpatched/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-06 22:36:59.479975311 +0000
 @@ -34,7 +34,7 @@ c----- end ramona added
       .msd2(3,3), td(3,3), tu(3,3),
       . usqmix(6,6), dsqmix(6,6)
@@ -231,9 +226,9 @@ diff -rupN SUSY-HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bo
       . cchaneutL(4,2), cchaneutR(4,2) 
        double precision ampcharslepton, ampintslepsneut, ampintwslep
         double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
-diff -rupN SUSY-HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
---- SUSY-HIT_1_5_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/makefile	2016-03-06 18:56:05.826975659 +0000
+diff -rupN SUSY-HIT_1_5_unpatched/makefile installed/SUSY-HIT/1.5/makefile
+--- SUSY-HIT_1_5_unpatched/makefile	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/makefile	2016-03-06 22:36:59.479975311 +0000
 @@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
  OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
  OBJS3 = susylha.o hgaga.o hdecay.o
@@ -258,11 +253,9 @@ diff -rupN SUSY-HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
 -	rm -f *.o
 \ No newline at end of file
 +	rm -f *.o
-Binary files SUSY-HIT_1_5_pristine/._makefile and installed/SUSY-HIT/1.5/._makefile differ
-Binary files SUSY-HIT_1_5_pristine/._sdecay.f and installed/SUSY-HIT/1.5/._sdecay.f differ
-diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
---- SUSY-HIT_1_5_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-06 19:18:36.016188480 +0000
+diff -rupN SUSY-HIT_1_5_unpatched/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
+--- SUSY-HIT_1_5_unpatched/sdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-07 09:27:15.107709336 +0000
 @@ -98,7 +98,12 @@ c  file.]
  c                                                                      c
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
@@ -303,22 +296,392 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        open(ninshs,file='susyhit.in',status='unknown')
  
  c -- read in susyhit.in --
-@@ -553,6 +561,14 @@ c-----ramona chnaged 7/6/13
+@@ -553,6 +561,384 @@ c-----ramona chnaged 7/6/13
        print*, "output only in SLHA2 format"
        flagoutput=1d0
        flagshsin=2d0
 +      endif                                      !Added by GAMBIT.
 +
-+      else                                       !Added by GAMBIT.
++      else                                       !This whole clause added by GAMBIT.
 +
-+        flagshsin=0d0                            !Added by GAMBIT.
-+        flagoutput=2d0                           !Added by GAMBIT.
-+        i4bod=1                                  !Added by GAMBIT.
++        !Internal SUSY-HIT operational flags
++        flagshsin=0d0
++        flagoutput=2d0
++        i4bod=1
++
++        !SUSY-HIT common blocks already initialised by GAMBIT:
++        !checkfavvio
++        !flavviolation
++        !susyhitin
++        !sd_leshouches1
++        !sd_leshouches2
++        !slha_leshouches1_hdec
++        !slha_leshouches2_hdec
++        !sd_mbmb
++        !sd_selectron
++
++        !HDECAY widths and branching fractions needing initialisation to zero.
++        abrb = 0.d0
++        abrl = 0.d0
++        abrm = 0.d0
++        abrs = 0.d0
++        abrc = 0.d0
++        abrt = 0.d0
++        abrg = 0.d0
++        abrga = 0.d0
++        abrzga = 0.d0
++        abrz = 0.d0
++        awdth = 0.d0
++        hlbrb = 0.d0
++        hlbrl = 0.d0
++        hlbrm = 0.d0
++        hlbrs = 0.d0
++        hlbrc = 0.d0
++        hlbrt = 0.d0
++        hlbrg = 0.d0
++        hlbrga = 0.d0
++        hlbrzga = 0.d0
++        hlbrw = 0.d0
++        hlbrz = 0.d0
++        hlbra = 0.d0
++        hlbraz = 0.d0
++        hlbrhw = 0.d0
++        hlwdth = 0.d0
++        hhbrb = 0.d0
++        hhbrl = 0.d0
++        hhbrm = 0.d0
++        hhbrs = 0.d0
++        hhbrc = 0.d0
++        hhbrt = 0.d0
++        hhbrg = 0.d0
++        hhbrga = 0.d0
++        hhbrzga = 0.d0
++        hhbrw = 0.d0
++        hhbrz = 0.d0
++        hhbrh = 0.d0
++        hhbra = 0.d0
++        hhbraz = 0.d0
++        hhbrhw = 0.d0
++        hhwdth = 0.d0
++        hcbrb = 0.d0
++        hcbrl = 0.d0
++        hcbrm = 0.d0
++        hcbrbu = 0.d0
++        hcbrs = 0.d0
++        hcbrc = 0.d0
++        hcbrt = 0.d0
++        hcbrw = 0.d0
++        hcbra = 0.d0
++        hcwdth = 0.d0
++        hlbrsc = 0.d0
++        hlbrsn = 0.d0
++        hhbrsc = 0.d0
++        hhbrsn = 0.d0
++        habrsc = 0.d0
++        habrsn = 0.d0
++        hcbrsu = 0.d0
++        hlbrcht = 0.d0
++        hhbrcht = 0.d0
++        habrcht = 0.d0
++        hlbrnet = 0.d0
++        hhbrnet = 0.d0
++        habrnet = 0.d0
++        hcbrcnt = 0.d0
++        hlbrsl = 0.d0
++        hhbrsl = 0.d0
++        hcbrsl = 0.d0
++        habrsl = 0.d0
++        habrst = 0.d0
++        habrsb = 0.d0
++        hhbrsq = 0.d0
++        hhbrst = 0.d0
++        hhbrsb = 0.d0
++        hhbrsqt = 0.d0
++        hcbrsq = 0.d0
++        hcbrstb = 0.d0
++        hcbrsqt = 0.d0
++        hlbrsq = 0.d0
++        hlbrsqt = 0.d0
++        bhlslnl = 0.d0
++        bhlslel = 0.d0
++        bhlsler = 0.d0
++        bhlsqul = 0.d0
++        bhlsqur = 0.d0
++        bhlsqdl = 0.d0
++        bhlsqdr = 0.d0
++        bhlst = 0.d0
++        bhlsb = 0.d0
++        bhlstau = 0.d0
++        bhhslnl = 0.d0
++        bhhslel = 0.d0
++        bhhsler = 0.d0
++        bhhsqul = 0.d0
++        bhhsqur = 0.d0
++        bhhsqdl = 0.d0
++        bhhsqdr = 0.d0
++        bhhst = 0.d0
++        bhhsb = 0.d0
++        bhhstau = 0.d0
++        bhastau = 0.d0
++        bhasb = 0.d0
++        bhast = 0.d0
++        bhcsl00 = 0.d0
++        bhcsl11 = 0.d0
++        bhcsl21 = 0.d0
++        bhcsq = 0.d0
++        bhcstb = 0.d0
++        whlgd = 0.d0
++        whhgd = 0.d0
++        whagd = 0.d0
++        whcgd = 0.d0
++      
++        !SDECAY widths and branching fractions needing initialisation to zero.
++        brcharst1 = 0.d0
++        brcharst2 = 0.d0
++        brcharsb1 = 0.d0
++        brcharsb2 = 0.d0
++        brcharsupl = 0.d0
++        brcharsupr = 0.d0
++        brcharsdownl = 0.d0
++        brcharsdownr = 0.d0
++        brcharsnel = 0.d0
++        brcharsn1 = 0.d0
++        brcharsn2 = 0.d0
++        brcharsell = 0.d0
++        brcharselr = 0.d0
++        brcharstau1 = 0.d0
++        brcharstau2 = 0.d0
++        brcharhcneut = 0.d0
++        brcharwneut = 0.d0
++        brcharzchic = 0.d0
++        brcharhlchic = 0.d0
++        brcharhhchic = 0.d0
++        brcharhachic = 0.d0
++        brcharwgravitino = 0.d0
++        brcharhcgravitino = 0.d0
++        brntaunut = 0.d0
++        brnelnue = 0.d0
++        brnmunumu = 0.d0
++        brnupdb = 0.d0
++        brnchsb = 0.d0
++        brntopbb = 0.d0
++        brglupdb = 0.d0
++        brglchsb = 0.d0
++        brgltopbb = 0.d0
++        brchee = 0.d0
++        brchmumu = 0.d0
++        brchtautau = 0.d0
++        brchnene = 0.d0
++        brchnmunmu = 0.d0
++        brchntauntau = 0.d0
++        brchupup = 0.d0
++        brchdodo = 0.d0
++        brchchch = 0.d0
++        brchstst = 0.d0
++        brchtoptop = 0.d0
++        brchbotbot = 0.d0
++        chartot = 0.d0
++        brneutst1 = 0.d0
++        brneutst2 = 0.d0
++        brneutsb1 = 0.d0
++        brneutsb2 = 0.d0
++        brneutsupl = 0.d0
++        brneutsupr = 0.d0
++        brneutsdownl = 0.d0
++        brneutsdownr = 0.d0
++        brneutsnel = 0.d0
++        brneutsn1 = 0.d0
++        brneutsn2 = 0.d0
++        brneutsell = 0.d0
++        brneutselr = 0.d0
++        brneutstau1 = 0.d0
++        brneutstau2 = 0.d0
++        brneutwchar = 0.d0
++        brneuthcchar = 0.d0
++        brneutzneut = 0.d0
++        brneuthlneut = 0.d0
++        brneuthhneut = 0.d0
++        brneuthaneut = 0.d0
++        brneutgamgrav = 0.d0
++        brneutzgrav = 0.d0
++        brneuthlgrav = 0.d0
++        brneuthhgrav = 0.d0
++        brneuthagrav = 0.d0
++        brneutup = 0.d0
++        brneutdow = 0.d0
++        brneutch = 0.d0
++        brneutst = 0.d0
++        brneutbot = 0.d0
++        brneuttop = 0.d0
++        brneutel = 0.d0
++        brneutmu = 0.d0
++        brneuttau = 0.d0
++        brneutnue = 0.d0
++        brneutnumu = 0.d0
++        brneutnutau = 0.d0
++        brchubd = 0.d0
++        brchcbs = 0.d0
++        brchtbb = 0.d0
++        brchelne = 0.d0
++        brchmunmu = 0.d0
++        brchtauntau = 0.d0
++        brglup = 0.d0
++        brgldo = 0.d0
++        brglch = 0.d0
++        brglst = 0.d0
++        brgltop = 0.d0
++        brglbot = 0.d0
++        brnraddec = 0.d0
++        neuttot = 0.d0
++        brgst1 = 0.d0
++        brgst2 = 0.d0
++        brgsb1 = 0.d0
++        brgsb2 = 0.d0
++        brgsupl = 0.d0
++        brgsupr = 0.d0
++        brgsdownl = 0.d0
++        brgsdownr = 0.d0
++        brgoup = 0.d0
++        brgoch = 0.d0
++        brgodn = 0.d0
++        brgost = 0.d0
++        brgotp = 0.d0
++        brgobt = 0.d0
++        brgoud = 0.d0
++        brgocs = 0.d0
++        brgotb = 0.d0
++        brhcst1b = 0.d0
++        brwst1b = 0.d0
++        brglnjgluon = 0.d0
++        gluitot = 0.d0
++        brsuplnup = 0.d0
++        brsuplcdow = 0.d0
++        brsuplglui = 0.d0
++        brsuprnup = 0.d0
++        brsuprcdow = 0.d0
++        brsuprglui = 0.d0
++        supltot2 = 0.d0
++        suprtot2 = 0.d0
++        brsdowlndow = 0.d0
++        brsdowlchup = 0.d0
++        brsdowlglui = 0.d0
++        brsdowrndow = 0.d0
++        brsdowrchup = 0.d0
++        brsdowrglui = 0.d0
++        sdowltot2 = 0.d0
++        sdowrtot2 = 0.d0
++        brst1neutt = 0.d0
++        brst2neutt = 0.d0
++        brst1charb = 0.d0
++        brst1hcsb = 0.d0
++        brst1wsb = 0.d0
++        brst2charb = 0.d0
++        brst2hcsb = 0.d0
++        brst2wsb = 0.d0
++        brst1glui = 0.d0
++        brst2glui = 0.d0
++        brst2hl = 0.d0
++        brst2hh = 0.d0
++        brst2ha = 0.d0
++        brst2ztop = 0.d0
++        brstopw = 0.d0
++        brstoph = 0.d0
++        brststau = 0.d0
++        brstsntau = 0.d0
++        brstsel = 0.d0
++        brstbsbst = 0.d0
++        brstbbsbt = 0.d0
++        brsttausbnu = 0.d0
++        brstelsbnu = 0.d0
++        brstupsbdow = 0.d0
++        brstsnel = 0.d0
++        brst2st1tt = 0.d0
++        brst2st1startt = 0.d0
++        brst2st1bb = 0.d0
++        brst2st1uu = 0.d0
++        brst2st1dd = 0.d0
++        brst2st1ee = 0.d0
++        brst2st1nunu = 0.d0
++        brst2st1tautau = 0.d0
++        brgamma = 0.d0
++        brgammaup = 0.d0
++        brgammagluino = 0.d0
++        brgamma4bod = 0.d0
++        brgammaup4bod = 0.d0
++        brgammagluino4bod = 0.d0
++        br4bodoffshelltau = 0.d0
++        stoptot4 = 0.d0
++        stoptot = 0.d0
++        brsb1neutt = 0.d0
++        brsb2neutt = 0.d0
++        brsb1chart = 0.d0
++        brsb2chart = 0.d0
++        brsb1hcst = 0.d0
++        brsb2hcst = 0.d0
++        brsb1wst = 0.d0
++        brsb2wst = 0.d0
++        brsb1glui = 0.d0
++        brsb2glui = 0.d0
++        brsb2hl = 0.d0
++        brsb2hh = 0.d0
++        brsb2ha = 0.d0
++        brsb2zbot = 0.d0
++        brsbstau = 0.d0
++        brsbsntau = 0.d0
++        brsbsel = 0.d0
++        brsbtstsb = 0.d0
++        brsbtbstb = 0.d0
++        brsbtaustnu = 0.d0
++        brsbelstnu = 0.d0
++        brsbupstdow = 0.d0
++        brsbsnel = 0.d0
++        brsb2sb1bb = 0.d0
++        brsb2sb1starbb = 0.d0
++        brsb2sb1tt = 0.d0
++        brsb2sb1uu = 0.d0
++        brsb2sb1dd = 0.d0
++        brsb2sb1ee = 0.d0
++        brsb2sb1nunu = 0.d0
++        brsb2sb1tautau = 0.d0
++        sbottot = 0.d0
++        brsellneute = 0.d0
++        brsellcharnue = 0.d0
++        brselrneute = 0.d0
++        brselrcharnue = 0.d0
++        selltot2 = 0.d0
++        selrtot2 = 0.d0
++        brsnellneut = 0.d0
++        brsnellchar = 0.d0
++        sneltot2 = 0.d0
++        brstau1neut = 0.d0
++        brstau2neut = 0.d0
++        brstau1char = 0.d0
++        brstau1hcsn = 0.d0
++        brstau1wsn = 0.d0
++        brstau2char = 0.d0
++        brstau2hcsn = 0.d0
++        brstau2wsn = 0.d0
++        brstau2hl = 0.d0
++        brstau2hh = 0.d0
++        brstau2ha = 0.d0
++        brstau2ztau = 0.d0
++        brstautaugrav = 0.d0
++        stau1tot2 = 0.d0
++        stau2tot2 = 0.d0
++        brsntauneut = 0.d0
++        brsntauchar = 0.d0
++        brsntau1wstau = 0.d0
++        brsntau1hcstau = 0.d0
++        sntautot2 = 0.d0
++        brtopbw = 0.d0
++        brtopbh = 0.d0
++        brtopneutrstop = 0.d0
++        toptot2 = 0.d0
 +
        endif
  c---- end ramona chnaged
  c -- The following flags are not read in any more but hard-coded for - c
-@@ -747,7 +763,11 @@ c -- the 2-body decays and 2-body total
+@@ -747,7 +1133,11 @@ c -- the 2-body decays and 2-body total
           do i=1,2,1
              chartot2nlo(i) = chartot2lo(i)+qcdcharst1(i)+qcdcharst2(i)+
       .           qcdcharsb1(i)+qcdcharsb2(i)+2.D0*(qcdcharsupl(i)+
@@ -331,7 +694,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           end do
        endif
  
-@@ -821,6 +841,46 @@ c ------------------------ the total wid
+@@ -821,6 +1211,46 @@ c ------------------------ the total wid
  
  c -------------------- the chargino branching ratios ----------------- c
  
@@ -378,7 +741,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0)  then
-@@ -837,6 +897,7 @@ c -- for the 2-body decays --
+@@ -837,6 +1267,7 @@ c -- for the 2-body decays --
        endif
  
        do i=1,2,1
@@ -386,7 +749,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           brcharst1(i)    = charst1(i)/chartot(i)
           brcharst2(i)    = charst2(i)/chartot(i)
           brcharsb1(i)    = charsb1(i)/chartot(i)
-@@ -852,20 +913,27 @@ c -- for the 2-body decays --
+@@ -852,20 +1283,27 @@ c -- for the 2-body decays --
           brcharselr(i)   = charselr(i)/chartot(i)
           brcharstau1(i)  = charstau1(i)/chartot(i)
           brcharstau2(i)  = charstau2(i)/chartot(i)
@@ -414,7 +777,16 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           end do
        endif
  
-@@ -1307,6 +1375,11 @@ c -- the 2-body decays and 2-body total
+@@ -874,6 +1312,8 @@ c -- for the 3-body decays --
+       do i=1,2,1
+          if(chartot2(i).eq.0.D0.and.flagmulti.eq.1.D0) then
+             do j=1,4,1
++               write(*,*) 'Yo I am setting your 3 bodies man...'
++               stop
+                brntaunut(i,j) = xchitau(i,j)/chartot(i)
+                brnelnue(i,j)  = xchiel(i,j)/chartot(i)
+                brnmunumu(i,j) = xchimu(i,j)/chartot(i)
+@@ -1307,6 +1747,11 @@ c -- the 2-body decays and 2-body total
       .                   +2.D0*qcdgsupr+2.D0*qcdgsdownl+2.D0*qcdgsdownr)
       .            + gluitot2lo
  
@@ -426,7 +798,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        if(flagqcd.eq.0.D0) then
           gluitot2 = gluitot2lo
        elseif(flagqcd.eq.1.D0) then
-@@ -1380,6 +1453,18 @@ c ------------------------ the total wid
+@@ -1380,6 +1825,18 @@ c ------------------------ the total wid
  
  c -------------------- the gluino branching ratios ------------------- c
  
@@ -445,7 +817,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0) then
-@@ -1393,14 +1478,14 @@ c -- for the 2-body decays --
+@@ -1393,14 +1850,14 @@ c -- for the 2-body decays --
           gsdownr = gsdownr+qcdgsdownr
        endif
  
@@ -468,7 +840,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
        if(flagnlspgmsb.eq.1.D0) then
           brggravgl = ggravgl/gluitot
-@@ -1714,6 +1799,14 @@ c -- the 2-body decays and 2-body total
+@@ -1714,6 +2171,14 @@ c -- the 2-body decays and 2-body total
       .            qcdst2hl+qcdst2hh+qcdst2ha+qcdst2ztop+qcdst2wsb(1)+
       .            qcdst2wsb(2)
  
@@ -483,7 +855,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        if(flagqcd.eq.0.D0) then
           do i=1,2,1
              stoptot2(i) = stoptot2lo(i)
-@@ -1818,7 +1911,8 @@ c ------------------------ the total wid
+@@ -1818,7 +2283,8 @@ c ------------------------ the total wid
              if(stoptotmulti(1).ne.0.D0) then
                 stoptot(1) = stoptotmulti(1)+stoptotrad(1)
              else
@@ -493,7 +865,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
              endif
           else
              stoptot(1) = stoptot2(1)
-@@ -1837,6 +1931,39 @@ c ------------------------ the total wid
+@@ -1837,6 +2303,39 @@ c ------------------------ the total wid
  
  c ---------------------- the stop branching ratios ------------------- c
  
@@ -533,7 +905,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0) then
-@@ -1861,23 +1988,23 @@ c -- for the 2-body decays --
+@@ -1861,23 +2360,23 @@ c -- for the 2-body decays --
        endif
  
        do i=1,4,1
@@ -572,7 +944,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
  c -- for the 3-body and loop decays --
  
-@@ -2043,6 +2170,14 @@ c -- the 2-body decays and 2-body total
+@@ -2043,6 +2542,14 @@ c -- the 2-body decays and 2-body total
       .               qcdsb2hcst(2)+qcdsb2hl+qcdsb2hh+qcdsb2ha +
       .               qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)
  
@@ -587,7 +959,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        if(flagqcd.eq.0.D0) then
           do i=1,2,1
              sbottot2(i) = sbottot2lo(i)
-@@ -2101,6 +2236,39 @@ c ------------------------ the total wid
+@@ -2101,6 +2608,39 @@ c ------------------------ the total wid
  
  c --------------------- the sbottom branching ratios ----------------- c
  
@@ -627,7 +999,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c -- for the 2-body decays --
  
        if(flagqcd.eq.1.D0) then
-@@ -2125,23 +2293,23 @@ c -- for the 2-body decays --
+@@ -2125,23 +2665,23 @@ c -- for the 2-body decays --
        endif
  
        do i=1,4,1
@@ -666,7 +1038,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
  c -- for the 3-body decays --
  
-@@ -2533,8 +2701,8 @@ c --------------------------------------
+@@ -2533,8 +3073,8 @@ c --------------------------------------
  
  
  c---- ramona chnaged 27/5/13--- flavour violation only with SLHA Output so far
@@ -677,7 +1049,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  c---- end ramona changed
  c ------------------ output a la Les Houches accord ------------------ c
  
-@@ -8392,7 +8560,7 @@ c      write(nout,102) bhcgd(2),2,ic2,ig
+@@ -8392,7 +8932,7 @@ c      write(nout,102) bhcgd(2),2,ic2,ig
  
  c ---------------- output not a la Les Houches accord ---------------- c
  
@@ -686,7 +1058,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  
        write(21,*)
        write(21,*) "                              ======================"
-@@ -12190,7 +12358,7 @@ c -- mb(mb)_MSbar --
+@@ -12190,7 +12730,7 @@ c -- mb(mb)_MSbar --
           call SD_runmbmb(amzp,runmbz)
        endif
  
@@ -695,7 +1067,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           samb = massval(34)
        endif
  
-@@ -37107,14 +37275,14 @@ c --------------------------------------
+@@ -37107,14 +37647,14 @@ c --------------------------------------
        AXX=SD_AX(xmu1,xmu2,xmu3)
        BXX=SD_BX(xmu1,xmu2,xmu3)
  
@@ -712,7 +1084,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
           SY=0.D0
           DO 2 J=1,NY
  
-@@ -37129,7 +37297,7 @@ c --------------------------------------
+@@ -37129,7 +37669,7 @@ c --------------------------------------
  
  c -------------------------------------------------------------------- c
  
@@ -721,7 +1093,7 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
  C     GAUSS-LEGENDRE INTEGRATION FROM A TO B (WEIGHT = 1.)
  C     CALCULATES GAUSSIAN POINTS X AND WEIGHTS W
  C                      FOR N=4,6,8,12,16,24,32 ;
-@@ -37138,7 +37306,7 @@ C     THE INTERVAL [A,B] AND N INTO CORR
+@@ -37138,7 +37678,7 @@ C     THE INTERVAL [A,B] AND N INTO CORR
  C     N MUST BE EVEN AND >= 4,IF IT IS NOT,IT IS CHANGED !
  C
        IMPLICIT REAL*8 (A-H,O-Z)
@@ -730,10 +1102,3 @@ diff -rupN SUSY-HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        DATA NBEG,NA,NI,NG /9*0,4,6,8,12,16,24,32/
        DATA XG/ .43056815579702629D 0, .16999052179242813D 0, 14*0.D0,
       X         .46623475710157601D 0, .33060469323313226D 0,
-Binary files SUSY-HIT_1_5_pristine/._slhaspectrum.in and installed/SUSY-HIT/1.5/._slhaspectrum.in differ
-Binary files SUSY-HIT_1_5_pristine/._suspect2.f and installed/SUSY-HIT/1.5/._suspect2.f differ
-Binary files SUSY-HIT_1_5_pristine/._suspect2_lha.in and installed/SUSY-HIT/1.5/._suspect2_lha.in differ
-Binary files SUSY-HIT_1_5_pristine/._susyhit.in and installed/SUSY-HIT/1.5/._susyhit.in differ
-Binary files SUSY-HIT_1_5_pristine/._susylha.f and installed/SUSY-HIT/1.5/._susylha.f differ
-Binary files SUSY-HIT_1_5_pristine/._twoloophiggs.f and installed/SUSY-HIT/1.5/._twoloophiggs.f differ
-Binary files SUSY-HIT_1_5_pristine/._Xvegas.f and installed/SUSY-HIT/1.5/._Xvegas.f differ
