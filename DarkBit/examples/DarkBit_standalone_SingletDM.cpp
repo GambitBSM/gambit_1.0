@@ -55,7 +55,7 @@ namespace Gambit
       singletmodel.SingletLambda   = 0.05; // *myPipe::Param.at("lambda_hS");
 
       SLHAstruct slhaea = read_SLHA(inputFileName);      
-      mySpec = singlet_spectrum_from_SLHAea(singletmodel, slhaea);
+      mySpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea);
       outSpec = &mySpec;
     }
 
