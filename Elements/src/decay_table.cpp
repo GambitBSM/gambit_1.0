@@ -14,9 +14,12 @@
 ///
 ///  *********************************************
 
+#include <fstream>
+
 #include "gambit/Elements/decay_table.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/version.hpp"
+#include "gambit/Utils/file_lock.hpp"
 
 #include <boost/lexical_cast.hpp>
 
@@ -133,6 +136,17 @@ namespace Gambit
         }
       }
     }
+  }
+
+  /// Output entire decay table as an SLHA file full of DECAY blocks
+  void DecayTable::as_slha(str filename, bool include_zero_bfs) const
+  {
+    Utils::FileLock mylock(filename);
+    mylock.get_lock();
+    std::ofstream ofs(filename);
+    ofs << as_slhaea(include_zero_bfs);
+    ofs.close();
+    mylock.release_lock();
   }
 
   /// Output entire decay table as an SLHAea file full of DECAY blocks

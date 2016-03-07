@@ -55,6 +55,9 @@ namespace Gambit
       /// Output entire decay table as an SLHAea file full of DECAY blocks
       SLHAstruct as_slhaea(bool include_zero_bfs=false) const;
     
+      /// Output entire decay table as an SLHA file full of DECAY blocks
+      void as_slha(str, bool include_zero_bfs=false) const;
+
       /// Output a decay table entry as an SLHAea DECAY block, using input parameter to identify the entry.
       /// @{
       SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
