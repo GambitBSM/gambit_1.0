@@ -166,6 +166,9 @@ namespace Gambit
         /// Retrieve properties of a given particle involved in one or more processes in this catalog
         TH_ParticleProperty getParticleProperty(str) const;
 
+        /// Check whether particle is in particle properties catalog
+        bool hasParticleProperty(str) const;
+
         /// Validate kinematics and entries
         void validate();
 
@@ -177,7 +180,6 @@ namespace Gambit
 
         /// Map from particles involved in the processes of this catalog, to their properties.
         std::map<std::string, TH_ParticleProperty> particleProperties;
-        // FIXME: Implement hasParticleProperty
     };
   }
 }

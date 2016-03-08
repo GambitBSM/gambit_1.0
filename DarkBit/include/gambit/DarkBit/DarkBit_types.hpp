@@ -113,44 +113,6 @@ namespace Gambit
     };
 
 
-    // FIXME: Should this be deleted?
-    /*
-//    struct RD_Boltzmann_type
-//    {
-//      RD_Boltzmann_type() {}
-//      RD_Boltzmann_type(const RD_coannihilating_particle & DMPart, const std::vector<TH_Resonance> & res, const std::vector<double> & thresholds) : DMParticle(DMPart), resonances(res), threshold_energy(thresholds) {}
-
-//      RD_coannihilating_particle DMParticle;
-//      std::vector<TH_Resonance> resonances;
-//      std::vector<double> threshold_energy;
-//    };
-    
-
-
-    //////////////////////////////////////////////
-    // General Dark Matter Halos and Halo Catalog
-    //////////////////////////////////////////////
-
-    struct MWhalo
-    {
-        MWhalo(Funk::Funk rho, Funk::Funk drho2dv) : rho(rho), drho2dv(drho2dv)
-        {
-            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y", "z"));
-            drho2dv->assert_args(Funk::vec<std::string>("r", "v"), Funk::vec<std::string>("x", "y", "z", "v"));
-        };
-        MWhalo(Funk::Funk rho) : rho(rho)
-        {
-            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y", "z"));
-            auto delta_v = Funk::delta("v", 1e-3, 1e-5);  // Add some fake velocity dependence
-            drho2dv = rho*rho * delta_v;
-        };
-        Funk::Funk rho;
-        Funk::Funk drho2dv;
-    };
-    */
-
-    // FIXME: Ensure that this is all needed
-
     //////////////////////////////////////////////
     // Neutrino telescope data structures
     //////////////////////////////////////////////
@@ -207,6 +169,9 @@ namespace Gambit
       double gna;
     };
 
+
+    /*  NOTE: These structures are currently not used in the code
+
     //------------------------------------------------------
     // Structure to contain the Sun & Earth's motion relative
     // to the Galactic rest frame in Galactic coordinates.
@@ -259,11 +224,10 @@ namespace Gambit
         std::vector<double> w;
     };
 
-    // FIXME: Check whether this is really used.
     // Structure containing (keyed?) set of halo components,
     // where the key can be used to associate a DM particle
     // with a halo component.
-    // FIXME: DDHaloS structure udpate
+    // TODO: DDHaloS structure udpate
     //  * How to handle keys? Actually associations must be
     //    made within DDCalc, where the calculations are
     //    done.
@@ -319,6 +283,7 @@ namespace Gambit
       private:
         std::vector<DDParticleS> P;
     };
+    */
 
     struct SimYieldChannel
     {

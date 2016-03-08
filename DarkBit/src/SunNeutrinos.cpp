@@ -129,19 +129,19 @@ namespace Gambit
       }
 
       // Set Higgs masses
-      std::map<str, TH_ParticleProperty>::const_iterator its[4];
-      its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
-      its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
-      its[2] = Dep::TH_ProcessCatalog->particleProperties.find("A0");
-      its[3] = Dep::TH_ProcessCatalog->particleProperties.find("H+");
-      Higgs_masses_neutral[0] = (its[0] != Dep::TH_ProcessCatalog->
-          particleProperties.end()) ? its[0]->second.mass : 0.;
-      Higgs_masses_neutral[1] = (its[1] != Dep::TH_ProcessCatalog->
-          particleProperties.end()) ? its[1]->second.mass : 0.;
-      Higgs_masses_neutral[2] = (its[2] != Dep::TH_ProcessCatalog->
-          particleProperties.end()) ? its[2]->second.mass : 0.;
-      Higgs_mass_charged      = (its[3] != Dep::TH_ProcessCatalog->
-          particleProperties.end()) ? its[3]->second.mass : 0.;
+      // FIXME: Correct to set higgs masses to zero if not present?
+      Higgs_masses_neutral[0] = 
+        Dep::TH_ProcessCatalog->hasParticleProperty("h0_2") ?  
+        Dep::TH_ProcessCatalog->getParticleProperty("h0_2").mass : 0.;
+      Higgs_masses_neutral[1] = 
+        Dep::TH_ProcessCatalog->hasParticleProperty("h0_1") ?  
+        Dep::TH_ProcessCatalog->getParticleProperty("h0_1").mass : 0.;
+      Higgs_masses_neutral[2] = 
+        Dep::TH_ProcessCatalog->hasParticleProperty("A0") ?  
+        Dep::TH_ProcessCatalog->getParticleProperty("A0").mass : 0.;
+      Higgs_mass_charged = 
+        Dep::TH_ProcessCatalog->hasParticleProperty("H+") ?  
+        Dep::TH_ProcessCatalog->getParticleProperty("H+").mass : 0.;
 
       // Find out which Higgs exist and have decay data in the process
       // catalog.

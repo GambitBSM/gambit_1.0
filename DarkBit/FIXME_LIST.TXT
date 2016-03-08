@@ -1,5 +1,5 @@
 Jonathan:
-DarkBit_types.hpp: 266	:    // FIXME: DDHaloS structure udpate
+DONE DarkBit_types.hpp: 266	:    // FIXME: DDHaloS structure udpate [this is not needed in the code and commented out now]
 GamYields.cpp: 468	:        // FIXME: Update energy validty ranges
 GamYields.cpp: 500	:        // FIXME: Update energy validty ranges
 GamYields.cpp: 541	:        // FIXME: Update energy validty ranges
@@ -12,10 +12,13 @@ SingletDM.cpp: 369	:      // FIXME: Probably this can be speed up f_vs_mass
 
 
 Pat:
+DarkBit_rollcall.hpp: 184	:      // FIXME: Is model CMSSM here really necessary?  
+DarkBit_rollcall.hpp: 185	:      // FIXME: Is model MSSM30atQ enough?
 DarkBit_types.hpp:  61	:// FIXME: What to include to allow DarkBit_warning() ?
 DarkBit_types.hpp: 360	:                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "addChanel: Channel already exists --> ignoring new one.");
 DarkBit_types.hpp: 404	:                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "getChannel: Channel unknown, returning dummy.");
 DarkBit_types.hpp: 425	:                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "SimYieldTable(): Channel not known, returning zero spectrum.");
+SunNeutrinos.cpp: 132 :      // FIXME: Correct to set higgs masses to zero if not present?
 SunNeutrinos.cpp: 311	:      //FIXME change below to >= when version numbers are available as ints
 SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
 SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
@@ -51,12 +54,13 @@ RelicDensity.cpp: 367	:        // FIXME: keep track of error flags in oh2_genera
 
 
 Christoph:
+DONE DarkBit_types.hpp: 116	:    // FIXME: Should this be deleted?
+DONE DarkBit_types.hpp: 152	:    // FIXME: Ensure that this is all needed
+DONE DarkBit_types.hpp: 262	:    // FIXME: Check whether this is really used.
+DONE DarkBit_rollcall.hpp: 183	:      // FIXME: Make sure that only activated for corret models
+DONE ProcessCatalog.hpp: 180	:        // FIXME: Implement hasParticleProperty
+
 SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process (check what this means)
-ProcessCatalog.hpp: 180	:        // FIXME: Implement hasParticleProperty
-DarkBit_types.hpp: 116	:    // FIXME: Should this be deleted?
-DarkBit_types.hpp: 152	:    // FIXME: Ensure that this is all needed
-DarkBit_types.hpp: 262	:    // FIXME: Check whether this is really used.
-DarkBit_rollcall.hpp: 183	:      // FIXME: Make sure that only activated for corret models
 SimpleLikelihoods.cpp:  98	:      // FIXME: Clean up this part
 SimpleLikelihoods.cpp: 103	:      // FIXME: Is integration accuracy enough?
 SimpleLikelihoods.cpp: 131	:      // FIXME: Make sure that gamLike also gets the lines properly resolved
