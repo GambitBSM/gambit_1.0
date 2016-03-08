@@ -27,9 +27,7 @@ namespace Gambit {
   namespace SpectrumContents {
 
     struct SM              : SubSpectrumContents { SM(); };
-    // FIXME: This is a temporary hack!! CW
-    //struct SM_slha         : SubSpectrumContents { SM_slha(); }; // Missing some running masses that aren't part of SMINPUTS in slha
-    struct SM_slha         : SubSpectrumContents { }; // Missing some running masses that aren't part of SMINPUTS in slha
+    struct SM_slha         : SubSpectrumContents { SM_slha(); }; // Missing some running masses that aren't part of SMINPUTS in slha
     struct SMHiggs         : SubSpectrumContents { SMHiggs(); };
     struct ScalarSingletDM : SubSpectrumContents { ScalarSingletDM(); };
     struct MSSM            : SubSpectrumContents { MSSM(); };
