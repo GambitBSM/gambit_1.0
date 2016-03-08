@@ -11,7 +11,9 @@
  *
  *  Christoph Weniger, created Dec 2014, edited until Mar 2016
  *  <c.weniger@uva.nl>
- *  Lars A. Dal, updated Apr, Jun 2015
+ *  
+ *  with contributions related to thread-safety from
+ *  Lars A. Dal, Apr, Jun 2015
  *  <l.a.dal@fys.uio.no>
  */
 
@@ -411,7 +413,7 @@ namespace Funk
                     if ( size == 1 ) size = it->size();
                     if ( size != it->size() )
                     {
-                        std::cout << "Warning: Inconsistent vector lengths." << std::endl;
+                        std::cout << "FunkBase WARNING: Inconsistent vector lengths." << std::endl;
                         return vec<double>();
                     }
                 }
@@ -595,7 +597,6 @@ namespace Funk
                     //        std::cout << "  " << it->first << std::endl;
                     //    }
                     //    exit(1);
-                    //
                 }
                 if ( argmap.find(my_arg) == argmap.end() )
                 {
@@ -634,7 +635,7 @@ namespace Funk
                 functions = vec(f, g);
                 Singularities tmp_singl = f->getSingl();
                 if ( tmp_singl.erase(arg) > 0 )
-                    std::cout << "WARNING: Loosing singularity information while setting " << arg << std::endl;
+                    std::cout << "FunkBase WARNING: Loosing singularity information while setting " << arg << std::endl;
                 singularities = joinSingl(g->getSingl(), tmp_singl);
                 arguments = joinArgs(eraseArg(f->getArgs(), arg), g->getArgs());
             };
@@ -949,7 +950,7 @@ namespace Funk
         }
         else
         {
-            std::cout << "Funk: Ignoring \"" << arg << "\" = function" << std::endl;
+            std::cout << "FunkBase WARNING: Ignoring \"" << arg << "\" = function." << std::endl;
         }
         return f->set(args...);
     }
@@ -979,11 +980,10 @@ namespace Funk
         std::map<std::string,size_t> argmap;
         if ( not args_match(arguments, bound_arguments) )
         {
-            // FIXME: Throw proper error if problems are encountered
-            std::cout << "FATAL ERROR: bind() tries to resolve wrong arguments." << std::endl;
-            std::cout << "  Arguments that are supposed to be bound: " << args_string(bound_arguments) << std::endl;
-            std::cout << "  Actual arguments: " << args_string(arguments) << std::endl;
-            exit(1);
+            std::string msg = "FunkBase::bind() tries to resolve wrong arguments.\n";
+                        msg+= " --- Arguments that are supposed to be bound: " + args_string(bound_arguments) + "\n";
+                        msg+= " --- Actual arguments of object: " + args_string(arguments);
+            throw std::invalid_argument(msg);
         }
         this->resolve(datamap, datalen, bindID, argmap);
         return shared_ptr<FunkBound>(new FunkBound(shared_from_this(), datalen, bindID));
@@ -1354,7 +1354,7 @@ namespace Funk
             }
 
         private:
-            std::string msg;  // Message in the bottle
+            std::string msg;  // Message in a bottle.  Ha!
     };
     //inline Funk print(std::string msg) { return Funk(new Bottle(msg)); }
     inline Funk FunkBase::print(std::string msg)
@@ -1492,7 +1492,7 @@ namespace Funk
                             double z0 = mean - singl_factor*sigma;
                             double z1 = mean + singl_factor*sigma;
                             if ( z0 == z1 )
-                                std::cout << "WARNING: Singularity width is beyond machine precision." << std::endl;
+                                std::cout << "FunkBase WARNING: Singularity width is beyond machine precision." << std::endl;
                             if ( z0 > x0 and z0 < x1 ) ranges.push_back(z0);
                             if ( z1 > x0 and z1 < x1 ) ranges.push_back(z1);
                         }

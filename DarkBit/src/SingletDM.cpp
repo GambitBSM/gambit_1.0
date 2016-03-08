@@ -415,18 +415,3 @@ namespace Gambit
     } // function TH_ProcessCatalog_SingletDM
   }
 }
-
-      /* FIXME: Delete if not needed elsewhere
-      double resmasses[] = {catalog.getParticleProperty("h0_1").mass};
-      double reswidths[] = {0.01};  
-      int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
-
-      for (int i=0; i<resmax; i++)
-      {
-        if (resmasses[i]/mS > 2.)
-        {
-          process_ann.thresholdResonances.resonances.
-            push_back(TH_Resonance(resmasses[i], reswidths[i]));
-        }
-      }
-      */
