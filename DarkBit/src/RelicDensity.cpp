@@ -334,7 +334,11 @@ namespace Gambit {
           Weff = Weff + 
             it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
-        // FIXME: Does not work for three-body final states.  Implement error check?
+        if ( Weff->getNArgs() != 1 )
+          DarkBit_error().raise(LOCAL_INFO, 
+              "RD_eff_annrate_from_ProcessCatalog: Wrong number of arguments.\n"
+              "The probable cause are three-body final states, which are not supported for this function."
+              );
         result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
       } // function RD_eff_annrate_from_ProcessCatalog
 
@@ -354,7 +358,7 @@ namespace Gambit {
       // RD_thresholds_resonances.
       RD_spectrum_type myRDspec = *Dep::RD_spectrum_ordered;
       if (myRDspec.coannihilatingParticles.empty()){
-        DarkBit_error().raise(LOCAL_INFO, "ERROR in RD_oh2_general: No DM particle!");
+        DarkBit_error().raise(LOCAL_INFO, "RD_oh2_general: No DM particle!");
       }
       double mwimp=myRDspec.coannihilatingParticles[0].mass;
 

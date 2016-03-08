@@ -304,13 +304,6 @@ namespace Gambit {
       getSMmass("mu+",    1)
       getSMmass("tau-",   1)
       getSMmass("tau+",   1)
-// FIXME: Should be deprecated
-//      getSMmass("nu_1",   1)
-//      getSMmass("nubar_1",1) 
-//      getSMmass("nu_2",   1)
-//      getSMmass("nubar_2",1) 
-//      getSMmass("nu_3",   1)
-//      getSMmass("nubar_3",1)      
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
       getSMmass("W-",     2)      
