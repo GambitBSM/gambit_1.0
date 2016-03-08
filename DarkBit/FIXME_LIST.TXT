@@ -1,0 +1,96 @@
+Jonathan:
+DarkBit_types.hpp: 266	:    // FIXME: DDHaloS structure udpate
+GamYields.cpp: 468	:        // FIXME: Update energy validty ranges
+GamYields.cpp: 500	:        // FIXME: Update energy validty ranges
+GamYields.cpp: 541	:        // FIXME: Update energy validty ranges
+GamYields.cpp: 563	:        // FIXME: Update energy validty ranges
+GamYields.cpp: 600	:        // FIXME: Update energy validty ranges
+GamYields.cpp: 643	:          // FIXME: Write interpolation routine
+GamYields.cpp: 662	:        // FIXME: Implemented PPPC4 tables
+SingletDM.cpp: 216	:      // FIXME: Double check expressions (taken from Cline et al. 2013)
+SingletDM.cpp: 369	:      // FIXME: Probably this can be speed up f_vs_mass
+
+
+Pat:
+DarkBit_types.hpp:  61	:// FIXME: What to include to allow DarkBit_warning() ?
+DarkBit_types.hpp: 360	:                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "addChanel: Channel already exists --> ignoring new one.");
+DarkBit_types.hpp: 404	:                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "getChannel: Channel unknown, returning dummy.");
+DarkBit_types.hpp: 425	:                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "SimYieldTable(): Channel not known, returning zero spectrum.");
+SunNeutrinos.cpp: 311	:      //FIXME change below to >= when version numbers are available as ints
+SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
+SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
+SunNeutrinos.cpp: 169	:          // FIXME: Replace when BFs become directly available.
+SunNeutrinos.cpp: 227	:        // FIXME: Replace when BFs become directly available.
+DirectDetection.cpp: 155	:      // FIXME: Error if nucleonAmplitudes from MicrOmegas fails?
+MSSM.cpp: 345	:      // FIXME: Get meson masses from somewhere else?
+MSSM.cpp: 164	:        // FIXME: If this the right place to set SLHAstruct model information?
+SingletDM.cpp: 332	:      // FIXME: Get meson masses from somewhere
+SingletDM.cpp: 370	:      // FIXME: alpha_s = 0.12 should not be hard-coded, but gotten from the spectrum object; but at what scale?
+
+
+Joakim/Torsten:
+RelicDensity.cpp / DarkSUSY.cpp :  FIXME: Get it working
+
+
+Torsten:
+ProcessCatalog.hpp: 148	:        // FIXME: rename thresholdResonances to TH_resonances_thresholds
+DarkSUSY.cpp:  90	:     * FIXME: Fix BackendIniBit_error problems?
+DarkSUSY.cpp: 247	:  // FIXME: add channel codes!
+DarkSUSY.cpp: 295	:    }else if (particleID=="~e-_4" or particleID=="~e+_4"){ //FIXME: someone should check this...
+DarkSUSY.cpp: 790	: * FIXME: Fix the IB mass setting routines
+DarkSUSY.cpp: 805	:  //FIXME: Fix the IB mass setting routines
+GamYields.cpp: 469	:        // FIXME: We could actually use boosted rest-frame spectra instead -- discuss
+MSSM.cpp: 198	:          // FIXME: Check whether DS initialized correctly
+MSSM.cpp: 598	:      // FIXME: Is this always the lighest neutralino?  What happens for staus?
+RelicDensity.cpp:  75	:      // FIXME: eventually, this function should not be BE-dependent anymore
+RelicDensity.cpp: 129	:          // FIXME: This is no longer needed here.  Remove.
+RelicDensity.cpp: 180	:      // FIXME: coannihilation thresholds have to be added once they are included
+RelicDensity.cpp: 255	:      // FIXME: Here goes a translation GAMBIT particle identifiers
+RelicDensity.cpp: 268	:      // now order: FIXME: probably not needed!
+RelicDensity.cpp: 367	:        // FIXME: keep track of error flags in oh2_general
+
+
+Christoph:
+SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process (check what this means)
+ProcessCatalog.hpp: 180	:        // FIXME: Implement hasParticleProperty
+DarkBit_types.hpp: 116	:    // FIXME: Should this be deleted?
+DarkBit_types.hpp: 152	:    // FIXME: Ensure that this is all needed
+DarkBit_types.hpp: 262	:    // FIXME: Check whether this is really used.
+DarkBit_rollcall.hpp: 183	:      // FIXME: Make sure that only activated for corret models
+SimpleLikelihoods.cpp:  98	:      // FIXME: Clean up this part
+SimpleLikelihoods.cpp: 103	:      // FIXME: Is integration accuracy enough?
+SimpleLikelihoods.cpp: 131	:      // FIXME: Make sure that gamLike also gets the lines properly resolved
+SimpleLikelihoods.cpp: 149	:      // FIXME: Provide more detailed spectrum (higher resolution of line features)?
+SimpleLikelihoods.cpp: 262	:     * FIXME: Delete this part
+Cascades.cpp:  52	:    // FIXME:  Delete this debug function?
+Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
+Cascades.cpp: 422	:          // FIXME: This sets equal binning for all particle types.  Each
+Cascades.cpp: 505	:            // FIXME: What happens for single particle endpoints without
+Cascades.cpp: 661	:          // FIXME: Default values provide 1-2% accuracy for singular integrals
+decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
+MSSM.cpp: 307	:// FIXME: Should be deprecated
+MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */                \
+GamYields.cpp: 183	:    // FIXME: Update description and v=0 properties
+GamYields.cpp: 214	:      // FIXME: Make use of Emin and Emax for AnnYield
+GamYields.cpp: 249	:        // FIXME: Improve Funktions error message when wrong number of
+GamYields.cpp: 348	:      // FIXME: Check whether three-body processes are actually open at v=0
+GamYields.cpp: 349	:      // FIXME: For now only primary gamma-ray lines are supported
+GamYields.cpp: 379	:            // FIXME: Implement correct treatment
+GamYields.cpp: 438	:        // FIXME: Update energy validty ranges
+GamYields.cpp: 455	:// FIXME: Fix neutrino channels
+GamYields.cpp: 457	:        ADD_CHANNEL(2, "h0_1_test", "h0_2_test", "gamma", 0., 10000.)      // FIXME: Remove.        
+GamYields.cpp: 458	:        ADD_CHANNEL(5, "h0_2_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.
+GamYields.cpp: 459	:        ADD_CHANNEL(6, "h0_1_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.       
+GamYields.cpp: 460	:        ADD_CHANNEL(8, "h0_2_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove. 
+GamYields.cpp: 461	:        ADD_CHANNEL(9, "h0_1_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove.        
+GamYields.cpp: 462	:        ADD_CHANNEL(10, "A0_test", "Z0_test", "gamma", 0., 10000.)         // FIXME: Remove.
+GamYields.cpp: 463	:        ADD_CHANNEL(11, "WH_test", "WH_test", "gamma", 0., 10000.)         // FIXME: Remove.      
+ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for three-body final states
+RelicDensity.cpp: 337	:        // FIXME: Does not work for three-body final states.  Implement error check?
+SingletDM.cpp:  31	://FIXME these should not be set here, and must come from the spectrum object instead
+SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
+SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
+SingletDM.cpp: 318	:      // FIXME: Is this information required for anything?
+SingletDM.cpp: 391	:          // FIXME: Is threshold sufficient?
+SingletDM.cpp: 409	:      /* FIXME: This is too general, but could go somewhere else
+
