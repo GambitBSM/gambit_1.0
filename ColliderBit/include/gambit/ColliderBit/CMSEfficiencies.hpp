@@ -59,14 +59,18 @@ namespace Gambit {
 
       /// @brief Randomly filter the supplied particle list by parameterised muon efficiency
       inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
-        muons.erase(std::remove_if(muons.begin(), muons.end(),
-                                   [](const HEPUtils::Particle* p) {
-                                     if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
-                                     const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
-                                     if (HEPUtils::rand01() > eff) { delete p; return true; }
-                                     return false;
-                                   } ),
-                    muons.end());
+        if(muons.empty()) return;
+        auto keptMuonsEnd = std::remove_if(muons.begin(), muons.end(),
+                                           [](const HEPUtils::Particle* p) {
+                                             if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
+                                             const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
+                                             if (HEPUtils::rand01() > eff) { delete p; return true; }
+                                             return false;
+                                           } );
+        // vectors erase most efficiently from the end...
+        // no delete is necessary, because erase destroys the elements it removes
+        while (keptMuonsEnd != muons.end())
+          muons.erase(--muons.end());
       }
 
 
