@@ -40,19 +40,34 @@ struct reweightScanData
 // values out of the old output into the ModelParameters
 scanner_plugin(reweight_prior, version(1, 0, 0))
 {
-  //int plugin_main
+  //std::vector<std::string> keys;
+  //std::pair<double, double> range;
+  
+  plugin_constructor
+  {
+      //keys = get_keys();
+      //set_dimension(keys.size());
+      //range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
+  }
 
-  void transform(const std::vector<double> &unitPars, std::unordered_map<std::string,double> &outputMap)
+  // The transform function
+  // Takes in the vector of unit hypercube parameters and outputs the physical parameters
+  // Here we don't actually need the hypercube parameters, and instead just load the physical
+  // parameters from the output file supplied by the user. Interaction with that file takes
+  // place in the "reweight" plugin; here we just access the parameters via the abstract
+  // 'reader' object.
+  void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)
   {
     std::cout << "Running prior plugin for 'reweight' scanner" << std::endl;
 
     // Inspect what we actually get from the outputMap
+    std::cout << "Parameters to be retrieved from previous output:" <<std::endl;
     for(auto it=outputMap.begin(); it!=outputMap.end(); ++it)
     {
-       std::cout << it->first << ": " << it->second << std::endl;
+       std::cout << "   " << it->first << ": " << it->second << std::endl;
     } 
 
-    // // Get pont reader (which should be created by the 'reweight' scanner plugin
+    // // Get point reader (which should be created by the 'reweight' scanner plugin
     // Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
 
     // // Extract the model parameters
@@ -62,13 +77,12 @@ scanner_plugin(reweight_prior, version(1, 0, 0))
 
   }
 
-  // Seems to be possible to have other functions?
-  // Like for priors, can have the 'transform' function, and also the 'operator()' function which returns the tranformed parameters?
-  // Need both of those for doing the transform.
-  // Transformation from unit hypercube to my_ranges:
-  //void transform(const std::vector<double> &unitPars, std::unordered_map<std::string,double> &outputMap) const
+  // Not sure what this does. Might be the likelihood container or something? Greg?
+  double plugin_main(const std::vector<double>&)
+  {
+      return 0.0;
+  }
 
-  // actually I don't remember what the 'operator()' function is for, the tranform function already does everything?
 }
 
 // The reweigher Scanner plugin

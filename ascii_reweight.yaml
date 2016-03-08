@@ -19,14 +19,12 @@ Priors:
   mu_prior:
     parameters: [NormalDist::mu]
     prior_type: plugin
-    options:
-      plugin: reweighter
+    plugin: read_from_file
 
   sigma_prior:
     parameters: [NormalDist::sigma]
     prior_type: plugin
-    options:
-      plugin: reweighter
+    plugin: read_from_file
 
 
 #    options:
@@ -44,7 +42,7 @@ Printer:
 
 #======== Scanner setup ========
 Scanner:
-  use_objectives: reweighter
+  use_objectives: read_from_file
   use_scanner: reweight
 
   scanners:
@@ -57,12 +55,13 @@ Scanner:
         type: ascii
         info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
         data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
- 
+
   objectives:
 
-    reweighter:
+    read_from_file:
       plugin: reweight_prior
-
+      purpose: Prior
+ 
                    
 #======== Observables of interest ========
 ObsLikes:
