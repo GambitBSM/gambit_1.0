@@ -212,8 +212,8 @@ ObsLikes:
     - capability: lnL_alpha_s
       purpose:  LogLike
 # HiggsSignals LHC likelihood
-    - capability: HS_LHC_lnL
-      purpose:  LogLike
+#    - capability: HS_LHC_lnL
+#      purpose:  LogLike
 
 Rules:
   # Gamma-rays -------------------------
@@ -250,6 +250,25 @@ Rules:
           function: GA_AnnYield_DarkSUSY
     options:
         filename: dNdE.dat
+
+  - capability: Higgs_decay_rates
+    function: SS_Higgs_decays
+    dependencies:
+        - capability: SingletDM_spectrum
+          function: get_SingletDM_spectrum
+
+  - capability: DD_couplings
+    function: DD_couplings_SingletDM
+    dependencies:
+        - capability: SingletDM_spectrum
+          function: get_SingletDM_spectrum
+
+  - capability: TH_ProcessCatalog
+    function: TH_ProcessCatalog_SingletDM
+    dependencies:
+        - capability: SingletDM_spectrum
+          function: get_SingletDM_spectrum
+
 
   # Relic density ----------------------
   - capability: RD_oh2
