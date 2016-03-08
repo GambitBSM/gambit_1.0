@@ -108,6 +108,16 @@ START_MODULE
     DEPENDENCY(prec_sinW2_eff, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
+
+
+// precision likelihood: (g-2)_\mu
+  #define CAPABILITY lnL_gm2
+  START_CAPABILITY
+    #define FUNCTION lnL_mssm_gm2_chi2
+    START_FUNCTION(double)
+    DEPENDENCY(a_mu_SUSY, double)
+    #undef FUNCTION
+  #undef CAPABILITY
   
   // Electroweak precision likelihoods: Delta rho
   #define CAPABILITY lnL_deltarho

@@ -24,6 +24,7 @@
 #include "gambit/PrecisionBit/PrecisionBit_rollcall.hpp"
 #include "gambit/Utils/statistics.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 //#define PRECISIONBIT_DEBUG
 
@@ -597,8 +598,33 @@ namespace Gambit
       result = Stats::gaussian_loglikelihood(Dep::deltarho->central, 0.00040, theory_uncert, 0.00024);
     }
 
-    /// g-2 likelihoods? (TODO Do these belong here or in FlavBit?)
+    
 
+    
+    /// g-2 likelihoods? (TODO Do these belong here or in FlavBit?)
+    void lnL_mssm_gm2_chi2(double &result)
+    {
+      using namespace Pipes::lnL_mssm_gm2_chi2;
+      double amu_susy = *Dep::a_mu_SUSY; 
+      /// and sets this as the error on the susy calculation
+      /// change this to new capability so that can be independent of gm2calc 
+      double amu_mssm_error = 0; //BEreq::gm2calc::calculate_uncertainty_amu_2loop(model);
+      /// Value taken from prediction in arXiv:1010.4180 (Eq 22)
+      double amu_sm  = 11659180.2;
+      double amu_exp = 11659208.9;
+      /// taken from arXiv:1010.4180 (Eq 22)
+      double amu_sm_error = 4.9;
+      // error from hep-ex/0602035. This is from a statistical uncertainty (5.4) and a sytematic uncertainty (3.3) combinied in qudrature.  arXiv:1010.4180 takes this and combines in quadrature with theior their errors to get the 3.6 sigma deviation that they claim. 
+      double amu_exp_error = 6.3;
+      double amu_theory = amu_sm + amu_susy;
+      double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
+				     + Gambit::Utils::sqr(amu_mssm_error) );
+
+      result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
+      					     amu_theory_err, amu_exp_error);
+
+      
+    }
 
 
     /// This function is unfinished because SUSY-POPE is buggy.
