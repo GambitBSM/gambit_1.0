@@ -70,6 +70,7 @@ namespace Gambit
     double lambda2 = SingletDM->runningpars().get(Par::dimensionless,"Lambda2");
     double lambda3 = SingletDM->runningpars().get(Par::dimensionless,"Lambda3");
     bool perturbative = lambda1 < 3.5449077018110318 && lambda2 < 3.5449077018110318 && lambda3 < 3.5449077018110318;
+    cout << "checking perturb at scale " << scale << " with lambda (LB) = " << lambda1 << endl;
     return perturbative;
     }
     
@@ -229,7 +230,7 @@ namespace Gambit
       }
       perturbative=check_perturb(fullspectrum,LB);
       cout << "perturbative = " << perturbative << endl;
-      double perturb=float(perturbative);
+      double perturb=float(!perturbative);
       age_pair = triplet<double>(lifetime,LB,perturb);
      
     }
@@ -260,7 +261,7 @@ namespace Gambit
       namespace myPipe = Pipes::get_likelihood;//
       using namespace Gambit;
       triplet<double> age = *myPipe::Dep::vacuum_stability;
-      result=age.lower;
+      result=age.lower*(1e-300); // returns lnlike, very small if pertub is 1, 0 otherwise
     }
 
     

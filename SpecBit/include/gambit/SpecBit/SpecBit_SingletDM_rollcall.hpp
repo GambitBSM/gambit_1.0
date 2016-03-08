@@ -90,32 +90,32 @@
 
 
 
-  #define CAPABILITY check_perturb_to_min_lambda
-  START_CAPABILITY
-
-    #define FUNCTION check_perturb_to_min_lambda_SingletDM
-    START_FUNCTION(double)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
-    DEPENDENCY(vacuum_stability, triplet<double>)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
-    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SingletDM_running))
-    ALLOW_MODEL_COMBINATION(higgs, singlet)
-    #undef FUNCTION
-
-    #define FUNCTION check_perturb_to_min_lambda_SingletDMZ3
-    START_FUNCTION(double)
-    DEPENDENCY(SMINPUTS, SMInputs)
-    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
-    DEPENDENCY(vacuum_stability, triplet<double>)
-    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running,SingletDMZ3)
-    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
-    MODEL_GROUP(singlet, (SingletDMZ3))
-    ALLOW_MODEL_COMBINATION(higgs, singlet)
-    #undef FUNCTION
-
-  #undef CAPABILITY
+//  #define CAPABILITY check_perturb_to_min_lambda
+//  START_CAPABILITY
+//
+//    #define FUNCTION check_perturb_to_min_lambda_SingletDM
+//    START_FUNCTION(double)
+//    DEPENDENCY(SMINPUTS, SMInputs)
+//    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+//    DEPENDENCY(vacuum_stability, triplet<double>)
+//    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running, SingletDM_running)
+//    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+//    MODEL_GROUP(singlet, (SingletDM_running))
+//    ALLOW_MODEL_COMBINATION(higgs, singlet)
+//    #undef FUNCTION
+//
+//    #define FUNCTION check_perturb_to_min_lambda_SingletDMZ3
+//    START_FUNCTION(double)
+//    DEPENDENCY(SMINPUTS, SMInputs)
+//    //DEPENDENCY(SingletDM_spectrum,const Spectrum*)
+//    DEPENDENCY(vacuum_stability, triplet<double>)
+//    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs_running,SingletDMZ3)
+//    MODEL_GROUP(higgs,   (StandardModel_Higgs_running))
+//    MODEL_GROUP(singlet, (SingletDMZ3))
+//    ALLOW_MODEL_COMBINATION(higgs, singlet)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
 
 
   #define CAPABILITY check_perturb
