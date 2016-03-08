@@ -130,10 +130,10 @@ namespace Gambit
          {
             MTget::fmap0 tmp_map;
 
-            addtomap(("u", "ubar", "u_1", "ubar_1"), &SMea::get_mu );
-            addtomap(("d", "dbar", "d_1", "dbar_1"), &SMea::get_md );
-            addtomap(("s", "sbar", "d_2", "dbar_2"), &SMea::get_ms );
- 
+            tmp_map["u_1"]  = &SMea::get_mu; // u
+            tmp_map["d_1"]  = &SMea::get_md; // d
+            tmp_map["d_2"]  = &SMea::get_ms; // s
+
             map_collection[Par::mass1].map0 = tmp_map;
          }
 
@@ -141,18 +141,19 @@ namespace Gambit
          {
             { //local scoping block
               MTget::fmap0 tmp_map;
-           
-              addtomap(("Z0", "Z"),       &SMea::get_MZ_pole );      
-              addtomap(("W+", "W-", "W"), &SMea::get_MW_pole );
-              addtomap(("t", "tbar", "u_3", "ubar_3"), &SMea::get_Mtop_pole );    
-              addtomap(("b", "bbar", "d_3", "dbar_3"), &SMea::get_MbMb      );
-              addtomap(("c", "cbar", "u_2", "ubar_2"), &SMea::get_McMc      );
-              addtomap(("tau+","tau-","tau","e+_3","e-_3"),         &SMea::get_Mtau_pole      );
-              addtomap(("mu-", "mu+", "mu", "e-_2", "e+_2", "e_2"), &SMea::get_Mmuon_pole     );
-              addtomap(("e-",  "e+",  "e",  "e-_1", "e+_1", "e_1"), &SMea::get_Melectron_pole );
-              addtomap(("nu_1", "nubar_1"), &SMea::get_Mnu1_pole );
-              addtomap(("nu_2", "nubar_2"), &SMea::get_Mnu2_pole );
-              addtomap(("nu_3", "nubar_3"), &SMea::get_Mnu3_pole );
+ 
+          
+              tmp_map["Z0"]  = &SMea::get_MZ_pole;      
+              tmp_map["W+"]  = &SMea::get_MW_pole;
+              tmp_map["d_3"]   = &SMea::get_MbMb; // b
+              tmp_map["u_2"]   = &SMea::get_McMc; // c
+              tmp_map["u_3"]   = &SMea::get_Mtop_pole; //t    
+              tmp_map["e-_3"]  = &SMea::get_Mtau_pole; // tau
+              tmp_map["e-_2"] = &SMea::get_Mmuon_pole; // mu
+              tmp_map["e-_1"]  = &SMea::get_Melectron_pole;
+              tmp_map["nu_1"]= &SMea::get_Mnu1_pole;
+              tmp_map["nu_2"]= &SMea::get_Mnu2_pole;
+              tmp_map["nu_3"]= &SMea::get_Mnu3_pole;
   
               tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
               tmp_map["g"]     = &SMea::get_MGluon_pole;  
