@@ -87,7 +87,7 @@ BE_INI_FUNCTION
     scan_level = false;
 
     /*
-     * CW: TODO FIXME Fix BackendIniBit_error problems
+     * FIXME: Fix BackendIniBit_error problems?
     if (runOptions->hasKey("dddn"))
     {
       if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
@@ -244,7 +244,7 @@ BE_NAMESPACE
 
   /// Translates GAMBIT string identifiers to the SUSY
   /// particle codes used internally in DS (as stored in common block /pacodes/)
-  //TODO: add channel codes!
+  // FIXME: add channel codes!
   int DSparticle_code(const str& particleID)
   {
     int kpart;
@@ -787,7 +787,7 @@ BE_NAMESPACE
 /* PS: I have made the mods requested, but these functions cannot work as designed,
  * because DarkBit::TH_ParticleProperty is a module type, not a backend type.
  * Make it a backend type or move these functions back into DarkBit.
- * FIXME
+ * FIXME: Fix the IB mass setting routines
   void registerMassesForIB(
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
@@ -802,7 +802,7 @@ BE_NAMESPACE
 */
 
   //PS: this can't compile anyway, as particleProperties is not defined
-  //FIXME
+  //FIXME: Fix the IB mass setting routines
   void setMassesForIB(bool set)
   {
     if (set)
