@@ -22,6 +22,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "gambit/ScannerBit/objective_plugin.hpp"
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/Utils/model_parameters.hpp"
 
@@ -38,7 +39,7 @@ struct reweightScanData
 // The prior transformation used by the 'reweight' scanner plugin
 // This is used instead of a normal prior, to transfer parameter
 // values out of the old output into the ModelParameters
-scanner_plugin(reweight_prior, version(1, 0, 0))
+objective_plugin(reweight_prior, version(1, 0, 0))
 {
   //std::vector<std::string> keys;
   //std::pair<double, double> range;
