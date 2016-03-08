@@ -212,8 +212,8 @@ ObsLikes:
     - capability: lnL_alpha_s
       purpose:  LogLike
 # HiggsSignals LHC likelihood
-#    - capability: HS_LHC_lnL
-#      purpose:  LogLike
+    - capability: LHC_Higgs_LogLike
+      purpose:  LogLike
 
 Rules:
   # Gamma-rays -------------------------
