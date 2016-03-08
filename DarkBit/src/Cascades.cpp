@@ -49,22 +49,6 @@ namespace Gambit {
 #endif
     }     
 
-    // FIXME:  Delete this debug function?
-    /*
-    // Print list of final states for debug purposes
-    void cascadeMC_printFinalStates(bool &dummy)
-    {
-      dummy=true;
-      using namespace Pipes::cascadeMC_printFinalStates;     
-      const std::vector<std::string> &list = *Dep::cascadeMC_FinalStates;
-      logger() << "Cascade decay final state list contains: " << std::endl;
-      for(size_t i=0; i<list.size(); i++)
-      {
-        logger() << i << ": " << list[i] << std::endl;
-      }
-    }   
-    */
-
     // Function setting up the decay table used in decay chains
     void cascadeMC_DecayTable(DarkBit::DecayChain::DecayTable &table)
     {

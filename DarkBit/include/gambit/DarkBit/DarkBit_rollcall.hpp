@@ -209,17 +209,6 @@ START_MODULE
     #undef FUNCTION                                                       
   #undef CAPABILITY 
 
-  /*
-  // Print list of final states for debug purposes
-  #define CAPABILITY cascadeMC_printFinalStates
-  START_CAPABILITY
-    #define FUNCTION cascadeMC_printFinalStates
-      START_FUNCTION(bool)      
-      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)      
-    #undef FUNCTION                                                       
-  #undef CAPABILITY 
-  */
-
   // Function setting up the decay table used in decay chains
   #define CAPABILITY cascadeMC_DecayTable
   START_CAPABILITY

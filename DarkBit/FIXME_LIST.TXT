@@ -51,6 +51,7 @@ RelicDensity.cpp: 180	:      // FIXME: coannihilation thresholds have to be adde
 RelicDensity.cpp: 255	:      // FIXME: Here goes a translation GAMBIT particle identifiers
 RelicDensity.cpp: 268	:      // now order: FIXME: probably not needed!
 RelicDensity.cpp: 367	:        // FIXME: keep track of error flags in oh2_general
+SingletDM.cpp: 391	:          // FIXME: Is threshold sufficient?
 
 
 Christoph:
@@ -66,29 +67,19 @@ DONE SimpleLikelihoods.cpp: 149	:      // FIXME: Provide more detailed spectrum 
 DONE SimpleLikelihoods.cpp: 262	:     * FIXME: Delete this part
 DONE MSSM.cpp: 307	:// FIXME: Should be deprecated
 DONE RelicDensity.cpp: 337	:        // FIXME: Does not work for three-body final states.  Implement error check?
+DONE SingletDM.cpp: 318	:      // FIXME: Is this information required for anything?
+DONE SingletDM.cpp: 409	:      /* FIXME: This is too general, but could go somewhere else
+DONE SingletDM.cpp:  31	://FIXME these should not be set here, and must come from the spectrum object instead
+DONE GamYields.cpp: 183	:    // FIXME: Update description and v=0 properties
+DONE GamYields.cpp: 214	:      // FIXME: Make use of Emin and Emax for AnnYield
+DONE Cascades.cpp:  52	:    // FIXME:  Delete this debug function?
 
-SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
-SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
-SingletDM.cpp: 318	:      // FIXME: Is this information required for anything?
-SingletDM.cpp: 409	:      /* FIXME: This is too general, but could go somewhere else
-SingletDM.cpp:  31	://FIXME these should not be set here, and must come from the spectrum object instead
-GamYields.cpp: 183	:    // FIXME: Update description and v=0 properties
-GamYields.cpp: 214	:      // FIXME: Make use of Emin and Emax for AnnYield
-
-SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process (check what this means)
-Cascades.cpp:  52	:    // FIXME:  Delete this debug function?
-Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
-Cascades.cpp: 422	:          // FIXME: This sets equal binning for all particle types.  Each
-Cascades.cpp: 505	:            // FIXME: What happens for single particle endpoints without
-Cascades.cpp: 661	:          // FIXME: Default values provide 1-2% accuracy for singular integrals
-decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
-MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */                \
 GamYields.cpp: 249	:        // FIXME: Improve Funktions error message when wrong number of
 GamYields.cpp: 348	:      // FIXME: Check whether three-body processes are actually open at v=0
 GamYields.cpp: 349	:      // FIXME: For now only primary gamma-ray lines are supported
-GamYields.cpp: 379	:            // FIXME: Implement correct treatment
-GamYields.cpp: 438	:        // FIXME: Update energy validty ranges
 GamYields.cpp: 455	:// FIXME: Fix neutrino channels
+
+GamYields.cpp: 379	:            // FIXME: Implement correct treatment
 GamYields.cpp: 457	:        ADD_CHANNEL(2, "h0_1_test", "h0_2_test", "gamma", 0., 10000.)      // FIXME: Remove.        
 GamYields.cpp: 458	:        ADD_CHANNEL(5, "h0_2_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.
 GamYields.cpp: 459	:        ADD_CHANNEL(6, "h0_1_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.       
@@ -96,9 +87,19 @@ GamYields.cpp: 460	:        ADD_CHANNEL(8, "h0_2_test", "Z0_test", "gamma", 0., 
 GamYields.cpp: 461	:        ADD_CHANNEL(9, "h0_1_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove.        
 GamYields.cpp: 462	:        ADD_CHANNEL(10, "A0_test", "Z0_test", "gamma", 0., 10000.)         // FIXME: Remove.
 GamYields.cpp: 463	:        ADD_CHANNEL(11, "WH_test", "WH_test", "gamma", 0., 10000.)         // FIXME: Remove.      
-SingletDM.cpp: 391	:          // FIXME: Is threshold sufficient?
 
+SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
+SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
+
+decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
+MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */                \
+Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
+Cascades.cpp: 422	:          // FIXME: This sets equal binning for all particle types.  Each
+Cascades.cpp: 505	:            // FIXME: What happens for single particle endpoints without
+Cascades.cpp: 661	:          // FIXME: Default values provide 1-2% accuracy for singular integrals
+SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process (check what this means)
 SimpleLikelihoods.cpp: 121, 143, 258:      // FIXME: Get grid from function object including all singularities
 funktions.cpp  :  somewhere :   // FIXME : Implement getting grid with singularities
 ProcessCatalog.cpp: everywhere : // FIXME: Check consisteny of kinematics in general (is v>0 correctly taken into account for final state particles everywhere?)
 ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for three-body final states
+SingletDM.cpp:  422 :          /* FIXME: Delete if not needed elsewhere

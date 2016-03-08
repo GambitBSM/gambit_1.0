@@ -28,11 +28,6 @@
 #include "boost/make_shared.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 
-//FIXME these should not be set here, and must come from the spectrum object instead
-const double m_Zboson = 91.1876;                              // Z-boson mass (GeV/c^2)
-const double m_Wboson = 80.385;                               // W-boson mass (GeV/c^2)
-
-
 namespace Gambit
 {
   
@@ -56,6 +51,8 @@ namespace Gambit
           mc   = catalog->getParticleProperty("c").mass;
           mtau = catalog->getParticleProperty("tau-").mass;
           mt   = catalog->getParticleProperty("t").mass;
+          mZ0  = catalog->getParticleProperty("Z0").mass;
+          mW   = catalog->getParticleProperty("W+").mass;
           f_vs_mass = arg_f_vs_mass;
           Gamma = f_vs_mass["Gamma"]->bind("mass");
           Gamma_mh = Gamma->eval(mh);
@@ -125,9 +122,9 @@ namespace Gambit
               return sv_ff(lambda, mass, v, mtau, false);
             if ( channel == "tt" and sqrt_s > mt*2 )
               return sv_ff(lambda, mass, v, mt, false);
-            if ( channel == "ZZ" and sqrt_s > m_Zboson*2)
+            if ( channel == "ZZ" and sqrt_s > mZ0*2)
               return sv_ZZ(lambda, mass, v);
-            if ( channel == "WW" and sqrt_s > m_Wboson*2)
+            if ( channel == "WW" and sqrt_s > mW*2)
               return sv_WW(lambda, mass, v);
           }
           return 0;
@@ -137,7 +134,7 @@ namespace Gambit
         double sv_WW(double lambda, double mass, double v)
         {
           double s = 4*mass*mass/(1-v*v/4);
-          double x = pow(m_Wboson,2)/s;
+          double x = pow(mW,2)/s;
           double GeV2tocm3s1 = gev2cm2*s2cm;
           return pow(lambda,2)*s/8/M_PI*sqrt(1-4*x)*Dh2(s)*(1-4*x+12*pow(x,2))
             *GeV2tocm3s1;
@@ -147,7 +144,7 @@ namespace Gambit
         double sv_ZZ(double lambda, double mass, double v)
         {
           double s = 4*mass*mass/(1-v*v/4);
-          double x = pow(m_Zboson,2)/s;
+          double x = pow(mZ0,2)/s;
           double GeV2tocm3s1 = gev2cm2*s2cm;
           return pow(lambda,2)*s/16/M_PI*sqrt(1-4*x)*Dh2(s)*(1-4*x+12*pow(x,2))
             * GeV2tocm3s1;
@@ -193,7 +190,7 @@ namespace Gambit
         std::map<std::string, Funk::Funk> f_vs_mass;
         Funk::BoundFunk Gamma;
 
-        double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt;
+        double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt, mZ0, mW;
     };
 
     void DarkMatter_ID_SingletDM(std::string & result)
@@ -315,13 +312,15 @@ namespace Gambit
       addParticle("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
 
       // Masses for neutrino flavour eigenstates. Set to zero.
-      // FIXME: Is this information required for anything?
+      // (presently not required)
+      /*
       addParticle("nu_e",     0.0, 1)
       addParticle("nubar_e",  0.0, 1)
       addParticle("nu_mu",    0.0, 1)
       addParticle("nubar_mu", 0.0, 1)
       addParticle("nu_tau",   0.0, 1)
       addParticle("nubar_tau",0.0, 1)      
+      */
 
       // Higgs-sector masses
       double mS = spec->get(Par::Pole_Mass,"S");
@@ -398,7 +397,7 @@ namespace Gambit
                 );
             process_ann.channelList.push_back(new_channel);
           }
-          else
+          if ( mS*2 > mtot_final )
           {
             process_ann.thresholdResonances.threshold_energy.
               push_back(mtot_final);
@@ -406,7 +405,18 @@ namespace Gambit
         }
       }
 
-      /* FIXME: This is too general, but could go somewhere else
+      // Populate resonance list
+      if ( mH >= mS*2 ) process_ann.thresholdResonances.resonances.
+          push_back(TH_Resonance(mH, gammaH));
+
+      catalog.processList.push_back(process_ann);
+
+      result = catalog;
+    } // function TH_ProcessCatalog_SingletDM
+  }
+}
+
+      /* FIXME: Delete if not needed elsewhere
       double resmasses[] = {catalog.getParticleProperty("h0_1").mass};
       double reswidths[] = {0.01};  
       int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
@@ -420,14 +430,3 @@ namespace Gambit
         }
       }
       */
-      
-      // Populate resonance list
-      if ( mH >= mS*2 ) process_ann.thresholdResonances.resonances.
-          push_back(TH_Resonance(mH, gammaH));
-
-      catalog.processList.push_back(process_ann);
-
-      result = catalog;
-    } // function TH_ProcessCatalog_SingletDM
-  }
-}
