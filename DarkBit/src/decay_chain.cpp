@@ -499,8 +499,6 @@ namespace Gambit
 
           string pID = it->particle1ID;
           double m = cat.getParticleProperty(pID).mass;
-          // FIXME: What to do with genRateTotal???
-          //double width = it->genRateTotal->bind()->eval();
           bool stable = ((it->channelList).size()<1);
           if(disabledList.count(pID)==1) stable = true;
           // If tabulated spectra exist for decays of this particle, consider
@@ -534,10 +532,7 @@ namespace Gambit
               finalStates.insert(*it3);
             }
           }
-          // Use specified total width (instead of summing widths of registered
-          // channels).
-          // FIXME: What to do with genRateTotal ???
-          // entry.forceTotalWidth(true,width);
+          // FIXME: Make sure that decay widths are correctly used everywhere
           if(!stable and entry.enabledDecays.size() == 0)
           {
             piped_warnings.request(LOCAL_INFO,

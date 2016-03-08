@@ -163,7 +163,7 @@ namespace Gambit {
      */
     Funk::Funk boost_dNdE(Funk::Funk dNdE, double gamma, double mass)
     {
-      if ( gamma < 1.0 + .02 )  // FIXME: What number to use?
+      if ( gamma < 1.0 + .02 )  // Ignore less than 2% boosts
       {
         if (gamma < 1.0)
           DarkBit_error().raise(LOCAL_INFO, 
@@ -176,7 +176,6 @@ namespace Gambit {
       Funk::Funk halfBox_int = betaGamma*sqrt(E*E-mass*mass);
       Funk::Funk halfBox_bound = betaGamma*sqrt(Ep*Ep-mass*mass);
       Funk::Funk integrand = dNdE/(2*halfBox_int);
-      // FIXME: Use a more thought-out accuracy condition
       return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
         ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", Funk::var("E"));
     }
@@ -212,7 +211,7 @@ namespace Gambit {
       std::string DMid= *Dep::DarkMatter_ID;
 
       // Grid and energy range used in interpolating functions.
-      // FIXME: Make use of Emin and Emax
+      // FIXME: Make use of Emin and Emax for AnnYield
       /*
       double Emin, Emax;
       Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");

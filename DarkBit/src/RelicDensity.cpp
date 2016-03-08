@@ -126,7 +126,7 @@ namespace Gambit {
             > 2.)
         {
         
-          // FIXME: This is no longer needed here!
+          // FIXME: This is no longer needed here.  Remove.
           if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
             // wide res treatment adopted in DS
             result.resonances.push_back(
@@ -255,7 +255,6 @@ namespace Gambit {
       // FIXME: Here goes a translation GAMBIT particle identifiers
       // -> DS particle codes
 
-
       //write info about coannihilating particles to DS common blocks
       //[this is essentially the model-dependent part of dsrdstart]
       DS_RDMGEV myrdmgev;
@@ -335,7 +334,7 @@ namespace Gambit {
           Weff = Weff + 
             it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
-        // FIXME: Does not work for three-body final states
+        // FIXME: Does not work for three-body final states.  Implement error check?
         result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
       } // function RD_eff_annrate_from_ProcessCatalog
 
@@ -365,7 +364,7 @@ namespace Gambit {
         // What follows below is the standard accurate calculation of oh2 in DS
         // either in fast = 0 (<1%)  or fast = 1 (default) mode
         
-        // Further TODO: keep track of error flags
+        // FIXME: keep track of error flags in oh2_general
 
         // the following replaces dsrdcom -- which cannot be linked properly!?
         DS_RDPARS myrdpars;

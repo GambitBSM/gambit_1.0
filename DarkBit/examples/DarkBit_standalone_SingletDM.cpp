@@ -60,7 +60,7 @@ namespace Gambit
     }
 
     // Create decay object from SLHA file input.slha
-    // FIXME: This is currently not including the invisible width contribution!
+    // FIXME: Include invisible Higgs contribution
     void createDecays(DecayTable& outDecays)
     {
       std::string inputFileName = "input.slha";

@@ -58,8 +58,6 @@ namespace Gambit {
     /*! \brief Retrieve the total thermally-averaged annihilation cross-section
      * for indirect detection (cm^3 / s).
      */
-    // FIXME this needs to be updated once
-    // annProc.genTotalRate->bind("v")->eval(0.) works.
     void sigmav_late_universe(double &result)
     {
       using namespace Pipes::sigmav_late_universe;

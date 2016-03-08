@@ -104,13 +104,7 @@ namespace Gambit
         /// Number of final state particles in this channel
         int nFinalStates;
 
-        /// Generic multiple purpose flags
-        // FIXME: Remove flags if not used
-        std::map<std::string, bool> flags;
-
         /// Energy dependence of final state particles. Includes v_rel ("v") as last argument in case of annihilation
-        /// \TODO: Implement checks on TH_Channel::genRate
-        // FIXME: Add description about kinematical variables
         Funk::Funk genRate = Funk::zero("dummyArgument");
     };
 
@@ -147,18 +141,14 @@ namespace Gambit
         str particle2ID;
         /// @}
 
-        /// Generic flags
-        // FIXME: Remove if not used?
-        std::map<str, bool> flags;
-
         /// List of channels
         std::vector<TH_Channel> channelList;
 
-        /// List of resonances and thresholds \TODO rename thresholdResonances to TH_resonances_thresholds
+        /// List of resonances and thresholds 
+        // FIXME: rename thresholdResonances to TH_resonances_thresholds
         TH_resonances_thresholds thresholdResonances;
 
         /// Additional decay rate or sigmav (in addition to above channels)
-        // FIXME: Add detailed description
         Funk::Funk genRateMisc;
     };
 
@@ -171,7 +161,6 @@ namespace Gambit
         TH_Process getProcess(str, str = "") const;
 
         /// Check for a specific process in the catalog
-        // FIXME: Remove or replace by something less annoying
         const TH_Process* find(str, str = "") const;
 
         /// Retrieve properties of a given particle involved in one or more processes in this catalog
@@ -179,8 +168,6 @@ namespace Gambit
 
         /// Validate kinematics and entries
         void validate();
-
-        // FIXME: Implement hasParticleProperty ?
 
 
         // Variables
@@ -190,6 +177,7 @@ namespace Gambit
 
         /// Map from particles involved in the processes of this catalog, to their properties.
         std::map<std::string, TH_ParticleProperty> particleProperties;
+        // FIXME: Implement hasParticleProperty
     };
   }
 }

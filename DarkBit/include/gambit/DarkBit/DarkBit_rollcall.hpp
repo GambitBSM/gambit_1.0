@@ -172,7 +172,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      //ALLOW_MODELS(MSSM30atQ)  // TODO: (CW) Check for which models this works
+      ALLOW_MODELS(CMSSM,MSSM30atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
@@ -180,7 +180,8 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      //ALLOW_MODELS(MSSM30atQ, SingletDM)  // TODO: (CW) Check for which models this works
+      // FIXME: Make sure that only activated for corret models
+      //ALLOW_MODELS(MSSM30atQ, SingletDM)
       BACKEND_REQ(oh2, (), double, (double*,int,double))
     #undef FUNCTION
   #undef CAPABILITY
@@ -207,6 +208,7 @@ START_MODULE
     #undef FUNCTION                                                       
   #undef CAPABILITY 
 
+  /*
   // Print list of final states for debug purposes
   #define CAPABILITY cascadeMC_printFinalStates
   START_CAPABILITY
@@ -215,6 +217,7 @@ START_MODULE
       DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)      
     #undef FUNCTION                                                       
   #undef CAPABILITY 
+  */
 
   // Function setting up the decay table used in decay chains
   #define CAPABILITY cascadeMC_DecayTable
@@ -232,7 +235,7 @@ START_MODULE
     #define FUNCTION cascadeMC_LoopManager
       START_FUNCTION(void, CAN_MANAGE_LOOPS)  
       DEPENDENCY(GA_missingFinalStates, std::vector<std::string>)
-      // FIXME: Hack to make sure these capabilities are run before the loop
+      // Make sure these capabilities are run before the loop
       DEPENDENCY(cascadeMC_DecayTable, DarkBit::DecayChain::DecayTable)
       DEPENDENCY(SimYieldTable, DarkBit::SimYieldTable)      
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)        
@@ -525,7 +528,6 @@ START_MODULE
   // The bool result to these functions is currently meaningless.
 
   // Set the WIMP mass and couplings
-  // TODO: Move halo settings from backend to here?
   #define CAPABILITY SetWIMP_DDCalc0
   START_CAPABILITY
     #define FUNCTION SetWIMP_DDCalc0

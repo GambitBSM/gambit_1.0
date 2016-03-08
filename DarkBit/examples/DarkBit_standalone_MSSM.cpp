@@ -135,7 +135,8 @@ int main()
   MicrOmegas_3_6_9_2_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
-  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
+  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
+  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");
   DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   logger() << "DarkSUSY..." << EOM;
   logger() << "DarkSUSY..." << EOM;
@@ -226,7 +227,8 @@ int main()
   mwimp_generic.resolveDependency(&DarkMatter_ID_MSSM30atQ);
   mwimp_generic.reset_and_calculate();
 
-  // Set generic annihilation rate in late universe (v->0 limit)  // FIXME: Check limit
+  // Set generic annihilation rate in late universe (v->0 limit)
+  // FIXME: Check whether limit is really calculated
   sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_MSSM);
   sigmav_late_universe.resolveDependency(&DarkMatter_ID_MSSM30atQ);
   sigmav_late_universe.reset_and_calculate();

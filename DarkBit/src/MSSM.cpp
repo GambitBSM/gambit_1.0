@@ -161,7 +161,7 @@ namespace Gambit {
         SLHAstruct mySLHA = mySpec->getSLHAea();
 
         // Add model select block to inform DS about 6x6 mixing
-        // FIXME: Should be done somewhere upstream
+        // FIXME: If this the right place to set SLHAstruct model information?
         SLHAea::Block modsel_block("MODSEL");
         modsel_block.push_back("BLOCK MODSEL");
         modsel_block.push_back("6 3 # FV");
@@ -195,7 +195,8 @@ namespace Gambit {
           logger() << "Initializing DarkSUSY via SLHA." << std::endl;
           BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
           BEreq::dsprep();
-          result = true;  // FIXME: Need some error checks
+          // FIXME: Check whether DS initialized correctly
+          result = true;
         }
         // Do pure diskless SLHA initialisation, including (s)particle widths from GAMBIT.
         else
@@ -341,7 +342,7 @@ namespace Gambit {
       addParticle("nubar_mu", 0.0,     1)
       addParticle("nu_tau",   0.0,     1)
       addParticle("nubar_tau",0.0,     1)   
-      // FIXME: Get meson masses from somewhere
+      // FIXME: Get meson masses from somewhere else?
       addParticle("pi0",      0.135,   0)
       addParticle("pi+",      0.1396,  0)
       addParticle("pi-",      0.1396,  0)
@@ -501,7 +502,7 @@ namespace Gambit {
       if(m_1 + m_2 < 2*M_DM)                                                 \
       {                                                                      \
         index = SV_IDX;                                                      \
-        /* TODO: Check whether this works */                                 \
+        /* FIXME: Double-check that import works correctly */                \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
         Funk::Funk CAT(kinematicFunction_,NAME) = sv*Funk::func(DSgamma3bdy, \
             STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, Funk::var("E"), Funk::var("E1"),     \
@@ -594,7 +595,7 @@ namespace Gambit {
     void DarkMatter_ID_MSSM30atQ(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_MSSM30atQ;
-      // FIXME: This should return the lightest neutralino identifier
+      // FIXME: Is this always the lighest neutralino?  What happens for staus?
       result = "~chi0_1";
     }
   }

@@ -213,7 +213,7 @@ namespace Gambit
       double lambda = he->get(Par::mass1,"lambda_hS");
       double mh = spec->get(Par::Pole_Mass,"h0_1");
 
-      // TODO: Double check expressions (taken from Cline et al. 2013)
+      // FIXME: Double check expressions (taken from Cline et al. 2013)
       double fp = 2./9. + 7./9.*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
       double fn = 2./9. + 7./9.*(*Param["fnu"] + *Param["fnd"] + *Param["fns"]);
 

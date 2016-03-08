@@ -95,12 +95,12 @@ namespace Gambit {
       // Integate spectrum 
       // (the zero velocity limit of the differential annihilation
       // cross-section as function of individual final state photons)
-      // FIXME: Clean this up?
+      // FIXME: Clean up this part
       //std::ofstream os;
       //os.open("test.dat");
       //(*Dep::GA_AnnYield)->writeToFile(Funk::logspace(-1., 5., 10000), os);
       //os.close();
-      // TODO: Make this take ->set_epsrel(1e-3)
+      // FIXME: Is integration accuracy enough?
       double AnnYieldint = (*Dep::GA_AnnYield)->
         set("v", 0.)->gsl_integration("E", 1, 100)->bind()->eval();
       logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
@@ -146,7 +146,7 @@ namespace Gambit {
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
-      // FIXME: Provide more detailed spectrum (higher resolution of line features)
+      // FIXME: Provide more detailed spectrum (higher resolution of line features)?
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
@@ -259,7 +259,7 @@ namespace Gambit {
     /*! \brief Helper function to dump gamma-ray spectra.
      *
      * NOTE: DEPRECATED!! (replaced by UnitTest)
-     * TODO: Delete
+     * FIXME: Delete this part
      */
     void dump_GammaSpectrum(double &result)
     {
