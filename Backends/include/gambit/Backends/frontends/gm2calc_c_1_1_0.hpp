@@ -42,7 +42,7 @@ BE_FUNCTION(gm2calc_mssmnofv_amu2LaSferm, double, (const gm2calc_c::MSSMNoFV_ons
 BE_FUNCTION(gm2calc_mssmnofv_amu2LaCha, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amu2LaCha", "gm2calc_mssmnofv_amu2LaCha")
 
 // Functions from gm2calc_c::MSSMNoFV_onshell.h
-// BE_FUNCTION(gm2calc_error_str, const char*, (gm2calc_c::gm2calc_error), "gm2calc_error_str", "gm2calc_error_str")
+BE_FUNCTION(gm2calc_error_str, const char*, (gm2calc_c::gm2calc_error), "gm2calc_error_str", "gm2calc_error_str")
 BE_FUNCTION(gm2calc_mssmnofv_new, gm2calc_c::MSSMNoFV_onshell*, (), "gm2calc_mssmnofv_new", "gm2calc_mssmnofv_new")
 BE_FUNCTION(gm2calc_mssmnofv_free, void, (gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_free", "gm2calc_mssmnofv_free")
 
@@ -118,9 +118,9 @@ BE_FUNCTION(gm2calc_mssmnofv_get_Ye, double, (const gm2calc_c::MSSMNoFV_onshell*
 BE_FUNCTION(gm2calc_mssmnofv_get_Yd, double, (const gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned), "gm2calc_mssmnofv_get_Yd", "gm2calc_mssmnofv_get_Yd")
 BE_FUNCTION(gm2calc_mssmnofv_get_Yu, double, (const gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned), "gm2calc_mssmnofv_get_Yu", "gm2calc_mssmnofv_get_Yu")
 
-// BE_FUNCTION(gm2calc_mssmnofv_convert_to_onshell, gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_convert_to_onshell", "gm2calc_mssmnofv_convert_to_onshell")
-// BE_FUNCTION(gm2calc_mssmnofv_convert_to_onshell_params, gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*, double, unsigned), "gm2calc_mssmnofv_convert_to_onshell_params", "gm2calc_mssmnofv_convert_to_onshell_params")
-// BE_FUNCTION(gm2calc_mssmnofv_calculate_masses, gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_masses", "gm2calc_mssmnofv_calculate_masses")
+BE_FUNCTION(gm2calc_mssmnofv_convert_to_onshell, gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_convert_to_onshell", "gm2calc_mssmnofv_convert_to_onshell")
+BE_FUNCTION(gm2calc_mssmnofv_convert_to_onshell_params, gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*, double, unsigned), "gm2calc_mssmnofv_convert_to_onshell_params", "gm2calc_mssmnofv_convert_to_onshell_params")
+BE_FUNCTION(gm2calc_mssmnofv_calculate_masses, gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_masses", "gm2calc_mssmnofv_calculate_masses")
 
 // Init function
 BE_INI_FUNCTION{}
