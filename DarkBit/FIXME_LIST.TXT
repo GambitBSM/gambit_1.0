@@ -52,6 +52,7 @@ RelicDensity.cpp: 255	:      // FIXME: Here goes a translation GAMBIT particle i
 RelicDensity.cpp: 268	:      // now order: FIXME: probably not needed!
 RelicDensity.cpp: 367	:        // FIXME: keep track of error flags in oh2_general
 SingletDM.cpp: 391	:          // FIXME: Is threshold sufficient?
+GamYields.cpp: 362 : // FIXME: Decide whether this is acceptable for the first release
 
 
 Christoph:
@@ -73,24 +74,21 @@ DONE SingletDM.cpp:  31	://FIXME these should not be set here, and must come fro
 DONE GamYields.cpp: 183	:    // FIXME: Update description and v=0 properties
 DONE GamYields.cpp: 214	:      // FIXME: Make use of Emin and Emax for AnnYield
 DONE Cascades.cpp:  52	:    // FIXME:  Delete this debug function?
-
-GamYields.cpp: 249	:        // FIXME: Improve Funktions error message when wrong number of
-GamYields.cpp: 348	:      // FIXME: Check whether three-body processes are actually open at v=0
-GamYields.cpp: 349	:      // FIXME: For now only primary gamma-ray lines are supported
-GamYields.cpp: 455	:// FIXME: Fix neutrino channels
-
-GamYields.cpp: 379	:            // FIXME: Implement correct treatment
-GamYields.cpp: 457	:        ADD_CHANNEL(2, "h0_1_test", "h0_2_test", "gamma", 0., 10000.)      // FIXME: Remove.        
-GamYields.cpp: 458	:        ADD_CHANNEL(5, "h0_2_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.
-GamYields.cpp: 459	:        ADD_CHANNEL(6, "h0_1_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.       
-GamYields.cpp: 460	:        ADD_CHANNEL(8, "h0_2_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove. 
-GamYields.cpp: 461	:        ADD_CHANNEL(9, "h0_1_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove.        
-GamYields.cpp: 462	:        ADD_CHANNEL(10, "A0_test", "Z0_test", "gamma", 0., 10000.)         // FIXME: Remove.
-GamYields.cpp: 463	:        ADD_CHANNEL(11, "WH_test", "WH_test", "gamma", 0., 10000.)         // FIXME: Remove.      
+DONE GamYields.cpp: 249	:        // FIXME: Improve Funktions error message when wrong number of
+DONE GamYields.cpp: 348	:      // FIXME: Check whether three-body processes are actually open at v=0
+DONE GamYields.cpp: 349	:      // FIXME: For now only primary gamma-ray lines are supported
+DONE GamYields.cpp: 379	:            // FIXME: Implement correct treatment
+DONE GamYields.cpp: 455	:// FIXME: Fix neutrino channels
+DONE GamYields.cpp: 457	:        ADD_CHANNEL(2, "h0_1_test", "h0_2_test", "gamma", 0., 10000.)      // FIXME: Remove.        
+DONE GamYields.cpp: 458	:        ADD_CHANNEL(5, "h0_2_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.
+DONE GamYields.cpp: 459	:        ADD_CHANNEL(6, "h0_1_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.       
+DONE GamYields.cpp: 460	:        ADD_CHANNEL(8, "h0_2_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove. 
+DONE GamYields.cpp: 461	:        ADD_CHANNEL(9, "h0_1_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove.        
+DONE GamYields.cpp: 462	:        ADD_CHANNEL(10, "A0_test", "Z0_test", "gamma", 0., 10000.)         // FIXME: Remove.
+DONE GamYields.cpp: 463	:        ADD_CHANNEL(11, "WH_test", "WH_test", "gamma", 0., 10000.)         // FIXME: Remove.      
 
 SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
 SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
-
 decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
 MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */                \
 Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
@@ -103,3 +101,4 @@ funktions.cpp  :  somewhere :   // FIXME : Implement getting grid with singulari
 ProcessCatalog.cpp: everywhere : // FIXME: Check consisteny of kinematics in general (is v>0 correctly taken into account for final state particles everywhere?)
 ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for three-body final states
 SingletDM.cpp:  422 :          /* FIXME: Delete if not needed elsewhere
+funktions.hpp :  FIXME: Implement proper error messages instead of exit(1) calls

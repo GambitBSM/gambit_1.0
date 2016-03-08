@@ -156,6 +156,30 @@ namespace Funk
     // Helper functions for internal calculations
     //
 
+    inline bool args_match(ArgsType args1, ArgsType args2)
+    {
+        bool m = true;
+        for ( auto it = args1.begin(); it!=args1.end(); it++ )
+        {
+            if ( std::find(args2.begin(), args2.end(), *it) == args2.end() )
+                m = false;
+        }
+        if ( args1.size() != args2.size() ) m = false;
+        return m;
+    }
+
+    inline std::string args_string(ArgsType args)
+    {
+        std::string msg = "";
+        for ( auto it = args.begin(); it!=args.end(); it++ )
+        {
+            msg += *it;
+            if ( it != args.end() - 1)
+                msg += ", ";
+        }
+        return msg;
+    }
+
     inline ArgsType joinArgs(ArgsType args1, ArgsType args2)
     {
         args1.insert(args1.end(), args2.begin(), args2.end());
@@ -953,6 +977,14 @@ namespace Funk
             datamap[*it] = i;
         }
         std::map<std::string,size_t> argmap;
+        if ( not args_match(arguments, bound_arguments) )
+        {
+            // FIXME: Throw proper error if problems are encountered
+            std::cout << "FATAL ERROR: bind() tries to resolve wrong arguments." << std::endl;
+            std::cout << "  Arguments that are supposed to be bound: " << args_string(bound_arguments) << std::endl;
+            std::cout << "  Actual arguments: " << args_string(arguments) << std::endl;
+            exit(1);
+        }
         this->resolve(datamap, datalen, bindID, argmap);
         return shared_ptr<FunkBound>(new FunkBound(shared_from_this(), datalen, bindID));
     }
