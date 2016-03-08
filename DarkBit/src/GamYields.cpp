@@ -180,16 +180,12 @@ namespace Gambit {
         ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", Funk::var("E"));
     }
 
-    // FIXME: Update description and v=0 properties
     /*! \brief General routine to derive annihilation yield.
      *
      * Depends on:
      * - SimYieldTable
      * - TH_ProcessCatalog
      * - cascadeMC_gammaSpectra
-     */
-    /*! \brief Calculates annihilation spectra for general process catalogs,
-     *        directly using DarkSUSY as a backend.
      *
      * This function returns 
      *
@@ -199,10 +195,6 @@ namespace Gambit {
      * energy (GeV) and velocity (c).  By default, only the v=0 component
      * is calculated.  
      *
-     * The return type is a GAMBIT Base Function object as function which
-     * is only defined for v=0.
-     *
-     * NOTE: This function will be completely replaced by GA_AnnYield_General
      */
     void GA_AnnYield_General(Funk::Funk &result)
     {
@@ -210,13 +202,6 @@ namespace Gambit {
 
       std::string DMid= *Dep::DarkMatter_ID;
 
-      // Grid and energy range used in interpolating functions.
-      // FIXME: Make use of Emin and Emax for AnnYield
-      /*
-      double Emin, Emax;
-      Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");
-      Emax = runOptions->getValueOrDef<double>(1e4,  "Emax");
-      */
       double line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
 
       // Get annihilation process from process catalog
@@ -411,7 +396,8 @@ namespace Gambit {
       if(debug) os.close();
 #endif
 
-      result = Yield/(mass*mass);
+      result = Funk::ifelse(1e-6 - Funk::var("v"), Yield/(mass*mass), 
+          Funk::throwError("Spectrum currently only defined for v=0."));
     }
 
 
