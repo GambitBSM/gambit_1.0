@@ -21,12 +21,12 @@ namespace Gambit
         struct MSSMNoFV_onshell;
         typedef struct MSSMNoFV_onshell MSSMNoFV_onshell;
 
-        // enum gm2calc_error{
-        //    gm2calc_NoError = 0,
-        //    gm2calc_InvalidInput,
-        //    gm2calc_PhysicalProblem,
-        //    gm2calc_UnknownError
-        // };
+        enum gm2calc_error{
+           gm2calc_NoError = 0,
+           gm2calc_InvalidInput,
+           gm2calc_PhysicalProblem,
+           gm2calc_UnknownError
+        };
     }
 }
 
