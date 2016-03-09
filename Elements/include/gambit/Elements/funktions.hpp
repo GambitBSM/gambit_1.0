@@ -1336,6 +1336,8 @@ namespace Funk
             }
             double value(const std::vector<double> & data, size_t bindID)
             {
+              (void)bindID;
+              (void)data;
               throw std::invalid_argument("Funk::ThrowError says: " + msg);
             }
 

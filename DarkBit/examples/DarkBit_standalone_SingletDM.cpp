@@ -226,6 +226,7 @@ int main()
   // ---- Direct detection -----
 
   // Calculate DD couplings with Micromegas
+  /*
   DD_couplings_MicrOmegas.notifyOfModel("SingletDM");
   DD_couplings_MicrOmegas.notifyOfModel("nuclear_params_fnq");
   DD_couplings_MicrOmegas.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
@@ -233,6 +234,14 @@ int main()
   DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::FeScLoop);
   DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::mocommon_);
   DD_couplings_MicrOmegas.reset_and_calculate();
+  */
+
+  DD_couplings_SingletDM.notifyOfModel("nuclear_params_fnq");
+  DD_couplings_SingletDM.notifyOfModel("SingletDM");
+  // NOTE: Should also resolve SingletDM parameters, but not relevant here
+  DD_couplings_SingletDM.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
+  DD_couplings_SingletDM.resolveDependency(&createSpectrum);
+  DD_couplings_SingletDM.reset_and_calculate();
 
 //  // Calculate DD couplings with DarkSUSY
 //  DD_couplings_DarkSUSY.notifyOfModel("nuclear_params_fnq");
@@ -411,6 +420,8 @@ int main()
   // Retrieve and print DarkSUSY result
   oh2 = RD_oh2_DarkSUSY(0);
   logger() << "Relic density from DarkSUSY: " << oh2 << LogTags::info << EOM;
+
+  std::cout << "Done!" << std::endl;
 
   return 0;
 }
