@@ -289,9 +289,11 @@ namespace Funk
 
             // Singularities handling
             Singularities getSingl() { return singularities; }
+        private:  // Note: This works currently only for constant functions
             Funk set_singularity(std::string arg, Funk pos, Funk width);
             Funk set_singularity(std::string arg, double pos, Funk width);
             Funk set_singularity(std::string arg, Funk pos, double width);
+        public:
             Funk set_singularity(std::string arg, double pos, double width);
 
             // Print message
@@ -900,7 +902,16 @@ namespace Funk
         auto it2 = tmp_indices.begin();
         for (; it1 != arguments.end() && it2 != tmp_indices.end(); ++it1, ++it2 )
         {
-            *it2 = datamap.at(*it1);
+            try
+            {
+                *it2 = datamap.at(*it1);
+            }
+            catch (std::out_of_range & e)
+            {
+                std::string msg = "FunkBase::resolve() encountered internal problem when resolving " + *it1 + ".\n";
+                            msg+= " --- Actual arguments of object: " + args_string(arguments);
+                throw std::runtime_error(msg);
+            }
         }
 
         // Set indices
@@ -1559,6 +1570,38 @@ namespace Funk
     // Standard behaviour
     template <typename T1, typename T2>
     inline shared_ptr<FunkIntegrate_gsl1d> getIntegrate_gsl1d(Funk fptr, std::string arg, T1 x1, T2 x2) { return shared_ptr<FunkIntegrate_gsl1d>(new FunkIntegrate_gsl1d(fptr, arg, x1, x2)); }
+
+    //
+    // Helper function for producing singularity-augmented x-grids
+    //
+
+    inline std::vector<double> augmentSingl(const std::vector<double> & xgrid, Funk f, int N = 100, double sigma = 3)
+    {
+        std::vector<double> result = xgrid;
+        double xmin = result.front();
+        double xmax = result.back();
+
+        if ( f->getNArgs() != 1 )
+        {
+            std::string msg = "augment_with_singularities(): takes only functions with one argument.\n";
+                        msg+= "  --- Actual arguments are: " + args_string(f->getArgs());
+            throw std::invalid_argument(msg);
+        }
+
+        auto singls = (f->getSingl()).at(f->getArgs()[0]);
+        for (auto it = singls.begin(); it != singls.end(); it ++)
+        {
+            double position= it->first->bind()->eval();
+            double width = it->second->bind()->eval();
+            std::vector<double> singlgrid = linspace(std::max(position-width*sigma, xmin), std::min(position+width*sigma, xmax), N);
+            result.insert(result.end(), singlgrid.begin(), singlgrid.end());
+        }
+
+        std::sort(result.begin(), result.end());
+
+        return result;
+    }
 }
+
 
 #endif  // __FUNK_HPP__

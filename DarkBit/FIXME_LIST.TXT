@@ -88,16 +88,21 @@ DONE GamYields.cpp: 462	:        ADD_CHANNEL(10, "A0_test", "Z0_test", "gamma", 
 DONE GamYields.cpp: 463	:        ADD_CHANNEL(11, "WH_test", "WH_test", "gamma", 0., 10000.)         // FIXME: Remove.      
 DONE funktions.hpp :  FIXME: Implement proper error messages instead of exit(1) calls
 DONE SingletDM.cpp:  422 :          /* FIXME: Delete if not needed elsewhere
-funktions.cpp  :  somewhere :   // FIXME : Implement getting grid with singularities
-SimpleLikelihoods.cpp: 121, 143, 258:      // FIXME: Get grid from function object including all singularities
+DONE funktions.cpp  :  somewhere :   // FIXME : Implement getting grid with singularities
+DONE SimpleLikelihoods.cpp: 121, 143, 258:      // FIXME: Get grid from function object including all singularities
+
+Get standalones working again after Ben's and Pat's mods
+SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
+SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
+
 Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
 Cascades.cpp: 422	:          // FIXME: This sets equal binning for all particle types.  Each
 Cascades.cpp: 505	:            // FIXME: What happens for single particle endpoints without
 Cascades.cpp: 661	:          // FIXME: Default values provide 1-2% accuracy for singular integrals
-SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process (check what this means)
+decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
+
+MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */                \
 ProcessCatalog.cpp: everywhere : // FIXME: Check consisteny of kinematics in general (is v>0 correctly taken into account for final state particles everywhere?)
 ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for three-body final states
-decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
-SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
-SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
-MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */                \
+
+SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process (check what this means)

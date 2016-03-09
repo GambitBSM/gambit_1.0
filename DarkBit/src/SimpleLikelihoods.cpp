@@ -118,8 +118,8 @@ namespace Gambit {
       result = 0;
 
       // from 0.1 to 500 GeV
-      // FIXME: Get grid from function object including all singularities
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
+      x = Funk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
@@ -140,7 +140,7 @@ namespace Gambit {
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
-      // FIXME: Get grid from function object including all singularities
+      x = Funk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
@@ -254,8 +254,6 @@ namespace Gambit {
     void dump_GammaSpectrum(double &result)
     {
       using namespace Pipes::dump_GammaSpectrum;
-      // Construct interpolated function, using GAMBIT base functions.
-      // FIXME: Get grid from function object including all singularities
       Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
       std::string filename = runOptions->getValueOrDef<std::string>(
           "dNdE.dat", "filename");
