@@ -91,8 +91,8 @@ DONE SingletDM.cpp:  422 :          /* FIXME: Delete if not needed elsewhere
 DONE funktions.cpp  :  somewhere :   // FIXME : Implement getting grid with singularities
 DONE SimpleLikelihoods.cpp: 121, 143, 258:      // FIXME: Get grid from function object including all singularities
 DONE Get DarkBit_standalone_WIMP working
-WAIT DarkBit_standalone_SingletDM ---> problem with spectrum objects (missing "e+"), delegated to Ben
-WAIT DarkBit_standalone_MSSM ---> problem with segfault (in spectrum object), delegated to Ben
+**FIXED** DarkBit_standalone_SingletDM ---> problem with spectrum objects (missing "e+"), delegated to Ben
+**FIXED** DarkBit_standalone_MSSM ---> problem with segfault (in spectrum object), delegated to Ben
 SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
 SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
 Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
