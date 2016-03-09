@@ -1588,16 +1588,21 @@ namespace Funk
             throw std::invalid_argument(msg);
         }
 
-        auto singls = (f->getSingl()).at(f->getArgs()[0]);
-        for (auto it = singls.begin(); it != singls.end(); it ++)
-        {
-            double position= it->first->bind()->eval();
-            double width = it->second->bind()->eval();
-            std::vector<double> singlgrid = linspace(std::max(position-width*sigma, xmin), std::min(position+width*sigma, xmax), N);
-            result.insert(result.end(), singlgrid.begin(), singlgrid.end());
-        }
+        std::string arg = f->getArgs()[0];
+        Singularities singlsMap = f->getSingl();
 
-        std::sort(result.begin(), result.end());
+        if ( singlsMap.find(arg) != singlsMap.end() )
+        {
+            auto singls = singlsMap.at(arg);
+            for (auto it = singls.begin(); it != singls.end(); it ++)
+            {
+                double position= it->first->bind()->eval();
+                double width = it->second->bind()->eval();
+                std::vector<double> singlgrid = linspace(std::max(position-width*sigma, xmin), std::min(position+width*sigma, xmax), N);
+                result.insert(result.end(), singlgrid.begin(), singlgrid.end());
+            }
+            std::sort(result.begin(), result.end());
+        }
 
         return result;
     }
