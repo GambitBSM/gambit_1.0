@@ -129,13 +129,13 @@ namespace Gambit
       }
 
       // Set Higgs masses
-      // FIXME: Correct to set higgs masses to zero if not present?
+      if (Dep::TH_ProcessCatalog->hasParticleProperty("h0_1"))
+        Higgs_masses_neutral[1] = Dep::TH_ProcessCatalog->getParticleProperty("h0_1").mass;
+      else
+        DarkBit_error().raise(LOCAL_INFO, "No SM-like Higgs in ProcessCatalog!");
       Higgs_masses_neutral[0] = 
         Dep::TH_ProcessCatalog->hasParticleProperty("h0_2") ?  
         Dep::TH_ProcessCatalog->getParticleProperty("h0_2").mass : 0.;
-      Higgs_masses_neutral[1] = 
-        Dep::TH_ProcessCatalog->hasParticleProperty("h0_1") ?  
-        Dep::TH_ProcessCatalog->getParticleProperty("h0_1").mass : 0.;
       Higgs_masses_neutral[2] = 
         Dep::TH_ProcessCatalog->hasParticleProperty("A0") ?  
         Dep::TH_ProcessCatalog->getParticleProperty("A0").mass : 0.;

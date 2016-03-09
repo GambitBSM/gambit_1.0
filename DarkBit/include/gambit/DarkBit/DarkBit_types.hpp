@@ -58,9 +58,6 @@
 #include <array>
 #include <cmath>
 
-// FIXME: What to include to allow DarkBit_warning() ?
-//#include "gambit/Elements/gambit_module_headers.hpp"
-//#include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/decay_chain.hpp"
 #include "gambit/DarkBit/SimpleHist.hpp"
 #include "gambit/DarkBit/ProcessCatalog.hpp"
@@ -76,13 +73,16 @@ namespace Gambit
   namespace DarkBit
   {
 
-    //Local preferred sources of tools.
+    // Forward declaration of warnings and errors
+    error& DarkBit_error();
+    warning& DarkBit_warning();
+
+    // Local preferred sources of tools.
     using boost::weak_ptr;
     using boost::shared_ptr;
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
-
 
     // A simple example
     struct Wstruct
@@ -322,7 +322,7 @@ namespace Gambit
             {
                 if ( hasChannel(p1, p2) )
                 {
-                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "addChanel: Channel already exists --> ignoring new one.");
+                    DarkBit_warning().raise(LOCAL_INFO, "addChanel: Channel already exists --> ignoring new one.");
                     return;
                 }
                 channel_list.push_back(SimYieldChannel(dNdE, p1, p2, finalState, Ecm_min, Ecm_max));
@@ -366,7 +366,7 @@ namespace Gambit
                 int index = findChannel(p1, p2, finalState);
                 if ( index == -1 )
                 {
-                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "getChannel: Channel unknown, returning dummy.");
+                    DarkBit_warning().raise(LOCAL_INFO, "getChannel: Channel unknown, returning dummy.");
                     return dummy_channel;
                 }
                 return channel_list[index];
@@ -387,7 +387,7 @@ namespace Gambit
                 int index = findChannel(p1, p2, finalState);
                 if ( index == -1 )
                 {
-                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "SimYieldTable(): Channel not known, returning zero spectrum.");
+                    DarkBit_warning().raise(LOCAL_INFO, "SimYieldTable(): Channel not known, returning zero spectrum.");
                     return Funk::zero("E", "Ecm");
                 }
                 return channel_list[index].dNdE;
