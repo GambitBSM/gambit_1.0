@@ -83,7 +83,7 @@ namespace Gambit
                  printer_interface *printerInterface) 
                 : options(options_in), printerInterface(printerInterface), has_local_prior_and_factory(false)
                 {
-                        Plugins::plugin_info.iniFile(options, *printerInterface);
+                        //Plugins::plugin_info.iniFile(options, *printerInterface);
                         
                         if (options.hasKey("use_objectives"))
                         {
