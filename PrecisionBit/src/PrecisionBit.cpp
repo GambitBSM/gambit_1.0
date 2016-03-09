@@ -518,12 +518,11 @@ namespace Gambit
       result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mCmC, 1.275, 0.0, 0.025);
     }
 
-    /// \brief Likelihoods for charm quark mass and light quark mass ratios. At the moment, all are just gaussians.
+    /// \brief Likelihoods for light quark mass ratios. At the moment, all are just gaussians.
     /// Default data from PDG http://PDG.LBL.GOV 10/6/2015
     /// m_u/m_d = 0.38-0.58
     /// m_s / ((m_u + m_d)/2) = 27.5 +/- 1.0
     /// m_s = 95 +/- 5 GeV
-
     void lnL_light_quark_masses_chi2 (double &result)
     {
         using namespace Pipes::lnL_light_quark_masses_chi2;

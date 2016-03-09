@@ -73,13 +73,16 @@ namespace Gambit
   namespace DarkBit
   {
 
-    //Local preferred sources of tools.
+    // Forward declaration of warnings and errors
+    error& DarkBit_error();
+    warning& DarkBit_warning();
+
+    // Local preferred sources of tools.
     using boost::weak_ptr;
     using boost::shared_ptr;
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
-
 
     // A simple example
     struct Wstruct
@@ -108,187 +111,6 @@ namespace Gambit
       std::vector<TH_Resonance> resonances;
       std::vector<double> threshold_energy;
     };
-
-
-//    struct RD_Boltzmann_type
-//    {
-//      RD_Boltzmann_type() {}
-//      RD_Boltzmann_type(const RD_coannihilating_particle & DMPart, const std::vector<TH_Resonance> & res, const std::vector<double> & thresholds) : DMParticle(DMPart), resonances(res), threshold_energy(thresholds) {}
-
-//      RD_coannihilating_particle DMParticle;
-//      std::vector<TH_Resonance> resonances;
-//      std::vector<double> threshold_energy;
-//    };
-    
-
-    // A double in, double out function pointer.  FIXME Probably actually better if this goes in
-    // shared_types.hpp eventually, as it will likely be needed by other modules too at some stage. 
-    typedef double(*fptr_dd)(double&);
-
-
-    //////////////////////////////////////////////
-    // General Dark Matter Halos and Halo Catalog
-    //////////////////////////////////////////////
-
-    struct MWhalo
-    {
-        MWhalo(Funk::Funk rho, Funk::Funk drho2dv) : rho(rho), drho2dv(drho2dv)
-        {
-            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y", "z"));
-            drho2dv->assert_args(Funk::vec<std::string>("r", "v"), Funk::vec<std::string>("x", "y", "z", "v"));
-        };
-        MWhalo(Funk::Funk rho) : rho(rho)
-        {
-            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y", "z"));
-            auto delta_v = Funk::delta("v", 1e-3, 1e-5);  // Add some fake velocity dependence
-            drho2dv = rho*rho * delta_v;
-        };
-        Funk::Funk rho;
-        Funk::Funk drho2dv;
-    };
-
-    /*
-    // This catalog is supposed to contain all DM halos that are relevant for a
-    // given analysis (Milky way halo, satellites, galaxy clusters, their
-    // memeber galaxies, etc).  However, unobserved subhalos are *not* included
-    // here, but part of DMhalo
-    struct DMhaloCatalog
-    {
-      public:
-        DMhaloCatalog() {}  // Dummy constructor
-
-        void addDMhalo(shared_ptr<DMhalo> newHalo)
-        {
-          this->myHalos.push_back(newHalo);
-        }
-
-        std::vector<shared_ptr<DMhalo> > getHaloList() {return myHalos;}
-
-        void show()
-        {
-            std::cout << "List of registered halos:" << std::endl;
-            for(std::vector<shared_ptr<DMhalo> >::iterator it = myHalos.begin(); it != myHalos.end(); ++it)
-            {
-                std::cout << (*it)->getName() << std::endl;
-            }
-        }
-
-      private:
-        std::vector<shared_ptr<DMhalo> > myHalos;
-    };
-    */
-
-
-    /////////////////////
-    // Sky maps and sums
-    /////////////////////
-
-    struct SuperHealpix
-    {
-        // TODO: Implement normal healpix for now
-    };
-
-    struct Jlayer
-    {
-        Jlayer() {}  // Dummy constructor
-
-        Jlayer(shared_ptr<SuperHealpix> map, double redshift)
-        {
-            this->myHealpix = map;
-            this->redshift = redshift;
-        }
-
-        shared_ptr<SuperHealpix> getMap() {return myHealpix;}
-
-        double getRedshift() {return redshift;}
-
-        private:
-            shared_ptr<SuperHealpix> myHealpix;
-            double redshift;  // redshift z
-    };
-
-    // J-value catalog
-    struct JlayerCatalog
-    {
-        public:
-            void addJlayer(shared_ptr<Jlayer> J)
-            {
-                this->myJlayers.push_back(J);
-            }
-
-            void setJfunc(shared_ptr<double> func)
-            {
-                this->Jfunc = func;
-            }
-
-        private:
-            std::vector<shared_ptr<Jlayer> > myJlayers;
-            shared_ptr<double> Jfunc;
-    };
-
-
-    //////////////////////////
-    // Physics implementation 
-    //////////////////////////
-
-    /*
-    class BFdmradialProfile: public BF::BaseFunction
-    {
-        public:
-            BFdmradialProfile(std::string type, int ndim, BF::BFargVec pars) : BF::BaseFunction("DMradialProfile", ndim), ndim(ndim)
-            {
-                if (ndim != 1 and ndim != 3) failHard("ERROR: DM profile can be only generated as 1-dim radial profile or 3-dim density function.");
-
-                if (type == "NFW")
-                {
-                    if (pars.size() != 2) failHard("NFW profile requires two parameters (scale radius and scale density).");
-                    this->rs = pars[0];
-                    this->rhos = pars[1];
-                    this->ptrF = &BFdmradialProfile::NFW;
-                }
-                // TODO: Implement 
-                // - Einasto profile
-                // - cored isothermal profile
-                // - alpha-beta-gamma profile
-            }
-
-        private:
-            // Redirection to profiles
-            double value(const BF::BFargVec &vec)
-            {
-                if (ndim == 1)
-                {
-                    return (this->*ptrF)(vec[0]);
-                }
-                else
-                {
-                    double r = 0;
-                    for (int i = 0; i < ndim; i++)
-                    {
-                        r += vec[i] * vec[i];
-                    }
-                    r = sqrt(r);
-                    return (this->*ptrF)(r);
-                }
-            }
-
-            // Dark matter profile parameters
-            double rs;  // Scale radius [kpc]
-            double rhos;  // Scale density [GeV/cm^3]
-
-            // Dimensionality (either 1 or 3)
-            int ndim;
-
-            // Pointer to member function that implements DM profile
-            double (BFdmradialProfile::*ptrF)(double);  
-
-            // The profiles
-            double NFW(double r)
-            {
-            return rhos / (r/rs) / (1+r/rs) / (1+r/rs);
-            }
-    };
-    */
 
 
     //////////////////////////////////////////////
@@ -347,6 +169,9 @@ namespace Gambit
       double gna;
     };
 
+
+    /*  NOTE: These structures are currently not used in the code
+
     //------------------------------------------------------
     // Structure to contain the Sun & Earth's motion relative
     // to the Galactic rest frame in Galactic coordinates.
@@ -402,7 +227,7 @@ namespace Gambit
     // Structure containing (keyed?) set of halo components,
     // where the key can be used to associate a DM particle
     // with a halo component.
-    // TODO:
+    // TODO: DDHaloS structure udpate
     //  * How to handle keys? Actually associations must be
     //    made within DDCalc, where the calculations are
     //    done.
@@ -458,21 +283,20 @@ namespace Gambit
       private:
         std::vector<DDParticleS> P;
     };
+    */
 
-    // FIXME: Ecm_min and _max do not appear to be used.
     struct SimYieldChannel
     {
         SimYieldChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
             dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) 
         {
-// FIXME: Make optional
-// #ifdef DARBIT_DEBUG
+//#ifdef DARBIT_DEBUG
             auto error = Funk::throwError(
                 "SimYieldChannel for "+p1+" "+p2+" final state(s): Requested center-of-mass energy out of range."
                 );
             auto Ecm = Funk::var("Ecm");
             this->dNdE = Funk::ifelse(Ecm - Ecm_min, Funk::ifelse(Ecm_max - Ecm, dNdE, error), error);
-// #endif
+//#endif
             dNdE_bound = dNdE->bind("E", "Ecm");
         }
         Funk::Funk dNdE;       
@@ -498,8 +322,7 @@ namespace Gambit
             {
                 if ( hasChannel(p1, p2) )
                 {
-                    // FIXMEW
-                    std::cout << "WARNING: Channel already exists.  Ignoring." << std::endl;
+                    DarkBit_warning().raise(LOCAL_INFO, "addChanel: Channel already exists --> ignoring new one.");
                     return;
                 }
                 channel_list.push_back(SimYieldChannel(dNdE, p1, p2, finalState, Ecm_min, Ecm_max));
@@ -543,8 +366,7 @@ namespace Gambit
                 int index = findChannel(p1, p2, finalState);
                 if ( index == -1 )
                 {
-                    // FIXMEW
-                    std::cout << "WARNING: Channel not known.  Returning dummy." << std::endl;
+                    DarkBit_warning().raise(LOCAL_INFO, "getChannel: Channel unknown, returning dummy.");
                     return dummy_channel;
                 }
                 return channel_list[index];
@@ -565,8 +387,7 @@ namespace Gambit
                 int index = findChannel(p1, p2, finalState);
                 if ( index == -1 )
                 {
-                    // FIXMEW
-                    std::cout << "WARNING: Channel not known.  Returning zero." << std::endl;
+                    DarkBit_warning().raise(LOCAL_INFO, "SimYieldTable(): Channel not known, returning zero spectrum.");
                     return Funk::zero("E", "Ecm");
                 }
                 return channel_list[index].dNdE;

@@ -1,0 +1,82 @@
+Status on DarkBit_development:
+
+Partial files:
+  debug_SLHA_filenames.yaml 
+  NuclearParams_fnq_DarkSUSY.yaml
+  NuclearParams_fnq_defaults.yaml
+  StandardModel_SLHA2_defaults.yaml
+  StandardModel_SLHA2_MSSM_scan.yaml
+  StandardModel_SLHA2_SingletDM_scan.yaml
+
+
+Runs fine (at least it looks like):
+  DarkBit_standalone_WIMP
+  spartan.yaml
+  spartan_multinest_hdf5.yaml
+  spartan_multinest.yaml
+  scan.yaml
+
+
+Problems:
+  DarkBit_standalone_SingletDM :  Problem with spectrum object (missing "e+") --> Ben
+  DarkBit_standalone_MSSM :  Problem with spectrum object (segfaults)  --> Ben
+  gambit_CMSSM_multinest_collider.yaml :  Fails verify_contents --> Ben
+  CMSSM.yaml
+  gambit_CMSSM_multinest_LEP.yaml
+  gambit_Collider.yaml
+  gambit_DarkBit_Example.yaml
+  gambit_DarkBit_MOTest.yaml
+  gambit_DecayBit_MSSM.yaml
+  gambit_DecayBit_SS.yaml
+  gambit_FlavBit_Example.yaml
+  gambit_FlavBit.yaml
+  gambit_SingletDM_hdf5_bad_process_catalog.yaml
+  gambit_SingletDM_hdf5.yaml
+  gambit_PrecisionBit.yaml
+  gambit_SpecBit_SSDM.yaml
+  lightquarktest.yaml
+  SpecBit.yaml
+
+  ColliderBit_standalone :  segfaults --> Ben/Abram ??
+
+  gambit_CMSSM_hdf5 :  Problem with DarkSUSY backend not activated for pure CMSSM scans  --> Jonathan
+  gambit_CMSSM_multinest.yaml
+  gambit_DarkBit_DSTest.yaml
+  gambit_DarkBit_MSSM7.yaml
+  gambit_SingletDM_multinest_MO.yaml
+  gambit_SingletDM_multinest.yaml
+  gambit_SingletDM.yaml
+  SSDM_rd.yaml
+
+  gambit_UnitTest.yaml  :  segfaults --> Christoph
+  gambit.yaml :  yaml-cpp error --> Christoph
+
+
+Outdated yaml file (wrong Rules, missing parameters etc):
+  gambit_DarkBit.yaml  --> Christoph
+  gambit_MSSM25_all_likelihoods.yaml
+  gambit_SingletDM_all_likelihoods.yaml
+  gambit_SpecBit_tests.yaml
+  spartan_Pythia_tester.yaml
+  MSSMskel_test.yaml
+  SingletDM_test.yaml
+  threadsafe_logger_test.yaml
+
+
+Note tested:
+  largetest_diver+ascii.yaml
+  largetest_diver+hdf5.yaml
+  largetest_multinest+ascii.yaml
+  largetest_multinest+hdf5.yaml
+  largetest_random+ascii.yaml
+  largetest_random+hdf5.yaml
+  LesHouches.in.MSSM_1.yaml
+  MSSM25_test_hdf5.yaml
+  MSSM25_test.yaml
+  MSSM7_Flaverrrrr.yaml
+  MSSM7_x.yaml
+  MSSM7.yaml
+  MSSM9.yaml
+  spartan_diver_hdf5.yaml
+  spartan_diver.yaml
+  parameters.yaml

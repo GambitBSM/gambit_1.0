@@ -18,8 +18,8 @@
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
-#include "gambit/Elements/MSSMskeleton.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 
 // Only needed here
 #include "gambit/Utils/util_functions.hpp"
@@ -48,19 +48,19 @@ namespace Gambit
       static Spectrum mySpec;
       std::string inputFileName = "input.slha";
 
-      Elements::SingletDMModel singletmodel;
+      Models::SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = 125.; // *myPipe::Param.at("mH");
       singletmodel.HiggsVEV        = 246.; // 1. / sqrt(sqrt(2.)*sminputs.GF);
       singletmodel.SingletPoleMass = 100.; // *myPipe::Param.at("mS");
       singletmodel.SingletLambda   = 0.05; // *myPipe::Param.at("lambda_hS");
 
       SLHAstruct slhaea = read_SLHA(inputFileName);      
-      mySpec = singlet_spectrum_from_SLHAea(singletmodel, slhaea);
+      mySpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea);
       outSpec = &mySpec;
     }
 
     // Create decay object from SLHA file input.slha
-    // FIXME: This is currently not including the invisible width contribution!
+    // FIXME: Include invisible Higgs contribution
     void createDecays(DecayTable& outDecays)
     {
       std::string inputFileName = "input.slha";
@@ -226,6 +226,7 @@ int main()
   // ---- Direct detection -----
 
   // Calculate DD couplings with Micromegas
+  /*
   DD_couplings_MicrOmegas.notifyOfModel("SingletDM");
   DD_couplings_MicrOmegas.notifyOfModel("nuclear_params_fnq");
   DD_couplings_MicrOmegas.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
@@ -233,6 +234,14 @@ int main()
   DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::FeScLoop);
   DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::mocommon_);
   DD_couplings_MicrOmegas.reset_and_calculate();
+  */
+
+  DD_couplings_SingletDM.notifyOfModel("nuclear_params_fnq");
+  DD_couplings_SingletDM.notifyOfModel("SingletDM");
+  // NOTE: Should also resolve SingletDM parameters, but not relevant here
+  DD_couplings_SingletDM.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
+  DD_couplings_SingletDM.resolveDependency(&createSpectrum);
+  DD_couplings_SingletDM.reset_and_calculate();
 
 //  // Calculate DD couplings with DarkSUSY
 //  DD_couplings_DarkSUSY.notifyOfModel("nuclear_params_fnq");
@@ -411,6 +420,8 @@ int main()
   // Retrieve and print DarkSUSY result
   oh2 = RD_oh2_DarkSUSY(0);
   logger() << "Relic density from DarkSUSY: " << oh2 << LogTags::info << EOM;
+
+  std::cout << "Done!" << std::endl;
 
   return 0;
 }

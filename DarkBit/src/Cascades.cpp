@@ -49,20 +49,6 @@ namespace Gambit {
 #endif
     }     
 
-    // Print list of final states for debug purposes
-    void cascadeMC_printFinalStates(bool &dummy)
-    {
-      // FIXME:  Remove this one
-      dummy=true;
-      using namespace Pipes::cascadeMC_printFinalStates;     
-      const std::vector<std::string> &list = *Dep::cascadeMC_FinalStates;
-      logger() << "Cascade decay final state list contains: " << std::endl;
-      for(size_t i=0; i<list.size(); i++)
-      {
-        logger() << i << ": " << list[i] << std::endl;
-      }
-    }   
-
     // Function setting up the decay table used in decay chains
     void cascadeMC_DecayTable(DarkBit::DecayChain::DecayTable &table)
     {
@@ -315,7 +301,7 @@ namespace Gambit {
             // Estimate for highest kinematically allowed CoM energy
           0.5*(M*M + msq)/M );
       if(Ecmin>=Ecmax) return;    
-      // TODO: Correct now?
+      // FIXME: Double-check that sampling is done correctly
       const double logmin = log(Ecmin);
       const double logmax = log(Ecmax);                  
       const double dlogE=logmax-logmin;       
@@ -417,8 +403,8 @@ namespace Gambit {
             runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
           cMC_gammaRelError      = 
             runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
-          // FIXME: This sets equal binning for all particle types.
-          // Each particle type should be allowed to have different binning.
+          // FIXME: This sets equal binning for all particle types.  Each
+          // particle type should be allowed to have different binning.
           cMC_NhistBins          = 
             runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");                 
           cMC_binLow             = 
@@ -657,6 +643,7 @@ namespace Gambit {
             i++;                                       
           }
           // FIXME: Default values provide 1-2% accuracy for singular integrals
+          // Make this optional.
           spectra[*it] = Funk::Funk(new Funk::FunkInterp("E", E, dN_dE, "lin"));
 
           for (size_t i = 1; i<E.size()-1; i++)

@@ -168,6 +168,13 @@ namespace Gambit {
       return it->second;
     }
 
+    bool TH_ProcessCatalog::hasParticleProperty(str id) const
+    {
+      auto it = particleProperties.find(id);
+      return (it != particleProperties.end());
+    }
+
+
     void TH_ProcessCatalog::validate()
     {
       for (auto it = processList.begin(); it != processList.end(); it++)

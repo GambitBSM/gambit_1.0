@@ -16,6 +16,7 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2013 Apr
 ///        2015 Mar, Aug
+///        2016 Feb
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -37,6 +38,7 @@
 
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/DarkSUSY.hpp"
+#include "gambit/Utils/file_lock.hpp"
 
 #define square(x) ((x) * (x))  // square a number
 
@@ -55,54 +57,93 @@ END_BE_NAMESPACE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-    // Initialize DarkSUSY if run for the first time
-    bool static scan_level = true;
+  // Initialize DarkSUSY if run for the first time
+  bool static scan_level = true;
 
-    if (scan_level)
+  if (scan_level)
+  {
+
+    // Do the call to dsinit one-by-one for each MPI process, as DarkSUSY loads up
+    // HiggsBounds, which writes files at init then reads them back in later.
+    Utils::FileLock mylock("DarkSUSY_" STRINGIFY(SAFE_VERSION) "_init");
+    mylock.get_lock();
+    dsinit();
+    mylock.release_lock();
+
+    dsrdinit();
+
+    // Initialize yield tables for use in cascade decays (initialize more if needed)
+    dshainit(151); // Initialize positron tables
+    dshainit(152); // Initialize gamma ray tables
+    dshainit(154); // Initialize antiproton tables
+    // Call dshayield for first call initialization of variables
+    double tmp1 = 100.0;
+    double tmp2 = 10.0;
+    int tmp3 = 15;
+    int tmp4 = 152;
+    int tmp5 = 0;
+    dshayield(tmp1,tmp2,tmp3,tmp4,tmp5);
+
+    scan_level = false;
+
+    /*
+     * FIXME: Fix BackendIniBit_error problems?
+    if (runOptions->hasKey("dddn"))
     {
-        std::cout << "DarkSUSY initialization" << std::endl;
-        dsinit();
-        dsrdinit();
-
-        // Initialize yield tables for use in cascade decays (initialize more if needed)
-        dshainit(151); // Initialize positron tables
-        dshainit(152); // Initialize gamma ray tables
-        dshainit(154); // Initialize antiproton tables
-        // Call dshayield for first call initialization of variables
-        double tmp1 = 100.0;
-        double tmp2 = 10.0;
-        int tmp3 = 15;
-        int tmp4 = 152;
-        int tmp5 = 0;
-        dshayield(tmp1,tmp2,tmp3,tmp4,tmp5);
-
-        scan_level = false;
-
-        /*
-         * CW: TODO FIXME Fix BackendIniBit_error problems
-        if (runOptions->hasKey("dddn"))
-        {
-          if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
-          else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
-          else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
-                "(only 0 or 1 permitted).");
-        }
-
-        if (runOptions->hasKey("ddpole"))
-        {
-          if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
-          else if (runOptions->getValue<int>("ddpole")==0)
-          {
-            ddcom->ddpole = 0;
-            if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
-              BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
-                  "by DarkSUSY because dddn = 1.");
-          }
-          else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
-                "(only 0 or 1 permitted).");
-        }
-        */
+      if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
+      else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
+      else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
+            "(only 0 or 1 permitted).");
     }
+
+    if (runOptions->hasKey("ddpole"))
+    {
+      if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
+      else if (runOptions->getValue<int>("ddpole")==0)
+      {
+        ddcom->ddpole = 0;
+        if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
+          BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
+              "by DarkSUSY because dddn = 1.");
+      }
+      else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
+            "(only 0 or 1 permitted).");
+    }
+    */
+
+  }
+
+  // Initialization of local DM halo parameters.
+  if (ModelInUse("LocalHalo"))
+  {
+    double rho0 = *Param["rho0"];
+    double vrot = *Param["vrot"];
+    double vearth = *Param["vearth"];
+    double vd_3d = sqrt(3./2.)*(*Param["v0"]);
+    double vesc = *Param["vesc"];
+
+    dshmcom->rho0 = rho0;
+    dshmcom->rhox = rho0;
+    dshmcom->v_sun = vrot;
+    dshmcom->v_earth = vearth;
+
+    dshmframevelcom->v_obs = vrot;
+
+    dshmisodf->vd_3d = vd_3d;
+    dshmisodf->vgalesc = vesc;
+
+    dshmnoclue->vobs = vrot;
+
+    logger() << "Updating DarkSUSY halo parameters:" << EOM;
+    logger() << "    rho0 [GeV/cm^3] = " << rho0 << EOM;
+    logger() << "    rho0_eff [GeV/cm^3] = " << rho0 << EOM;
+    logger() << "    v_sun [km/s]  = " << vrot<< EOM;
+    logger() << "    v_earth [km/s]  = " << vearth << EOM;
+    logger() << "    v_obs [km/s]  = " << vrot << EOM;
+    logger() << "    vd_3d [km/s]  = " << vd_3d << EOM;
+    logger() << "    v_esc [km/s]  = " << vesc << EOM;
+  }
+
 }
 END_BE_INI_FUNCTION
 
@@ -203,7 +244,7 @@ BE_NAMESPACE
 
   /// Translates GAMBIT string identifiers to the SUSY
   /// particle codes used internally in DS (as stored in common block /pacodes/)
-  //TODO: add channel codes!
+  // FIXME: add channel codes!
   int DSparticle_code(const str& particleID)
   {
     int kpart;
@@ -746,7 +787,7 @@ BE_NAMESPACE
 /* PS: I have made the mods requested, but these functions cannot work as designed,
  * because DarkBit::TH_ParticleProperty is a module type, not a backend type.
  * Make it a backend type or move these functions back into DarkBit.
- *
+ * FIXME: Fix the IB mass setting routines
   void registerMassesForIB(
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
@@ -761,6 +802,7 @@ BE_NAMESPACE
 */
 
   //PS: this can't compile anyway, as particleProperties is not defined
+  //FIXME: Fix the IB mass setting routines
   void setMassesForIB(bool set)
   {
     if (set)

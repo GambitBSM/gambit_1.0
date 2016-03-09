@@ -18,8 +18,8 @@
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
-#include "gambit/Elements/MSSMskeleton.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 
 // Only needed here
 #include "gambit/Utils/util_functions.hpp"
@@ -47,7 +47,9 @@ namespace Gambit
     void createSpectrum(const Spectrum *& outSpec){
       static Spectrum mySpec;
       std::string inputFileName = "input.slha";
-      mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);     
+      std::cout << "Segfault is coming ----> " << std::endl;
+      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);  // FIXME: Segfault
+      std::cout << "..." << std::endl;
       outSpec = &mySpec;
     }
 
@@ -126,7 +128,7 @@ int main()
   // Initialize nulike backend
   Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);
   nulike_1_0_2_init.reset_and_calculate();
-  
+
   // Initialize gamLike backend
   gamLike_1_0_0_init.reset_and_calculate();
 
@@ -135,15 +137,9 @@ int main()
   MicrOmegas_3_6_9_2_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
+  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
+  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");
+  DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DarkSUSY_5_1_3_init.reset_and_calculate();
   DarkSUSY_PointInit_MSSM.notifyOfModel("MSSM30atQ");
   DarkSUSY_PointInit_MSSM.resolveDependency(&createSpectrum);
@@ -157,28 +153,8 @@ int main()
   DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dswwidth);
   DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mssmpar);
   DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
   DarkSUSY_PointInit_MSSM.reset_and_calculate();
-  logger() << "...done" << EOM;
 
-  // Initialize DarkSUSY Local Halo Model
-
-  DarkSUSY_PointInit_LocalHalo_func.notifyOfModel("LocalHalo");
-  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
-  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
-  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
-  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
-  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
-  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
-  DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
 
   // Initialize DDCalc0 backend
   Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
@@ -186,6 +162,7 @@ int main()
   DDCalc0_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DDCalc0_0_0_init.resolveDependency(&RD_fraction_fixed);
   DDCalc0_0_0_init.reset_and_calculate();
+
 
   // ---- Relic density ----
 
@@ -234,7 +211,8 @@ int main()
   mwimp_generic.resolveDependency(&DarkMatter_ID_MSSM30atQ);
   mwimp_generic.reset_and_calculate();
 
-  // Set generic annihilation rate in late universe (v->0 limit)  // FIXME: Check limit
+  // Set generic annihilation rate in late universe (v->0 limit)
+  // FIXME: Check whether limit is really calculated
   sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_MSSM);
   sigmav_late_universe.resolveDependency(&DarkMatter_ID_MSSM30atQ);
   sigmav_late_universe.reset_and_calculate();

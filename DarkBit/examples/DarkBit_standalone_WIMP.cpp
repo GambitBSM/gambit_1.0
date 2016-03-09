@@ -401,9 +401,8 @@ int main()
   dumpSpectrum("dNdE3.dat", mass, sv, Funk::vec<double>(0., 0., 0., 1., 0., 0.));
   dumpSpectrum("dNdE4.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 1., 0.));
   dumpSpectrum("dNdE5.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 0., 1.));
-*/
+  */
 
-/*
   // Systematic parameter maps annihilation
   std::cout << "Producing test maps." << std::endl;
   int mBins = 40;
@@ -449,8 +448,8 @@ int main()
   }
   dump_array_to_file("Fermi_table.dat", lnL_array, m_list, sv_list);
   dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
-*/
 
+  /*
   // Systematic parameter maps scattering
   std::cout << "Producing test maps." << std::endl;
   int mBins = 40;
@@ -489,6 +488,9 @@ int main()
     }
   }
   dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
+  */
+
+  std::cout << "Done!" << std::endl;
 
   return 0;
 }

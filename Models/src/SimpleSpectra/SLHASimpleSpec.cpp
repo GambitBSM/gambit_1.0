@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/SLHAskeleton.hpp" 
+#include "gambit/Models/SimpleSpectra/SLHASimpleSpec.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>

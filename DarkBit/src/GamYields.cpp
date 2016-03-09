@@ -163,7 +163,7 @@ namespace Gambit {
      */
     Funk::Funk boost_dNdE(Funk::Funk dNdE, double gamma, double mass)
     {
-      if ( gamma < 1.0 + .02 )  // FIXME: What number to use?
+      if ( gamma < 1.0 + .02 )  // Ignore less than 2% boosts
       {
         if (gamma < 1.0)
           DarkBit_error().raise(LOCAL_INFO, 
@@ -176,21 +176,16 @@ namespace Gambit {
       Funk::Funk halfBox_int = betaGamma*sqrt(E*E-mass*mass);
       Funk::Funk halfBox_bound = betaGamma*sqrt(Ep*Ep-mass*mass);
       Funk::Funk integrand = dNdE/(2*halfBox_int);
-      // FIXME: Use a more thought-out accuracy condition
       return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
         ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", Funk::var("E"));
     }
 
-    // FIXME: Update description and v=0 properties
     /*! \brief General routine to derive annihilation yield.
      *
      * Depends on:
      * - SimYieldTable
      * - TH_ProcessCatalog
      * - cascadeMC_gammaSpectra
-     */
-    /*! \brief Calculates annihilation spectra for general process catalogs,
-     *        directly using DarkSUSY as a backend.
      *
      * This function returns 
      *
@@ -200,10 +195,6 @@ namespace Gambit {
      * energy (GeV) and velocity (c).  By default, only the v=0 component
      * is calculated.  
      *
-     * The return type is a GAMBIT Base Function object as function which
-     * is only defined for v=0.
-     *
-     * NOTE: This function will be completely replaced by GA_AnnYield_General
      */
     void GA_AnnYield_General(Funk::Funk &result)
     {
@@ -211,13 +202,6 @@ namespace Gambit {
 
       std::string DMid= *Dep::DarkMatter_ID;
 
-      // Grid and energy range used in interpolating functions.
-      // FIXME: Make use of Emin and Emax
-      /*
-      double Emin, Emax;
-      Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");
-      Emax = runOptions->getValueOrDef<double>(1e4,  "Emax");
-      */
       double line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
 
       // Get annihilation process from process catalog
@@ -247,8 +231,6 @@ namespace Gambit {
         if ( m0 + m1 > Ecm ) continue;
 
         // Ignore channels with 0 BR in v=0 limit
-        // FIXME: Improve Funktions error message when wrong number of
-        // arguments is bound
         if (it->genRate->bind("v")->eval(0.) <= 0.) continue;
 
         double E0 = 0.5*(Ecm*Ecm+m0*m0-m1*m1)/Ecm;
@@ -346,8 +328,8 @@ namespace Gambit {
 #endif
       
       // Adding three-body final states
-      // FIXME: Check whether three-body processes are actually open at v=0
-      // FIXME: For now only primary gamma-ray lines are supported
+      //
+      // NOTE:  Three body processes are added even if they are closed for at v=0
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
           it != annProc.channelList.end(); ++it)
       {
@@ -377,7 +359,7 @@ namespace Gambit {
         {
           if ( it->finalStateIDs[1] == "gamma" or it->finalStateIDs[2] == "gamma")
           {
-            // FIXME: Implement correct treatment
+            // FIXME: Decide whether this is acceptable for the first release
             DarkBit_warning().raise(LOCAL_INFO, "Second and/or third primary gamma rays in three-body final states ignored.");
           }
           double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(
@@ -412,7 +394,8 @@ namespace Gambit {
       if(debug) os.close();
 #endif
 
-      result = Yield/(mass*mass);
+      result = Funk::ifelse(1e-6 - Funk::var("v"), Yield/(mass*mass), 
+          Funk::throwError("Spectrum currently only defined for v=0."));
     }
 
 
@@ -436,7 +419,7 @@ namespace Gambit {
         result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  
 
         // specifies also center of mass energy range
-        // FIXME: Update energy validty ranges
+        // FIXME: Update energy validity ranges
         ADD_CHANNEL(12, "Z0", "Z0", "gamma", 91.2*2, 10000.)
         ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
         ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 10000.)
@@ -452,21 +435,11 @@ namespace Gambit {
         ADD_CHANNEL(24, "t", "tbar", "gamma", 0., 10000.)
         ADD_CHANNEL(25, "b", "bbar", "gamma", 0., 10000.)
         ADD_CHANNEL(26, "g", "g", "gamma", 0., 10000.)
-        
-// FIXME: Fix neutrino channels
-        /*
-        ADD_CHANNEL(2, "h0_1_test", "h0_2_test", "gamma", 0., 10000.)      // FIXME: Remove.        
-        ADD_CHANNEL(5, "h0_2_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.
-        ADD_CHANNEL(6, "h0_1_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.       
-        ADD_CHANNEL(8, "h0_2_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove. 
-        ADD_CHANNEL(9, "h0_1_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove.        
-        ADD_CHANNEL(10, "A0_test", "Z0_test", "gamma", 0., 10000.)         // FIXME: Remove.
-        ADD_CHANNEL(11, "WH_test", "WH_test", "gamma", 0., 10000.)         // FIXME: Remove.      
-        */
+        // FIXME: Double-check validity of neutrino channels
 #undef ADD_CHANNEL
 
         // Add approximations for single-particle cases.
-        // FIXME: Update energy validty ranges
+        // FIXME: Update energy validity ranges
         // FIXME: We could actually use boosted rest-frame spectra instead -- discuss
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 12, yieldk, flag);
         result.addChannel(dNdE/2, "Z0", "gamma", 91.2, 10000.);

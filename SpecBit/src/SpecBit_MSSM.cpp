@@ -27,7 +27,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
-#include "gambit/Elements/MSSMskeleton.hpp"
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
@@ -525,7 +525,7 @@ namespace Gambit
     }
 
     /// Get an MSSMSpectrum object from an SLHA file
-    /// Wraps it up in MSSMskeleton; i.e. no RGE running possible.
+    /// Wraps it up in MSSMSimpleSpec; i.e. no RGE running possible.
     /// This is mainly for testing against benchmark points, but may be a useful last
     /// resort for interacting with "difficult" spectrum generators.
     void get_MSSM_spectrum_from_SLHAfile(const Spectrum* &result)
@@ -569,7 +569,7 @@ namespace Gambit
 
       // Create Spectrum object from the slhaea object
       static Spectrum matched_spectra;
-      matched_spectra = spectrum_from_SLHAea<MSSMskeleton>(input_slha);
+      matched_spectra = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
       result = &matched_spectra;
 
       // No sneaking in charged LSPs via SLHA, jävlar.
@@ -856,63 +856,57 @@ namespace Gambit
     /// Common function to fill the spectrum map from a Spectrum object
     void fill_map_from_MSSMspectrum(std::map<std::string,double>& specmap, const Spectrum* mssmspec)
     {
-      /// Add everything... use metadata to loop when available.
-      #define ADD_ALL(tag,strings)\
-         for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
-         {\
-            std::ostringstream label;\
-            label << *it <<" "<<STRINGIFY(tag);\
-            specmap[label.str()] = mssmspec->get_HE()->get(Par::tag,*it);\
+      /// Add everything... use spectrum contents routines to automate task
+      static const SpectrumContents::MSSM contents;
+      static const std::vector<SpectrumParameter> required_parameters = contents.all_parameters();
+      
+      for(std::vector<SpectrumParameter>::const_iterator it = required_parameters.begin();
+           it != required_parameters.end(); ++it)
+      {
+         const Par::Tags        tag   = it->tag();
+         const std::string      name  = it->name();
+         const std::vector<int> shape = it->shape();
+
+         /// Verification routine should have taken care of invalid shapes etc, so won't check for that here.
+
+         // Check scalar case
+         if(shape.size()==1 and shape[0]==1)
+         {
+           std::ostringstream label;
+           label << name <<" "<< Par::toString.at(tag);
+           specmap[label.str()] = mssmspec->get_HE()->get(tag,name);
          }
-
-      #define ADD_ALL1(tag,strings,indices)\
-         for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
-         {\
-            for(std::vector<int>::const_iterator it1=indices.begin(); it1!=indices.end(); ++it1)\
-            {\
-               std::ostringstream label;\
-               label << *it <<"_"<<*it1<<" "<<STRINGIFY(tag);\
-               specmap[label.str()] = mssmspec->get_HE()->get(Par::tag,*it,*it1);\
-            }\
+         // Check vector case
+         else if(shape.size()==1 and shape[0]>1)
+         {
+           for(int i = 1; i<=shape[0]; ++i) {
+             std::ostringstream label;
+             label << name <<"_"<<i<<" "<< Par::toString.at(tag);
+             specmap[label.str()] = mssmspec->get_HE()->get(tag,name,i);
+           }
          }
-
-      #define ADD_ALL2(tag,strings,indices1,indices2)\
-         for(std::vector<std::string>::const_iterator it=strings.begin(); it!=strings.end(); ++it)\
-         {\
-            for(std::vector<int>::const_iterator it1=indices1.begin(); it1!=indices1.end(); ++it1)\
-            {\
-            for(std::vector<int>::const_iterator it2=indices2.begin(); it2!=indices2.end(); ++it2)\
-            {\
-               std::ostringstream label;\
-               label << *it <<"_("<<*it1<<","<<*it2<<") "<<STRINGIFY(tag);\
-               specmap[label.str()] = mssmspec->get_HE()->get(Par::tag,*it,*it1,*it2);\
-            }\
-            }\
+         // Check matrix case
+         else if(shape.size()==2)
+         {
+           for(int i = 1; i<=shape[0]; ++i) {
+             for(int j = 1; j<=shape[0]; ++j) {
+               std::ostringstream label;
+               label << name <<"_("<<i<<","<<j<<") "<<Par::toString.at(tag);
+               specmap[label.str()] = mssmspec->get_HE()->get(tag,name,i,j);
+             }  
+           }
          }
-      static const MSSM_strs ms;
+         // Deal with all other cases
+         else
+         {
+           // ERROR
+           std::ostringstream errmsg;           
+           errmsg << "Error, invalid parameter received while converting MSSMspectrum to map of strings! This should no be possible if the spectrum content verification routines were working correctly; they must be buggy, please report this.";
+           errmsg << "Problematic parameter was: "<< tag <<", " << name << ", shape="<< shape; 
+           utils_error().forced_throw(LOCAL_INFO,errmsg.str());
+         }
+      }
 
-      static const std::vector<int> i12     = initVector(1,2);
-      static const std::vector<int> i123    = initVector(1,2,3);
-      static const std::vector<int> i1234   = initVector(1,2,3,4);
-      static const std::vector<int> i123456 = initVector(1,2,3,4,5,6);
-
-      ADD_ALL (Pole_Mass,ms.pole_mass_strs)             // no-index strings
-      ADD_ALL1(Pole_Mass,ms.pole_mass_strs_1_2,i12)     // 1-index with two allowed values
-      ADD_ALL1(Pole_Mass,ms.pole_mass_strs_1_3,i123)    // 1-index with three allowed values
-      ADD_ALL1(Pole_Mass,ms.pole_mass_strs_1_4,i1234)   // 1-index with four allowed values
-      ADD_ALL1(Pole_Mass,ms.pole_mass_strs_1_6,i123456) // 1-index with six allowed values
-
-      ADD_ALL2(Pole_Mixing,ms.pole_mixing_strs_2_6x6,i123456,i123456)
-      ADD_ALL2(Pole_Mixing,ms.pole_mixing_strs_2_4x4,i1234,i1234)
-      ADD_ALL2(Pole_Mixing,ms.pole_mixing_strs_2_3x3,i123,i123)
-      ADD_ALL2(Pole_Mixing,ms.pole_mixing_strs_2_2x2,i12,i12)
-
-      ADD_ALL (mass2,ms.mass2_strs)
-      ADD_ALL2(mass2,ms.mass2_strs_2_3x3,i123,i123)
-      ADD_ALL (mass1,ms.mass1_strs)
-      ADD_ALL2(mass1,ms.mass1_strs_2_3x3,i123,i123)
-      ADD_ALL (dimensionless,ms.dimensionless_strs)
-      ADD_ALL2(dimensionless,ms.dimensionless_strs_2_3x3,i123,i123)
     }
 
 
