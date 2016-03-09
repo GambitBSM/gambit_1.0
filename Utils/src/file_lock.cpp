@@ -58,6 +58,7 @@ namespace Gambit {
       FileLock::FileLock(const std::string& fname)
        : my_lock_fname(ensure_path_exists(lock_prefix + fname + lock_suffix))
        , fd(open(my_lock_fname.c_str(), O_RDWR | O_CREAT, 0666)) // last argument is permissions, in case file has to be created.
+       , have_lock(false)
       {
         /// Should check for errors opening the file. List of error codes is kind of long though, let people look it up themselves for now...
         if(fd<0)
