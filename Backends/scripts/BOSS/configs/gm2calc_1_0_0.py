@@ -32,6 +32,7 @@ input_files = [
     '../../../Backends/installed/gm2calc/1.0.0/src/MSSMNoFV_onshell.hpp',
     '../../../Backends/installed/gm2calc/1.0.0/src/gm2_1loop.hpp',
     '../../../Backends/installed/gm2calc/1.0.0/src/gm2_2loop.hpp',
+    '../../../Backends/installed/gm2calc/1.0.0/src/gm2_uncertainty.hpp',
 ]
 include_paths = [
     '../../../Backends/installed/gm2calc/1.0.0/src', 
@@ -56,6 +57,7 @@ load_functions = [
   'gm2calc::calculate_amu_1loop_non_tan_beta_resummed(const gm2calc::MSSMNoFV_onshell&)',
   'gm2calc::calculate_amu_2loop(const gm2calc::MSSMNoFV_onshell&)',
   'gm2calc::calculate_amu_2loop_non_tan_beta_resummed(const gm2calc::MSSMNoFV_onshell&)',
+  'gm2calc::calculate_uncertainty_amu_2loop(const gm2calc::MSSMNoFV_onshell&)'
 ]
 
 ditch = []
