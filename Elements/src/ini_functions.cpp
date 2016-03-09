@@ -291,6 +291,21 @@ namespace Gambit
     return 0;
   }
 
+  /// Disable a backend initialisation function if the backend is missing. 
+  int set_BackendIniBit_functor_status(functor& ini_functor, str be, str v)
+  {
+    bool present = Backends::backendInfo().works.at(be + v);
+    try
+    {  
+      if (not present)
+      {
+        ini_functor.setStatus(-4);
+      }
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;
+  }
+
   /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.        
   int get_ctor_status(str be, str ver, str name, str barename, str args, str symbol_name)
   {
