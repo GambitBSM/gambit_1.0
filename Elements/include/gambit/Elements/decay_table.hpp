@@ -55,6 +55,9 @@ namespace Gambit
       /// Output entire decay table as an SLHAea file full of DECAY blocks
       SLHAstruct as_slhaea(bool include_zero_bfs=false) const;
     
+      /// Output entire decay table as an SLHA file full of DECAY blocks
+      void as_slha(str, bool include_zero_bfs=false) const;
+
       /// Output a decay table entry as an SLHAea DECAY block, using input parameter to identify the entry.
       /// @{
       SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
@@ -98,6 +101,9 @@ namespace Gambit
 
           /// Make sure all particles listed in a set are actually known to the GAMBIT particle database
           void check_particles_exist(std::multiset< std::pair<int,int> >&) const;
+
+          /// Make sure no NaNs have been passed to the DecayTable by nefarious backends
+          void check_BF_validity(double, double, std::multiset< std::pair<int,int> >&) const;
 
           /// Construct a set of particles from a variadic list of full names or short names and indices 
           /// @{
@@ -149,6 +155,7 @@ namespace Gambit
             std::pair<int,int> particles[] = {p1, args...};
             std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args)+1);
             check_particles_exist(key);
+            check_BF_validity(BF, error, key);
             channels[key] = std::pair<double, double>(BF, error);
           }
 
@@ -157,6 +164,7 @@ namespace Gambit
           {
             std::multiset< std::pair<int,int> > key;
             construct_key(key, p1, args...);
+            check_BF_validity(BF, error, key);
             channels[key] = std::pair<double, double>(BF, error);
           }
           /// @}

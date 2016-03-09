@@ -4,9 +4,6 @@
 ///
 ///  ScannerBit interface to Multinest 3.9
 ///
-///  This interface is based on crapsample.cpp,
-///  including random comments from Greg.
-///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -30,7 +27,6 @@
 #include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/util_functions.hpp"
-//#include "gambit/Printers/basebaseprinter.hpp"
 
 
 namespace Gambit

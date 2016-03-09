@@ -11,12 +11,16 @@
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Aug
+///  \author Jonathan Cornell
+///          (cornellj@physics.mcgill.ca)
+///  \date 2016 Feb
 ///
 ///  *********************************************
 
 #include "gambit/Utils/statistics.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-
+#include "gambit/Elements/numerical_constants.hpp"
+#include "gambit/Utils/local_info.hpp"
 
 namespace Gambit
 {
@@ -24,11 +28,27 @@ namespace Gambit
   namespace Stats
   {
 
-    /// Use a detection to compute a simple chi-square likelihood (returns log likelihood)
+    /// Use a detection to compute a simple chi-square likelihood.
+    /// For the case when obs/theory is normally distributed with a variance of
+    /// (err/theory)^2. (returns log likelihood)
     double gaussian_loglikelihood(double theory, double obs, double theoryerr, double obserr)
     {
       double errsq = theoryerr*theoryerr + obserr*obserr;
-      return -0.5*pow(theory-obs,2)/errsq;
+      return (log(theory/sqrt(errsq*2*pi)) - 0.5*pow(theory-obs,2)/errsq);
+    }
+
+    /// Use a detection to compute a simple chi-square likelihood for the case
+    /// where the quantity ln(obs/theory) is normally distributed. (err/theory)^2 is
+    /// the variance of the distribution of ln(obs/theory) values.
+    /// (returns log-likelihood)
+    double lognormal_loglikelihood(double theory, double obs, double theoryerr, double obserr)
+    {
+
+        double errsq_prime = (theoryerr*theoryerr + obserr*obserr) / (theory*theory);
+        double obs_prime = obs / theory;
+
+        return (-log(sqrt(errsq_prime*2*pi)) - log(obs_prime)
+                - 0.5*pow(log(obs_prime),2)/errsq_prime);
     }
 
     /// Use a detection to compute a log-likelihood for an upper limit

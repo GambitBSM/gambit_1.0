@@ -174,7 +174,7 @@ int main(int argc, char* argv[])
     // If true, bail out (just wanted the run order, not a scan); otherwise, keep going.
     if (not Core().show_runorder)
     {
- 
+      Scanner::Plugins::plugin_info.iniFile(iniFile.getScannerNode(), printerManager);
       //Define the prior
       Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   

@@ -526,13 +526,13 @@ is a unique record for every rank/pointID pair.";
     }
  
  
-    // PRINT FUNCTIONS
+    /// @{ PRINT FUNCTIONS
     //----------------------------
     // Need to define one of these for every type we want to print!
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
    
-    // Template for print functions of "easy" types
+    /// Template for print functions of "easy" types
     template<class T>
     void asciiPrinter::template_print(T const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
@@ -597,7 +597,9 @@ is a unique record for every rank/pointID pair.";
       }
       addtobuffer(vdvalue,names,IDcode,thread,pointID);
     }
-     
+    
+    /// @}
+
   } // end namespace printers
 } // end namespace Gambit
 

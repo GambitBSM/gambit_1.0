@@ -71,7 +71,7 @@ namespace Gambit
 
     /// Split a string into a vector of strings, using a delimiter,
     /// and removing any whitespace around the delimiter.
-    std::vector<str> delimiterSplit(str, str);
+    std::vector<str> delimiterSplit(str s, str delim);
 
     /// Strips namespace from the start of a string, or after "const".
     str strip_leading_namespace(str s, str ns);

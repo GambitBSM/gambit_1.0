@@ -1,0 +1,97 @@
+# Test YAML file for running the 'reweight' scanner plugin, for testing
+# out point reweighting
+#
+# largetest_multinest+ascii.yaml
+#
+# Ben Farmer <benjamin.farmer@fysik.su.se>
+# Feb 2015
+#
+ 
+#======== Input parameter declarations =======
+Parameters: 
+  NormalDist:
+    mu: 
+    sigma:
+
+#======== Prior setup ========
+Priors:
+  # None needed: flat priors automatically generated for mu and sigma
+  mu_prior:
+    parameters: [NormalDist::mu]
+    prior_type: plugin
+    plugin: read_from_file
+
+  sigma_prior:
+    parameters: [NormalDist::sigma]
+    prior_type: plugin
+    plugin: read_from_file
+
+
+#    options:
+#      new_prior:
+#        parameters: [CMSSM::M12]
+#        prior_type: log
+#        range: [100,2000]
+
+
+#======== Output setup ========
+Printer:
+  printer: ascii
+  options:
+    output_file: "results.txt"
+
+#======== Scanner setup ========
+Scanner:
+  #use_objectives: read_from_file
+  use_scanner: reweight
+
+  scanners:
+
+    reweight:
+      plugin: reweight
+      LogLike: LogLike
+      old_LogLike: LogLike
+      reader:
+        type: ascii
+        info_filename: "runs/largetest_multinest+ascii/samples/results.txt_info_0"
+        data_filename: "runs/largetest_multinest+ascii/samples/results.txt_0"
+
+  objectives:
+
+    read_from_file:
+      plugin: reweight_prior
+      purpose: Prior
+ 
+                   
+#======== Observables of interest ========
+ObsLikes:
+  - purpose:      LogLike
+    capability:   normaldist_loglike
+    module:       ExampleBit_A
+    type:         double
+
+#======== Rule entries ========
+Rules:
+  # None required
+
+#======== Logging setup ========
+Logger:
+  redirection:
+    [Default]      : "default.log"
+    [Utilities]    : "utils.log"
+    [Utilities,Info] : "utils_info.log"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [Scanner]      : "Scanner.log"
+    [Printers]     : "Printers.log"
+
+#======== Generic Name/Value Section ========
+KeyValues:
+
+  default_output_path: "runs/ascii_reweight/"
+
+  print_timing_data: false
+
+  rng: ranlux48
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6

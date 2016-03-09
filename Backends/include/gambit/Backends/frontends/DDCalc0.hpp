@@ -30,6 +30,7 @@
 // Load it
 LOAD_LIBRARY
 
+BE_ALLOW_MODELS(LocalHalo)
 
 // BACKEND FUNCTIONS =======================================
 
@@ -254,16 +255,13 @@ BE_INI_FUNCTION
     logger() << "    vrot [km/s]         = " << vrot << EOM;
     logger() << "    v0   [km/s]         = " << v0   << EOM;
     logger() << "    vesc [km/s]         = " << vesc << EOM;
-    DDCalc0_SetSHM(&rho0,&vrot,&v0,&vesc);
+    DDCalc0_SetSHM(&rho0_eff,&vrot,&v0,&vesc);
   }
   scan_level = false;
 
   // Point-level initialization ----------------------------
   // Change halo parameters, if they are scanning parameters.
-  // The "LocalHalo" model space is not yet defined, but
-  // ModelInUse is optional here since existence of parameters
-  // is explicitly checked for.
-  //if (ModelInUse("LocalHalo")) {
+  if (ModelInUse("LocalHalo")) {
     bool halo_changed = false;
     if (Param.count("rho0") != 0) {rho0 = *Param["rho0"]; halo_changed = true;}
     rho0_eff = rho0*fraction;
@@ -277,9 +275,9 @@ BE_INI_FUNCTION
       logger() << "    vrot [km/s]         = " << vrot << EOM;
       logger() << "    v0   [km/s]         = " << v0   << EOM;
       logger() << "    vesc [km/s]         = " << vesc << EOM;
-      DDCalc0_SetSHM(&rho0,&vrot,&v0,&vesc);
+      DDCalc0_SetSHM(&rho0_eff,&vrot,&v0,&vesc);
     }
-  //}
+  }
 }
 END_BE_INI_FUNCTION                                                
 

@@ -23,12 +23,14 @@
 #ifndef __spectrum_helpers_hpp__
 #define __spectrum_helpers_hpp__
 
-#include <map>
 #include <string>
 #include <set>
+#include <vector>
+#include <map>
 
 namespace Gambit
 {
+   typedef std::string str;
 
    /// Helper function for checking if indices are valid
    inline bool within_bounds(const int i, const std::set<int> allowed)
@@ -73,9 +75,9 @@ namespace Gambit
       }
 
       /// Map from enum value to string, for error messages
-      static std::map<int,std::string> fill_map()
+      static std::map<Tags,std::string> fill_map()
       {
-         std::map<int,std::string> name;
+         std::map<Tags,std::string> name;
          name[Pole_Mass]       = "Pole_Mass";
          name[Pole_Mass_1srd_high] = "Pole_Mass_1srd_high";
          name[Pole_Mass_1srd_low]  = "Pole_Mass_1srd_low";
@@ -88,7 +90,7 @@ namespace Gambit
          name[mass_eigenstate] = "mass4";
          return name;
       }
-      static const std::map<int,std::string> toString = fill_map();
+      static const std::map<Tags,std::string> toString = fill_map();
    }
 
    /// Structs to hold function pointers and valid index sets

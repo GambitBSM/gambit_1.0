@@ -27,7 +27,7 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-#include "gambit/SpecBit/SMHiggsContainer.hpp"
+#include "gambit/Models/SimpleSpectra/SMHiggsSimpleSpec.hpp"
 
 // QedQcd header from SoftSUSY (via FlexibleSUSY)
 #include "flexiblesusy/src/lowe.h"
@@ -99,7 +99,7 @@ namespace Gambit
       higgsmodel.HiggsVEV      = 1. / sqrt(sqrt(2.)*sminputs.GF);
 
       // Create a SubSpectrum object to wrap the EW sector information
-      SMHiggsContainer higgsspec(higgsmodel);
+      SMHiggsSimpleSpec higgsspec(higgsmodel);
 
       // Create full Spectrum object from components above
       // (SubSpectrum objects will be "cloned" into the Spectrum object)
