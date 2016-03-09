@@ -47,7 +47,9 @@ namespace Gambit
     void createSpectrum(const Spectrum *& outSpec){
       static Spectrum mySpec;
       std::string inputFileName = "input.slha";
-      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
+      std::cout << "Segfault is coming ----> " << std::endl;
+      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);  // FIXME: Segfault
+      std::cout << "..." << std::endl;
       outSpec = &mySpec;
     }
 
@@ -126,7 +128,7 @@ int main()
   // Initialize nulike backend
   Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);
   nulike_1_0_2_init.reset_and_calculate();
-  
+
   // Initialize gamLike backend
   gamLike_1_0_0_init.reset_and_calculate();
 
@@ -138,15 +140,6 @@ int main()
   // FIXME: Q: What to do if we do *not* want to set LocalHalo?
   DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");
   DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
   DarkSUSY_5_1_3_init.reset_and_calculate();
   DarkSUSY_PointInit_MSSM.notifyOfModel("MSSM30atQ");
   DarkSUSY_PointInit_MSSM.resolveDependency(&createSpectrum);
@@ -160,17 +153,8 @@ int main()
   DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dswwidth);
   DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mssmpar);
   DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
   DarkSUSY_PointInit_MSSM.reset_and_calculate();
-  logger() << "...done" << EOM;
+
 
   // Initialize DDCalc0 backend
   Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
