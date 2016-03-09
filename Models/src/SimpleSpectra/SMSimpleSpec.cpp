@@ -134,6 +134,11 @@ namespace Gambit
             tmp_map["d_1"]  = &SMea::get_md; // d
             tmp_map["d_2"]  = &SMea::get_ms; // s
 
+            // Nearest flavour 'aliases' for the SM mass eigenstates
+            tmp_map["u"]  = &SMea::get_mu; // u
+            tmp_map["d"]  = &SMea::get_md; // d
+            tmp_map["s"]  = &SMea::get_ms; // s
+
             map_collection[Par::mass1].map0 = tmp_map;
          }
 
@@ -145,19 +150,28 @@ namespace Gambit
           
               tmp_map["Z0"]  = &SMea::get_MZ_pole;      
               tmp_map["W+"]  = &SMea::get_MW_pole;
-              tmp_map["d_3"]   = &SMea::get_MbMb; // b
-              tmp_map["u_2"]   = &SMea::get_McMc; // c
-              tmp_map["u_3"]   = &SMea::get_Mtop_pole; //t    
-              tmp_map["e-_3"]  = &SMea::get_Mtau_pole; // tau
-              tmp_map["e-_2"] = &SMea::get_Mmuon_pole; // mu
-              tmp_map["e-_1"]  = &SMea::get_Melectron_pole;
+              tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
+              tmp_map["g"]     = &SMea::get_MGluon_pole;  
+
+              tmp_map["d_3"] = &SMea::get_MbMb; // b
+              tmp_map["u_2"] = &SMea::get_McMc; // c
+              tmp_map["u_3"] = &SMea::get_Mtop_pole; //t    
+              tmp_map["e-_3"]= &SMea::get_Mtau_pole; // tau
+              tmp_map["e-_2"]= &SMea::get_Mmuon_pole; // mu
+              tmp_map["e-_1"]= &SMea::get_Melectron_pole;
               tmp_map["nu_1"]= &SMea::get_Mnu1_pole;
               tmp_map["nu_2"]= &SMea::get_Mnu2_pole;
               tmp_map["nu_3"]= &SMea::get_Mnu3_pole;
-  
-              tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
-              tmp_map["g"]     = &SMea::get_MGluon_pole;  
-  
+ 
+              // Nearest flavour 'aliases' for the SM mass eigenstates
+              tmp_map["b"]   = &SMea::get_MbMb; // b
+              tmp_map["c"]   = &SMea::get_McMc; // c
+              tmp_map["t"]   = &SMea::get_Mtop_pole; //t    
+              tmp_map["tau-"]= &SMea::get_Mtau_pole; // tau
+              tmp_map["mu-"] = &SMea::get_Mmuon_pole; // mu
+              tmp_map["e-"]  = &SMea::get_Melectron_pole;
+ 
+   
               map_collection[Par::Pole_Mass].map0 = tmp_map;
             }
 

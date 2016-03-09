@@ -219,13 +219,18 @@ namespace Gambit
             // there is a mismatch, please change the ones here!
             MTget::fmap0 tmp_map;
       
-            tmp_map["Z0"]= &softsusy::QedQcd::displayPoleMZ;
-            tmp_map["W+"]= &softsusy::QedQcd::displayPoleMW;
+            tmp_map["Z0"]  = &softsusy::QedQcd::displayPoleMZ;
+            tmp_map["W+"]  = &softsusy::QedQcd::displayPoleMW;
             tmp_map["u_3"] = &softsusy::QedQcd::displayPoleMt; // t
             // "Pole" for b quark is quoted in SoftSUSY (lowe.h) documentation, so I guess this is an approximation; need to check details.
-            tmp_map["d_1"]   = &softsusy::QedQcd::displayPoleMb; // b
+            tmp_map["d_3"] = &softsusy::QedQcd::displayPoleMb; // b
             tmp_map["e-_3"]= &softsusy::QedQcd::displayPoleMtau; // tau
-   
+ 
+            // Nearest flavour 'aliases' for the SM mass eigenstates
+            tmp_map["t"] = &softsusy::QedQcd::displayPoleMt;
+            tmp_map["b"] = &softsusy::QedQcd::displayPoleMb;
+            tmp_map["tau-"]= &softsusy::QedQcd::displayPoleMtau;
+  
             map_collection[Par::Pole_Mass].map0 = tmp_map;
          }
 
@@ -243,6 +248,10 @@ namespace Gambit
             tmp_map["nu_1"] = &get_Pole_mNu1;
             tmp_map["nu_2"] = &get_Pole_mNu2;
             tmp_map["nu_3"] = &get_Pole_mNu3;
+
+            // Nearest flavour 'aliases' for the SM mass eigenstates
+            tmp_map["e-"]  = &get_Pole_mElectron; // e-
+            tmp_map["mu-"] = &get_Pole_mMuon; // mu-
 
             tmp_map["gamma"] = &get_Pole_mPhoton;
             tmp_map["g"]     = &get_Pole_mGluon;
