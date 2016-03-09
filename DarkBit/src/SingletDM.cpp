@@ -47,10 +47,10 @@ namespace Gambit
           alpha_s (alpha_strong)   
         {
           mh   = catalog->getParticleProperty("h0_1").mass;
-          mb   = catalog->getParticleProperty("b").mass;
-          mc   = catalog->getParticleProperty("c").mass;
-          mtau = catalog->getParticleProperty("tau-").mass;
-          mt   = catalog->getParticleProperty("t").mass;
+          mb   = catalog->getParticleProperty("d_3").mass;
+          mc   = catalog->getParticleProperty("u_2").mass;
+          mtau = catalog->getParticleProperty("e-_3").mass;
+          mt   = catalog->getParticleProperty("u_3").mass;
           mZ0  = catalog->getParticleProperty("Z0").mass;
           mW   = catalog->getParticleProperty("W+").mass;
           f_vs_mass = arg_f_vs_mass;
@@ -268,6 +268,7 @@ namespace Gambit
       
       // Convenience macros
       #define getSMmass(Name, spinX2)                                           \
+      std::cout << "Importing " << Name << std::endl; \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(SM->get(Par::Pole_Mass,Name), spinX2)));    
       #define addParticle(Name, Mass, spinX2)                                   \
@@ -285,31 +286,37 @@ namespace Gambit
       double v = he->get(Par::mass1,"vev");
 
       // Get SM pole masses
-      getSMmass("e-",     1)
-      getSMmass("e+",     1)
-      getSMmass("mu-",    1)
-      getSMmass("mu+",    1)
-      getSMmass("tau-",   1)
-      getSMmass("tau+",   1)
+//      getSMmass("e-",     1)
+//      getSMmass("e+",     1)
+//      getSMmass("mu-",    1)
+//      getSMmass("mu+",    1)
+//      getSMmass("tau-",   1)
+//      getSMmass("tau+",   1)
+      getSMmass("e-_1",     1)
+      getSMmass("e+_1",     1)
+      getSMmass("e-_2",     1)
+      getSMmass("e+_2",     1)
+      getSMmass("e-_3",     1)
+      getSMmass("e+_3",     1)
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
       getSMmass("W-",     2)      
       getSMmass("g",      2)   
       getSMmass("gamma",  2)   
-      getSMmass("b",      1)
-      getSMmass("bbar",   1)
-      getSMmass("t",      1)
-      getSMmass("tbar",   1)
+      getSMmass("u_3",      1)
+      getSMmass("ubar_3",   1)
+      getSMmass("d_3",      1)
+      getSMmass("dbar_3",   1)
 
       // Pole masses not available for the light quarks.    
-      addParticle("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      addParticle("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      addParticle("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      addParticle("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      addParticle("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      addParticle("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      addParticle("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      addParticle("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("ubar_1", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("dbar_1", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("u_2"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("ubar_2", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("d_2"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("dbar_2", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
 
       // Masses for neutrino flavour eigenstates. Set to zero.
       // (presently not required)
@@ -377,9 +384,9 @@ namespace Gambit
       auto channel = 
         Funk::vec<string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
       auto p1 = 
-        Funk::vec<string>("b",   "W+", "c",   "tau+", "Z0", "t",   "h0_1");
+        Funk::vec<string>("d_3",   "W+", "u_2",   "e+_3", "Z0", "u_3",   "h0_1");
       auto p2 = 
-        Funk::vec<string>("bbar","W-", "cbar","tau-", "Z0", "tbar","h0_1");
+        Funk::vec<string>("dbar_3","W-", "ubar_2","e-_3", "Z0", "ubar_3","h0_1");
       {
         for ( unsigned int i = 0; i < channel.size(); i++ )
         {
