@@ -99,6 +99,7 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/hdf5_combine_tools.hpp"
 
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Core/error_handlers.hpp"
@@ -1010,7 +1011,7 @@ namespace Gambit
     /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
     void HDF5Printer::combine_output(const int N, const bool resume, const bool finalcombine)
     {
-      std::ostringstream command;
+      /*std::ostringstream command;
       command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<finalfile<<" "<<group<<" "<<N<<" "<<resume<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
@@ -1040,7 +1041,8 @@ namespace Gambit
          std::ostringstream errmsg;
          errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call is below:" << std::endl << output.str();
          printer_error().raise(LOCAL_INFO, errmsg.str());              
-      }
+      }*/
+      Gambit::Printers::HDF5::combine_hdf5_files(file, finalfile, group, N);
       // Otherwise everything should be ok!
       if(finalcombine)
       {
