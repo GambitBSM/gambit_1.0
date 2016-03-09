@@ -36,19 +36,31 @@ struct reweightScanData
   Printers::BaseBaseReader* reader;
 };
 
+
 // The prior transformation used by the 'reweight' scanner plugin
 // This is used instead of a normal prior, to transfer parameter
 // values out of the old output into the ModelParameters
 objective_plugin(reweight_prior, version(1, 0, 0))
 {
-  //std::vector<std::string> keys;
-  //std::pair<double, double> range;
+  std::map<std::string,ModelParameters> params; // All the model+parameter names
   
   plugin_constructor
   {
-      //keys = get_keys();
+      std::cout << "Constructing prior plugin for reweight scanner" << std::endl;
+      std::vector<std::string> keys = get_keys();
       //set_dimension(keys.size());
-      //range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
+      
+      // Pull the keys apart into model-name, parameter-name pairs
+      std::cout << "Number of parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
+      for(auto it=keys.begin(); it!=keys.end(); ++it)
+      {
+         std::cout << "   " << *it << std::endl;
+         std::vector<std::string> splitkey = delimiterSplit(*it, "::");
+         std::string model = splitkey[0];
+         std::string par   = splitkey[1];
+         params[model]
+      }   
+
   }
 
   // The transform function
@@ -59,23 +71,24 @@ objective_plugin(reweight_prior, version(1, 0, 0))
   // 'reader' object.
   void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)
   {
-    std::cout << "Running prior plugin for 'reweight' scanner" << std::endl;
+    std::cout << "Running prior transform plugin for 'reweight' scanner" << std::endl;
 
     // Inspect what we actually get from the outputMap
-    std::cout << "Parameters to be retrieved from previous output:" <<std::endl;
-    for(auto it=outputMap.begin(); it!=outputMap.end(); ++it)
+    std::cout << "Number of parameters to be retrieved from previous output: "<< keys.size() <<std::endl;
+    for(auto it=keys.begin(); it!=keys.end(); ++it)
     {
-       std::cout << "   " << it->first << ": " << it->second << std::endl;
+       std::cout << "   " << *it << std::endl;
     } 
 
-    // // Get point reader (which should be created by the 'reweight' scanner plugin
-    // Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
+    // Get point reader (which should be created by the 'reweight' scanner plugin
+    Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
 
-    // // Extract the model parameters
-    // ModelParameters params;
-    // std::string modelname = "NormalDist"; // Get this somehow...
-    // reader->retrieve(params, modelname);
-
+    // Extract the model parameters
+    ModelParameters params;
+    std::string modelname = "NormalDist"; // Get this somehow...
+    reader->retrieve(params, modelname);
+    
+    std::cout << "Finished prior transform for 'reweight' scanner" << std::endl;
   }
 
   // Not sure what this does. Might be the likelihood container or something? Greg?
@@ -98,6 +111,12 @@ scanner_plugin(reweight, version(1, 0, 0))
     // Retrieve the external likelihood calculator
     scan_ptr<double (const std::vector<double>&)> LogLike;
     LogLike = get_purpose(get_inifile_value<std::string>("LogLike"));
+
+    // Create the unit hypercube
+    // We aren't going to use it, but the LogLike calculator
+    // requires it anyway.
+    int dims = get_dimension();
+    std::vector<double> unitcube(dims);
 
     // Get label that the input data file uses for the LogLikelihood entries
     std::string old_loglike_label = get_inifile_value<std::string>("old_LogLike");
@@ -173,8 +192,9 @@ scanner_plugin(reweight, version(1, 0, 0))
         std::cout << "    " << *it << ": " << params[*it] << std::endl;
       }
 
-      // Somehow call the likelihood function to compute the new component
-      double partial_logL = 0; //LogLike(vec);
+      // Call the likelihood function to compute new component
+      // Must use "reweight_prior" as the prior!!
+      double partial_logL = LogLike(unitcube);
 
       // Combine with the old logL value and output
       double combined_logL = old_LogL + partial_logL;
