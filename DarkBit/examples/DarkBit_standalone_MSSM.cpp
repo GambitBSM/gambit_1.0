@@ -137,9 +137,6 @@ int main()
   MicrOmegas_3_6_9_2_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
-  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
-  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");
-  DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DarkSUSY_5_1_3_init.reset_and_calculate();
   DarkSUSY_PointInit_MSSM.notifyOfModel("MSSM30atQ");
   DarkSUSY_PointInit_MSSM.resolveDependency(&createSpectrum);
@@ -155,6 +152,15 @@ int main()
   DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
   DarkSUSY_PointInit_MSSM.reset_and_calculate();
 
+  // Initialize DarkSUSY Local Halo Model
+  DarkSUSY_PointInit_LocalHalo_func.notifyOfModel("LocalHalo");
+  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
+  DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
 
   // Initialize DDCalc0 backend
   Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
@@ -348,7 +354,6 @@ int main()
   // ---- IceCube limits ----
 
   // Infer WIMP capture rate in Sun
-  capture_rate_Sun_constant_xsec.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   capture_rate_Sun_constant_xsec.resolveDependency(&mwimp_generic);
   capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SI_p_simple);
   capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SD_p_simple);

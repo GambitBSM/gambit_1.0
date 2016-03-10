@@ -234,8 +234,6 @@ int main()
   gamLike_1_0_0_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
-  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
-  DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DarkSUSY_5_1_3_init.reset_and_calculate();
 
   // Initialize DDCalc0 backend
