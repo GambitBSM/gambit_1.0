@@ -105,7 +105,13 @@ namespace Gambit
       /// Reset-then-recalculate method
       virtual void reset_and_calculate();
 
-      /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+      /// Setter for status: -4 = required backend absent (backend ini functions)
+      ///                    -3 = required classes absent
+      ///                    -2 = function absent
+      ///                    -1 = origin absent
+      ///                     0 = model incompatibility (default)
+      ///                     1 = available
+      ///                     2 = active
       void setStatus(int);
       /// Set the inUse flag (must be overridden in derived class to have any effect).
       virtual void setInUse(bool){};
@@ -127,7 +133,14 @@ namespace Gambit
       str version() const;
       /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
       virtual str safe_version() const;
-      /// Getter for the wrapped function current status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+      /// Getter for the wrapped function current status:
+      ///                    -4 = required backend absent (backend ini functions)
+      ///                    -3 = required classes absent
+      ///                    -2 = function absent
+      ///                    -1 = origin absent
+      ///                     0 = model incompatibility (default)
+      ///                     1 = available
+      ///                     2 = active
       int status() const;
       /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
       sspair quantity() const;
@@ -282,7 +295,14 @@ namespace Gambit
       const str myLabel;
       /// String label, used to label functor timing data for printer system
       const str myTimingLabel;
-      /// Status: -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active
+      /// Status:
+      ///                    -4 = required backend absent (backend ini functions)
+      ///                    -3 = required classes absent
+      ///                    -2 = function absent
+      ///                    -1 = origin absent
+      ///                     0 = model incompatibility (default)
+      ///                     1 = available
+      ///                     2 = active
       int myStatus;
       /// Internal storage of the vertex ID number used by the printer system to identify functors
       int myVertexID;
@@ -609,6 +629,9 @@ namespace Gambit
 
       /// Map from required classloading backends to their versions
       std::map< str, std::set<str> > required_classloading_backends;
+
+      /// Vector of required backends currently missing
+      std::vector<str> missing_backends;
 
       /// Internal timespec object
       timespec tp;

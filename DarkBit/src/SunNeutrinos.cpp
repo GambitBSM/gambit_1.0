@@ -312,12 +312,12 @@ namespace Gambit
     }
 
     /// \brief Likelihood calculators for different IceCube event samples
-    /// These functions all include the likelihood of the background-only model for the respective sameple.
+    /// These functions all include the likelihood of the background-only model for the respective sample.
     /// We define the final log-likelihood as delta = sum over analyses of (lnL_model - lnL_BG), conservatively
     /// forbidding delta > 0 in order to always just use the neutrino likelihood as a limit.  This ignores small
     /// low-E excesses caused by impending breakdown of approximations used in IceCube response data and the nulike
     /// likelihood at very low E. This implies conditioning on all but one parameter (e.g. the cross-section),
-    /// such that including any combination of IC data adds just *one* additional degree of freedom to the fit.
+    /// such that including any particular IC analysis adds just *one* additional degree of freedom to the fit.
     /// @{
 
     /// \brief 22-string IceCube sample: predicted signal and background
