@@ -18,28 +18,28 @@ Parameters:
             range: [0.002, 0.5]
             #fixed_value: 0.0366524
             prior_type: log
-    nuclear_params_fnq:
-      # proton hadronic matrix elements
-      fpd:
-        fixed_value: 0.0191
-      fpu:
-        fixed_value: 0.0153
-      fps:
-        fixed_value: 0.0447
-      # neutron hadronic matrix elements
-      fnd:
-        fixed_value: 0.0273
-      fnu:
-        fixed_value: 0.011
-      fns:
-        fixed_value: 0.0447
-      # proton spin content
-      deltad:
-        fixed_value: -0.427
-      deltau:
-        fixed_value: 0.842
-      deltas:
-        fixed_value: -0.085
+#    nuclear_params_fnq:
+#      # proton hadronic matrix elements
+#      fpd:
+#        fixed_value: 0.0191
+#      fpu:
+#        fixed_value: 0.0153
+#      fps:
+#        fixed_value: 0.0447
+#      # neutron hadronic matrix elements
+#      fnd:
+#        fixed_value: 0.0273
+#      fnu:
+#        fixed_value: 0.011
+#      fns:
+#        fixed_value: 0.0447
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
 
 #   Uncomment the below to use DarkSUSY nuclear parameters.
 #    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yaml
@@ -185,6 +185,10 @@ Rules:
     options:
        oh2_mean: 0.11
        oh2_err: 0.07
+
+  - capability: SingletDM_spectrum
+    function: get_SingletDM_spectrum
+
   # Direct detection -------------------
   # For MSSM-based models, which of the DarkSUSY or micrOMEGAs routines
   # to use must be explicitly specified here (uncomment the desired one).
