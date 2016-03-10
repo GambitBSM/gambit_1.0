@@ -357,8 +357,8 @@ int main()
   capture_rate_Sun_constant_xsec.resolveDependency(&mwimp_generic);
   capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SI_p_simple);
   capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SD_p_simple);
-  capture_rate_Sun_constant_xsec.resolveDependency(&DarkSUSY_PointInit_LocalHalo_func);
   capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsntcapsuntab);
+  capture_rate_Sun_constant_xsec.resolveDependency(&DarkSUSY_PointInit_LocalHalo_func);
   capture_rate_Sun_constant_xsec.reset_and_calculate();
 
   // Infer WIMP equilibration time in Sun

@@ -1020,12 +1020,10 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(sigma_SI_p, double)
       DEPENDENCY(sigma_SD_p, double)
-      //FIXME:: Conditional dependency below doesn't seem to work with standalones.
-//        #define CONDITIONAL_DEPENDENCY DarkSUSY_PointInit_LocalHalo
-//        START_CONDITIONAL_DEPENDENCY(bool)
-//        ACTIVATE_FOR_BACKEND(capture_rate_Sun, DarkSUSY)
-//        #undef CONDITIONAL_DEPENDENCY
-      DEPENDENCY(DarkSUSY_PointInit_LocalHalo, bool)
+        #define CONDITIONAL_DEPENDENCY DarkSUSY_PointInit_LocalHalo
+        START_CONDITIONAL_DEPENDENCY(bool)
+        ACTIVATE_FOR_BACKEND(capture_rate_Sun, DarkSUSY)
+        #undef CONDITIONAL_DEPENDENCY
     #undef FUNCTION
   #undef CAPABILITY
   
