@@ -15,23 +15,10 @@ Parameters:
 
 #======== Prior setup ========
 Priors:
-  # None needed: flat priors automatically generated for mu and sigma
-  mu_prior:
-    parameters: [NormalDist::mu]
+  read_from_file_prior:
+    parameters: [NormalDist::mu, NormalDist::sigma]
     prior_type: plugin
-    plugin: read_from_file
-
-  sigma_prior:
-    parameters: [NormalDist::sigma]
-    prior_type: plugin
-    plugin: read_from_file
-
-
-#    options:
-#      new_prior:
-#        parameters: [CMSSM::M12]
-#        prior_type: log
-#        range: [100,2000]
+    plugin: parameter_reader
 
 
 #======== Output setup ========
@@ -42,7 +29,6 @@ Printer:
 
 #======== Scanner setup ========
 Scanner:
-  #use_objectives: read_from_file
   use_scanner: reweight
 
   scanners:
@@ -58,9 +44,8 @@ Scanner:
 
   objectives:
 
-    read_from_file:
+    parameter_reader:
       plugin: reweight_prior
-      purpose: Prior
  
                    
 #======== Observables of interest ========
