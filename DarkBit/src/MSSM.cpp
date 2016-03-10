@@ -509,8 +509,8 @@ namespace Gambit {
         TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME),                \
             CAT(kinematicFunction_,NAME));                                   \
         process.channelList.push_back(CAT(channel_,NAME));                   \
-        annFinalStates.insert(STRINGIFY(P1));                                \
-        annFinalStates.insert(STRINGIFY(P2));                                \
+        annFinalStates.insert(str_flav_to_mass(STRINGIFY(P1)));                                \
+        annFinalStates.insert(str_flav_to_mass(STRINGIFY(P2)));                                \
       }                                        
 
       if ( not runOptions->getValueOrDef<bool>(false, "ignore_three_body") )
@@ -563,7 +563,7 @@ namespace Gambit {
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 
-      auto excludeDecays = Funk::vec<std::string>("Z0", "W+", "W-");
+      auto excludeDecays = Funk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3");
 
       // Import relevant decays
       using DarkBit_utils::ImportDecays;

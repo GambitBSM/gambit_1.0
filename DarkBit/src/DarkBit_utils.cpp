@@ -110,6 +110,7 @@ namespace Gambit
                   pit != fState_it->first.end(); ++pit)
               {
                 std::string name = Models::ParticleDB().long_name(*pit);
+                name = DarkBit_utils::str_flav_to_mass(name);
                 m_final += catalog.getParticleProperty(name).mass;
                 pIDs.push_back(name);
               } 

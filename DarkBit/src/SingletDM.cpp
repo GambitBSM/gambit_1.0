@@ -93,6 +93,13 @@ namespace Gambit
             else return 0;
           }
 
+          if ( channel == "bb" and sqrt_s < mb*2 ) return 0;
+          if ( channel == "cc" and sqrt_s < mc*2  ) return 0;
+          if ( channel == "tautau" and sqrt_s < mtau*2 ) return 0;
+          if ( channel == "tt" and sqrt_s < mt*2 ) return 0;
+          if ( channel == "ZZ" and sqrt_s < mZ0*2) return 0;
+          if ( channel == "WW" and sqrt_s < mW*2) return 0;
+
           if ( sqrt_s < 300 )
           {
             double br = virtual_SMHiggs_widths(channel,sqrt_s);
@@ -108,18 +115,12 @@ namespace Gambit
           }
           else
           {
-            if ( channel == "bb" and sqrt_s > mb*2 )
-              return sv_ff(lambda, mass, v, mb, true);
-            if ( channel == "cc" and sqrt_s > mc*2  )
-              return sv_ff(lambda, mass, v, mc, false);
-            if ( channel == "tautau" and sqrt_s > mtau*2 )
-              return sv_ff(lambda, mass, v, mtau, false);
-            if ( channel == "tt" and sqrt_s > mt*2 )
-              return sv_ff(lambda, mass, v, mt, false);
-            if ( channel == "ZZ" and sqrt_s > mZ0*2)
-              return sv_ZZ(lambda, mass, v);
-            if ( channel == "WW" and sqrt_s > mW*2)
-              return sv_WW(lambda, mass, v);
+            if ( channel == "bb" ) return sv_ff(lambda, mass, v, mb, true);
+            if ( channel == "cc" ) return sv_ff(lambda, mass, v, mc, false);
+            if ( channel == "tautau" ) return sv_ff(lambda, mass, v, mtau, false);
+            if ( channel == "tt" ) return sv_ff(lambda, mass, v, mt, false);
+            if ( channel == "ZZ" ) return sv_ZZ(lambda, mass, v);
+            if ( channel == "WW" ) return sv_WW(lambda, mass, v);
           }
           return 0;
         }
@@ -279,12 +280,6 @@ namespace Gambit
       double v = he->get(Par::mass1,"vev");
 
       // Get SM pole masses
-//      getSMmass("e-",     1)
-//      getSMmass("e+",     1)
-//      getSMmass("mu-",    1)
-//      getSMmass("mu+",    1)
-//      getSMmass("tau-",   1)
-//      getSMmass("tau+",   1)
       getSMmass("e-_1",     1)
       getSMmass("e+_1",     1)
       getSMmass("e-_2",     1)
@@ -314,14 +309,12 @@ namespace Gambit
 
       // Masses for neutrino flavour eigenstates. Set to zero.
       // (presently not required)
-      /*
       addParticle("nu_e",     0.0, 1)
       addParticle("nubar_e",  0.0, 1)
       addParticle("nu_mu",    0.0, 1)
       addParticle("nubar_mu", 0.0, 1)
       addParticle("nu_tau",   0.0, 1)
       addParticle("nubar_tau",0.0, 1)      
-      */
 
       // Higgs-sector masses
       double mS = spec->get(Par::Pole_Mass,"S");
@@ -361,7 +354,8 @@ namespace Gambit
 
       // Import relevant decays (only Higgs and subsequent decays)
       using DarkBit_utils::ImportDecays;
-      ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching, Funk::vec<std::string>("Z0", "W+", "W-"));
+      ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching,
+          Funk::vec<std::string>("Z0", "W+", "W-", "e+_2", "e-_2", "e+_3", "e-_3"));
 
       // Instantiate new SingletDM object
       auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass, v, alpha_s);

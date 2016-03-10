@@ -27,30 +27,29 @@ Runs fine (at least it looks like):
   gambit_DarkBit_MOTest.yaml
   gambit_DarkBit_DSTest.yaml
   gambit_DarkBit_MSSM7.yaml
-
-
-Problems:
-  gambit_SingletDM_hdf5_bad_process_catalog.yaml : dependnecies missing
-  gambit_SingletDM_multinest.yaml
-  SSDM_rd.yaml
-  gambit.yaml :  yaml-cpp error --> Christoph
-
-  gambit_UnitTest.yaml  :  SLHA problem
-
-  gambit_SingletDM_hdf5.yaml :  missing tau+
+  gambit_SingletDM_hdf5.yaml
   gambit_DarkBit_Example.yaml
   gambit_CMSSM_hdf5
   gambit_CMSSM_multinest.yaml 
+  gambit_SingletDM.yaml 
   gambit_SingletDM_multinest_MO.yaml
-  gambit_SingletDM.yaml
 
-  lightquarktest.yaml :  FptrFinder error
 
-  SpecBit.yaml :  Unprintable functor
+Problems:
+  lightquarktest.yaml :  FptrFinder error --> Ben
+
+  SpecBit.yaml :  Unprintable functor --> Ben
   gambit_SpecBit_SSDM.yaml
   gambit_FlavBit.yaml
   gambit_DecayBit_MSSM.yaml
   gambit_DecayBit_SS.yaml
+
+  gambit_SingletDM_hdf5_bad_process_catalog.yaml : dependnecies missing
+  gambit_SingletDM_multinest.yaml
+  SSDM_rd.yaml
+  gambit.yaml
+
+  gambit_UnitTest.yaml  :  SLHA problem
 
 
 Outdated yaml file (wrong Rules, missing parameters etc):

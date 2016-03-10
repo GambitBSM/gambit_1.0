@@ -18,6 +18,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Utils/ascii_table_reader.hpp"
+#include "gambit/DarkBit/DarkBit_utils.hpp"
 
 //#define DARKBIT_DEBUG
 
@@ -410,13 +411,15 @@ namespace Gambit {
         int flag = 0;      // some flag
         int yieldk = 152;  // gamma ray yield
         Funk::Funk dNdE;
+
+        using DarkBit_utils::str_flav_to_mass;
         
 #define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                \
         dNdE = Funk::func_fromThreadsafe(                             \
             BEreq::dshayield.pointer(), Funk::var("mwimp"),           \
             Funk::var("E"), ch, yieldk, flag)->set("mwimp",           \
             Funk::var("Ecm")/2);                                      \
-        result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  
+        result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);  
 
         // specifies also center of mass energy range
         // FIXME: Update energy validity ranges
@@ -447,15 +450,15 @@ namespace Gambit {
         result.addChannel(dNdE/2, "W+", "gamma", 0., 10000.);
         result.addChannel(dNdE/2, "W-", "gamma", 0., 10000.);
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 17, yieldk, flag);
-        result.addChannel(dNdE/2, "mu+", "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, "mu-", "gamma", 0., 10000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0., 10000.);        
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 19, yieldk, flag);
-        result.addChannel(dNdE/2, "tau+", "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, "tau-", "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 0., 10000.);
         // Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades.
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 24, yieldk, flag);
-        result.addChannel(dNdE/2, "t",    "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, "tbar", "gamma", 0., 10000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 0., 10000.);        
         
         // Approximations for mixed quark channels
         Funk::Funk dNdE_u = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
@@ -472,26 +475,26 @@ namespace Gambit {
                               Funk::var("mwimp"), Funk::var("E"), 25, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  
                   
         // FIXME: Update energy validty ranges
-        result.addChannel(0.5*(dNdE_u+dNdE_d), "u", "dbar", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), "u", "sbar", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), "u", "bbar", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_d), "ubar", "d", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), "ubar", "s", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), "ubar", "b", "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("u"), str_flav_to_mass("bbar"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("ubar"), str_flav_to_mass("d"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("ubar"), str_flav_to_mass("s"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("ubar"), str_flav_to_mass("b"), "gamma", 0., 10000.); 
 
-        result.addChannel(0.5*(dNdE_c+dNdE_d), "c", "dbar", "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), "c", "sbar", "gamma", 0., 10000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), "c", "bbar", "gamma", 0., 10000.);        
-        result.addChannel(0.5*(dNdE_c+dNdE_d), "cbar", "d", "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), "cbar", "s", "gamma", 0., 10000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), "cbar", "b", "gamma", 0., 10000.);        
+        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("c"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("c"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);   
+        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("c"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);        
+        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("cbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("cbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);   
+        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("cbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);        
 
-        result.addChannel(0.5*(dNdE_t+dNdE_d), "t", "dbar", "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), "t", "sbar", "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), "t", "bbar", "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_d), "tbar", "d", "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), "tbar", "s", "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), "tbar", "b", "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("t"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("t"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("t"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);    
    
         initialized = true;
       }
@@ -501,6 +504,7 @@ namespace Gambit {
     void SimYieldTable_MicrOmegas(SimYieldTable& result)
     {
       using namespace Pipes::SimYieldTable_MicrOmegas;
+      using DarkBit_utils::str_flav_to_mass;
 
       static bool initialized = false;
       const int outN = 0;  // gamma
@@ -511,7 +515,7 @@ namespace Gambit {
 
 #define ADD_CHANNEL(inP, P1, P2, FINAL, EcmMin, EcmMax)                                                   \
         dNdE = Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), Funk::var("Ecm"), Funk::var("E"), inP, outN)/Funk::var("E"); \
-        result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
+        result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
         // FIXME: Update energy validty ranges
         ADD_CHANNEL(0, "g", "g", "gamma", 0., 10000.)
         ADD_CHANNEL(1, "d", "dbar", "gamma", 0., 10000.)
@@ -537,12 +541,12 @@ namespace Gambit {
         // FIXME: Update energy validty ranges
         dNdE = (Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), Funk::var("_Ecm"), Funk::var("E"), 8, outN) 
                /Funk::var("E"))->set("_Ecm", Funk::var("Ecm")*2);
-        result.addChannel(dNdE/2, "mu+", "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, "mu-", "gamma", 0., 10000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0., 10000.);        
         dNdE = (Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), Funk::var("_Ecm"), Funk::var("E"), 9, outN) 
                /Funk::var("E"))->set("_Ecm", Funk::var("Ecm")*2);
-        result.addChannel(dNdE/2, "tau+", "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, "tau-", "gamma", 0., 10000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 0., 10000.);        
         dNdE = (Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), Funk::var("_Ecm"), Funk::var("E"), 10, outN) 
                /Funk::var("E"))->set("_Ecm", Funk::var("Ecm")*2);
         result.addChannel(dNdE/2, "Z0", "gamma", 0., 10000.);
@@ -554,8 +558,8 @@ namespace Gambit {
         // Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades.
         dNdE = (Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), Funk::var("_Ecm"), Funk::var("E"), 6, outN) 
                /Funk::var("E"))->set("_Ecm", Funk::var("Ecm")*2);
-        result.addChannel(dNdE/2, "t",    "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, "tbar", "gamma", 0., 10000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 0., 10000.);        
         
         // Approximations for mixed quark channels
         Funk::Funk dNdE_d = Funk::func_fromThreadsafe(BEreq::dNdE.pointer(), 
@@ -572,26 +576,26 @@ namespace Gambit {
                               Funk::var("Ecm"), Funk::var("E"), 6, outN)/Funk::var("E");
                   
         // FIXME: Update energy validty ranges
-        result.addChannel(0.5*(dNdE_u+dNdE_d), "u", "dbar", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), "u", "sbar", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), "u", "bbar", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_d), "ubar", "d", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), "ubar", "s", "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), "ubar", "b", "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("u"), str_flav_to_mass("bbar"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("ubar"), str_flav_to_mass("d"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("ubar"), str_flav_to_mass("s"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("ubar"), str_flav_to_mass("b"), "gamma", 0., 10000.); 
 
-        result.addChannel(0.5*(dNdE_c+dNdE_d), "c", "dbar", "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), "c", "sbar", "gamma", 0., 10000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), "c", "bbar", "gamma", 0., 10000.);        
-        result.addChannel(0.5*(dNdE_c+dNdE_d), "cbar", "d", "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), "cbar", "s", "gamma", 0., 10000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), "cbar", "b", "gamma", 0., 10000.);        
+        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("c"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("c"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);   
+        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("c"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);        
+        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("cbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("cbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);   
+        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("cbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);        
 
-        result.addChannel(0.5*(dNdE_t+dNdE_d), "t", "dbar", "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), "t", "sbar", "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), "t", "bbar", "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_d), "tbar", "d", "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), "tbar", "s", "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), "tbar", "b", "gamma", 0., 10000.);             
+        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("t"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("t"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("t"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);             
             
         initialized = true;
       }
