@@ -33,6 +33,52 @@
 namespace Gambit {
   namespace DarkBit {
 
+    std::string str_flav_to_mass(std::string flav)
+    {
+      if (flav=="e+") return "e+_1";
+      if (flav=="mu+") return "e+_2";
+      if (flav=="tau+") return "e+_3";
+      if (flav=="u") return "u_1";
+      if (flav=="d") return "d_1";
+      if (flav=="c") return "u_2";
+      if (flav=="s") return "d_2";
+      if (flav=="t") return "u_3";
+      if (flav=="b") return "d_3";
+      if (flav=="e-") return "e-_1";
+      if (flav=="mu-") return "e-_2";
+      if (flav=="tau-") return "e-_3";
+      if (flav=="ubar") return "ubar_1";
+      if (flav=="dbar") return "dbar_1";
+      if (flav=="cbar") return "ubar_2";
+      if (flav=="sbar") return "dbar_2";
+      if (flav=="tbar") return "ubar_3";
+      if (flav=="bbar") return "dbar_3";
+      return flav;
+    }
+
+    std::string str_mass_to_flav(std::string mass)
+    {
+      if (mass=="e+_1"   ) return "e+";
+      if (mass=="e+_2"   ) return "mu+";
+      if (mass=="e+_3"   ) return "tau+";
+      if (mass=="u_1"    ) return "u";
+      if (mass=="d_1"    ) return "d";
+      if (mass=="u_2"    ) return "c";
+      if (mass=="d_2"    ) return "s";
+      if (mass=="u_3"    ) return "t";
+      if (mass=="d_3"    ) return "b";
+      if (mass=="e-_1"   ) return "e-";
+      if (mass=="e-_2"   ) return "mu-";
+      if (mass=="e-_3"   ) return "tau-";
+      if (mass=="ubar_1" ) return "ubar";
+      if (mass=="dbar_1" ) return "dbar";
+      if (mass=="ubar_2" ) return "cbar";
+      if (mass=="dbar_2" ) return "sbar";
+      if (mass=="ubar_3" ) return "tbar";
+      if (mass=="dbar_3" ) return "bbar";
+      return mass;
+    }
+
     //////////////////////////////////////////////////////////////////////////
     //
     //                       Convenience functions
@@ -298,21 +344,21 @@ namespace Gambit {
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
         Name , TH_ParticleProperty(SM->get(Par::Pole_Mass,Name), spinX2)));   
-      getSMmass("e-",     1)
-      getSMmass("e+",     1)
-      getSMmass("mu-",    1)
-      getSMmass("mu+",    1)
-      getSMmass("tau-",   1)
-      getSMmass("tau+",   1)
+      getSMmass("e-_1",     1)
+      getSMmass("e+_1",     1)
+      getSMmass("e-_2",     1)
+      getSMmass("e+_2",     1)
+      getSMmass("e-_3",     1)
+      getSMmass("e+_3",     1)
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
       getSMmass("W-",     2)      
       getSMmass("g",      2)   
       getSMmass("gamma",  2)   
-      getSMmass("b",      1)
-      getSMmass("bbar",   1)
-      getSMmass("t",      1)
-      getSMmass("tbar",   1)          
+      getSMmass("d_3",      1)
+      getSMmass("dbar_3",   1)
+      getSMmass("u_3",      1)
+      getSMmass("ubar_3",   1)          
 #undef getSMmass
 
       // Pole masses not available for the light quarks.
@@ -320,14 +366,14 @@ namespace Gambit {
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
         Name , TH_ParticleProperty(Mass, spinX2)));                           
-      addParticle("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      addParticle("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      addParticle("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      addParticle("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      addParticle("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      addParticle("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      addParticle("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      addParticle("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("dbar_1", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("ubar_1", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("d_2"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("dbar_2", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("u_2"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("ubar_2", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
       // Masses for neutrino flavour eigenstates. Set to zero.
       addParticle("nu_e",     0.0,     1)
       addParticle("nubar_e",  0.0,     1)
@@ -462,17 +508,17 @@ namespace Gambit {
       SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0,     1   )
       SETUP_DS_PROCESS(WW,        13, W+,     W-,     1   )
       SETUP_DS_PROCESS(nuenue,    14, nu_e,   nubar_e,1   )
-      SETUP_DS_PROCESS(ee,        15, e+,     e-,     1   )
+      SETUP_DS_PROCESS(ee,        15, e+_1,   e-_1,   1   )
       SETUP_DS_PROCESS(numnum,    16, nu_mu,  nubar_mu,1  )
-      SETUP_DS_PROCESS(mumu,      17, mu+,    mu-,    1   )
+      SETUP_DS_PROCESS(mumu,      17, e+_2,   e-_2,   1   )
       SETUP_DS_PROCESS(nutnut,    18, nu_tau, nubar_tau,1 )
-      SETUP_DS_PROCESS(tautau,    19, tau+,   tau-,   1   )
-      SETUP_DS_PROCESS(uubar,     20, u,      ubar,   1   )
-      SETUP_DS_PROCESS(ddbar,     21, d,      dbar,   1   )
-      SETUP_DS_PROCESS(ccbar,     22, c,      cbar,   1   )
-      SETUP_DS_PROCESS(ssbar,     23, s,      sbar,   1   )
-      SETUP_DS_PROCESS(ttbar,     24, t,      tbar,   1   )
-      SETUP_DS_PROCESS(bbbar,     25, b,      bbar,   1   )
+      SETUP_DS_PROCESS(tautau,    19, e+_3,   e-_3,   1   )
+      SETUP_DS_PROCESS(uubar,     20, u_1,    ubar_1,   1   )
+      SETUP_DS_PROCESS(ddbar,     21, d_1,    dbar_1,   1   )
+      SETUP_DS_PROCESS(ccbar,     22, u_2,    ubar_2,   1   )
+      SETUP_DS_PROCESS(ssbar,     23, d_2,    dbar_2,   1   )
+      SETUP_DS_PROCESS(ttbar,     24, u_3,    ubar_3,   1   )
+      SETUP_DS_PROCESS(bbbar,     25, d_3,    dbar_3,   1   )
       SETUP_DS_PROCESS(gluglu,    26, g,      g,      1   )
       SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma,  1   )
       //        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma,  1   )
@@ -490,8 +536,8 @@ namespace Gambit {
       // Macro for setting up 3-body decays with gammas
 #define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \
       /* Check if process is kinematically allowed */                        \
-      m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                 \
-      m_2 = catalog.getParticleProperty(STRINGIFY(P2)).mass;                 \
+      m_1 = catalog.getParticleProperty(str_flav_to_mass(STRINGIFY(P1))).mass;                 \
+      m_2 = catalog.getParticleProperty(str_flav_to_mass(STRINGIFY(P2))).mass;                 \
       if(m_1 + m_2 < 2*M_DM)                                                 \
       {                                                                      \
         index = SV_IDX;                                                      \
@@ -503,8 +549,8 @@ namespace Gambit {
         /* Create channel identifier string */                               \
         std::vector<std::string> CAT(finalStates_,NAME);                     \
         CAT(finalStates_,NAME).push_back("gamma");                           \
-        CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                     \
-        CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                     \
+        CAT(finalStates_,NAME).push_back(str_flav_to_mass(STRINGIFY(P1)));                     \
+        CAT(finalStates_,NAME).push_back(str_flav_to_mass(STRINGIFY(P2)));                     \
         /* Create channel and push it into channel list of process */        \
         TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME),                \
             CAT(kinematicFunction_,NAME));                                   \
