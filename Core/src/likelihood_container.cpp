@@ -92,6 +92,9 @@ namespace Gambit
   /// Do the prior transformation and populate the parameter map
   void Likelihood_Container::setParameters (const std::vector<double> &vec)
   {
+    // Clear the parameter map to make sure no junk from the last iteration gets left in there
+    parameterMap.clear();
+
     // Do the prior transformation, saving the real parameter values in the parameterMap
     prior.transform(vec, parameterMap);
 
@@ -108,8 +111,23 @@ namespace Gambit
       for (auto par_it = paramkeys.begin(), par_end = paramkeys.end(); par_it != par_end; par_it++)
       {
         str key = act_it->first + "::" + *par_it;
-        parstream << "    " << *par_it << ": " << parameterMap[key] << endl;
-        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[key]);
+        auto tmp_it = parameterMap.find(key);
+        if(tmp_it == parameterMap.end())
+        {
+           std::ostringstream err;
+           err << "Error! Failed to set parameter '"<<key<<"' following prior transformation! The parameter could not be found in the map returned by the prior. This probably means that the prior you are using contains a bug." << std::endl;
+           err << "The parameters and values that *were* returned by the prior were:" <<std::endl;
+           if(parameterMap.size()==0){ err << "None! Size of map was zero." << std::endl; } 
+           else {
+             for (auto par_jt = parameterMap.begin(); par_jt != parameterMap.end(); ++par_jt)
+             {
+               err << par_jt->first << "=" << par_jt->second << std::endl;
+             }
+           }
+           core_error().raise(LOCAL_INFO,err.str());
+        }
+        parstream << "    " << *par_it << ": " << tmp_it->second << endl;
+        act_it->second->getcontentsPtr()->setValue(*par_it, tmp_it->second);
       }
     }
 

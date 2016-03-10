@@ -29,7 +29,6 @@ Printer:
 
 #======== Scanner setup ========
 Scanner:
-  #use_objectives: read_from_file
   use_scanner: reweight
 
   scanners:
