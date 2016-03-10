@@ -124,17 +124,19 @@ DONE MSSM.cpp: 345	:      // FIXME: Get meson masses from somewhere else?
 DONE SingletDM.cpp: 332	:      // FIXME: Get meson masses from somewhere
 DONE   -- Pat: there is nowhere else in the code that defines or uses meson masses.  I think the most appropriate (for now) would be to put them in Elements/include/.../numerical_constants.cpp, maybe in a const map initialised with some function defined in a new source file Elements/src/numerical_constants.cpp.
 
+
+After sanity checks of DS and MO results
+----------------------------------------
+MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */ (they do look correct)
+ProcessCatalog.cpp: everywhere : // FIXME: Check consisteny of kinematics in general (is v>0 correctly taken into account for final state particles everywhere?)
 Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
 Cascades.cpp: 422	:          // FIXME: This sets equal binning for all particle types.  Each
 Cascades.cpp: 505	:            // FIXME: What happens for single particle endpoints without
 Cascades.cpp: 661	:          // FIXME: Default values provide 1-2% accuracy for singular integrals
 decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
 
-MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */                \
-ProcessCatalog.cpp: everywhere : // FIXME: Check consisteny of kinematics in general (is v>0 correctly taken into account for final state particles everywhere?)
-
-SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
-SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
-SunNeutrinos.cpp: 169	:          // FIXME: Replace when BFs become directly available.
-SunNeutrinos.cpp: 227	:        // FIXME: Replace when BFs become directly available.
-  -- Pat: these stand, unless BFs are now available directly from the process catalog? (nothing changed)
+LATER: SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
+LATER: SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
+LATER: SunNeutrinos.cpp: 169	:          // FIXME: Replace when BFs become directly available.
+LATER: SunNeutrinos.cpp: 227	:        // FIXME: Replace when BFs become directly available.
+LATER:   -- Pat: these stand, unless BFs are now available directly from the process catalog? (nothing changed)

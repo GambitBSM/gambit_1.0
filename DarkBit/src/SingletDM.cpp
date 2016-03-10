@@ -407,6 +407,9 @@ namespace Gambit
           push_back(TH_Resonance(mH, gammaH));
 
       catalog.processList.push_back(process_ann);
+      
+      // Validate
+      catalog.validate();
 
       result = catalog;
     } // function TH_ProcessCatalog_SingletDM

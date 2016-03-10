@@ -497,7 +497,7 @@ namespace Gambit {
         index = SV_IDX;                                                      \
         /* FIXME: Double-check that import works correctly */                \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
-        Funk::Funk CAT(kinematicFunction_,NAME) = sv*Funk::func(DSgamma3bdy, \
+        Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(sv,"v")*Funk::func(DSgamma3bdy, \
             STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, Funk::var("E"), Funk::var("E1"),     \
             M_DM, m_1, m_2);                                                 \
         /* Create channel identifier string */                               \
@@ -580,6 +580,9 @@ namespace Gambit {
 
       // Add process to provess list
       catalog.processList.push_back(process);                
+
+      // Validate
+      catalog.validate();
 
       // Return the finished process catalog
       result = catalog;

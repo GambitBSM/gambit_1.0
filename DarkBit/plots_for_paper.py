@@ -14,12 +14,18 @@ def plotSpectra():
             ['dNdE3.dat', 'phi phi->gggg'],
             ['dNdE4.dat', '2 x phi1 -> 4 x phi2 -> 8 x g'],
             ['dNdE5.dat', '3-body'],
+            ['dNdE_MSSM.dat', 'input.slha'],
+#            ['FMCp03000765.gaspec', 'input.slha'],
             ]:
         x, y = loadtxt(filename).T
         print trapz(y, x)/(3e-26/100**2)
+#        if filename[0] == "F":
+#            factor = 1/250**2
+#        else:
+#            factor = 1.
         plt.loglog(x, y*x*x+1e-50, label=label)
-    plt.ylim([1e-33, 1e-23])
-    plt.xlim([1e0, 3e2])
+    plt.ylim([1e-36, 1e-23])
+    plt.xlim([1e0, 5e2])
     plt.xlabel("E [GeV]")
     plt.ylabel("E^2 dN/dE")
     plt.tight_layout(pad=0.3)
@@ -71,5 +77,5 @@ def plotLUX():
 
 if __name__ == '__main__':
     #plotLimits()
-    #plotSpectra()
-    plotLUX()
+    plotSpectra()
+    #plotLUX()

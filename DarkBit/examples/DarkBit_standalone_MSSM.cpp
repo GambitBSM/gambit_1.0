@@ -47,9 +47,7 @@ namespace Gambit
     void createSpectrum(const Spectrum *& outSpec){
       static Spectrum mySpec;
       std::string inputFileName = "input.slha";
-      std::cout << "Segfault is coming ----> " << std::endl;
-      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);  // FIXME: Segfault
-      std::cout << "..." << std::endl;
+      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
       outSpec = &mySpec;
     }
 
@@ -343,6 +341,11 @@ int main()
   GA_AnnYield_General.resolveDependency(&DarkMatter_ID_MSSM30atQ);
   GA_AnnYield_General.resolveDependency(&cascadeMC_gammaSpectra);
   GA_AnnYield_General.reset_and_calculate();
+
+  // Dump spectrum into file
+  dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
+  dump_GammaSpectrum.setOption<std::string>("filename", "dNdE_MSSM.dat");
+  dump_GammaSpectrum.reset_and_calculate();
 
   // Calculate Fermi LAT dwarf likelihood
   lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
