@@ -37,6 +37,15 @@ LATER   -- Pat: stands; backend version numbers are not available as ints yet (n
 Joakim/Torsten
 --------------
 RelicDensity.cpp / DarkSUSY.cpp :  FIXME: Get it working
+MSSM.cpp: 164	:        // FIXME: If this the right place to set SLHAstruct model information?
+  -- Pat: I think this should probably go into the DS diskless initialisation function, with a check for MODSEL in the slhaea, and then setting MODSEL in darksusy only if it is missing/inappropriate in the slhaea object.
+  Note that MODSEL needed by different backends is different, so it can't be set in the spectrum object before emitting the slhaea.  This change would also require the current code in MSSM.cpp that sets MODSEL to be shifted inside the
+    if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
+  clause, so it only gets applied if emitting an actual SLHA file.
+  -- I moved this part into the use_dsSLHAread part of the code.  But still the
+  question remains whether this is something that should be tested explicitely
+  in the diskless initialization.  Probably it should.  Joakim?
+  Have a look at DarkSUSY.cpp:333
 
 
 Torsten
@@ -99,17 +108,28 @@ DONE SimpleLikelihoods.cpp: 121, 143, 258:      // FIXME: Get grid from function
 DONE Get DarkBit_standalone_WIMP working
 DONE DarkBit_standalone_SingletDM ---> problem with spectrum objects (missing "e+"), delegated to Ben
 DONE DarkBit_standalone_MSSM ---> problem with segfault (in spectrum object), delegated to Ben
+DONE SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
+DONE SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
+DONE DirectDetection.cpp: 155	:      // FIXME: Error if nucleonAmplitudes from MicrOmegas fails?
+DONE   -- Pat: whether raising an error is the right thing to do in this situation or not depends on whether
+DONE   a) the error is unexpected in general and therefore a bug (raise the error),
+DONE   b) expected and due to some physical inconsistency (raise an invalid pt exception instead), or
+DONE   c) a regular numerical failing of micromegas that isn't really a bug but not really reflective of problems with phyiscs (probably just raise invalid pt and go on).
+DONE       -- Christoph:  I don't know under what circumstances this can fail.  For
+DONE       now it throws an error.
+DONE SingletDM.cpp: 370	:      // FIXME: alpha_s = 0.12 should not be hard-coded, but gotten from the spectrum object; but at what scale?
+DONE   -- Pat: arg - it depends on exactly how the 1-loop QCD correction it is being used in was calculated I guess.  I think formally the difference between taking it at mZ and sqrt(s) is 2-loop though, so both would be equally correct.  Probably just taking it at mZ is safest, i.e. using alpha_s from the SMINPUTS part of the spectrum.
 
-SingletDM.cpp:  80	:          // FIXME: Comment this in to get a segfault... Sigh
-SingletDM.cpp:  82	:          // FIXME: Comment this in to get not a segfault... Sigh-sigh
+ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for three-body final states
+
 Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
 Cascades.cpp: 422	:          // FIXME: This sets equal binning for all particle types.  Each
 Cascades.cpp: 505	:            // FIXME: What happens for single particle endpoints without
 Cascades.cpp: 661	:          // FIXME: Default values provide 1-2% accuracy for singular integrals
 decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
+
 MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */                \
 ProcessCatalog.cpp: everywhere : // FIXME: Check consisteny of kinematics in general (is v>0 correctly taken into account for final state particles everywhere?)
-ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for three-body final states
 
 SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
 SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
@@ -117,21 +137,6 @@ SunNeutrinos.cpp: 169	:          // FIXME: Replace when BFs become directly avai
 SunNeutrinos.cpp: 227	:        // FIXME: Replace when BFs become directly available.
   -- Pat: these stand, unless BFs are now available directly from the process catalog? (nothing changed)
 
-DirectDetection.cpp: 155	:      // FIXME: Error if nucleonAmplitudes from MicrOmegas fails?
-  -- Pat: whether raising an error is the right thing to do in this situation or not depends on whether
-  a) the error is unexpected in general and therefore a bug (raise the error),
-  b) expected and due to some physical inconsistency (raise an invalid pt exception instead), or
-  c) a regular numerical failing of micromegas that isn't really a bug but not really reflective of problems with phyiscs (probably just raise invalid pt and go on).
-
 MSSM.cpp: 345	:      // FIXME: Get meson masses from somewhere else?
 SingletDM.cpp: 332	:      // FIXME: Get meson masses from somewhere
   -- Pat: there is nowhere else in the code that defines or uses meson masses.  I think the most appropriate (for now) would be to put them in Elements/include/.../numerical_constants.cpp, maybe in a const map initialised with some function defined in a new source file Elements/src/numerical_constants.cpp.
-
-MSSM.cpp: 164	:        // FIXME: If this the right place to set SLHAstruct model information?
-  -- Pat: I think this should probably go into the DS diskless initialisation function, with a check for MODSEL in the slhaea, and then setting MODSEL in darksusy only if it is missing/inappropriate in the slhaea object.
-  Note that MODSEL needed by different backends is different, so it can't be set in the spectrum object before emitting the slhaea.  This change would also require the current code in MSSM.cpp that sets MODSEL to be shifted inside the
-    if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
-  clause, so it only gets applied if emitting an actual SLHA file.
-
-SingletDM.cpp: 370	:      // FIXME: alpha_s = 0.12 should not be hard-coded, but gotten from the spectrum object; but at what scale?
-  -- Pat: arg - it depends on exactly how the 1-loop QCD correction it is being used in was calculated I guess.  I think formally the difference between taking it at mZ and sqrt(s) is 2-loop though, so both would be equally correct.  Probably just taking it at mZ is safest, i.e. using alpha_s from the SMINPUTS part of the spectrum.

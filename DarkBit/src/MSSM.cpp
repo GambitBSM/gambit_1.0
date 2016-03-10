@@ -160,13 +160,6 @@ namespace Gambit {
         const Spectrum* mySpec = *Dep::MSSM_spectrum;
         SLHAstruct mySLHA = mySpec->getSLHAea();
 
-        // Add model select block to inform DS about 6x6 mixing
-        // FIXME: If this the right place to set SLHAstruct model information?
-        SLHAea::Block modsel_block("MODSEL");
-        modsel_block.push_back("BLOCK MODSEL");
-        modsel_block.push_back("6 3 # FV");
-        mySLHA.push_back(modsel_block);
-
         // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
@@ -178,6 +171,11 @@ namespace Gambit {
               rank = comm.Get_rank();
           }
 #endif
+          // Add model select block to inform DS about 6x6 mixing
+          SLHAea::Block modsel_block("MODSEL");
+          modsel_block.push_back("BLOCK MODSEL");
+          modsel_block.push_back("6 3 # FV");
+          mySLHA.push_back(modsel_block);
 
           // Set filename
           std::string fstr = "DarkBit_temp_";

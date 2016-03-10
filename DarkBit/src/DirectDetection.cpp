@@ -152,7 +152,6 @@ namespace Gambit {
         << (*BEreq::MOcommon).par[7] << endl;
 
       double p1[2], p2[2], p3[2], p4[2];
-      // FIXME: Error if nucleonAmplitudes from MicrOmegas fails?
       int error = BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), 
           byVal(p1), byVal(p2), byVal(p3), byVal(p4));
       if(error!=0)

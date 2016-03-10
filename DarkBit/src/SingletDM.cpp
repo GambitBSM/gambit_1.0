@@ -74,12 +74,6 @@ namespace Gambit
         double sv(std::string channel, double lambda, double mass, double v)
         {
           // Note: Valid for mass > 45 GeV
-          // FIXME: Comment this in to get a segfault... Sigh
-          //f_vs_mass["Gamma"]->bind("mass");
-          // FIXME: Comment this in to get not a segfault... Sigh-sigh
-          //auto h = f_vs_mass["Gamma"]->bind("mass");
-          // I think this is related to a bug in the funktions.hpp.  But I
-          // don't understand how.
           double s = 4*mass*mass/(1-v*v/4);
           double sqrt_s = sqrt(s);
           if ( sqrt_s < 90 )
@@ -316,6 +310,7 @@ namespace Gambit
       addParticle("ubar_2", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
       addParticle("d_2"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
       addParticle("dbar_2", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      double alpha_s = SMI.alphaS;      // alpha_s(mZ)^MSbar
 
       // Masses for neutrino flavour eigenstates. Set to zero.
       // (presently not required)
@@ -371,9 +366,7 @@ namespace Gambit
       ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching, Funk::vec<std::string>("Z0", "W+", "W-"));
 
       // Instantiate new SingletDM object
-      // FIXME: Probably this can be speed up f_vs_mass
-      // FIXME: alpha_s = 0.12 should not be hard-coded, but gotten from the spectrum object; but at what scale?
-      auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass, v, 0.12);
+      auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass, v, alpha_s);
 
       // Populate annihilation channel list and add thresholds to threshold
       // list.

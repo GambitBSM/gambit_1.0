@@ -329,6 +329,15 @@ BE_NAMESPACE
     const std::complex<double> imagi(0.0, 1.0);
     DS_PACODES *DSpart = &(*pacodes);
 
+    /*
+    // FIXME: Joakim --> would this be need for anything / should this be
+    // checked?
+    SLHAea::Block modsel_block("MODSEL");
+    modsel_block.push_back("BLOCK MODSEL");
+    modsel_block.push_back("6 3 # FV");
+    mySLHA.push_back(modsel_block);
+    */
+
     // Define required blocks and raise an error if a block is missing
     required_block("SMINPUTS", mySLHA);
     required_block("VCKMIN",   mySLHA);
