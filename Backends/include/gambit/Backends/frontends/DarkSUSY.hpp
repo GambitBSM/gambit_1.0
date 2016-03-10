@@ -49,8 +49,6 @@
 // Load the library
 LOAD_LIBRARY
 
-BE_ALLOW_MODELS(LocalHalo)
-
 // Functions
 BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
 BE_FUNCTION(dshainit, void, (const int&), "dshainit_", "dshainit")
