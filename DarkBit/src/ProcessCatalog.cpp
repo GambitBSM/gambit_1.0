@@ -224,11 +224,15 @@ namespace Gambit {
                   "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
                   "  genRate must have three arguments (v, E and E1) for annihilation into " + outstring);
             if ((it2->finalStateIDs.size() == 3) and E_out > E_in)
+            {
+              // TODO:  This could be defined more generally (allowing
+              // three-body final states that are closed for v=0)
               DarkBit_error().raise(LOCAL_INFO, 
                 "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
                 "  three-body final states kinematically not allowed for v=0 for annihilation into " + outstring);
-            if (E_out > E_in)  // Test whether channels kinematically closed for v=0 are indeed closed
-              // FIXME: Implement this also for three-body final states
+            }
+            // Test whether channels kinematically closed for v=0 are indeed closed
+            if ((it2->finalStateIDs.size() == 2) and (E_out > E_in))
             {
               double v_min = sqrt(1-1/pow(E_out/E_in,2));
               if ( it2->genRate->bind("v")->eval(v_min*0.999) != 0 )

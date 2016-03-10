@@ -119,8 +119,10 @@ DONE       -- Christoph:  I don't know under what circumstances this can fail.  
 DONE       now it throws an error.
 DONE SingletDM.cpp: 370	:      // FIXME: alpha_s = 0.12 should not be hard-coded, but gotten from the spectrum object; but at what scale?
 DONE   -- Pat: arg - it depends on exactly how the 1-loop QCD correction it is being used in was calculated I guess.  I think formally the difference between taking it at mZ and sqrt(s) is 2-loop though, so both would be equally correct.  Probably just taking it at mZ is safest, i.e. using alpha_s from the SMINPUTS part of the spectrum.
-
-ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for three-body final states
+DONE ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for three-body final states
+DONE MSSM.cpp: 345	:      // FIXME: Get meson masses from somewhere else?
+DONE SingletDM.cpp: 332	:      // FIXME: Get meson masses from somewhere
+DONE   -- Pat: there is nowhere else in the code that defines or uses meson masses.  I think the most appropriate (for now) would be to put them in Elements/include/.../numerical_constants.cpp, maybe in a const map initialised with some function defined in a new source file Elements/src/numerical_constants.cpp.
 
 Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
 Cascades.cpp: 422	:          // FIXME: This sets equal binning for all particle types.  Each
@@ -136,7 +138,3 @@ SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available d
 SunNeutrinos.cpp: 169	:          // FIXME: Replace when BFs become directly available.
 SunNeutrinos.cpp: 227	:        // FIXME: Replace when BFs become directly available.
   -- Pat: these stand, unless BFs are now available directly from the process catalog? (nothing changed)
-
-MSSM.cpp: 345	:      // FIXME: Get meson masses from somewhere else?
-SingletDM.cpp: 332	:      // FIXME: Get meson masses from somewhere
-  -- Pat: there is nowhere else in the code that defines or uses meson masses.  I think the most appropriate (for now) would be to put them in Elements/include/.../numerical_constants.cpp, maybe in a const map initialised with some function defined in a new source file Elements/src/numerical_constants.cpp.

@@ -328,16 +328,14 @@ namespace Gambit
       double mH = spec->get(Par::Pole_Mass,"h0_1");
       addParticle("S",        mS, 0)  // Singlet DM
       addParticle("h0_1",     mH, 0)  // SM-like Higgs
-      
-      // FIXME: Get meson masses from somewhere
-      addParticle("pi0",      0.135,   0)
-      addParticle("pi+",      0.1396,  0)
-      addParticle("pi-",      0.1396,  0)
-      addParticle("eta",      0.547,   0)
-      addParticle("rho0",     0.775,   1)        
-      addParticle("rho+",     0.775,   1)       
-      addParticle("rho-",     0.775,   1)             
-      addParticle("omega",    0.7827,  1)         
+      addParticle("pi0",   meson_masses.pi0,       0)
+      addParticle("pi+",   meson_masses.pi_plus,   0)
+      addParticle("pi-",   meson_masses.pi_minus,  0)
+      addParticle("eta",   meson_masses.eta,       0)
+      addParticle("rho0",  meson_masses.rho0,      1)        
+      addParticle("rho+",  meson_masses.rho_plus,  1)       
+      addParticle("rho-",  meson_masses.rho_minus, 1)             
+      addParticle("omega", meson_masses.omega,     1)         
 
       // Get rid of convenience macros
       #undef getSMmass
