@@ -22,6 +22,7 @@
 #include "gambit/Utils/mpiwrapper.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "yaml-cpp/yaml.h"
+//#include "gambit/ScannerBit/plugin_loader.hpp"
 
 namespace Gambit
 {
@@ -463,6 +464,7 @@ namespace Gambit
        sighandler_emergency(sig); // calls exit(sig)
      }
      // We will avoid touching streams in this "clean" shutdown mode since technically it is undefined behaviour, so no messages here.
+     //Scanner::Plugins::plugin_info.dump();
      signaldata().set_shutdown_begun();
      signaldata().add_signal(sig);
    }
@@ -471,6 +473,7 @@ namespace Gambit
    {
      // std::cerr << " Saw signal " << sig << std::endl; // debugging
      signaldata().set_shutdown_begun();
+     //Scanner::Plugins::plugin_info.dump();
      #ifdef WITH_MPI
      std::cerr << "rank "<<signaldata().rank<<": ";
      #endif

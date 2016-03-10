@@ -31,6 +31,7 @@
 #include "gambit/ScannerBit/printer_interface.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 namespace Gambit
 {
@@ -131,6 +132,7 @@ namespace Gambit
                 std::map<std::string, std::ifstream *> resume_streams;
                 printer_interface *printer;
                 Options options;
+                std::string def_out_path;
                 
                 inline void set_resume(std::vector<__plugin_resume_base__ *> &){}
                                 
@@ -175,7 +177,10 @@ namespace Gambit
                     if (printer->resume_mode())
                     {
                         if (resume_streams.find(name) != resume_streams.end())
-                            resume_streams[name] = new std::ifstream((std::string(GAMBIT_DIR) + "/scratch/" + name).c_str(), std::ifstream::binary);
+                        {
+                            std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files");
+                            resume_streams[name] = new std::ifstream((path + "/" + name).c_str(), std::ifstream::binary);
+                        }
                         if (resume_streams[name]->is_open())
                         {
                             get_resume(*resume_streams[name], data...);

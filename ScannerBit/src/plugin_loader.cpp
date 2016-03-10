@@ -434,6 +434,11 @@ namespace Gambit
                 printer = &printerIn;
                 if (options.getNode().IsMap())
                 {
+                    if (options.hasKey("default_output_path"))
+                        def_out_path = options.getValue<std::string>("default_output_path");
+                    else
+                        scan_err << "\"default output path\" must be specified in KeyValues section." << scan_end;
+                    
                     for (auto it = options.getNode().begin(), end = options.getNode().end(); it != end; it++)
                     {
                         std::string plug_type = it->first.as<std::string>();
@@ -484,9 +489,16 @@ namespace Gambit
                 {
                     Proto_Plugin_Details &detail = selectedPlugins[type][tag];
                     YAML::Node plugin_options = options.getNode(type + "s", tag);
-                    plugin_options["default_output_path"] = options.getValue<std::string>("default_output_path");
-                    plugin_options["likelihood: model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
-                    plugin_options["model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
+                    
+                    //if (!plugin_options.hasKey("default_output_path"))
+                        plugin_options["default_output_path"] = options.getValue<std::string>("default_output_path");
+                    
+                    //if (!plugin_options.hasKey("likelihood: model_invalid_for_lnlike_below"]))
+                        plugin_options["likelihood: model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
+                    
+                    //if (!plugin_options.hasKey("model_invalid_for_lnlike_below"))
+                        plugin_options["model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
+                    
                     return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, plugin_options);
                 }
                 else
@@ -502,7 +514,9 @@ namespace Gambit
             {
                 for (auto it = resume_data.begin(), end = resume_data.end(); it != end; ++it)
                 {
-                    std::ofstream out((std::string(GAMBIT_DIR) + "/scratch/" + it->first).c_str(), std::ofstream::binary);
+                    std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files");
+                    std::cout << path << std::endl; getchar();
+                    std::ofstream out((path + "/" + it->first).c_str(), std::ofstream::binary);
                     for (auto v_it = it->second.begin(), v_end = it->second.end(); v_it != v_end; ++v_it)
                     {
                         (*v_it)->print(out);

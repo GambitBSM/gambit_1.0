@@ -110,6 +110,14 @@ namespace Gambit
                         std::vector<bool> valid;
                         Enter_HDF5<read_hdf5> (*itv, valid);
                         H5Dread(*it, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[0]);
+                        
+                        if((unsigned long long)dim_t < *st)
+                        {
+                            std::ostringstream errmsg;
+                            errmsg << "Error copying aux parameter.  Input file smaller than required.";
+                            printer_error().raise(LOCAL_INFO, errmsg.str());
+                        }
+                        
                         for (int i = 0, end = *st; i < end; i++)
                         {
                             if (valid[i])
