@@ -115,7 +115,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_mssm_gm2_chi2
     START_FUNCTION(double)
-    DEPENDENCY(a_mu_SUSY, double)
+  DEPENDENCY(a_mu_SUSY, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
   
@@ -145,14 +145,17 @@ START_MODULE
   #define CAPABILITY a_mu_SUSY
   START_CAPABILITY
     #define FUNCTION a_mu_SUSY
-    START_FUNCTION(double)
+  START_FUNCTION(triplet<double>)
     NEEDS_CLASSES_FROM(gm2calc, default)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(calculate_amu_1loop, (libgm2calc), double, 
                              (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
     BACKEND_REQ(calculate_amu_2loop, (libgm2calc), double, 
                              (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
+    BACKEND_REQ(calculate_uncertainty_amu_2loop, (libgm2calc), double, 
+                             (const gm2calc_1_0_0::gm2calc::MSSMNoFV_onshell&))
     BACKEND_OPTION( (gm2calc), (libgm2calc) )
+  
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 

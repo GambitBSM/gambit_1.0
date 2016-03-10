@@ -67,6 +67,8 @@ ObsLikes:
     capability:  lnL_sinW2_eff
   - purpose:  Likelihood
     capability:  lnL_deltarho
+  - purpose:  Likelihood
+    capability:  lnL_gm2
   - purpose:    Observable
     capability: a_mu_SUSY
   - purpose:    Observable

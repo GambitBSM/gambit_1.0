@@ -605,21 +605,43 @@ namespace Gambit
     void lnL_mssm_gm2_chi2(double &result)
     {
       using namespace Pipes::lnL_mssm_gm2_chi2;
-      double amu_susy = *Dep::a_mu_SUSY; 
+      double amu_susy = Dep::a_mu_SUSY->central; 
       /// and sets this as the error on the susy calculation
       /// change this to new capability so that can be independent of gm2calc 
-      double amu_mssm_error = 0; //BEreq::gm2calc::calculate_uncertainty_amu_2loop(model);
+      double amu_mssm_error = std::max(Dep::a_mu_SUSY->upper,
+				       Dep::a_mu_SUSY->lower); 
       /// Value taken from prediction in arXiv:1010.4180 (Eq 22)
-      double amu_sm  = 11659180.2;
-      double amu_exp = 11659208.9;
-      /// taken from arXiv:1010.4180 (Eq 22)
-      double amu_sm_error = 4.9;
-      // error from hep-ex/0602035. This is from a statistical uncertainty (5.4) and a sytematic uncertainty (3.3) combinied in qudrature.  arXiv:1010.4180 takes this and combines in quadrature with theior their errors to get the 3.6 sigma deviation that they claim. 
-      double amu_exp_error = 6.3;
+      double amu_sm  = 11659180.2e-10;
+      double amu_sm_error = 4.9e-10;
+      // From hep-ex/0602035.
+      double amu_exp = 11659208.9e-10;
+      // Combines statistical (5.4) and systematic (3.3) uncertainties in quadrature.  
+      double amu_exp_error = 6.3e-10;
       double amu_theory = amu_sm + amu_susy;
       double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
 				     + Gambit::Utils::sqr(amu_mssm_error) );
 
+      std::cout << "amu_susy = " << amu_susy << std::endl;
+      std::cout << "amu_mssm_error = "  << amu_mssm_error << std::endl;
+      std::cout << "amu_theory = "  << amu_theory << std::endl;
+      std::cout << "amu_theory_err = "  << amu_theory_err << std::endl;
+
+      std::cout << "amu_theory - amu_exp = "
+		<< amu_theory - amu_exp
+		<< std::endl;
+
+      std::cout << "number of deviations inc susy = "
+		<< (amu_theory - amu_exp) /
+	sqrt(Gambit::Utils::sqr(amu_theory_err)
+	  + Gambit::Utils::sqr(amu_exp_error) )
+		<< " sigma" << std::endl;
+
+      std::cout << "number of deviations exc susy = "
+		<< (amu_sm - amu_exp) /
+	sqrt(Gambit::Utils::sqr(amu_sm_error)
+	  + Gambit::Utils::sqr(amu_exp_error) )
+		<< " sigma" << std::endl;
+      
       result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
       					     amu_theory_err, amu_exp_error);
 
@@ -652,7 +674,7 @@ namespace Gambit
 
 
     /// Test function for gm2calc backend (simple copy/paste from gm2calc manual.)
-    void a_mu_SUSY(double &result)
+    void a_mu_SUSY(triplet<double> &result)
     {
       using namespace Pipes::a_mu_SUSY;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
@@ -733,9 +755,16 @@ namespace Gambit
 
       // convert DR-bar parameters to on-shell
       model.convert_to_onshell();
-   
-      result = BEreq::calculate_amu_1loop(model) 
+
+      double error = BEreq::calculate_uncertainty_amu_2loop(model);
+      
+      double amumssm = BEreq::calculate_amu_1loop(model) 
                + BEreq::calculate_amu_2loop(model);
+
+      result.central = amumssm;
+      result.upper = error;
+      result.lower = error;
+      
       return;
     }
 
