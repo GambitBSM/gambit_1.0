@@ -26,6 +26,7 @@
 #define __spec_hpp__
 
 #include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Models/SpectrumContents/subspectrum_contents.hpp"
 
 // Particle database access
 #define PDB Models::ParticleDB()        
@@ -33,34 +34,6 @@
 namespace Gambit
 {
 
-   /// Implementations (overrides) of the virtual getters/setters found in CommonAbstract.
-   /// These now need to be templated so that they know details of the derived spectrum object.
-   template <class HostSpec>
-   class CommonTemplateFuncs: public virtual CommonFuncs
-   {
-      public:
-
-        /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
-        bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-        double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
-        bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-        double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
-        bool   has(const Par::Tags, const str&, int, int) const;
-        double get(const Par::Tags, const str&, int, int) const;
-
-        /* Setter declarations, for setting parameters in a derived model object,
-           and for overriding model object values with values stored outside
-           the model object (for when values cannot be inserted back into the
-           model object)
-           Note; these are NON-CONST */
-        void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
-        void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
-        void set(const Par::Tags, const double, const str&, int, int);
-   };
- 
-   /// =====================================================
-   
-     
    /// Need to forward declare Spec class
    template <class>
    class Spec;
@@ -84,28 +57,62 @@ namespace Gambit
    /// Forward declarations related to FptrFinder class
    template<class,class> class SetMaps;
    template<class,class> class FptrFinder;  
-   template<class,class> class CallFcn;  
-  
-         
+   template<class,class> class CallFcn; 
+
+   /// Simpler helper class to run the verify_contents function only
+   /// once, the first time a particular wrapper class is constructed.
+   template<class Contents>
+   class VerifyContents
+   {
+      public:
+        VerifyContents(const SubSpectrum& spec)
+        {
+          Contents contents;
+          contents.verify_contents(spec); 
+        }
+   };
+
    // CRTP used to allow access to some special data members of the derived class.
    // Various inherited classes are just used to factor out code, some of which
    // doesn't need to be templated.
    template <class DerivedSpec>
-   class Spec : public SubSpectrum,
-                public CommonTemplateFuncs<Spec<DerivedSpec>>
+   class Spec : public SubSpectrum
    { 
-      public:
+     template <class,class>
+     friend class FptrFinder;
+ 
+     public:
          typedef DerivedSpec D;
          typedef Spec<D> Self;
 
          /// Note: Wrapper need to define a specialisation of 
          /// SpecTraits, which typedefs Model and Input.
          /// "Grab" these typedefs here to simplify notation
-         typedef typename SpecTraits<D>::Model Model;
-         typedef typename SpecTraits<D>::Input Input;
+         typedef typename SpecTraits<D>::Contents Contents;
+         typedef typename SpecTraits<D>::Model    Model;
+         typedef typename SpecTraits<D>::Input    Input;
 
          typedef MapTypes<D,MapTag::Get> MTget; 
          typedef MapTypes<D,MapTag::Set> MTset; 
+
+         std::string getName() const { return SpecTraits<D>::name(); };
+
+         /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */
+         bool   has(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         double get(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
+         double get(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
+         bool   has(const Par::Tags, const str&, int, int) const;
+         double get(const Par::Tags, const str&, int, int) const;
+
+         /* Setter declarations, for setting parameters in a derived model object,
+            and for overriding model object values with values stored outside
+            the model object (for when values cannot be inserted back into the
+            model object)
+            Note; these are NON-CONST */
+         void set(const Par::Tags, const double, const str&, SafeBool check_antiparticle = SafeBool(true));
+         void set(const Par::Tags, const double, const str&, int, SafeBool check_antiparticle = SafeBool(true));
+         void set(const Par::Tags, const double, const str&, int, int);
 
          /// @{ Default (empty) map filler functions
          /// Override as needed in derived classes
@@ -119,9 +126,16 @@ namespace Gambit
             std::map<Par::Tags,MapCollection<MTset>> tmp;
             return tmp;
          }
-         /// @}
+
+         /// Get integer offset convention used by internal model class (needed by getters which take indices) 
+         /// By default assume no offset. Overrride as needed in derived class.
+         static int index_offset() { return 0; } 
+
 
       private:
+         /// Function to retrieve the possibly overridden index offset from the derived class via CRTP
+         static int get_index_offset() { return D::index_offset(); }
+
          /// @{ Functions to ensure that all the possible tags exist in the final map, 
          ///    even if no getters/setters are stored under those tags.
        
@@ -170,7 +184,11 @@ namespace Gambit
          
       public: 
 
-         /// Using default constructors
+         /// Constructor
+         /// This uses the "Contents" class to verify (once, not every construction)
+         /// that this wrapper provides all the basic functionality that it is
+         /// supposed to.
+         Spec() { static VerifyContents<Contents> runonce(*this); };
        
          /// Virtual destructor
          virtual ~Spec() {};

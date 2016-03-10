@@ -344,6 +344,7 @@ set(susyhit_ver "1\\.5")
 set(susyhit_lib "libsusyhit")
 set(susyhit_dir "${PROJECT_SOURCE_DIR}/Backends/installed/SUSY-HIT/1.5")
 set(susyhit_short_dir "./Backends/installed/SUSY-HIT/1.5")
+set(susyhit_patch "${PROJECT_SOURCE_DIR}/Backends/patches/SUSY-HIT/1.5")
 set(susyhit_dl "susyhit.tar.gz")
 ExternalProject_Add(susyhit
   URL http://www.itp.kit.edu/~maggie/SUSY-HIT/${susyhit_dl}
@@ -352,101 +353,8 @@ ExternalProject_Add(susyhit
   SOURCE_DIR ${susyhit_dir}
   BUILD_IN_SOURCE 1
   DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND cp -n makefile makefile.orig  COMMAND cp -n sdecay.f sdecay.orig  COMMAND cp -n hdecay.f hdecay.orig
-            COMMAND cp -n lightst3bod.f lightst3bod.f.orig COMMAND cp -n lightst4bod.f lightst4bod.f.orig
-            COMMAND cp makefile.orig makefile.tmp COMMAND cp sdecay.orig sdecay.f.tmp COMMAND cp hdecay.orig hdecay.f.tmp
-            COMMAND cp lightst3bod.f.orig lightst3bod.f.tmp COMMAND cp lightst4bod.f.orig lightst4bod.f.tmp
-            COMMAND sed ${dashi} -e "s#FC=\\(.*\\)[[:space:]]*$#FF=\\1${nl}${nl}FC=\\$\\(FF\\)${nl}FFLAGS= -O2 -fPIC#g"
-                                 -e "s#FC)[[:space:]]*-c#FC\\) \\$\\(FFLAGS\\) -c#g"
-                                 -e "s#\\(clean:.*\\)$#${susyhit_lib}.so:\\$\\(OBJS1\\) \\$\\(OBJS2\\) \\$\\(OBJS3\\)${nl}\t\\$\\(FC\\) -shared -o \\$@ \\$\\(OBJS1\\) \\$\\(OBJS2\\) \\$\\(OBJS3\\)${nl}${nl}\\1#g"
-                                 makefile.tmp
-            COMMAND sed ${dashi} -e "s#^[[:space:]]*program sdecay[[:space:]]*$#      !Added by GAMBIT to make 100% sure \\'unlikely\\' matches the fortran value.${nl}      double precision function s_hit_unlikely()${nl}        s_hit_unlikely = -123456789D0${nl}      end${nl}${nl}      subroutine sdecay                          !Modified by GAMBIT.#g"
-                                 -e "s#COMMON/SD_stopwidth/stoptot4[[:space:]]*$#COMMON/SD_stopwidth/stoptot4,stoptot       !Modified by GAMBIT#g"
-                                 -e "s#\\([[:space:]]*open(ninshs,file=.*\\)$#      if (.false.) then                          !Added by GAMBIT.${nl}${nl}\\1#g"
-                                 -e "s#\\(^[[:space:]]*flagshsin=2d0\\)$#\\1${nl}      endif                                      !Added by GAMBIT.${nl}${nl}      else                                       !Added by GAMBIT.${nl}${nl}        flagshsin=0d0                            !Added by GAMBIT.${nl}        flagoutput=2d0                           !Added by GAMBIT.${nl}        i4bod=1                                  !Added by GAMBIT.${nl}#g"
-                                 -e "s#\\([[:space:]]*if((flagoutput\\.eq\\.1\\.D0).or.(ifavvio\\.eq\\.1)) then\\)#c\\1 !Commented out by GAMBIT.#g"
-                                 -e "s#\\!\\([[:space:]]*if(flagoutput\\.eq\\.1\\.D0) then\\)[[:space:]]*$#\\1                !Reinstated by GAMBIT.#g"
-                                 -e "/output not a la Les Houches accord/{" -e "N" -e "N" -e "s/else/elseif(flagoutput.eq.0.D0) then            !Modified by GAMBIT./" -e "}"
-                                 -e "s#\\(^[[:space:]]*if(flagshsin\\.\\)eq\\(\\.1\\.D0) then\\)#\\1le\\2                 !Modified by GAMBIT.#g"
-                                 -e "s#integer nx1t,ny1t,nnlo,imod(1:2)#logical qcdcorrstok(2),qcdcorrsbok(2),qcdcorrchok(2),qcdcorrglok!Added by GAMBIT${nl}      integer nx1t,ny1t,nnlo,imod(1:2)#g"
-                                 -e "s#     \\.           qcdcharsupr(i)+qcdcharsdownl(i)+qcdcharsdownr(i))#     .           qcdcharsupr(i)+qcdcharsdownl(i)+qcdcharsdownr(i))${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}            qcdcorrchok(i) = chartot2nlo(i) .ge. 0.D0${nl}            if (.not.qcdcorrchok(i)) chartot2nlo(i) =${nl}     .       chartot2lo(i) / (2.D0 - chartot2nlo(i) / chartot2lo(i))#g"
-                                 -e "s#     \\.            + gluitot2lo#     .            + gluitot2lo${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      qcdcorrglok = gluitot2nlo .ge. 0.D0${nl}      if (.not.qcdcorrglok) gluitot2nlo =${nl}     . gluitot2lo / (2.D0 - gluitot2nlo / gluitot2lo)#g"
-                                 -e "s#qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)#qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      do i = 1,2,1${nl}         qcdcorrsbok(i) = sbottot2nlo(i) .ge. 0.D0${nl}         if (.not.qcdcorrsbok(i)) sbottot2nlo(i) =${nl}     .    sbottot2lo(i) / (2.D0 - sbottot2nlo(i) / sbottot2lo(2))${nl}      enddo${nl}#g"
-                                 -e "s#     \\.            qcdst2wsb(2)#     .            qcdst2wsb(2)${nl}${nl}c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction${nl}      do i = 1,2,1${nl}         qcdcorrstok(i) = stoptot2nlo(i) .ge. 0.D0${nl}         if (.not.qcdcorrstok(i)) stoptot2nlo(i) =${nl}     .    stoptot2lo(i) / (2.D0 - stoptot2nlo(i) / stoptot2lo(i))${nl}      enddo${nl}#g"
-                                 -e "s#stoptot(1) = sigma4bodtot+stoptotrad(1)#stoptot(1) = stoptotrad(1)${nl}               if (sigma4bodtot.gt.0.D0) stoptot(1) = stoptot(1) + sigma4bodtot#g"
-                                 -e "s#         brcharst1(i)    = charst1(i)/chartot(i)#         if(qcdcorrchok(i)) then                                     !Added by GAMBIT${nl}         brcharst1(i)    = charst1(i)/chartot(i)#g"
-                                 -e "s#         brcharstau2(i)  = charstau2(i)/chartot(i)#         brcharstau2(i)  = charstau2(i)/chartot(i)${nl}         endif                                                       !Added by GAMBIT#g"
-                                 -e "s#            brcharhcneut(i,j) = charhcneut(i,j)/chartot(i)#         if(qcdcorrchok(i)) then                                     !Added by GAMBIT${nl}            brcharhcneut(i,j) = charhcneut(i,j)/chartot(i)#g"
-                                 -e "s#            brcharwneut(i,j)  = charwneut(i,j)/chartot(i)#            brcharwneut(i,j)  = charwneut(i,j)/chartot(i)${nl}         endif                                                       !Added by GAMBIT#g"
-                                 -e "s#      brcharzchic  = char2zchic1/chartot(2)#      if(qcdcorrchok(2)) then                                        !Added by GAMBIT${nl}      brcharzchic  = char2zchic1/chartot(2)#g"
-                                 -e "s#      brcharhachic = char2hachic1/chartot(2)#      brcharhachic = char2hachic1/chartot(2)${nl}      endif                                                          !Added by GAMBIT#g"
-                                 -e "s#            brcharwgravitino(i)  = charwgravitino(i)/chartot(i)#         if(qcdcorrchok(i)) then                                     !Added by GAMBIT${nl}            brcharwgravitino(i)  = charwgravitino(i)/chartot(i)#g"
-                                 -e "s#            brcharhcgravitino(i) = charhcgravitino(i)/chartot(i)#            brcharhcgravitino(i) = charhcgravitino(i)/chartot(i)${nl}         endif                                                       !Added by GAMBIT#g"
-                                 -e "s#brgst1    = gst1/gluitot#if (qcdcorrglok) brgst1    = gst1/gluitot      !Modified by GAMBIT#g"
-                                 -e "s#brgst2    = gst2/gluitot#if (qcdcorrglok) brgst2    = gst2/gluitot      !Modified by GAMBIT#g"
-                                 -e "s#brgsb1    = gsb1/gluitot#if (qcdcorrglok) brgsb1    = gsb1/gluitot      !Modified by GAMBIT#g"
-                                 -e "s#brgsb2    = gsb2/gluitot#if (qcdcorrglok) brgsb2    = gsb2/gluitot      !Modified by GAMBIT#g"
-                                 -e "s#brgsupl   = gsupl/gluitot#if (qcdcorrglok) brgsupl   = gsupl/gluitot     !Modified by GAMBIT#g"
-                                 -e "s#brgsupr   = gsupr/gluitot#if (qcdcorrglok) brgsupr   = gsupr/gluitot     !Modified by GAMBIT#g"
-                                 -e "s#brgsdownl = gsdownl/gluitot#if (qcdcorrglok) brgsdownl = gsdownl/gluitot   !Modified by GAMBIT#g"
-                                 -e "s#brgsdownr = gsdownr/gluitot#if (qcdcorrglok) brgsdownr = gsdownr/gluitot   !Modified by GAMBIT#g"
-                                 -e "s#brsb1neutt(i)=sb1neutt(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1neutt(i)=sb1neutt(i)/sbottot2(1)    !Modified by GAMBIT#g"
-                                 -e "s#brsb2neutt(i)=sb2neutt(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2neutt(i)=sb2neutt(i)/sbottot2(2)    !Modified by GAMBIT#g"
-                                 -e "s#brsb1chart(i) = sb1chart(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1chart(i) = sb1chart(i)/sbottot2(1)  !Modified by GAMBIT#g"
-                                 -e "s#brsb2chart(i) = sb2chart(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2chart(i) = sb2chart(i)/sbottot2(2)  !Modified by GAMBIT#g"
-                                 -e "s#brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)   !Modified by GAMBIT#g"
-                                 -e "s#brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)   !Modified by GAMBIT#g"
-                                 -e "s#brsb1wst(i)   = sb1wst(i)/sbottot2(1)#if(qcdcorrsbok(1)) brsb1wst(i)   = sb1wst(i)/sbottot2(1)    !Modified by GAMBIT#g"
-                                 -e "s#brsb2wst(i)   = sb2wst(i)/sbottot2(2)#if(qcdcorrsbok(2)) brsb2wst(i)   = sb2wst(i)/sbottot2(2)    !Modified by GAMBIT#g"
-                                 -e "s#brsb1glui = sb1glui/sbottot2(1)#if(qcdcorrsbok(1)) brsb1glui = sb1glui/sbottot2(1)             !Modified by GAMBIT#g"
-                                 -e "s#brsb2glui = sb2glui/sbottot2(2)#if(qcdcorrsbok(2)) brsb2glui = sb2glui/sbottot2(2)             !Modified by GAMBIT#g"
-                                 -e "s#brsb2hl   = sb2hl/sbottot2(2)#if(qcdcorrsbok(2)) brsb2hl   = sb2hl/sbottot2(2)               !Modified by GAMBIT#g"
-                                 -e "s#brsb2hh   = sb2hh/sbottot2(2)#if(qcdcorrsbok(2)) brsb2hh   = sb2hh/sbottot2(2)               !Modified by GAMBIT#g"
-                                 -e "s#brsb2ha   = sb2ha/sbottot2(2)#if(qcdcorrsbok(2)) brsb2ha   = sb2ha/sbottot2(2)               !Modified by GAMBIT#g"
-                                 -e "s#brsb2zbot = sb2zbot/sbottot2(2)#if(qcdcorrsbok(2)) brsb2zbot = sb2zbot/sbottot2(2)             !Modified by GAMBIT#g"
-                                 -e "s#brst1neutt(i) = st1neutt(i)/stoptot(1)#if(qcdcorrstok(1)) brst1neutt(i) = st1neutt(i)/stoptot(1)   !Modified by GAMBIT#g"
-                                 -e "s#brst2neutt(i) = st2neutt(i)/stoptot(2)#if(qcdcorrstok(2)) brst2neutt(i) = st2neutt(i)/stoptot(2)   !Modified by GAMBIT#g"
-                                 -e "s#brst1charb(i) = st1charb(i)/stoptot(1)#if(qcdcorrstok(1)) brst1charb(i) = st1charb(i)/stoptot(1)   !Modified by GAMBIT#g"
-                                 -e "s#brst1hcsb(i)  = st1hcsb(i)/stoptot(1)#if(qcdcorrstok(1)) brst1hcsb(i)  = st1hcsb(i)/stoptot(1)    !Modified by GAMBIT#g"
-                                 -e "s#brst1wsb(i)   = st1wsb(i)/stoptot(1)#if(qcdcorrstok(1)) brst1wsb(i)   = st1wsb(i)/stoptot(1)     !Modified by GAMBIT#g"
-                                 -e "s#brst2charb(i) = st2charb(i)/stoptot(2)#if(qcdcorrstok(2)) brst2charb(i) = st2charb(i)/stoptot(2)   !Modified by GAMBIT#g"
-                                 -e "s#brst2hcsb(i)  = st2hcsb(i)/stoptot(2)#if(qcdcorrstok(2)) brst2hcsb(i)  = st2hcsb(i)/stoptot(2)    !Modified by GAMBIT#g"
-                                 -e "s#brst2wsb(i)   = st2wsb(i)/stoptot(2)#if(qcdcorrstok(2)) brst2wsb(i)   = st2wsb(i)/stoptot(2)     !Modified by GAMBIT#g"
-                                 -e "s#brst1glui = st1glui/stoptot(1)#if(qcdcorrstok(1)) brst1glui = st1glui/stoptot(1)              !Modified by GAMBIT#g"
-                                 -e "s#brst2glui = st2glui/stoptot(2)#if(qcdcorrstok(2)) brst2glui = st2glui/stoptot(2)              !Modified by GAMBIT#g"
-                                 -e "s#brst2hl   = st2hl/stoptot(2)#if(qcdcorrstok(2)) brst2hl   = st2hl/stoptot(2)                !Modified by GAMBIT#g"
-                                 -e "s#brst2hh   = st2hh/stoptot(2)#if(qcdcorrstok(2)) brst2hh   = st2hh/stoptot(2)                !Modified by GAMBIT#g"
-                                 -e "s#brst2ha   = st2ha/stoptot(2)#if(qcdcorrstok(2)) brst2ha   = st2ha/stoptot(2)                !Modified by GAMBIT#g"
-                                 -e "s#brst2ztop = st2ztop/stoptot(2)#if(qcdcorrstok(2)) brst2ztop = st2ztop/stoptot(2)              !Modified by GAMBIT#g"
-                                 -e "s#c -------------------- the chargino branching ratios ----------------- c#c -------------------- the chargino branching ratios ----------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      do i=1,2,1${nl}         if(.not.qcdcorrchok(i)) then${nl}            brcharst1(i)    = charst1(i)/chartot2lo(i)${nl}            brcharst2(i)    = charst2(i)/chartot2lo(i)${nl}            brcharsb1(i)    = charsb1(i)/chartot2lo(i)${nl}            brcharsb2(i)    = charsb2(i)/chartot2lo(i)${nl}            brcharsupl(i)   = charsupl(i)/chartot2lo(i)${nl}            brcharsupr(i)   = charsupr(i)/chartot2lo(i)${nl}            brcharsdownl(i) = charsdownl(i)/chartot2lo(i)${nl}            brcharsdownr(i) = charsdownr(i)/chartot2lo(i)${nl}            brcharsnel(i)   = charsnel(i)/chartot2lo(i)${nl}            brcharsn1(i)    = charsn1(i)/chartot2lo(i)${nl}            brcharsn2(i)    = charsn2(i)/chartot2lo(i)${nl}            brcharsell(i)   = charsell(i)/chartot2lo(i)${nl}            brcharselr(i)   = charselr(i)/chartot2lo(i)${nl}            brcharstau1(i)  = charstau1(i)/chartot2lo(i)${nl}            brcharstau2(i)  = charstau2(i)/chartot2lo(i)${nl}            do j=1,4,1${nl}               brcharhcneut(i,j) = charhcneut(i,j)/chartot2lo(i)${nl}               brcharwneut(i,j)  = charwneut(i,j)/chartot2lo(i)${nl}            end do${nl}        endif${nl}      end do${nl}      if(.not.qcdcorrchok(2)) then${nl}         brcharzchic  = char2zchic1/chartot2lo(2)${nl}         brcharhlchic = char2hlchic1/chartot2lo(2)${nl}         brcharhhchic = char2hhchic1/chartot2lo(2)${nl}         brcharhachic = char2hachic1/chartot2lo(2)${nl}      endif${nl}${nl}      if(flagnlspgmsb.eq.1.D0) then${nl}         do i=1,2,1${nl}            if(.not.qcdcorrchok(i)) then${nl}               brcharwgravitino(i)  = charwgravitino(i)/chartot2lo(i)${nl}               brcharhcgravitino(i) = charhcgravitino(i)/chartot2lo(i)${nl}            endif${nl}         end do${nl}      endif#g"
-                                 -e "s#c -------------------- the gluino branching ratios ------------------- c#c -------------------- the gluino branching ratios ------------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrglok) then${nl}        brgst1    = gst1/gluitot2lo${nl}        brgst2    = gst2/gluitot2lo${nl}        brgsb1    = gsb1/gluitot2lo${nl}        brgsb2    = gsb2/gluitot2lo${nl}        brgsupl   = gsupl/gluitot2lo${nl}        brgsupr   = gsupr/gluitot2lo${nl}        brgsdownl = gsdownl/gluitot2lo${nl}        brgsdownr = gsdownr/gluitot2lo${nl}      endif#g"
-                                 -e "s#c ---------------------- the stop branching ratios ------------------- c#c ---------------------- the stop branching ratios ------------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrstok(1)) then${nl}${nl}        do i=1,4,1${nl}           brst1neutt(i) = st1neutt(i)/stoptot2lo(1)${nl}        end do${nl}        do i=1,2,1${nl}           brst1charb(i) = st1charb(i)/stoptot2lo(1)${nl}           brst1hcsb(i)  = st1hcsb(i)/stoptot2lo(1)${nl}           brst1wsb(i)   = st1wsb(i)/stoptot2lo(1)${nl}        end do${nl}        brst1glui = st1glui/stoptot2lo(1)${nl}${nl}      endif${nl}${nl}      if(.not.qcdcorrstok(2)) then${nl}${nl}        do i=1,4,1${nl}           brst2neutt(i) = st2neutt(i)/stoptot2lo(2)${nl}        end do${nl}        do i=1,2,1${nl}           brst2charb(i) = st2charb(i)/stoptot2lo(2)${nl}           brst2hcsb(i)  = st2hcsb(i)/stoptot2lo(2)${nl}           brst2wsb(i)   = st2wsb(i)/stoptot2lo(2)${nl}        end do${nl}        brst2glui = st2glui/stoptot2lo(2)${nl}        brst2hl   = st2hl/stoptot2lo(2)${nl}        brst2hh   = st2hh/stoptot2lo(2)${nl}        brst2ha   = st2ha/stoptot2lo(2)${nl}        brst2ztop = st2ztop/stoptot2lo(2)${nl}${nl}      endif#g"
-                                 -e "s#c --------------------- the sbottom branching ratios ----------------- c#c --------------------- the sbottom branching ratios ----------------- c${nl}${nl}c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level${nl}      if(.not.qcdcorrsbok(1)) then${nl}${nl}        do i=1,4,1${nl}           brsb1neutt(i) = sb1neutt(i)/sbottot2lo(1)${nl}        end do${nl}        do i=1,2,1${nl}           brsb1chart(i) = sb1chart(i)/sbottot2lo(1)${nl}           brsb1hcst(i)  = sb1hcst(i)/sbottot2lo(1)${nl}           brsb1wst(i)   = sb1wst(i)/sbottot2lo(1)${nl}        end do${nl}        brsb1glui = sb1glui/sbottot2lo(1)${nl}${nl}      endif${nl}${nl}      if(.not.qcdcorrsbok(2)) then${nl}${nl}        do i=1,4,1${nl}           brsb2neutt(i) = sb2neutt(i)/sbottot2lo(2)${nl}        end do${nl}        do i=1,2,1${nl}           brsb2chart(i) = sb2chart(i)/sbottot2lo(2)${nl}           brsb2hcst(i)  = sb2hcst(i)/sbottot2lo(2)${nl}           brsb2wst(i)   = sb2wst(i)/sbottot2lo(2)${nl}        end do${nl}        brsb2glui = sb2glui/sbottot2lo(2)${nl}        brsb2hl   = sb2hl/sbottot2lo(2)${nl}        brsb2hh   = sb2hh/sbottot2lo(2)${nl}        brsb2ha   = sb2ha/sbottot2lo(2)${nl}        brsb2zbot = sb2zbot/sbottot2lo(2)${nl}${nl}      endif#g"
-                                 sdecay.f.tmp
-            COMMAND sed ${dashi} -e "/=1: READ SUSY LES HOUCHES ACCORD INPUT/{" -e "N" -e "N" -e "s/\\(.*${nl}c end change susyhit[[:space:]]\\)/\\1C           =2: SLHA INPUT PROVIDED BY CALLING PROGRAM  !Added by GAMBIT.${nl}/" -e "}"
-                                 -e "/=1: WRITE SUSY LES HOUCHES ACCORD OUTPUT/{" -e "N" -e "N" -e "s/\\(.*${nl}c end change susyhit[[:space:]]\\)/\\1C           =2: WRITE NOTHING                           !Added by GAMBIT.${nl}/" -e "}"
-                                 -e "s#[[:space:]]*if(islhao\\.ne\\.1) then[[:space:]]*\$#      if(islhao.eq.0) then                       !Modified by GAMBIT.#g"
-                                 -e "s#[[:space:]]*\\(CALL CLOSE_HDEC\\)[[:space:]]*\$#      if(islhao.eq.0) \\1            !Modified by GAMBIT.#g"
-                                 -e "s#[[:space:]]*islhai[[:space:]]*=[[:space:]]*1[[:space:]]*\$#      islhai  = 2                                !Modified by GAMBIT.#g"
-                                 -e "s#[[:space:]]*islhao[[:space:]]*=[[:space:]]*1[[:space:]]*\$#      islhao  = 2                                !Modified by GAMBIT.#g"
-                                 -e "/[[:space:]]*if(islhai\\.eq\\.1)[[:space:]]*then[[:space:]]*\$/{" -e "N" -e "s#\\([[:space:]]*if(islhai\\.eq\\.1)[[:space:]]*then\\)#      if(islhai.ge.1) then                       !Added by GAMBIT.${nl}  \\1#" -e "}"
-                                 -e "s#[[:space:]]*call SLHA_read_leshouches_HDEC(ninlha)#         call SLHA_read_leshouches_HDEC(ninlha)${nl}        endif                                    !Added by GAMBIT.#g"
-                                 -e "s#\\(c -- calculation of the mb pole mass from mb(mb)_MSbar --[[:space:]]*\\)\$#      if(ishai.eq.2) fmb = massval(34)           !Added by GAMBIT.${nl}\\1#g"
-                                 -e "/c -- calculation of the mb pole mass from mb(mb)_MSbar --[[:space:]]*\$/{" -e "N" -e "s#\\([[:space:]]*if(smval(5)\\.ne\\.0\\.D0\\))[[:space:]]*then[[:space:]]*\$#\\1 .and. ishai.ne.2) then !Modified by GAMBIT.#" -e "}"
-                                 -e "/[[:space:]]*close(nout)[[:space:]]*\$/{" -e "N" -e "N" -e "s#else#elseif (islhao .eq. 0) then                !Modified by GAMBIT.#" -e "}"
-                                 -e "s#\\(^[[:space:]][[:space:]]*.*write.*H[[:space:]]*->[[:space:]]*sbot.*\\)$#c\\1 !Commented out by GAMBIT#g"
-                                 -e "s#\\(^[[:space:]][[:space:]]*\\.[[:space:]]*WHHSB(I,J)/SUSY,WHHSB(I,J)\\)#c\\1                    !Commented out by GAMBIT#g"
-                                 hdecay.f.tmp
-            COMMAND sed ${dashi} -e "s#DcharL(3,6,2), EcharR(3,6,2),#DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT#g" lightst3bod.f.tmp > lightst3bod.f
-            COMMAND sed ${dashi} -e "s#DcharL(3,6,2), EcharR(3,6,2),#DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT#g" lightst4bod.f.tmp > lightst4bod.f
-            COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" makefile.tmp > makefile
-            COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" sdecay.f.tmp > sdecay.f
-            COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" hdecay.f.tmp > hdecay.f
-            COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" lightst3bod.f.tmp > lightst3bod.f
-            COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" lightst4bod.f.tmp > lightst4bod.f
-            COMMAND ${CMAKE_COMMAND} -E remove makefile.tmp
-            COMMAND ${CMAKE_COMMAND} -E remove sdecay.f.tmp
-            COMMAND ${CMAKE_COMMAND} -E remove hdecay.f.tmp
+  PATCH_COMMAND patch -p1 < ${susyhit_patch}/patch_SUSYHIT_1_5.dif
+  CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${GAMBIT_Fortran_FLAGS}
   INSTALL_COMMAND ""
 )

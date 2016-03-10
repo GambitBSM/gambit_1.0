@@ -405,7 +405,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION FH_HiggsProd
     START_FUNCTION(fh_HiggsProd)
-//DEPENDENCY(Higgs_couplings, fh_Couplings)
+    //DEPENDENCY(Higgs_Couplings, fh_Couplings)
     BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
     BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
@@ -426,10 +426,10 @@ START_MODULE
     // MSSM Higgs model parameters
     #define FUNCTION MSSMHiggs_ModelParameters
     START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(SM_inputs, SMInputs)
+    DEPENDENCY(SMINPUTS, SMInputs)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(decay_rates, DecayTable)
-    DEPENDENCY(Higgs_couplings, fh_Couplings) // temporary dependency 
+    DEPENDENCY(Higgs_Couplings, fh_Couplings) // temporary dependency 
     DEPENDENCY(FH_HiggsProd, fh_HiggsProd)    // temporary dependency 
     ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION

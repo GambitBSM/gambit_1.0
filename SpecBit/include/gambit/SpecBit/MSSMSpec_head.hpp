@@ -24,8 +24,9 @@
 #ifndef MSSMSPEC_HEAD_H
 #define MSSMSPEC_HEAD_H
 
-#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spec.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
@@ -48,6 +49,8 @@ namespace Gambit
    template <class MI>
    struct SpecTraits<SpecBit::MSSMSpec<MI>>
    {
+      static std::string name() { return "MSSMSpec"; }
+      typedef SpectrumContents::MSSM Contents;
       typedef typename MI::Model Model;
       typedef DummyInput Input;
    };
@@ -60,8 +63,7 @@ namespace Gambit
          private:
             str backend_name;
             str backend_version;
-            int index_offset;
-            virtual int get_index_offset() const {return index_offset;}
+            static const int _index_offset;
 
          public:
             /// These typedefs are inherited, but the name lookup doesn't work so smoothly in
@@ -75,13 +77,14 @@ namespace Gambit
             typedef typename SpecTraits<Self>::Input Input;
            
             /// Interface function overrides
+            static int index_offset() {return _index_offset;}
             virtual double GetScale() const;
             virtual void SetScale(double scale);           
             virtual void RunToScaleOverride(double scale);
 
             //constructors
-            MSSMSpec(bool switch_index_convention=false);
-            MSSMSpec(MI, str backend_name, str backend_version, bool switch_index_convention=false);
+            MSSMSpec();
+            MSSMSpec(MI, str backend_name, str backend_version);
 
             //Could more constructors to interface with other generators   
              

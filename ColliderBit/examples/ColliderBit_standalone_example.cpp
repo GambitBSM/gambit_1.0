@@ -17,8 +17,8 @@
 #include "gambit/Utils/standalone_module.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 #include "gambit/Elements/spectrum_factories.hpp"
-#include "gambit/Elements/MSSMskeleton.hpp"
 #include "gambit/Elements/mssm_slhahelp.hpp"
+#include "gambit/Models/SimpleSpectra/MSSMSimpleSpec.hpp"
 
 using namespace ColliderBit::Accessors;     // Helper functions that provide some info about the module
 using namespace ColliderBit::Functown;      // Functors wrapping the module's actual module functions
@@ -48,7 +48,7 @@ namespace Gambit
     // Make a GAMBIT spectrum object from an SLHA file
     void createSpectrum(const Spectrum *& outSpec){
       static Spectrum mySpec;
-      mySpec = spectrum_from_SLHA<MSSMskeleton>(inputFileName);     
+      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
       outSpec = &mySpec;
     }
     

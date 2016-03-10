@@ -28,6 +28,10 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 May 
 ///
+///  \author Abram Krislock
+///          (a.m.b.krislock@fys.uio.no)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 #ifndef __Spectrum_hpp__
@@ -35,6 +39,7 @@
 
 #include <complex>
 
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Elements/sminputs.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/partmap.hpp"
@@ -125,6 +130,14 @@ namespace Gambit
          double get(const Par::Tags partype, const std::pair<int,int> pdgpr) const;
          bool   has(const Par::Tags partype, const std::pair<str,int> shortpr) const;
          double get(const Par::Tags partype, const std::pair<str,int> shortpr) const;
+         /// @}
+
+         /// @{ Getters which first check the sanity of the thing they are returning
+         double safeget(const Par::Tags partype, const std::string& mass) const; 
+         double safeget(const Par::Tags partype, const std::string& mass, const int index) const; 
+         double safeget(const Par::Tags partype, const int pdg_code, const int context) const;
+         double safeget(const Par::Tags partype, const std::pair<int,int> pdgpr) const;
+         double safeget(const Par::Tags partype, const std::pair<str,int> shortpr) const;
          /// @}
 
          /// @}
