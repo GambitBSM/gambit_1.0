@@ -9,7 +9,7 @@ GamYields.cpp: 643	:          // FIXME: Write interpolation routine
 GamYields.cpp: 662	:        // FIXME: Implemented PPPC4 tables
 SingletDM.cpp: 216	:      // FIXME: Double check expressions (taken from Cline et al. 2013)
 SingletDM.cpp: 369	:      // FIXME: Probably this can be speed up f_vs_mass
-
+DarkBit_rollcall.hpp: 1023     :     //  FIXME:: Conditional dependency below doesn't seem to work with standalones.
 
 Pat:
 DarkBit_rollcall.hpp: 184	:      // FIXME: Is model CMSSM here really necessary?  

@@ -39,7 +39,7 @@ Problems:
 
   ColliderBit_standalone :  segfaults --> Ben/Abram ??
 
-  gambit_CMSSM_hdf5 :  Problem with DarkSUSY backend not activated for pure CMSSM scans  --> Jonathan
+  FIXED gambit_CMSSM_hdf5 :  Problem with DarkSUSY backend not activated for pure CMSSM scans  --> Jonathan
   gambit_CMSSM_multinest.yaml
   gambit_DarkBit_DSTest.yaml
   gambit_DarkBit_MSSM7.yaml
