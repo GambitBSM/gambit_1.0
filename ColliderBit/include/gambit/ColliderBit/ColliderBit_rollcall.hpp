@@ -132,24 +132,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  /// Event converters to the standard Gambit collider event format
-  #define CAPABILITY ConvertedScatteringEvent
-  START_CAPABILITY
-    #define FUNCTION convertPythia8PartonEvent
-    START_FUNCTION(HEPUtils::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
-    #undef FUNCTION
-
-    #define FUNCTION convertPythia8ParticleEvent
-    START_FUNCTION(HEPUtils::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
-    #undef FUNCTION
-  #undef CAPABILITY
-
 /// I still need to see how Aldo's FastSim works... So for now, I'll
 /// comment out this entire CAPABILITY.
 /*
@@ -184,7 +166,7 @@ START_MODULE
     #define FUNCTION smearEventATLAS
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmearATLAS)
     #undef FUNCTION
   #undef CAPABILITY
@@ -194,7 +176,7 @@ START_MODULE
     #define FUNCTION smearEventCMS
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmearCMS)
     #undef FUNCTION
   #undef CAPABILITY
@@ -204,7 +186,7 @@ START_MODULE
     #define FUNCTION copyEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastIdentity)
     #undef FUNCTION
   #undef CAPABILITY

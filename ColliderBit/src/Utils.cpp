@@ -12,39 +12,27 @@ namespace Gambit {
 
 
     void filtereff(std::vector<HEPUtils::Particle*>& particles, double eff) {
-      particles.erase(std::remove_if(particles.begin(), particles.end(),
-                                     [&](const HEPUtils::Particle* p) {
-                                       const bool kill = !random_bool(eff);
-                                       if (kill) delete p;
-                                       return kill; } ),
-                      particles.end());
-      // vector<HEPUtils::Particle*> todel;
-      // for (HEPUtils::Particle* p : particles) {
-      //   if (!random_bool(eff)) todel.push_back(p);
-      // }
-      // for (HEPUtils::Particle* p : todel) {
-      //   delete p;
-      //   particles.erase(find(particles.begin(), particles.end(), p));
-      // }
+      if(particles.empty()) return;
+      auto keptParticlesEnd = std::remove_if(particles.begin(), particles.end(),
+                                             [&](const HEPUtils::Particle*) {
+                                               return !random_bool(eff); } );
+      // vectors erase most efficiently from the end
+      // no delete is necessary, because erase destroys the elements it removes
+      while (keptParticlesEnd != particles.end())
+        particles.erase(--particles.end());
     }
 
 
-        /// Utility function for filtering a supplied particle vector by sampling wrt a binned 2D efficiency map in |eta| and pT
+    /// Utility function for filtering a supplied particle vector by sampling wrt a binned 2D efficiency map in |eta| and pT
     void filtereff_etapt(std::vector<HEPUtils::Particle*>& particles, const HEPUtils::BinnedFn2D<double>& eff_etapt) {
-      particles.erase(std::remove_if(particles.begin(), particles.end(),
-                                     [&](const HEPUtils::Particle* p) {
-                                       const bool kill = !random_bool(eff_etapt, p->abseta(), p->pT());
-                                       if (kill) delete p;
-                                       return kill; } ),
-                      particles.end());
-      // vector<HEPUtils::Particle*> todel;
-      // for (HEPUtils::Particle* p : particles) {
-      //   if (!random_bool(eff_etapt, p->abseta(), p->pT())) todel.push_back(p);
-      // }
-      // for (HEPUtils::Particle* p : todel) {
-      //   delete p;
-      //   particles.erase(find(particles.begin(), particles.end(), p));
-      // }
+      if(particles.empty()) return;
+      auto keptParticlesEnd = std::remove_if(particles.begin(), particles.end(),
+                                             [&](const HEPUtils::Particle* p) {
+                                               return !random_bool(eff_etapt, p->abseta(), p->pT()); } );
+      // vectors erase most efficiently from the end
+      // no delete is necessary, because erase destroys the elements it removes
+      while (keptParticlesEnd != particles.end())
+        particles.erase(--particles.end());
     }
 
 

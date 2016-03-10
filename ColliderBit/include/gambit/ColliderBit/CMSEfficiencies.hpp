@@ -59,14 +59,18 @@ namespace Gambit {
 
       /// @brief Randomly filter the supplied particle list by parameterised muon efficiency
       inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
-        muons.erase(std::remove_if(muons.begin(), muons.end(),
-                                   [](const HEPUtils::Particle* p) {
-                                     if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
-                                     const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
-                                     if (HEPUtils::rand01() > eff) { delete p; return true; }
-                                     return false;
-                                   } ),
-                    muons.end());
+        if(muons.empty()) return;
+        auto keptMuonsEnd = std::remove_if(muons.begin(), muons.end(),
+                                           [](const HEPUtils::Particle* p) {
+                                             if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
+                                             const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
+                                             if (HEPUtils::rand01() > eff) { delete p; return true; }
+                                             return false;
+                                           } );
+        // vectors erase most efficiently from the end...
+        // no delete is necessary, because erase destroys the elements it removes
+        while (keptMuonsEnd != muons.end())
+          muons.erase(--muons.end());
       }
 
 
@@ -86,32 +90,32 @@ namespace Gambit {
         std::mt19937 gen(rd());
 
         // Now loop over the electrons and smear the 4-vectors
-        for (HEPUtils::Particle* p : electrons) {
+        for (HEPUtils::Particle* e : electrons) {
 
           // Calculate resolution
           // for pT > 0.1 GeV, E resolution = |eta| < 0.5 -> sqrt(0.06^2 + pt^2 * 1.3e-3^2)
           //                                  |eta| < 1.5 -> sqrt(0.10^2 + pt^2 * 1.7e-3^2)
           //                                  |eta| < 2.5 -> sqrt(0.25^2 + pt^2 * 3.1e-3^2)
           double resolution = 0;
-          const double abseta = p->abseta();
-          if (p->pT() > 0.1 && abseta < 2.5) {
+          const double abseta = e->abseta();
+          if (e->pT() > 0.1 && abseta < 2.5) {
             if (abseta < 0.5) {
-              resolution = HEPUtils::add_quad(0.06, 1.3e-3 * p->pT());
+              resolution = HEPUtils::add_quad(0.06, 1.3e-3 * e->pT());
             } else if (abseta < 1.5) {
-              resolution = HEPUtils::add_quad(0.10, 1.7e-3 * p->pT());
+              resolution = HEPUtils::add_quad(0.10, 1.7e-3 * e->pT());
             } else { // still |eta| < 2.5
-              resolution = HEPUtils::add_quad(0.25, 3.1e-3 * p->pT());
+              resolution = HEPUtils::add_quad(0.25, 3.1e-3 * e->pT());
             }
           }
 
           // Smear by a Gaussian centered on the current energy, with width given by the resolution
           if (resolution > 0) {
-            std::normal_distribution<> d(p->E(), resolution);
+            std::normal_distribution<> d(e->E(), resolution);
             double smeared_E = d(gen);
             if (smeared_E < 0) smeared_E = 0;
             // double smeared_pt = smeared_E/cosh(e->eta()); ///< @todo Should be cosh(|eta|)?
             // std::cout << "BEFORE eta " << electron->eta() << std::endl;
-            p->set_mom(HEPUtils::P4::mkEtaPhiME(p->eta(), p->phi(), p->mass(), smeared_E));
+            e->set_mom(HEPUtils::P4::mkEtaPhiME(e->eta(), e->phi(), e->mass(), smeared_E));
             // std::cout << "AFTER eta " << electron->eta() << std::endl;
           }
         }

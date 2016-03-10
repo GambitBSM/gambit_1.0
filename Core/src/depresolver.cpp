@@ -237,7 +237,18 @@ namespace Gambit
       if ( s1 == "" ) return true;
       if ( s1 == "*" ) return true;
 #ifdef HAVE_REGEX_H
-      if (with_regex) if (std::regex_match(s2, std::regex(s1))) return true;
+      try
+      {
+        if (with_regex) if (std::regex_match(s2, std::regex(s1))) return true;
+      }
+      catch (std::regex_error & err)
+      {
+        std::ostringstream errmsg;
+        errmsg << "ERROR during regex string comparison." << std::endl;
+        errmsg << "  Comparing regular expression: " << s1 << std::endl;
+        errmsg << "  with test string: " << s2 << std::endl;
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
+      }
 #endif
       return false;
     }
@@ -253,8 +264,8 @@ namespace Gambit
         match1 = match2 = false;
         for (auto it2 = it1->begin(); it2 != it1->end(); it2++)
         {
-          if (s1 == *it2) match1 = true;
-          if (stringComp(*it2, s2, with_regex)) match2 = true;
+          if (s2 == *it2) match1 = true;
+          if (stringComp(s1, *it2, with_regex)) match2 = true;
         }
         if (match1 and match2) return true;
       }

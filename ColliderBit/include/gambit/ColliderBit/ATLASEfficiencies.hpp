@@ -215,6 +215,7 @@ namespace Gambit {
       ///
       /// Numbers digitised from 8 TeV note (ATLAS-CONF-2014-032)
       inline void applyMediumIDElectronSelection(std::vector<HEPUtils::Particle*>& electrons) {
+        if(electrons.empty()) return;
 
         const static double binedges_E10_15_list[] = {0., 0.0494681, 0.453578, 1.10675, 1.46298, 1.78963, 2.2766, 2.5};
         const static std::vector<double>  binedges_E10_15(binedges_E10_15_list, binedges_E10_15_list+8);
@@ -294,8 +295,33 @@ namespace Gambit {
         const static HEPUtils::BinnedFn1D<double> _eff_E80 = {binedges_E80, binvalues_E80};
 
         // Now loop over the electrons and only keep those that pass the random efficiency cut
-        /// @todo This is duplicated below -- split into a single util fn (in unnamed namespace?) when binned fns are static
-        std::vector<HEPUtils::Particle*> survivors;
+        /// @todo This is an exact duplication of the below filtering code -- split into a single util fn (in unnamed namespace?) when binned fns are static
+        auto keptElectronsEnd = std::remove_if(electrons.begin(), electrons.end(),
+                                           [](const HEPUtils::Particle* electron) {
+                                             const double e_pt = electron->pT();
+                                             const double e_eta = electron->eta();
+                                             if (!(fabs(e_eta) < 2.5 && e_pt >= 10)) return true;
+                                             else if (HEPUtils::in_range(e_pt, 10, 15)) return !random_bool(_eff_E10_15, fabs(e_eta));
+                                             else if (HEPUtils::in_range(e_pt, 15, 20)) return !random_bool(_eff_E15_20, fabs(e_eta));
+                                             else if (HEPUtils::in_range(e_pt, 20, 25)) return !random_bool(_eff_E20_25, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 25, 30)) return !random_bool(_eff_E25_30, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 30, 35)) return !random_bool(_eff_E30_35, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 35, 40)) return !random_bool(_eff_E35_40, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 40, 45)) return !random_bool(_eff_E40_45, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 45, 50)) return !random_bool(_eff_E45_50, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 50, 60)) return !random_bool(_eff_E50_60, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 60, 80)) return !random_bool(_eff_E60_80, e_eta);
+                                             else return !random_bool(_eff_E80, e_eta);
+                                           } );
+        // vectors erase most efficiently from the end...
+        // no delete is necessary, because erase destroys the elements it removes
+        while (keptElectronsEnd != electrons.end())
+          electrons.erase(--electrons.end());
+
+/** @TODO: compare my lambda function above to the original code.... The original code said "keep"
+           while I am doing "remove_if", so I negated every boolean with !.
+    @ TODO: Andy, please check.
+
         for (HEPUtils::Particle* electron : electrons ) {
           const double e_pt = electron->pT();
           const double e_eta = electron->eta();
@@ -315,7 +341,7 @@ namespace Gambit {
           }
           if (hasTag) survivors.push_back(electron);
         }
-        electrons = survivors;
+        electrons = survivors; */
       }
 
 
@@ -403,27 +429,28 @@ namespace Gambit {
 
         // Now loop over the electrons and only keep those that pass the random efficiency cut
         /// @todo This is an exact duplication of the above filtering code -- split into a single util fn (in unnamed namespace?) when binned fns are static
-        std::vector<HEPUtils::Particle*> survivors;
-        for (HEPUtils::Particle* electron : electrons ) {
-          const double e_pt = electron->pT();
-          const double e_eta = electron->eta();
-          bool hasTag = false;
-          if (fabs(e_eta) < 2.5 && e_pt >= 10) {
-            if (HEPUtils::in_range(e_pt, 10, 15))hasTag = random_bool(_eff_E10_15, fabs(e_eta));
-            else if (HEPUtils::in_range(e_pt, 15, 20)) hasTag = random_bool(_eff_E15_20, fabs(e_eta));
-            else if (HEPUtils::in_range(e_pt, 20, 25)) hasTag = random_bool(_eff_E20_25, e_eta);
-            else if (HEPUtils::in_range(e_pt, 25, 30)) hasTag = random_bool(_eff_E25_30, e_eta);
-            else if (HEPUtils::in_range(e_pt, 30, 35)) hasTag = random_bool(_eff_E30_35, e_eta);
-            else if (HEPUtils::in_range(e_pt, 35, 40)) hasTag = random_bool(_eff_E35_40, e_eta);
-            else if (HEPUtils::in_range(e_pt, 40, 45)) hasTag = random_bool(_eff_E40_45, e_eta);
-            else if (HEPUtils::in_range(e_pt, 45, 50)) hasTag = random_bool(_eff_E45_50, e_eta);
-            else if (HEPUtils::in_range(e_pt, 50, 60)) hasTag = random_bool(_eff_E50_60, e_eta);
-            else if (HEPUtils::in_range(e_pt, 60, 80)) hasTag = random_bool(_eff_E60_80, e_eta);
-            else hasTag = random_bool(_eff_E80, e_eta);
-          }
-          if (hasTag) survivors.push_back(electron);
-        }
-        electrons = survivors;
+        auto keptElectronsEnd = std::remove_if(electrons.begin(), electrons.end(),
+                                           [](const HEPUtils::Particle* electron) {
+                                             const double e_pt = electron->pT();
+                                             const double e_eta = electron->eta();
+                                             if (!(fabs(e_eta) < 2.5 && e_pt >= 10)) return true;
+                                             else if (HEPUtils::in_range(e_pt, 10, 15)) return !random_bool(_eff_E10_15, fabs(e_eta));
+                                             else if (HEPUtils::in_range(e_pt, 15, 20)) return !random_bool(_eff_E15_20, fabs(e_eta));
+                                             else if (HEPUtils::in_range(e_pt, 20, 25)) return !random_bool(_eff_E20_25, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 25, 30)) return !random_bool(_eff_E25_30, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 30, 35)) return !random_bool(_eff_E30_35, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 35, 40)) return !random_bool(_eff_E35_40, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 40, 45)) return !random_bool(_eff_E40_45, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 45, 50)) return !random_bool(_eff_E45_50, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 50, 60)) return !random_bool(_eff_E50_60, e_eta);
+                                             else if (HEPUtils::in_range(e_pt, 60, 80)) return !random_bool(_eff_E60_80, e_eta);
+                                             else return !random_bool(_eff_E80, e_eta);
+                                           } );
+        // vectors erase most efficiently from the end...
+        // no delete is necessary, because erase destroys the elements it removes
+        while (keptElectronsEnd != electrons.end())
+          electrons.erase(--electrons.end());
+
       }
 
       //@}
