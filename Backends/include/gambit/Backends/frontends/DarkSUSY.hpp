@@ -122,7 +122,7 @@ BE_VARIABLE(DS_NUCOM, wabranch, "wabranch_", "nu_common_block")
 // Halo model common blocks
 BE_VARIABLE(DS_HMCOM, dshmcom, "dshmcom_", "dshmcom")
 BE_VARIABLE(DS_HMFRAMEVELCOM, dshmframevelcom, "dshmframevelcom_", "dshmframevelcom")
-BE_VARIABLE(DS_HMISODF, dshmisodf, "dshmisodf_", "dshmisdof")
+BE_VARIABLE(DS_HMISODF, dshmisodf, "dshmisodf_", "dshmisodf")
 BE_VARIABLE(DS_HMNOCLUE, dshmnoclue, "dshmnoclue_", "dshmnoclue")
 
 // Convenience functions (registration)
