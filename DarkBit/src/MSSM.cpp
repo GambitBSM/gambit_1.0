@@ -33,52 +33,6 @@
 namespace Gambit {
   namespace DarkBit {
 
-    std::string str_flav_to_mass(std::string flav)
-    {
-      if (flav=="e+") return "e+_1";
-      if (flav=="mu+") return "e+_2";
-      if (flav=="tau+") return "e+_3";
-      if (flav=="u") return "u_1";
-      if (flav=="d") return "d_1";
-      if (flav=="c") return "u_2";
-      if (flav=="s") return "d_2";
-      if (flav=="t") return "u_3";
-      if (flav=="b") return "d_3";
-      if (flav=="e-") return "e-_1";
-      if (flav=="mu-") return "e-_2";
-      if (flav=="tau-") return "e-_3";
-      if (flav=="ubar") return "ubar_1";
-      if (flav=="dbar") return "dbar_1";
-      if (flav=="cbar") return "ubar_2";
-      if (flav=="sbar") return "dbar_2";
-      if (flav=="tbar") return "ubar_3";
-      if (flav=="bbar") return "dbar_3";
-      return flav;
-    }
-
-    std::string str_mass_to_flav(std::string mass)
-    {
-      if (mass=="e+_1"   ) return "e+";
-      if (mass=="e+_2"   ) return "mu+";
-      if (mass=="e+_3"   ) return "tau+";
-      if (mass=="u_1"    ) return "u";
-      if (mass=="d_1"    ) return "d";
-      if (mass=="u_2"    ) return "c";
-      if (mass=="d_2"    ) return "s";
-      if (mass=="u_3"    ) return "t";
-      if (mass=="d_3"    ) return "b";
-      if (mass=="e-_1"   ) return "e-";
-      if (mass=="e-_2"   ) return "mu-";
-      if (mass=="e-_3"   ) return "tau-";
-      if (mass=="ubar_1" ) return "ubar";
-      if (mass=="dbar_1" ) return "dbar";
-      if (mass=="ubar_2" ) return "cbar";
-      if (mass=="dbar_2" ) return "sbar";
-      if (mass=="ubar_3" ) return "tbar";
-      if (mass=="dbar_3" ) return "bbar";
-      return mass;
-    }
-
     //////////////////////////////////////////////////////////////////////////
     //
     //                       Convenience functions
@@ -529,6 +483,8 @@ namespace Gambit {
       ///////////////////////////////////////////
       // Import three-body annihilation process
       ///////////////////////////////////////////
+
+      using DarkBit_utils::str_flav_to_mass;
 
       //PS: commented out for now, as this can't be a backend function in its current form.
       //BEreq::registerMassesForIB(catalog.particleProperties);

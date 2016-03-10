@@ -15,41 +15,42 @@ Runs fine (at least it looks like):
   spartan_multinest_hdf5.yaml
   spartan_multinest.yaml
   scan.yaml
-
-
-Problems:
   DarkBit_standalone_SingletDM :  Problem with spectrum object (missing "e+") --> Ben
   DarkBit_standalone_MSSM :  Problem with spectrum object (segfaults)  --> Ben
   gambit_CMSSM_multinest_collider.yaml :  Fails verify_contents --> Ben
   CMSSM.yaml
   gambit_CMSSM_multinest_LEP.yaml
   gambit_Collider.yaml
-  gambit_DarkBit_Example.yaml
-  gambit_DarkBit_MOTest.yaml
-  gambit_DecayBit_MSSM.yaml
-  gambit_DecayBit_SS.yaml
-  gambit_FlavBit_Example.yaml
-  gambit_FlavBit.yaml
-  gambit_SingletDM_hdf5_bad_process_catalog.yaml
-  gambit_SingletDM_hdf5.yaml
-  gambit_PrecisionBit.yaml
-  gambit_SpecBit_SSDM.yaml
-  lightquarktest.yaml
-  SpecBit.yaml
-
   ColliderBit_standalone :  segfaults --> Ben/Abram ??
-
-  FIXED gambit_CMSSM_hdf5 :  Problem with DarkSUSY backend not activated for pure CMSSM scans  --> Jonathan
-  gambit_CMSSM_multinest.yaml
+  gambit_PrecisionBit.yaml
+  gambit_FlavBit_Example.yaml
+  gambit_DarkBit_MOTest.yaml
   gambit_DarkBit_DSTest.yaml
   gambit_DarkBit_MSSM7.yaml
+
+
+Problems:
+  gambit_SingletDM_hdf5_bad_process_catalog.yaml : dependnecies missing
+  gambit_CMSSM_multinest.yaml
   gambit_SingletDM_multinest_MO.yaml
   gambit_SingletDM_multinest.yaml
   gambit_SingletDM.yaml
   SSDM_rd.yaml
-
-  gambit_UnitTest.yaml  :  segfaults --> Christoph
   gambit.yaml :  yaml-cpp error --> Christoph
+
+  gambit_UnitTest.yaml  :  SLHA problem
+
+  gambit_SingletDM_hdf5.yaml :  missing tau+
+  gambit_DarkBit_Example.yaml
+  gambit_CMSSM_hdf5 
+
+  lightquarktest.yaml :  FptrFinder error
+
+  SpecBit.yaml :  Unprintable functor
+  gambit_SpecBit_SSDM.yaml
+  gambit_FlavBit.yaml
+  gambit_DecayBit_MSSM.yaml
+  gambit_DecayBit_SS.yaml
 
 
 Outdated yaml file (wrong Rules, missing parameters etc):
