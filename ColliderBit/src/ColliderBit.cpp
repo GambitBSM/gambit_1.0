@@ -391,9 +391,9 @@ namespace Gambit
       {
         result.clear();
         // Setup new BuckFast:
-        GET_COLLIDER_RUNOPTION(partonOnly, bool);
-        GET_COLLIDER_RUNOPTION(antiktR, double);
-        result.init();
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.init(partonOnly, antiktR);
       }
     }
 
@@ -407,9 +407,9 @@ namespace Gambit
       {
         result.clear();
         // Setup new BuckFast
-        GET_COLLIDER_RUNOPTION(partonOnly, bool);
-        GET_COLLIDER_RUNOPTION(antiktR, double);
-        result.init();
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.init(partonOnly, antiktR);
       }
     }
 
@@ -423,9 +423,9 @@ namespace Gambit
       {
         result.clear();
         // Setup new BuckFast
-        GET_COLLIDER_RUNOPTION(partonOnly, bool);
-        GET_COLLIDER_RUNOPTION(antiktR, double);
-        result.init();
+        partonOnly = runOptions->getValueOrDef<bool>(false, "partonOnly");
+        antiktR = runOptions->getValueOrDef<double>(0.4, "antiktR");
+        result.init(partonOnly, antiktR);
       }
     }
 

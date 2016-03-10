@@ -14,8 +14,9 @@ namespace Gambit {
     void filtereff(std::vector<HEPUtils::Particle*>& particles, double eff) {
       if(particles.empty()) return;
       auto keptParticlesEnd = std::remove_if(particles.begin(), particles.end(),
-                                             [&](const HEPUtils::Particle*) {
-                                               return !random_bool(eff); } );
+                                             [&](HEPUtils::Particle* p) {
+                                               if (!random_bool(eff)) { delete p; return true; }
+                                               else return false; } );
       // vectors erase most efficiently from the end
       // no delete is necessary, because erase destroys the elements it removes
       while (keptParticlesEnd != particles.end())
