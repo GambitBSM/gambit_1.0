@@ -39,9 +39,7 @@ namespace Gambit
       using namespace Pipes::capture_rate_Sun_constant_xsec;
 
       if (BEreq::capture_rate_Sun.origin()=="DarkSUSY")
-        if(*Dep::DarkSUSY_PointInit_LocalHalo)
-          cout << "Local Halo correctly initialized in DarkSUSY!" << endl;
-        else
+        if(!(*Dep::DarkSUSY_PointInit_LocalHalo))
           DarkBit_error().raise(LOCAL_INFO,"DarkSUSY halo model not initialized!");
 
       // Here we assume that the proton and neutron scattering cross-sections
