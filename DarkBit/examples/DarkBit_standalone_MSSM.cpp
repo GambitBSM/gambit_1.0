@@ -45,8 +45,10 @@ namespace Gambit
 
     // Create spectrum object from SLHA file input.slha
     void createSpectrum(const Spectrum *& outSpec){
+      using namespace Pipes::createSpectrum;
       static Spectrum mySpec;
-      std::string inputFileName = "input.slha";
+      std::string inputFileName = runOptions->getValue<std::string>("filename");
+      std::cout << "Loading: " << inputFileName << std::endl;
       mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
       outSpec = &mySpec;
     }
@@ -54,22 +56,30 @@ namespace Gambit
     // Create decay object from SLHA file input.slha
     void createDecays(DecayTable& outDecays)
     {
-      std::string inputFileName = "input.slha";
+      using namespace Pipes::createDecays;
+      std::string inputFileName = runOptions->getValue<std::string>("filename");
+      std::cout << "Loading: " << inputFileName << std::endl;
       outDecays = DecayTable(inputFileName);
     }
   }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
   std::cout << std::endl 
             << "Start DarkBit standalone example" << std::endl;
   std::cout << "--------------------------------" << std::endl;
-  std::cout << std::endl;
-  std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-  std::cout << "This program reads and needs a file 'input.slha', or crashes otherwise." << std::endl;
-  std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-  std::cout << std::endl;
+
+  if (argc == 1)
+  {
+    std::cout << "Please provide name of slha file at command line." << std::endl;
+    exit(1);
+  }
+  std::string filename = argv[1];
+  std::string outname = "dNdE.dat";
+  if (argc >= 3) outname = argv[2];
+  std::string filename_data= "data.dat";
+  if (argc >= 4) filename_data = argv[3];
 
 
   // ---- Initialise (or disable) logging ----
@@ -117,7 +127,9 @@ int main()
 
   // ---- Initialize spectrum and decays from SLHA file ----
 
+  createSpectrum.setOption<std::string>("filename", filename);
   createSpectrum.reset_and_calculate();
+  createDecays.setOption<std::string>("filename", filename);
   createDecays.reset_and_calculate();
 
 
@@ -344,7 +356,7 @@ int main()
 
   // Dump spectrum into file
   dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
-  dump_GammaSpectrum.setOption<std::string>("filename", "dNdE_MSSM.dat");
+  dump_GammaSpectrum.setOption<std::string>("filename", outname);
   dump_GammaSpectrum.reset_and_calculate();
 
   // Calculate Fermi LAT dwarf likelihood
@@ -411,5 +423,35 @@ int main()
   oh2 = RD_oh2_DarkSUSY(0);
   logger() << "Relic density from DarkSUSY: " << oh2 << LogTags::info << EOM;
 
+  // ---- Dump output into file ----
+
+  std::fstream file;
+  file.open(filename_data, std::ios_base::out);
+  oh2 = RD_oh2_MicrOmegas(0);
+  file << oh2 << "  # oh2 micromegas " << std::endl;
+  oh2 = RD_oh2_DarkSUSY(0);
+  file << oh2 << "  # oh2 darksusy" << std::endl;
+
+  double dd_gps = DD_couplings_MicrOmegas(0).gps;
+  double dd_gpa = DD_couplings_MicrOmegas(0).gpa;
+  double dd_gns = DD_couplings_MicrOmegas(0).gns;
+  double dd_gna = DD_couplings_MicrOmegas(0).gna;
+  file << dd_gps << "  # gps micromegas" << std::endl;
+  file << dd_gpa << "  # gpa micromegas" << std::endl;
+  file << dd_gns << "  # gns micromegas" << std::endl;
+  file << dd_gna << "  # gna micromegas" << std::endl;
+
+  dd_gps = DD_couplings_DarkSUSY(0).gps;
+  dd_gpa = DD_couplings_DarkSUSY(0).gpa;
+  dd_gns = DD_couplings_DarkSUSY(0).gns;
+  dd_gna = DD_couplings_DarkSUSY(0).gna;
+  file << dd_gps << "  # gps darksusy" << std::endl;
+  file << dd_gpa << "  # gpa darksusy" << std::endl;
+  file << dd_gns << "  # gns darksusy" << std::endl;
+  file << dd_gna << "  # gna darksusy" << std::endl;
+
+  file.close();
+
   return 0;
+
 }
