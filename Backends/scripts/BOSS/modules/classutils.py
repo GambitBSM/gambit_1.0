@@ -372,7 +372,7 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
     class_decl += ' '*(n_indents+2)*indent + '}\n'
 
     # - Construct copy constructor
-    class_decl += ' '*(n_indents+2)*indent + class_name['short'] + '(const ' + class_name['short'] + '& in) : \n'
+    class_decl += ' '*(n_indents+2)*indent + abstr_class_name_short + '(const ' + abstr_class_name_short + '& in) : \n'
     class_decl += ' '*(n_indents+3)*indent + 'AbstractBase(in)\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
     class_decl += ' '*(n_indents+3)*indent + 'is_wrapped(false);\n'
