@@ -270,11 +270,11 @@ def constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namesp
     elif (is_template == True) and (class_name['long'] not in templ_spec_done):
         class_decl += classutils.constrAbstractClassDecl(class_el, class_name, abstr_class_name['short'], namespaces, 
                                                          indent=cfg.indent, template_types=spec_template_types, 
-                                                         has_copy_constructor=has_copy_constructor, construct_assignment_operator=construct_assignment_operator)
+                                                         construct_assignment_operator=construct_assignment_operator)
         class_decl += '\n'
     else:
         class_decl += classutils.constrAbstractClassDecl(class_el, class_name, abstr_class_name['short'], namespaces, indent=cfg.indent, 
-                                                         has_copy_constructor=has_copy_constructor, construct_assignment_operator=construct_assignment_operator)
+                                                         construct_assignment_operator=construct_assignment_operator)
         class_decl += '\n'
 
     # - Register code

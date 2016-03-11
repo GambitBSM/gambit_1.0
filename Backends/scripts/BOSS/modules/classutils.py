@@ -84,8 +84,7 @@ def constrTemplForwDecl(class_name_short, namespaces, template_bracket, indent=4
 
 # ====== constrAbstractClassDecl ========
 
-def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namespaces, indent=4, template_types=[], 
-                            has_copy_constructor=True,  construct_assignment_operator=True):
+def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namespaces, indent=4, template_types=[], construct_assignment_operator=True):
 
     n_indents = len(namespaces)
 
@@ -371,6 +370,15 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
     class_decl += ' '*(n_indents+4)*indent + 'wrapper_deleter(wptr);\n'
     class_decl += ' '*(n_indents+3)*indent + '}\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
+
+    # - Construct copy constructor
+    class_decl += ' '*(n_indents+2)*indent + class_name['short'] + '(const ' + class_name['short'] + '& in) : \n'
+    class_decl += ' '*(n_indents+3)*indent + 'AbstractBase(in)\n'
+    class_decl += ' '*(n_indents+2)*indent + '{\n'
+    class_decl += ' '*(n_indents+3)*indent + 'is_wrapped(false);\n'
+    class_decl += ' '*(n_indents+3)*indent + 'can_delete_wrapper(false);\n'
+    class_decl += ' '*(n_indents+2)*indent + '}\n'
+
 
     # - Close the class body
     class_decl += ' '*n_indents*indent + '};' + '\n'
