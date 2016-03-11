@@ -160,7 +160,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
-  // Muon g-2 -- Using the C interface to gm2calc
+// Muon g-2 -- Using the C interface to gm2calc
   #define CAPABILITY a_mu_SUSY_c
   START_CAPABILITY
     #define FUNCTION a_mu_SUSY_c
@@ -168,37 +168,36 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(gm2calc_mssmnofv_new, (libgm2calc), gm2calc_c::MSSMNoFV_onshell*, ())
     BACKEND_REQ(gm2calc_mssmnofv_set_MSvmL_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
-BACKEND_REQ(gm2calc_mssmnofv_set_MSm_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_MChi_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_MCha_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MSm_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MChi_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_MCha_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_MAh_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_TB, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_Mu, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_MassB, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_MassWB, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_MassG, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_ml2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_me2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_mq2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_md2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_mu2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_Au, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_Ad, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, int, double))
-    BACKEND_REQ(gm2calc_mssmnofv_set_Ae, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, int, int, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_ml2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_me2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_mq2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_md2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_mu2, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_Au, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_Ad, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
+    BACKEND_REQ(gm2calc_mssmnofv_set_Ae, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_scale, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
-    BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
-    BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_1loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
-    BACKEND_REQ(gm2calc_mssmnofv_convert_to_onshell, (libgm2calc), void, (const gm2calc_c::MSSMNoFV_onshell*))
+    // BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    // BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_1loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    // BACKEND_REQ(gm2calc_mssmnofv_convert_to_onshell, (libgm2calc), void, (const gm2calc_c::MSSMNoFV_onshell*))
     BACKEND_REQ(gm2calc_mssmnofv_free, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*))
     BACKEND_OPTION( (gm2calc_c), (libgm2calc) )
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
 
-
-
 #undef MODULE
 
 
 #endif /* defined(__PrecisionBit_rollcall_hpp__) */
+
 

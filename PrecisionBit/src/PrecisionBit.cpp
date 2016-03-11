@@ -769,6 +769,78 @@ namespace Gambit
     }
 
 
+    /// // Test function for the backend to the C version of gm2calc
+    // void a_mu_SUSY_c(double &result)
+    // {
+    //   using namespace Pipes::a_mu_SUSY_c;
+    //   const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
+
+    //   // Example of how to use the C backend:
+    //   // Note the extra ".pointer()" for functions that take the pointer "model" as input.
+    //   // Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
+
+    //   gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
+
+    //   BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, 5.18860573e+02);    /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, 5.05095249e+02);   /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, 5.25187016e+02);   /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, 2.01611468e+02);  /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 1, 4.10040273e+02);  /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 2, -5.16529941e+02); /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 3, 5.45628749e+02);  /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 0, 4.09989890e+02);  /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 1, 5.46057190e+02);  /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_MAh_pole.pointer()(model, 1.50000000e+03);      /* 2L */
+      
+    //   /* fill DR-bar parameters */
+    //   BEreq::gm2calc_mssmnofv_set_TB.pointer()(model, 40);                        /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_Mu.pointer()(model, 500);                       /* initial guess */
+    //   BEreq::gm2calc_mssmnofv_set_MassB.pointer()(model, 200);                    /* initial guess */
+    //   BEreq::gm2calc_mssmnofv_set_MassWB.pointer()(model, 400);                   /* initial guess */
+    //   BEreq::gm2calc_mssmnofv_set_MassG.pointer()(model, 2000);                   /* 2L */
+    //   BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 0, 0, 500 * 500);          /* 2L */
+    //   BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 1, 1, 500 * 500);          /* irrelevant */
+    //   BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 2, 2, 500 * 500);          /* 2L */
+    //   BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 0, 0, 500 * 500);          /* 2L */
+    //   BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 1, 1, 500 * 500);          /* initial guess */
+    //   BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 2, 2, 500 * 500);          /* 2L */
+    //   for (unsigned i = 0; i < 3; i++) {
+    // 	BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
+    // 	BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
+    // 	BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
+    //   }
+    //   BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, 2, 2, 0);                   /* 2L */
+    //   BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, 2, 2, 0);                   /* 2L */
+    //   BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 1, 1, 0);                   /* 1L */
+    //   BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 2, 2, 0);                   /* 2L */
+    //   BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, 1000);                   /* 2L */
+      
+    //   /* convert DR-bar parameters to on-shell */
+    //   BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
+      
+    //   // const gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
+      
+    //   // if (error != gm2calc_NoError) {
+    //   // 	printf("Error: %s\n", BEreq::gm2calc_error_str(error));
+    //   // 	abort();
+    //   // }
+
+    //   const double amu =
+    //   + BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
+    //   + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
+
+
+  
+
+    //   BEreq::gm2calc_mssmnofv_free.pointer()(model);
+
+    //   // Dummy result
+    //   result = amu;
+    //   return;
+    // }
+
+
+
     /// Test function for the backend to the C version of gm2calc
     void a_mu_SUSY_c(double &result)
     {
@@ -777,11 +849,11 @@ namespace Gambit
 
       // Example of how to use the C backend:
       // Note the extra ".pointer()" for functions that take the pointer "model" as input.
-      // Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
+      // Alsom, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
 
       gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
 
-      BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, 5.18860573e+02);    /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, mssm->get(Par::Pole_Mass, "~nu", 2));
       BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, 5.05095249e+02);   /* 1L */
       BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, 5.25187016e+02);   /* 1L */
       BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, 2.01611468e+02);  /* 1L */
@@ -792,7 +864,6 @@ namespace Gambit
       BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 1, 5.46057190e+02);  /* 1L */
       BEreq::gm2calc_mssmnofv_set_MAh_pole.pointer()(model, 1.50000000e+03);      /* 2L */
       
-      /* fill DR-bar parameters */
       BEreq::gm2calc_mssmnofv_set_TB.pointer()(model, 40);                        /* 1L */
       BEreq::gm2calc_mssmnofv_set_Mu.pointer()(model, 500);                       /* initial guess */
       BEreq::gm2calc_mssmnofv_set_MassB.pointer()(model, 200);                    /* initial guess */
@@ -805,37 +876,36 @@ namespace Gambit
       BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 1, 1, 500 * 500);          /* initial guess */
       BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 2, 2, 500 * 500);          /* 2L */
       for (unsigned i = 0; i < 3; i++) {
-	BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
-	BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
-	BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
+    	BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
+    	BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
+    	BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
       }
       BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, 2, 2, 0);                   /* 2L */
       BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, 2, 2, 0);                   /* 2L */
       BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 1, 1, 0);                   /* 1L */
-      BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 2, 2, 0);                   /* 2L */
-      BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, 1000);                   /* 2L */
+      BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 2, 2, 0);
+
+      BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, 1000);    
       
-      /* convert DR-bar parameters to on-shell */
-      BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
+     //  /* convert DR-bar parameters to on-shell */
+     //  BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
       
-      // const gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
+     // // const gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
       
-      // if (error != gm2calc_NoError) {
-      // 	printf("Error: %s\n", BEreq::gm2calc_error_str(error));
-      // 	abort();
-      // }
+     //  // if (error != gm2calc_NoError) {
+     //  // 	printf("Error: %s\n", BEreq::gm2calc_error_str(error));
+     //  // 	abort();
+     //  // }
 
-      const double amu =
-      + BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
-      + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
+     //  const double amu =
+     //  + BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
+     //  + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
 
-
-  
-
+      
       BEreq::gm2calc_mssmnofv_free.pointer()(model);
-
+      /// result = amu;
       // Dummy result
-      result = amu;
+      result = 1.234;
       return;
     }
 
