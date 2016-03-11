@@ -195,8 +195,17 @@ namespace Gambit
   }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+  if (argc==1)
+  {
+    std::cout << "Please select test mode (1-7)" << std::endl;
+    exit(1);
+  }
+  int mode = std::stoi((std::string)argv[1]);
+  std::cout << "Starting with mode " << mode << std::endl;
+
+
   // ---- Initialise (or disable) logging ----
 
   std::map<std::string, std::string> loggerinfo;
@@ -389,106 +398,110 @@ int main()
   sigma_SI_p_simple.resolveDependency(&DD_couplings_WIMP);
   sigma_SI_p_simple.resolveDependency(&mwimp_generic);
 
-/*
   // Spectral tests
-  std::cout << "Producing test spectra." << std::endl;
-  double mass = 100.;
-  double sv = 3e-26;
-  dumpSpectrum("dNdE1.dat", mass, sv, Funk::vec<double>(0., 1., 0., 0., 0., 0.));
-  dumpSpectrum("dNdE2.dat", mass, sv, Funk::vec<double>(0., 0., 1., 0., 0., 0.));
-  dumpSpectrum("dNdE3.dat", mass, sv, Funk::vec<double>(0., 0., 0., 1., 0., 0.));
-  dumpSpectrum("dNdE4.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 1., 0.));
-  dumpSpectrum("dNdE5.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 0., 1.));
-  */
-
-  // Systematic parameter maps annihilation
-  std::cout << "Producing test maps." << std::endl;
-  int mBins = 40;
-  int svBins = 20;
-  std::vector<double> m_list = Funk::logspace(1.0, 3.0, mBins);
-  std::vector<double> sv_list = Funk::logspace(-28.0, -24.0, svBins);
-  boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
-  boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
-  for (size_t i = 0; i < m_list.size(); i++)
+  if ( (mode > 0) and (mode < 6) )
   {
-    for (size_t j = 0; j < sv_list.size(); j++)
-    {
-      TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
-      TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
-      TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
-      //TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(0., 0., 1., 0., 0., 0.));
-      std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
-      DarkMatter_ID_WIMP.reset_and_calculate();
-      TH_ProcessCatalog_WIMP.reset_and_calculate();
-      RD_fraction_fixed.reset_and_calculate();
-      SimYieldTable_DarkSUSY.reset_and_calculate();
-      GA_missingFinalStates.reset_and_calculate();
-      cascadeMC_FinalStates.reset_and_calculate();
-      cascadeMC_DecayTable.reset_and_calculate();
-      cascadeMC_LoopManager.reset_and_calculate();
-      cascadeMC_gammaSpectra.reset_and_calculate();
-      GA_AnnYield_General.reset_and_calculate();
-      //dump_GammaSpectrum.reset_and_calculate();
-      lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
-      double lnL = lnL_FermiLATdwarfs_gamLike(0);
-      std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
-      lnL_array[i][j] = lnL;
-      RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
-      RD_spectrum_from_ProcessCatalog.reset_and_calculate();
-      RD_spectrum_ordered_func.reset_and_calculate();
-      RD_oh2_general.reset_and_calculate();
-      double oh2 = RD_oh2_general(0);
-      oh2_array[i][j] = oh2;
-//    SetWIMP_DDCalc0.reset_and_calculate();
-//    CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
-//    LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
-    }
+    std::cout << "Producing test spectra." << std::endl;
+    double mass = 100.;
+    double sv = 3e-26;
+    if (mode==1) dumpSpectrum("dNdE1.dat", mass, sv, Funk::vec<double>(0., 1., 0., 0., 0., 0.));
+    if (mode==2) dumpSpectrum("dNdE2.dat", mass, sv, Funk::vec<double>(0., 0., 1., 0., 0., 0.));
+    if (mode==3) dumpSpectrum("dNdE3.dat", mass, sv, Funk::vec<double>(0., 0., 0., 1., 0., 0.));
+    if (mode==4) dumpSpectrum("dNdE4.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 1., 0.));
+    if (mode==5) dumpSpectrum("dNdE5.dat", mass, sv, Funk::vec<double>(0., 0., 0., 0., 0., 1.));
   }
-  dump_array_to_file("Fermi_table.dat", lnL_array, m_list, sv_list);
-  dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
 
-  /*
-  // Systematic parameter maps scattering
-  std::cout << "Producing test maps." << std::endl;
-  int mBins = 40;
-  int sBins = 40;
-  std::vector<double> m_list = Funk::logspace(0.0, 4.0, mBins);
-  std::vector<double> s_list = Funk::logspace(-10, -6, sBins);
-  boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
-  boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
-  TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
-  TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
-  for (size_t i = 0; i < m_list.size(); i++)
+  if (mode==6)
   {
-    for (size_t j = 0; j < s_list.size(); j++)
+    // Systematic parameter maps annihilation
+    std::cout << "Producing test maps." << std::endl;
+    int mBins = 40;
+    int svBins = 20;
+    std::vector<double> m_list = Funk::logspace(1.0, 3.0, mBins);
+    std::vector<double> sv_list = Funk::logspace(-28.0, -24.0, svBins);
+    boost::multi_array<double, 2> lnL_array{boost::extents[mBins][svBins]};
+    boost::multi_array<double, 2> oh2_array{boost::extents[mBins][svBins]};
+    for (size_t i = 0; i < m_list.size(); i++)
     {
-      TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
-      std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
-      DarkMatter_ID_WIMP.reset_and_calculate();
-      TH_ProcessCatalog_WIMP.reset_and_calculate();
-      RD_fraction_fixed.reset_and_calculate();
-      DDCalc0_0_0_init.reset_and_calculate();
-      DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
-      DD_couplings_WIMP.setOption<double>("gns", 0.);
-      DD_couplings_WIMP.setOption<double>("gpa", 0.);
-      DD_couplings_WIMP.setOption<double>("gna", 0.);
-      DD_couplings_WIMP.reset_and_calculate();
-      mwimp_generic.reset_and_calculate();
-      sigma_SI_p_simple.reset_and_calculate();
-      double sigma_SI_p = sigma_SI_p_simple(0);
-      std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
-      SetWIMP_DDCalc0.reset_and_calculate();
-      CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
-      LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
-      double lnL = LUX_2013_LogLikelihood_DDCalc0(0);
-      std::cout << "LUX2013 lnL = " << lnL << std::endl;
-      lnL_array[i][j] = lnL;
+      for (size_t j = 0; j < sv_list.size(); j++)
+      {
+        TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+        TH_ProcessCatalog_WIMP.setOption<double>("sv", sv_list[j]);
+        TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
+        //TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(0., 0., 1., 0., 0., 0.));
+        std::cout << "Parameters: " << m_list[i] << " " << sv_list[j] << std::endl;
+        DarkMatter_ID_WIMP.reset_and_calculate();
+        TH_ProcessCatalog_WIMP.reset_and_calculate();
+        RD_fraction_fixed.reset_and_calculate();
+        SimYieldTable_DarkSUSY.reset_and_calculate();
+        GA_missingFinalStates.reset_and_calculate();
+        cascadeMC_FinalStates.reset_and_calculate();
+        cascadeMC_DecayTable.reset_and_calculate();
+        cascadeMC_LoopManager.reset_and_calculate();
+        cascadeMC_gammaSpectra.reset_and_calculate();
+        GA_AnnYield_General.reset_and_calculate();
+        //dump_GammaSpectrum.reset_and_calculate();
+        lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
+        double lnL = lnL_FermiLATdwarfs_gamLike(0);
+        std::cout << "Fermi LAT likelihood: " << lnL << std::endl;
+        lnL_array[i][j] = lnL;
+        RD_eff_annrate_from_ProcessCatalog.reset_and_calculate();
+        RD_spectrum_from_ProcessCatalog.reset_and_calculate();
+        RD_spectrum_ordered_func.reset_and_calculate();
+        RD_oh2_general.reset_and_calculate();
+        double oh2 = RD_oh2_general(0);
+        oh2_array[i][j] = oh2;
+  //    SetWIMP_DDCalc0.reset_and_calculate();
+  //    CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
+  //    LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
+      }
     }
+    dump_array_to_file("Fermi_table.dat", lnL_array, m_list, sv_list);
+    dump_array_to_file("oh2_table.dat", oh2_array, m_list, sv_list);
   }
-  dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
-  */
+
+  if (mode==7)
+  {
+    // Systematic parameter maps scattering
+    std::cout << "Producing test maps." << std::endl;
+    int mBins = 40;
+    int sBins = 40;
+    std::vector<double> m_list = Funk::logspace(0.0, 4.0, mBins);
+    std::vector<double> s_list = Funk::logspace(-10, -6, sBins);
+    boost::multi_array<double, 2> lnL_array{boost::extents[mBins][sBins]};
+    boost::multi_array<double, 2> oh2_array{boost::extents[mBins][sBins]};
+    TH_ProcessCatalog_WIMP.setOption<double>("sv", 0.);
+    TH_ProcessCatalog_WIMP.setOption<std::vector<double>>("brList", Funk::vec<double>(1., 0., 0., 0., 0., 0.));
+    for (size_t i = 0; i < m_list.size(); i++)
+    {
+      for (size_t j = 0; j < s_list.size(); j++)
+      {
+        TH_ProcessCatalog_WIMP.setOption<double>("mWIMP", m_list[i]);
+        std::cout << "Parameters: " << m_list[i] << " " << s_list[j] << std::endl;
+        DarkMatter_ID_WIMP.reset_and_calculate();
+        TH_ProcessCatalog_WIMP.reset_and_calculate();
+        RD_fraction_fixed.reset_and_calculate();
+        DDCalc0_0_0_init.reset_and_calculate();
+        DD_couplings_WIMP.setOption<double>("gps", s_list[j]);
+        DD_couplings_WIMP.setOption<double>("gns", 0.);
+        DD_couplings_WIMP.setOption<double>("gpa", 0.);
+        DD_couplings_WIMP.setOption<double>("gna", 0.);
+        DD_couplings_WIMP.reset_and_calculate();
+        mwimp_generic.reset_and_calculate();
+        sigma_SI_p_simple.reset_and_calculate();
+        double sigma_SI_p = sigma_SI_p_simple(0);
+        std::cout << "sigma_SI_p: " << sigma_SI_p << std::endl;
+        SetWIMP_DDCalc0.reset_and_calculate();
+        CalcRates_LUX_2013_DDCalc0.reset_and_calculate();
+        LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
+        double lnL = LUX_2013_LogLikelihood_DDCalc0(0);
+        std::cout << "LUX2013 lnL = " << lnL << std::endl;
+        lnL_array[i][j] = lnL;
+      }
+    }
+    dump_array_to_file("LUX2013_table.dat", lnL_array, m_list, s_list);
+  }
 
   std::cout << "Done!" << std::endl;
-
   return 0;
 }
