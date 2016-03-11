@@ -64,7 +64,7 @@ namespace Gambit
             struct copy_hdf5
             {
                 template <typename U>
-                static void run(U, hid_t &dataset_out, std::vector<hid_t> &datasets, unsigned long long &size_tot, std::vector<unsigned long long> &sizes)
+                static void run(U, hid_t &dataset_out, std::vector<hid_t> &datasets, unsigned long long &size_tot, std::vector<unsigned long long> &sizes, hid_t dspace = H5S_ALL)
                 {
                     std::vector<U> data(size_tot);
                     unsigned long long j = 0;
@@ -89,14 +89,14 @@ namespace Gambit
                         }
                     }
                     
-                    H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[0]);
+                    H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, dspace, H5P_DEFAULT, (void *)&data[0]);
                 }
             };
 
             struct ra_copy_hdf5
             {
                 template <typename U>
-                static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, unsigned long long &size, std::vector<unsigned long long> &sizes, std::vector<std::vector <unsigned long long> > &pointid, std::vector<std::vector <unsigned long long> > &rank, std::vector<unsigned long long> &aux_sizes)
+                static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, unsigned long long &size, std::vector<unsigned long long> &sizes, std::vector<std::vector <unsigned long long> > &pointid, std::vector<std::vector <unsigned long long> > &rank, std::vector<unsigned long long> &aux_sizes, hid_t &dspace, hid_t &dspace2)
                 {
                     std::vector<U> output(size, 0);
                     std::vector<int> valids(size, 0);
@@ -140,8 +140,8 @@ namespace Gambit
                         }
                     }
                     
-                    H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
-                    H5Dwrite( dataset2_out, get_hdf5_data_type<int>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
+                    H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, dspace, H5P_DEFAULT, (void *)&output[0]);
+                    H5Dwrite( dataset2_out, get_hdf5_data_type<int>::type(), H5S_ALL, dspace2, H5P_DEFAULT, (void *)&valids[0]);
                 }
             };
 
@@ -230,14 +230,14 @@ namespace Gambit
             public:
                 hdf5_stuff(const std::string &file_name, const std::string &group_name, int num);
                 
-                void Enter_Aux_Paramters(const std::string &file);
+                void Enter_Aux_Paramters(const std::string &file, bool resume = false);
             };
 
-            inline void combine_hdf5_files(const std::string file_output, const std::string &file, const std::string &group, int num)
+            inline void combine_hdf5_files(const std::string file_output, const std::string &file, const std::string &group, int num, bool resume)
             {
                 hdf5_stuff stuff(file, group, num);
                 
-                stuff.Enter_Aux_Paramters(file_output);
+                stuff.Enter_Aux_Paramters(file_output, resume);
             }
         }
     }
