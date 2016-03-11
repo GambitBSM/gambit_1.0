@@ -170,12 +170,15 @@ namespace Gambit {
         // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
-#ifdef WITH_MPI
-          GMPI::Comm comm;
-          int rank = comm.Get_rank();
-#else
           int rank = 0;
+#ifdef WITH_MPI
+          if(GMPI::Is_initialized())
+          {
+              GMPI::Comm comm;
+              rank = comm.Get_rank();
+          }
 #endif
+
           // Set filename
           std::string fstr = "DarkBit_temp_";
           fstr += std::to_string(rank) + ".slha";
@@ -292,7 +295,7 @@ namespace Gambit {
 #define getSMmass(Name, spinX2)                                               \
         catalog.particleProperties.insert(                                    \
         std::pair<std::string, TH_ParticleProperty>(                          \
-        Name , TH_ParticleProperty(SM->phys().get(Par::Pole_Mass,Name), spinX2)));   
+        Name , TH_ParticleProperty(SM->get(Par::Pole_Mass,Name), spinX2)));   
       getSMmass("e-",     1)
       getSMmass("e+",     1)
       getSMmass("mu-",    1)
@@ -352,7 +355,7 @@ namespace Gambit {
 #define getMSSMmass(Name, spinX2)                                                   \
         catalog.particleProperties.insert(                                          \
         std::pair<std::string, TH_ParticleProperty> (                               \
-        Name , TH_ParticleProperty(std::abs(spec->phys().get(Par::Pole_Mass,Name)), spinX2)));  
+        Name , TH_ParticleProperty(std::abs(spec->get(Par::Pole_Mass,Name)), spinX2)));  
       getMSSMmass("H+"     , 0)
       getMSSMmass("H-"     , 0)
       getMSSMmass("h0_1"   , 0)

@@ -23,7 +23,7 @@ Required packages:
       python-yaml
     FlexibleSUSY / SpecBit only:
       dpkg-dev (requires apt-get update and apt-get install -f to work from cold start)
-      liblabpack-dev
+      liblapack-dev
       libblas-dev
 
 

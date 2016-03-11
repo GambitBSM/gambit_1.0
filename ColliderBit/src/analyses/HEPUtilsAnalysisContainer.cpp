@@ -5,6 +5,7 @@ namespace Gambit {
   namespace ColliderBit {
 
     // Fwd declarations
+    DECLARE_ANALYSIS_FACTORY(Minimum);
     DECLARE_ANALYSIS_FACTORY(ATLAS_0LEP_20invfb);
     DECLARE_ANALYSIS_FACTORY(ATLAS_0LEPStop_20invfb);
     DECLARE_ANALYSIS_FACTORY(ATLAS_1LEPStop_20invfb);
@@ -21,6 +22,7 @@ namespace Gambit {
     // Factory definition
     HEPUtilsAnalysis* mkAnalysis(const std::string& name) {
       #define IF_X_RTN_CREATEX(A) if (name == #A) return create_Analysis_ ## A()
+      IF_X_RTN_CREATEX(Minimum);
       IF_X_RTN_CREATEX(ATLAS_0LEP_20invfb);
       IF_X_RTN_CREATEX(ATLAS_0LEPStop_20invfb);
       IF_X_RTN_CREATEX(ATLAS_1LEPStop_20invfb);

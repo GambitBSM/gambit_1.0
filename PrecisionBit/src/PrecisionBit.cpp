@@ -151,18 +151,18 @@ namespace Gambit
       // W mass
       //-------
 
-      HE->phys().set(Par::Pole_Mass, Dep::prec_mw->central, "W+");
-      HE->phys().set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true);
-      HE->phys().set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);
+      HE->set(Par::Pole_Mass, Dep::prec_mw->central, "W+");
+      HE->set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", true);
+      HE->set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", true);
       //FIXME this syntax doesn't work yet
-      //HE->phys().set(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+");
-      //HE->phys().set(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+");
-      LE->phys().set(Par::Pole_Mass, Dep::prec_mw->central, "W+");
-      LE->phys().set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", false); //FIXME these should contain some default error, no?
-      LE->phys().set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", false);  //FIXME these should contain some default error, no?
+      //HE->set(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+");
+      //HE->set(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+");
+      LE->set(Par::Pole_Mass, Dep::prec_mw->central, "W+");
+      LE->set_override(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+", false); //FIXME these should contain some default error, no?
+      LE->set_override(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+", false);  //FIXME these should contain some default error, no?
       //FIXME this syntax doesn't work yet
-      //LE->phys().set(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+");
-      //LE->phys().set(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+");
+      //LE->set(Par::Pole_Mass_1srd_high, Dep::prec_mw->upper, "W+");
+      //LE->set(Par::Pole_Mass_1srd_low, Dep::prec_mw->lower, "W+");
 
       // Higgs masses
       //-------------
@@ -178,17 +178,17 @@ namespace Gambit
       //                                 std::pair<int,int>(36,0),
       //                                 std::pair<int,int>(37,0)};
       const str higgses[4] = {"h0_1", "h0_2", "A0", "H+"};
-      const double mh_s[4] = {HE->phys().get(Par::Pole_Mass, higgses[0]),
-                              HE->phys().get(Par::Pole_Mass, higgses[1]),
-                              HE->phys().get(Par::Pole_Mass, higgses[2]),
-                              HE->phys().get(Par::Pole_Mass, higgses[3])};
+      const double mh_s[4] = {HE->get(Par::Pole_Mass, higgses[0]),
+                              HE->get(Par::Pole_Mass, higgses[1]),
+                              HE->get(Par::Pole_Mass, higgses[2]),
+                              HE->get(Par::Pole_Mass, higgses[3])};
       double mh[4];
 
 
       #ifdef PRECISIONBIT_DEBUG
         for (int i = 0; i < 4; i++) cout << "h masses, FS: "<< mh_s[i] << endl;
-        for (int i = 0; i < 4; i++) cout << "h masses, FS error low: "<< HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i] << endl;
-        for (int i = 0; i < 4; i++) cout << "h masses, FS error high: "<< HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i] << endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, FS error low: "<< HE->get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i] << endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, FS error high: "<< HE->get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i] << endl;
         for (int i = 0; i < 4; i++) cout << "h masses, FH: "<< Dep::prec_HiggsMasses->MH[i] << endl;
         for (int i = 0; i < 4; i++) cout << "h masses, FH error: "<< Dep::prec_HiggsMasses->deltaMH[i] << endl;
       #endif
@@ -213,7 +213,7 @@ namespace Gambit
       }
       if (central != 2)
       {
-        for (int i = 0; i < 4; i++) HE->phys().set(Par::Pole_Mass, mh[i], higgses[i]);
+        for (int i = 0; i < 4; i++) HE->set(Par::Pole_Mass, mh[i], higgses[i]);
       }
 
       // Uncertainties:
@@ -237,8 +237,8 @@ namespace Gambit
       {
         for (int i = 0; i < 4; i++)
         {
-          double D_s_low = HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i];
-          double D_s_high = HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i];
+          double D_s_low = HE->get(Par::Pole_Mass_1srd_low, higgses[i])*mh_s[i];
+          double D_s_high = HE->get(Par::Pole_Mass_1srd_high, higgses[i])*mh_s[i];
           double D_p = Dep::prec_HiggsMasses->deltaMH[i];
           mh_low[i] = sqrt(D_s_low*D_s_low + D_p*D_p + D_g[i]*D_g[i]);
           mh_high[i] = sqrt(D_s_high*D_s_high + D_p*D_p + D_g[i]*D_g[i]);
@@ -250,8 +250,8 @@ namespace Gambit
       {
         for (int i = 0; i < 4; i++)
         {
-          double D_s_low = mh_s[i]*HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i]);
-          double D_s_high = mh_s[i]*HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i]);
+          double D_s_low = mh_s[i]*HE->get(Par::Pole_Mass_1srd_low, higgses[i]);
+          double D_s_high = mh_s[i]*HE->get(Par::Pole_Mass_1srd_high, higgses[i]);
           double D_p = Dep::prec_HiggsMasses->deltaMH[i];
           if (central == 1) // Using precision calculator mass as central value
           {
@@ -387,8 +387,8 @@ namespace Gambit
       {
         for (int i = 0; i < 4; i++)
         {
-          double D_s_low = mh_s[i]*HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i]);
-          double D_s_high = mh_s[i]*HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i]);
+          double D_s_low = mh_s[i]*HE->get(Par::Pole_Mass_1srd_low, higgses[i]);
+          double D_s_high = mh_s[i]*HE->get(Par::Pole_Mass_1srd_high, higgses[i]);
           if (central == 1) // Using precision calculator mass as central value
           {
             if (D_g[i] >= 0) // Precision calculator mass is higher than spectrum generator mass
@@ -438,16 +438,16 @@ namespace Gambit
         msg << "Unrecognised Higgs_predictions_error_method specified for make_MSSM_precision_spectrum: " << central;
         PrecisionBit_error().raise(LOCAL_INFO,msg.str());
       }
-      for (int i = 0; i < 4; i++) HE->phys().set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true);
-      for (int i = 0; i < 4; i++) HE->phys().set_override(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i], true);
+      for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i], true);
+      for (int i = 0; i < 4; i++) HE->set_override(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i], true);
       //FIXME this syntax does not work yet
-      //for (int i = 0; i < 4; i++) HE->phys().set(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i]);
-      //for (int i = 0; i < 4; i++) HE->phys().set(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i]);
+      //for (int i = 0; i < 4; i++) HE->set(Par::Pole_Mass_1srd_low, mh_low[i], higgses[i]);
+      //for (int i = 0; i < 4; i++) HE->set(Par::Pole_Mass_1srd_high, mh_high[i], higgses[i]);
 
       #ifdef PRECISIONBIT_DEBUG
-        for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE->phys().get(Par::Pole_Mass, higgses[i])<< endl;
-        for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE->phys().get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
-        for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE->phys().get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, central: "<< HE->get(Par::Pole_Mass, higgses[i])<< endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, low: "<< HE->get(Par::Pole_Mass_1srd_low, higgses[i])<< endl;
+        for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE->get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
       #endif
 
       result = &improved_spec;
@@ -460,25 +460,25 @@ namespace Gambit
     {
       using namespace Pipes::mw_from_MSSM_spectrum;
       const SubSpectrum* HE = (*Dep::MSSM_spectrum)->get_HE();
-      result.central = HE->phys().get(Par::Pole_Mass, "W+");;
-      result.upper =  HE->phys().get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE->phys().get(Par::Pole_Mass_1srd_low, "W+");
+      result.central = HE->get(Par::Pole_Mass, "W+");;
+      result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mw_from_SM_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SM_spectrum;
       const SubSpectrum* HE = (*Dep::SM_spectrum)->get_HE();
-      result.central = HE->phys().get(Par::Pole_Mass, "W+");;
-      result.upper =  HE->phys().get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE->phys().get(Par::Pole_Mass_1srd_low, "W+");
+      result.central = HE->get(Par::Pole_Mass, "W+");;
+      result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
     }
     void mw_from_SS_spectrum(triplet<double> &result)
     {
       using namespace Pipes::mw_from_SS_spectrum;
       const SubSpectrum* HE = (*Pipes::mw_from_SS_spectrum::Dep::SingletDM_spectrum)->get_HE();
-      result.central = HE->phys().get(Par::Pole_Mass, "W+");;
-      result.upper =  HE->phys().get(Par::Pole_Mass_1srd_high, "W+");
-      result.lower =  HE->phys().get(Par::Pole_Mass_1srd_low, "W+");
+      result.central = HE->get(Par::Pole_Mass, "W+");;
+      result.upper =  HE->get(Par::Pole_Mass_1srd_high, "W+");
+      result.lower =  HE->get(Par::Pole_Mass_1srd_low, "W+");
     }
     /// @}
 
@@ -518,12 +518,11 @@ namespace Gambit
       result = Stats::gaussian_loglikelihood(Dep::SMINPUTS->mCmC, 1.275, 0.0, 0.025);
     }
 
-    /// \brief Likelihoods for charm quark mass and light quark mass ratios. At the moment, all are just gaussians.
+    /// \brief Likelihoods for light quark mass ratios. At the moment, all are just gaussians.
     /// Default data from PDG http://PDG.LBL.GOV 10/6/2015
     /// m_u/m_d = 0.38-0.58
     /// m_s / ((m_u + m_d)/2) = 27.5 +/- 1.0
     /// m_s = 95 +/- 5 GeV
-
     void lnL_light_quark_masses_chi2 (double &result)
     {
         using namespace Pipes::lnL_light_quark_masses_chi2;

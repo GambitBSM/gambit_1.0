@@ -16,7 +16,7 @@
 
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Models/model_helpers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 #include "gambit/Models/models/NUHM2.hpp"
 
@@ -43,11 +43,14 @@
        "me2_1", "me2_2", "me2_3",
        };
      static const std::vector<std::string> M0vec(M0init,Utils::endA(M0init));
-     set_many_to_one(targetP, M0vec, myP["M0"]);
+     double M0 = myP["M0"];
+     set_many_to_one(targetP, M0vec, M0*M0);
 
      // MH2
-     targetP.setValue("mHu2", myP["mHu2"]);
-     targetP.setValue("mHd2", myP["mHd2"]);
+     double mHu = myP["mHu"];
+     double mHd = myP["mHd"];
+     targetP.setValue("mHu2", mHu*mHu);
+     targetP.setValue("mHd2", mHd*mHd);
 
      // M12
      targetP.setValue("M1",  myP["M12"] );

@@ -120,8 +120,6 @@ namespace Gambit
                 {//loop over iniFile parameters
                     Options par_options;
                     std::string par_name;
-                    if (!model_options.getNode(mod, *par_it).IsScalar())
-                        par_options = Options(model_options.getNode(mod, *par_it));
                     
                     par_pos = par_it->find("...");
                     if (!isDefault && par_pos != std::string::npos)
@@ -149,94 +147,103 @@ namespace Gambit
                     
                     param_names.push_back(mod + std::string("::") + par_name);
                     
-                    if (par_options.hasKey("same_as"))
+                    if (model_options.getNode(mod, *par_it).IsSequence() || model_options.getNode(mod, *par_it).IsScalar())
                     {
-                        std::string connectedName = par_options.getValue<std::string>("same_as");
-                        std::string::size_type pos = connectedName.rfind("::");
-                        if (pos == std::string::npos)
-                        {
-                            connectedName += std::string("::") + par_name;
-                        }
-                        
-                        sameMap[mod + std::string("::") + par_name] = connectedName;
-                        
-                        auto opt = std::pair<double, double>(1.0, 0.0);
-                        if (par_options.hasKey("scale"))
-                        {
-                            opt.first = par_options.getValue<double>("scale");
-                        }
-                        
-                        if (par_options.hasKey("shift"))
-                        {
-                            opt.second = par_options.getValue<double>("shift");
-                        }
-                        
-                        sameMapOptions[mod + std::string("::") + par_name] = opt;
+                        phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par_name, model_options.getNode(mod, *par_it)));
                     }
-                    else if (par_options.hasKey("fixed_value"))
+                    else
                     {
-                        phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par_name, par_options.getValue<double>("fixed_value")));
-                    }
-                    else   
-                    {
-                        std::string joined_parname = mod + std::string("::") + par_name;
-                        
-                        if (par_options.hasKey("prior_type"))
+                        par_options = Options(model_options.getNode(mod, *par_it));
+                    
+                        if (par_options.hasKey("same_as"))
                         {
-                            Options options = par_options.getOptions();
-                            std::string priortype = par_options.getValue<std::string>("prior_type");
-                            
-                            if(priortype == "same_as")
+                            std::string connectedName = par_options.getValue<std::string>("same_as");
+                            std::string::size_type pos = connectedName.rfind("::");
+                            if (pos == std::string::npos)
                             {
-                                if (options.hasKey("same_as"))
+                                connectedName += std::string("::") + par_name;
+                            }
+                            
+                            sameMap[mod + std::string("::") + par_name] = connectedName;
+                            
+                            auto opt = std::pair<double, double>(1.0, 0.0);
+                            if (par_options.hasKey("scale"))
+                            {
+                                opt.first = par_options.getValue<double>("scale");
+                            }
+                            
+                            if (par_options.hasKey("shift"))
+                            {
+                                opt.second = par_options.getValue<double>("shift");
+                            }
+                            
+                            sameMapOptions[mod + std::string("::") + par_name] = opt;
+                        }
+                        else if (par_options.hasKey("fixed_value"))
+                        {
+                            phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par_name, par_options.getNode("fixed_value")));
+                        }
+                        else   
+                        {
+                            std::string joined_parname = mod + std::string("::") + par_name;
+                            
+                            if (par_options.hasKey("prior_type"))
+                            {
+                                Options options = par_options.getOptions();
+                                std::string priortype = par_options.getValue<std::string>("prior_type");
+                                
+                                if(priortype == "same_as")
                                 {
-                                    sameMap[joined_parname] = options.getValue<std::string>("same_as");
-                                    
-                                    auto opt = std::pair<double, double>(1.0, 0.0);
-                                    if (par_options.hasKey("scale"))
+                                    if (options.hasKey("same_as"))
                                     {
-                                        opt.first = par_options.getValue<double>("scale");
+                                        sameMap[joined_parname] = options.getValue<std::string>("same_as");
+                                        
+                                        auto opt = std::pair<double, double>(1.0, 0.0);
+                                        if (par_options.hasKey("scale"))
+                                        {
+                                            opt.first = par_options.getValue<double>("scale");
+                                        }
+                                        
+                                        if (par_options.hasKey("shift"))
+                                        {
+                                            opt.second = par_options.getValue<double>("shift");
+                                        }
+                                        
+                                        sameMapOptions[joined_parname] = opt;
                                     }
-                                    
-                                    if (par_options.hasKey("shift"))
+                                    else
                                     {
-                                        opt.second = par_options.getValue<double>("shift");
+                                        scan_err << "Same_as prior for parameter \"" << mod << "\" in model \""<< par_name << "\" has no \"same_as\" entry." << scan_end;
                                     }
-                                    
-                                    sameMapOptions[joined_parname] = opt;
                                 }
                                 else
                                 {
-                                    scan_err << "Same_as prior for parameter \"" << mod << "\" in model \""<< par_name << "\" has no \"same_as\" entry." << scan_end;
-                                }
-                            }
-                            else
-                            {
-                                if (prior_creators.find(priortype) == prior_creators.end())
-                                {
-                                    scan_err << "Parameter '"<< par_name <<"' of model '" << mod << "' is of type '"<<priortype
-                                        <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scan_end;
-                                }
-                                else
-                                {
-                                    my_subpriors.push_back( prior_creators.at(priortype)(std::vector<std::string>(1, joined_parname),options) );
-                                    if (priortype != "fixed")
+                                    if (prior_creators.find(priortype) == prior_creators.end())
                                     {
-                                        shown_param_names.push_back(joined_parname);
+                                        scan_err << "Parameter '"<< par_name <<"' of model '" << mod << "' is of type '"<<priortype
+                                            <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scan_end;
+                                    }
+                                    else
+                                    {
+                                        my_subpriors.push_back( prior_creators.at(priortype)(std::vector<std::string>(1, joined_parname),options) );
+                                        if (priortype != "fixed")
+                                        {
+                                            shown_param_names.push_back(joined_parname);
+                                        }
                                     }
                                 }
                             }
-                        }
-                        else if (par_options.hasKey("range"))
-                        {
-                            shown_param_names.push_back(joined_parname);
-                            
-                            my_subpriors.push_back(new RangePrior1D<flatprior>(std::vector<std::string>(1, joined_parname), par_options));
-                        }
-                        else 
-                        {
-                            shown_param_names.push_back(joined_parname);
-                            needSet.insert(joined_parname);
+                            else if (par_options.hasKey("range"))
+                            {
+                                shown_param_names.push_back(joined_parname);
+                                
+                                my_subpriors.push_back(new RangePrior1D<flatprior>(std::vector<std::string>(1, joined_parname), par_options));
+                            }
+                            else 
+                            {
+                                shown_param_names.push_back(joined_parname);
+                                needSet.insert(joined_parname);
+                            }
                         }
                     }
                     

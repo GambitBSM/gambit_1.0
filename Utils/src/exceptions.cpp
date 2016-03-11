@@ -17,16 +17,21 @@
 ///
 ///  *********************************************
 
+#include <string>
+#include <iostream>
+#include <omp.h>
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 namespace Gambit
 {
-  using namespace LogTags;
+    using namespace std;
+    using namespace LogTags;
+    typedef std::string str;
 
-  // Public members of GAMBIT exception base class.
+    // Public members of GAMBIT exception base class.
 
     /// Constructor without log tags
     exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal) :

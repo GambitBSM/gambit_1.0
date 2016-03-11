@@ -29,8 +29,7 @@
 LOAD_LIBRARY
 
 // Set models that this backend can be used with.  If absent, all models are allowed.
-//BE_ALLOW_MODELS(test_parent_I)  // Ben: disabled since no longer using CMSSM_demo
-BE_ALLOW_MODELS(CMSSM, CMSSM_demo)  // CW: Added CMSSM_demo back, since it is still used by ExampleBits and spartan.yaml
+BE_ALLOW_MODELS(CMSSM)
 
 // Functions
 BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
@@ -51,7 +50,6 @@ BE_VARIABLE(std::vector<double>,SomeVector, "someVector", "test_vector")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(nevents, int)
-//BE_INI_CONDITIONAL_DEPENDENCY(bar, double, CMSSM)  // Ben: nothing seems to exist to fulfil this
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM, UED))

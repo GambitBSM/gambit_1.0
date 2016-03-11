@@ -24,7 +24,6 @@
 Parameters:
 
 
-
 ##############################
 # Prior setup
 ##############################
@@ -68,7 +67,7 @@ Scanner:
 
   use_objectives: gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: multinest
+  use_scanner: grid
   #find_shift
   #find_kernel
   #object_detection
@@ -80,10 +79,19 @@ Scanner:
 
     twalk:
       plugin: twalk
-      like: LogLike
-      tolerance: 1.001
-      #chain_number: 20
-      projection_dimension: 4
+      options:
+        tolerance: 1.001
+        #chain_number: 20
+        projection_dimension: 4
+        
+    tnest:
+      plugin: tnest
+      options:
+        tolerance: 0.1
+        mh_iter: 100
+        min_iter: 10
+        live_points: 2000
+        sampler: 1
 
     de:
       plugin: Diver
@@ -95,7 +103,7 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 100000000
+      point_number: 100
       like: LogLike
           
     toy:
@@ -112,7 +120,7 @@ Scanner:
     grid:
       plugin: grid
       version: ">=1.0"
-      like: LogLike
+      like: LogLike2
       grid_pts: [4, 2]
         
     multinest:
@@ -160,14 +168,14 @@ Scanner:
       plugin: bin_grid
       options:
         use_hdf5: true
-        input_files: ["runs/test_hdf5/samples/gambit_output.hdf5"]
+        input_files: ["runs/scan/samples/gambit_output.hdf5"]
         groups: ["/test/test2"]
         output_file: "output_hdf5"
         #xrange: [2.0, 6.0]
-        xrange: [0, 1]
-        yrange: [0, 1]
-        #xrange: [-5, 5]
-        #yrange: [-5, 5]
+        #xrange: [0, 1]
+        #yrange: [0, 1]
+        xrange: [-5, 5]
+        yrange: [-5, 5]
         grid: [50, 50]
         selected_pts:
           - "EggBox::param_0"
@@ -377,22 +385,24 @@ Scanner:
           output_file: "gambit_output2.txt"
       parameters:
         param...2:
+          prior_type: flat
           range: [0, 1]
 
     gaussian:
       plugin: gaussian
-      purpose: LogLike
+      purpose: LogLike2
       #options:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
       parameters:
-        #same:
-        #  same_as: "gaussian::param_0"
-        #  scale: -2
-        #  shift: -1
-        param...10:
+        ##same:
+        ##  same_as: "gaussian::param_0"
+        ##  scale: -2
+        ##  shift: -1
+        param...2:
           range: [-5, 5]
-
+        params...2: 
+          fixed_value: [-1, 1]
     test:
       plugin: test_plug
       #plugin_path: /home/gmartine/test.so
@@ -464,7 +474,7 @@ Rules:
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
-  - capability:    "MSSM_demo_parameters"
+  - capability:    "MSSM_parameters"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 

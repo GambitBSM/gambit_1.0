@@ -57,7 +57,7 @@ namespace Gambit
                //Mix_{row, col}
                /// iterate through row indice with column indice fixed
                mass_state_content[i - 1] =  
-                  mssm->phys().get(Par::Pole_Mixing,type, i, gauge_index); /// fill 
+                  mssm->get(Par::Pole_Mixing,type, i, gauge_index); /// fill 
            }
          return mass_state_content;
       }
@@ -74,7 +74,7 @@ namespace Gambit
                /// Mix_{row, col}
                /// iterate through column indice with row indice fixed
                gauge_state_content[i - 1] =  
-                  mssm->phys().get(Par::Pole_Mixing,type, mass_index, i); /// fill
+                  mssm->get(Par::Pole_Mixing,type, mass_index, i); /// fill
             }
          return gauge_state_content;
       }
@@ -118,7 +118,7 @@ namespace Gambit
                "called with types for the gauge eigenstate and mass eigenstate that don't match.");
             }
          /// will need to add mssm object to cal method in gambit
-         double admix = mssm->phys().get(Par::Pole_Mixing,type, mass_index, 
+         double admix = mssm->get(Par::Pole_Mixing,type, mass_index, 
                                                    gauge_index);
          return admix;
       }
@@ -457,7 +457,7 @@ namespace Gambit
          double row_length = gauge_es_strs.size(); 
          for(std::vector<int>::size_type i = 1; i <= row_length; i++) 
             {
-               double temp = mssm->phys().get(Par::Pole_Mixing,type, mass_index, i); 
+               double temp = mssm->get(Par::Pole_Mixing,type, mass_index, i); 
                if(i == gauge_L_index || i == gauge_R_index) 
                   gauge_composition.push_back(temp);
                else off_family_mixing.push_back(temp);
@@ -593,8 +593,8 @@ namespace Gambit
          double row_length = gauge_es_strs.size(); 
          for(std::vector<int>::size_type i = 1; i <= row_length; i++) 
             {   
-               double temp1 = mssm->phys().get(Par::Pole_Mixing,type, mass_index1, i);
-               double temp2 = mssm->phys().get(Par::Pole_Mixing,type, mass_index2, i);
+               double temp1 = mssm->get(Par::Pole_Mixing,type, mass_index1, i);
+               double temp2 = mssm->get(Par::Pole_Mixing,type, mass_index2, i);
                if(i == gauge_L_index || i == gauge_R_index) 
                   {
                      mix_row_1.push_back(temp1);
@@ -632,7 +632,7 @@ namespace Gambit
          mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type[mass_es]).first;   
-         double admix = mssm->phys().get(Par::Pole_Mixing,type_gauge, mass_index, 
+         double admix = mssm->get(Par::Pole_Mixing,type_gauge, mass_index, 
                                                    gauge_index);      
          return admix;      
       }

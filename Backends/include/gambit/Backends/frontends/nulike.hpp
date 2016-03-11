@@ -20,8 +20,8 @@
 ///  *********************************************
 
 #define BACKENDNAME nulike
-#define VERSION 1.0.1
-#define SAFE_VERSION 1_0_1
+#define VERSION 1.0.2
+#define SAFE_VERSION 1_0_2
 
 // Load it
 LOAD_LIBRARY

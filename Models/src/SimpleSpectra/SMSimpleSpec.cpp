@@ -14,7 +14,8 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/SMskeleton.hpp" 
+#include "gambit/Models/SimpleSpectra/SMSimpleSpec.hpp" 
+#include "gambit/Utils/util_functions.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
@@ -35,11 +36,6 @@ using namespace SLHAea;
 
 namespace Gambit
 {
-
-      /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MTget; 
-      typedef std::map<Par::Phys,MapCollection<MTget>> PhysGetterMaps; 
-      typedef std::map<Par::Running,MapCollection<MTget>> RunningGetterMaps; 
 
       /// @{ Member functions for SLHAeaModel class
            
@@ -82,6 +78,8 @@ namespace Gambit
       // allow it as a non-standard entry in SMINPUTS. Here we will stick to
       // SLHA.
       double SMea::get_MW_pole()        const { return getdata("MASS",24); }
+
+      double SMea::get_sinthW2_pole()   const { return (1.0 - Utils::sqr(get_MW_pole()) / Utils::sqr(get_MZ_pole())); }
       
       /// Running masses
       //  Only available for light quarks
@@ -97,39 +95,38 @@ namespace Gambit
       /// @}
 
 
-      /// @{ Member functions for SMskeleton class
+      /// @{ Member functions for SMSimpleSpec class
 
       /// @{ Constructors 
  
       /// Default Constructor
-      SMskeleton::SMskeleton() 
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >()
+      SMSimpleSpec::SMSimpleSpec() 
       {}
 
       /// Constructor via SLHAea object
-      SMskeleton::SMskeleton(const SLHAea::Coll& input)
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >(input)
+      SMSimpleSpec::SMSimpleSpec(const SLHAea::Coll& input)
+        : SLHASimpleSpec(input)
       {}
 
       /// Copy constructor: needed by clone function.
-      SMskeleton::SMskeleton(const SMskeleton& other)
-        : SLHAskeleton<SMskeleton,SLHAskeletonTraits<SMea> >(other)
+      SMSimpleSpec::SMSimpleSpec(const SMSimpleSpec& other)
+        : SLHASimpleSpec(other)
       {} 
 
       /// @}  
        
       /// Hardcoded to return SLHA2 defined scale of light quark MSbar masses in SMINPUTS block (2 GeV)
-      double SMskeleton::GetScale() const { return 2; }
+      double SMSimpleSpec::GetScale() const { return 2; }
       
       /// @}
       
       // Map fillers
 
-      RunningGetterMaps SMskeleton::runningpars_fill_getter_maps()
+      SMSimpleSpec::GetterMaps SMSimpleSpec::fill_getter_maps()
       {
-         RunningGetterMaps map_collection; 
+         GetterMaps map_collection; 
 
-         /// Filler for mass1 map 
+         /// Fill for mass1 map 
          {
             MTget::fmap0 tmp_map;
 
@@ -139,34 +136,39 @@ namespace Gambit
  
             map_collection[Par::mass1].map0 = tmp_map;
          }
-         return map_collection;
-      }
 
-      PhysGetterMaps SMskeleton::phys_fill_getter_maps()
-      {
-         PhysGetterMaps map_collection; 
-
-         /// Filler for Pole_mass map (from Model object)
+         /// Fill Pole_mass map (from Model object)
          {
-            MTget::fmap0 tmp_map;
-         
-            addtomap(("Z0", "Z"),       &SMea::get_MZ_pole );      
-            addtomap(("W+", "W-", "W"), &SMea::get_MW_pole );
-            addtomap(("t", "tbar", "u_3", "ubar_3"), &SMea::get_Mtop_pole );    
-            addtomap(("b", "bbar", "d_3", "dbar_3"), &SMea::get_MbMb      );
-            addtomap(("c", "cbar", "u_2", "ubar_2"), &SMea::get_McMc      );
-            addtomap(("tau+","tau-","tau","e+_3","e-_3"),         &SMea::get_Mtau_pole      );
-            addtomap(("mu-", "mu+", "mu", "e-_2", "e+_2", "e_2"), &SMea::get_Mmuon_pole     );
-            addtomap(("e-",  "e+",  "e",  "e-_1", "e+_1", "e_1"), &SMea::get_Melectron_pole );
-            addtomap(("nu_1", "nubar_1"), &SMea::get_Mnu1_pole );
-            addtomap(("nu_2", "nubar_2"), &SMea::get_Mnu2_pole );
-            addtomap(("nu_3", "nubar_3"), &SMea::get_Mnu3_pole );
+            { //local scoping block
+              MTget::fmap0 tmp_map;
+           
+              addtomap(("Z0", "Z"),       &SMea::get_MZ_pole );      
+              addtomap(("W+", "W-", "W"), &SMea::get_MW_pole );
+              addtomap(("t", "tbar", "u_3", "ubar_3"), &SMea::get_Mtop_pole );    
+              addtomap(("b", "bbar", "d_3", "dbar_3"), &SMea::get_MbMb      );
+              addtomap(("c", "cbar", "u_2", "ubar_2"), &SMea::get_McMc      );
+              addtomap(("tau+","tau-","tau","e+_3","e-_3"),         &SMea::get_Mtau_pole      );
+              addtomap(("mu-", "mu+", "mu", "e-_2", "e+_2", "e_2"), &SMea::get_Mmuon_pole     );
+              addtomap(("e-",  "e+",  "e",  "e-_1", "e+_1", "e_1"), &SMea::get_Melectron_pole );
+              addtomap(("nu_1", "nubar_1"), &SMea::get_Mnu1_pole );
+              addtomap(("nu_2", "nubar_2"), &SMea::get_Mnu2_pole );
+              addtomap(("nu_3", "nubar_3"), &SMea::get_Mnu3_pole );
+  
+              tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
+              tmp_map["g"]     = &SMea::get_MGluon_pole;  
+  
+              map_collection[Par::Pole_Mass].map0 = tmp_map;
+            }
 
-            tmp_map["gamma"] = &SMea::get_MPhoton_pole;  
-            tmp_map["g"]     = &SMea::get_MGluon_pole;  
-
-            map_collection[Par::Pole_Mass].map0 = tmp_map;
+            { //local scoping block
+              MTget::fmap0 tmp_map;
+  
+              tmp_map["sinW2"] = &SMea::get_sinthW2_pole;
+  
+              map_collection[Par::Pole_Mixing].map0 = tmp_map;
+            }
          }
+
          return map_collection;
       }
 

@@ -28,6 +28,10 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 May 
 ///
+///  \author Abram Krislock
+///          (a.m.b.krislock@fys.uio.no)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 #include "gambit/Elements/spectrum.hpp"
@@ -119,8 +123,8 @@ namespace Gambit
    /// Only possible with non-const object
    void Spectrum::RunBothToScale(double scale)
    {
-     LE->runningpars().RunToScale(scale);
-     HE->runningpars().RunToScale(scale);
+     LE->RunToScale(scale);
+     HE->RunToScale(scale);
    }
    
    /// Standard getters
@@ -146,18 +150,18 @@ namespace Gambit
    /// TODO: These currently work for anything! Need to restrict them to only allow
    /// access to pole masses and their estimated uncertainties
    /// Also need to change error messages etc, plus the PDG overloads
-   bool Spectrum::has(const Par::Phys partype, const std::string& mass) const 
+   bool Spectrum::has(const Par::Tags partype, const std::string& mass) const 
    {
-     return (HE->phys().has(partype,mass) or LE->phys().has(partype,mass)); 
+     return (HE->has(partype,mass) or LE->has(partype,mass)); 
    }
    
-   double Spectrum::get(const Par::Phys partype, const std::string& mass) const 
+   double Spectrum::get(const Par::Tags partype, const std::string& mass) const 
    {
      double result(-1);
-     if( HE->phys().has(partype,mass) )
-     { result = HE->phys().get(partype,mass); }
-     else if( LE->phys().has(partype,mass) ) 
-     { result = LE->phys().get(partype,mass); }
+     if( HE->has(partype,mass) )
+     { result = HE->get(partype,mass); }
+     else if( LE->has(partype,mass) ) 
+     { result = LE->get(partype,mass); }
      else
      {
         std::ostringstream errmsg;
@@ -172,18 +176,18 @@ namespace Gambit
      return result;
    }
    
-   bool Spectrum::has(const Par::Phys partype, const std::string& mass, const int index) const 
+   bool Spectrum::has(const Par::Tags partype, const std::string& mass, const int index) const 
    {
-     return (HE->phys().has(partype,mass,index) or LE->phys().has(partype,mass,index)); 
+     return (HE->has(partype,mass,index) or LE->has(partype,mass,index)); 
    }
    
-   double Spectrum::get(const Par::Phys partype, const std::string& mass, const int index) const 
+   double Spectrum::get(const Par::Tags partype, const std::string& mass, const int index) const 
    {
      double result(-1);
-     if( HE->phys().has(partype,mass,index) )
-     { result = HE->phys().get(partype,mass,index); }
-     else if( LE->phys().has(partype,mass,index) ) 
-     { result = LE->phys().get(partype,mass,index); }
+     if( HE->has(partype,mass,index) )
+     { result = HE->get(partype,mass,index); }
+     else if( LE->has(partype,mass,index) ) 
+     { result = LE->get(partype,mass,index); }
      else
      {
         std::ostringstream errmsg;
@@ -198,21 +202,21 @@ namespace Gambit
    /// @{ PDB getter/checker overloads
 
    /* Input PDG code plus context integer as separate arguments */
-   bool Spectrum::has(const Par::Phys partype, 
+   bool Spectrum::has(const Par::Tags partype, 
                         const int pdg_code, const int context) const
    {
       return has( partype, std::make_pair(pdg_code,context) );
    }
 
    /* Input PDG code plus context integer as separate arguments */
-   double Spectrum::get(const Par::Phys partype, 
+   double Spectrum::get(const Par::Tags partype, 
                         const int pdg_code, const int context) const
    {
       return get( partype, std::make_pair(pdg_code,context) );
    }
 
    /* Input PDG code plus context integer as pair */
-   bool Spectrum::has(const Par::Phys partype, 
+   bool Spectrum::has(const Par::Tags partype, 
                         const std::pair<int,int> pdgpr) const
    {
       /* If there is a short name, then retrieve that plus the index */      
@@ -227,7 +231,7 @@ namespace Gambit
    }
 
    /* Input PDG code plus context integer as pair */
-   double Spectrum::get(const Par::Phys partype, 
+   double Spectrum::get(const Par::Tags partype, 
                         const std::pair<int,int> pdgpr) const
    {
       /* If there is a short name, then retrieve that plus the index */      
@@ -242,14 +246,14 @@ namespace Gambit
    }
 
    /* Input short name plus index as pair */
-   bool Spectrum::has(const Par::Phys partype, 
+   bool Spectrum::has(const Par::Tags partype, 
                         const std::pair<str,int> shortpr) const
    {
       return has( partype, shortpr.first, shortpr.second);
    }
 
    /* Input short name plus index as pair */
-   double Spectrum::get(const Par::Phys partype, 
+   double Spectrum::get(const Par::Tags partype, 
                         const std::pair<str,int> shortpr) const
    {
       return get( partype, shortpr.first, shortpr.second);
@@ -257,6 +261,54 @@ namespace Gambit
 
    /// @}
 
+   /// @{ Getters which first check the sanity of the thing they are returning
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const std::string& mass) const
+   {
+      double result = get(partype, mass);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const std::string& mass, const int index) const
+   {
+      double result = get(partype, mass, index);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const int pdg_code, const int context) const
+   {
+      double result = get(partype, pdg_code, context);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const std::pair<int,int> pdgpr) const
+   {
+      double result = get(partype, pdgpr);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double Spectrum::safeget(const Par::Tags partype,
+                            const std::pair<str,int> shortpr) const
+   {
+      double result = get(partype, shortpr);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   /// @}
  
    /// SLHAea object getter
    /// First constructs an SLHAea object from the SMINPUTS object, then adds the info from
@@ -269,6 +321,12 @@ namespace Gambit
      LE->add_to_SLHAea(slha);
      HE->add_to_SLHAea(slha);
      return slha;
+   }
+
+   /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+   const std::map<int, int>& Spectrum::PDG_translator() const
+   {
+     return HE->PDG_translator();
    }
 
    // The expressions in all of the following CKM functions are from the CKMFitter paper hep-ph/0406184v3.
