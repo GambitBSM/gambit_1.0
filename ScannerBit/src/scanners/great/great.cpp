@@ -44,6 +44,9 @@ scanner_plugin(GreAT, version(1, 0, 0))
   // Access GreAT and standard Gambit things
   using namespace Gambit;
   using namespace Gambit::GreAT;
+  using namespace Gambit::Scanner;
+
+  //  const static PriorTransform prior;
 
   // Error thrown if the following entries are not present in the inifile
   reqd_inifile_entries(); // None at the momement. Needed to be added later
@@ -99,9 +102,6 @@ scanner_plugin(GreAT, version(1, 0, 0))
     std::cout << "\033[1;31mRunning GreAT...\033[0m" << std::endl;
     MyManager.Run();
 
-    // Deleting the GreAT model
-    delete MyModel;
-
     // Analyse
     // 1) Fetch the ROOT file
     TFile *file;
@@ -114,20 +114,30 @@ scanner_plugin(GreAT, version(1, 0, 0))
     // Show the scan statistics
     estimator->ShowStatistics();
 
-    // Link to the GAMBIT printer
-    std::cout << "\033[1;31mWriting points...\033[0m" << std::endl;
-    Scanner::printer* primary_printer(data.printer->get_stream());
-    static const int MPIrank = data.likelihood_function->getRank();
-    int pointID = data.likelihood_function->getPtID();
-
-    for(TGreatMCMCSample *sample = estimator->GetFirstIndSample(); sample != 0; sample = estimator->GetNextIndSample())
+    // Setup auxilliary stream. It is only needed by the master process
+    static const int MPIrank = get_printer().get_stream()->getRank(); // MPI rank of this process
+    if(MPIrank == 0)
     {
-      primary_printer->print(sample->GetPoint(), "Unit cube parameters", MPIrank, pointID);
-      primary_printer->print(sample->GetLogProb(), "ln(Likelihood)", MPIrank, pointID);
-    }
+      Gambit::Options ind_samples_options   = get_inifile_node("aux_printer_ind_samples_options");
 
-    // Deleting the estimator
-    delete estimator;
+      // Options to desynchronise print streams from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
+      ind_samples_options.setValue("synchronised", false);
+
+      std::cout << "\033[1;31mWriting points...\033[0m" << std::endl;
+      // Initialise auxiliary print streams
+      data.printer -> new_stream("ind_samples", ind_samples_options);
+
+      Scanner::printer* ind_samples_printer(data.printer->get_stream("ind_samples"));
+      static const int MPIrank = data.likelihood_function->getRank();
+      int pointID = 0;//data.likelihood_function->getPtID();
+
+      for(TGreatMCMCSample *sample = estimator->GetFirstIndSample(); sample != 0; sample = estimator->GetNextIndSample())
+      {
+        ind_samples_printer->print(sample->GetPoint(), "Unit cube parameters", MPIrank, pointID);
+        ind_samples_printer->print(sample->GetLogProb(), "ln(Likelihood)", MPIrank, pointID);
+        pointID++;
+      }
+    }
 
     std::cout << "\033[1;31mGreAT finished successfully!\033[0m" << std::endl;
     return 0;

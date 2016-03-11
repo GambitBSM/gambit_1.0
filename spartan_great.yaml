@@ -35,10 +35,11 @@ Scanner:
   scanners:
     mcmc:
       plugin: GreAT
-      nTrialLists: 4
-      nTrials: 20000
+      nTrialLists: 5
+      nTrials: 40000
       like: Likelihood
       path: "runs/spartan_great/great_native"
+      aux_printer_ind_samples_options:
 
 #======== Observables of interest ========
 ObsLikes:
