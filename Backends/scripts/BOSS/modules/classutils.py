@@ -417,6 +417,16 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
     class_decl = '\n__START_GAMBIT_NAMESPACE__\n\n' + class_decl + '\n__END_GAMBIT_NAMESPACE__\n'
 
 
+    # - Add forward declaration of wrapper_creator function (needed by the 'destructor pattern')
+    abstr_class_name_long = toAbstractType(class_name['long'], include_namespace=True)
+    frwd_decl_creator  = '\n'
+    frwd_decl_creator += '// Forward declaration for wrapper_creator.\n'
+    frwd_decl_creator += gb.gambit_backend_namespace + '::' + class_name['long'] + '* wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name_long + '*);\n'
+    frwd_decl_creator += '\n'
+
+    class_decl = frwd_decl_creator + class_decl
+
+
     # - Add forward declaration of wrapper_deleter function (needed by the 'destructor pattern')
     frwd_decl_deleter  = '\n'
     frwd_decl_deleter += '// Forward declaration needed by the destructor pattern.\n'

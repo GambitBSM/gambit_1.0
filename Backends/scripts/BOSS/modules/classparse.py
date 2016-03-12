@@ -749,7 +749,7 @@ def constrWrapperCreator(class_name):
     w_creator_impl  = '\n'
     w_creator_impl += wrapper_class_name + '* wrapper_creator(' + abstr_class_name + '* abs_ptr)\n'
     w_creator_impl += '{\n'
-    w_creator_impl += ' '*cfg.indent + 'return new ' + wrapper_class_name + '(*abs_ptr);\n'
+    w_creator_impl += ' '*cfg.indent + 'return new ' + wrapper_class_name + '(abs_ptr);\n'
     w_creator_impl += '}\n'
 
     # Register code
@@ -760,6 +760,7 @@ def constrWrapperCreator(class_name):
         gb.new_code[w_creator_header_path] = {'code_tuples':[], 'add_include_guard':True}
 
         gb.new_code[w_creator_header_path]['code_tuples'].append( (0, '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"\n') )
+        gb.new_code[w_creator_header_path]['code_tuples'].append( (0, '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"\n') )
 
     gb.new_code[w_creator_header_path]['code_tuples'].append( (0, wrapper_include_statement_decl) )        
     gb.new_code[w_creator_header_path]['code_tuples'].append( (-1, w_creator_decl) )        

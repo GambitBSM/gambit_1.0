@@ -19,6 +19,10 @@
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_mass_eigenstates*);
 
 
+// Forward declaration for wrapper_creator.
+CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_mass_eigenstates* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates*);
+
+
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
    
@@ -402,6 +406,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                {
                   can_delete_me(false);
                   wrapper_deleter(wptr);
+               }
+            }
+   
+            Abstract_MSSMNoFV_onshell_mass_eigenstates(const Abstract_MSSMNoFV_onshell_mass_eigenstates& in)
+             : AbstractBase(in), gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters(in)
+            {
+               if (is_wrapped() == false)
+               {
+                  wptr = wrapper_creator(this);
+                  is_wrapped(true);
+                  can_delete_wrapper(true);
+               }
+               else
+               {
+                  wptr = 0;
+                  is_wrapped(false);
+                  can_delete_wrapper(false);
                }
             }
       };

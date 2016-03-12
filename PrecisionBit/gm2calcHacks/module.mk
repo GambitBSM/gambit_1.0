@@ -34,6 +34,7 @@ LIBsrc_SRC := \
 		$(DIR)/BOSS_func_calculate_amu_2loop_non_tan_beta_resummed.cpp \
 		$(DIR)/BOSS_func_calculate_uncertainty_amu_2loop.cpp \
 		$(DIR)/BOSS_function_return_utils.cpp \
+		$(DIR)/BOSS_wrappercreator.cpp \
 		$(DIR)/BOSS_wrapperdeleter.cpp
 #
 
