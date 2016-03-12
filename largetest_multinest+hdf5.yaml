@@ -72,7 +72,6 @@ Logger:
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
     [Printers]     : "Printers.log"
-  separate_file_per_process: false
 
 #======== Generic Name/Value Section ========
 KeyValues:
