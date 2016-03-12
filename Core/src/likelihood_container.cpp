@@ -130,6 +130,8 @@ namespace Gambit
   /// Evaluate total likelihood function
   double Likelihood_Container::main (const std::vector<double> &in)
   {
+    double lnlike = 0;
+
     /// Unblock system signals (these are blocked to prevent external scanner 
     /// codes from getting interrupted while they are performing sensitive
     /// tasks, like writing to disk; i.e. we do not trust them to have 
@@ -139,7 +141,6 @@ namespace Gambit
     /// Check for signals to abort run
     signaldata().check_for_shutdown_signal();
 
-    double lnlike = 0;
     bool compute_aux = true;
     setParameters(in);
 

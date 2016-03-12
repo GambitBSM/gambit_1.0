@@ -34,6 +34,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release_03")
   SET(CMAKE_BUILD_TYPE Release CACHE STRING "${CMAKE_BUILD_TYPE_STRING}" FORCE)
   SET(FORCE_03 TRUE)
 endif()
+message("${Yellow}-- Build type is set to ${CMAKE_BUILD_TYPE} ${ColourReset}")
 
 # Set certain policies to NEW
 foreach(p

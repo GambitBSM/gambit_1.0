@@ -71,8 +71,11 @@ namespace Gambit
        /// Register that shutdown has begun
        void set_shutdown_begun(const sig_atomic_t emergnc=0);
 
-       /// Check if shutdown has already begun
+       /// Check if (any kind of) shutdown is in progress
        bool shutdown_begun();
+
+       /// Check if emergency shutdown is in progress 
+       bool emergency_shutdown_begun();
 
        /// Add signal to record
        void add_signal(int sig);

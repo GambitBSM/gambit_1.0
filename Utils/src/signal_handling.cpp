@@ -113,20 +113,29 @@ namespace Gambit
      }
    }
 
-   /// Check if shutdown has already begun
+   /// Check if shutdown is in progress
    bool SignalData::shutdown_begun() { return shutdownBegun; }
+   bool SignalData::emergency_shutdown_begun() { return shutdownBegun & emergency; }
 
    /// Attempt to synchronise all processes, but abort if it takes too long
    bool SignalData::all_processes_ready()
    {
-     logger() << "Waiting for all processes to sync..." << std::endl;
+     logger() << "Waiting up to 5 seconds for all processes to sync..." << std::endl;
      #ifdef WITH_MPI
      // sleep setup
      bool timedout = false;
-     std::chrono::seconds timeout(5); // FIXME: replace with estimated plugin evaluation time
-     if( signalComm->BarrierWithTimeout(timeout, 9999, std::cerr) )
-              timedout = true; // Barrier timed out waiting for some process to enter
+     std::chrono::milliseconds timeout(5000); // FIXME: replace with estimated plugin evaluation time
+     // This is a fancy barrier that waits a certain amount of time after the FIRST process
+     // enters before unlocking (so that other action can be taken). This means that all the
+     // processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
+     // This helps the synchronisation to be achieved next time.
+     std::ostringstream logmsg;
+     if( signalComm->BarrierWithCommonTimeout(timeout, 9999, 9998, logmsg) )
+     {
+       timedout = true; // Barrier timed out waiting for some process to enter
+     }
      // else the barrier succeed in synchronising all processes
+     logger() << logmsg.str();
      logger() << "Synchronised? " << !timedout << EOM;
      return !timedout; 
      #else
@@ -137,6 +146,17 @@ namespace Gambit
    void SignalData::attempt_soft_shutdown()
    {
      const int max_attempts=6; // 6 attempts ==> 3 plugin loops (we attempt shutdown both before and after the plugin evaluation) 
+     const std::chrono::seconds max_time(120);
+
+     /// Start counting...
+     static std::chrono::time_point<std::chrono::system_clock> start(std::chrono::system_clock::now());
+
+     // Will continue trying to sync until BOTH the max_attempts 
+     // has been exceeded, AND the max_time has been exceeded.
+     // In other words if it takes more than 6 attempts for
+     // 120 seconds to elapse, we just keep trying, or if 6
+     // attempts take long than 120 seconds, then we wait
+     // until the 6 attempts complete.
      if (all_processes_ready()) 
      {
        call_cleanup();
@@ -152,14 +172,18 @@ namespace Gambit
        shutdown_attempts+=1;
      }                    
 
-     if (shutdown_attempts>=max_attempts) 
+     // Compute elapsed time since shutdown began
+     std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+     std::chrono::duration<double> time_waited = current - start;
+
+     if (shutdown_attempts>=max_attempts and time_waited>=max_time) 
      {
        call_cleanup();
        std::ostringstream msg;
        #ifdef WITH_MPI
        msg << "rank "<<rank<<": ";
        #endif
-       msg << "Soft shutdown failed (could not synchronise all processes after "<<max_attempts<<" attempts), emergency shutdown performed instead! Data handled by external scanner codes (in other processes) may have been left in an inconsistent state." << std::endl;
+       msg << "Soft shutdown failed (could not synchronise all processes after "<<shutdown_attempts<<" attempts, and after waiting "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() <<" seconds), emergency shutdown performed instead! Data handled by external scanner codes (in other processes) may have been left in an inconsistent state." << std::endl;
        throw HardShutdownException(msg.str()); 
      }
    }
@@ -221,22 +245,27 @@ namespace Gambit
        logger() << ss.str() << EOM;
        #ifdef WITH_MPI
        // Broadcast shutdown message to all processes
-       int shutdown_code;
-       std::string shutdown_name;
-       if(emergency)
+       static bool broadcast_done(false); // slightly ugly way of making the broadcast only occur once
+       if(not broadcast_done)
        {
-         shutdown_code = EMERGENCY_SHUTDOWN;
-         shutdown_name = "EMERGENCY";
+         int shutdown_code;
+         std::string shutdown_name;
+         if(emergency)
+         {
+           shutdown_code = EMERGENCY_SHUTDOWN;
+           shutdown_name = "EMERGENCY";
+         }
+         else
+         {
+           shutdown_code = SOFT_SHUTDOWN;
+           shutdown_name = "SOFT";
+         }
+         /// This is basically the same function used in gambit.cpp ("broadcast_shutdown_signal"), would be good to unify the two.
+         MPI_Request req_null = MPI_REQUEST_NULL;
+         signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
+         logger() << LogTags::core << LogTags::info << shutdown_name<<" shutdown signal broadcast to all processes" << EOM;
+         broadcast_done = true;
        }
-       else
-       {
-         shutdown_code = SOFT_SHUTDOWN;
-         shutdown_name = "SOFT";
-       }
-       /// This is basically the same function used in gambit.cpp ("broadcast_shutdown_signal"), would be good to unify the two.
-       MPI_Request req_null = MPI_REQUEST_NULL;
-       signalComm->IsendToAll(&shutdown_code, 1, signalComm->mytag, &req_null);
-       logger() << LogTags::core << LogTags::info << shutdown_name<<" shutdown signal broadcast to all processes" << EOM;
        #endif
        // Go to emergency shutdown routine if needed
        check_for_emergency_shutdown_signal();
