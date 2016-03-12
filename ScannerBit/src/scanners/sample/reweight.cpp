@@ -86,9 +86,9 @@ objective_plugin(reweight_prior, version(1, 0, 0))
       reader->retrieve(modelparameters, model);
 
       /// @{ Debugging; show what was actually retrieved from the output file
-      std::pair<uint,ulong> current_point = reader->get_current_point();
-      uint  MPIrank = current_point.first;
-      ulong pointID = current_point.second;
+      std::pair<unsigned int,unsigned long> current_point = reader->get_current_point();
+      unsigned int  MPIrank = current_point.first;
+      unsigned long pointID = current_point.second;
       std::cout << "Retrieved parameters for model '"<<model<<"' at point:" << std::endl;
       std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
       const std::vector<std::string> names = modelparameters.getKeys();
@@ -180,7 +180,7 @@ scanner_plugin(reweight, version(1, 0, 0))
     Printers::BaseBaseReader* reader = get_printer().get_reader("old_points");
 
     // Loop over the old points
-    std::pair<uint,ulong> current_point = reader->get_next_point();
+    std::pair<unsigned int,unsigned long> current_point = reader->get_next_point();
     int loopi = 0; // DEBUG
     std::cout << "Starting loop over old points" << std::endl;
     while(not reader->eoi()) // while not end of input
@@ -191,8 +191,8 @@ scanner_plugin(reweight, version(1, 0, 0))
 
       // NOTE: don't need this anymore, reader can figure it out automatically
       // Get the ID information for the current point
-      //uint  MPIrank = current_point.first;
-      //ulong pointID = current_point.second;
+      //unsigned int  MPIrank = current_point.first;
+      //unsigned long pointID = current_point.second;
  
       // Get the previously computed likelihood value for this point
       double old_LogL;
@@ -226,9 +226,9 @@ scanner_plugin(reweight, version(1, 0, 0))
        
       /// For now just output to screen so we can see if the extraction
       /// is working:
-      // std::pair<uint,ulong> current_point = reader->get_current_point();
-      // uint  MPIrank = current_point.first;
-      // ulong pointID = current_point.second;
+      // std::pair<unsigned int,unsigned long> current_point = reader->get_current_point();
+      // unsigned int  MPIrank = current_point.first;
+      // unsigned long pointID = current_point.second;
       // std::cout << "Retrieved parameters for model '"<<modelname<<"' at point:" << std::endl;
       // std::cout << " ("<<MPIrank<<", "<<pointID<<")  (rank,pointID)" << std::endl;
       // const std::vector<std::string> names = params.getKeys();
@@ -245,8 +245,8 @@ scanner_plugin(reweight, version(1, 0, 0))
 
       // Combine with the old logL value and output
       double combined_logL = old_LogL + partial_logL;
-      uint  MPIrank = current_point.first;
-      ulong pointID = current_point.second;
+      unsigned int  MPIrank = current_point.first;
+      unsigned long pointID = current_point.second;
       get_printer().get_stream()->print( combined_logL, "reweighted_LogL", MPIrank, pointID);
  
       /// TODO: There are currently some issues to solve regarding the output
