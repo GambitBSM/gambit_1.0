@@ -136,8 +136,9 @@ def isKnownClass(el, class_name=None):
         return is_known
 
     # Check if listed among the user-specified known types
-    full_name = class_name['long_templ']
-    if (full_name in cfg.known_classes.keys()) or (full_name.replace(' ','') in cfg.known_classes.keys()):
+    if isInList(class_name['long_templ'], cfg.known_classes.keys(), return_index=False, ignore_whitespace=True):
+        is_known = True
+    elif isInList(class_name['long'], cfg.known_classes.keys(), return_index=False, ignore_whitespace=True):
         is_known = True
 
     return is_known
@@ -1901,12 +1902,16 @@ def getIncludeStatements(input_el, convert_loaded_to='none', exclude_types=[],
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
 
             else:
-                if type_name['long'] in cfg.known_classes.keys():
-                    header_name = cfg.known_classes[type_name['long']].strip()
+                is_known, index = isInList(type_name['long_templ'], cfg.known_classes.keys(), return_index=True, ignore_whitespace=True)
+                if not is_known:
+                    is_known, index = isInList(type_name['long'], cfg.known_classes.keys(), return_index=True, ignore_whitespace=True)
+
+                if is_known:
+                    header_name = cfg.known_classes.values()[index]
                     if (header_name[0] == '<') and (header_name[-1] == '>'):
-                        include_statements.append('#include ' + cfg.known_classes[type_name['long']])
+                        include_statements.append('#include ' + header_name)
                     else:
-                        include_statements.append('#include "' + cfg.known_classes[type_name['long']] + '"')
+                        include_statements.append('#include "' + header_name + '"')
                 else:
                     reason = "The type '%s' has no specified header file. Please update the 'known_classes' dictionary in the config file." % type_name['long_templ']
                     infomsg.NoIncludeStatementGenerated(type_name['long_templ'], reason).printMessage()
@@ -2140,7 +2145,7 @@ def constrLoadedTypesHeaderContent():
     for class_name in gb.classes_done:
         if class_name['long'] in gb.factory_info.keys():
             namespace, class_name_short = removeNamespace(class_name['long'], return_namespace=True)
-            incl_statements_code += '#include "' + cfg.wrapper_header_prefix + class_name['short'] + cfg.header_extension + '"\n'
+            incl_statements_code += '#include "' + gb.wrapper_header_prefix + class_name['short'] + cfg.header_extension + '"\n'
     incl_statements_code += '#include "identification.hpp"\n'
     # incl_statements_code += '#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, 'identification.hpp') + '"\n'
 
@@ -2812,15 +2817,15 @@ def initGlobalXMLdicts(xml_path, id_and_name_only=False):
 
             if class_name_long not in gb.new_header_files.keys():
               
-                abstract_header_name     = cfg.abstr_header_prefix + class_name_short + cfg.header_extension
-                wrapper_header_name      = cfg.wrapper_header_prefix + class_name_short + cfg.header_extension
-                wrapper_decl_header_name = cfg.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension
-                wrapper_def_header_name  = cfg.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension
+                abstract_header_name     = gb.abstr_header_prefix + class_name_short + cfg.header_extension
+                wrapper_header_name      = gb.wrapper_header_prefix + class_name_short + cfg.header_extension
+                wrapper_decl_header_name = gb.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension
+                wrapper_def_header_name  = gb.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension
 
-                abstract_header_fullpath     = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.abstr_header_prefix + class_name_short + cfg.header_extension )
-                wrapper_header_fullpath      = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + cfg.header_extension )
-                wrapper_decl_header_fullpath = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension )
-                wrapper_def_header_fullpath  = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension )
+                abstract_header_fullpath     = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.abstr_header_prefix + class_name_short + cfg.header_extension )
+                wrapper_header_fullpath      = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + cfg.header_extension )
+                wrapper_decl_header_fullpath = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension )
+                wrapper_def_header_fullpath  = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension )
                 
                 gb.new_header_files[class_name_long] = {    'abstract': abstract_header_name, 
                                                             'wrapper': wrapper_header_name, 
@@ -2922,6 +2927,44 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
 
 
 
+# ====== isInList ========
+
+def isInList(search_entry, search_list, return_index=True, ignore_whitespace=True):
+
+    # Search for entry
+    try:
+        i = search_list.index(search_entry)
+        if return_index:
+            return True, i
+        else:
+            return True
+    except ValueError:
+        pass    
+
+    # Search for entry after removing all whitespace
+    if ignore_whitespace:
+        search_entry_no_ws = "".join(search_entry.split())
+        search_list_no_ws = ["".join(e.split()) for e in search_list]
+        try: 
+            i = search_list_no_ws.index(search_entry_no_ws)
+            if return_index:
+                return True, i
+            else:
+                return True
+        except ValueError:
+            pass    
+
+    # Entry not found
+    if return_index:
+        return False, -1
+    else:
+        return False
+
+# ====== END: isInList ========
+
+
+
+
 # # ====== fillNewHeaderFilesDict ========
 
 # def fillNewHeaderFilesDict():
@@ -2934,15 +2977,15 @@ def identifyStdIncludePaths(timeout_limit=60., poll_interval=0.1):
 
 #         if class_name_long not in gb.new_header_files.keys():
           
-#             abstract_header_name     = cfg.abstr_header_prefix + class_name_short + cfg.header_extension
-#             wrapper_header_name      = cfg.wrapper_header_prefix + class_name_short + cfg.header_extension
-#             wrapper_decl_header_name = cfg.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension
-#             wrapper_def_header_name  = cfg.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension
+#             abstract_header_name     = gb.abstr_header_prefix + class_name_short + cfg.header_extension
+#             wrapper_header_name      = gb.wrapper_header_prefix + class_name_short + cfg.header_extension
+#             wrapper_decl_header_name = gb.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension
+#             wrapper_def_header_name  = gb.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension
 
-#             abstract_header_fullpath     = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.abstr_header_prefix + class_name_short + cfg.header_extension )
-#             wrapper_header_fullpath      = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + cfg.header_extension )
-#             wrapper_decl_header_fullpath = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension )
-#             wrapper_def_header_fullpath  = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, cfg.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension )
+#             abstract_header_fullpath     = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.abstr_header_prefix + class_name_short + cfg.header_extension )
+#             wrapper_header_fullpath      = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + cfg.header_extension )
+#             wrapper_decl_header_fullpath = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + '_decl' + cfg.header_extension )
+#             wrapper_def_header_fullpath  = os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.wrapper_header_prefix + class_name_short + '_def'  + cfg.header_extension )
             
 #             gb.new_header_files[class_name_long] = {    'abstract': abstract_header_name, 
 #                                                         'wrapper': wrapper_header_name, 

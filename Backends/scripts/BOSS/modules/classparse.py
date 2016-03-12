@@ -68,7 +68,7 @@ def run():
         original_file_name       = original_class_file_el.get('name')
         original_file_name_base  = os.path.basename(original_file_name)
         original_class_file_dir  = os.path.split(original_file_name)[0]
-        extras_src_file_name     = os.path.join(cfg.extra_output_dir, class_name['short'] + '_extras' + gb.code_suffix + cfg.source_extension)
+        extras_src_file_name     = os.path.join(cfg.extra_output_dir, gb.general_src_file_prefix + class_name['short'] + cfg.source_extension)
 
         short_abstr_class_fname = gb.new_header_files[class_name['long']]['abstract']
         abstr_class_fname       = os.path.join(cfg.extra_output_dir, short_abstr_class_fname)
@@ -667,7 +667,7 @@ def generateFactoryFunctions(class_el, class_name, is_template):
 
     # Generate factory file name
     dir_name = cfg.extra_output_dir
-    factory_file_name = os.path.join(dir_name, cfg.factory_file_prefix + class_name['short'] + cfg.source_extension)
+    factory_file_name = os.path.join(dir_name, gb.factory_file_prefix + class_name['short'] + cfg.source_extension)
 
     # Register code
     if factory_file_name not in gb.new_code.keys():

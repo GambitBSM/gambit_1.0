@@ -515,7 +515,7 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
             factory_name = 'Factory_' + class_name['short'] + '_' + str(counter)
             if len(template_types) > 0:
                 factory_name += '_' + '_'.join(template_types)
-            factory_name += gb.code_suffix + str(gb.symbol_name_counter)
+            factory_name += gb.code_suffix + '_' + str(gb.symbol_name_counter)
             gb.symbol_name_counter += 1
 
             if remove_n_args == 0:
