@@ -376,6 +376,9 @@ namespace Gambit {
       }
       double mwimp=myRDspec.coannihilatingParticles[0].mass;
 
+        double tbtest=0;
+
+
       // HERE STARTS A GIANT IF STATEMENT WHICH 
       // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
       if (1==1) {
@@ -504,20 +507,21 @@ namespace Gambit {
         logger() << "...done!" << std::endl;
 
         // Get runtime
-        double runtime = (end - start).count();
+        double runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
         //if (runOptions->getValueOrDef<bool>(false, "debugMode"))
         {
           // Check if runtime too long
           if ( runtime > 30. )
           {
-            std::cout << "Duration: " << runtime << std::endl;
+            std::cout << "Duration [ms]: " << runtime << std::endl;
             const Spectrum* mySpec = *Dep::MSSM_spectrum;
             SLHAstruct mySLHA = mySpec->getSLHAea();
             std::ofstream ofs("RelicDensity_debug.slha");
             ofs << mySLHA;
             ofs.close();
-            exit(1);  // And stop
+            tbtest=1;
+//            exit(1);  // And stop
           }
         }
 
@@ -555,6 +559,8 @@ namespace Gambit {
       
       std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
       std::cout << "Oh2     = " << result << std::endl << std::endl;
+
+      if (tbtest==1) {exit(1);}
       
 
     } // function RD_oh2_general
