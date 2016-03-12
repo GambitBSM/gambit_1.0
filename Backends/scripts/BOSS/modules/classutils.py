@@ -390,8 +390,19 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
     class_decl += ' '*(n_indents+2)*indent + abstr_class_name_short + '(const ' + abstr_class_name_short + '& in)\n'
     class_decl += ' '*(n_indents+2)*indent + parent_cctors_line
     class_decl += ' '*(n_indents+2)*indent + '{\n'
-    class_decl += ' '*(n_indents+3)*indent + 'is_wrapped(false);\n'
-    class_decl += ' '*(n_indents+3)*indent + 'can_delete_wrapper(false);\n'
+    class_decl += ' '*(n_indents+3)*indent + 'if (is_wrapped() == false)\n'
+    class_decl += ' '*(n_indents+3)*indent + '{\n'
+    # class_decl += ' '*(n_indents+4)*indent + 'wptr = wrapper_creator(in.wptr);\n'
+    class_decl += ' '*(n_indents+4)*indent + 'wptr = wrapper_creator(this);\n'
+    class_decl += ' '*(n_indents+4)*indent + 'is_wrapped(true);\n'
+    class_decl += ' '*(n_indents+4)*indent + 'can_delete_wrapper(true);\n'
+    class_decl += ' '*(n_indents+3)*indent + '}\n'
+    class_decl += ' '*(n_indents+3)*indent + 'else\n'
+    class_decl += ' '*(n_indents+3)*indent + '{\n'
+    class_decl += ' '*(n_indents+4)*indent + 'wptr = 0;\n'
+    class_decl += ' '*(n_indents+4)*indent + 'is_wrapped(false);\n'
+    class_decl += ' '*(n_indents+4)*indent + 'can_delete_wrapper(false);\n'
+    class_decl += ' '*(n_indents+3)*indent + '}\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
 
 

@@ -72,6 +72,7 @@ wrapper_class_prefix = 'Wrapper_'
 
 
 func_return_utils_fname = 'function_return_utils'
+wrapper_creator_fname   = 'wrappercreator'
 wrapper_deleter_fname   = 'wrapperdeleter'
 frwd_decls_abs_fname    = 'forward_decls_abstract_classes'
 frwd_decls_wrp_fname    = 'forward_decls_wrapper_classes'
