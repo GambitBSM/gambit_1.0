@@ -36,7 +36,7 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 50000
+      nlive: 10000
       tol: 0.01
       mmodal: 0
       # write native MultiNest ascii output files?
@@ -72,6 +72,7 @@ Logger:
     [ExampleBit_A] : "ExampleBit_A.log"
     [Scanner]      : "Scanner.log"
     [Printers]     : "Printers.log"
+  separate_file_per_process: false
 
 #======== Generic Name/Value Section ========
 KeyValues:
