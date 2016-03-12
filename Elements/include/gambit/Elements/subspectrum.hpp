@@ -17,6 +17,10 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2014, 2015 Jan - Jul
 ///
+///  \author Abram Krislock
+///          (a.m.b.krislock@fys.uio.no)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 #ifndef __subspectrum_hpp__
@@ -30,6 +34,7 @@
 #include "gambit/Utils/cats.hpp"
 #include "gambit/Utils/safebool.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/spectrum_helpers.hpp"
 #include "gambit/Models/partmap.hpp"
@@ -183,6 +188,15 @@ namespace Gambit
          double get(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
          bool   has(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
          double get(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
+
+         /* Getters which first check the sanity of the thing they are returning */
+         /* These don't have to be virtual; they just call the virtual functions in the end. */
+         double safeget(const Par::Tags, const str&, SafeBool check_antiparticle = SafeBool(true)) const;
+         double safeget(const Par::Tags, const str&, int, SafeBool check_antiparticle = SafeBool(true)) const;
+         double safeget(const Par::Tags, const str&, int, int) const;
+         double safeget(const Par::Tags, const int, const int, SafeBool check_antiparticle = SafeBool(true)) const;     /* Input PDG code plus context integer */
+         double safeget(const Par::Tags, const std::pair<int,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input PDG code plus context integer */
+         double safeget(const Par::Tags, const std::pair<str,int>, SafeBool check_antiparticle = SafeBool(true)) const; /* Input short name plus index */
 
          /// @{ PDB overloads for setters
 

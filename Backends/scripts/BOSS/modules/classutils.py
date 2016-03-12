@@ -84,8 +84,7 @@ def constrTemplForwDecl(class_name_short, namespaces, template_bracket, indent=4
 
 # ====== constrAbstractClassDecl ========
 
-def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namespaces, indent=4, template_types=[], 
-                            has_copy_constructor=True,  construct_assignment_operator=True):
+def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namespaces, indent=4, template_types=[], construct_assignment_operator=True):
 
     n_indents = len(namespaces)
 
@@ -371,6 +370,30 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name_short, namesp
     class_decl += ' '*(n_indents+4)*indent + 'wrapper_deleter(wptr);\n'
     class_decl += ' '*(n_indents+3)*indent + '}\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
+
+    # - Construct copy constructor
+    # -- Construct code for calling copy constructors of parent classes
+    parent_cctors_line = ' : AbstractBase(in)'
+    for parent_dict in parent_classes:
+        if parent_dict['loaded']:
+            parent_cctors_line += ', ' + parent_dict['abstr_class_name']['long_templ'] + '(in)'
+        elif parent_dict['fundamental'] or parent_dict['std']:
+            reason = 'Avoid inheritance ambiguity.'
+            infomsg.ParentClassIgnored(abstr_class_name_short, parent_dict['class_name']['long_templ'], reason).printMessage()
+        else:
+            reason = 'Not loaded or accepted type.'
+            infomsg.ParentClassIgnored(abstr_class_name_short, parent_dict['class_name']['long_templ'], reason).printMessage()
+            continue
+    parent_cctors_line += '\n'
+
+    class_decl += '\n'
+    class_decl += ' '*(n_indents+2)*indent + abstr_class_name_short + '(const ' + abstr_class_name_short + '& in)\n'
+    class_decl += ' '*(n_indents+2)*indent + parent_cctors_line
+    class_decl += ' '*(n_indents+2)*indent + '{\n'
+    class_decl += ' '*(n_indents+3)*indent + 'is_wrapped(false);\n'
+    class_decl += ' '*(n_indents+3)*indent + 'can_delete_wrapper(false);\n'
+    class_decl += ' '*(n_indents+2)*indent + '}\n'
+
 
     # - Close the class body
     class_decl += ' '*n_indents*indent + '};' + '\n'

@@ -50,7 +50,6 @@ BE_VARIABLE(std::vector<double>,SomeVector, "someVector", "test_vector")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(nevents, int)
-//BE_INI_CONDITIONAL_DEPENDENCY(bar, double, CMSSM)  // Ben: nothing seems to exist to fulfil this
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM, UED))
