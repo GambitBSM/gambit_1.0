@@ -120,11 +120,11 @@ namespace Gambit
    /// Attempt to synchronise all processes, but abort if it takes too long
    bool SignalData::all_processes_ready()
    {
-     logger() << "Waiting up to 5 seconds for all processes to sync..." << std::endl;
+     logger() << "Waiting up to 30 seconds for all processes to sync..." << std::endl;
      #ifdef WITH_MPI
      // sleep setup
      bool timedout = false;
-     std::chrono::milliseconds timeout(5000); // FIXME: replace with estimated plugin evaluation time
+     std::chrono::milliseconds timeout(30000); // FIXME: replace with estimated plugin evaluation time
      // This is a fancy barrier that waits a certain amount of time after the FIRST process
      // enters before unlocking (so that other action can be taken). This means that all the
      // processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
