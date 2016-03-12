@@ -229,7 +229,7 @@ BE_NAMESPACE
     if ((istat bitand 4) == 4)
     {
       if (not piped_warnings.inquire()) // Don't bother re-raising a warning if it's already been done since the last .check().
-        piped_warnings.request(LOCAL_INFO, "DarkSUSY's dswayiled_int didn't converge. This occasionally happens "
+        piped_warnings.request(LOCAL_INFO, "DarkSUSY's dswayield_int didn't converge. This occasionally happens "
                                            "due to finite statistics in the nu yield tables from Pythia. "
                                            "This is benign (the missing integrals are always negligible).");
     }    

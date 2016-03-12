@@ -222,7 +222,6 @@ endif()
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 
 # - Set local paths
-set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
 set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212")
 set(pythia_dl "pythia8212.tgz")
 # - Actual configure and compile commands
@@ -253,22 +252,6 @@ ExternalProject_Add_Step(pythia apply_hacks
 )
 BOSS_backend(pythia Pythia 8.212)
 add_extra_targets(pythia ${pythia_dir} ${backend_download}/${pythia_dl} distclean)
-
-# Fastsim
-set(fastsim_location "${GAMBIT_INTERNAL}/fast_sim")
-set(fastsim_dir "${PROJECT_SOURCE_DIR}/Backends/installed/fastsim/1.0")
-ExternalProject_Add(fastsim
-  DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --yellow --bold ${private_code_warning1}
-           COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red --bold ${private_code_warning2}
-           COMMAND ${CMAKE_COMMAND} -E copy_directory ${fastsim_location} ${fastsim_dir}
-  SOURCE_DIR ${fastsim_dir}
-  BUILD_IN_SOURCE 1
-  DOWNLOAD_ALWAYS 0
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${GAMBIT_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} libfastsim.so
-  INSTALL_COMMAND ""
-)
-add_extra_targets(fastsim ${fastsim_dir} null distclean)
 
 # Nulike
 set(nulike_ver "1.0.2")
@@ -440,7 +423,6 @@ set_target_properties(darksusy
                       ddcalc
                       gamlike
                       nulike
-                      fastsim
                       PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends
@@ -457,7 +439,7 @@ add_custom_target(backends
                   nulike
                  )
 
-add_custom_target(backends-nonfree DEPENDS ddcalc gamlike) #fastsim
+add_custom_target(backends-nonfree DEPENDS ddcalc gamlike)
 
 add_custom_target(clean-backends
                   DEPENDS
