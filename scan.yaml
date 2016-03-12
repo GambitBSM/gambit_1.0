@@ -55,7 +55,7 @@ Printer:
     # name of info file (explains content of output file)
     #info_file: "runs/spartan/samples/gambit_output2.info"
 
-    output_file: "gambit_output2.hdf5"
+    output_file: "gambit_output.hdf5"
     group: "/test/test2"
     delete_file_if_exists: true
 

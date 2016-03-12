@@ -1043,14 +1043,7 @@ namespace Gambit
          errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call is below:" << std::endl << output.str();
          printer_error().raise(LOCAL_INFO, errmsg.str());              
       }*/
-      if (resume)
-      {
-          Gambit::Printers::HDF5::combine_hdf5_files(file, finalfile, group, N, finalcombine);
-      }
-      else
-      {
-          Gambit::Printers::HDF5::combine_hdf5_files(file, finalfile, group, N, false);
-      }
+      Gambit::Printers::HDF5::combine_hdf5_files(file, finalfile, group, N, resume);
       // Otherwise everything should be ok!
       if(finalcombine)
       {

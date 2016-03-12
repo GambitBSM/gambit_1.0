@@ -64,10 +64,20 @@ namespace Gambit
             struct copy_hdf5
             {
                 template <typename U>
-                static void run(U, hid_t &dataset_out, std::vector<hid_t> &datasets, unsigned long long &size_tot, std::vector<unsigned long long> &sizes, hid_t dspace = H5S_ALL)
+                static void run(U, hid_t &dataset_out, std::vector<hid_t> &datasets, unsigned long long &size_tot, std::vector<unsigned long long> &sizes, hid_t &old_dataset)
                 {
                     std::vector<U> data(size_tot);
                     unsigned long long j = 0;
+                    
+                    if (old_dataset >= 0)
+                    {
+                        hid_t space = H5Dget_space(old_dataset);
+                        hsize_t dim_t = H5Sget_simple_extent_npoints(space);
+                        H5Sclose(space);
+                        data.resize(dim_t + size_tot);
+                        H5Dread(old_dataset, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[0]);
+                        j = dim_t;
+                    }
                     
                     for (int i = 0, end = datasets.size(); i < end; i++)
                     {
@@ -89,17 +99,29 @@ namespace Gambit
                         }
                     }
                     
-                    H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, dspace, H5P_DEFAULT, (void *)&data[0]);
+                    H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&data[0]);
                 }
             };
 
             struct ra_copy_hdf5
             {
                 template <typename U>
-                static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, unsigned long long &size, std::vector<unsigned long long> &sizes, std::vector<std::vector <unsigned long long> > &pointid, std::vector<std::vector <unsigned long long> > &rank, std::vector<unsigned long long> &aux_sizes, hid_t &dspace, hid_t &dspace2)
+                static void run (U, hid_t &dataset_out, hid_t &dataset2_out, std::vector<hid_t> &datasets, std::vector<hid_t> &datasets2, unsigned long long size, std::vector<unsigned long long> &sizes, std::vector<std::vector <unsigned long long> > &pointid, std::vector<std::vector <unsigned long long> > &rank, std::vector<unsigned long long> &aux_sizes, hid_t &old_dataset, hid_t &old_dataset2, unsigned long long pt_min)
                 {
+                    unsigned long long j = 0;
                     std::vector<U> output(size, 0);
                     std::vector<int> valids(size, 0);
+
+                    if (old_dataset >= 0 && old_dataset2 >= 0)
+                    {
+                        hid_t space = H5Dget_space(old_dataset);
+                        hsize_t dim_t = H5Sget_simple_extent_npoints(space);
+                        H5Sclose(space);
+                        H5Dread(old_dataset, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
+                        H5Dread(old_dataset2, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
+                        j = dim_t;
+                    }
+                    
                     auto st = aux_sizes.begin();
                     auto pt = pointid.begin(), ra = rank.begin();
                     for (auto it = datasets.begin(), itv = datasets2.begin(), end = datasets.end(); it != end; ++it, ++itv, ++pt, ++ra, ++st)
@@ -117,12 +139,12 @@ namespace Gambit
                             errmsg << "Error copying aux parameter.  Input file smaller than required.";
                             printer_error().raise(LOCAL_INFO, errmsg.str());
                         }
-                        
+
                         for (int i = 0, end = *st; i < end; i++)
                         {
                             if (valid[i])
                             {
-                                unsigned long long temp = sizes[(*ra)[i]] + (*pt)[i] - 1;
+                                unsigned long long temp = j + sizes[(*ra)[i]] + (*pt)[i] - pt_min;
                                 if (temp < size)
                                 {
                                     output[temp] = data[i];
@@ -140,8 +162,8 @@ namespace Gambit
                         }
                     }
                     
-                    H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, dspace, H5P_DEFAULT, (void *)&output[0]);
-                    H5Dwrite( dataset2_out, get_hdf5_data_type<int>::type(), H5S_ALL, dspace2, H5P_DEFAULT, (void *)&valids[0]);
+                    H5Dwrite( dataset_out, get_hdf5_data_type<U>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&output[0]);
+                    H5Dwrite( dataset2_out, get_hdf5_data_type<int>::type(), H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)&valids[0]);
                 }
             };
 
@@ -226,6 +248,8 @@ namespace Gambit
                 std::vector<unsigned long long> sizes;
                 unsigned long long size_tot;
                 unsigned long long size_tot_l;
+                std::string root_file_name;
+                unsigned long long pt_min;
                 
             public:
                 hdf5_stuff(const std::string &file_name, const std::string &group_name, int num);

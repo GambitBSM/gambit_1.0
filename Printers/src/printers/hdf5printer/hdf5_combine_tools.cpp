@@ -122,60 +122,14 @@ namespace Gambit
                 return return_val;
             }
             
-            inline void setup_hdf5_points(hid_t new_group, hid_t type, hid_t type2, unsigned long long size_tot, hid_t &dataset_out, hid_t &dataset2_out, hid_t &dataspace, hid_t &dataspace2, const std::string &name, bool resume)
+            inline void setup_hdf5_points(hid_t new_group, hid_t type, hid_t type2, unsigned long long size_tot, hid_t &dataset_out, hid_t &dataset2_out, hid_t &dataspace, hid_t &dataspace2, const std::string &name)
             {
-                if (resume)
-                {
-                    hid_t dataset_out = H5Dopen2(new_group, name.c_str(), H5P_DEFAULT);
-                    hid_t dataset2_out = H5Dopen2(new_group, (name + "_isvalid").c_str(), H5P_DEFAULT);
-                    dataspace = H5Dget_space(dataset_out);
-                    dataspace2 = H5Dget_space(dataset2_out);
-                    hssize_t dim_t = H5Sget_simple_extent_npoints(dataspace);
-                    hsize_t ext_size[1];
-                    ext_size[0] = dim_t + size_tot;
-                    herr_t status = H5Dset_extent(dataset_out, ext_size);
-                    std::cout << dataspace << std::endl;
-                    if(status<0)
-                    {
-                        std::ostringstream errmsg;
-                        errmsg << "Could not extend data set for parameter " << name << ": " << status << std::endl;
-                        printer_error().raise(LOCAL_INFO, errmsg.str());
-                    }
-                    status = H5Dset_extent(dataset2_out, ext_size);
-                    if(status<0)
-                    {
-                        std::ostringstream errmsg;
-                        errmsg << "Could not extend data set for parameter " << name << ": " << status  << "_isvalid" << std::endl;
-                        printer_error().raise(LOCAL_INFO, errmsg.str());
-                    }
-                    hsize_t offsets[1];
-                    hsize_t chunk_size[1];
-                    offsets[0] = dim_t;
-                    chunk_size[0] = size_tot;
-                    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offsets, NULL, chunk_size, NULL); 
-                    if(status<0)
-                    {
-                        std::ostringstream errmsg;
-                        errmsg << "Could not define hyperslab for parameter " << name << ": " << status  << std::endl;
-                        printer_error().raise(LOCAL_INFO, errmsg.str());
-                    }
-                    status = H5Sselect_hyperslab(dataspace2, H5S_SELECT_SET, offsets, NULL, chunk_size, NULL); 
-                    if(status<0)
-                    {
-                        std::ostringstream errmsg;
-                        errmsg << "Could not define hyperslab for parameter " << name << ": " << status  << "_isvalid" << std::endl;
-                        printer_error().raise(LOCAL_INFO, errmsg.str());
-                    }
-                }
-                else
-                {
-                    hsize_t dimsf[1];
-                    dimsf[0] = size_tot;
-                    dataspace = H5Screate_simple(1, dimsf, NULL); 
-                    dataset_out = H5Dcreate2(new_group, name.c_str(), type, dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-                    dataspace2 = H5Screate_simple(1, dimsf, NULL); 
-                    dataset2_out = H5Dcreate2(new_group, (name + "_isvalid").c_str(), type2, dataspace2, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-                }
+                hsize_t dimsf[1];
+                dimsf[0] = size_tot;
+                dataspace = H5Screate_simple(1, dimsf, NULL); 
+                dataset_out = H5Dcreate2(new_group, name.c_str(), type, dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+                dataspace2 = H5Screate_simple(1, dimsf, NULL);
+                dataset2_out = H5Dcreate2(new_group, (name + "_isvalid").c_str(), type2, dataspace2, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
             }
                 
             inline std::vector<std::string> getGroups(std::string groups)
@@ -196,7 +150,7 @@ namespace Gambit
                 return ret;
             }
                 
-            hdf5_stuff::hdf5_stuff(const std::string &file_name, const std::string &group_name, int num) : group_name(group_name), cum_sizes(num, 0), sizes(num, 0), size_tot(0)
+            hdf5_stuff::hdf5_stuff(const std::string &file_name, const std::string &group_name, int num) : group_name(group_name), cum_sizes(num, 0), sizes(num, 0), size_tot(0), root_file_name(file_name)
             {
                 std::vector<bool> temp;
                 std::unordered_set<std::string> param_set, aux_param_set;
@@ -267,6 +221,13 @@ namespace Gambit
                     std::vector<bool> valids;
                     Enter_HDF5<read_hdf5>(dataset2, valids);
                     
+                    if (i == 0)
+                    {
+                        std::vector<unsigned long long> pt_id;
+                        Enter_HDF5<read_hdf5>(dataset2, pt_id);
+                        pt_min = pt_id[0];
+                    }
+                    
                     if (size != size2)
                     {
                         std::ostringstream errmsg;
@@ -305,21 +266,27 @@ namespace Gambit
                 std::vector<std::vector<unsigned long long>> ranks, ptids;
                 std::vector<unsigned long long> aux_sizes;
                 
-                hid_t new_file, new_group;
+                hid_t old_file, old_group;
                 if (resume)
                 {
-                    new_file = H5Fopen(file.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
-                    new_group = H5Gopen2(new_file, group_name.c_str(), H5P_DEFAULT);
+                    std::system(("mv " + file + " " + file + ".temp.bak").c_str());
+                    old_file = H5Fopen((file + ".temp.bak").c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+                    old_group = H5Gopen2(old_file, group_name.c_str(), H5P_DEFAULT);
+                    
+                    hid_t old_dataset = H5Dopen2(old_group, "pointID", H5P_DEFAULT);
+                    hid_t space = H5Dget_space(old_dataset);
+                    hsize_t extra = H5Sget_simple_extent_npoints(space);
+                    H5Sclose(space);
+                    
+                    size_tot += extra;
                 }
-                else
+                
+                hid_t new_file = H5Fcreate(file.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+                hid_t new_group = new_file;
+                auto new_groups = getGroups(group_name);
+                for (auto it = new_groups.begin(), end = new_groups.end(); it != end; ++it)
                 {
-                    new_file = H5Fcreate(file.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-                    new_group = new_file;
-                    auto new_groups = getGroups(group_name);
-                    for (auto it = new_groups.begin(), end = new_groups.end(); it != end; ++it)
-                    {
-                        new_group = H5Gcreate2(new_group, it->c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-                    }
+                    new_group = H5Gcreate2(new_group, it->c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
                 }
                 
                 if (aux_param_names.size() > 0) for (auto itg = aux_groups.begin(), endg = aux_groups.end(); itg != endg; ++itg)
@@ -376,11 +343,18 @@ namespace Gambit
                         datasets2.push_back(dataset2);
                     }
                     
+                    hid_t old_dataset = -1, old_dataset2 = -1;
+                    if (resume)
+                    {
+                        old_dataset = H5Dopen2(old_group, it->c_str(), H5P_DEFAULT);
+                        old_dataset2 = H5Dopen2(old_group, (*it + "_isvalid").c_str(), H5P_DEFAULT);
+                    }
+                    
                     hid_t dataset_out, dataset2_out, dataspace, dataspace2;
-                    setup_hdf5_points(new_group, H5Dget_type(datasets[0]), H5Dget_type(datasets2[0]), size_tot, dataset_out, dataset2_out, dataspace, dataspace2, *it, resume);
+                    setup_hdf5_points(new_group, H5Dget_type(datasets[0]), H5Dget_type(datasets2[0]), size_tot, dataset_out, dataset2_out, dataspace, dataspace2, *it);
 
-                    Enter_HDF5<copy_hdf5>(dataset_out, datasets, size_tot_l, sizes, dataspace);
-                    Enter_HDF5<copy_hdf5>(dataset2_out, datasets2, size_tot_l, sizes, dataspace2);
+                    Enter_HDF5<copy_hdf5>(dataset_out, datasets, size_tot_l, sizes, old_dataset);
+                    Enter_HDF5<copy_hdf5>(dataset2_out, datasets2, size_tot_l, sizes, old_dataset2);
                     
                     for (int i = 0, end = datasets.size(); i < end; i++)
                     {
@@ -407,10 +381,22 @@ namespace Gambit
                         datasets2.push_back(dataset2);
                     }
                     
+                    hid_t old_dataset = -1, old_dataset2 = -1;
+                    if (resume)
+                    {
+                        H5E_auto2_t old_func;
+                        void *old_client_data;
+                        H5Eget_auto2(H5E_DEFAULT, &old_func, &old_client_data);
+                        H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
+                        old_dataset = H5Dopen2(old_group, it->c_str(), H5P_DEFAULT);
+                        old_dataset2 = H5Dopen2(old_group, (*it + "_isvalid").c_str(), H5P_DEFAULT);
+                        H5Eset_auto2(H5E_DEFAULT, old_func, old_client_data);
+                    }
+
                     hid_t dataset_out, dataset2_out, dataspace, dataspace2;
-                    setup_hdf5_points(new_group, H5Dget_type(datasets[0]), H5Dget_type(datasets2[0]), size_tot, dataset_out, dataset2_out, dataspace, dataspace2, *it, resume);
+                    setup_hdf5_points(new_group, H5Dget_type(datasets[0]), H5Dget_type(datasets2[0]), size_tot, dataset_out, dataset2_out, dataspace, dataspace2, *it);
                     
-                    Enter_HDF5<ra_copy_hdf5>(dataset_out, dataset2_out, datasets, datasets2, size_tot, cum_sizes, ptids, ranks, aux_sizes, dataspace, dataspace2);
+                    Enter_HDF5<ra_copy_hdf5>(dataset_out, dataset2_out, datasets, datasets2, size_tot, cum_sizes, ptids, ranks, aux_sizes, old_dataset, old_dataset2, pt_min);
                     
                     for (int i = 0, end = datasets.size(); i < end; i++)
                     {
@@ -421,6 +407,18 @@ namespace Gambit
                 
                 H5Gclose(new_group);
                 H5Fclose(new_file);
+                
+                if (resume)
+                {
+                    std::system(("rm -f " + file + ".temp.bak").c_str());
+                }
+                
+                /*for (int i = 0, end = group_name.size(); i < end; i++)
+                {
+                    std::stringstream ss;
+                    ss << i;
+                    std::system(("rm -f " + root_file_name + "_temp_" + ss.str()).c_str());
+                }*/
             }
         }
     }
