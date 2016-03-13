@@ -33,6 +33,9 @@
 ///
 ///  *********************************************
 
+#ifndef __functor_definitions_hpp__
+#define __functor_definitions_hpp__
+
 #include <chrono>
 
 #include "gambit/Elements/functors.hpp"
@@ -447,3 +450,4 @@ namespace Gambit                                                  \
   template class backend_functor<STRIP_PARENS(TYPE_PACK)>;        \
 }
 
+#endif /* defined(__functor_definitions_hpp__) */
