@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   logger()<<"Running DarkBit standalone example"<<LogTags::info<<EOM;
 
 
-    // ---- Initialize models ----
+  // ---- Initialize models ----
 
   // Initialize LocalHalo model
   ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();

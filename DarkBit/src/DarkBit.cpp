@@ -39,6 +39,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
+#include "gambit/DarkBit/DarkBit_utils.hpp"
 
 namespace Gambit {
   namespace DarkBit {
@@ -89,6 +90,7 @@ namespace Gambit {
     void UnitTest_DarkBit(int &result)
     {
       using namespace Pipes::UnitTest_DarkBit;
+      using DarkBit_utils::gamma3bdy_limits;
       /* This function depends on all relevant DM observables (indirect and
        * direct) and dumps them into convenient files in YAML format, which
        * afterwards can be checked against the expectations.
@@ -109,10 +111,13 @@ namespace Gambit {
       Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 
       std::ostringstream filename;
+      /*
       filename << runOptions->getValueOrDef<std::string>("UnitTest_DarkBit",
           "fileroot");
       filename << "_" << counter << ".yml";
       counter++;
+      */
+      filename << runOptions->getValueOrDef<std::string>("UnitTest.yaml", "filename");
 
       std::ofstream os;
       os.open(filename.str());
@@ -170,7 +175,18 @@ namespace Gambit {
           if (it->finalStateIDs.size() == 2)
             os << ": " << it->genRate->bind("v")->eval(0);
           if (it->finalStateIDs.size() == 3)
-            os << ": " << it->genRate->bind("v", "E", "E1")->eval(0., 0., 0.);
+          {
+            double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(
+                it->finalStateIDs[1]).mass;
+            double m2 = (*Dep::TH_ProcessCatalog).getParticleProperty(
+                it->finalStateIDs[2]).mass;
+            double mass = M_DM;
+            Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
+            Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
+            Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high)->set("v", 0);
+            double svTOT = dsigmavde->gsl_integration("E", 0, M_DM)->bind()->eval();
+            os << ": " << svTOT;
+          }
           os << "\n";
         }
         os << std::endl;

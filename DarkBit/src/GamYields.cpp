@@ -31,41 +31,6 @@ namespace Gambit {
     //
     //////////////////////////////////////////////////////////////////////////
 
-    /*! \brief Calculate kinematical limits for three-body final states.
-     *
-     * Notes: 
-     * - m0 = 0, E0 = Eg
-     * - M_DM is half of center of mass energy
-     * - returns E1_low or E1_high, or 0 if kinematically forbidden
-     * - Template parameter 0(1) means lower (upper) limit of range.  
-     */
-    template <int i>
-      double gamma3bdy_limits(double Eg, double M_DM, double m1, double m2)
-      {
-        double x = Eg/M_DM;
-        double x0, x1;
-        // Check if kinematic constraints are satisfied
-        if((1.-pow(m1+m2,2)/(4*M_DM*M_DM))<=x)
-        {
-          x0 = x1 = 0;
-        }
-        else
-        {
-          double eta = pow(m1/M_DM,2);
-          double diffeta=pow(m2/M_DM,2);
-          diffeta   = 0.25*(eta-diffeta);
-          double f1 = 0.25*eta + diffeta*x/(2*(1-x));
-          double f2 = sqrt(pow(1+diffeta/(1-x),2)-eta/(1-x));
-          double aint = f1 + 0.5*(1-f2)*x;
-          double bint = f1 + 0.5*(1+f2)*x;
-          // Now convert these limits to limits on E1
-          double f3 = pow(0.5*m2/M_DM,2);
-          x0 = M_DM*(1-x+aint-f3);
-          x1 = M_DM*(1-x+bint-f3);
-        }
-        if ( i == 0 ) return x0;
-        else return x1;
-      }
 
     /*! \brief Identification of final states that are not yet tabulated.
      *
@@ -200,6 +165,7 @@ namespace Gambit {
     void GA_AnnYield_General(Funk::Funk &result)
     {
       using namespace Pipes::GA_AnnYield_General;
+      using DarkBit_utils::gamma3bdy_limits;
 
       std::string DMid= *Dep::DarkMatter_ID;
 
