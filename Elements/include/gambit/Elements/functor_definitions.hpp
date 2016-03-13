@@ -92,7 +92,7 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
-      if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
+      if(not signaldata().emergency_shutdown_begun())// If emergency shutdown signal has been received, skip everything
       {
         if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
         {
@@ -171,7 +171,7 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int thread_num)
     {
-      if(not signaldata().shutdown_begun()) // Don't print anything if we are shutting down,
+      if(not signaldata().emergency_shutdown_begun()) // Don't print anything if we are shutting down,
       {                                     // since this calculation has been interrupted.
         // Only try to print if print flag set to true, and if this functor(+thread) hasn't already been printed
         // TODO: though actually the printer system will probably cark it if printing from multiple threads is
@@ -224,7 +224,7 @@ namespace Gambit
     /// execution of this functor.
     void module_functor<void>::calculate()
     {
-      if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
+      if(not signaldata().emergency_shutdown_begun()) // If emergency shutdown signal has been received, skip everything
       {
         if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
         {

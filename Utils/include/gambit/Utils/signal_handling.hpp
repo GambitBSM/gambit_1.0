@@ -43,6 +43,9 @@ namespace Gambit
    /// Translate signal codes to strings
    std::string signal_name(int sig);
 
+   /// Forward declare MPI class
+   namespace GMPI { class Comm; } 
+
    /// Variables for use in signal handlers
    class SignalData
    {
@@ -68,8 +71,11 @@ namespace Gambit
        /// Register that shutdown has begun
        void set_shutdown_begun(const sig_atomic_t emergnc=0);
 
-       /// Check if shutdown has already begun
+       /// Check if (any kind of) shutdown is in progress
        bool shutdown_begun();
+
+       /// Check if emergency shutdown is in progress 
+       bool emergency_shutdown_begun();
 
        /// Add signal to record
        void add_signal(int sig);
@@ -98,6 +104,15 @@ namespace Gambit
        /// Report 'true' if inside a multithreaded region (according to our own flag)
        bool inside_multithreaded_region();
 
+       /// Extra functions needed in MPI mode
+       #ifdef WITH_MPI
+       /// Set the MPI communicator
+       void set_MPI_comm(GMPI::Comm*);
+
+       /// Check that the communicator has been set
+       bool comm_ready();
+       #endif
+   
      private:
        /// Flag to warn if early shutdown is already in process
        volatile sig_atomic_t shutdownBegun = 0;
@@ -124,6 +139,16 @@ namespace Gambit
        /// hard shutdown.
        void attempt_soft_shutdown();
 
+       /// Extra data needed in MPI mode
+       #ifdef WITH_MPI
+       GMPI::Comm* signalComm;
+       bool _comm_rdy;
+ 
+       /// Shutdown codes receivable via MPI (not MPI tags)
+       //static const int ERROR = 0; // Not in use
+       static const int SOFT_SHUTDOWN = 1;
+       static const int EMERGENCY_SHUTDOWN = 2;
+       #endif
    };
 
    /// Retrieve global instance of signal handler options struct

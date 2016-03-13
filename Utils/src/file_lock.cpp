@@ -54,11 +54,14 @@ namespace Gambit {
       const std::string FileLock::lock_prefix("scratch/locks/");
       const std::string FileLock::lock_suffix(".lock");
 
+      const std::string hardmsg("Now calling abort (will produce a core file for analysis if this is enabled on your system; if so please include this with the bug report)");
+
       /// Constructor
-      FileLock::FileLock(const std::string& fname)
+      FileLock::FileLock(const std::string& fname, const bool harderrs)
        : my_lock_fname(ensure_path_exists(lock_prefix + fname + lock_suffix))
        , fd(open(my_lock_fname.c_str(), O_RDWR | O_CREAT, 0666)) // last argument is permissions, in case file has to be created.
        , have_lock(false)
+       , hard_errors(harderrs)
       {
         /// Should check for errors opening the file. List of error codes is kind of long though, let people look it up themselves for now...
         if(fd<0)
@@ -66,7 +69,8 @@ namespace Gambit {
           /// Error opening file!
           std::ostringstream msg;
           msg << "Error getting file descriptor for lock file '"<<my_lock_fname<<"'! Error was: "<< std::strerror(errno);
-          utils_error().raise(LOCAL_INFO,msg.str());
+          if(hard_errors) { std::cerr<<"Error! ("<<LOCAL_INFO<<"): "<<msg.str()<<hardmsg<<std::endl; std::cerr.flush(); abort(); }
+          else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
       }
 
@@ -81,7 +85,8 @@ namespace Gambit {
           /// Error closing file!
           std::ostringstream msg;
           msg << "Error closing file descriptor for lock file '"<<my_lock_fname<<"'! Error was: "<< std::strerror(errno);
-          utils_error().raise(LOCAL_INFO,msg.str());
+          if(hard_errors) { std::cerr<<"Error! ("<<LOCAL_INFO<<"): "<<msg.str()<<hardmsg<<std::endl; std::cerr.flush(); abort(); }
+          else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
       }
 
@@ -93,7 +98,8 @@ namespace Gambit {
           /// Already have the lock!
           std::ostringstream msg;
           msg << "Tried to obtain lock for file '"<<my_lock_fname<<"', but we already have it! This indicates a logic error in whatever code tried to obtain the lock, please file a bug report.";
-          utils_error().raise(LOCAL_INFO,msg.str());
+          if(hard_errors) { std::cerr<<"Error! ("<<LOCAL_INFO<<"): "<<msg.str()<<hardmsg<<std::endl; std::cerr.flush(); abort(); }
+          else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
 
         // Attempt to gain the lock. If the lock cannot be obtained, will block until it can.
@@ -105,7 +111,8 @@ namespace Gambit {
           // Uh oh, error occurred. Return error message
           std::ostringstream msg;
           msg << "Error obtaining lock on \""<<my_lock_fname<<"\"! Error was: "<< std::strerror(errno);
-          utils_error().raise(LOCAL_INFO,msg.str());
+          if(hard_errors) { std::cerr<<"Error! ("<<LOCAL_INFO<<"): "<<msg.str()<<hardmsg<<std::endl; std::cerr.flush(); abort(); }
+          else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
         // Else the lock is ours!
         have_lock = true;
@@ -119,7 +126,8 @@ namespace Gambit {
           /// Don't have the lock!
           std::ostringstream msg;
           msg << "Tried to release lock for file '"<<my_lock_fname<<"', but it is not ours to release (i.e. get_lock() was not called, or the lock has already been released)! This indicates a logic error in whatever code tried to obtain the lock, please file a bug report.";
-          utils_error().raise(LOCAL_INFO,msg.str());
+          if(hard_errors) { std::cerr<<"Error! ("<<LOCAL_INFO<<"): "<<msg.str()<<hardmsg<<std::endl; std::cerr.flush(); abort(); }
+          else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
 
         /// Release the lock
@@ -130,7 +138,8 @@ namespace Gambit {
           // Uh oh, error occurred. Return error message
           std::ostringstream msg;
           msg << "Error releasing lock on \""<<my_lock_fname<<"\"! Error was: "<< std::strerror(errno);
-          utils_error().raise(LOCAL_INFO,msg.str());
+          if(hard_errors) { std::cerr<<"Error! ("<<LOCAL_INFO<<"): "<<msg.str()<<hardmsg<<std::endl; std::cerr.flush(); abort(); }
+          else { utils_error().raise(LOCAL_INFO,msg.str()); }
         }
         have_lock = false; 
       }
