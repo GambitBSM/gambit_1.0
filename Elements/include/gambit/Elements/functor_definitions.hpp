@@ -217,10 +217,10 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID) { print(printer,pointID,0); }
 
-  /// Class methods for actual module functors for TYPE=void
+  /// Class methods for actual module functors for TYPE=void. inline to avoid multiple definition errors.
 
     /// Constructor
-    module_functor<void>::module_functor(void (*inputFunction)(),
+    inline module_functor<void>::module_functor(void (*inputFunction)(),
                                          str func_name,
                                          str func_capability,
                                          str result_type,
@@ -234,7 +234,7 @@ namespace Gambit
     /// so there are some extra switches in here to let the signal
     /// handler know that it needs to run in threadsafe mode during
     /// execution of this functor.
-    void module_functor<void>::calculate()
+    inline void module_functor<void>::calculate()
     {
       #ifndef STANDALONE
       if(not signaldata().emergency_shutdown_begun()) // If emergency shutdown signal has been received, skip everything
@@ -294,8 +294,8 @@ namespace Gambit
     }
 
     /// Blank print methods
-    void module_functor<void>::print(Printers::BasePrinter*, const int, int) {}
-    void module_functor<void>::print(Printers::BasePrinter*, const int) {}
+    inline void module_functor<void>::print(Printers::BasePrinter*, const int, int) {}
+    inline void module_functor<void>::print(Printers::BasePrinter*, const int) {}
 
 
   // Backend_functor_common class method definitions
