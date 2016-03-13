@@ -78,8 +78,10 @@ int main(int argc, char* argv[])
   std::string filename = argv[1];
   std::string outname = "dNdE.dat";
   if (argc >= 3) outname = argv[2];
-  std::string filename_data= "data.dat";
+  std::string filename_data = "data.yaml";
   if (argc >= 4) filename_data = argv[3];
+  std::string filename_dump = "dump.yaml";
+  if (argc >= 5) filename_dump = argv[4];
 
 
   // ---- Initialise (or disable) logging ----
@@ -189,7 +191,7 @@ int main(int argc, char* argv[])
   // Relic density calculation with DarkSUSY (the sloppy version)
   RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
   RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-  RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
+  RD_oh2_DarkSUSY.setOption<int>("fast", 2);  // 0: normal; 1: fast; 2: dirty
   RD_oh2_DarkSUSY.reset_and_calculate();
   // FIXME: Use "general" version instead
 
@@ -413,6 +415,17 @@ int main(int argc, char* argv[])
   // FIXME: Code up other analyses
   
 
+  // ---- Runs DarkBit UnitTest ----
+
+  UnitTest_DarkBit.setOption<std::string>("filename", filename_dump);
+  UnitTest_DarkBit.resolveDependency(&RD_oh2_DarkSUSY);
+  UnitTest_DarkBit.resolveDependency(&GA_AnnYield_General);
+  UnitTest_DarkBit.resolveDependency(&TH_ProcessCatalog_MSSM);
+  UnitTest_DarkBit.resolveDependency(&DarkMatter_ID_MSSM30atQ);
+  UnitTest_DarkBit.resolveDependency(&DD_couplings_DarkSUSY);
+  UnitTest_DarkBit.reset_and_calculate();
+  
+
   // ---- Dump results on screen ----
 
   // Retrieve and print MicrOmegas result
@@ -428,27 +441,36 @@ int main(int argc, char* argv[])
   std::fstream file;
   file.open(filename_data, std::ios_base::out);
   oh2 = RD_oh2_MicrOmegas(0);
-  file << oh2 << "  # oh2 micromegas " << std::endl;
+  file << "oh2:"<<std::endl;
+  file << "  MO: " << oh2 << std::endl;
   oh2 = RD_oh2_DarkSUSY(0);
-  file << oh2 << "  # oh2 darksusy" << std::endl;
+  file << "  DS: " << oh2 << std::endl;
 
+  file << "DD_couplings:" << std::endl;
+
+  file << "  gps:" << std::endl;
   double dd_gps = DD_couplings_MicrOmegas(0).gps;
-  double dd_gpa = DD_couplings_MicrOmegas(0).gpa;
-  double dd_gns = DD_couplings_MicrOmegas(0).gns;
-  double dd_gna = DD_couplings_MicrOmegas(0).gna;
-  file << dd_gps << "  # gps micromegas" << std::endl;
-  file << dd_gpa << "  # gpa micromegas" << std::endl;
-  file << dd_gns << "  # gns micromegas" << std::endl;
-  file << dd_gna << "  # gna micromegas" << std::endl;
-
+  file << "    MO: " << dd_gps << std::endl;
   dd_gps = DD_couplings_DarkSUSY(0).gps;
-  dd_gpa = DD_couplings_DarkSUSY(0).gpa;
+  file << "    DS: " << dd_gps << std::endl;
+
+  file << "  gns:" << std::endl;
+  double dd_gns = DD_couplings_MicrOmegas(0).gns;
+  file << "    MO: " << dd_gns << std::endl;
   dd_gns = DD_couplings_DarkSUSY(0).gns;
+  file << "    DS: " << dd_gns << std::endl;
+
+  file << "  gpa:" << std::endl;
+  double dd_gpa = DD_couplings_MicrOmegas(0).gpa;
+  file << "    MO: " << dd_gpa << std::endl;
+  dd_gpa = DD_couplings_DarkSUSY(0).gpa;
+  file << "    DS: " << dd_gpa << std::endl;
+
+  file << "  gna:" << std::endl;
+  double dd_gna = DD_couplings_MicrOmegas(0).gna;
+  file << "    MO: " << dd_gna << std::endl;
   dd_gna = DD_couplings_DarkSUSY(0).gna;
-  file << dd_gps << "  # gps darksusy" << std::endl;
-  file << dd_gpa << "  # gpa darksusy" << std::endl;
-  file << dd_gns << "  # gns darksusy" << std::endl;
-  file << dd_gna << "  # gna darksusy" << std::endl;
+  file << "    DS: " << dd_gna << std::endl;
 
   file.close();
 

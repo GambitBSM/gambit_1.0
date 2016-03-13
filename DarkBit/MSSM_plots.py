@@ -7,6 +7,7 @@ from __future__ import division
 from numpy import *
 import pylab as plt
 import subprocess
+import yaml
 
 colors_list = ['Chocolate', 'k', 'r', 'g', 'y', 'b']
 
@@ -21,17 +22,19 @@ def getTags():
       ]:
     SLHAPATH = 'DarkBit/slha-benchmarks/14-12-2014_joakim/'
     yield {'slha':SLHAPATH+tag+".slha", 'dNdE_gambit': SLHAPATH+"dNdE_gambit_"+tag+".dat",
-        'results_gambit': SLHAPATH+"results_gambit_"+tag+".dat", 'tag': tag,
+        'results1_gambit': SLHAPATH+"results1_gambit_"+tag+".yaml", 
+        'results2_gambit': SLHAPATH+"results2_gambit_"+tag+".yaml", 
+        'tag': tag,
         'dNdE_orig': SLHAPATH+tag+".gaspec", 'results_orig': SLHAPATH+tag+'.dat'}
 
 def rungambit(tags):
   slhafile = tags['slha']
   outfile1 = tags['dNdE_gambit']
-  outfile2 = tags['results_gambit']
+  outfile2 = tags['results1_gambit']
+  outfile3 = tags['results2_gambit']
   print "Running SLHA file", slhafile
   process = subprocess.Popen(
-      ('./DarkBit_standalone_MSSM ' + slhafile + ' ' + outfile1 + ' ' +
-        outfile2).split(), stdout = subprocess.PIPE)
+      ('./DarkBit_standalone_MSSM ' + slhafile + ' ' + outfile1 + ' ' + outfile2 + ' ' + outfile3).split(), stdout = subprocess.PIPE)
   output = process.communicate()[0]
   print output
 
@@ -57,30 +60,25 @@ def getDATinfos(filename):
       if "gna" in line: gna = float(line.split()[0])
   return {'oh2': oh2, 'gps': gps, 'gns': gns, 'gpa': gpa, 'gna': gna}
 
-def getRESinfos(filename):
+def getRES1infos(filename):
   with open(filename) as f:
-    for line in f:
-      if "oh2" in line and "darksusy" in line:
-        oh2_DS = float(line.split()[0])
-      if "oh2" in line and "micromegas" in line:
-        oh2_MO= float(line.split()[0])
-      if "gps" in line and 'darksusy' in line: gps_DS = float(line.split()[0])
-      if "gns" in line and 'darksusy' in line: gns_DS = float(line.split()[0])
-      if "gpa" in line and 'darksusy' in line: gpa_DS = float(line.split()[0])
-      if "gna" in line and 'darksusy' in line: gna_DS = float(line.split()[0])
-      if "gps" in line and 'micromegas' in line: gps_MO = float(line.split()[0])
-      if "gns" in line and 'micromegas' in line: gns_MO = float(line.split()[0])
-      if "gpa" in line and 'micromegas' in line: gpa_MO = float(line.split()[0])
-      if "gna" in line and 'micromegas' in line: gna_MO = float(line.split()[0])
-  return {'oh2_DS': oh2_DS, 'oh2_MO': oh2_MO, 
-      'gps_DS': gps_DS,
-      'gpa_DS': gpa_DS,
-      'gns_DS': gns_DS,
-      'gna_DS': gna_DS,
-      'gps_MO': gps_MO,
-      'gpa_MO': gpa_MO,
-      'gns_MO': gns_MO,
-      'gna_MO': gna_MO,}
+    data = yaml.load(f)
+  return {
+      'oh2_DS': data['oh2']['DS'],
+      'oh2_MO': data['oh2']['MO'],
+      'gps_DS': data['DD_couplings']['gps']['DS'],
+      'gpa_DS': data['DD_couplings']['gpa']['DS'],
+      'gns_DS': data['DD_couplings']['gns']['DS'],
+      'gna_DS': data['DD_couplings']['gna']['DS'],
+      'gps_MO': data['DD_couplings']['gps']['MO'],
+      'gpa_MO': data['DD_couplings']['gpa']['MO'],
+      'gns_MO': data['DD_couplings']['gns']['MO'],
+      'gna_MO': data['DD_couplings']['gna']['MO'],}
+
+def getRES2infos(filename):
+  with open(filename) as f:
+    data = yaml.load(f)
+  return data
 
 def getdNdE(filename):
   x, y = loadtxt(filename).T
@@ -118,7 +116,7 @@ def showRelic():
   colors = iter(colors_list)
   def plotPoint(t):
     info_orig = getDATinfos(t['results_orig'])
-    info_gambit = getRESinfos(t['results_gambit'])
+    info_gambit = getRES1infos(t['results1_gambit'])
     c = colors.next()
     plt.plot( info_orig['oh2'], info_gambit['oh2_DS'], marker='o', color=c, label=t['tag'])
     plt.plot( info_orig['oh2'], info_gambit['oh2_MO'], marker='*', color=c)
@@ -132,13 +130,55 @@ def showRelic():
   plt.ylabel("Gambit oh2 (DS (o) & MO (*))")
   plt.savefig("DarkBit/oh2_MSSM.eps")
 
+def showBR():
+  plt.clf()
+  plt.figure(figsize=(15,6))
+  tags = getTags()
+  colors = iter(colors_list)
+
+  def printBR(t, offset):
+    col = colors.next()
+    infos = getRES2infos(t['results2_gambit'])
+    rates = infos['AnnihilationRates']
+    l = []
+    for key, value in rates.iteritems():
+      l.append([key, value])
+    l.sort(key=lambda x: -x[1])
+    sv = array([x[1] for x in l])
+    channel = array([x[0] for x in l])
+    sv_tot = sum(sv)
+    br = sv/sv_tot
+    btlast = 10
+    for b, c in zip(br, channel):
+      if b < 1e-4: continue
+      plt.plot([offset, offset+1], [b, b], ls='-', lw=2, color=col)
+      bt = min(btlast*0.7, b)
+      plt.text(offset+1.3, bt, c, va='center')
+      plt.plot([offset+1, offset+1.25], [b, bt], 'k', dashes=[1,1])
+      btlast = bt
+    plt.plot([0, 0], [0, 0], ls='-', color=col, label=t['tag'])
+
+  offset = 1
+  for t in tags:
+    printBR(t, offset)
+    offset += 5.
+
+  plt.gca().set_yscale('log')
+  plt.ylim([1e-5, 2])
+  plt.xlim([0, 30])
+  plt.ylabel("BR")
+  plt.tight_layout(pad=0.3)
+  plt.legend(frameon=False, loc=3, ncol=5)
+  plt.savefig("DarkBit/BR_MSSM.eps")
+
+
 def showDD():
   plt.clf()
   tags = getTags()
   colors = iter(colors_list)
   def plotPoint(t):
     info_orig = getDATinfos(t['results_orig'])
-    info_gambit = getRESinfos(t['results_gambit'])
+    info_gambit = getRES1infos(t['results1_gambit'])
     c = colors.next()
     plt.loglog( abs(info_orig['gps']), abs(info_gambit['gps_DS']), marker='v', color=c, label=t['tag'])
     plt.loglog( abs(info_orig['gns']), abs(info_gambit['gns_DS']), marker='^', color=c)
@@ -159,7 +199,8 @@ def showDD():
   plt.savefig("DarkBit/DD_MSSM.eps")
 
 if __name__ == '__main__':
-  #runtests()  # This can take *very* long thanks to DS relic density routines
-  showSpec()
-  showRelic()
-  showDD()
+  runtests()  # This can take *very* long thanks to DS relic density routines
+  #showSpec()
+  #showRelic()
+  #showDD()
+  #showBR()
