@@ -38,7 +38,7 @@
 
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#ifndef STANDALONE
+#ifndef NO_SIGNALS
   #include "gambit/Utils/signal_handling.hpp" // Don't want this in standlone mode
 #endif
 #include "gambit/Models/models.hpp"
@@ -47,7 +47,7 @@
 #include "gambit/Printers/baseprinter.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
-
+#include <boost/io/ios_state.hpp>
 
 namespace Gambit
 {
@@ -1535,7 +1535,7 @@ namespace Gambit
 
     void module_functor_common::entering_multithreaded_region()
     {
-      #ifndef STANDALONE
+      #ifndef NO_SIGNALS
       if(iCanManageLoops and not signaldata().inside_multithreaded_region())
       {
          /* Debugging */
@@ -1553,7 +1553,7 @@ namespace Gambit
 
     void module_functor_common::leaving_multithreaded_region()
     {
-      #ifndef STANDALONE
+      #ifndef NO_SIGNALS
       if(iCanManageLoops and not signal_mode_locked)
       {
          /* Debugging */
@@ -1569,6 +1569,85 @@ namespace Gambit
     }
     /// @}
 
+  /// Class methods for actual module functors for TYPE=void.
+
+    /// Constructor
+    module_functor<void>::module_functor(void (*inputFunction)(),
+                                         str func_name,
+                                         str func_capability,
+                                         str result_type,
+                                         str origin_name,
+                                         Models::ModelFunctorClaw &claw)
+    : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
+      myFunction (inputFunction) {}
+
+    /// Calculate method
+    /// The "void" specialisation can potentially manage loops,
+    /// so there are some extra switches in here to let the signal
+    /// handler know that it needs to run in threadsafe mode during
+    /// execution of this functor.
+    void module_functor<void>::calculate()
+    {
+      #ifndef NO_SIGNALS
+      if(not signaldata().emergency_shutdown_begun()) // If emergency shutdown signal has been received, skip everything
+      {
+      #endif
+        if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
+        {
+          std::ostringstream ss;
+          ss << "Sorry, the function " << origin() << "::" << name()
+           << " cannot be used" << endl << "because it requires classes from a backend that you do not have installed."
+           << endl << "Missing backends: ";
+          for (auto it = missing_backends.begin(); it != missing_backends.end(); ++it) ss << endl << "  " << *it;
+          backend_error().raise(LOCAL_INFO, ss.str());
+        }
+        else if (myStatus == -4)
+        {
+          std::ostringstream ss;
+          ss << "Sorry, the backend initialisation function " << name()
+          << " cannot be used" << endl << "because it initialises a backend that you do not have installed!";                 
+          backend_error().raise(LOCAL_INFO, ss.str());    
+        }
+        boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
+        int thread_num = omp_get_thread_num();
+        init_memory();                               // Init memory if this is the first run through.
+        if (needs_recalculating[thread_num])
+        {
+          entering_multithreaded_region();
+
+          logger().entering_module(myLogTag);
+          this->startTiming(thread_num);
+          try
+          {
+            this->myFunction();
+          }
+          catch (invalid_point_exception& e)
+          {
+            if (not point_exception_raised) acknowledgeInvalidation(e);
+            if (omp_get_level()==0)                  // If not in an OpenMP parallel block, throw onwards
+            {
+              this->finishTiming(thread_num);
+              leaving_multithreaded_region();
+              throw(e);
+            } 
+          }
+          this->finishTiming(thread_num);
+          logger().leaving_module();         
+          leaving_multithreaded_region();
+        }
+      #ifndef NO_SIGNALS
+        check_for_shutdown_signal();
+      }
+      else
+      {
+        logger() << "Shutdown in progress! Skipping evaluation of functor " << myName << EOM;
+      }
+      #endif
+    }
+
+    /// Blank print methods
+    void module_functor<void>::print(Printers::BasePrinter*, const int, int) {}
+    void module_functor<void>::print(Printers::BasePrinter*, const int) {}
 
 
     /// @{ Model functor class method definitions

@@ -281,7 +281,7 @@ def main(argv):
 ///                                               \n\
 ///  *********************************************\n\
                                                   \n\
-#define STANDALONE // Needed to switch functors into standalone mode (removes signal handling components) \n\
+#define NO_SIGNALS //removes signal handling components from functors \n\
                                                   \n\
 #include \"gambit/Elements/functor_definitions.hpp\"\n\
 #include \"gambit/Elements/types_rollcall.hpp\"   \n\
