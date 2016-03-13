@@ -38,7 +38,9 @@
 
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Utils/signal_handling.hpp"
+#ifndef STANDALONE
+  #include "gambit/Utils/signal_handling.hpp" // Don't want this in standlone mode
+#endif
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logging.hpp"
@@ -1533,6 +1535,7 @@ namespace Gambit
 
     void module_functor_common::entering_multithreaded_region()
     {
+      #ifndef STANDALONE
       if(iCanManageLoops and not signaldata().inside_multithreaded_region())
       {
          /* Debugging */
@@ -1545,10 +1548,12 @@ namespace Gambit
          signaldata().entering_multithreaded_region(); /* Switch signal handler to threadsafe mode */
          signal_mode_locked = false;                  /* We are allowed to switch off sighandler threadsafe mode */
       }
+      #endif
     }
 
     void module_functor_common::leaving_multithreaded_region()
     {
+      #ifndef STANDALONE
       if(iCanManageLoops and not signal_mode_locked)
       {
          /* Debugging */
@@ -1560,6 +1565,7 @@ namespace Gambit
          /* end debugging */
          signaldata().leaving_multithreaded_region(); /* Switch signal handler back to normal mode */
       }
+      #endif
     }
     /// @}
 

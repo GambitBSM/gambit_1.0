@@ -643,7 +643,9 @@ namespace Gambit
       void check_missing_LogTag();
 
       /// @{ Some helper functions for interacting with signals in the calculate() routine
+      #ifndef STANDALONE
       void check_for_shutdown_signal();
+      #endif
       void entering_multithreaded_region();
       void leaving_multithreaded_region();
       /// While locked, prevent this function switching off threadsafe* emergency signal handling.
