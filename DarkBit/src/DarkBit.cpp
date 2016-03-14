@@ -183,8 +183,17 @@ namespace Gambit {
             double mass = M_DM;
             Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
             Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
-            Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high)->set("v", 0);
-            double svTOT = dsigmavde->gsl_integration("E", 0, M_DM)->bind()->eval();
+            Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high)->set_epsrel(1e-3)->set("v", 0);
+            auto xgrid = Funk::logspace(-2, 3, 1000);
+            auto ygrid = Funk::logspace(-2, 3, 1000);
+            for ( size_t i = 0; i<xgrid.size(); i++ )
+            {
+              ygrid[i] = dsigmavde->bind("E")->eval(xgrid[i]);
+            }
+            auto interp = Funk::interp("E", xgrid, ygrid);
+            // FIXME: Directly nested integrals seems to be buggy
+            // double svTOT = dsigmavde->gsl_integration("E", 0, M_DM)->bind()->eval();
+            double svTOT = interp->gsl_integration("E", 10., 20.)->set_epsabs(1e-3)->bind()->eval();
             os << ": " << svTOT;
           }
           os << "\n";

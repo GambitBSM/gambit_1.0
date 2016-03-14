@@ -15,7 +15,7 @@ def getTags():
   for tag in [
       'FMCp03000765',
       'JE56C_003717',
-      'JE58D_007879',
+      #'JE58D_007879',
       'JE67B_006998',
       'JE67D_001840',
       'JE87O_006600'
@@ -150,11 +150,11 @@ def showBR():
     br = sv/sv_tot
     btlast = 10
     for b, c in zip(br, channel):
-      if b < 1e-4: continue
+      if b < 1e-5: continue
       plt.plot([offset, offset+1], [b, b], ls='-', lw=2, color=col)
-      bt = min(btlast*0.7, b)
-      plt.text(offset+1.3, bt, c, va='center')
-      plt.plot([offset+1, offset+1.25], [b, bt], 'k', dashes=[1,1])
+      bt = min(btlast*0.55, b)
+      plt.text(offset+1.4, bt, c, va='center')
+      plt.plot([offset+1.1, offset+1.35], [b, bt], 'k', dashes=[1,1])
       btlast = bt
     plt.plot([0, 0], [0, 0], ls='-', color=col, label=t['tag'])
 
@@ -164,7 +164,7 @@ def showBR():
     offset += 5.
 
   plt.gca().set_yscale('log')
-  plt.ylim([1e-5, 2])
+  plt.ylim([1e-6, 2])
   plt.xlim([0, 30])
   plt.ylabel("BR")
   plt.tight_layout(pad=0.3)
@@ -199,8 +199,8 @@ def showDD():
   plt.savefig("DarkBit/DD_MSSM.eps")
 
 if __name__ == '__main__':
-  runtests()  # This can take *very* long thanks to DS relic density routines
+  #runtests()  # This can take *very* long thanks to DS relic density routines
   #showSpec()
   #showRelic()
   #showDD()
-  #showBR()
+  showBR()
