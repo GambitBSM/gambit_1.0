@@ -24,5 +24,6 @@
 namespace Gambit
 {
 
+ // Obsolete, need to remove this file
 
 }

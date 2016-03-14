@@ -37,6 +37,7 @@
 #include <chrono>
 
 #include "gambit/Elements/functors.hpp"
+#include "gambit/Elements/functor_definitions.hpp" // Had to add this for signal decoupling, might be some other way around the linking problems...
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"

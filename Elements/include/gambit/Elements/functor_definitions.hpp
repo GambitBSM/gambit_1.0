@@ -40,6 +40,9 @@
 
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#ifndef NO_SIGNALS
+  #include "gambit/Utils/signal_handling.hpp" // Don't want this in standlone mode
+#endif
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Printers/baseprinter.hpp"
