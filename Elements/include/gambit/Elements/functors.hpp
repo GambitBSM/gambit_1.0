@@ -642,19 +642,6 @@ namespace Gambit
       /// Check if an appropriate LogTag for this functor is missing from the logging system.
       void check_missing_LogTag();
 
-      /// @{ Some helper functions for interacting with signals in the calculate() routine
-      #ifndef NO_SIGNALS
-      void check_for_shutdown_signal();
-      bool emergency_shutdown_begun();
-      void entering_multithreaded_region();
-      void leaving_multithreaded_region();
-      #else
-      // Replacement functions for use in standalone compile units
-      void check_for_shutdown_signal() {}
-      bool emergency_shutdown_begun() { return false; }
-      void entering_multithreaded_region() {}
-      void leaving_multithreaded_region() {}
-      #endif
       /// While locked, prevent this function switching off threadsafe* emergency signal handling.
       /// *The emergency signal handling cannot be made completely threadsafe; it can still cause
       /// lockups and memory corruption if it occurs at an inopportune time. "soft" shutdown is
@@ -723,6 +710,19 @@ namespace Gambit
       /// Initialise the memory of this functor.
       virtual void init_memory();
 
+      /// @{ Some helper functions for interacting with signals in the calculate() routine
+      #ifndef NO_SIGNALS
+      void check_for_shutdown_signal();
+      bool emergency_shutdown_begun();
+      void entering_multithreaded_region();
+      void leaving_multithreaded_region();
+      #else
+      // Replacement functions for use in standalone compile units
+      inline void check_for_shutdown_signal() {}
+      inline bool emergency_shutdown_begun() { return false; }
+      inline void entering_multithreaded_region() {}
+      inline void leaving_multithreaded_region() {}
+      #endif
   };
 
 
@@ -750,6 +750,19 @@ namespace Gambit
       /// Internal storage of function pointer
       void (*myFunction)();
 
+      /// @{ Some helper functions for interacting with signals in the calculate() routine
+      #ifndef NO_SIGNALS
+      void check_for_shutdown_signal();
+      bool emergency_shutdown_begun();
+      void entering_multithreaded_region();
+      void leaving_multithreaded_region();
+      #else
+      // Replacement functions for use in standalone compile units
+      inline void check_for_shutdown_signal() {}
+      inline bool emergency_shutdown_begun() { return false; }
+      inline void entering_multithreaded_region() {}
+      inline void leaving_multithreaded_region() {}
+      #endif
   };
 
 

@@ -206,6 +206,171 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID) { print(printer,pointID,0); }
 
+    /// @{ Some helper functions for interacting with signals in the calculate() routine
+    ///    These don't exist in standalone compilations, are replaced with null functions
+    #ifndef NO_SIGNALS
+
+    /// Thin wrapper to isolate signal handling from other components of the functors 
+    template <typename TYPE>
+    bool module_functor<TYPE>::emergency_shutdown_begun()
+    {
+      return signaldata().emergency_shutdown_begun();
+    }
+         
+    /// Check if shutdown in progress and take appropriate action.
+    /// Now only cancels evaluations if it is an emergency shutdown; soft shutdown requires
+    /// valid likelihood calculation to continue until synchronisation can be achieved.
+    template <typename TYPE>
+    void module_functor<TYPE>::check_for_shutdown_signal()
+    {
+      /* Check if shutdown signal received, and either throw Shutdown exception or break out of loop */
+      if(emergency_shutdown_begun())
+      {
+        #pragma omp critical (module_functor_calculate)
+        {
+          std::ostringstream ss;
+          ss << "Shutdown signal detected while computing functor "<<myName<<"! (omp_get_level()==" << omp_get_level() << ", thread="<<omp_get_thread_num()<<")";
+          std::cerr << ss.str() << std::endl;
+          logger() << LogTags::core << LogTags::debug << ss.str() << EOM;
+        }
+        if(omp_get_level()==0)                               /* If shutdown signal received and we are not in an */
+        {                                                    /* OpenMP parallel block, perform the shutdown.     */
+          signaldata().check_for_emergency_shutdown_signal();/* (but only if it is an emergency) */
+          // Throw error if we haven't jumped!
+          std::cerr << "rank " << signaldata().rank <<": No emergency shutdown occurred, but according to previous logic the signal to do so must have already been received! Please file a bug report." << std::endl;
+          exit(EXIT_FAILURE);
+        } 
+        else if(iCanManageLoops)
+        {
+          breakLoop();
+          logger() << LogTags::core << LogTags::debug << "breakLoop triggered (iCanManageLoops==1) in functor " << myName << EOM;
+        }
+        else /* Must be a managed functor (since type is not void, cannot be a loop manager) */
+        {
+          breakLoopFromManagedFunctor();
+          breakLoop(); /* Set this as well anyway in case I didn't understand the logic correctly. */
+          logger() << LogTags::core << LogTags::debug << "breakLoop triggered while computing functor "<<myName<<" (thread="<<omp_get_thread_num()<<")" << EOM;
+        }
+      }
+    }
+
+    template <typename TYPE>
+    void module_functor<TYPE>::entering_multithreaded_region()
+    {
+      if(iCanManageLoops and not signaldata().inside_multithreaded_region())
+      {
+         /* Debugging */
+         if(omp_get_level()!=0)
+         {
+           std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=1 (in "<<myName<<"), but we are already in a parellel region! Please file a bug report." << std::endl;
+           exit(EXIT_FAILURE);
+         } \
+         /* end debugging */
+         signaldata().entering_multithreaded_region(); /* Switch signal handler to threadsafe mode */
+         signal_mode_locked = false;                  /* We are allowed to switch off sighandler threadsafe mode */
+      }
+    }
+
+    template <typename TYPE>
+    void module_functor<TYPE>::leaving_multithreaded_region()
+    {
+      if(iCanManageLoops and not signal_mode_locked)
+      {
+         /* Debugging */
+         if(omp_get_level()!=0)
+         {
+           std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=0 (in "<<myName<<"), but we are still inside a parellel region! Please file a bug report." << std::endl;
+           exit(EXIT_FAILURE);
+         }
+         /* end debugging */
+         signaldata().leaving_multithreaded_region(); /* Switch signal handler back to normal mode */
+      }
+    }
+
+    /// Also need versions for the <void> specialisation
+    /// Should be able to consolidate these somehow, but I am in a hurry
+
+    /// Thin wrapper to isolate signal handling from other components of the functors 
+    inline bool module_functor<void>::emergency_shutdown_begun()
+    {
+      return signaldata().emergency_shutdown_begun();
+    }
+         
+    /// Check if shutdown in progress and take appropriate action.
+    /// Now only cancels evaluations if it is an emergency shutdown; soft shutdown requires
+    /// valid likelihood calculation to continue until synchronisation can be achieved.
+    inline void module_functor<void>::check_for_shutdown_signal()
+    {
+      /* Check if shutdown signal received, and either throw Shutdown exception or break out of loop */
+      if(emergency_shutdown_begun())
+      {
+        #pragma omp critical (module_functor_calculate)
+        {
+          std::ostringstream ss;
+          ss << "Shutdown signal detected while computing functor "<<myName<<"! (omp_get_level()==" << omp_get_level() << ", thread="<<omp_get_thread_num()<<")";
+          std::cerr << ss.str() << std::endl;
+          logger() << LogTags::core << LogTags::debug << ss.str() << EOM;
+        }
+        if(omp_get_level()==0)                               /* If shutdown signal received and we are not in an */
+        {                                                    /* OpenMP parallel block, perform the shutdown.     */
+          signaldata().check_for_emergency_shutdown_signal();/* (but only if it is an emergency) */
+          // Throw error if we haven't jumped!
+          std::cerr << "rank " << signaldata().rank <<": No emergency shutdown occurred, but according to previous logic the signal to do so must have already been received! Please file a bug report." << std::endl;
+          exit(EXIT_FAILURE);
+        } 
+        else if(iCanManageLoops)
+        {
+          breakLoop();
+          logger() << LogTags::core << LogTags::debug << "breakLoop triggered (iCanManageLoops==1) in functor " << myName << EOM;
+        }
+        else /* Must be a managed functor (since type is not void, cannot be a loop manager) */
+        {
+          breakLoopFromManagedFunctor();
+          breakLoop(); /* Set this as well anyway in case I didn't understand the logic correctly. */
+          logger() << LogTags::core << LogTags::debug << "breakLoop triggered while computing functor "<<myName<<" (thread="<<omp_get_thread_num()<<")" << EOM;
+        }
+      }
+    }
+
+    inline void module_functor<void>::entering_multithreaded_region()
+    {
+      if(iCanManageLoops and not signaldata().inside_multithreaded_region())
+      {
+         /* Debugging */
+         if(omp_get_level()!=0)
+         {
+           std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=1 (in "<<myName<<"), but we are already in a parellel region! Please file a bug report." << std::endl;
+           exit(EXIT_FAILURE);
+         } \
+         /* end debugging */
+         signaldata().entering_multithreaded_region(); /* Switch signal handler to threadsafe mode */
+         signal_mode_locked = false;                  /* We are allowed to switch off sighandler threadsafe mode */
+      }
+    }
+
+    inline void module_functor<void>::leaving_multithreaded_region()
+    {
+      if(iCanManageLoops and not signal_mode_locked)
+      {
+         /* Debugging */
+         if(omp_get_level()!=0)
+         {
+           std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=0 (in "<<myName<<"), but we are still inside a parellel region! Please file a bug report." << std::endl;
+           exit(EXIT_FAILURE);
+         }
+         /* end debugging */
+         signaldata().leaving_multithreaded_region(); /* Switch signal handler back to normal mode */
+      }
+    }
+
+  
+    #endif
+    /// @}
+
+
+
+
+
   // Backend_functor_common class method definitions
 
     /// Constructor
