@@ -49,9 +49,6 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/model_parameters.hpp"
-#ifndef NO_SIGNALS
-  #include "gambit/Utils/signal_handling.hpp" // Don't want this in standlone mode
-#endif
 #include "gambit/Logs/logger.hpp" 
 #include "gambit/Logs/logmaster.hpp" // Need full declaration of LogMaster class
 

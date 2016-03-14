@@ -281,8 +281,6 @@ def main(argv):
 ///                                               \n\
 ///  *********************************************\n\
                                                   \n\
-#define NO_SIGNALS //removes signal handling components from functors \n\
-                                                  \n\
 #include \"gambit/Elements/functor_definitions.hpp\"\n\
 #include \"gambit/Elements/types_rollcall.hpp\"   \n\
 #include \"gambit/Elements/all_functor_types.hpp\"\n\

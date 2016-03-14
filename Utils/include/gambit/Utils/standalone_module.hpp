@@ -19,7 +19,6 @@
 #define __standalone_hpp__
 
 #define STANDALONE
-#define NO_SIGNALS
 
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/backend_rollcall.hpp"
