@@ -38,9 +38,6 @@
 
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#ifndef NO_SIGNALS
-  #include "gambit/Utils/signal_handling.hpp" // Don't want this in standlone mode
-#endif
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Logs/logging.hpp"
@@ -1495,80 +1492,6 @@ namespace Gambit
       needs_recalculating[thread_num] = false;
     }
 
-    /// @{ Some helper functions for interacting with signals in the calculate() routine
-          
-    /// Check if shutdown in progress and take appropriate action.
-    /// Now only cancels evaluations if it is an emergency shutdown; soft shutdown requires
-    /// valid likelihood calculation to continue until synchronisation can be achieved.
-    void module_functor_common::check_for_shutdown_signal()
-    {
-      /* Check if shutdown signal received, and either throw Shutdown exception or break out of loop */
-      if(signaldata().emergency_shutdown_begun())
-      {
-        #pragma omp critical (module_functor_calculate)
-        {
-          std::ostringstream ss;
-          ss << "Shutdown signal detected while computing functor "<<myName<<"! (omp_get_level()==" << omp_get_level() << ", thread="<<omp_get_thread_num()<<")";
-          std::cerr << ss.str() << std::endl;
-          logger() << LogTags::core << LogTags::debug << ss.str() << EOM;
-        }
-        if(omp_get_level()==0)                               /* If shutdown signal received and we are not in an */
-        {                                                    /* OpenMP parallel block, perform the shutdown.     */
-          signaldata().check_for_emergency_shutdown_signal();/* (but only if it is an emergency) */
-          // Throw error if we haven't jumped!
-          std::cerr << "rank " << signaldata().rank <<": No emergency shutdown occurred, but according to previous logic the signal to do so must have already been received! Please file a bug report." << std::endl;
-          exit(EXIT_FAILURE);
-        } 
-        else if(iCanManageLoops)
-        {
-          breakLoop();
-          logger() << LogTags::core << LogTags::debug << "breakLoop triggered (iCanManageLoops==1) in functor " << myName << EOM;
-        }
-        else /* Must be a managed functor (since type is not void, cannot be a loop manager) */
-        {
-          breakLoopFromManagedFunctor();
-          breakLoop(); /* Set this as well anyway in case I didn't understand the logic correctly. */
-          logger() << LogTags::core << LogTags::debug << "breakLoop triggered while computing functor "<<myName<<" (thread="<<omp_get_thread_num()<<")" << EOM;
-        }
-      }
-    }
-
-    void module_functor_common::entering_multithreaded_region()
-    {
-      #ifndef NO_SIGNALS
-      if(iCanManageLoops and not signaldata().inside_multithreaded_region())
-      {
-         /* Debugging */
-         if(omp_get_level()!=0)
-         {
-           std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=1 (in "<<myName<<"), but we are already in a parellel region! Please file a bug report." << std::endl;
-           exit(EXIT_FAILURE);
-         } \
-         /* end debugging */
-         signaldata().entering_multithreaded_region(); /* Switch signal handler to threadsafe mode */
-         signal_mode_locked = false;                  /* We are allowed to switch off sighandler threadsafe mode */
-      }
-      #endif
-    }
-
-    void module_functor_common::leaving_multithreaded_region()
-    {
-      #ifndef NO_SIGNALS
-      if(iCanManageLoops and not signal_mode_locked)
-      {
-         /* Debugging */
-         if(omp_get_level()!=0)
-         {
-           std::cerr << "rank " << signaldata().rank <<": Tried to set signaldata().inside_omp_block=0 (in "<<myName<<"), but we are still inside a parellel region! Please file a bug report." << std::endl;
-           exit(EXIT_FAILURE);
-         }
-         /* end debugging */
-         signaldata().leaving_multithreaded_region(); /* Switch signal handler back to normal mode */
-      }
-      #endif
-    }
-    /// @}
-
   /// Class methods for actual module functors for TYPE=void.
 
     /// Constructor
@@ -1588,10 +1511,8 @@ namespace Gambit
     /// execution of this functor.
     void module_functor<void>::calculate()
     {
-      #ifndef NO_SIGNALS
-      if(not signaldata().emergency_shutdown_begun()) // If emergency shutdown signal has been received, skip everything
+      if(not emergency_shutdown_begun()) // If emergency shutdown signal has been received, skip everything (does nothing in standalone compile units)
       {
-      #endif
         if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
         {
           std::ostringstream ss;
@@ -1635,14 +1556,12 @@ namespace Gambit
           logger().leaving_module();         
           leaving_multithreaded_region();
         }
-      #ifndef NO_SIGNALS
         check_for_shutdown_signal();
       }
       else
       {
         logger() << "Shutdown in progress! Skipping evaluation of functor " << myName << EOM;
       }
-      #endif
     }
 
     /// Blank print methods

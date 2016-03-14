@@ -645,9 +645,16 @@ namespace Gambit
       /// @{ Some helper functions for interacting with signals in the calculate() routine
       #ifndef NO_SIGNALS
       void check_for_shutdown_signal();
-      #endif
+      bool emergency_shutdown_begun();
       void entering_multithreaded_region();
       void leaving_multithreaded_region();
+      #else
+      // Replacement functions for use in standalone compile units
+      void check_for_shutdown_signal() {}
+      bool emergency_shutdown_begun() { return false; }
+      void entering_multithreaded_region() {}
+      void leaving_multithreaded_region() {}
+      #endif
       /// While locked, prevent this function switching off threadsafe* emergency signal handling.
       /// *The emergency signal handling cannot be made completely threadsafe; it can still cause
       /// lockups and memory corruption if it occurs at an inopportune time. "soft" shutdown is

@@ -40,9 +40,6 @@
 
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#ifndef NO_SIGNALS
-   #include "gambit/Utils/signal_handling.hpp"  // Don't want this in standalone mode
-#endif
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/logger.hpp"
 #include "gambit/Printers/baseprinter.hpp"
@@ -97,10 +94,8 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
-      #ifndef NO_SIGNALS
-      if(not signaldata().emergency_shutdown_begun())// If emergency shutdown signal has been received, skip everything
+      if(not emergency_shutdown_begun())// If emergency shutdown signal has been received, skip everything. Does nothing in standalone compile units
       {
-      #endif
         if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
         {
           std::ostringstream ss;
@@ -133,14 +128,12 @@ namespace Gambit
           this->finishTiming(thread_num);            //Stop timing function evaluation
           logger().leaving_module();
         }
-      #ifndef NO_SIGNALS
         check_for_shutdown_signal();
       }
       else
       {
         logger() << "Shutdown in progress! Skipping evaluation of functor " << myName << EOM;
       }
-      #endif
     }
 
     /// Initialise the memory of this functor.
@@ -180,10 +173,8 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int thread_num)
     {
-      #ifndef NO_SIGNALS
-      if(not signaldata().emergency_shutdown_begun()) // Don't print anything if we are shutting down,
+      if(not emergency_shutdown_begun()) // Don't print anything if we are shutting down,
       {                                     // since this calculation has been interrupted.
-      #endif
         // Only try to print if print flag set to true, and if this functor(+thread) hasn't already been printed
         // TODO: though actually the printer system will probably cark it if printing from multiple threads is
         // attempted, because it uses the VertexID to differentiate print streams, and this is shared among threads.
@@ -208,9 +199,7 @@ namespace Gambit
           printer->print(runtime.count(),myTimingLabel,myTimingVertexID,rank,pointID);
           already_printed_timing[thread_num] = true;
         }
-      #ifndef NO_SIGNALS
       }
-      #endif
     }
 
     /// Printer function (no-thread-index short-circuit)
