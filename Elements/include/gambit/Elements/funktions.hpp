@@ -9,9 +9,11 @@
  *  v0.1 Dec 2014
  *  v0.2 Mar 2015 - Completely rewritten internal structure
  *
- *  Christoph Weniger, created Dec 2014
+ *  Christoph Weniger, created Dec 2014, edited until Mar 2016
  *  <c.weniger@uva.nl>
- *  Lars A. Dal, updated Apr, Jun 2015
+ *  
+ *  with contributions related to thread-safety from
+ *  Lars A. Dal, Apr, Jun 2015
  *  <l.a.dal@fys.uio.no>
  */
 
@@ -37,17 +39,17 @@
 
 namespace Funk {class FunkPlain;}
 
-#define DEF_FUNKTRAIT(C)                         \
-  class C {                                      \
-    public:                                      \
-      static Funk::FunkPlain* ptr;               \
-      static void set(Funk::FunkPlain* new_ptr)  \
-      {                                          \
-        delete ptr;                              \
-        ptr = new_ptr;                           \
-      }                                          \
-  };                                             \
-  Funk::FunkPlain* C::ptr = NULL;
+#define DEF_FUNKTRAIT(C)                          \
+class C {                                         \
+    public:                                       \
+        static Funk::FunkPlain* ptr;              \
+        static void set(Funk::FunkPlain* new_ptr) \
+        {                                         \
+            delete ptr;                           \
+            ptr = new_ptr;                        \
+        }                                         \
+};                                                \
+Funk::FunkPlain* C::ptr = NULL;
 
 // Extensions
 #include <gsl/gsl_integration.h>
@@ -156,6 +158,30 @@ namespace Funk
     // Helper functions for internal calculations
     //
 
+    inline bool args_match(ArgsType args1, ArgsType args2)
+    {
+        bool m = true;
+        for ( auto it = args1.begin(); it!=args1.end(); it++ )
+        {
+            if ( std::find(args2.begin(), args2.end(), *it) == args2.end() )
+                m = false;
+        }
+        if ( args1.size() != args2.size() ) m = false;
+        return m;
+    }
+
+    inline std::string args_string(ArgsType args)
+    {
+        std::string msg = "";
+        for ( auto it = args.begin(); it!=args.end(); it++ )
+        {
+            msg += *it;
+            if ( it != args.end() - 1)
+                msg += ", ";
+        }
+        return msg;
+    }
+
     inline ArgsType joinArgs(ArgsType args1, ArgsType args2)
     {
         args1.insert(args1.end(), args2.begin(), args2.end());
@@ -261,11 +287,17 @@ namespace Funk
             virtual void resolve(std::map<std::string, size_t> datamap, size_t & datalen, size_t bindID, std::map<std::string,size_t> &argmap);
 
 
+            // Singularities handling
             Singularities getSingl() { return singularities; }
+        private:  // Note: This works currently only for constant functions
             Funk set_singularity(std::string arg, Funk pos, Funk width);
             Funk set_singularity(std::string arg, double pos, Funk width);
             Funk set_singularity(std::string arg, Funk pos, double width);
+        public:
             Funk set_singularity(std::string arg, double pos, double width);
+
+            // Print message
+            Funk print(std::string arg);
 
 
             //
@@ -383,7 +415,7 @@ namespace Funk
                     if ( size == 1 ) size = it->size();
                     if ( size != it->size() )
                     {
-                        std::cout << "Warning: Inconsistent vector lengths." << std::endl;
+                        std::cout << "FunkBase WARNING: Inconsistent vector lengths." << std::endl;
                         return vec<double>();
                     }
                 }
@@ -567,7 +599,6 @@ namespace Funk
                     //        std::cout << "  " << it->first << std::endl;
                     //    }
                     //    exit(1);
-                    //
                 }
                 if ( argmap.find(my_arg) == argmap.end() )
                 {
@@ -606,7 +637,7 @@ namespace Funk
                 functions = vec(f, g);
                 Singularities tmp_singl = f->getSingl();
                 if ( tmp_singl.erase(arg) > 0 )
-                    std::cout << "WARNING: Loosing singularity information while setting " << arg << std::endl;
+                    std::cout << "FunkBase WARNING: Loosing singularity information while setting " << arg << std::endl;
                 singularities = joinSingl(g->getSingl(), tmp_singl);
                 arguments = joinArgs(eraseArg(f->getArgs(), arg), g->getArgs());
             };
@@ -871,7 +902,16 @@ namespace Funk
         auto it2 = tmp_indices.begin();
         for (; it1 != arguments.end() && it2 != tmp_indices.end(); ++it1, ++it2 )
         {
-            *it2 = datamap.at(*it1);
+            try
+            {
+                *it2 = datamap.at(*it1);
+            }
+            catch (std::out_of_range & e)
+            {
+                std::string msg = "FunkBase::resolve() encountered internal problem when resolving " + *it1 + ".\n";
+                            msg+= " --- Actual arguments of object: " + args_string(arguments);
+                throw std::runtime_error(msg);
+            }
         }
 
         // Set indices
@@ -921,7 +961,7 @@ namespace Funk
         }
         else
         {
-            std::cout << "Funk: Ignoring \"" << arg << "\" = function" << std::endl;
+            std::cout << "FunkBase WARNING: Ignoring \"" << arg << "\" = function." << std::endl;
         }
         return f->set(args...);
     }
@@ -949,6 +989,13 @@ namespace Funk
             datamap[*it] = i;
         }
         std::map<std::string,size_t> argmap;
+        if ( not args_match(arguments, bound_arguments) )
+        {
+            std::string msg = "FunkBase::bind() tries to resolve wrong arguments.\n";
+                        msg+= " --- Arguments that are supposed to be bound: " + args_string(bound_arguments) + "\n";
+                        msg+= " --- Actual arguments of object: " + args_string(arguments);
+            throw std::invalid_argument(msg);
+        }
         this->resolve(datamap, datalen, bindID, argmap);
         return shared_ptr<FunkBound>(new FunkBound(shared_from_this(), datalen, bindID));
     }
@@ -1251,6 +1298,83 @@ namespace Funk
 
 
     //
+    // Basic if..else clause
+    //
+
+    class FunkIfElse: public FunkBase
+    {
+        public:
+            FunkIfElse(Funk f, Funk g, Funk h)
+            {
+                functions = vec(f, g, h);
+                singularities = joinSingl(joinSingl(f->getSingl(), g->getSingl()), h->getSingl());
+                arguments = joinArgs(joinArgs(f->getArgs(), g->getArgs()), h->getArgs());
+            }
+            double value(const std::vector<double> & data, size_t bindID)
+            {
+              if ( functions[0]->value(data,bindID) >= 0. )
+                return functions[1]->value(data,bindID);
+              else
+                return functions[2]->value(data,bindID);
+            }
+    };
+    inline Funk ifelse(Funk f, Funk g, Funk h) { return Funk(new FunkIfElse(f, g, h)); }
+    inline Funk ifelse(Funk f, double g, Funk h) { return Funk(new FunkIfElse(f, cnst(g), h)); }
+    inline Funk ifelse(Funk f, double g, double h) { return Funk(new FunkIfElse(f, cnst(g), cnst(h))); }
+    inline Funk ifelse(Funk f, Funk g, double h) { return Funk(new FunkIfElse(f, g, cnst(h))); }
+
+
+    //
+    // Throw errors when called
+    //
+
+    class ThrowError: public FunkBase
+    {
+        public:
+            ThrowError(std::string msg) : msg(msg)
+            {
+            }
+            double value(const std::vector<double> & data, size_t bindID)
+            {
+              (void)bindID;
+              (void)data;
+              throw std::invalid_argument("Funk::ThrowError says: " + msg);
+            }
+
+        private:
+            std::string msg;  // Error message to throw when function is called
+    };
+    inline Funk throwError(std::string msg) { return Funk(new ThrowError(msg)); }
+
+
+    //
+    // Prints message when called
+    //
+
+    class Bottle: public FunkBase
+    {
+        public:
+            Bottle(Funk f, std::string msg) : msg(msg)
+            {
+                functions = vec(f);
+                singularities = f->getSingl();
+                arguments = f->getArgs();
+            }
+            double value(const std::vector<double> & data, size_t bindID)
+            {
+              std::cout << "Funk::Message says:\n" << msg << std::endl;
+              return functions[0]->value(data, bindID);
+            }
+
+        private:
+            std::string msg;  // Message in a bottle.  Ha!
+    };
+    //inline Funk print(std::string msg) { return Funk(new Bottle(msg)); }
+    inline Funk FunkBase::print(std::string msg)
+    { return Funk(new Bottle(shared_from_this(), msg)); };
+
+
+    //
     // GSL integration
     //
 
@@ -1366,6 +1490,7 @@ namespace Funk
                     double x0 = functions[1]->value(data, bindID);
                     double x1 = functions[2]->value(data, bindID);
                     if ( my_singularities.size() == 0 )
+                        // FIXME: Catch errors
                         gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
                     else
                     {
@@ -1380,13 +1505,14 @@ namespace Funk
                             double z0 = mean - singl_factor*sigma;
                             double z1 = mean + singl_factor*sigma;
                             if ( z0 == z1 )
-                                std::cout << "WARNING: Singularity width is beyond machine precision." << std::endl;
+                                std::cout << "FunkBase WARNING: Singularity width is beyond machine precision." << std::endl;
                             if ( z0 > x0 and z0 < x1 ) ranges.push_back(z0);
                             if ( z1 > x0 and z1 < x1 ) ranges.push_back(z1);
                         }
                         std::sort(ranges.begin(), ranges.end());
                         for ( auto it = ranges.begin(); it != ranges.end()-1; ++it )
                         {
+                            // FIXME: Catch errors
                             gsl_integration_qags(this, *it, *(it+1), epsabs, epsrel, limit, gsl_workspace, &result, &error);
                             s += result;
                         }
@@ -1446,6 +1572,43 @@ namespace Funk
     // Standard behaviour
     template <typename T1, typename T2>
     inline shared_ptr<FunkIntegrate_gsl1d> getIntegrate_gsl1d(Funk fptr, std::string arg, T1 x1, T2 x2) { return shared_ptr<FunkIntegrate_gsl1d>(new FunkIntegrate_gsl1d(fptr, arg, x1, x2)); }
+
+    //
+    // Helper function for producing singularity-augmented x-grids
+    //
+
+    inline std::vector<double> augmentSingl(const std::vector<double> & xgrid, Funk f, int N = 100, double sigma = 3)
+    {
+        std::vector<double> result = xgrid;
+        double xmin = result.front();
+        double xmax = result.back();
+
+        if ( f->getNArgs() != 1 )
+        {
+            std::string msg = "augment_with_singularities(): takes only functions with one argument.\n";
+                        msg+= "  --- Actual arguments are: " + args_string(f->getArgs());
+            throw std::invalid_argument(msg);
+        }
+
+        std::string arg = f->getArgs()[0];
+        Singularities singlsMap = f->getSingl();
+
+        if ( singlsMap.find(arg) != singlsMap.end() )
+        {
+            auto singls = singlsMap.at(arg);
+            for (auto it = singls.begin(); it != singls.end(); it ++)
+            {
+                double position= it->first->bind()->eval();
+                double width = it->second->bind()->eval();
+                std::vector<double> singlgrid = linspace(std::max(position-width*sigma, xmin), std::min(position+width*sigma, xmax), N);
+                result.insert(result.end(), singlgrid.begin(), singlgrid.end());
+            }
+            std::sort(result.begin(), result.end());
+        }
+
+        return result;
+    }
 }
+
 
 #endif  // __FUNK_HPP__

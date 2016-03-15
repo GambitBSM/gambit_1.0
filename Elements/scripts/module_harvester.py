@@ -298,7 +298,18 @@ namespace Gambit                                  \n\
             towrite += "  // No module-specific types for "+module+".\n"
         towrite += "}\n\n\
 // Instantiate the backend functor templates for all required types \n\
-BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)\n"
+BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)\n\
+\n\
+// Define the functor helper functions for this standalone compilation unit\n\
+// Define standalone version of functor signal helpers (that do nothing)\n\
+namespace Gambit {\n\
+  namespace FunctorHelp {\n\
+    void check_for_shutdown_signal(module_functor_common&) {}\n\
+    bool emergency_shutdown_begun() { return false; }\n\
+    void entering_multithreaded_region(module_functor_common&) {}\n\
+    void leaving_multithreaded_region(module_functor_common&) {}\n\
+  }\n\
+}\n"
 
         # Don't touch any existing file unless it is actually different from what we will create
         filename = "./"+module+"/examples/standalone_functors.cpp"

@@ -140,12 +140,20 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/DarkBit/" AND ";${GAMBIT_BITS};" MATCHES ";Dark
                                 $<TARGET_OBJECTS:DarkBit>
                                 ${GAMBIT_ALL_COMMON_OBJECTS}
   )
+  add_gambit_executable(DarkBit_standalone_WIMP "${DarkBit_XTRA}"
+                        SOURCES ${PROJECT_SOURCE_DIR}/DarkBit/examples/DarkBit_standalone_WIMP.cpp
+                                ${PROJECT_SOURCE_DIR}/DarkBit/examples/standalone_functors.cpp
+                                $<TARGET_OBJECTS:DarkBit>
+                                ${GAMBIT_ALL_COMMON_OBJECTS}
+  )
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(DarkBit_standalone_MSSM flexiblesusy)
     add_dependencies(DarkBit_standalone_SingletDM flexiblesusy)
+    add_dependencies(DarkBit_standalone_WIMP flexiblesusy)
   endif()
   if (NOT EXCLUDE_DELPHES)
     add_dependencies(DarkBit_standalone_MSSM delphes)
     add_dependencies(DarkBit_standalone_SingletDM delphes)
+    add_dependencies(DarkBit_standalone_WIMP delphes)
   endif()
 endif()

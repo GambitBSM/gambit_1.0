@@ -569,7 +569,7 @@ namespace Gambit
 
       // Create Spectrum object from the slhaea object
       static Spectrum matched_spectra;
-      matched_spectra = spectrum_from_SLHAea<MSSMSimpleSpec>(input_slha);
+      matched_spectra = spectrum_from_SLHAea<MSSMSimpleSpec, SLHAstruct>(input_slha, input_slha);
       result = &matched_spectra;
 
       // No sneaking in charged LSPs via SLHA, jävlar.

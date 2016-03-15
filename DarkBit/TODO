@@ -44,7 +44,7 @@ List with *necessary* tasks for first DarkBit version
 - Remove initialization functions from DarkBit --> backends
 - Use doxygen for starting a manual
 - Finish dNdE_gam annihilation yields from DS (include VIB, lines, etc)
-- Finish annihilation catalogue
+- Finish annihilation catalog
 - Cross-checks between relic density from DarkSUSY and Micromegas
 - Simple OmegaDM likelihood function with different values from the literature
 - Write printer for BaseFunction object (to dump e.g. gamma-ray spectra)

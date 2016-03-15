@@ -69,9 +69,11 @@ namespace Gambit {
           RD_coannihilating_particle(DSpart->kn(1), 
           myintdof->kdof(DSpart->kn(1)),mymspctm->mass(DSpart->kn(1))));
 
+#ifdef DARKBIT_DEBUG
       std::cout << "WIMP : "<< DSpart->kn(1) << " " <<
           myintdof->kdof(DSpart->kn(1)) << " " << mymspctm->mass(DSpart->kn(1)) 
           << std::endl;
+#endif
 
       // FIXME: eventually, this function should not be BE-dependent anymore
       // and instead depend on the process catalog! The use of any 
@@ -127,7 +129,7 @@ namespace Gambit {
             > 2.)
         {
         
-          // FIXME: This is no longer needed here!
+          // FIXME: This is no longer needed here.  Remove.
           if (reslist[i]==BEreq::particle_code("h0_2") && mywidths->width(BEreq::particle_code("h0_2")) < 0.1)
             // wide res treatment adopted in DS
             result.resonances.push_back(
@@ -169,7 +171,7 @@ namespace Gambit {
       TH_ParticleProperty DMproperty = 
               (*Dep::TH_ProcessCatalog).getParticleProperty(DMid);
 
-      // get thresholds & resonances from process catalogue
+      // get thresholds & resonances from process catalog
       result.resonances = annihilation.thresholdResonances.resonances;
       result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
 
@@ -179,12 +181,13 @@ namespace Gambit {
       result.coannihilatingParticles.push_back(
           RD_coannihilating_particle(100,1+DMproperty.spin2,DMproperty.mass));
       // FIXME: coannihilation thresholds have to be added once they are included
-      // in the process catalogue
+      // in the process catalog
       
-//      std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
-
-//      std::cout << "Test : " << BEreq::particle_code("d_3")
-//      << " " << BEreq::particle_code("u_3") << std::endl;
+#ifdef DARKBIT_DEBUG
+      std::cout << "DM dof = " << 1+ DMproperty.spin2 << std::endl;
+      std::cout << "Test : " << BEreq::particle_code("d_3")
+      << " " << BEreq::particle_code("u_3") << std::endl;
+#endif
       
 
     } // function RD_spectrum_from_ProcessCatalog
@@ -271,7 +274,6 @@ namespace Gambit {
       // FIXME: Here goes a translation GAMBIT particle identifiers
       // -> DS particle codes
 
-
       //write info about coannihilating particles to DS common blocks
       //[this is essentially the model-dependent part of dsrdstart]
       DS_RDMGEV myrdmgev;
@@ -329,7 +331,7 @@ namespace Gambit {
     } // function RD_eff_annrate_SUSY
 
 
-    /*! \brief Infer Weff from process catalogue.
+    /*! \brief Infer Weff from process catalog.
     */
     // Carries pointer to Weff
     DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)
@@ -352,8 +354,12 @@ namespace Gambit {
           Weff = Weff + 
             it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
+        if ( Weff->getNArgs() != 1 )
+          DarkBit_error().raise(LOCAL_INFO, 
+              "RD_eff_annrate_from_ProcessCatalog: Wrong number of arguments.\n"
+              "The probable cause are three-body final states, which are not supported for this function."
+              );
         result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
-
       } // function RD_eff_annrate_from_ProcessCatalog
 
 
@@ -372,7 +378,7 @@ namespace Gambit {
       // RD_thresholds_resonances.
       RD_spectrum_type myRDspec = *Dep::RD_spectrum_ordered;
       if (myRDspec.coannihilatingParticles.empty()){
-        std::cout << "ERROR in RD_oh2_general: No DM particle!";
+        DarkBit_error().raise(LOCAL_INFO, "RD_oh2_general: No DM particle!");
       }
       double mwimp=myRDspec.coannihilatingParticles[0].mass;
 
@@ -385,7 +391,7 @@ namespace Gambit {
         // What follows below is the standard accurate calculation of oh2 in DS
         // either in fast = 0 (<1%)  or fast = 1 (default) mode
         
-        // Further TODO: keep track of error flags
+        // FIXME: keep track of error flags in oh2_general
 
         // the following replaces dsrdcom -- which cannot be linked properly!?
         DS_RDPARS myrdpars;
@@ -482,10 +488,12 @@ namespace Gambit {
         if (widthheavyHiggs<0.1) 
           (*BEreq::widths).width(BEreq::particle_code("h0_2"))=0.1;
 
+#ifdef DARKBIT_DEBUG
         // Dump Weff info on screen
-          std::cout << "xstart = " << xstart << std::endl;
+        std::cout << "xstart = " << xstart << std::endl;
         for ( double peff = 0.001;  peff < 100; peff = peff*1.5 )
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
+#endif
 
         // Set up timing
         std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -557,8 +565,10 @@ namespace Gambit {
 
       logger() << "RD_oh2_general: oh2 =" << result << std::endl;
       
+#ifdef DARKBIT_DEBUG
       std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
       std::cout << "Oh2     = " << result << std::endl << std::endl;
+#endif
 
       if (tbtest==1) {exit(1);}
       

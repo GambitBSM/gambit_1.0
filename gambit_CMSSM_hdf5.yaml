@@ -16,9 +16,22 @@ Parameters:
         range: [100, 1000]
         prior_type: flat
       A0: 0
-      tanb: 10
-      signmu: 1
+      TanBeta: 10
+      SignMu: 1
 
+    LocalHalo:
+      rho0: # Local dark matter density
+        fixed_value: .4 # GeV/cm^3
+        #range: [.2, .8]
+        #prior_type: flat
+      vrot: # Local disk rotation speed
+        fixed_value: 235 # km/s
+      v0: # Maxwellian most-probable speed
+        fixed_value: 235 # km/s
+      vesc: # Local galactic escape speed
+        fixed_value: 550 # km/s
+      vearth: # Keplerian velocity of the earth around the sun
+        fixed_value: 29.78 # km/s
 
 
 ##############################
@@ -103,6 +116,13 @@ ObsLikes:
 
 # Complete list of likelihoods in DarkBit as of 2015-05-10
 Rules:
+
+  # Choose to rescale signals in direct and indirect detection by the relic density fraction
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
+    options:
+      mode: leq_one
+      
   - function: get_mass_es_pseudonyms
     options:
       hard_error_on_mixing_failure: false

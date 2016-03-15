@@ -27,6 +27,7 @@ set(source_files src/container_factory.cpp
                  src/diagnostics.cpp
                  src/error_handlers.cpp
                  src/functors.cpp
+                 src/functors_with_signals.cpp
                  src/ini_functions.cpp
                  src/likelihood_container.cpp
                  src/modelgraph.cpp

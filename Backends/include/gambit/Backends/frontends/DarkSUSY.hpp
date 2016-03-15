@@ -41,15 +41,13 @@
 #define VERSION 5.1.3
 #define SAFE_VERSION 5_1_3
 
-#include "gambit/DarkBit/ProcessCatalogue.hpp"
+#include "gambit/DarkBit/ProcessCatalog.hpp"
 #include "gambit/Elements/funktions.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 #include <string>
 
 // Load the library
 LOAD_LIBRARY
-
-BE_ALLOW_MODELS(LocalHalo)
 
 // Functions
 BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
@@ -122,7 +120,7 @@ BE_VARIABLE(DS_NUCOM, wabranch, "wabranch_", "nu_common_block")
 // Halo model common blocks
 BE_VARIABLE(DS_HMCOM, dshmcom, "dshmcom_", "dshmcom")
 BE_VARIABLE(DS_HMFRAMEVELCOM, dshmframevelcom, "dshmframevelcom_", "dshmframevelcom")
-BE_VARIABLE(DS_HMISODF, dshmisodf, "dshmisodf_", "dshmisdof")
+BE_VARIABLE(DS_HMISODF, dshmisodf, "dshmisodf_", "dshmisodf")
 BE_VARIABLE(DS_HMNOCLUE, dshmnoclue, "dshmnoclue_", "dshmnoclue")
 
 // Convenience functions (registration)

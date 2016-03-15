@@ -45,31 +45,43 @@ namespace Gambit
 
     // Create spectrum object from SLHA file input.slha
     void createSpectrum(const Spectrum *& outSpec){
+      using namespace Pipes::createSpectrum;
       static Spectrum mySpec;
-      std::string inputFileName = "input.slha";
-      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);     
+      std::string inputFileName = runOptions->getValue<std::string>("filename");
+      std::cout << "Loading: " << inputFileName << std::endl;
+      mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
       outSpec = &mySpec;
     }
 
     // Create decay object from SLHA file input.slha
     void createDecays(DecayTable& outDecays)
     {
-      std::string inputFileName = "input.slha";
+      using namespace Pipes::createDecays;
+      std::string inputFileName = runOptions->getValue<std::string>("filename");
+      std::cout << "Loading: " << inputFileName << std::endl;
       outDecays = DecayTable(inputFileName);
     }
   }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
   std::cout << std::endl 
             << "Start DarkBit standalone example" << std::endl;
   std::cout << "--------------------------------" << std::endl;
-  std::cout << std::endl;
-  std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-  std::cout << "This program reads and needs a file 'input.slha', or crashes otherwise." << std::endl;
-  std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-  std::cout << std::endl;
+
+  if (argc == 1)
+  {
+    std::cout << "Please provide name of slha file at command line." << std::endl;
+    exit(1);
+  }
+  std::string filename = argv[1];
+  std::string outname = "dNdE.dat";
+  if (argc >= 3) outname = argv[2];
+  std::string filename_data = "data.yaml";
+  if (argc >= 4) filename_data = argv[3];
+  std::string filename_dump = "dump.yaml";
+  if (argc >= 5) filename_dump = argv[4];
 
 
   // ---- Initialise (or disable) logging ----
@@ -87,12 +99,12 @@ int main()
   logger().initialise(loggerinfo);
 
   model_warning().set_fatal(true);
-  DarkBit::DarkBit_error().set_fatal(false);
+  DarkBit::DarkBit_error().set_fatal(true);
 
   logger()<<"Running DarkBit standalone example"<<LogTags::info<<EOM;
 
 
-    // ---- Initialize models ----
+  // ---- Initialize models ----
 
   // Initialize LocalHalo model
   ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();
@@ -117,16 +129,18 @@ int main()
 
   // ---- Initialize spectrum and decays from SLHA file ----
 
+  createSpectrum.setOption<std::string>("filename", filename);
   createSpectrum.reset_and_calculate();
+  createDecays.setOption<std::string>("filename", filename);
   createDecays.reset_and_calculate();
 
 
   // ---- Initialize backends ----
 
   // Initialize nulike backend
-  Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);  // FIXME: Not nice; Q: Alternatives?
+  Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);
   nulike_1_0_2_init.reset_and_calculate();
-  
+
   // Initialize gamLike backend
   gamLike_1_0_0_init.reset_and_calculate();
 
@@ -135,17 +149,6 @@ int main()
   MicrOmegas_3_6_9_2_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
-  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
-  DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
-  logger() << "DarkSUSY..." << EOM;
   DarkSUSY_5_1_3_init.reset_and_calculate();
   DarkSUSY_PointInit_MSSM.notifyOfModel("MSSM30atQ");
   DarkSUSY_PointInit_MSSM.resolveDependency(&createSpectrum);
@@ -159,20 +162,20 @@ int main()
   DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dswwidth);
   DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mssmpar);
   DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
-  logger() << "Initializing DarkSUSY..." << EOM;
   DarkSUSY_PointInit_MSSM.reset_and_calculate();
-  logger() << "...done" << EOM;
+
+  // Initialize DarkSUSY Local Halo Model
+  DarkSUSY_PointInit_LocalHalo_func.notifyOfModel("LocalHalo");
+  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
+  DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
 
   // Initialize DDCalc0 backend
-  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);  // FIXME: Isn't there a smarter way?
+  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
   DDCalc0_0_0_init.notifyOfModel("LocalHalo");
   DDCalc0_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DDCalc0_0_0_init.resolveDependency(&RD_fraction_fixed);
@@ -188,7 +191,7 @@ int main()
   // Relic density calculation with DarkSUSY (the sloppy version)
   RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
   RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-  RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
+  RD_oh2_DarkSUSY.setOption<int>("fast", 2);  // 0: normal; 1: fast; 2: dirty
   RD_oh2_DarkSUSY.reset_and_calculate();
   // FIXME: Use "general" version instead
 
@@ -226,7 +229,8 @@ int main()
   mwimp_generic.resolveDependency(&DarkMatter_ID_MSSM30atQ);
   mwimp_generic.reset_and_calculate();
 
-  // Set generic annihilation rate in late universe (v->0 limit)  // FIXME: Check limit
+  // Set generic annihilation rate in late universe (v->0 limit)
+  // FIXME: Check whether limit is really calculated
   sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_MSSM);
   sigmav_late_universe.resolveDependency(&DarkMatter_ID_MSSM30atQ);
   sigmav_late_universe.reset_and_calculate();
@@ -352,6 +356,11 @@ int main()
   GA_AnnYield_General.resolveDependency(&cascadeMC_gammaSpectra);
   GA_AnnYield_General.reset_and_calculate();
 
+  // Dump spectrum into file
+  dump_GammaSpectrum.resolveDependency(&GA_AnnYield_General);
+  dump_GammaSpectrum.setOption<std::string>("filename", outname);
+  dump_GammaSpectrum.reset_and_calculate();
+
   // Calculate Fermi LAT dwarf likelihood
   lnL_FermiLATdwarfs_gamLike.resolveDependency(&GA_AnnYield_General);
   lnL_FermiLATdwarfs_gamLike.resolveDependency(&RD_fraction_fixed);
@@ -362,14 +371,11 @@ int main()
   // ---- IceCube limits ----
 
   // Infer WIMP capture rate in Sun
-  capture_rate_Sun_constant_xsec.notifyOfModel("LocalHalo");
-  capture_rate_Sun_constant_xsec.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   capture_rate_Sun_constant_xsec.resolveDependency(&mwimp_generic);
   capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SI_p_simple);
   capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SD_p_simple);
-  capture_rate_Sun_constant_xsec.resolveDependency(&RD_fraction_fixed);
-  capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
   capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsntcapsuntab);
+  capture_rate_Sun_constant_xsec.resolveDependency(&DarkSUSY_PointInit_LocalHalo_func);
   capture_rate_Sun_constant_xsec.reset_and_calculate();
 
   // Infer WIMP equilibration time in Sun
@@ -402,12 +408,22 @@ int main()
   IC79WH_full.resolveDependency(&nuyield_from_DS);
   IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_bounds);
   IC79WH_full.reset_and_calculate();
-  // FIXME: Code up other analyses
 
   // Calculate IceCube likelihood
   IC79WH_loglike.resolveDependency(&IC79WH_full);
   IC79WH_loglike.reset_and_calculate();
   // FIXME: Code up other analyses
+  
+
+  // ---- Runs DarkBit UnitTest ----
+
+  UnitTest_DarkBit.setOption<std::string>("filename", filename_dump);
+  UnitTest_DarkBit.resolveDependency(&RD_oh2_DarkSUSY);
+  UnitTest_DarkBit.resolveDependency(&GA_AnnYield_General);
+  UnitTest_DarkBit.resolveDependency(&TH_ProcessCatalog_MSSM);
+  UnitTest_DarkBit.resolveDependency(&DarkMatter_ID_MSSM30atQ);
+  UnitTest_DarkBit.resolveDependency(&DD_couplings_DarkSUSY);
+  UnitTest_DarkBit.reset_and_calculate();
   
 
   // ---- Dump results on screen ----
@@ -420,5 +436,44 @@ int main()
   oh2 = RD_oh2_DarkSUSY(0);
   logger() << "Relic density from DarkSUSY: " << oh2 << LogTags::info << EOM;
 
+  // ---- Dump output into file ----
+
+  std::fstream file;
+  file.open(filename_data, std::ios_base::out);
+  oh2 = RD_oh2_MicrOmegas(0);
+  file << "oh2:"<<std::endl;
+  file << "  MO: " << oh2 << std::endl;
+  oh2 = RD_oh2_DarkSUSY(0);
+  file << "  DS: " << oh2 << std::endl;
+
+  file << "DD_couplings:" << std::endl;
+
+  file << "  gps:" << std::endl;
+  double dd_gps = DD_couplings_MicrOmegas(0).gps;
+  file << "    MO: " << dd_gps << std::endl;
+  dd_gps = DD_couplings_DarkSUSY(0).gps;
+  file << "    DS: " << dd_gps << std::endl;
+
+  file << "  gns:" << std::endl;
+  double dd_gns = DD_couplings_MicrOmegas(0).gns;
+  file << "    MO: " << dd_gns << std::endl;
+  dd_gns = DD_couplings_DarkSUSY(0).gns;
+  file << "    DS: " << dd_gns << std::endl;
+
+  file << "  gpa:" << std::endl;
+  double dd_gpa = DD_couplings_MicrOmegas(0).gpa;
+  file << "    MO: " << dd_gpa << std::endl;
+  dd_gpa = DD_couplings_DarkSUSY(0).gpa;
+  file << "    DS: " << dd_gpa << std::endl;
+
+  file << "  gna:" << std::endl;
+  double dd_gna = DD_couplings_MicrOmegas(0).gna;
+  file << "    MO: " << dd_gna << std::endl;
+  dd_gna = DD_couplings_DarkSUSY(0).gna;
+  file << "    DS: " << dd_gna << std::endl;
+
+  file.close();
+
   return 0;
+
 }

@@ -92,7 +92,7 @@ namespace Gambit
              // ERROR, Required parameter not found
              std::ostringstream errmsg;           
              errmsg << "Error while verifying contents of SubSpectrum object against SubSpectrumContents object with name \""<<my_name<<"\" !" << std::endl;
-             errmsg << "Required scalar-valued parameter ("<<Par::toString.at(tag)<<", "<<name<<") is not accessible via subspectrum->get(\""<<Par::toString.at(tag)<<", "<<name<<"). Please fix the relevant SubSpectrum wrapper class so that this parameter can be accessed." << std::endl;
+             errmsg << "Required scalar-valued parameter ("<<Par::toString.at(tag)<<", "<<name<<") is not accessible via subspectrum->get(Par::"<<Par::toString.at(tag)<<", \""<<name<<"\"). Please fix the relevant SubSpectrum wrapper class so that this parameter can be accessed." << std::endl;
              utils_error().forced_throw(LOCAL_INFO,errmsg.str());
            }
          }
@@ -115,7 +115,7 @@ namespace Gambit
                  // ERROR, Required parameter not found
                  std::ostringstream errmsg;           
                  errmsg << "Error while verifying contents of SubSpectrum object against SubSpectrumContents object with name \""<<my_name<<"\" !" << std::endl;
-                 errmsg << "An entry of the required vector-valued parameter ("<<Par::toString.at(tag)<<", "<<name<<") with required length "<<shape[0]<<" is not accessible via subspectrum->get(\""<<Par::toString.at(tag)<<", "<<name<<", "<<i<<"). Please fix the relevant SubSpectrum wrapper class so that this parameter can be accessed. Keep in mind that you may need to override index_offset() to align the expected indices." << std::endl;
+                 errmsg << "An entry of the required vector-valued parameter ("<<Par::toString.at(tag)<<", "<<name<<") with required length "<<shape[0]<<" is not accessible via subspectrum->get(Par::"<<Par::toString.at(tag)<<", \""<<name<<"\", "<<i<<"). Please fix the relevant SubSpectrum wrapper class so that this parameter can be accessed. Keep in mind that you may need to override index_offset() to align the expected indices." << std::endl;
                  utils_error().forced_throw(LOCAL_INFO,errmsg.str());
                }            
              }
@@ -141,7 +141,7 @@ namespace Gambit
                     // ERROR, Required parameter not found
                     std::ostringstream errmsg;           
                     errmsg << "Error while verifying contents of SubSpectrum object against SubSpectrumContents object with name \""<<my_name<<"\" !" << std::endl;
-                    errmsg << "An entry of the required matrix-valued parameter ("<<Par::toString.at(tag)<<", "<<name<<") with required dimensions ("<<shape[0]<<", "<<shape[1]<<") is not accessible via subspectrum->get(\""<<Par::toString.at(tag)<<", "<<name<<", "<<i<<", "<<j<<"). Please fix the relevant SubSpectrum wrapper class so that this parameter can be accessed. Keep in mind that you may need to override index_offset() to align the expected indices." << std::endl;
+                    errmsg << "An entry of the required matrix-valued parameter ("<<Par::toString.at(tag)<<", "<<name<<") with required dimensions ("<<shape[0]<<", "<<shape[1]<<") is not accessible via subspectrum->get(Par::"<<Par::toString.at(tag)<<", \""<<name<<"\", "<<i<<", "<<j<<"). Please fix the relevant SubSpectrum wrapper class so that this parameter can be accessed. Keep in mind that you may need to override index_offset() to align the expected indices." << std::endl;
                     utils_error().forced_throw(LOCAL_INFO,errmsg.str());
                   }            
                }
