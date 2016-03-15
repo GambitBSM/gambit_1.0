@@ -391,8 +391,12 @@ namespace Gambit
       if (*Loop::iteration == INIT)
       {
         result.clear();
+        // Reset Options
+        delphesOptions.clear();
+        std::string delphesConfigFile;
+        GET_COLLIDER_RUNOPTION(delphesConfigFile, std::string);
+        delphesOptions.push_back(delphesConfigFile);
         // Setup new Delphes
-        GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
         result.init(delphesOptions);
       }
     }
