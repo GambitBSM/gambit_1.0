@@ -33,6 +33,7 @@
 #define __signal_handling_hpp__
 
 #include <signal.h>
+#include <chrono>
 #include <setjmp.h>     /* jmp_buf, setjmp, longjmp */
 #include "yaml-cpp/yaml.h"
 #include "exceptions.hpp"
