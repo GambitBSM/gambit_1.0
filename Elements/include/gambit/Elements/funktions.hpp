@@ -53,6 +53,7 @@ Funk::FunkPlain* C::ptr = NULL;
 
 // Extensions
 #include <gsl/gsl_integration.h>
+#include <gsl/gsl_errno.h>
 
 namespace Funk
 {
@@ -1489,9 +1490,12 @@ namespace Funk
                     params=this;
                     double x0 = functions[1]->value(data, bindID);
                     double x1 = functions[2]->value(data, bindID);
+                    gsl_set_error_handler_off();
+                    int status = 0;
                     if ( my_singularities.size() == 0 )
-                        // FIXME: Catch errors
-                        gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
+                    {
+                        status = gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
+                    }
                     else
                     {
                         double s = 0;
@@ -1512,11 +1516,23 @@ namespace Funk
                         std::sort(ranges.begin(), ranges.end());
                         for ( auto it = ranges.begin(); it != ranges.end()-1; ++it )
                         {
-                            // FIXME: Catch errors
-                            gsl_integration_qags(this, *it, *(it+1), epsabs, epsrel, limit, gsl_workspace, &result, &error);
+                            status = gsl_integration_qags(this, *it, *(it+1), epsabs, epsrel, limit, gsl_workspace, &result, &error);
                             s += result;
+                            if (status) break;
                         }
                         result = s;
+                    }
+                    // FIXME: Implement flags to optionally throw an error
+                    if (status)
+                    {
+                        std::cout << "FunkIntegrate_gsl1d WARNING: " << gsl_strerror(status) << std::endl;
+                        std::cout << "Attempt to integrate from " << x0 << " to " << x1 << std::endl;
+                        std::cout << "Details about the integrand:" << std::endl;
+                        functions[0]->help();
+                        std::cout << "Dumping integrand:" << std::endl;
+                        for ( double x = x0; x <= x1; x = (x0>0) ? x*1.01 : x+(x1-x0)/1000)
+                            std::cout << "  " << x << " " << invoke(x, this) << std::endl;
+                        result = 0.;
                     }
                 }
                 return result;
