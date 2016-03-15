@@ -36,7 +36,8 @@ LATER   -- Pat: stands; backend version numbers are not available as ints yet (n
 
 Joakim/Torsten
 --------------
-RelicDensity.cpp / DarkSUSY.cpp :  FIXME: Get it working
+Darksusy backend:  Add checks with particle width 
+DONE RelicDensity.cpp / DarkSUSY.cpp :  FIXME: Get it working
 MSSM.cpp: 164	:        // FIXME: If this the right place to set SLHAstruct model information?
   -- Pat: I think this should probably go into the DS diskless initialisation function, with a check for MODSEL in the slhaea, and then setting MODSEL in darksusy only if it is missing/inappropriate in the slhaea object.
   Note that MODSEL needed by different backends is different, so it can't be set in the spectrum object before emitting the slhaea.  This change would also require the current code in MSSM.cpp that sets MODSEL to be shifted inside the
@@ -134,6 +135,8 @@ Cascades.cpp: 422	:          // FIXME: This sets equal binning for all particle 
 Cascades.cpp: 505	:            // FIXME: What happens for single particle endpoints without
 Cascades.cpp: 661	:          // FIXME: Default values provide 1-2% accuracy for singular integrals
 decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
+funktion.cpp :  // FIXME: Decide how to handle integration errors and problems
+DarkBit.cpp : Figure out why spectra don't agree
 
 LATER: SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
 LATER: SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
