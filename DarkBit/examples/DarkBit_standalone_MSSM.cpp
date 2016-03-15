@@ -44,7 +44,8 @@ namespace Gambit
     }
 
     // Create spectrum object from SLHA file input.slha
-    void createSpectrum(const Spectrum *& outSpec){
+    void createSpectrum(const Spectrum *& outSpec)
+    {
       using namespace Pipes::createSpectrum;
       static Spectrum mySpec;
       std::string inputFileName = runOptions->getValue<std::string>("filename");
@@ -60,6 +61,8 @@ namespace Gambit
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
       outDecays = DecayTable(inputFileName);
+      //std::cout << "Exemplary width:" << std::endl;
+      //std::cout << outDecays.at(std::pair<int,int>(25,0)).width_in_GeV << std::endl;
     }
   }
 }
@@ -191,7 +194,7 @@ int main(int argc, char* argv[])
   // Relic density calculation with DarkSUSY (the sloppy version)
   RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
   RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-  RD_oh2_DarkSUSY.setOption<int>("fast", 2);  // 0: normal; 1: fast; 2: dirty
+  RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
   RD_oh2_DarkSUSY.reset_and_calculate();
   // FIXME: Use "general" version instead
 
