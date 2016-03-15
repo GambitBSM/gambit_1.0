@@ -40,7 +40,8 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/signal_handling.hpp"
 #include "gambit/Models/models.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
+#include "gambit/Logs/logging.hpp"
 #include "gambit/Printers/baseprinter.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -79,7 +80,7 @@ namespace Gambit
     /// @{
     double functor::getRuntimeAverage() { return 0; }
     double functor::getInvalidationRate() { return 0; }
-    void functor::setFadeRate() {}
+    void functor::setFadeRate(double) {}
     void functor::notifyOfInvalidation(const str&) {}
     void functor::reset() {}
     void functor::reset(int) {}
@@ -97,7 +98,13 @@ namespace Gambit
     /// Acquire ID for timing 'vertex' (used in printer system)
     void functor::setTimingVertexID(int ID) { if (this == NULL) failBigTime("setTimingVertexID"); myTimingVertexID = ID; }
 
-    /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    /// Setter for status: -4 = required backend absent (backend ini functions)
+    ///                    -3 = required classes absent
+    ///                    -2 = function absent
+    ///                    -1 = origin absent
+    ///                     0 = model incompatibility (default)
+    ///                     1 = available
+    ///                     2 = active
     void functor::setStatus(int stat)
     {
       if (this == NULL) failBigTime("setStatus");
@@ -117,7 +124,14 @@ namespace Gambit
     str functor::version()     const { if (this == NULL) failBigTime("version"); return myVersion; }
     /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
     str functor::safe_version()const { utils_error().raise(LOCAL_INFO,"The safe_version method is only defined for backend functors."); return ""; }
-    /// Getter for the wrapped function current status (-3 = required classes absent, -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    /// Getter for the wrapped function current status:
+    ///                    -4 = required backend absent (backend ini functions)
+    ///                    -3 = required classes absent
+    ///                    -2 = function absent
+    ///                    -1 = origin absent
+    ///                     0 = model incompatibility (default)
+    ///                     1 = available
+    ///                     2 = active
     int functor::status()      const { if (this == NULL) failBigTime("status"); return myStatus; }
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
     sspair functor::quantity() const { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
@@ -1191,6 +1205,7 @@ namespace Gambit
     /// Indicate to the functor which backends are actually loaded and working
     void module_functor_common::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)
     {
+      missing_backends.clear();
       // Loop over all the backends that are needed for this functor to work.
       for (auto it = required_classloading_backends.begin(); it != required_classloading_backends.end(); ++it)
       {
@@ -1198,6 +1213,7 @@ namespace Gambit
         if (be_ver_map.find(it->first) == be_ver_map.end())
         {
           this->myStatus = -3;
+          missing_backends.push_back(it->first);
         }
         else
         {  // Loop over all the versions of the backend that are needed for this functor to work.
@@ -1205,7 +1221,11 @@ namespace Gambit
           {
             std::set<str> versions = be_ver_map.at(it->first);
             // Check that the specific version needed is connected.
-            if (versions.find(*jt) == versions.end()) this->myStatus = -3;
+            if (versions.find(*jt) == versions.end())
+            {
+              this->myStatus = -3;
+              missing_backends.push_back(it->first + ", v" + *jt);
+            }
           }
         }
       }
@@ -1474,34 +1494,39 @@ namespace Gambit
     }
 
     /// @{ Some helper functions for interacting with signals in the calculate() routine
+          
+    /// Check if shutdown in progress and take appropriate action.
+    /// Now only cancels evaluations if it is an emergency shutdown; soft shutdown requires
+    /// valid likelihood calculation to continue until synchronisation can be achieved.
     void module_functor_common::check_for_shutdown_signal()
     {
       /* Check if shutdown signal received, and either throw Shutdown exception or break out of loop */
-      if(signaldata().shutdown_begun())
+      if(signaldata().emergency_shutdown_begun())
       {
         #pragma omp critical (module_functor_calculate)
         {
           std::ostringstream ss;
           ss << "Shutdown signal detected while computing functor "<<myName<<"! (omp_get_level()==" << omp_get_level() << ", thread="<<omp_get_thread_num()<<")";
           std::cerr << ss.str() << std::endl;
-          logger() << ss.str() << EOM;
+          logger() << LogTags::core << LogTags::debug << ss.str() << EOM;
         }
         if(omp_get_level()==0)                               /* If shutdown signal received and we are not in an */
         {                                                    /* OpenMP parallel block, perform the shutdown.     */
-          logger() << "Checking for emergency shutdown..." << EOM;
-          signaldata().check_for_emergency_shutdown_signal();/* (but only if it is an emergency; soft shutdown   */
-          logger() << "No emergency; will wait for whole scanner function loop to end before performing shutdown..." << EOM;
-        }                                                    /* to perform shutdown)                             */
+          signaldata().check_for_emergency_shutdown_signal();/* (but only if it is an emergency) */
+          // Throw error if we haven't jumped!
+          std::cerr << "rank " << signaldata().rank <<": No emergency shutdown occurred, but according to previous logic the signal to do so must have already been received! Please file a bug report." << std::endl;
+          exit(EXIT_FAILURE);
+        } 
         else if(iCanManageLoops)
         {
           breakLoop();
-          logger() << "breakLoop triggered (iCanManageLoops==1) in functor " << myName << EOM;
+          logger() << LogTags::core << LogTags::debug << "breakLoop triggered (iCanManageLoops==1) in functor " << myName << EOM;
         }
         else /* Must be a managed functor (since type is not void, cannot be a loop manager) */
         {
           breakLoopFromManagedFunctor();
           breakLoop(); /* Set this as well anyway in case I didn't understand the logic correctly. */
-          logger() << "breakLoop triggered while computing functor "<<myName<<" (thread="<<omp_get_thread_num()<<")" << EOM;
+          logger() << LogTags::core << LogTags::debug << "breakLoop triggered while computing functor "<<myName<<" (thread="<<omp_get_thread_num()<<")" << EOM;
         }
       }
     }

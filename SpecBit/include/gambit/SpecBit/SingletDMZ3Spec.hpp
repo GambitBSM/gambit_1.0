@@ -46,40 +46,25 @@ namespace Gambit
 
    namespace SpecBit
    {
-//      void shift(double &a, double &b, double &c, const double d)
-//      {
-//          a=b;
-//          b=c;
-//          c=d;
-//      }
-     // int stability; // stability flag
-     // double high_energy_minimum;  // scale at which high energy minimum occurs (or if no second minimum then default is Planck scale)
-     
-      //
-      // IMPLEMENTATION OF SingletDMZ3Spec MEMBER FUNCTIONS FOLLOWS  // edited for use with SingletDMZ3 with most functions removed (JM)
-      // 
-      // SingletDMZ3Spec this is a template class, we need these definition in the header
-      // file. It is nice to keep them seperate from the class declaration though.
-      //
- 
-      // NOTE!! mi is COPIED into the object, so when we get the reference to the 
+
+
+      // Set index offset from interface class
+      template <class MI>
+      const int SingletDMZ3Spec<MI>::_index_offset = MI::index_offset;
+
+      // NOTE!! mi is COPIED into the object, so when we get the reference to the
       // actual Model object to store in 'model', we need to use the copy inside
       // the object. So also need to make sure 'model_interface' is initialised first
       // (i.e. it should be declared first)
       template <class MI>
-      SingletDMZ3Spec<MI>::SingletDMZ3Spec(MI mi, str be_name, str be_version, bool switch_index_convention)
+      SingletDMZ3Spec<MI>::SingletDMZ3Spec(MI mi, str be_name, str be_version)
          : backend_name(be_name)
          , backend_version(be_version)
-         , index_offset(-1)
          , model_interface(mi)
-      {
-         if (switch_index_convention) index_offset = 0;
-      }
-      
-      // Default constructor
+      {}
+     
       template <class MI>
-      SingletDMZ3Spec<MI>::SingletDMZ3Spec(bool switch_index_convention)
-         : index_offset(switch_index_convention ? 0 : -1)
+      SingletDMZ3Spec<MI>::SingletDMZ3Spec()
       {}
   
       template <class MI>
@@ -89,7 +74,7 @@ namespace Gambit
      
      
       template <class MI>
-      void SingletDMZ3Spec<MI>::RunToScale(double scale)
+      void SingletDMZ3Spec<MI>::RunToScaleOverride(double scale)
       {
         model_interface.model.run_to(scale);
       }
@@ -114,18 +99,18 @@ namespace Gambit
      
      
 
-    
-      template <class Model>
-      double get_sinthW2_DRbar(const Model& model)
-      {
-       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
-                      (0.6 * Utils::sqr(model.get_g1()) + 
-                      Utils::sqr(model.get_g2()));
-       return sthW2;
-      }
-      
-
-      
+//    
+//      template <class Model>
+//      double get_sinthW2_DRbar(const Model& model)
+//      {
+//       double sthW2 = Utils::sqr(model.get_g1()) * 0.6 / 
+//                      (0.6 * Utils::sqr(model.get_g1()) + 
+//                      Utils::sqr(model.get_g2()));
+//       return sthW2;
+//      }
+//      
+//
+//      
       template <class Model>
       void set_Mhh_pole_slha(Model& model,double mass)
       {
@@ -138,53 +123,68 @@ namespace Gambit
       {
         model.get_physical_slha().Mss = mass;
       }
+//
+//      
+//
+//      template <class Model>
+//      void set_neutral_goldstone_pole_slha(Model& model, double mass)
+//      {
+//        model.get_physical_slha().MAh = mass;
+//      }
+//     
+//           template <class Model>
+//      void set_MAh_pole_slha(Model& model, double mass)
+//      {
+//        model.get_physical_slha().MAh = mass;
+//      }
+//     
+//     
+//
+//     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
+//     template <class Model>
+//     void set_MZ_pole_slha(Model& model, double mass)
+//     {
+//        model.get_physical_slha().MVZ = mass;
+//     }
+//
+//     template <class Model>
+//     void set_MW_pole_slha(Model& model, double mass)
+//     {
+//        model.get_physical_slha().MVWp = mass;
+//     }
+//
+//     
+//     template <class Model>
+//     void set_MGluon(Model& model, double mass)
+//     {
+//        model.get_physical().MVG = mass;
+//     }
+//     
+//     template <class Model>
+//     void set_MPhoton(Model& model, double mass)
+//     {
+//        model.get_physical().MVP = mass;
+//     }
+//
+//
+//      template <class Model>
+//      double get_MAh_pole_slha(const Model& model)
+//      {
+//        return model.get_MAh_pole_slha();
+//      }
+//     
+//      template <class Model>
+//      double get_Mss_pole_slha(const Model& model)
+//      {
+//        return model.get_Mss_pole_slha();
+//      }
 
-      
 
-      template <class Model>
-      void set_neutral_goldstone_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MAh = mass;
-      }
-     
-           template <class Model>
-      void set_MAh_pole_slha(Model& model, double mass)
-      {
-        model.get_physical_slha().MAh = mass;
-      }
-     
-     
-
-     //PA:  setting MZ and MW is necessary because we may have them as ouptuts
-     template <class Model>
-     void set_MZ_pole_slha(Model& model, double mass)
-     {
-        model.get_physical_slha().MVZ = mass;
-     }
-
-     template <class Model>
-     void set_MW_pole_slha(Model& model, double mass)
-     {
-        model.get_physical_slha().MVWp = mass;
-     }
-
-     
-     template <class Model>
-     void set_MGluon(Model& model, double mass)
-     {
-        model.get_physical().MVG = mass;
-     }
-     
-     template <class Model>
-     void set_MPhoton(Model& model, double mass)
-     {
-        model.get_physical().MVP = mass;
-     }
 
       template <class MI>
-      typename SingletDMZ3Spec<MI>::RunningGetterMaps SingletDMZ3Spec<MI>::runningpars_fill_getter_maps()
+      typename SingletDMZ3Spec<MI>::GetterMaps SingletDMZ3Spec<MI>::fill_getter_maps()
       {
-         typename SingletDMZ3Spec<MI>::RunningGetterMaps map_collection; 
+         typename SingletDMZ3Spec<MI>::GetterMaps map_collection;
          typedef typename MI::Model Model;
 
          typedef typename MTget::FInfo1 FInfo1;
@@ -223,7 +223,7 @@ namespace Gambit
             tmp_map["Lambda1"]= &Model::get_LamH;
            
             tmp_map["Lambda2"]= &Model::get_LamSH;
-            tmp_map["lambda_hS"]= &Model::get_LamSH; // same naming convention as SingletDM
+            tmp_map["lambda_hS"]= &Model::get_LamSH; // same naming convention as SingletDMZ3
             tmp_map["Lambda3"]= &Model::get_LamS;
             tmp_map["Lambda_s"]= &Model::get_LamS; // alternative naming convention
 
@@ -276,15 +276,59 @@ namespace Gambit
 
             map_collection[Par::mass_eigenstate].map1 = tmp_map;
          }
+        
+        
+         {  
+            typename MTget::fmap0 tmp_map;
+                   
+            // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
+            // reinstating the Z and W getters as otherwise there is no
+            // point in having the setters!
+            tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
+            //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
+             tmp_map["g"] = &Model::get_MVG_pole_slha;
+
+
+            map_collection[Par::Pole_Mass].map0 = tmp_map;
+         } 
+
+         // Functions utilising the "extraM" function signature
+         // (Zero index, model object as argument)
+//         {
+//            typename MTget::fmap0_extraM tmp_map;
+//        
+//            // Using wrapper functions defined above
+//            tmp_map["A0"] = &get_MAh_pole_slha<Model>;
+//
+//      
+//            map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
+//         }
+
+         // Functions utilising the one-index "plain-vanilla" function signature
+         // (One-index member functions of model object)
+         {  
+            typename MTget::fmap0 tmp_map;
+
+            tmp_map["S"] =  &Model::get_Mss_pole_slha;
+            tmp_map["Singlet"] =  &Model::get_Mss_pole_slha; // alternative naming convention as in SingletDMZ3 container
+            tmp_map["h0"] = &Model::get_Mhh_pole_slha;
+            tmp_map["h0_1"] = &Model::get_Mhh_pole_slha; //added to match SM Higgs container naming
+
+            tmp_map["A0"] = &Model::get_MAh_pole_slha;
+
+
+            map_collection[Par::Pole_Mass].map0 = tmp_map;
+         }
+
 
          return map_collection;
       } 
 
       // Filler function for setter function pointer maps extractable from "runningpars" container
       template <class MI>
-      typename SingletDMZ3Spec<MI>::RunningSetterMaps SingletDMZ3Spec<MI>::runningpars_fill_setter_maps()
+      typename SingletDMZ3Spec<MI>::SetterMaps SingletDMZ3Spec<MI>::fill_setter_maps()
       {
-         typename SingletDMZ3Spec<MI>::RunningSetterMaps map_collection; 
+         typename SingletDMZ3Spec<MI>::SetterMaps map_collection;
          typedef typename MI::Model Model;
 
          typedef typename MTset::FInfo1 FInfo1;
@@ -353,157 +397,35 @@ namespace Gambit
             map_collection[Par::dimensionless].map2 = tmp_map;
          }
 
+//        {  
+//          typename MTset::fmap0_extraM tmp_map;
+//          tmp_map["A0"] = &set_MAh_pole_slha<Model>;
+//          tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
+//   
+//          /// the getters for these were removed but Pat last meeting
+//          /// we agreed to add setters here unless I misunderstood.
+//          /// need to discuss this
+//          tmp_map["W+"] = &set_MW_pole_slha<Model>;
+//          tmp_map["W-"] = &set_MW_pole_slha<Model>;
+//          tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
+//       
+//          map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
+//        }
+
+//        {  
+//          typename MTset::fmap0_extraM tmp_map;
+//
+//          tmp_map["h0"] = &Model::set_Mhh_pole_slha;// &set_Mhh_pole_slha<Model>;
+//          tmp_map["s0"] = &Model::set_Mss_pole_slha;//&set_Mss_pole_slha<Model>;
+//          
+//          map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
+//        }
+
+
          return map_collection;
       } 
 
       /// @}
-
- 
-      // Need wrapper functios for A0 and H+ getters, to retrieve only the 
-      // non-Goldstone entries. 
-      // Need to pass in the model object, since we won't have the 'this' pointer
-      template <class Model>
-      double get_MAh_pole_slha(const Model& model)
-      {
-        return model.get_MAh_pole_slha();
-      }
-     
-      template <class Model>
-      double get_Mss_pole_slha(const Model& model)
-      {
-        return model.get_Mss_pole_slha();
-      }
-
-
-
-   
-      // Filler function for getter function pointer maps extractable from "phys" container
-      template <class MI>
-      typename SingletDMZ3Spec<MI>::PhysSetterMaps SingletDMZ3Spec<MI>::phys_fill_setter_maps()
-      {
-        typename SingletDMZ3Spec<MI>::PhysSetterMaps map_collection; 
-        typedef typename MI::Model Model;
-
-        typedef typename MTset::FInfo1M FInfo1M;
-        typedef typename MTset::FInfo2M FInfo2M;
-
-        // Can't use c++11 initialise lists,
-        // so have to initialise the index sets like this.
-        static const int i01v[] = {0,1};
-        static const std::set<int> i01(i01v, Utils::endA(i01v));
-
-        static const int i012v[] = {0,1,2};
-        static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-        static const int i0123v[] = {0,1,2,3};
-        static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
-
-        static const int i012345v[] = {0,1,2,3,4,5};
-        static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-
-        {  
-          typename MTset::fmap0_extraM tmp_map;
-          tmp_map["A0"] = &set_MAh_pole_slha<Model>;
-          tmp_map["Goldstone0"] = &set_neutral_goldstone_pole_slha<Model>;
-   
-          /// the getters for these were removed but Pat last meeting
-          /// we agreed to add setters here unless I misunderstood.
-          /// need to discuss this
-          tmp_map["W+"] = &set_MW_pole_slha<Model>;
-          tmp_map["W-"] = &set_MW_pole_slha<Model>;
-          tmp_map["Z0"] = &set_MZ_pole_slha<Model>;
-       
-          map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
-        }
-
-        {  
-          typename MTset::fmap0_extraM tmp_map;
-
-          tmp_map["h0"] = &set_Mhh_pole_slha<Model>;
-          tmp_map["s0"] = &set_Mss_pole_slha<Model>;
-          
-          map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
-        }
-
-   
-
-        return map_collection;
-      }
-
-      // Filler function for getter function pointer maps extractable from "phys" container
-      template <class MI>
-      typename SingletDMZ3Spec<MI>::PhysGetterMaps SingletDMZ3Spec<MI>::phys_fill_getter_maps()
-      {
-         typename SingletDMZ3Spec<MI>::PhysGetterMaps map_collection; 
-         typedef typename MI::Model Model;
-
-         typedef typename MTget::FInfo1 FInfo1;
-         typedef typename MTget::FInfo2 FInfo2;
-
-         // Can't use c++11 initialise lists, so have to initialise the index sets like this.
-         static const int i01v[] = {0,1};
-         static const std::set<int> i01(i01v, Utils::endA(i01v));
-
-         static const int i012v[] = {0,1,2};
-         static const std::set<int> i012(i012v, Utils::endA(i012v));
-
-         static const int i0123v[] = {0,1,2,3};
-         static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
-
-         static const int i012345v[] = {0,1,2,3,4,5};
-         static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-         
-         /// @{ Pole_Mass - Pole mass parameters
-         //
-         // Functions utilising the "plain-vanilla" function signature
-         // (Zero index member functions of model object)
-         {  
-            typename MTget::fmap0 tmp_map;
-                   
-            // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
-            // reinstating the Z and W getters as otherwise there is no
-            // point in having the setters!
-            tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
-            //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
-             tmp_map["g"] = &Model::get_MVG_pole_slha;
-
-
-            map_collection[Par::Pole_Mass].map0 = tmp_map;
-         } 
-
-         // Functions utilising the "extraM" function signature
-         // (Zero index, model object as argument)
-         {
-            typename MTget::fmap0_extraM tmp_map;
-        
-            // Using wrapper functions defined above
-            tmp_map["A0"] = &get_MAh_pole_slha<Model>;
-
-      
-            map_collection[Par::Pole_Mass].map0_extraM = tmp_map;
-         }
-
-         // Functions utilising the one-index "plain-vanilla" function signature
-         // (One-index member functions of model object)
-         {  
-            typename MTget::fmap0 tmp_map;
-
-            tmp_map["S"] =  &Model::get_Mss_pole_slha;
-            tmp_map["Singlet"] =  &Model::get_Mss_pole_slha; // alternative naming convention as in SingletDM container
-            tmp_map["h0"] = &Model::get_Mhh_pole_slha;
-            tmp_map["h0_1"] = &Model::get_Mhh_pole_slha; //added to match SM Higgs container naming
-
-            tmp_map["A0"] = &Model::get_MAh_pole_slha;
-
-
-            map_collection[Par::Pole_Mass].map0 = tmp_map;
-         }
- 
-
-         return map_collection;
-      }
-
-
   
    } // end SpecBit namespace 
 } // end Gambit namespace

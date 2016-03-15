@@ -66,9 +66,9 @@ namespace Gambit
     using namespace SpecBit;
     std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
     SingletDM -> RunToScale(scale);
-    double lambda1 = SingletDM->runningpars().get(Par::dimensionless,"Lambda1");
-    double lambda2 = SingletDM->runningpars().get(Par::dimensionless,"Lambda2");
-    double lambda3 = SingletDM->runningpars().get(Par::dimensionless,"Lambda3");
+    double lambda1 = SingletDM->get(Par::dimensionless,"Lambda1"); //runningpars().get(Par::dimensionless,"Lambda1");
+    double lambda2 = SingletDM->get(Par::dimensionless,"Lambda2");
+    double lambda3 = SingletDM->get(Par::dimensionless,"Lambda3");
     bool perturbative = lambda1 < 3.5449077018110318 && lambda2 < 3.5449077018110318 && lambda3 < 3.5449077018110318;
     cout << "checking perturb at scale " << scale << " with lambda (LB) = " << lambda1 << endl;
     return perturbative;
@@ -82,7 +82,7 @@ namespace Gambit
     std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE(); // clone the original spectrum incase the running takes the spectrum
                                                                 // into a non-perturbative scale and thus the spectrum is no longer reliable
     SingletDM -> RunToScale(scale);
-    double lambda1 = SingletDM->runningpars().get(Par::dimensionless,"Lambda1");
+    double lambda1 = SingletDM->get(Par::dimensionless,"Lambda1");
     return lambda1;
     }
     

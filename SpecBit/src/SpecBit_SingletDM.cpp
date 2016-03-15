@@ -32,8 +32,8 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
-#include "gambit/SpecBit/SMHiggsContainer.hpp"
-#include "gambit/SpecBit/ScalarSingletDMContainer.hpp"
+#include "gambit/Models/SimpleSpectra/SMHiggsSimpleSpec.hpp"
+#include "gambit/Models/SimpleSpectra/ScalarSingletDMSimpleSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 
 #include "gambit/SpecBit/SingletDMZ3Spec.hpp"
@@ -81,14 +81,14 @@ namespace Gambit
       QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       // Initialise an object to carry the Singlet plus Higgs sector information
-      SingletDMModel singletmodel;
+      Models::SingletDMModel singletmodel;
       singletmodel.HiggsPoleMass   = *myPipe::Param.at("mH");
       singletmodel.HiggsVEV        = 1. / sqrt(sqrt(2.)*sminputs.GF);
       singletmodel.SingletPoleMass = *myPipe::Param.at("mS");
       singletmodel.SingletLambda   = *myPipe::Param.at("lambda_hS");
 
       // Create a SubSpectrum object to wrap the EW sector information
-      SingletDMContainer singletspec(singletmodel);
+      Models::ScalarSingletDMSimpleSpec singletspec(singletmodel);
 
       // Create full Spectrum object from components above
       // Note: SubSpectrum objects cannot be copied, but Spectrum
@@ -192,10 +192,11 @@ namespace Gambit
       SI singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // new templated spectrum class name
       //SingletDMSpec<MI> singletdmspec(model_interface, "FlexibleSUSY", "1.1.0"); // should be 1.2.4?
 
-      
-      singletdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-      singletdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-      singletdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+    
+      singletdmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+      singletdmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+      singletdmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+
 
       // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
       // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
@@ -299,7 +300,7 @@ namespace Gambit
       using namespace SpecBit;
       const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
       const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
-      result=spec->phys().get(Par::Pole_Mass,"h0");
+      result=spec->get(Par::Pole_Mass,"h0");
     }
 
 
@@ -312,7 +313,7 @@ namespace Gambit
       using namespace SpecBit;
       const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
       const SubSpectrum* spec = fullspectrum->get_HE(); // SingletDMZ3Spec SubSpectrum object
-      result=spec->phys().get(Par::Pole_Mass,"s0");
+      result=spec->get(Par::Pole_Mass,"s0");
     }
     
     

@@ -29,6 +29,7 @@
 ///  *********************************************
 
 #include <algorithm>
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Models/models.hpp"
 
 namespace Gambit

@@ -208,9 +208,9 @@ namespace Gambit
     {
       using namespace Pipes::DD_couplings_SingletDM;
       const Spectrum* spec = *Dep::SingletDM_spectrum;
-      const RunningPars& extrapar = spec->get_HE()->runningpars();
+      const SubSpectrum* he = spec->get_HE();
       double mass = spec->get(Par::Pole_Mass,"S");
-      double lambda = extrapar.get(Par::mass1,"lambda_hS");
+      double lambda = he->get(Par::mass1,"lambda_hS");
       double mh = spec->get(Par::Pole_Mass,"h0_1");
 
       // TODO: Double check expressions (taken from Cline et al. 2013)
@@ -272,20 +272,20 @@ namespace Gambit
       // Convenience macros
       #define getSMmass(Name, spinX2)                                           \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
-       (Name , TH_ParticleProperty(SM->phys().get(Par::Pole_Mass,Name), spinX2)));    
+       (Name , TH_ParticleProperty(SM->get(Par::Pole_Mass,Name), spinX2)));    
       #define addParticle(Name, Mass, spinX2)                                   \
        catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
        (Name , TH_ParticleProperty(Mass, spinX2)));    
 
       // Import Spectrum objects
       const Spectrum* spec = *Dep::SingletDM_spectrum;
-      const RunningPars& extrapar = spec->get_HE()->runningpars();
+      const SubSpectrum* he = spec->get_HE();
       const SubSpectrum* SM = spec->get_LE();
       const SMInputs& SMI   = spec->get_SMInputs();
 
       // Import couplings
-      double lambda = extrapar.get(Par::mass1,"lambda_hS");
-      double v = extrapar.get(Par::mass1,"vev");
+      double lambda = he->get(Par::mass1,"lambda_hS");
+      double v = he->get(Par::mass1,"vev");
 
       // Get SM pole masses
       getSMmass("e-",     1)

@@ -1727,7 +1727,7 @@ void Pythia::banner(ostream& os) {
      << "ische Physik,                         |  | \n"
      << " |  |     Universitaet Heidelberg, Philosophe"
      << "nweg 16, D-69120 Heidelberg, Germany; |  | \n"
-     << " |  |      e-mail: n.desai@thphys.uni-heidelb"
+     << " |  |      e-mail: n.desai@thuni-heidelb"
      << "erg.de                                |  | \n"
      << " |  |   Philip Ilten;  Massachusetts Institut"
      << "e of Technology,                      |  | \n"

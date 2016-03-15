@@ -45,7 +45,7 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Elements/module_macros_incore.hpp"
 #include "gambit/Elements/functors.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Backends/ini_functions.hpp"
 #include "gambit/Backends/common_macros.hpp"
 #ifndef STANDALONE
@@ -146,6 +146,21 @@ CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
  CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),                                   \
  CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),                                   \
  void,2)                                                                    \
+                                                                            \
+namespace Gambit                                                            \
+{                                                                           \
+  namespace Backends                                                        \
+  {                                                                         \
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
+    {                                                                       \
+      /* Disable the initialisation function if the backend is missing */   \
+      int ini_status = set_BackendIniBit_functor_status(                    \
+       BackendIniBit::Functown::CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),    \
+       STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));                         \
+    }                                                                       \
+  }                                                                         \
+}                                                                           \
+    
 
 /// Register this backend with the Core if not running in standalone mode.
 #ifndef STANDALONE

@@ -72,6 +72,7 @@
           InputParameters input;    /* Parameters needed to compute points of Model */ \
           Problems problems; /* FlexibleSUSY problems report manager */                \
           Scales scales;   /*scales at shich coundary conditions are applied*/         \
+          static const int index_offset = -1; /* indices start from 0 (1 less than Gambit convention) */ \
                                                                                        \
           /* The rest is also internal data only. For now anyway, might need some of it     
              accessible at some point, like the input parameters, could add more       

@@ -11,7 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Jonathan Cornell
-//  2015 October
+//  2015 October, 2016 February
 //
 //  *********************************************
 
@@ -25,7 +25,8 @@
   // Local disk rotation speed vrot [km/s]
   // Maxwellian most-probable speed v0 [km/s]
   // Local galactic escape speed vesc [km/s]
-  DEFINEPARS(rho0, vrot, v0, vesc)
+  // Keplerian velocity of the earth around the sun vearth [km/s]
+  DEFINEPARS(rho0, vrot, v0, vesc, vearth)
 #undef MODEL
 
 #endif

@@ -181,18 +181,18 @@ BE_INI_FUNCTION
   // cout << Ae.re << " " << Amu.re << " " << Atau.re << endl;
 
   fh_complex MUE;  // Higgs mixing parameter mu
-  MUE.re = spec->runningpars().get(Par::mass1,"Mu"); 
+  MUE.re = spec->get(Par::mass1,"Mu"); 
   MUE.im = 0;
 
   // cout << "** MU = " << MUE.re << endl;
 
   // gaugino mass parameters. M_1 == 0 => GUT relation is used
   fh_complex M_1, M_2, M_3; 
-  M_1.re = spec->runningpars().get(Par::mass1,"M1");   
+  M_1.re = spec->get(Par::mass1,"M1");   
   M_1.im = 0;
-  M_2.re = spec->runningpars().get(Par::mass1,"M2"); 
+  M_2.re = spec->get(Par::mass1,"M2"); 
   M_2.im = 0;
-  M_3.re = spec->runningpars().get(Par::mass1,"M3"); 
+  M_3.re = spec->get(Par::mass1,"M3"); 
   M_3.im = 0;
 
   // cout << "** M1 = " << M_1.re << endl;
@@ -201,7 +201,7 @@ BE_INI_FUNCTION
 
   // the scales at which the sfermion input parameters M3S are given
   // 0 indicates on-shell parameters
-  double SCALE = spec->runningpars().GetScale();
+  double SCALE = spec->GetScale();
   
   // cout << "** SCALE = " << SCALE << endl;
 

@@ -28,6 +28,10 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 May 
 ///
+///  \author Abram Krislock
+///          (a.m.b.krislock@fys.uio.no)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 #ifndef __Spectrum_hpp__
@@ -35,13 +39,15 @@
 
 #include <complex>
 
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Elements/sminputs.hpp"
-#include "gambit/Elements/slhaea_helpers.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/partmap.hpp"
 
 namespace Gambit
 {
+   /// Less confusing name for SLHAea container class
+   typedef SLHAea::Coll SLHAstruct;
 
    /// "Standard Model" (low-energy) plus high-energy model container class
    class Spectrum
@@ -112,18 +118,26 @@ namespace Gambit
          /// "Shortcut" getters to access pole masses in hosted SubSpectrum objects.
          /// HE object given higher priority; if no match found, LE object will be 
          /// checked. If still no match, error is thrown.
-         bool   has(const Par::Phys partype, const std::string& mass) const; 
-         double get(const Par::Phys partype, const std::string& mass) const; 
-         bool   has(const Par::Phys partype, const std::string& mass, const int index) const; 
-         double get(const Par::Phys partype, const std::string& mass, const int index) const; 
+         bool   has(const Par::Tags partype, const std::string& mass) const; 
+         double get(const Par::Tags partype, const std::string& mass) const; 
+         bool   has(const Par::Tags partype, const std::string& mass, const int index) const; 
+         double get(const Par::Tags partype, const std::string& mass, const int index) const; 
 
          /// @{ PDB getter/checker overloads
-         bool   has(const Par::Phys partype, const int pdg_code, const int context) const;
-         double get(const Par::Phys partype, const int pdg_code, const int context) const;
-         bool   has(const Par::Phys partype, const std::pair<int,int> pdgpr) const;
-         double get(const Par::Phys partype, const std::pair<int,int> pdgpr) const;
-         bool   has(const Par::Phys partype, const std::pair<str,int> shortpr) const;
-         double get(const Par::Phys partype, const std::pair<str,int> shortpr) const;
+         bool   has(const Par::Tags partype, const int pdg_code, const int context) const;
+         double get(const Par::Tags partype, const int pdg_code, const int context) const;
+         bool   has(const Par::Tags partype, const std::pair<int,int> pdgpr) const;
+         double get(const Par::Tags partype, const std::pair<int,int> pdgpr) const;
+         bool   has(const Par::Tags partype, const std::pair<str,int> shortpr) const;
+         double get(const Par::Tags partype, const std::pair<str,int> shortpr) const;
+         /// @}
+
+         /// @{ Getters which first check the sanity of the thing they are returning
+         double safeget(const Par::Tags partype, const std::string& mass) const; 
+         double safeget(const Par::Tags partype, const std::string& mass, const int index) const; 
+         double safeget(const Par::Tags partype, const int pdg_code, const int context) const;
+         double safeget(const Par::Tags partype, const std::pair<int,int> pdgpr) const;
+         double safeget(const Par::Tags partype, const std::pair<str,int> shortpr) const;
          /// @}
 
          /// @}
@@ -134,6 +148,9 @@ namespace Gambit
          /// entries are overwritten at each step, so HE takes precendence over LE, and LE takes precedence
          /// over SMINPUTS.
          SLHAstruct getSLHAea() const;
+
+         /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+         const std::map<int, int>& PDG_translator() const;
          
          /// CKM Wolfenstein (lambda, A, rhobar, etabar) --> V_qq standard parameterisation convertors
          /// @{

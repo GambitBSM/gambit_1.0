@@ -48,7 +48,7 @@
     // FlexibleSUSY compatible maximal CMSSM generalisation (MSSM with GUT boundary conditions) 
     #define FUNCTION get_MSSMatMGUT_spectrum
     START_FUNCTION(const Spectrum*)                  
-    ALLOW_MODELS(MSSM78atMGUT)
+    ALLOW_MODELS(MSSM63atMGUT)
     DEPENDENCY(SMINPUTS, SMInputs) // Need SLHA2 SMINPUTS to set up spectrum generator
     #undef FUNCTION
 
@@ -56,7 +56,7 @@
     // MSSM parameterised with input at (user-defined) scale Q 
     #define FUNCTION get_MSSMatQ_spectrum
     START_FUNCTION(const Spectrum*)                  
-    ALLOW_MODELS(MSSM78atQ)
+    ALLOW_MODELS(MSSM63atQ)
     DEPENDENCY(SMINPUTS, SMInputs) // Need SLHA2 SMINPUTS to set up spectrum generator
     #undef FUNCTION
 
@@ -134,7 +134,7 @@
                 Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
                 Farray< fh_real,1,4>&, fh_real&))
     BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
 
@@ -151,7 +151,7 @@
                 Farray<fh_complex, 1,3, 1,3>&, 
                 Farray<fh_complex, 1,3, 1,3>&))
     BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
 
@@ -167,7 +167,7 @@
                                                     Farray< fh_real,1,978>&,
                                                     Farray< fh_real,1,250>&, int&))
     BACKEND_OPTION( (FeynHiggs, 2.11.2, 2.11.3), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    ALLOW_MODELS(MSSM63atQ, MSSM63atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
 

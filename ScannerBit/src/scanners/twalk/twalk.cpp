@@ -113,15 +113,10 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         {
             MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (c_ptr(a0[talls[i]]), a0[talls[i]].size(), MPI_DOUBLE, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&chisq[talls[i]], 1, MPI_DOUBLE, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&mult[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&count[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&ranks[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&ids[talls[i]], 1, MPI_UNSIGNED_LONG_LONG, i, MPI_COMM_WORLD);
         }
 #endif
@@ -150,9 +145,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
 #ifdef WITH_MPI
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast (c_ptr(chisq), chisq.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast (c_ptr(ids), ids.size(), MPI_UNSIGNED_LONG_LONG, 0, MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast (c_ptr(ranks), ranks.size(), MPI_INT, 0, MPI_COMM_WORLD);
 #endif
             
@@ -184,7 +177,6 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
 
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast (c_ptr(talls), talls.size(), MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast (c_ptr(tints), tints.size(), MPI_INT, 0, MPI_COMM_WORLD);
         
         t = talls[rank];
@@ -278,15 +270,10 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
         {
             MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (c_ptr(a0[talls[i]]), a0[talls[i]].size(), MPI_DOUBLE, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&chisq[talls[i]], 1, MPI_DOUBLE, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&mult[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&count[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&ranks[talls[i]], 1, MPI_INT, i, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD);
             MPI_Bcast (&ids[talls[i]], 1, MPI_UNSIGNED_LONG_LONG, i, MPI_COMM_WORLD);
         }
 #endif
@@ -364,9 +351,7 @@ void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike
 #endif
     }
     while((cont));
-#ifdef WITH_MPI
-    MPI_Barrier(MPI_COMM_WORLD);
-#endif
+
     std::cout << "twalk for rank " << rank << " has finished." << std::endl;
     
     return;

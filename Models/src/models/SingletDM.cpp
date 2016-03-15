@@ -27,7 +27,7 @@
 
 #include "gambit/Models/model_macros.hpp"
 #include "gambit/Models/model_helpers.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
 #include "gambit/Models/models/SingletDM.hpp"
@@ -47,7 +47,7 @@ using namespace Gambit::Utils;
 void MODEL_NAMESPACE::SingletDM_to_SingletDM_running (const ModelParameters &myP, ModelParameters &targetP)
 {
    USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
-   logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_running..."<<LogTags::info<<EOM;
+   logger()<<"Running interpret_as_parent calculations for SingletDM --> SingletDM_.."<<LogTags::info<<EOM;
   
 
   double Lambda_hS;
