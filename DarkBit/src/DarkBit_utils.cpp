@@ -21,6 +21,8 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 
+#define DARKBIT_DEBUG
+
 namespace Gambit 
 {
   namespace DarkBit 
@@ -129,9 +131,15 @@ namespace Gambit
         try{entry = &(tbl->at(pID));} 
         catch(const std::out_of_range& oor)
         {
+#ifdef DARKBIT_DEBUG
+          std::cout << "  ! No entry found in DecayTable object (nothing imported) !" << std::endl;
+#endif
           return;
         }     
         double totalWidth = entry->width_in_GeV;
+#ifdef DARKBIT_DEBUG
+        std::cout << "  totalWidth = " << totalWidth << std::endl;
+#endif
         if(totalWidth>0)
         {
           TH_Process process(pID);
@@ -144,6 +152,9 @@ namespace Gambit
             {
               std::vector<std::string> pIDs;
               double m_final = 0;
+#ifdef DARKBIT_DEBUG
+              std::cout << "  Final state: ";
+#endif
               for(auto pit = fState_it->first.begin();
                   pit != fState_it->first.end(); ++pit)
               {
@@ -151,8 +162,17 @@ namespace Gambit
                 name = DarkBit_utils::str_flav_to_mass(name);
                 m_final += catalog.getParticleProperty(name).mass;
                 pIDs.push_back(name);
+#ifdef DARKBIT_DEBUG
+                std::cout << name << " ";
+#endif
               } 
               double partialWidth = totalWidth * bFraction;        
+#ifdef DARKBIT_DEBUG
+              std::cout << std::endl;
+              std::cout << "    m_init = " << m_init << std::endl;
+              std::cout << "    m_final = " << m_final << std::endl;
+              std::cout << "    bFraction = " << bFraction << std::endl;
+#endif
               if(m_final<=m_init)
               {
                 process.channelList.push_back(
@@ -164,6 +184,10 @@ namespace Gambit
                     ImportDecays(*f_it, catalog, importedDecays, tbl, minBranching, excludeDecays);
                 }
               }
+#ifdef DARKBIT_DEBUG
+              else
+                std::cout << "    ! Process ignored since it is offshell !" << std::endl;
+#endif
             }
           }
           catalog.processList.push_back(process);          
@@ -173,3 +197,5 @@ namespace Gambit
     } // namespace DarkBit_utils
   } // namespace DarkBit
 } // namespace Gambit
+
+#undef DARKBIT_DEBUG

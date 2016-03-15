@@ -19,6 +19,8 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/ProcessCatalog.hpp"
 
+#define DARKBIT_DEBUG
+
 namespace Gambit {
   namespace DarkBit {
 
@@ -177,22 +179,37 @@ namespace Gambit {
 
     void TH_ProcessCatalog::validate()
     {
+#ifdef DARKBIG_DEBUG
+      std::cout << std::endl;
+      std::cout << "********************************" << std::endl;
+      std::cout << "*** Validate Process catalog ***" << std::endl;
+      std::cout << "********************************" << std::endl;
+      std::cout << std::endl;
+#endif
+
       for (auto it = processList.begin(); it != processList.end(); it++)
       {
-        std::string processname;
-
         if (it->isAnnihilation) // Annihilation
         {
-          double E_in = getParticleProperty(it->particle1ID).mass;
-          E_in += getParticleProperty(it->particle2ID).mass;
+          std::string p1ID = it->particle1ID;
+          std::string p2ID = it->particle2ID;
+          double m1 = getParticleProperty(p1ID).mass;
+          double m2 = getParticleProperty(p2ID).mass;
+          double E_in = m1 + m2;
 #ifdef DARKBIT_DEBUG
-          std::cout << E_in << std::endl;
-#endif
+          std::cout << "Annihilation process for: " << p1ID << " " << p2ID << std::endl;
+          std::cout << "  Masses (GeV): " << m1 << " " << m2 << std::endl;
+#undef
 
           if ((it->genRateMisc->getNArgs() != 1) or not(it->genRateMisc->hasArg("v")))
             DarkBit_error().raise(LOCAL_INFO, 
                 "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
                 "  genRateMisc must have relative velocity v as only argument.");
+
+#ifdef DARKBIT_DEBUG
+          std::cout << "  genRateMisc(v=0) = " << it->genRateMisc->bind("v")->eval(0) << std::endl;
+#undef
+
           for (auto it2 = it->channelList.begin(); it2 != it->channelList.end(); it2++)
           {
             double E_out = 0;
@@ -203,8 +220,9 @@ namespace Gambit {
               outstring += it2->finalStateIDs[i] + " ";
             }
 #ifdef DARKBIT_DEBUG
-            std::cout << outstring << " --- " << E_out << std::endl;
-#endif
+            std::cout << "  Channel: " << outstring << std::endl;
+            std::cout << "    Total mass: " << E_out << std::endl;
+#undef
             if (it2->nFinalStates != it2->finalStateIDs.size())
               DarkBit_error().raise(LOCAL_INFO, 
                   "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
@@ -240,11 +258,23 @@ namespace Gambit {
                   "Invalid TH_ProcessCatalog annihilation entry for " + it->particle1ID + " " + it->particle2ID + "\n"
                   "  genRate must be zero for values of v that are below kinematic threshold for annihilation into " + outstring);
             }
+#ifdef DARKBIT_DEBUG
+            if (it2->finalStateIDs.size() == 2)
+              std::cout << "    genRate(v=0) = " << it2->genRate->bind("v")->eval() << std::endl;
+            else
+              std::cout << "    genRate(v=0) = f(E, E1)" << std::endl;
+#undef
           }
         }
         else // Decay
         {
           double E_in = getParticleProperty(it->particle1ID).mass;
+
+#ifdef DARKBIT_DEBUG
+          std::cout << "Decay process for: " << it->particle1ID << std::endl;
+          std::cout << "  Mass (GeV): " << E_in << std::endl;
+          std::cout << "  genRateMisc = " << it->genRateMisc->bind()->eval() << std::endl;
+#undef
 
           if (it->genRateMisc->getNArgs() != 0)
             DarkBit_error().raise(LOCAL_INFO, 
@@ -259,6 +289,10 @@ namespace Gambit {
               E_out += getParticleProperty(it2->finalStateIDs[i]).mass;
               outstring += it2->finalStateIDs[i] + " ";
             }
+#ifdef DARKBIT_DEBUG
+            std::cout << "  Channel: " << outstring << std::endl;
+            std::cout << "    Total mass: " << E_out << std::endl;
+#undef
             if (it2->nFinalStates != it2->finalStateIDs.size())
               DarkBit_error().raise(LOCAL_INFO, 
                   "Invalid TH_ProcessCatalog decay entry for " + it->particle1ID + "\n"
@@ -281,12 +315,24 @@ namespace Gambit {
               DarkBit_error().raise(LOCAL_INFO, 
                 "Invalid TH_ProcessCatalog decay entry for " + it->particle1ID + "\n"
                 "  kinematically forbidden decay into " + outstring);
+#ifdef DARKBIT_DEBUG
+            if (it2->finalStateIDs.size() == 2)
+              std::cout << "    genRate = " << it2->genRate->bind()->eval() << std::endl;
+            else
+              std::cout << "    genRate = f(E, E1)" << std::endl;
+#undef
           }
         }
       }
 #ifdef DARKBIT_DEBUG
-      std::cout << "Validation OK." << std::endl;
-#endif
+      std::cout << std::endl;
+      std::cout << "*****************" << std::endl;
+      std::cout << "*** Validated ***" << std::endl;
+      std::cout << "*****************" << std::endl;
+      std::cout << std::endl;
+#undef
     }
   } // namespace DarkBit
 } // namespace Gambit
+
+#undef DARKBIT_DEBUG

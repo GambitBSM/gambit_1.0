@@ -47,6 +47,7 @@ namespace Gambit {
      * 3) Put together the full spectrum.
      *
      */
+#define DARKBIT_DEBUG
     void GA_missingFinalStates(std::vector<std::string> &result)
     {
       using namespace Pipes::GA_missingFinalStates;
@@ -97,15 +98,21 @@ namespace Gambit {
         }
       }
       // Remove particles we don't have decays for.
-      for (auto it = missingFinalStates.begin(); it != missingFinalStates.end(); ) 
+      for (auto it = missingFinalStates.begin(); it != missingFinalStates.end();) 
       {
           if ((*Dep::TH_ProcessCatalog).find(*it, "") == NULL) 
           {
+#ifdef DARKBIT_DEBUG
+            std::cout << "Erasing (because no decays known): " << *it << std::endl;
+#endif
             missingFinalStates.erase(it++);
           }
-          else 
+          else
           {
             ++it;
+#ifdef DARKBIT_DEBUG
+            std::cout << "Keeping (because decay known): " << *it << std::endl;
+#endif
           }
       }
 
@@ -119,6 +126,7 @@ namespace Gambit {
 
       result.assign(missingFinalStates.begin(), missingFinalStates.end());
     }
+#undef DARKBIT_DEBUG
 
     /*! \brief Boosts an energy spectrum of isotropic particles into another
      *         frame (and isotropizes again).
@@ -138,11 +146,16 @@ namespace Gambit {
       }
       double betaGamma = sqrt(gamma*gamma-1);
       Funk::Funk E = Funk::var("E");
+      Funk::Funk lnE = Funk::var("lnE");
       Funk::Funk Ep = Funk::var("Ep");
       Funk::Funk halfBox_int = betaGamma*sqrt(E*E-mass*mass);
       Funk::Funk halfBox_bound = betaGamma*sqrt(Ep*Ep-mass*mass);
       Funk::Funk integrand = dNdE/(2*halfBox_int);
-      return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
+      //return integrand->gsl_integration("E", Ep*gamma-halfBox_bound, Ep*gamma+halfBox_bound)
+      //  ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", Funk::var("E"));
+      //
+      // Numerically more stable to integrate over lnE instead
+      return (integrand*E)->set("E", exp(lnE))->gsl_integration("lnE", log(Ep*gamma-halfBox_bound), log(Ep*gamma+halfBox_bound))
         ->set_epsabs(0)->set_epsrel(1e-3)->set("Ep", Funk::var("E"));
     }
 
@@ -415,6 +428,10 @@ namespace Gambit {
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 13, yieldk, flag);
         result.addChannel(dNdE/2, "W+", "gamma", 0., 10000.);
         result.addChannel(dNdE/2, "W-", "gamma", 0., 10000.);
+        // FIXME: This is a bad approximation to final state radiation, I suppose
+        dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 15, yieldk, flag);
+        result.addChannel(dNdE/2, str_flav_to_mass("e+"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("e-"), "gamma", 0., 10000.);
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 17, yieldk, flag);
         result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 0., 10000.);
         result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0., 10000.);        
