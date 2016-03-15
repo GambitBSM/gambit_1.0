@@ -21,6 +21,8 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
+//#define DARKBIT_DEBUG
+
 namespace Gambit {
   namespace DarkBit {
 
@@ -41,10 +43,10 @@ namespace Gambit {
       list = runOptions->getValueOrDef<std::vector<std::string> >(
           list,"cMC_finalStates");       
 #ifdef DARKBIT_DEBUG
-      std::cout << "Final states to generate:" << std::endl;
+      std::cout << "Final states to generate: " << list.size() << std::endl;
       for(size_t i=0; i < list.size(); i++)
       {
-        std::cout << list[i] << std::endl;
+        std::cout << "  " << list[i] << std::endl;
       }
 #endif
     }     
@@ -57,22 +59,10 @@ namespace Gambit {
       std::set<std::string> disabled;
       // Force quarks and gluons to be stable in cascade context.
       // These spectra should be handled using SimYields.
-      if(runOptions->getValueOrDef<bool> (true, "cMC_noColoredSMdecays"))
-      {
-        disabled.insert("u");
-        disabled.insert("ubar");     
-        disabled.insert("d");
-        disabled.insert("dbar");
-        disabled.insert("c");
-        disabled.insert("cbar");  
-        disabled.insert("s");
-        disabled.insert("sbar");                 
-        disabled.insert("t");
-        disabled.insert("tbar");
-        disabled.insert("b");
-        disabled.insert("bbar");   
-        disabled.insert("g");                        
-      }
+// FIXME: Decide what to do with quark final states
+//      if(runOptions->getValueOrDef<bool> (true, "cMC_noColoredSMdecays"))
+//        disabled = Funk::vec<std::string>( "u", "ubar", "d", "dbar", "c",
+//            "cbar", "s", "sbar", "t", "tbar", "b", "bbar", "g");
       try
       {
         table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable, disabled);
@@ -81,7 +71,9 @@ namespace Gambit {
       {
           DarkBit_error().raise(err.first,err.second);
       }
-      //table.printTable();
+#ifdef DARKBIT_DEBUG
+      table.printTable();
+#endif
     }
 
     // Loop manager for cascade decays
@@ -164,9 +156,10 @@ namespace Gambit {
         pID = chainList[iteration];
 #ifdef DARKBIT_DEBUG
          std::cout << "cascadeMC_InitialState" << std::endl;            
-         std::cout << "Iteration: " << *Loop::iteration << std::endl;
-         std::cout << "Number of states to simulate: " 
+         std::cout << "  Iteration: " << *Loop::iteration << std::endl;
+         std::cout << "  Number of states to simulate: " 
            << chainList.size() << std::endl;
+         std::cout << "  Current state: " << pID << std::endl;
 #endif
     }
 
@@ -672,6 +665,20 @@ namespace Gambit {
       cascadeMC_fetchSpectra(spectra, "gamma", *Dep::GA_missingFinalStates,
           *Dep::cascadeMC_FinalStates, *Dep::cascadeMC_Histograms,
           *Dep::cascadeMC_EventCount);
+#ifdef DARKBIT_DEBUG
+      std::cout << "Retrieving cascade spectra for gamma final states" << std::endl;
+      std::cout << "Number of simulated final states: " << spectra.size() << std::endl;
+      for ( auto it = spectra.begin(); it != spectra.end(); it ++ )
+      {
+        std::cout << "Particle: " << it->first << std::endl;
+        auto f= it->second;
+        for ( double E = 0.1; E < 1000; E*=1.5 )
+        {
+          std::cout << "  " << E << " " << f->bind("E")->eval(E) << std::endl;
+        }
+        std::cout << "  Integrated spectrum: " << f->gsl_integration("E", 0, 1000)->bind()->eval() << std::endl;
+      }
+#endif
     }
 
 
@@ -710,3 +717,5 @@ namespace Gambit {
     }
   } 
 }
+
+#undef DARKBIT_DEBUG

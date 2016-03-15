@@ -489,6 +489,9 @@ namespace Gambit
       DecayTable::DecayTable(const TH_ProcessCatalog &cat,
           const SimYieldTable &tab, set<string> disabledList)
       {
+#ifdef DARKBIT_DEBUG
+        std::cout << "Importing CascadeMC DecayTable from process catalog..." << std::endl;
+#endif
         set<string> finalStates;
         // Register all decaying particles and their decays
         for(vector<TH_Process>::const_iterator it = cat.processList.begin();
@@ -583,6 +586,9 @@ namespace Gambit
             addEntry(*it,m,true);
           }
         }
+#ifdef DARKBIT_DEBUG
+        std::cout << "...done" << std::endl;
+#endif
       }
       bool DecayTable::hasEntry(string index) const
       {
@@ -631,51 +637,51 @@ namespace Gambit
       }
       void DecayTable::printTable() const
       {
-        // FXIMEW
-        logger() << "DecayTable printout:" << endl;
+#ifdef DARKBIT_DEBUG
+        std::cout << std::endl;
+        std::cout << "***********************" << endl;
+        std::cout << "CMC DecayTable printout" << endl;
+        std::cout << "***********************" << endl;
+        std::cout << std::endl;
         for(unordered_map<string,DecayTableEntry>::const_iterator 
             it = table.begin(); it != table.end(); ++it)
         {
-          logger() << "Particle: " <<(it->first) << endl;
-          logger() << "Set stable: " << (it->second).stable << endl;
-          logger() << "Mass: " <<(it->second).m << endl;
-          logger() << "Total width: " << (it->second.getTotalWidth())<< endl;
-          logger() << "Enabled branching ratio: " 
+          std::cout << "Particle: " <<(it->first) << endl;
+          std::cout << "Set stable: " << (it->second).stable << endl;
+          std::cout << "Mass: " <<(it->second).m << endl;
+          std::cout << "Total width: " << (it->second.getTotalWidth())<< endl;
+          std::cout << "Enabled branching ratio: " 
             << (it->second.getEnabledBranching()) << endl;
-          logger() << "Enabled decays:" << endl;
-          int ctr = 0;
+          std::cout << "Enabled decays:" << endl;
           for(vector<const TH_Channel*>::const_iterator 
               it2 = (it->second.enabledDecays).begin();
               it2 != (it->second.enabledDecays).end(); ++it2)
           {
-            logger() << ctr << "   ";
+            std::cout << "  ";
             for(vector<string>::const_iterator 
                 it3 = ((*it2)->finalStateIDs).begin();
                 it3 != ((*it2)->finalStateIDs).end(); ++it3)
             {
-              logger() << *it3 << ", ";
+              std::cout << *it3 << ", ";
             }
-            ctr++;
-            logger() << "Width: " << getWidth(*it2) << endl;
+            std::cout << "Width: " << getWidth(*it2) << endl;
           }
-          logger() << "Disabled decays:" << endl;
-          ctr = 0;
+          std::cout << "Disabled decays:" << endl;
           for(vector<const TH_Channel*>::const_iterator 
               it2 = (it->second.disabledDecays).begin();
               it2 != (it->second.disabledDecays).end(); ++it2)
           {
-            logger() << ctr << "   ";
+            std::cout << "  ";
             for(vector<string>::const_iterator 
                 it3 = ((*it2)->finalStateIDs).begin();
                 it3 != ((*it2)->finalStateIDs).end(); ++it3)
             {
-              logger() << *it3 << ", ";
+              std::cout << *it3 << ", ";
             }
-            ctr++;
-            logger() << "Width: " << getWidth(*it2) << endl;
+            std::cout << "Width: " << getWidth(*it2) << endl;
           }
-          logger() << endl;
         } 
+#endif
       }
 
 
