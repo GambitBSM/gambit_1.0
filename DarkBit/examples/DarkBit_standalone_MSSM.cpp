@@ -301,6 +301,7 @@ int main(int argc, char* argv[])
   GA_missingFinalStates.reset_and_calculate();
 
   // Infer for which type of final states particles MC should be performed
+  cascadeMC_FinalStates.setOption<std::vector<std::string>>("cMC_finalStates", Funk::vec((std::string)"gamma"));
   cascadeMC_FinalStates.reset_and_calculate();
 
   // Collect decay information for cascade MC
@@ -309,6 +310,7 @@ int main(int argc, char* argv[])
   cascadeMC_DecayTable.reset_and_calculate();
 
   // Set up MC loop manager for cascade MC
+  cascadeMC_LoopManager.setOption<int>("cMC_maxEvents", 1000);
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
   cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
