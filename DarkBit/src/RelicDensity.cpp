@@ -203,6 +203,7 @@ namespace Gambit {
       // NB: coannihilatingParticles does not have to be ordered,
       // but it is assumed that coannihilatingParticles[0] is the DM particle 
 
+      // FIXME: Discuss!!!
       RD_coannihilating_particle tmp_co;
       if (result.coannihilatingParticles.size() > 1)
         for (std::size_t i=0; i<result.coannihilatingParticles.size()-1; i++)
@@ -284,7 +285,8 @@ namespace Gambit {
         myrdmgev.kcoann(i)=specres.coannihilatingParticles[i-1].index;
         // NB: only this particle code is DS/SUSY specific!
       }
-      // now order: (still needed! (?) )
+
+      // now order:  FIXME: Discuss!!!
       double tmp; int itmp;
       for (int i=1; i<=myrdmgev.nco-1; i++) {
         for (int j=i+1; j<=myrdmgev.nco; j++) {
@@ -321,6 +323,7 @@ namespace Gambit {
       // similar for other BEs...
 
       // TB : why testing this only for peff= 0.1 ?
+      // FIXME: Discuss!!!
 //      double peff = 0.1;
 //      if ( Utils::isnan((*result)(peff)) )
 //      {
@@ -382,7 +385,9 @@ namespace Gambit {
       }
       double mwimp=myRDspec.coannihilatingParticles[0].mass;
 
-        double tbtest=0;
+#ifdef DARKBIT_RD_DEBUG
+      double tbtest=0;
+#endif
 
 
       // HERE STARTS A GIANT IF STATEMENT WHICH 
@@ -438,8 +443,10 @@ namespace Gambit {
         for (std::size_t i=1; i<=((unsigned int)myrdmgev->nco); i++) {
           myrdmgev->mco(i)=myRDspec.coannihilatingParticles[i-1].mass;
           myrdmgev->mdof(i)=myRDspec.coannihilatingParticles[i-1].degreesOfFreedom; 
-          myrdmgev->kcoann(i)=myRDspec.coannihilatingParticles[i-1].index; 
+          myrdmgev->kcoann(i)=myRDspec.coannihilatingParticles[i-1].index;   // FIXME: Discuss!!!
+#ifdef DARKBIT_RD_DEBUG
           std::cout << "kcoann, mco, mdof: " << myrdmgev->kcoann(i) << "  " << myrdmgev->mco(i) << "  " << myrdmgev->mdof(i) << std::endl;
+#endif
         }
 
         // write information about thresholds and resonances to DS common blocks
@@ -450,7 +457,9 @@ namespace Gambit {
           for (std::size_t i=1; i<=myRDspec.resonances.size(); i++) {
             myrdmgev->rgev(i)=myRDspec.resonances[i-1].energy;
             myrdmgev->rwid(i)=myRDspec.resonances[i-1].width;
+#ifdef DARKBIT_RD_DEBUG
             std::cout << "rgev, rwid: " << myrdmgev->rgev(i) << "  " << myrdmgev->rwid(i) << std::endl;
+#endif
           }
         }
         // convert to momenta and write to DS common blocks
@@ -461,7 +470,9 @@ namespace Gambit {
         for (std::size_t i=1; i<myRDspec.threshold_energy.size(); i++) {
           myrdpth.pth(i)=sqrt(pow(myRDspec.threshold_energy[i],2)/4-pow(mwimp,2));
           myrdpth.incth(i)=1;
+#ifdef DARKBIT_RD_DEBUG
           std::cout << "pth, incth: " << myrdpth.pth(i) << "  " << myrdpth.incth(i) << std::endl;
+#endif
         }
         *BEreq::rdpth = myrdpth;
 
@@ -495,12 +506,13 @@ namespace Gambit {
           std::cout << "Weff(" << peff << ") = " << (*Dep::RD_eff_annrate)(peff) << std::endl;
 #endif
 
+#ifdef DARKBIT_RD_DEBUG
         // Set up timing
         std::chrono::time_point<std::chrono::system_clock> start, end;
+#endif
 
-        // tabulate invariant rate
-        logger() << "Tabulating RD_eff_annrate..." << std::endl;
         
+        // FIXME: Remove?
 //            const Spectrum* mySpec = *Dep::MSSM_spectrum;
 //            SLHAstruct mySLHA = mySpec->getSLHAea();
 //            std::ofstream ofs("RelicDensity_debug.slha");
@@ -509,29 +521,33 @@ namespace Gambit {
         
 //        std::cout << "SLHA written to file" << std::endl;
         
+#ifdef DARKBIT_RD_DEBUG
         start = std::chrono::system_clock::now();
+#endif
+
+        // tabulate invariant rate
+        logger() << "Tabulating RD_eff_annrate..." << std::endl;
         BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
-        end = std::chrono::system_clock::now();
         logger() << "...done!" << std::endl;
 
+#ifdef DARKBIT_RD_DEBUG
         // Get runtime
+        end = std::chrono::system_clock::now();
         double runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-        //if (runOptions->getValueOrDef<bool>(false, "debugMode"))
+        // Check if runtime too long
+        if ( runtime > 30. )
         {
-          // Check if runtime too long
-          if ( runtime > 30. )
-          {
-            std::cout << "Duration [ms]: " << runtime << std::endl;
-            const Spectrum* mySpec = *Dep::MSSM_spectrum;
-            SLHAstruct mySLHA = mySpec->getSLHAea();
-            std::ofstream ofs("RelicDensity_debug.slha");
-            ofs << mySLHA;
-            ofs.close();
-            tbtest=1;
+          std::cout << "Duration [ms]: " << runtime << std::endl;
+          const Spectrum* mySpec = *Dep::MSSM_spectrum;
+          SLHAstruct mySLHA = mySpec->getSLHAea();
+          std::ofstream ofs("RelicDensity_debug.slha");
+          ofs << mySLHA;
+          ofs.close();
+          tbtest=1;
 //            exit(1);  // And stop
-          }
         }
+#endif
 
         // Check whether piped invalid point was thrown
         piped_invalid_point.check();
@@ -564,13 +580,16 @@ namespace Gambit {
       } // USING BE=DS
 
       logger() << "RD_oh2_general: oh2 =" << result << std::endl;
-      
-#ifdef DARKBIT_DEBUG
+
+// FIXME: Should be commented out
+//#ifdef DARKBIT_DEBUG
       std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
       std::cout << "Oh2     = " << result << std::endl << std::endl;
-#endif
+//#endif
 
+#ifdef DARKBIT_RD_DEBUG
       if (tbtest==1) {exit(1);}
+#endif
       
 
     } // function RD_oh2_general
