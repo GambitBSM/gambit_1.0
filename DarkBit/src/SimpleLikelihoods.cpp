@@ -261,7 +261,7 @@ namespace Gambit {
       std::ofstream myfile (filename);
       if (myfile.is_open())
       {
-        for (int i = 0; i<=1000; i++)
+        for (int i = 0; i<=1200; i++)
         {
           double energy = pow(10., i/200. - 2.);
 

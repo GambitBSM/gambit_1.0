@@ -15,7 +15,7 @@ def getTags():
   for tag in [
       'FMCp03000765',
       'JE56C_003717',
-      #'JE58D_007879',
+      'JE58D_007879',
       'JE67B_006998',
       'JE67D_001840',
       'JE87O_006600'
@@ -152,7 +152,7 @@ def showBR():
     for b, c in zip(br, channel):
       if b < 1e-5: continue
       plt.plot([offset, offset+1], [b, b], ls='-', lw=2, color=col)
-      bt = min(btlast*0.55, b)
+      bt = min(btlast*0.55, b*1.2)
       plt.text(offset+1.4, bt, c, va='center')
       plt.plot([offset+1.1, offset+1.35], [b, bt], 'k', dashes=[1,1])
       btlast = bt
@@ -199,8 +199,8 @@ def showDD():
   plt.savefig("DarkBit/DD_MSSM.eps")
 
 if __name__ == '__main__':
-  #runtests()  # This can take *very* long thanks to DS relic density routines
-  #showSpec()
-  #showRelic()
-  #showDD()
+  runtests()  # This can take *very* long thanks to DS relic density routines
+  showSpec()
+  showRelic()
+  showDD()
   showBR()
