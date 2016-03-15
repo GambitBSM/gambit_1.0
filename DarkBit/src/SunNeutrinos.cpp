@@ -17,7 +17,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
-#define DARKBIT_DEBUG
+//#define DARKBIT_DEBUG
 
 namespace Gambit
 {
@@ -37,6 +37,14 @@ namespace Gambit
     void capture_rate_Sun_constant_xsec(double &result)
     {
       using namespace Pipes::capture_rate_Sun_constant_xsec;
+
+      // Set local DM density based on calculated relic density.
+
+      double rho0_eff = (*Dep::RD_fraction)*(*Param["rho0"]);
+      BEreq::dshmcom->rhox = rho0_eff;
+      logger() << "Updating DarkSUSY halo parameters:" << EOM;
+      logger() << "  rho0_eff [GeV/cm^3] = " << rho0_eff << EOM;
+
       // Here we assume that the proton and neutron scattering cross-sections
       // are the same.
       result = BEreq::capture_rate_Sun(
@@ -84,7 +92,11 @@ namespace Gambit
       {
         const TH_Channel* channel = annProc.find(neutral_channels[i]);
 
-        if (channel != NULL)
+        if (channel == NULL or i == 26) // Channel 26 has not been implemented in DarkSUSY.
+        {
+          annihilation_bf[i] = 0.;
+        }
+        else
         {
           annihilation_bf[i] = channel->genRate->bind("v")->eval(0.);
           if (i == 10) // Add W- H+ for this channel
@@ -95,8 +107,6 @@ namespace Gambit
                 " That's some suspiciously severe CP violation yo.");
             annihilation_bf[i] += channel->genRate->bind("v")->eval(0.);
           }
-          // This channel has not been implemented in DarkSUSY.
-          if (i == 26) annihilation_bf[i] = 0.;
           annihilation_bf[i] /= *Dep::sigmav;
 
           // Check that having this channel turned on makes sense at all.
@@ -111,15 +121,9 @@ namespace Gambit
             }
             cout << "Sqrt(s) vs total mass of final states: " << 2 * *Dep::mwimp << " vs. " << mtot << endl;
             cout << "Branching fraction in v=0 limit: " << annihilation_bf[i] << endl << endl;
-            if (0.9 * mtot > 2 * *Dep::mwimp and annihilation_bf[i] > 0.0)
+            if (mtot > 2 * *Dep::mwimp and annihilation_bf[i] > 0.0)
              DarkBit_error().raise(LOCAL_INFO, "Channel is open in process catalog but should not be kinematically allowed.");
           #endif
-
-        }
-
-        else
-        {
-          annihilation_bf[i] = 0.;
         }
 
       }
@@ -148,9 +152,9 @@ namespace Gambit
       const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
       const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
       if (Hplus_decays != NULL and Hminus_decays == NULL) DarkBit_error().raise(
-          LOCAL_INFO, "H+ decays exists in process catalogue but not H-.");
+          LOCAL_INFO, "H+ decays exist in process catalogue but not H-.");
       if (Hplus_decays == NULL and Hminus_decays != NULL) DarkBit_error().raise(
-          LOCAL_INFO, "H- decays exists in process catalogue but not H+.");
+          LOCAL_INFO, "H- decays exist in process catalogue but not H+.");
 
       // Set the neutral Higgs decay branching fractions
       // FIXME needs to be fixed once BFs are available directly from TH_Process
@@ -311,12 +315,12 @@ namespace Gambit
     }
 
     /// \brief Likelihood calculators for different IceCube event samples
-    /// These functions all include the likelihood of the background-only model for the respective sameple.
+    /// These functions all include the likelihood of the background-only model for the respective sample.
     /// We define the final log-likelihood as delta = sum over analyses of (lnL_model - lnL_BG), conservatively
     /// forbidding delta > 0 in order to always just use the neutrino likelihood as a limit.  This ignores small
     /// low-E excesses caused by impending breakdown of approximations used in IceCube response data and the nulike
     /// likelihood at very low E. This implies conditioning on all but one parameter (e.g. the cross-section),
-    /// such that including any combination of IC data adds just *one* additional degree of freedom to the fit.
+    /// such that including any particular IC analysis adds just *one* additional degree of freedom to the fit.
     /// @{
 
     /// \brief 22-string IceCube sample: predicted signal and background

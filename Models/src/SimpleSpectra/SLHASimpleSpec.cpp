@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/SLHAskeleton.hpp" 
+#include "gambit/Models/SimpleSpectra/SLHASimpleSpec.hpp" 
 
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
@@ -54,6 +54,19 @@ namespace Gambit
         return data;
       }
 
+      /// Add spectrum information to an SLHAea object
+      void SLHAeaModel::add_to_SLHAea(SLHAea::Coll& slha) const
+      {
+        slha.insert(slha.end(), data.cbegin(), data.cend());
+      }
+
+      /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
+      const std::map<int, int>& SLHAeaModel::PDG_translator() const
+      {
+        return PDG_translation_map;
+      }
+
+
       /// @{ Helper functions to do error checking for SLHAea object contents
 
       /// One index
@@ -77,7 +90,7 @@ namespace Gambit
       {
          double output;
          try {
-           output = to<double>(getSLHAea().at(block).at(i,j).at(1));
+           output = to<double>(getSLHAea().at(block).at(i,j).at(2));
          }
          catch (const std::out_of_range& e) {
            std::ostringstream errmsg;

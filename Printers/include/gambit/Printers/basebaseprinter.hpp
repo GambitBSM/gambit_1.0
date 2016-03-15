@@ -58,11 +58,53 @@ namespace Gambit
         /// Signal printer that scan is finished, and final output needs to be performed
         virtual void finalise(bool abnormal=false) = 0;
 
-        /// Ask the printer for the highest ID number known for a given rank
-        /// process (needed for resuming, so the scanner can resume assigning
-        /// point ID from this value. 
-        /// TODO: DEPRECATED
-        //virtual unsigned long getHighestPointID(const int rank) = 0;
+        // Printer dispatch function. If a virtual function override exists for
+        // the print type, info is passed on, otherwise the function call is resolved
+        // to a default function which raises an informative runtime error explaining
+        // that the type is not printable.
+        template<typename T>
+        void print(T const& in, const std::string& label,
+                   const int vertexID, const uint rank,
+                   const ulong pointID)
+        {
+          _print(in, label, vertexID, rank, pointID);
+        }
+
+        // Overload which automatically determines a unique ID code
+        // based on the label. Used by scanner plugin.
+        template<typename T>
+        inline void print(T const& in, const std::string& label,
+                           const uint rank,
+                           const ulong pointID)
+        {
+          print(in, label, get_aux_param_id(label), rank, pointID);
+        }
+
+
+      protected:
+        // Default _print function. Throws an error if no matching 
+        // virtual function for the type of the attempted print is
+        // found.
+        template<typename T>
+        void _print(T const&, const std::string& label,
+                    const int vertexID, const uint,
+                    const ulong)
+        {
+          std::ostringstream err;                               
+                                                                
+          err << "Attempted to print a functor whose return type "
+              << "is not registered as being printable. "
+              << "If you really want to print this functor, you must "
+              << "add its return type to the PRINTABLE_TYPES sequence "
+              << "in \"gambit/Elements/printable_types.hpp\". You will then have "
+              << "to define a print function for it in whatever printer "
+              << "you are using (see documentation for GAMBIT printers)."
+              << "\n  Available info for this print attempt..."                
+              << "\n   Label      : " << label                  
+              << "\n   vertexID   : " << vertexID               
+              << "\n   Type       : " << STRINGIFY(T);       
+          printer_error().raise(LOCAL_INFO,err.str());         
+        }
 
         /// Declarations of minimal print functions needed by ScannerBit
         #define SCANNER_PRINTABLE_TYPES \
@@ -74,8 +116,8 @@ namespace Gambit
           (std::vector<double>)
  
         // Virtual print methods for base printer classes
-        #define VPRINT(r,data,elem)                               \
-        virtual void print(elem const&, const std::string& label, \
+        #define VPRINT(r,data,elem)                                \
+        virtual void _print(elem const&, const std::string& label, \
                            const int vertexID, const uint /*rank*/, \
                            const ulong /*pointID*/)               \
         {                                                         \
@@ -88,17 +130,15 @@ namespace Gambit
               << "\n   Label      : " << label                    \
               << "\n   vertexID   : " << vertexID                 \
               << "\n   Type       : " << STRINGIFY(elem);         \
-          printer_warning().raise(LOCAL_INFO,err.str());          \
-        }                                                         \
-        inline void print(elem const& in, const std::string& label, \
-                           const uint rank,                       \
-                           const ulong pointID)                   \
-        {                                                         \
-          print(in, label, get_aux_param_id(label), rank, pointID);\
-        }                                                         \
+          printer_error().raise(LOCAL_INFO,err.str());          \
+        }
 
         #define ADD_VIRTUAL_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(VPRINT, _, TYPES)
+
+        // Add the base virtual functions for registered printable types, 
+        // to be overloaded in each printer.
         ADD_VIRTUAL_PRINTS(SCANNER_PRINTABLE_TYPES) 
+
     };
  
   } //end namespace Printers

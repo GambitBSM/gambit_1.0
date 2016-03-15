@@ -433,6 +433,40 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Local DM density likelihood
+
+  #define CAPABILITY lnL_rho0
+  START_CAPABILITY
+    #define FUNCTION lnL_rho0_lognormal
+      START_FUNCTION(double)
+      ALLOW_MODELS(LocalHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_vrot
+  START_CAPABILITY
+    #define FUNCTION lnL_vrot_gaussian
+      START_FUNCTION(double)
+      ALLOW_MODELS(LocalHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_v0
+  START_CAPABILITY
+    #define FUNCTION lnL_v0_gaussian
+      START_FUNCTION(double)
+      ALLOW_MODELS(LocalHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_vesc
+  START_CAPABILITY
+    #define FUNCTION lnL_vesc_gaussian
+      START_FUNCTION(double)
+      ALLOW_MODELS(LocalHalo)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   // Simple WIMP property extractors =======================================
 
   // Retrieve the DM mass in GeV for generic models
@@ -979,9 +1013,12 @@ START_MODULE
     #define FUNCTION capture_rate_Sun_constant_xsec
       START_FUNCTION(double)
       BACKEND_REQ(capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
+      BACKEND_REQ(dshmcom, (DarkSUSY), DS_HMCOM)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(sigma_SI_p, double)
       DEPENDENCY(sigma_SD_p, double)
+      DEPENDENCY(RD_fraction, double)
+      ALLOW_MODELS(LocalHalo)
     #undef FUNCTION
   #undef CAPABILITY
   

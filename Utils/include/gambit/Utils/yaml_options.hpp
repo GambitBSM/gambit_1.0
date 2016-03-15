@@ -35,7 +35,7 @@
 
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Utils/variadic_functions.hpp"
+#include "gambit/Utils/yaml_variadic_functions.hpp"
 
 namespace Gambit
 {

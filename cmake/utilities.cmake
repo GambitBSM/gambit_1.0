@@ -18,9 +18,17 @@
 #          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
 #
+#  \author Ben Farmer
+#          (benjamin.farmer@fysik.su.se)
+#  \date 2016 Jan
+#
 #************************************************
 
 include(CMakeParseArguments)
+
+# Add precompiled header support
+##include(cmake/PrecompiledHeader.cmake)
+#include(cmake/cotire.cmake)
 
 # defining some colors
 string(ASCII 27 Esc)
@@ -101,7 +109,7 @@ endmacro()
 macro(add_external_clean package dir dl target)
   set(rmstring "${CMAKE_BINARY_DIR}/${package}-prefix/src/${package}-stamp/${package}")
   add_custom_target(clean-${package} COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-configure ${rmstring}-build ${rmstring}-install ${rmstring}-done
-                                     COMMAND cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
+                                     COMMAND [ -e ${dir} ] && cd ${dir} && ([ -e makefile ] || [ -e Makefile ] && ${CMAKE_MAKE_PROGRAM} ${target}) || true)
   add_custom_target(nuke-${package} DEPENDS clean-${package}
                                     COMMAND ${CMAKE_COMMAND} -E remove -f ${rmstring}-download ${rmstring}-mkdir ${rmstring}-patch ${rmstring}-update ${dl} || true
                                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${dir} || true)
@@ -144,6 +152,10 @@ function(add_gambit_library libraryname)
   if(${ARG_OPTION} STREQUAL SHARED AND APPLE)
     set_property(TARGET ${libraryname} PROPERTY SUFFIX .so)
   endif()
+
+  # Cotire speeds up compilation by automatically generating and precompiling prefix headers for the targets
+  #cotire(${libraryname})
+  ##add_precompiled_header(${libraryname} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/common.hpp" TRUE)
 
 endfunction()
 
@@ -249,13 +261,18 @@ function(add_gambit_executable executablename LIBRARIES)
     message(STATUS ${LIBRARIES})
   endif()
 
+  # Cotire speeds up compilation by automatically generating and precompiling prefix headers for the targets
+  #cotire(${executablename})
+  ##add_precompiled_header(${executablename} "${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/common.hpp" TRUE)
+
 endfunction()
 
 # Simple function to find specific Python modules
-function(find_python_module module)
+macro(find_python_module module)
   execute_process(COMMAND python -c "import ${module}" RESULT_VARIABLE return_value ERROR_QUIET)
   if (NOT return_value)
     message(STATUS "Found Python module ${module}.")
+    set(PY_${module}_FOUND TRUE)
   else()
     if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
       message(FATAL_ERROR "-- FAILED to find Python module ${module}.")
@@ -263,7 +280,7 @@ function(find_python_module module)
       message(STATUS "FAILED to find Python module ${module}.")
     endif()
   endif()
-endfunction()
+endmacro()
 
 # Macro for BOSSing a backend
 set(BOSS_dir "${PROJECT_SOURCE_DIR}/Backends/scripts/BOSS")

@@ -46,11 +46,13 @@ BE_INI_FUNCTION
 
     std::string filename;
 
-#ifdef WITH_MPI
-    GMPI::Comm comm;
-    int rank = comm.Get_rank();
-#else
     int rank = 0;
+#ifdef WITH_MPI
+    if(GMPI::Is_initialized())
+    {
+        GMPI::Comm comm;
+        rank = comm.Get_rank();
+    }
 #endif
 
     // Write out a SLHA file with a random file name;
@@ -117,7 +119,7 @@ BE_INI_FUNCTION
     ofs.close();
 
     // Convert filename string to char* type
-    char * filename_c = new char[filename.size() + 1];
+    char* filename_c = new char[filename.size() + 1];
     std::copy(filename.begin(), filename.end(), filename_c);
     filename_c[filename.size()] = '\0';
 
@@ -156,7 +158,7 @@ BE_INI_FUNCTION
     readSpectra();
 
     // Delete the heap filename
-    delete filename_c;
+    delete [] filename_c;
 
 }
 END_BE_INI_FUNCTION

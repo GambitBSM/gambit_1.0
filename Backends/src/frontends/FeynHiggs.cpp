@@ -28,7 +28,8 @@ BE_INI_FUNCTION
 
   // Scan-level initialisation
   static bool scan_level = true;
-  if(scan_level){
+  if(scan_level)
+  {
     // initialize FeynHiggs flags
     int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
     int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
@@ -57,12 +58,17 @@ BE_INI_FUNCTION
   const SubSpectrum* spec = fullspectrum->get_HE();
   SLHAea::Coll slhaea = fullspectrum->getSLHAea();
 
+  if (slhaea.find("SPINFO") == slhaea.end())
+  {
+    cout << slhaea << endl;
+    backend_error().raise(LOCAL_INFO, "SPINFO block missing from SLHAea object.");
+  }
   SLHAea::Block spinfo = slhaea.at("SPINFO");
   std::vector<std::string> k3(1, "3");
   std::vector<std::string> k4(1, "4");
-
-  if(spinfo.find(k3) != spinfo.end() || spinfo.find(k4) != spinfo.end()){
-    // throw an error?
+  if(spinfo.find(k3) != spinfo.end() || spinfo.find(k4) != spinfo.end())
+  {
+    backend_error().raise(LOCAL_INFO, "Entry 3 or 4 missing in SPINFO block.");
   }
 
   //
@@ -181,18 +187,18 @@ BE_INI_FUNCTION
   // cout << Ae.re << " " << Amu.re << " " << Atau.re << endl;
 
   fh_complex MUE;  // Higgs mixing parameter mu
-  MUE.re = spec->runningpars().get(Par::mass1,"Mu"); 
+  MUE.re = spec->get(Par::mass1,"Mu"); 
   MUE.im = 0;
 
   // cout << "** MU = " << MUE.re << endl;
 
   // gaugino mass parameters. M_1 == 0 => GUT relation is used
   fh_complex M_1, M_2, M_3; 
-  M_1.re = spec->runningpars().get(Par::mass1,"M1");   
+  M_1.re = spec->get(Par::mass1,"M1");   
   M_1.im = 0;
-  M_2.re = spec->runningpars().get(Par::mass1,"M2"); 
+  M_2.re = spec->get(Par::mass1,"M2"); 
   M_2.im = 0;
-  M_3.re = spec->runningpars().get(Par::mass1,"M3"); 
+  M_3.re = spec->get(Par::mass1,"M3"); 
   M_3.im = 0;
 
   // cout << "** M1 = " << M_1.re << endl;
@@ -201,7 +207,7 @@ BE_INI_FUNCTION
 
   // the scales at which the sfermion input parameters M3S are given
   // 0 indicates on-shell parameters
-  double SCALE = spec->runningpars().GetScale();
+  double SCALE = spec->GetScale();
   
   // cout << "** SCALE = " << SCALE << endl;
 

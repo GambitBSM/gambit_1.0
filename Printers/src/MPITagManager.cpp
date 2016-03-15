@@ -21,11 +21,12 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 //#include <pthread.h> // Using pthreads for MPI listener process
 #include <time.h> // For short sleeps in listener process 
 
 // Gambit
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Core/error_handlers.hpp"
 

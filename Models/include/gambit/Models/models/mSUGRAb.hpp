@@ -33,7 +33,7 @@
 #define MODEL mSUGRAb
 #define PARENT VCMSSM
   START_MODEL
-  DEFINEPARS(M0,M12,A0)
+  DEFINEPARS(M0,M12,A0,SignMu)
   INTERPRET_AS_PARENT_FUNCTION(mSUGRAb_to_VCMSSM)
   // Translation functions defined in mSUGRAb.cpp
 #undef PARENT

@@ -36,8 +36,6 @@
 #include <deque>
 #include <array>
 
-#include "yaml-cpp/yaml.h"
-
 namespace Gambit
 {       
         ///////////////////////////////
@@ -315,22 +313,7 @@ namespace Gambit
         //Variadic Node functions
         //////////////////////////////////////
         
-        inline const YAML::Node getVariadicNode(const YAML::Node &node)
-        {
-                return node;
-        }
-        
-        inline const YAML::Node getVariadicNode(const YAML::Node &node, std::string key) 
-        {
-                return node[key];
-        }
-
-        template <typename... args>
-        inline const YAML::Node getVariadicNode(const YAML::Node &node, const std::string &key, const args&... keys)
-        {
-                if(not node[key]) return node[key];
-                else return getVariadicNode(node[key], keys...);
-        }
+        // YAML-dependent stuff moved to yaml_variadic_functions.hpp
         
         inline const std::string stringifyVariadic() {return "";}
         
