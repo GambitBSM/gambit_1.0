@@ -1,3 +1,16 @@
+Everybody
+---------
+- Writing the paper with e.g.
+    - systematic comparison of relic density results
+    - comparison of various ID limits on simple benchmark models (e.g. the GeV
+      excess?)
+- Use doxygen for starting a manual
+- Cross-checks between relic density from DarkSUSY and Micromegas
+- Validating tests
+- Backending SuperIsoRelic
+- Simple OmegaDM likelihood function with different values from the literature
+
+
 Jonathan
 --------
 DONE DarkBit_types.hpp: 266	:    // FIXME: DDHaloS structure udpate [this is not needed in the code and commented out now]
@@ -137,6 +150,7 @@ Cascades.cpp: 661	:          // FIXME: Default values provide 1-2% accuracy for 
 decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correctly used everywhere
 funktion.cpp :  // FIXME: Decide how to handle integration errors and problems
 DarkBit.cpp : Figure out why spectra don't agree
+Standalone:  Use general relic density codes
 
 LATER: SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
 LATER: SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
