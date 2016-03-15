@@ -1,4 +1,13 @@
-Status on DarkBit_development:
+Current (16-03-206):
+
+gambit_DarkBit_Example.yaml OK
+gambit_DarkBit_MSSM7.yaml OK
+gambit_SingletDM_hdf5.yaml Segfault
+gambit_SingletDM_hdf5_bad_process_catalog.yaml CRASH
+SSDM_rd.yaml CRASH
+
+
+Status on DarkBit_development (until 15-03-2016)
 
 Partial files:
   debug_SLHA_filenames.yaml 
@@ -15,24 +24,20 @@ Runs fine (at least it looks like):
   spartan_multinest_hdf5.yaml
   spartan_multinest.yaml
   scan.yaml
-  DarkBit_standalone_SingletDM :  Problem with spectrum object (missing "e+") --> Ben
-  DarkBit_standalone_MSSM :  Problem with spectrum object (segfaults)  --> Ben
-  gambit_CMSSM_multinest_collider.yaml :  Fails verify_contents --> Ben
+  DarkBit_standalone_SingletDM
+  DarkBit_standalone_MSSM
+  gambit_CMSSM_multinest_collider.yaml
   CMSSM.yaml
   gambit_CMSSM_multinest_LEP.yaml
   gambit_Collider.yaml
-  ColliderBit_standalone :  segfaults --> Ben/Abram ??
+  ColliderBit_standalone
   gambit_PrecisionBit.yaml
   gambit_FlavBit_Example.yaml
-  gambit_DarkBit_MOTest.yaml
-  gambit_DarkBit_DSTest.yaml
   gambit_DarkBit_MSSM7.yaml
   gambit_SingletDM_hdf5.yaml
   gambit_DarkBit_Example.yaml
   gambit_CMSSM_hdf5
   gambit_CMSSM_multinest.yaml 
-  gambit_SingletDM.yaml 
-  gambit_SingletDM_multinest_MO.yaml
 
 
 Problems:

@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
   // Relic density calculation with DarkSUSY (the sloppy version)
   RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
   RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-  RD_oh2_DarkSUSY.setOption<int>("fast", 2);  // 0: normal; 1: fast; 2: dirty
+  RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
   RD_oh2_DarkSUSY.reset_and_calculate();
   // FIXME: Use "general" version instead
 
