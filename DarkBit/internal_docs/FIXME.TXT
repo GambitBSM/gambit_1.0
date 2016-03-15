@@ -16,6 +16,7 @@ Jonathan
 DONE DarkBit_types.hpp: 266	:    // FIXME: DDHaloS structure udpate [this is not needed in the code and commented out now]
 DONE DarkBit_rollcall.hpp: 1023     :     //  FIXME:: Conditional dependency below doesn't seem to work with standalones.
 
+gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep?
 GamYields.cpp: 468	:        // FIXME: Update energy validty ranges
 GamYields.cpp: 500	:        // FIXME: Update energy validty ranges
 GamYields.cpp: 541	:        // FIXME: Update energy validty ranges
