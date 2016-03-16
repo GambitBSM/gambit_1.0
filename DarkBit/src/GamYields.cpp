@@ -109,10 +109,10 @@ namespace Gambit {
           }
           else
           {
-            ++it;
 #ifdef DARKBIT_DEBUG
             std::cout << "Keeping (because decay known): " << *it << std::endl;
 #endif
+            ++it;
           }
       }
 
