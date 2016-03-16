@@ -2,7 +2,8 @@ Current (16-03-206):
 
 gambit_DarkBit_Example.yaml OK
 gambit_DarkBit_MSSM7.yaml OK
-gambit_SingletDM_hdf5.yaml Segfault
+gambit_SingletDM_hdf5.yaml OK
+
 gambit_SingletDM_hdf5_bad_process_catalog.yaml CRASH
 SSDM_rd.yaml CRASH
 
