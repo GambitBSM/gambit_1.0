@@ -95,13 +95,8 @@ namespace Gambit {
       // Integate spectrum 
       // (the zero velocity limit of the differential annihilation
       // cross-section as function of individual final state photons)
-      //std::ofstream os;
-      //os.open("test.dat");
-      //(*Dep::GA_AnnYield)->writeToFile(Funk::logspace(-1., 5., 10000), os);
-      //os.close();
-      // TODO: Make this take ->set_epsrel(1e-3)
       double AnnYieldint = (*Dep::GA_AnnYield)->
-        set("v", 0.)->gsl_integration("E", 1, 100)->bind()->eval();
+        set("v", 0.)->gsl_integration("E", 1, 100)->set_epsabs(0)->set_epsrel(1e-3)->bind()->eval();
       logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
       // Calculate phi-value
@@ -124,8 +119,10 @@ namespace Gambit {
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
+      x = Funk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
+
 
       result += BEreq::lnL(1, x, y);
 
@@ -143,6 +140,7 @@ namespace Gambit {
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
+      x = Funk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
@@ -205,15 +203,57 @@ namespace Gambit {
         logger() << "lnL for SI nuclear parameters is " << result << EOM;
     }
 
-    /*! \brief Helper function to dump gamma-ray spectra.
-     *
-     * NOTE: DEPRECATED!! (replaced by UnitTest)
-     * TODO: Delete
-     */
+    /// \brief Likelihoods for halo parameters. The likelihood for the local DM density follows a
+    /// log normal distribution while for the velocities the distribution is Gaussian.
+    /// For discussion of the default values for measured halo paramters and their errors,
+    /// see JCAP04(2011)012.
+
+    void lnL_rho0_lognormal(double &result)
+    {
+        using namespace Pipes::lnL_rho0_lognormal;
+        double rho0 = *Param["rho0"];
+        double rho0_obs = runOptions->getValueOrDef<double>(.4, "rho0_obs");
+        double rho0_obserror = runOptions->getValueOrDef<double>(.15, "rho0_obserr");
+
+        result = Stats::lognormal_loglikelihood(rho0, rho0_obs, 0.,
+                rho0_obserror);
+        logger() << "lnL_rho0 yields " << result << EOM;
+    }
+
+    void lnL_vrot_gaussian(double &result)
+    {
+      using namespace Pipes::lnL_vrot_gaussian;
+      double vrot = *Param["vrot"];
+      double vrot_obs = runOptions->getValueOrDef<double>(235, "vrot_obs");
+      double vrot_obserr  = runOptions->getValueOrDef<double>(20, "vrot_obserr");
+      result = Stats::gaussian_loglikelihood(vrot, vrot_obs, 0., vrot_obserr);
+      logger() << "lnL_vrot yields " << result << EOM;
+    }
+
+    void lnL_v0_gaussian(double &result)
+    {
+      using namespace Pipes::lnL_v0_gaussian;
+      double v0 = *Param["v0"];
+      double v0_obs = runOptions->getValueOrDef<double>(235, "v0_obs");
+      double v0_obserr  = runOptions->getValueOrDef<double>(20, "v0_obserr");
+      result = Stats::gaussian_loglikelihood(v0, v0_obs, 0., v0_obserr);
+      logger() << "lnL_v0 yields " << result << EOM;
+    }
+
+    void lnL_vesc_gaussian(double &result)
+    {
+      using namespace Pipes::lnL_vesc_gaussian;
+      double vesc = *Param["vesc"];
+      double vesc_obs = runOptions->getValueOrDef<double>(550, "vesc_obs");
+      double vesc_obserr  = runOptions->getValueOrDef<double>(35, "vesc_obserr");
+      result = Stats::gaussian_loglikelihood(vesc, vesc_obs, 0., vesc_obserr);
+      logger() << "lnL_vesc yields " << result << EOM;
+    }
+
+    /// \brief Helper function to dump gamma-ray spectra.
     void dump_GammaSpectrum(double &result)
     {
       using namespace Pipes::dump_GammaSpectrum;
-      // Construct interpolated function, using GAMBIT base functions.
       Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
       std::string filename = runOptions->getValueOrDef<std::string>(
           "dNdE.dat", "filename");
@@ -221,9 +261,9 @@ namespace Gambit {
       std::ofstream myfile (filename);
       if (myfile.is_open())
       {
-        for (int i = 0; i<=50; i++)
+        for (int i = 0; i<=1200; i++)
         {
-          double energy = pow(10., i/10. - 2.);
+          double energy = pow(10., i/200. - 2.);
 
           myfile << energy << " " << spectrum->bind("E")->eval(energy) << "\n";
         }

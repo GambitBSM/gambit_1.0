@@ -110,7 +110,7 @@ Scanner:
       nlive: 500
       tol: 0.1
       like:  LogLike
-     output_file:  output
+      output_file:  output
 
     twalk_beta:
       plugin: twalk
@@ -400,7 +400,7 @@ Rules:
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
-  - capability:    "MSSM_demo_parameters"
+  - capability:    "MSSM_parameters"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 

@@ -18,6 +18,11 @@
 #ifndef __nuclear_params_hpp__
 #define __nuclear_params_hpp__
 
+// Forward declaration of needed types
+namespace Gambit {
+  class SMInputs;
+}
+
 // Explicitly defined hadronic matrix elements
 #define MODEL nuclear_params_fnq
   START_MODEL

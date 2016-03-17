@@ -50,11 +50,11 @@
 #include <iostream>
 #include <type_traits>
 #include <chrono>
+#include <mpi.h>
+#include <boost/utility/enable_if.hpp>
 
 #include "gambit/Core/error_handlers.hpp"
 
-#include <mpi.h>
-#include <boost/utility/enable_if.hpp>
 
 /// Provide template specialisation of get_mpi_data_type only if the requested type hasn't been used to define one already.
 #define SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(TYPEDEFD_TYPE, RETURN_MPI_TYPE)                                                   \
@@ -352,6 +352,15 @@ namespace Gambit
             /// Returns 'false' if barrier succeeds, 'true' if barrier times out (i.e. answers the question "did the barrier time out?")
             bool BarrierWithTimeout(const std::chrono::duration<double> timeout, const int tag, std::ostream& errorlog = std::cout);
 
+            /// This is a fancy barrier that waits a certain amount of time after the FIRST process
+            /// enters before unlocking (so that other action can be taken). This means that all the
+            /// processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
+            /// This helps the synchronisation to be achieved next time.
+            bool BarrierWithCommonTimeout(std::chrono::duration<double> timeout, 
+                                          const int tag_entered, 
+                                          const int tag_timeleft, 
+                                          std::ostream& errorlog);
+      
             /// A generic place to store a tag commonly used by this communicator
             int mytag = 1;
 

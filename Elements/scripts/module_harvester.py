@@ -89,6 +89,9 @@ def main(argv):
       exclude_types.add("ColliderBit::DelphesVanilla")
       exclude_types.add("DelphesVanilla")
 
+    # List of directory names to ignore when searching for headers
+    exclude_dirs=set([".git","build","doc","cmake","extras","config","contrib","runs","Logs","Printers","scratch"])
+
     # Load up the sets of equivalent types
     equiv_classes = get_type_equivalencies()
 
@@ -156,9 +159,9 @@ def main(argv):
     # Recurse through chosen rollcall headers, locating all the included headers therein, and find them all 
     # in the gambit source tree so that we can parse them for types etc.   
     if verbose: print "  Searching rollcall headers..."
-    find_and_harvest_headers(rollcall_headers,full_rollcall_headers,exclude_header,verbose=verbose)
+    find_and_harvest_headers(rollcall_headers,full_rollcall_headers,exclude_header,exclude_dirs,verbose=verbose)
     if verbose: print "  Searching type headers..."
-    find_and_harvest_headers(type_headers,full_type_headers,exclude_header,verbose=verbose)
+    find_and_harvest_headers(type_headers,full_type_headers,exclude_header,exclude_dirs,verbose=verbose)
 
     # Search through rollcall headers and look for macro calls that create module_functors or safe pointers to them 
     types=set(["ModelParameters", "double", "float", "std::vector<double>", "std::vector<float>"]) #Manually add these, as they must always be included.
@@ -232,7 +235,7 @@ def main(argv):
 #include \"gambit/Elements/types_rollcall.hpp\"   \n\
                                                   \n\
 // Automatically generated preprocessor sequence of module functor types \n\
-#define PRINTABLE_TYPES \\\n"
+#define MODULE_FUNCTOR_TYPES \\\n"
     for t in types:
         towrite+='({0})'.format(t)+"\\\n"
 
@@ -279,6 +282,8 @@ def main(argv):
 ///  *********************************************\n\
                                                   \n\
 #include \"gambit/Elements/functor_definitions.hpp\"\n\
+#include \"gambit/Elements/types_rollcall.hpp\"   \n\
+#include \"gambit/Elements/all_functor_types.hpp\"\n\
                                                   \n\
 namespace Gambit                                  \n\
 {                                                 \n\
@@ -293,7 +298,18 @@ namespace Gambit                                  \n\
             towrite += "  // No module-specific types for "+module+".\n"
         towrite += "}\n\n\
 // Instantiate the backend functor templates for all required types \n\
-BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)\n"
+BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)\n\
+\n\
+// Define the functor helper functions for this standalone compilation unit\n\
+// Define standalone version of functor signal helpers (that do nothing)\n\
+namespace Gambit {\n\
+  namespace FunctorHelp {\n\
+    void check_for_shutdown_signal(module_functor_common&) {}\n\
+    bool emergency_shutdown_begun() { return false; }\n\
+    void entering_multithreaded_region(module_functor_common&) {}\n\
+    void leaving_multithreaded_region(module_functor_common&) {}\n\
+  }\n\
+}\n"
 
         # Don't touch any existing file unless it is actually different from what we will create
         filename = "./"+module+"/examples/standalone_functors.cpp"

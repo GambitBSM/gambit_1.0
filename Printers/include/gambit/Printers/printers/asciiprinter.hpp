@@ -139,17 +139,18 @@ namespace Gambit
         // for all types that have a << operator already defined.
 
         // Scanner-friendly types to print
-        void print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void print(triplet<double> const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void _print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void _print(bool const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void _print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void _print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void _print(triplet<double> const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void _print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
 
         // Scanner-unfriendly print functions
         #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
         // unsigned int is chosen somewhat arbitrarily just to demonstrate this requirement. Will be more important if other
         // fancier types need to be disabled.
-        void print(unsigned int const&,        const std::string& label, const int IDcode, const uint rank, const ulong pointID); 
+        void _print(unsigned int const&,        const std::string& label, const int IDcode, const uint rank, const ulong pointID); 
         #endif      
 
         /// Helper print functions

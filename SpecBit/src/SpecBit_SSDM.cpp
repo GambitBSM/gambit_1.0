@@ -192,9 +192,9 @@ namespace Gambit
 //      // (last parameter turns the 'safety' check for the override setter off, which allows
 //      //  us to set parameters that don't previously exist)
 //      
-//      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
-//      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
-//      ssdmspec.runningpars().set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
+//      ssdmspec.set_override(Par::mass1,spectrum_generator.get_high_scale(),"high_scale",false);
+//      ssdmspec.set_override(Par::mass1,spectrum_generator.get_susy_scale(),"susy_scale",false);
+//      ssdmspec.set_override(Par::mass1,spectrum_generator.get_low_scale(), "low_scale", false);
 //
 //      // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
 //      // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
@@ -385,16 +385,16 @@ namespace Gambit
       const SubSpectrum* spec = fullspectrum->get_HE(); // SSDMSpec SubSpectrum object
      
       cout<<"Scalar pole mass:" << endl;
-      cout<<spec->phys().get(Par::Pole_Mass,"S")  <<endl;
+      cout<<spec->get(Par::Pole_Mass,"S")  <<endl;
       cout<<"Higgs pole mass:" << endl;
-      cout<<spec->phys().get(Par::Pole_Mass,"h0")  <<endl;
+      cout<<spec->get(Par::Pole_Mass,"h0")  <<endl;
 
       //SMInputs sminputs = fullspectrum->get_SMInputs();
       std::unique_ptr<SubSpectrum> SM = fullspectrum->clone_HE(); // COPIES Spectrum object
       //std::unique_ptr<SubSpectrum> oneset = fullspectrum->clone_LE();
   
       SM -> RunToScale(MZ);
-      //double LamZ =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      //double LamZ =SM->get(Par::dimensionless,"Lambda1");
       //
 
 
@@ -407,11 +407,11 @@ namespace Gambit
       for (int i=1;i<3;i++)
       {
       SM -> RunToScale(pow(10,u_1));
-      lambda_1 =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      lambda_1 =SM->get(Par::dimensionless,"Lambda1");
       SM -> RunToScale(pow(10,u_2));
-      lambda_2 =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      lambda_2 =SM->get(Par::dimensionless,"Lambda1");
       SM -> RunToScale(pow(10,u_3));
-      lambda_3 =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      lambda_3 =SM->get(Par::dimensionless,"Lambda1");
       double min_u= (lambda_1*(pow(u_2,2)-pow(u_3,2))  - lambda_2*(pow(u_1,2)-pow(u_3,2)) + lambda_3*(pow(u_1,2)-pow(u_2,2)));
       min_u=(min_u/( lambda_1*(u_2-u_3)+ lambda_2*(u_3-u_1)  +lambda_3*(u_1-u_2)))/2;
       u_1=min_u-2/(pow(float(i),0.01));
@@ -435,7 +435,7 @@ namespace Gambit
       double b=(ax > cx ? ax : cx);
       x=w=v=bx;
       SM -> RunToScale(x);
-      fw=fv=fx =SM->runningpars().get(Par::dimensionless,"Lambda1");
+      fw=fv=fx =SM->get(Par::dimensionless,"Lambda1");
       
       
       for (int iter=0;iter<ITMAX;iter++)
@@ -474,7 +474,7 @@ namespace Gambit
           u=(abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
         
           SM -> RunToScale(u);
-          fu =SM->runningpars().get(Par::dimensionless,"Lambda1");
+          fu =SM->get(Par::dimensionless,"Lambda1");
         
         
         

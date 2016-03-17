@@ -41,7 +41,7 @@
 #define VERSION 5.1.3
 #define SAFE_VERSION 5_1_3
 
-#include "gambit/DarkBit/ProcessCatalogue.hpp"
+#include "gambit/DarkBit/ProcessCatalog.hpp"
 #include "gambit/Elements/funktions.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 #include <string>
@@ -117,8 +117,11 @@ BE_VARIABLE(DS_IBINTVARS,IBintvars,"ibintvars_", "IBintvars")
 BE_VARIABLE(DS_DDCOM, ddcom, "ddcom_",    "ddcom")
 // Neutrino detection
 BE_VARIABLE(DS_NUCOM, wabranch, "wabranch_", "nu_common_block")
-// Halo model common block
+// Halo model common blocks
 BE_VARIABLE(DS_HMCOM, dshmcom, "dshmcom_", "dshmcom")
+BE_VARIABLE(DS_HMFRAMEVELCOM, dshmframevelcom, "dshmframevelcom_", "dshmframevelcom")
+BE_VARIABLE(DS_HMISODF, dshmisodf, "dshmisodf_", "dshmisodf")
+BE_VARIABLE(DS_HMNOCLUE, dshmnoclue, "dshmnoclue_", "dshmnoclue")
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "nuyield")
@@ -132,6 +135,9 @@ BE_CONV_FUNCTION(DS_charged_h_decay_channels, std::vector<std::vector<str>>, (),
 // PS: these two need to be redesigned
 //BE_CONV_FUNCTION(registerMassesForIB, void, (std::map<std::string, DarkBit::TH_ParticleProperty>&), "registerMassesForIB")
 BE_CONV_FUNCTION(setMassesForIB, void, (bool), "setMassesForIB")
+
+// Fraction of DM that is accounted for by model
+// BE_INI_DEPENDENCY(RD_fraction, double)
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

@@ -20,7 +20,8 @@
 #ifndef __SpecFptrFinder_hpp__
 #define __SpecFptrFinder_hpp__
 
-#include "gambit/Elements/subspectrum_head.hpp"
+#include "gambit/Elements/spectrum_helpers.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/partmap.hpp"
 
 // Particle database access
@@ -31,14 +32,19 @@
 
 namespace Gambit {
 
+   /// Forward declaration of FptrFinder
+   template<class HostSpec, class MTag>
+   class FptrFinder;
+
    /// FptrFinder friend class for implementing named parameter idiom
-   template<class DT, class This, class MTag>
+   template<class HostSpec, class MTag>
    class SetMaps
    {
       public:
-         SetMaps(const std::string& label, const This* const fakethis)
+         SetMaps(const std::string& label, HostSpec* const fakethis)
           : label_(label) 
           , fakethis_(fakethis)
+          , const_fakethis_(fakethis)
           , override_only_(false)
           , map0_(NULL)
           , map0M_(NULL)
@@ -53,16 +59,40 @@ namespace Gambit {
           , omap1_(NULL)
           , omap2_(NULL)
          {}
+
+         /// Version to deal with const host object
+         SetMaps(const std::string& label, const HostSpec* const fakethis)
+          : label_(label) 
+          , fakethis_(NULL) // CANNOT USE WHEN HOST IS CONST
+          , const_fakethis_(fakethis)
+          , override_only_(false)
+          , map0_(NULL)
+          , map0M_(NULL)
+          , map0I_(NULL)
+          , map1_(NULL)
+          , map1M_(NULL)
+          , map1I_(NULL)
+          , map2_(NULL)
+          , map2M_(NULL)
+          , map2I_(NULL)
+          , omap0_(NULL)
+          , omap1_(NULL)
+          , omap2_(NULL)
+         {}
+
+         /// Type of derived spectrum wrapper is known to HostSpec as D
+         typedef typename HostSpec::D D;
+
          /// derived class maps
-         SetMaps& map0(const typename MapTypes<DT,MTag>::fmap0&        map0)  { map0_=&map0; return *this; }
-         SetMaps& map0M(const typename MapTypes<DT,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
-         SetMaps& map0I(const typename MapTypes<DT,MTag>::fmap0_extraI& map0I){ map0I_=&map0I; return *this; }
-         SetMaps& map1(const typename MapTypes<DT,MTag>::fmap1&        map1)  { map1_=&map1; return *this; }
-         SetMaps& map1M(const typename MapTypes<DT,MTag>::fmap1_extraM& map1M){ map1M_=&map1M; return *this; }
-         SetMaps& map1I(const typename MapTypes<DT,MTag>::fmap1_extraI& map1I){ map1I_=&map1I; return *this; }
-         SetMaps& map2(const typename MapTypes<DT,MTag>::fmap2&        map2)  { map2_=&map2; return *this; }
-         SetMaps& map2M(const typename MapTypes<DT,MTag>::fmap2_extraM& map2M){ map2M_=&map2M; return *this; }
-         SetMaps& map2I(const typename MapTypes<DT,MTag>::fmap2_extraI& map2I){ map2I_=&map2I; return *this; }
+         SetMaps& map0 (const typename MapTypes<D,MTag>::fmap0&        map0) { map0_ =&map0;  return *this; }
+         SetMaps& map0M(const typename MapTypes<D,MTag>::fmap0_extraM& map0M){ map0M_=&map0M; return *this; }
+         SetMaps& map0I(const typename MapTypes<D,MTag>::fmap0_extraI& map0I){ map0I_=&map0I; return *this; }
+         SetMaps& map1 (const typename MapTypes<D,MTag>::fmap1&        map1) { map1_ =&map1;  return *this; }
+         SetMaps& map1M(const typename MapTypes<D,MTag>::fmap1_extraM& map1M){ map1M_=&map1M; return *this; }
+         SetMaps& map1I(const typename MapTypes<D,MTag>::fmap1_extraI& map1I){ map1I_=&map1I; return *this; }
+         SetMaps& map2 (const typename MapTypes<D,MTag>::fmap2&        map2) { map2_ =&map2;  return *this; }
+         SetMaps& map2M(const typename MapTypes<D,MTag>::fmap2_extraM& map2M){ map2M_=&map2M; return *this; }
+         SetMaps& map2I(const typename MapTypes<D,MTag>::fmap2_extraI& map2I){ map2I_=&map2I; return *this; }
          /// base class override maps
          SetMaps& omap0(const std::map<std::string,double>& om0)              { omap0_=&om0; return *this;}
          SetMaps& omap1(const std::map<std::string,std::map<int,double>>& om1){ omap1_=&om1; return *this;}
@@ -71,21 +101,22 @@ namespace Gambit {
          SetMaps& override_only(const bool flag) { override_only_=flag; return *this;}
 
       private:
-         friend class FptrFinder<DT,This,MTag>; 
+         friend class FptrFinder<HostSpec,MTag>; 
          const std::string label_;
-         const This* const fakethis_;
+         HostSpec* const fakethis_;
+         const HostSpec* const const_fakethis_;
          bool override_only_;
 
          /// Maps from derived class
-         const typename MapTypes<DT,MTag>::fmap0*        map0_;
-         const typename MapTypes<DT,MTag>::fmap0_extraM* map0M_; 
-         const typename MapTypes<DT,MTag>::fmap0_extraI* map0I_; 
-         const typename MapTypes<DT,MTag>::fmap1*        map1_; 
-         const typename MapTypes<DT,MTag>::fmap1_extraM* map1M_; 
-         const typename MapTypes<DT,MTag>::fmap1_extraI* map1I_; 
-         const typename MapTypes<DT,MTag>::fmap2*        map2_; 
-         const typename MapTypes<DT,MTag>::fmap2_extraM* map2M_; 
-         const typename MapTypes<DT,MTag>::fmap2_extraI* map2I_; 
+         const typename MapTypes<D,MTag>::fmap0*        map0_;
+         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
+         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
+         const typename MapTypes<D,MTag>::fmap1*        map1_; 
+         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
+         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
+         const typename MapTypes<D,MTag>::fmap2*        map2_; 
+         const typename MapTypes<D,MTag>::fmap2_extraM* map2M_; 
+         const typename MapTypes<D,MTag>::fmap2_extraI* map2I_; 
           
          /// Maps from base class (override maps, only used in getter case)
          const std::map<std::string,double>*                             omap0_;
@@ -94,16 +125,17 @@ namespace Gambit {
    }; 
  
    /// Helper class for calling function pointers found by FptrFinder
-   template<class DT, class This, class MTag>
+   template<class HostSpec, class MTag>
    struct CallFcn;
 
    /// Helper class for locating the function pointer corresponding to a 
    /// requested string, from amongst the various different maps in which
    /// it could be located.
-   template<class DT, class This, class MTag>
+   template<class HostSpec, class MTag>
    class FptrFinder
    {
-      friend struct CallFcn<DT,This,MTag>;
+      friend struct CallFcn<HostSpec,MTag>;
+  
       private:
          /// Label to help track down errors if they occur
          const std::string label;
@@ -111,9 +143,13 @@ namespace Gambit {
          /// Last used search string (only set if there was a problem, for error messages)
          std::string lastname;
 
-         /// This class pretending to be an extra set of class functions, so need the "this" pointer
-         const This* const fakethis;
+         /// HostSpec class pretending to be an extra set of class functions, so need the "this" pointer
+         HostSpec* const fakethis;
+         const HostSpec* const const_fakethis;
 
+         /// Get type of the derived spectrum wrapper from HostSpec
+         typedef typename HostSpec::D D; // D for "DerivedSpec"
+       
          /// Flag to permit searching only override maps
          const bool override_only_;
 
@@ -123,15 +159,15 @@ namespace Gambit {
          const std::map<std::string,std::map<int,double>>*               omap1_;
          const std::map<std::string,std::map<int,std::map<int,double>>>* omap2_;
          /// Maps filled by derived (wrapper) classes
-         const typename MapTypes<DT,MTag>::fmap0*        map0_;
-         const typename MapTypes<DT,MTag>::fmap0_extraM* map0M_; 
-         const typename MapTypes<DT,MTag>::fmap0_extraI* map0I_; 
-         const typename MapTypes<DT,MTag>::fmap1*        map1_; 
-         const typename MapTypes<DT,MTag>::fmap1_extraM* map1M_; 
-         const typename MapTypes<DT,MTag>::fmap1_extraI* map1I_; 
-         const typename MapTypes<DT,MTag>::fmap2*        map2_; 
-         const typename MapTypes<DT,MTag>::fmap2_extraM* map2M_; 
-         const typename MapTypes<DT,MTag>::fmap2_extraI* map2I_; 
+         const typename MapTypes<D,MTag>::fmap0*        map0_;
+         const typename MapTypes<D,MTag>::fmap0_extraM* map0M_; 
+         const typename MapTypes<D,MTag>::fmap0_extraI* map0I_; 
+         const typename MapTypes<D,MTag>::fmap1*        map1_; 
+         const typename MapTypes<D,MTag>::fmap1_extraM* map1M_; 
+         const typename MapTypes<D,MTag>::fmap1_extraI* map1I_; 
+         const typename MapTypes<D,MTag>::fmap2*        map2_; 
+         const typename MapTypes<D,MTag>::fmap2_extraM* map2M_; 
+         const typename MapTypes<D,MTag>::fmap2_extraI* map2I_; 
 
          /// Iterators needed for storing locatation of search result
          /// ...for override values
@@ -139,30 +175,43 @@ namespace Gambit {
          std::map<std::string,std::map<int,double>>::const_iterator  ito1; // 1
          std::map<std::string,std::map<int,std::map<int,double>>>::const_iterator ito2; // 2
          /// ...for derived class values
-         typename MapTypes<DT,MTag>::fmap0::const_iterator        it0;  // 3
-         typename MapTypes<DT,MTag>::fmap0_extraM::const_iterator it0M; // 4
-         typename MapTypes<DT,MTag>::fmap0_extraI::const_iterator it0I; // 5
-         typename MapTypes<DT,MTag>::fmap1::const_iterator        it1;  // 6
-         typename MapTypes<DT,MTag>::fmap1_extraM::const_iterator it1M; // 7
-         typename MapTypes<DT,MTag>::fmap1_extraI::const_iterator it1I; // 8
-         typename MapTypes<DT,MTag>::fmap2::const_iterator        it2;  // 9 //was 7
-         typename MapTypes<DT,MTag>::fmap2_extraM::const_iterator it2M; // 10
-         typename MapTypes<DT,MTag>::fmap2_extraI::const_iterator it2I; // 11
+         typename MapTypes<D,MTag>::fmap0::const_iterator        it0;  // 3
+         typename MapTypes<D,MTag>::fmap0_extraM::const_iterator it0M; // 4
+         typename MapTypes<D,MTag>::fmap0_extraI::const_iterator it0I; // 5
+         typename MapTypes<D,MTag>::fmap1::const_iterator        it1;  // 6
+         typename MapTypes<D,MTag>::fmap1_extraM::const_iterator it1M; // 7
+         typename MapTypes<D,MTag>::fmap1_extraI::const_iterator it1I; // 8
+         typename MapTypes<D,MTag>::fmap2::const_iterator        it2;  // 9 //was 7
+         typename MapTypes<D,MTag>::fmap2_extraM::const_iterator it2M; // 10
+         typename MapTypes<D,MTag>::fmap2_extraI::const_iterator it2I; // 11
 
-         /// Booleans to indicate whether or not it is safe to dereference
-         /// the above iterators
-         bool ito0_safe;
-         bool ito1_safe;
-         bool ito2_safe;
-         bool it0_safe;
-         bool it0M_safe;
-         bool it0I_safe;
-         bool it1_safe;
-         bool it1M_safe;
-         bool it1I_safe;
-         bool it2_safe;
-         bool it2M_safe;
-         bool it2I_safe;
+         /// empty maps used to initialise the above iterators
+         static const std::map<std::string,double>                nullmap_ito0; // 0
+         static const std::map<std::string,std::map<int,double>>  nullmap_ito1; // 1
+         static const std::map<std::string,std::map<int,std::map<int,double>>> nullmap_ito2; // 2
+         static const typename MapTypes<D,MTag>::fmap0        nullmap_it0;  // 3
+         static const typename MapTypes<D,MTag>::fmap0_extraM nullmap_it0M; // 4
+         static const typename MapTypes<D,MTag>::fmap0_extraI nullmap_it0I; // 5
+         static const typename MapTypes<D,MTag>::fmap1        nullmap_it1;  // 6
+         static const typename MapTypes<D,MTag>::fmap1_extraM nullmap_it1M; // 7
+         static const typename MapTypes<D,MTag>::fmap1_extraI nullmap_it1I; // 8
+         static const typename MapTypes<D,MTag>::fmap2        nullmap_it2;  // 9 //was 7
+         static const typename MapTypes<D,MTag>::fmap2_extraM nullmap_it2M; // 10
+         static const typename MapTypes<D,MTag>::fmap2_extraI nullmap_it2I; // 11
+
+         /// Functions to check whether or not it is safe to dereference the above iterators
+         bool ito0_safe() { return ito0 != nullmap_ito0.end(); };
+         bool ito1_safe() { return ito1 != nullmap_ito1.end(); };
+         bool ito2_safe() { return ito2 != nullmap_ito2.end(); };
+         bool it0_safe()  { return it0  != nullmap_it0.end(); };
+         bool it0M_safe() { return it0M != nullmap_it0M.end(); };
+         bool it0I_safe() { return it0I != nullmap_it0I.end(); };
+         bool it1_safe()  { return it1  != nullmap_it1.end(); };
+         bool it1M_safe() { return it1M != nullmap_it1M.end(); };
+         bool it1I_safe() { return it1I != nullmap_it1I.end(); };
+         bool it2_safe()  { return it2  != nullmap_it2.end(); };
+         bool it2M_safe() { return it2M != nullmap_it2M.end(); };
+         bool it2I_safe() { return it2I != nullmap_it2I.end(); };
 
          // int which records which iterator points to the search result 
          int whichiter;    
@@ -184,18 +233,19 @@ namespace Gambit {
 
       public:
          /// Caller for whatever function was found
-         /// This has to work slightly differently depending on whether FptrFinder is
+         /// HostSpec has to work slightly differently depending on whether FptrFinder is
          /// specialised for MapTag::Get or MapTag::Set, so we just declare it here and
          /// do the specialisation after the class declaration.
-         /// This has to be a struct, since we partial specialisation of functions is
+         /// HostSpec has to be a struct, since we partial specialisation of functions is
          /// not allowed in C++, but it is treated like a member function.
-         CallFcn<DT,This,MTag> callfcn;
+         CallFcn<HostSpec,MTag> callfcn;
 
          // Constructor utilising named "parameters"
-         FptrFinder(const SetMaps<DT,This,MTag>& params)
+         FptrFinder(const SetMaps<HostSpec,MTag>& params)
            : label(params.label_)
            , lastname("NONE")
            , fakethis(params.fakethis_)
+           , const_fakethis(params.const_fakethis_)
            , override_only_(params.override_only_)
            , omap0_(params.omap0_)   
            , omap1_(params.omap1_)   
@@ -209,30 +259,18 @@ namespace Gambit {
            , map2_(params.map2_)
            , map2M_(params.map2M_)
            , map2I_(params.map2I_)
-           , ito0()
-           , ito1()
-           , ito2()
-           , it0()
-           , it0M()
-           , it0I()
-           , it1()
-           , it1M()
-           , it1I()
-           , it2()
-           , it2M()
-           , it2I()
-           , ito0_safe (false)
-           , ito1_safe(false)
-           , ito2_safe(false)
-           , it0_safe (false)
-           , it0M_safe(false)
-           , it0I_safe(false)
-           , it1_safe(false)
-           , it1M_safe(false)
-           , it1I_safe(false)
-           , it2_safe(false) 
-           , it2M_safe(false)
-           , it2I_safe(false)
+           , ito0(nullmap_ito0.end())
+           , ito1(nullmap_ito1.end())
+           , ito2(nullmap_ito2.end())
+           , it0 (nullmap_it0.end())
+           , it0M(nullmap_it0M.end())
+           , it0I(nullmap_it0I.end())
+           , it1 (nullmap_it1.end())
+           , it1M(nullmap_it1M.end())
+           , it1I(nullmap_it1I.end())
+           , it2 (nullmap_it2.end())
+           , it2M(nullmap_it2M.end())
+           , it2I(nullmap_it2I.end())
            , whichiter(-1)
            , index1(-1)
            , index2(-1)
@@ -338,7 +376,6 @@ namespace Gambit {
                   #ifdef CHECK_WHERE_FOUND
                   std::cout<<"   Searching 0-index override maps for "<<name<<std::endl;
                   #endif
-                  ito0_safe=true; 
                   found=true; 
                   whichiter=0; 
                   #ifdef CHECK_WHERE_FOUND
@@ -355,7 +392,6 @@ namespace Gambit {
                   #endif
                   if  ( search_map(p.first,omap1_,ito1) )
                   { 
-                     ito1_safe=true; 
                      found=true; 
                      index1=p.second;
                      whichiter=1; 
@@ -372,17 +408,17 @@ namespace Gambit {
                #ifdef CHECK_WHERE_FOUND
                std::cout<<"   Searching standard maps for "<<name<<std::endl;
                #endif
-               if     ( search_map(name,map0_,it0)   ){ it0_safe=true;  found=true; whichiter=3; 
+               if     ( search_map(name,map0_,it0)   ){ found=true; whichiter=3; 
                   #ifdef CHECK_WHERE_FOUND
                   std::cout<<"   Found "<<name<<" in found in 0-index map (type O)"<<std::endl;
                   #endif
                }
-               else if( search_map(name,map0M_,it0M) ){ it0M_safe=true; found=true; whichiter=4;
+               else if( search_map(name,map0M_,it0M) ){ found=true; whichiter=4;
                   #ifdef CHECK_WHERE_FOUND
                   std::cout<<"   Found "<<name<<" in found in 0-index map (type OM)"<<std::endl;
                   #endif
                }
-               else if( search_map(name,map0I_,it0I) ){ it0I_safe=true; found=true; whichiter=5;
+               else if( search_map(name,map0I_,it0I) ){ found=true; whichiter=5;
                   #ifdef CHECK_WHERE_FOUND
                   std::cout<<"   Found "<<name<<" in found in 0-index map (type OI)"<<std::endl;
                   #endif
@@ -420,6 +456,29 @@ namespace Gambit {
             return found;
          }
 
+         template<class ITER>
+         bool check_indices_1(const std::string& name, const ITER& it, const int i, const int whichit, const bool debug)
+         {
+            bool found = false;
+            /* Switch index convention */
+            int offset = const_fakethis->get_index_offset();
+            index1 = i + offset; /* set for later use */
+            /* Check that index is in the permitted set */
+            if( not within_bounds(index1, it->second.iset1) )
+            {
+               /* index1 out of bounds */
+               found = false;
+               error_code = 2;
+            }
+            else {
+               /* everything cool. */
+               found = true;
+               if(debug) std::cout<<"   Found ("<<name<<","<<i<<") in 1-index map"<<std::endl;
+               whichiter=whichit;
+            }
+            return found;
+         }
+
          /// Search function for 1-index maps
          bool find(const std::string& name, int i, bool doublecheck=true, bool check_antiparticle=true)
          {
@@ -444,7 +503,6 @@ namespace Gambit {
                   std::map<int,double>::const_iterator it = ito1->second.find(i);
                   if( it != ito1->second.end() )
                   { 
-                     ito1_safe=true; 
                      found=true; 
                      index1=i;
                      whichiter=1; 
@@ -456,7 +514,6 @@ namespace Gambit {
                   {
                      // Didn't find it in 1-index override map; translate using PDB entry and try
                      // 0-index override map
-                     ito0_safe=true; 
                      found=true; 
                      whichiter=0;
                      #ifdef CHECK_WHERE_FOUND
@@ -478,28 +535,9 @@ namespace Gambit {
                debug=true;
                #endif
 
-               #define CHECK_INDICES_1(ITER,WHICHITER,DEBUG)   \
-                  CAT(ITER,_safe)=true;   \
-                  /* Switch index convention */ \
-                  int offset = fakethis->parent.get_index_offset(); \
-                  index1 = i + offset; /* set for later use */ \
-                  /* Check that index is in the permitted set */ \
-                  if( not within_bounds(index1, ITER->second.iset1) ) \
-                  { \
-                     /* index1 out of bounds */ \
-                     found = false; \
-                     error_code = 2; \
-                  } \
-                  else { \
-                     /* everything cool. */ \
-                     found = true;        \
-                     if(DEBUG) std::cout<<"   Found ("<<name<<","<<i<<") in 1-index map (type "<<STRINGIFY(ITER)<<")"<<std::endl;\
-                     whichiter=WHICHITER; \
-                  }  \
-
-               if( search_map(name,map1_,it1) )       { CHECK_INDICES_1(it1,6,debug)  }
-               else if( search_map(name,map1M_,it1M) ){ CHECK_INDICES_1(it1M,7,debug) }
-               else if( search_map(name,map1I_,it1I) ){ CHECK_INDICES_1(it1I,8,debug) }
+               if( search_map(name,map1_,it1) )       { check(it1_safe());  found=check_indices_1(name,it1 ,i,6,debug); }
+               else if( search_map(name,map1M_,it1M) ){ check(it1M_safe()); found=check_indices_1(name,it1M,i,7,debug); }
+               else if( search_map(name,map1I_,it1I) ){ check(it1I_safe()); found=check_indices_1(name,it1I,i,8,debug); }
                else if( doublecheck and PDB.has_particle(std::make_pair(name,i)) )
                {
                   // Didn't find it in 1-index maps; translate using PDB entry and try 0-index maps
@@ -533,6 +571,35 @@ namespace Gambit {
             return found;
          }
 
+         template<class ITER>
+         bool check_indices_2(const std::string& /*name*/, const ITER& it, const int i, const int j, const int whichit)
+         {
+            bool found = false;
+            /* Switch index convention */
+            int offset = const_fakethis->get_index_offset();
+            index1 = i + offset; /* set for later use */
+            index2 = j + offset; /* set for later use */
+            /* Check that index is in the permitted set */
+            if( not within_bounds(index1, it->second.iset1) )
+            {
+               /* index1 out of bounds */
+               found = false;
+               error_code = 2;
+            }
+            else if( not within_bounds(index2, it->second.iset2) )
+            {
+               /* index2 out of bounds */
+               found = false;
+               error_code = 3;
+            }
+            else {
+               /* everything cool. */
+               found = true;
+               whichiter=whichit;
+            }
+            return found;
+         }
+
          /// Search function for 2-index maps
          bool find(const std::string& name, int i, int j)
          {
@@ -553,7 +620,6 @@ namespace Gambit {
                   std::map<int,double>::const_iterator jt2 = jt->second.find(j);
                   if( jt2 != jt->second.end() )
                   { 
-                     ito2_safe=true; 
                      found=true; 
                      index1=i;
                      index2=j;
@@ -565,35 +631,9 @@ namespace Gambit {
             // If no override, search the wrapper class maps
             if(not found and not override_only_)
             {
-
-               #define CHECK_INDICES_2(ITER,WHICHITER)   \
-                  CAT(ITER,_safe)=true; \
-                  /* Switch index convention */ \
-                  int offset = fakethis->parent.get_index_offset(); \
-                  index1 = i + offset; /* set for later use */ \
-                  index2 = j + offset; /* set for later use */ \
-                  /* Check that index is in the permitted set */ \
-                  if( not within_bounds(index1, ITER->second.iset1) ) \
-                  { \
-                     /* index1 out of bounds */ \
-                     found = false; \
-                     error_code = 2; \
-                  } \
-                  else if( not within_bounds(index2, ITER->second.iset2) ) \
-                  { \
-                     /* index2 out of bounds */ \
-                     found = false; \
-                     error_code = 3; \
-                  } \
-                  else { \
-                     /* everything cool. */ \
-                     found = true;        \
-                     whichiter=WHICHITER; \
-                  } \
-
-               if( search_map(name,map2_,it2) )       { CHECK_INDICES_2(it2,9)   }
-               else if( search_map(name,map2M_,it2M) ){ CHECK_INDICES_2(it2M,10) }
-               else if( search_map(name,map2I_,it2I) ){ CHECK_INDICES_2(it2I,11) }
+               if( search_map(name,map2_,it2) )       { check(it2_safe());  found=check_indices_2(name,it2, i,j,9);  }
+               else if( search_map(name,map2M_,it2M) ){ check(it2M_safe()); found=check_indices_2(name,it2M,i,j,10); }
+               else if( search_map(name,map2I_,it2I) ){ check(it2I_safe()); found=check_indices_2(name,it2I,i,j,11); }
                else { 
                  found = false;
                  error_code = 1;
@@ -606,16 +646,37 @@ namespace Gambit {
 
    }; // end class FptrFinder
 
+   /// Initialise static members of FptrFinder
+   template<class HS, class MT> const std::map<std::string,double>                FptrFinder<HS,MT>::nullmap_ito0 = std::map<std::string,double>              (); // 0
+   template<class HS, class MT> const std::map<std::string,std::map<int,double>>  FptrFinder<HS,MT>::nullmap_ito1 = std::map<std::string,std::map<int,double>>(); // 1
+   template<class HS, class MT> const std::map<std::string,std::map<int,std::map<int,double>>> FptrFinder<HS,MT>::nullmap_ito2 = std::map<std::string,std::map<int,std::map<int,double>>>(); // 2
+   /// ...for derived class values
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0        FptrFinder<HS,MT>::nullmap_it0  = typename MapTypes<typename HS::D,MT>::fmap0       (); // 3
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraM FptrFinder<HS,MT>::nullmap_it0M = typename MapTypes<typename HS::D,MT>::fmap0_extraM(); // 4
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap0_extraI FptrFinder<HS,MT>::nullmap_it0I = typename MapTypes<typename HS::D,MT>::fmap0_extraI(); // 5
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1        FptrFinder<HS,MT>::nullmap_it1  = typename MapTypes<typename HS::D,MT>::fmap1       (); // 6
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraM FptrFinder<HS,MT>::nullmap_it1M = typename MapTypes<typename HS::D,MT>::fmap1_extraM(); // 7
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap1_extraI FptrFinder<HS,MT>::nullmap_it1I = typename MapTypes<typename HS::D,MT>::fmap1_extraI(); // 8
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2        FptrFinder<HS,MT>::nullmap_it2  = typename MapTypes<typename HS::D,MT>::fmap2       (); // 9 //was 7
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2_extraM FptrFinder<HS,MT>::nullmap_it2M = typename MapTypes<typename HS::D,MT>::fmap2_extraM(); // 10
+   template<class HS, class MT> const typename MapTypes<typename HS::D,MT>::fmap2_extraI FptrFinder<HS,MT>::nullmap_it2I = typename MapTypes<typename HS::D,MT>::fmap2_extraI(); // 11
+
+
    /// Specialisation of CallFcn for calling 'getter' functions
-   template<class DT, class This>
-   struct CallFcn<DT,This,MapTag::Get>
+   template<class HostSpec>
+   struct CallFcn<HostSpec,MapTag::Get>
    {
      private:
-      typedef MapTypes<DT,MapTag::Get> MT;
-      FptrFinder<DT,This,MapTag::Get>* ff;
+      // Model and Input types from wrapper traits class
+      typedef typename HostSpec::D DerivedSpec;
+      typedef typename SpecTraits<DerivedSpec>::Model Model;
+      typedef typename SpecTraits<DerivedSpec>::Input Input;    
+
+      typedef MapTypes<DerivedSpec,MapTag::Get> MT;
+      FptrFinder<HostSpec,MapTag::Get>* ff;
 
      public: 
-      CallFcn(FptrFinder<DT,This,MapTag::Get>* host) 
+      CallFcn(FptrFinder<HostSpec,MapTag::Get>* host) 
         : ff(host) 
       {}
 
@@ -624,76 +685,76 @@ namespace Gambit {
          double result(-1); // should not be returned in this state
          if(ff->error_code==0)
          {
-            typename DT::Model& model = ff->fakethis->parent.model();
-            typename DT::Input& input = ff->fakethis->parent.input();
+            const Model& model = ff->const_fakethis->model();
+            const Input& input = ff->const_fakethis->input();
             switch( ff->whichiter )
             {
                // Override retrieval cases
                case 0: {
-                 ff->check(ff->ito0_safe);
+                 ff->check(ff->ito0_safe());
                  result = ff->ito0->second;
                  break;}
                case 1: {
-                 ff->check(ff->ito1_safe);
+                 ff->check(ff->ito1_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  result = (ff->ito1->second).at(ff->index1);
                  break;}
                case 2: {
-                 ff->check(ff->ito2_safe);
+                 ff->check(ff->ito2_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  result = (ff->ito2->second).at(ff->index1).at(ff->index2);
                  break;}
                // Wrapper class function call cases
                case 3: {
-                 ff->check(ff->it0_safe);
+                 ff->check(ff->it0_safe());
                  typename MT::FSptr f = ff->it0->second;
                  result = (model.*f)();
                  break;}
                case 4: {
-                 ff->check(ff->it0M_safe);
+                 ff->check(ff->it0M_safe());
                  typename MT::plainfptrM f = ff->it0M->second;
                  result = (*f)(model);
                  break;}
                case 5: {
-                 ff->check(ff->it0I_safe);
+                 ff->check(ff->it0I_safe());
                  typename MT::plainfptrI f = ff->it0I->second;
                  result = (*f)(input);
                  break;}
                case 6: {
-                 ff->check(ff->it1_safe);
+                 ff->check(ff->it1_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  typename MT::FSptr1 f = ff->it1->second.fptr;
                  result = (model.*f)(ff->index1);
                  break;}
                case 7: {
-                 ff->check(ff->it1M_safe);
+                 ff->check(ff->it1M_safe());
                  typename MT::plainfptrM1 f = ff->it1M->second.fptr;
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  result = (*f)(model,ff->index1);
                  break;}
                case 8: {
-                 ff->check(ff->it1I_safe);
+                 ff->check(ff->it1I_safe());
                  typename MT::plainfptrI1 f = ff->it1I->second.fptr;
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  result = (*f)(input,ff->index1);
                  break;}
               case 9: {
-                 ff->check(ff->it2_safe);
+                 ff->check(ff->it2_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::FSptr2 f = ff->it2->second.fptr;
                  result = (model.*f)(ff->index1,ff->index2);
                  break;}
                case 10: {
-                 ff->check(ff->it2M_safe);
+                 ff->check(ff->it2M_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::plainfptrM2 f = ff->it2M->second.fptr;
                  result = (*f)(model,ff->index1,ff->index2);
                  break;}
                case 11: {
-                 ff->check(ff->it2I_safe);
+                 ff->check(ff->it2I_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;
@@ -720,15 +781,20 @@ namespace Gambit {
    };
 
    /// Specialisation of CallFcn for calling 'setter' functions
-   template<class DT, class This>
-   struct CallFcn<DT,This,MapTag::Set>
+   template<class HostSpec>
+   struct CallFcn<HostSpec,MapTag::Set>
    {
      private:
-      typedef MapTypes<DT,MapTag::Set> MT;
-      FptrFinder<DT,This,MapTag::Set>* ff;
+      // Model and Input types from wrapper traits class
+      typedef typename HostSpec::D DerivedSpec;
+      typedef typename SpecTraits<DerivedSpec>::Model Model;
+      typedef typename SpecTraits<DerivedSpec>::Input Input;    
+
+      typedef MapTypes<DerivedSpec,MapTag::Set> MT;
+      FptrFinder<HostSpec,MapTag::Set>* ff;
 
      public: 
-      CallFcn(FptrFinder<DT,This,MapTag::Set>* host) 
+      CallFcn(FptrFinder<HostSpec,MapTag::Set>* host) 
         : ff(host) 
       {}
 
@@ -736,8 +802,15 @@ namespace Gambit {
       {
          if(ff->error_code==0)
          {
-            typename DT::Model& model = ff->fakethis->parent.model();
-            typename DT::Input& input = ff->fakethis->parent.input();
+            // Must use NON-const version; make sure pointer correctly initialised!
+            if(ff->fakethis==NULL)
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error! 'Setter' version of FptrFinder tried to use non-const 'fakethis' pointer, but the pointer was not initialised! This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Setter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
+                utils_error().forced_throw(LOCAL_INFO,errmsg.str());                 
+            }
+            Model& model = ff->fakethis->model();
+            Input& input = ff->fakethis->input();
             switch( ff->whichiter )
             {
                // Override retrieval cases
@@ -752,54 +825,54 @@ namespace Gambit {
                }
                // Wrapper class function call cases
                case 3: {
-                 ff->check(ff->it0_safe);
+                 ff->check(ff->it0_safe());
                  typename MT::FSptr f = ff->it0->second;
                  (model.*f)(set_value);
                  break;}
                case 4: {
-                 ff->check(ff->it0M_safe);
+                 ff->check(ff->it0M_safe());
                  typename MT::plainfptrM f = ff->it0M->second;
                  (*f)(model,set_value);
                  break;}
                case 5: {
-                 ff->check(ff->it0I_safe);
+                 ff->check(ff->it0I_safe());
                  typename MT::plainfptrI f = ff->it0I->second;
                  (*f)(input,set_value);
                  break;}
                case 6: {
-                 ff->check(ff->it1_safe);
+                 ff->check(ff->it1_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  typename MT::FSptr1 f = ff->it1->second.fptr;
                  (model.*f)(set_value,ff->index1);
                  break;}
                case 7: {
-                 ff->check(ff->it1M_safe);
+                 ff->check(ff->it1M_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  typename MT::plainfptrM1 f = ff->it1M->second.fptr;
                  (*f)(model,set_value,ff->index1);
                  break;}
                case 8: {
-                 ff->check(ff->it1I_safe);
+                 ff->check(ff->it1I_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  typename MT::plainfptrI1 f = ff->it1I->second.fptr;
                  (*f)(input,set_value,ff->index1);
                  break;}
                case 9: {
-                 ff->check(ff->it2_safe);
+                 ff->check(ff->it2_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::FSptr2 f = ff->it2->second.fptr;
                  (model.*f)(set_value,ff->index1,ff->index2);
                  break;}
                case 10: {
-                 ff->check(ff->it2M_safe);
+                 ff->check(ff->it2M_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::plainfptrM2 f = ff->it2M->second.fptr;
                  (*f)(model,set_value,ff->index1,ff->index2);
                  break;}
                case 11: {
-                 ff->check(ff->it2I_safe);
+                 ff->check(ff->it2I_safe());
                  ff->check_index_initd(LOCAL_INFO,ff->index1,"index1");
                  ff->check_index_initd(LOCAL_INFO,ff->index2,"index2");
                  typename MT::plainfptrI2 f = ff->it2I->second.fptr;

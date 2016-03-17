@@ -18,15 +18,21 @@
 ///  \author Peter Athron  
 ///          (peter.athron@coepp.org.au)
 ///  \date 2015 
+//
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2016 Feb
 ///
 ///  *********************************************
 
 #include <dlfcn.h>
 
 #include "gambit/Elements/ini_functions.hpp"
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
+#include "gambit/Logs/logging.hpp"
 
 #ifdef HAVE_LINK_H
   #include <link.h>
@@ -208,7 +214,7 @@ namespace Gambit
         std::ostringstream err;
         str error = dlerror();
         Backends::backendInfo().dlerrors[be+ver] = error;
-        err << "Failed loading library from " << path << " due to error: " << endl
+        err << "Failed loading library from " << path << " due to: " << endl
             << error << endl
             << "All functions in this backend library will be disabled (i.e. given status = -1).";
         backend_warning().raise(LOCAL_INFO,err.str());
@@ -279,6 +285,21 @@ namespace Gambit
             << "The backend function from this symbol will be disabled (i.e. get status = -2)" << std::endl;
         backend_warning().raise(LOCAL_INFO, err.str());
         be_functor.setStatus(-2);
+      }
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;
+  }
+
+  /// Disable a backend initialisation function if the backend is missing. 
+  int set_BackendIniBit_functor_status(functor& ini_functor, str be, str v)
+  {
+    bool present = Backends::backendInfo().works.at(be + v);
+    try
+    {  
+      if (not present)
+      {
+        ini_functor.setStatus(-4);
       }
     }
     catch (std::exception& e) { ini_catch(e); }

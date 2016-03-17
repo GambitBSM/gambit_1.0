@@ -32,7 +32,7 @@
 include(ExternalProject)
 
 # Specify the location of unreleased codes in the gambit_internal repository.
-set(GAMBIT_INTERNAL "${PROJECT_SOURCE_DIR}/../gambit_internal/extras")
+set(GAMBIT_INTERNAL "${PROJECT_SOURCE_DIR}/../gambit_internal/unreleased")
 
 # Specify the warning to give when trying to compile unreleased codes.
 set(private_code_warning "       Retrieving unreleased code from GAMBIT Collaboration private repository. This will fail if you don't have the repository.")

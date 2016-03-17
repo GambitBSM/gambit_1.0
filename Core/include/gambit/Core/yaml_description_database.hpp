@@ -29,7 +29,7 @@
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
-
+#include "gambit/Utils/yaml_variadic_functions.hpp"
 
 #ifndef __yaml_description_database_hpp__
 #define __yaml_description_database_hpp__

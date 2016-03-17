@@ -36,7 +36,7 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 20000
+      nlive: 10000
       tol: 0.01
       mmodal: 0
       # write native MultiNest ascii output files?
@@ -78,7 +78,7 @@ KeyValues:
 
   default_output_path: "runs/largetest_multinest+hdf5/"
 
-  print_timing_data: true
+  print_timing_data: false
 
   rng: ranlux48
 

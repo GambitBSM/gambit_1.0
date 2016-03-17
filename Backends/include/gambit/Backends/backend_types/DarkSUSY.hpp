@@ -275,6 +275,29 @@ namespace Gambit
       Finteger hclumpy;  // 1=smooth 2=clumpy
   };
 
+  struct DS_HMISODF
+  {
+      Fdouble vd_3d;     // velocity dispersion in 3 dimensions
+      Fdouble vgalesc;   // galactic escape velocity
+  };
+
+  struct DS_HMFRAMEVELCOM
+  {
+      Fdouble veX;
+      Fdouble veY;
+      Fdouble veZ;
+      Fdouble vspX;
+      Fdouble vspY;
+      Fdouble vspZ;
+      Fdouble v_obs;
+  };
+
+  struct DS_HMNOCLUE
+  {
+      Fdouble vobs;        // speed of earth observer with respect to halo
+                          // yearly averaged ????
+  };
+
 }
 
 #endif /* defined __DarkSUSY_types_hpp__ */

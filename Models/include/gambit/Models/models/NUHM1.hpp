@@ -23,7 +23,7 @@
 #define MODEL NUHM1
 #define PARENT NUHM2
   START_MODEL
-  DEFINEPARS(M0,M12,mH2,A0,TanBeta,SignMu)
+  DEFINEPARS(M0,M12,mH,A0,TanBeta,SignMu)
   INTERPRET_AS_PARENT_FUNCTION(NUHM1_to_NUHM2)
   // Translation functions defined in NUHM1.cpp
 #undef PARENT

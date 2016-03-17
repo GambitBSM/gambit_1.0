@@ -16,6 +16,7 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2013 Apr
 ///        2015 Mar, Aug
+///        2016 Feb
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -31,12 +32,13 @@
 ///
 ///  \author Joakim Edsjo
 ///          (edsjo@fysik.su.se)
-///  \date 2015 Aug
+///  \date 2015 Aug, 2016 Mar
 ///
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/DarkSUSY.hpp"
+#include "gambit/Utils/file_lock.hpp"
 
 #define square(x) ((x) * (x))  // square a number
 
@@ -45,7 +47,7 @@
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE
 {
-  const double min_chi01_width = 1.e-10;
+  const double min_chi01_rwidth = 5.e-3; // 0.5%  to avoid numerical problems
   const std::vector<str> IBfinalstate = initVector<str>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
   std::vector<double> DSparticle_mass;
   std::vector<double> GAMBITparticle_mass;
@@ -55,56 +57,61 @@ END_BE_NAMESPACE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-    // Initialize DarkSUSY if run for the first time
-    bool static scan_level = true;
+  // Initialize DarkSUSY if run for the first time
+  bool static scan_level = true;
 
-    if (scan_level)
+  if (scan_level)
+  {
+
+    // Do the call to dsinit one-by-one for each MPI process, as DarkSUSY loads up
+    // HiggsBounds, which writes files at init then reads them back in later.
+    Utils::FileLock mylock("DarkSUSY_" STRINGIFY(SAFE_VERSION) "_init");
+    mylock.get_lock();
+    dsinit();
+    mylock.release_lock();
+
+    dsrdinit();
+
+    // Initialize yield tables for use in cascade decays (initialize more if needed)
+    dshainit(151); // Initialize positron tables
+    dshainit(152); // Initialize gamma ray tables
+    dshainit(154); // Initialize antiproton tables
+    // Call dshayield for first call initialization of variables
+    double tmp1 = 100.0;
+    double tmp2 = 10.0;
+    int tmp3 = 15;
+    int tmp4 = 152;
+    int tmp5 = 0;
+    dshayield(tmp1,tmp2,tmp3,tmp4,tmp5);
+
+    scan_level = false;
+
+    /*
+     * FIXME: Fix BackendIniBit_error problems?
+    if (runOptions->hasKey("dddn"))
     {
-        std::cout << "DarkSUSY initialization" << std::endl;
-        dsinit();
-        dsrdinit();
-
-        // Initialize yield tables for use in cascade decays (initialize more if needed)
-        dshainit(151); // Initialize positron tables
-        dshainit(152); // Initialize gamma ray tables
-        dshainit(154); // Initialize antiproton tables
-        // Call dshayield for first call initialization of variables
-        double tmp1 = 100.0;
-        double tmp2 = 10.0;
-        int tmp3 = 15;
-        int tmp4 = 152;
-        int tmp5 = 0;
-        dshayield(tmp1,tmp2,tmp3,tmp4,tmp5);
-
-        scan_level = false;
-
-        /*
-         * CW: TODO FIXME Fix BackendIniBit_error problems
-        if (runOptions->hasKey("dddn"))
-        {
-          if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
-          else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
-          else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
-                "(only 0 or 1 permitted).");
-        }
-
-        if (runOptions->hasKey("ddpole"))
-        {
-          if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
-          else if (runOptions->getValue<int>("ddpole")==0)
-          {
-            ddcom->ddpole = 0;
-            if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
-              BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
-                  "by DarkSUSY because dddn = 1.");
-          }
-          else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
-                "(only 0 or 1 permitted).");
-        }
-        */
-
+      if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
+      else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
+      else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
+            "(only 0 or 1 permitted).");
     }
 
+    if (runOptions->hasKey("ddpole"))
+    {
+      if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
+      else if (runOptions->getValue<int>("ddpole")==0)
+      {
+        ddcom->ddpole = 0;
+        if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
+          BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
+              "by DarkSUSY because dddn = 1.");
+      }
+      else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
+            "(only 0 or 1 permitted).");
+    }
+    */
+
+  }
 }
 END_BE_INI_FUNCTION
 
@@ -182,21 +189,30 @@ BE_NAMESPACE
     int istat = 0;
     const char object[3] = "su";
     double result = 1e-30 * dsntmuonyield(pow(10.0,log10E),10.0,object[0],3,1,ptype,istat);
-    if (istat == 1)
+    if ((istat bitand 1) == 1)
     {
-      if (not piped_warnings.inquire()) // Don't bother re-raising this warning if it's already been done since the last .check().
+      if (not piped_warnings.inquire()) // Don't bother re-raising a warning if it's already been done since the last .check().
         piped_warnings.request(LOCAL_INFO, "Neutrino yield from Sun is lower bound; likelihood will be conservative.");
     }
-    else if (istat > 1)
+    if ((istat bitand 4) == 4)
     {
-      piped_errors.request(LOCAL_INFO, "Inaccessible final state requested in neutrino flux calculation.");
+      if (not piped_warnings.inquire()) // Don't bother re-raising a warning if it's already been done since the last .check().
+        piped_warnings.request(LOCAL_INFO, "DarkSUSY's dswayield_int didn't converge. This occasionally happens "
+                                           "due to finite statistics in the nu yield tables from Pythia. "
+                                           "This is benign (the missing integrals are always negligible).");
+    }    
+    if (istat > 4)
+    {
+      std::ostringstream err;
+      err << "Error from DarkSUSY::dswayield functions in neutrino flux calculation.  istat = " << istat;      
+      piped_errors.request(LOCAL_INFO, err.str());
     }
     return result;
   }
 
   /// Translates GAMBIT string identifiers to the SUSY
   /// particle codes used internally in DS (as stored in common block /pacodes/)
-  //TODO: add channel codes!
+  // FIXME: add channel codes!
   int DSparticle_code(const str& particleID)
   {
     int kpart;
@@ -312,6 +328,15 @@ BE_NAMESPACE
     using SLHAea::to;
     const std::complex<double> imagi(0.0, 1.0);
     DS_PACODES *DSpart = &(*pacodes);
+
+    /*
+    // FIXME: Joakim --> would this be need for anything / should this be
+    // checked?
+    SLHAea::Block modsel_block("MODSEL");
+    modsel_block.push_back("BLOCK MODSEL");
+    modsel_block.push_back("6 3 # FV");
+    mySLHA.push_back(modsel_block);
+    */
 
     // Define required blocks and raise an error if a block is missing
     required_block("SMINPUTS", mySLHA);
@@ -650,7 +675,7 @@ BE_NAMESPACE
     widths->width(DSpart->ksqd(6)) = myDecays.at(std::pair<int,int>(2000005,0)).width_in_GeV;
 
     // Set up neutralino widths.  Give the lightest some small nonzero width to avoid internal numerical issues in DS.
-    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_width);
+    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_rwidth * to<double>(mySLHA.at("MASS").at(1000022).at(1))); 
     widths->width(DSpart->kn(2)) = myDecays.at(std::pair<int,int>(1000023,0)).width_in_GeV;
     widths->width(DSpart->kn(3)) = myDecays.at(std::pair<int,int>(1000025,0)).width_in_GeV;
     widths->width(DSpart->kn(4)) = myDecays.at(std::pair<int,int>(1000035,0)).width_in_GeV;
@@ -667,9 +692,10 @@ BE_NAMESPACE
 
     #ifdef DARKSUSY_DEBUG
       // Spit out spectrum and width files for debug purposes
-      int u = 6;
-      dswspectrum(u);
-      dswwidth(u);
+      int u1 = 49;
+      int u2 = 50;
+      dswspectrum(u1);
+      dswwidth(u2);
     #endif
 
     return 0;  // everything OK (hah. maybe.)
@@ -738,7 +764,7 @@ BE_NAMESPACE
 /* PS: I have made the mods requested, but these functions cannot work as designed,
  * because DarkBit::TH_ParticleProperty is a module type, not a backend type.
  * Make it a backend type or move these functions back into DarkBit.
- *
+ * FIXME: Fix the IB mass setting routines
   void registerMassesForIB(
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
@@ -753,6 +779,7 @@ BE_NAMESPACE
 */
 
   //PS: this can't compile anyway, as particleProperties is not defined
+  //FIXME: Fix the IB mass setting routines
   void setMassesForIB(bool set)
   {
     if (set)

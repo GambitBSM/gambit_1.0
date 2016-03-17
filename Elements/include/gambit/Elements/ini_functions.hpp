@@ -26,18 +26,23 @@
 
 #include <vector>
 
-#include "gambit/Elements/functors.hpp"
+//#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
 
 /// Define the separator to use instead of "::" when macros get gnarly.
 #define NS_SEP ___no_apologies_for_rocking_macros___
 
 namespace Gambit
 {
-    
+  /// Forward declarations 
+  class functor;
+  class module_functor_common;
+  class model_functor;
+  class Options;
+  
   /// Catch initialisation exceptions
   void ini_catch(std::exception&);
     
@@ -82,6 +87,9 @@ namespace Gambit
   
   /// Disable a backend functor if its library is missing or the symbol cannot be found. 
   int set_backend_functor_status(functor&, str);
+
+  /// Disable a backend initialisation function if the backend is missing. 
+  int set_BackendIniBit_functor_status(functor&, str, str);
 
   /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.        
   int get_ctor_status(str, str, str, str, str, str);

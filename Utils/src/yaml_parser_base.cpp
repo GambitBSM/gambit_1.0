@@ -22,7 +22,8 @@
 
 #include "gambit/Utils/yaml_parser_base.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Logs/log.hpp"
+#include "gambit/Logs/logger.hpp"
+#include "gambit/Logs/logmaster.hpp"
 
 namespace Gambit
 {
@@ -238,8 +239,8 @@ namespace Gambit
          loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
      }
       // Initialise global LogMaster object
-      if(logNode["separate_file_per_process"])
-         logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>());
+      //if(logNode["separate_file_per_process"])
+      //   logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>()); // THIS IS NOW FORBIDDEN. Always using separate files. Will write a script to combine log files post run.
       if(logNode["log_debug_messages"])
          logger().set_log_debug_messages(logNode["log_debug_messages"].as<bool>());
       logger().initialise(loggerinfo);
@@ -255,7 +256,7 @@ namespace Gambit
       // Parameter must have no entries besides the value for this syntax to be valid
 
       // loop through models
-      for (YAML::const_iterator itm = parametersNode.begin(); itm!=parametersNode.end(); ++itm)
+      /*for (YAML::const_iterator itm = parametersNode.begin(); itm!=parametersNode.end(); ++itm)
       {
         std::string model = itm->first.as<std::string>();
         // loop through parameters  
@@ -274,7 +275,7 @@ namespace Gambit
             parametersNode[model][param] = newparam;
           }
         }
-      }
+      }*/
     }
 
     /// Getters for key/value section
