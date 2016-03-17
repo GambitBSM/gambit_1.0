@@ -4,9 +4,8 @@
 ///
 ///  Functions of module SpecBit
 ///
-///  These functions link ModelParameters to 
-///  Spectrum objects in various ways (by running
-///  spectrum generators, etc.)
+///  Vacuum stability functions
+///
 ///
 ///  *********************************************
 ///
