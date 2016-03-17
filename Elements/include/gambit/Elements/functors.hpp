@@ -72,6 +72,14 @@ namespace Gambit
   template <typename TYPE, typename... ARGS>
   struct variadic_ptr { typedef TYPE(*type)(ARGS..., ...); };
 
+  /// Forward declare helper friend functions
+  class module_functor_common;
+  namespace FunctorHelp {
+    void check_for_shutdown_signal(module_functor_common&);
+    bool emergency_shutdown_begun();
+    void entering_multithreaded_region(module_functor_common&);
+    void leaving_multithreaded_region(module_functor_common&);
+  }
 
   // ======================== Base Functor =====================================
 
@@ -642,16 +650,22 @@ namespace Gambit
       /// Check if an appropriate LogTag for this functor is missing from the logging system.
       void check_missing_LogTag();
 
-      /// @{ Some helper functions for interacting with signals in the calculate() routine
-      void check_for_shutdown_signal();
-      void entering_multithreaded_region();
-      void leaving_multithreaded_region();
       /// While locked, prevent this function switching off threadsafe* emergency signal handling.
       /// *The emergency signal handling cannot be made completely threadsafe; it can still cause
       /// lockups and memory corruption if it occurs at an inopportune time. "soft" shutdown is
       /// always preferable.
       bool signal_mode_locked = true; 
       /// @}
+
+      /// Connectors to external helper functions (to decouple signal handling from this class)
+      friend void FunctorHelp::check_for_shutdown_signal(module_functor_common&);
+      friend bool FunctorHelp::emergency_shutdown_begun();
+      friend void FunctorHelp::entering_multithreaded_region(module_functor_common&);
+      friend void FunctorHelp::leaving_multithreaded_region(module_functor_common&);
+      void check_for_shutdown_signal(){ FunctorHelp::check_for_shutdown_signal(*this); }
+      bool emergency_shutdown_begun(){ return FunctorHelp::emergency_shutdown_begun(); }
+      void entering_multithreaded_region(){ FunctorHelp::entering_multithreaded_region(*this); }
+      void leaving_multithreaded_region(){ FunctorHelp::leaving_multithreaded_region(*this); }
 
   };
 

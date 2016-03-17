@@ -92,6 +92,19 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Function to initialize LocalHalo model in DarkSUSY
+  #define CAPABILITY DarkSUSY_PointInit_LocalHalo
+  START_CAPABILITY
+    #define FUNCTION DarkSUSY_PointInit_LocalHalo_func
+      START_FUNCTION(bool)
+      DEPENDENCY(RD_fraction, double)
+      ALLOW_MODELS(LocalHalo)
+      BACKEND_REQ(dshmcom,(),DS_HMCOM)
+      BACKEND_REQ(dshmisodf,(),DS_HMISODF)
+      BACKEND_REQ(dshmframevelcom,(),DS_HMFRAMEVELCOM)
+      BACKEND_REQ(dshmnoclue,(),DS_HMNOCLUE)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Relic density -----------------------------------------
 
@@ -153,6 +166,9 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(RD_spectrum_ordered, DarkBit::RD_spectrum_type)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
+#ifdef DARKBIT_RD_DEBUG
+      DEPENDENCY(MSSM_spectrum, const Spectrum*) 
+#endif
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
       BACKEND_REQ(dsrdeqn, (), void, (double(*)(double&),double&,double&,double&,double&,int&))
@@ -172,7 +188,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      //ALLOW_MODELS(MSSM30atQ)  // TODO: (CW) Check for which models this works
+      ALLOW_MODELS(CMSSM,MSSM30atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
@@ -180,8 +196,10 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      //ALLOW_MODELS(MSSM30atQ, SingletDM)  // TODO: (CW) Check for which models this works
-      BACKEND_REQ(oh2, (), double, (double*,int,double))
+      BACKEND_REQ(oh2, (MicrOmegas, MicrOmegasSingletDM), double, (double*,int,double))
+      // FIXME: Is model CMSSM here really necessary?
+      // FIXME: Is model MSSM30atQ enough?
+      ALLOW_MODELS(CMSSM,MSSM30atQ,SingletDM)  
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -207,15 +225,6 @@ START_MODULE
     #undef FUNCTION                                                       
   #undef CAPABILITY 
 
-  // Print list of final states for debug purposes
-  #define CAPABILITY cascadeMC_printFinalStates
-  START_CAPABILITY
-    #define FUNCTION cascadeMC_printFinalStates
-      START_FUNCTION(bool)      
-      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)      
-    #undef FUNCTION                                                       
-  #undef CAPABILITY 
-
   // Function setting up the decay table used in decay chains
   #define CAPABILITY cascadeMC_DecayTable
   START_CAPABILITY
@@ -232,7 +241,7 @@ START_MODULE
     #define FUNCTION cascadeMC_LoopManager
       START_FUNCTION(void, CAN_MANAGE_LOOPS)  
       DEPENDENCY(GA_missingFinalStates, std::vector<std::string>)
-      // FIXME: Hack to make sure these capabilities are run before the loop
+      // Make sure these capabilities are run before the loop
       DEPENDENCY(cascadeMC_DecayTable, DarkBit::DecayChain::DecayTable)
       DEPENDENCY(SimYieldTable, DarkBit::SimYieldTable)      
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)        
@@ -525,7 +534,6 @@ START_MODULE
   // The bool result to these functions is currently meaningless.
 
   // Set the WIMP mass and couplings
-  // TODO: Move halo settings from backend to here?
   #define CAPABILITY SetWIMP_DDCalc0
   START_CAPABILITY
     #define FUNCTION SetWIMP_DDCalc0
@@ -1012,12 +1020,13 @@ START_MODULE
     #define FUNCTION capture_rate_Sun_constant_xsec
       START_FUNCTION(double)
       BACKEND_REQ(capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
-      BACKEND_REQ(dshmcom, (DarkSUSY), DS_HMCOM)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(sigma_SI_p, double)
       DEPENDENCY(sigma_SD_p, double)
-      DEPENDENCY(RD_fraction, double)
-      ALLOW_MODELS(LocalHalo)
+        #define CONDITIONAL_DEPENDENCY DarkSUSY_PointInit_LocalHalo
+        START_CONDITIONAL_DEPENDENCY(bool)
+        ACTIVATE_FOR_BACKEND(capture_rate_Sun, DarkSUSY)
+        #undef CONDITIONAL_DEPENDENCY
     #undef FUNCTION
   #undef CAPABILITY
   

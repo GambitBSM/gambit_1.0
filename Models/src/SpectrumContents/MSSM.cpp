@@ -72,7 +72,6 @@ namespace Gambit {
      addParameter(Par::dimensionless, "Ye", m3x3);
   
      addParameter(Par::Pole_Mass, "~g", scalar);
-     addParameter(Par::Pole_Mass, "W+", scalar);
   
      addParameter(Par::Pole_Mass, "~d",    v6);
      addParameter(Par::Pole_Mass, "~u",    v6);

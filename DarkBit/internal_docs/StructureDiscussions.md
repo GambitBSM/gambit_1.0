@@ -5,7 +5,7 @@ DarkBit Structure discussions
 
 ## TB: updated 01/2015 (after long discussion with CW)
 
-To represent this information, we can use the "ProcessCatalogue",
+To represent this information, we can use the "ProcessCatalog",
 a structure with a hierarchy of the following form:
 
 * ParticleProperties
@@ -22,7 +22,7 @@ a structure with a hierarchy of the following form:
 This contains all information about DM annihilation or decay relevant for
 indirect detection; e.g. the annihilation of several DM particles, velocity
 dependence, cascade decays, etc.
-NB: The ProcessCatalogue is initialized once for each model parameter set;
+NB: The ProcessCatalog is initialized once for each model parameter set;
 this is done in such a way that no indirect detection routines needs
 to know about *how* this was done. 
 
@@ -103,7 +103,7 @@ states. It looks like
     
     
 The last layer is the "ProcessList", which is simply a list of all the above 
-described processes. On top of that, the "ProcessCatalogue" contains the 
+described processes. On top of that, the "ProcessCatalog" contains the 
 
   * Particle properties
 

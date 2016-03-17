@@ -152,8 +152,6 @@ namespace Gambit {
         << (*BEreq::MOcommon).par[7] << endl;
 
       double p1[2], p2[2], p3[2], p4[2];
-      // TODO: Should this be an error or just an invalid point if the
-      // calculation fails?
       int error = BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), 
           byVal(p1), byVal(p2), byVal(p3), byVal(p4));
       if(error!=0)
@@ -218,7 +216,6 @@ namespace Gambit {
     //////////////////////////////////////////////////////////////////////////
 
     /// Point-level initialization of DDCalc backend.
-    // TODO: Move halo settings from backend to here?
     void SetWIMP_DDCalc0(bool &result) {
       using namespace Pipes::SetWIMP_DDCalc0;
       double M = 
