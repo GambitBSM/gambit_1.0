@@ -59,19 +59,26 @@ namespace Gambit
         c=d;
     }
     
-    bool check_perturb(const Spectrum*  spec,double scale)
+    bool check_perturb(const Spectrum*  spec,double scale,int pts)
     {
     using namespace flexiblesusy;
     using namespace Gambit;
     using namespace SpecBit;
     std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE();
-    SingletDM -> RunToScale(scale);
-    double lambda1 = SingletDM->get(Par::dimensionless,"Lambda1"); //runningpars().get(Par::dimensionless,"Lambda1");
-    double lambda2 = SingletDM->get(Par::dimensionless,"Lambda2");
-    double lambda3 = SingletDM->get(Par::dimensionless,"Lambda3");
-    bool perturbative = lambda1 < 3.5449077018110318 && lambda2 < 3.5449077018110318 && lambda3 < 3.5449077018110318;
-    cout << "checking perturb at scale " << scale << " with lambda (LB) = " << lambda1 << endl;
-    return perturbative;
+    double step = scale / pts;
+    bool nperturbative = 0;
+    double ul=3.5449077018110318;
+    for (int i=1;i<pts;i++)
+    {
+    SingletDM -> RunToScale(step*float(i));
+    bool perturbative = 0;
+    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_h")) < ul;
+    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_hS")) < ul;
+    perturbative = !(SingletDM->get(Par::dimensionless,"lambda_S")) < ul;
+    nperturbative +=!perturbative;
+    }
+//    cout << "checking perturb at scale " << scale << " with lambda (LB) = " << lambda1 << endl;
+    return !nperturbative;
     }
     
     double run_lambda(const Spectrum*  spec,double scale)
@@ -82,7 +89,7 @@ namespace Gambit
     std::unique_ptr<SubSpectrum> SingletDM = spec ->clone_HE(); // clone the original spectrum incase the running takes the spectrum
                                                                 // into a non-perturbative scale and thus the spectrum is no longer reliable
     SingletDM -> RunToScale(scale);
-    double lambda1 = SingletDM->get(Par::dimensionless,"Lambda1");
+    double lambda1 = SingletDM->get(Par::dimensionless,"lambda_h");
     return lambda1;
     }
     
@@ -91,6 +98,9 @@ namespace Gambit
       using namespace flexiblesusy;
       using namespace softsusy;
       namespace myPipe = Pipes::find_min_lambda;//get_SingletDM_spectrum;
+      const Options& runOptions=*myPipe::runOptions;
+      double high_energy_limit = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
+      int check_perturb_pts = runOptions.getValueOrDef<double>(100,"check_perturb_pts");
       using namespace Gambit;
       using namespace SpecBit;
       const Spectrum* fullspectrum = *myPipe::Dep::SingletDM_spectrum;
@@ -224,12 +234,11 @@ namespace Gambit
       }
       else
       {
-        LB=1.22e19;
+        LB=high_energy_limit;
         lifetime=1e300;
         //stability=0; // stable
       }
-      perturbative=check_perturb(fullspectrum,LB);
-      cout << "perturbative = " << perturbative << endl;
+      perturbative=check_perturb(fullspectrum,LB,check_perturb_pts);
       double perturb=float(!perturbative);
       age_pair = triplet<double>(lifetime,LB,perturb);
      
@@ -256,9 +265,9 @@ namespace Gambit
     }
     
     
-    void check_perturb_min_lambda(double &result)
+    void get_check_perturb_min_lambda(double &result)
     {
-      namespace myPipe = Pipes::get_likelihood;//
+      namespace myPipe = Pipes::get_check_perturb_min_lambda;//
       using namespace Gambit;
       triplet<double> age = *myPipe::Dep::vacuum_stability;
       result=age.lower*(1e-300); // returns lnlike, very small if pertub is 1, 0 otherwise
