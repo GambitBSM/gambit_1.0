@@ -46,10 +46,10 @@
 
 - name: BR_Dstaunu
   islimit: false
-  value: 55.4e-2
-  stat_error_minus: 2.4e-2
+  value: 5.54e-2
+  stat_error_minus: 0.24e-2
   sys_error_minus: 0.
-  stat_error_plus: 2.4e-2
+  stat_error_plus: 0.24e-2
   sys_error_plus: 0.
   source: PDG
   correlation:
