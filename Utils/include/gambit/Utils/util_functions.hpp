@@ -132,6 +132,12 @@ namespace Gambit
      /// Ensure that a path exists (and then return the path, for chaining purposes)
     const std::string& ensure_path_exists(const std::string&);
 
+    /// Return a vector of strings listing the contents of a directory (POSIX)
+    std::vector<std::string> ls_dir(const std::string& dir);
+
+    /// Get directory name from full path+filename (POSIX)
+    std::string dir_name(const std::string& path);
+
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
 
     /// Get clock time

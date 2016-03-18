@@ -684,13 +684,33 @@ namespace Gambit
  
          if(myRank==0)
          { 
-            // Check if temporary files from previous run exist.
-               
-            // TODO: assumes mpiSize the same as last run, can we relax this? Try to auto-detect files?
-            for(std::size_t i=0; i<mpiSize; i++)
+            // Autodetect temporary files from previous run.
+            std::string output_dir = Utils::dir_name(finalfile);
+            std::vector<std::string> files = Utils::ls_dir(output_dir); 
+            std::string tmp_base(finalfile + "_temp_");
+            std::vector<int> ranks;
+            for(auto it=files.begin(); it!=files.end(); ++it)
+            {
+               std::cout << (*it) << std::endl;
+               if (it->compare(0, tmp_base.length(), tmp_base) == 0)
+               {
+                  // Matches format of temporary file! Extract the rank that produced it
+                  std::stringstream ss;
+                  ss << it->substr(tmp_base.length());
+                  int rank;
+                  ss >> rank;
+                  std::cout << ss.str() << " : " << rank << std::endl;
+                  // TODO: check for failed read
+                  ranks.push_back(rank);
+               }
+            }
+            // TODO: Check that no files are missing (up to largest known rank)
+
+            // Check if temporary files from previous run are readable.
+            for(auto it=ranks.begin(); it!=ranks.end(); ++it)
             {
                std::ostringstream tmpfile;
-               tmpfile << finalfile << "_temp_" << i;
+               tmpfile << finalfile << "_temp_" << (*it);
                std::string msg2;
                if(not HDF5::checkFileReadable(tmpfile.str(), msg2))
                {
@@ -1072,8 +1092,7 @@ namespace Gambit
       {
         // This happens only at the end of the run; copy data to user-requested filename
         // TODO! This does not permit adding different runs into the same hdf5 file
-        // Probably shouldn't do that though, risks the existing data. Better to maintain
-        // separate files. Can be combined outside of gambit if desired.
+        // Need to make sure Greg's combine code can do this.
         std::ostringstream command2;
         command2 <<"cp "<<file<<" "<<finalfile<<" && rm "<<file; // Note, deletes old file if successful
         FILE* fp = popen(command2.str().c_str(), "r");
