@@ -31,7 +31,7 @@ namespace Gambit {
 
     namespace HDF5 { 
       /// Create or open hdf5 file (ignoring feedback regarding whether file already existed)
-      hid_t openFile(const std::string& fname, bool overwrite=false)
+      hid_t openFile(const std::string& fname, bool overwrite)
       {
          bool tmp;
          return openFile(fname,overwrite,tmp);

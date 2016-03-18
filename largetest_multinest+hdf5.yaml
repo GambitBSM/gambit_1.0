@@ -25,8 +25,8 @@ Printer:
   printer: hdf5
   options:
     output_file: "results.hdf5"
-    group: "/gambit_data"
-    delete_file_if_exists: true
+    group: "/gambit_data3"
+    delete_file_if_exists: false
 
 #======== Scanner setup ========
 Scanner:
@@ -36,7 +36,7 @@ Scanner:
     multinest:
       plugin: MultiNest
       like:  LogLike
-      nlive: 10000
+      nlive: 1000
       tol: 0.01
       mmodal: 0
       # write native MultiNest ascii output files?

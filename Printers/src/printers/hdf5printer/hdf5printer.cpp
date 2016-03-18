@@ -524,7 +524,7 @@ namespace Gambit
            if(not resume)
            {
              std::string msg_finalfile;
-             if(HDF5::checkFileReadable(finalfile, msg_finalfile)
+             if(HDF5::checkFileReadable(finalfile, msg_finalfile))
              {
                if(overwrite_file)
                {
