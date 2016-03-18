@@ -30,6 +30,13 @@ namespace Gambit {
   namespace Printers {
 
     namespace HDF5 { 
+      /// Create or open hdf5 file (ignoring feedback regarding whether file already existed)
+      hid_t openFile(const std::string& fname, bool overwrite=false)
+      {
+         bool tmp;
+         return openFile(fname,overwrite,tmp);
+      }
+
       /// Create or open hdf5 file
       /// third argument "oldfile" is used to report whether an existing file was opened (true if yes)
       hid_t openFile(const std::string& fname, bool overwrite, bool& oldfile)

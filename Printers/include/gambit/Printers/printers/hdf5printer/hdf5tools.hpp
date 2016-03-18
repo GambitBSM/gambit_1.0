@@ -81,6 +81,7 @@ namespace Gambit
          // If overwrite=true then any existing file will be deleted and replaced. USE CAREFULLY!!!
          // third argument "oldfile" is used to report whether an existing file was opened (true if yes)
          hid_t openFile(const std::string& fname, bool overwrite, bool& oldfile);
+         hid_t openFile(const std::string& fname, bool overwrite=false);
 
          /// Close hdf5 file
          void closeFile(hid_t file);
