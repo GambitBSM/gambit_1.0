@@ -366,7 +366,11 @@ namespace Gambit
     const Options& runOptions=*myPipe::runOptions;
     double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
     const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-    cout<< "checking perturbativity to scale =  " << scale << endl;
+    
+    #ifdef SPECBIT_DEBUG
+        std::cout<<"checking perturbativity to scale =  " << scale<<std::endl;
+    #endif
+    
     SingletDM_input_parameters input;
     fill_SingletDM_input(input,myPipe::Param,sminputs,scale);
     if(check_perturb_func_SingletDM(input,sminputs)){lnlike=1e-300;}

@@ -206,16 +206,21 @@ namespace Gambit
               }
           }
       }
-      cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<endl;
+
+    #ifdef SPECBIT_DEBUG
+        std::cout<< "minimum value of quartic coupling is   "<< fu << " at " << u <<" GeV"<<std::endl;
+    #endif
+    
+
 
       double lambda_min=fu;
       double lifetime,LB;
       if (lambda_min<0) // second minimum exists, now determine stability and lifetime
       {
         LB=u;
-        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4);
-        cout<< "tunnelling rate is approximately  " << p << endl;
+        double p=exp(4*140-2600/(abs(lambda_min)/0.01))*pow(LB/(1.2e19),4); // compute tunnelling rate
      
+        #ifdef SPECBIT_DEBUG
         if (p>1)
         {
             cout<< "vacuum is unstable" << endl;
@@ -224,6 +229,7 @@ namespace Gambit
         {
             cout<< "vacuum is metastable" << endl;
         }
+        #endif
        
         lifetime=1/(exp(3*140-2600/(abs(lambda_min)/0.01))*pow(1/(1.2e19),3)*pow(LB,4));
       }
@@ -231,7 +237,9 @@ namespace Gambit
       {
         LB=high_energy_limit;
         lifetime=1e300;
+        #ifdef SPECBIT_DEBUG
         cout << "vacuum is absolutely stable" << endl;
+        #endif
         // vacuum is stable
       }
       bool perturbative=check_perturb(fullspectrum,LB,check_perturb_pts);  // now do a check on the perturbativity of the couplings up to this scale
