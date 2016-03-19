@@ -19,7 +19,7 @@
 Parameters:
     StandardModel_SLHA2: #!import StandardModel_SLHA2_defaults.yaml
       mT:
-         range: [150,200]
+         range: [173.15,173.16]
          prior_type: flat
 
       # SLHA1
@@ -63,20 +63,14 @@ Parameters:
 
     StandardModel_Higgs_running:
       mH:
-        range: [100, 150]
+        range: [146.1, 146.66]
         prior_type: flat
       QEWSB: 173
 
 
-    SingletDMZ3:
-      mS:
-        range: [100, 600]
-        prior_type: flat
-      lambda_hS:
-        range: [0.01, 0.15]
-        prior_type: flat
-      lambda_S: 0
-      mu3: 0
+    SingletDM:
+      mS: 80
+      lambda_hS: 0.5 #0.30
 
   #  SSDM:  # use running mass model and able to choose lambda_S as well
   #    mS2: 1000
@@ -117,7 +111,7 @@ Printer:
 Scanner:
 
   #use_objectives: uniform
-  use_scanner: multinest
+  use_scanner: grid
 
 # Scanners
 
@@ -142,7 +136,7 @@ Scanner:
       plugin: grid
       version: ">=1.0"
       like:  LogLike
-      grid_pts: [2, 2]
+      grid_pts: [2,2]
 
     multinest:
       plugin: MultiNest
@@ -174,24 +168,23 @@ ObsLikes:
 
 # simple test vacuum stability function in SpecBit (observable only for now)
 
-#    - capability: vacuum_stability
-#      purpose: Observable
-#      function: find_min_lambda
+    - capability: vacuum_stability
+      purpose: Observable
+      function: find_min_lambda
     - capability: SingletDM_pole_mh
       purpose: Observable
 
     - capability: VS_likelihood
-      purpose: LogLike
+      purpose: Observable
+
+    - capability: check_perturb_min_lambda
+      purpose: Observable
 
     - capability: check_perturb
       purpose: Observable
-      function: check_perturb_SingletDMZ3
-      options:
-        set_high_scale: 1e6
 
-
-#    - capability: expected_lifetime
-#      purpose: Observable
+    - capability: expected_lifetime
+      purpose: Observable
 
 
 
@@ -200,14 +193,17 @@ ObsLikes:
 #########################
 
 Rules:
- #   - capability: check_perturb
- #     purpose: Observable
- #     function: check_perturb_to_min_lambda #or check_perturb_simple
-     # options:
-     #   set_high_scale: 10000  #option can be used with check_perturb_simple only
+    - capability: check_perturb
+      purpose: Observable
+      function: check_perturb_SingletDM #or check_perturb_simple
+      options:
+        set_high_scale: 1e18  #option can be used with check_perturb_simple only
 
     - capability: SingletDM_spectrum
-      function: get_SingletDMZ3_spectrum
+      function: get_SingletDM_spectrum_pole
+      options:
+        set_high_scale: 200
+        check_perturb_pts: 10
 
 #########################
 # Logging setup

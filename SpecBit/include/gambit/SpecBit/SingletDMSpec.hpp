@@ -2,10 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  SingletDM derived version of SubSpectrum class. Designed
-///  for easy interface to FlexibleSUSY, but also
-///  works with SoftSUSY as the backend with an
-///  appropriately designed intermediate later.
+///  SingletDM derived version of SubSpectrum class.
 ///
 ///  *********************************************
 ///
@@ -23,6 +20,10 @@
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 Aug
+///
+///  \author James McKay
+///          (j.mckay14@imperial.ac.uk)
+///  \date 2016 Mar
 ///
 ///  *********************************************
 

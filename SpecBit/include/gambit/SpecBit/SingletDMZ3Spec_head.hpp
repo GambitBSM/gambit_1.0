@@ -3,8 +3,6 @@
 ///  \file
 ///
 ///  "Header" declarations for SingletDMZ3Spec class
-///  (definitions in another header file due to
-///  this being a template class)
 ///
 ///  *********************************************
 ///

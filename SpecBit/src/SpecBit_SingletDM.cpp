@@ -360,9 +360,9 @@ namespace Gambit
     return error;
     }
     
-    void check_perturb_simple_SingletDM(double &lnlike)
+    void check_perturb_SingletDM(double &lnlike)
     {
-    namespace myPipe = Pipes::check_perturb_simple_SingletDM;
+    namespace myPipe = Pipes::check_perturb_SingletDM;
     const Options& runOptions=*myPipe::runOptions;
     double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
     const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
@@ -373,9 +373,9 @@ namespace Gambit
     else{lnlike=0;}
     }
     
-    void check_perturb_simple_SingletDMZ3(double &lnlike)
+    void check_perturb_SingletDMZ3(double &lnlike)
     {
-    namespace myPipe = Pipes::check_perturb_simple_SingletDMZ3;
+    namespace myPipe = Pipes::check_perturb_SingletDMZ3;
     const Options& runOptions=*myPipe::runOptions;
     double scale = runOptions.getValueOrDef<double>(1.22e19,"set_high_scale");
     const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;

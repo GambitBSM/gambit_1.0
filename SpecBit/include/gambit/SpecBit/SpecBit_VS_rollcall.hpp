@@ -3,7 +3,7 @@
 ///  \file
 ///
 ///  Rollcall declarations for module functions
-///  contained in SpecBit_SingletDMZ3.cpp
+///  contained in SpecBit_VS.cpp
 ///
 ///  *********************************************
 ///

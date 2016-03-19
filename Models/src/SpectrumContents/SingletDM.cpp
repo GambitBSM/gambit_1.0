@@ -13,7 +13,12 @@
 ///   
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2016 Feb 
+///  \date 2016 Feb
+///
+///
+///  \author James McKay
+///          (j.mckay14@imperial.ac.uk)
+///  \date 2016 Mar
 ///
 ///  *********************************************
 

@@ -15,6 +15,10 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2016 Feb 
 ///
+///  \author James McKay
+///          (j.mckay14@imperial.ac.uk)
+///  \date 2016 Mar
+///
 ///  *********************************************
 
 #ifndef __singlet_DMZ3_contents_hpp__
