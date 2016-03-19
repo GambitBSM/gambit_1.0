@@ -92,6 +92,12 @@ namespace Gambit
         /// Override a backend's config file location
         void override_path(str&, str&, str);
 
+        /// Set the default version of a BOSSed backend, for easy retrieval later. Returns true on success.
+        void set_default_version(const str&, const str&);
+        
+        /// Get the default version of a BOSSed backend.
+        str default_version(const str& be) const;
+
       private:
 
         /// Map from backend names to maps between version and safe version
@@ -99,6 +105,9 @@ namespace Gambit
 
         /// Map from backend names to maps between version and paths found by dlinfo
         std::map<str, std::map<str, str> > bepathoverrides;
+
+        /// Map from BOSSed backend names to their default versions
+        std::map<str, str> default_versions;
 
         /// Filename in which to find the user's custom backend locations configuration file.
         const str filename;

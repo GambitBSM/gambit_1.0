@@ -106,6 +106,9 @@ namespace Gambit
   /// Set the classloading requirements of a given functor.
   int set_classload_requirements(module_functor_common&, str, str, str);
 
+  /// Save default versions of BOSSed backends for later reference
+  int set_default_bossed_version(const str&, const str&);
+
   namespace slhahelp
   {
 

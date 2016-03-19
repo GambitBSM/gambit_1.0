@@ -70,16 +70,6 @@ START_MODULE
 
   // #undef CAPABILITY
 
-  #define CAPABILITY dump_spectrum_slha
-  START_CAPABILITY
-
-    #define FUNCTION dump_spectrum
-      START_FUNCTION(double)
-      DEPENDENCY(SM_subspectrum, const SubSpectrum*)
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
 
 #undef MODULE
 

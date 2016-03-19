@@ -409,6 +409,17 @@ namespace Gambit
     return 0;
   }
 
+  /// Save default versions of BOSSed backends for later reference
+  int set_default_bossed_version(const str& be, const str& sv)
+  {
+    try
+    {
+      Backends::backendInfo().set_default_version(be, sv);
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;
+  }
+
   namespace slhahelp
   {
 

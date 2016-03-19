@@ -457,10 +457,12 @@ namespace Gambit
       // Only allow neutralino LSPs.
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
 
-      #ifdef SPECBIT_DEBUG
-        // Dump spectrum information to slha file (for testing...)
-        result->get_HE()->getSLHA("SpecBit/CMSSM_fromSpectrumObject.slha");
-      #endif
+      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
+      {
+        // Spit out the full spectrum as an SLHA file.
+        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
+        result->getSLHA(filename);
+      }
 
     }
 
@@ -475,6 +477,12 @@ namespace Gambit
       fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
+      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
+      {
+        // Spit out the full spectrum as an SLHA file.
+        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
+        result->getSLHA(filename);
+      }
     }
 
     // Runs MSSM spectrum generator with GUT scale input
@@ -487,6 +495,12 @@ namespace Gambit
       fill_MSSM63_input(input,myPipe::Param);
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions,myPipe::Param);
       if (not has_neutralino_LSP(result)) invalid_point().raise("Neutralino is not LSP.");
+      if (myPipe::runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
+      {
+        // Spit out the full spectrum as an SLHA file.
+        str filename = myPipe::runOptions->getValueOrDef<str>("GAMBIT_unimproved_spectrum.slha", "SLHA_output_filename");
+        result->getSLHA(filename);
+      }
     }
 
     void get_GUTMSSMB_spectrum (const Spectrum* &/*result*/)
@@ -505,17 +519,6 @@ namespace Gambit
       namespace myPipe = Pipes::get_SM_SubSpectrum_from_MSSM_Spectrum;
       const Spectrum* matched_spectra(*myPipe::Dep::unimproved_MSSM_spectrum);
       result = matched_spectra->get_LE();
-    }
-
-    /// Dump whatever is in the spectrum object to SLHA
-    /// This is mostly for testing purposes.
-    void dump_spectrum(double &result)
-    {
-      namespace myPipe = Pipes::dump_spectrum;
-      const SubSpectrum* spec(*myPipe::Dep::SM_subspectrum);
-      std::string filename(myPipe::runOptions->getValue<std::string>("filename"));
-      spec->getSLHA(filename);
-      result = 1;
     }
 
     /// Extract an SLHAea version of the spectrum contained in a Spectrum object

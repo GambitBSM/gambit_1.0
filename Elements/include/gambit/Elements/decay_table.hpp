@@ -53,16 +53,16 @@ namespace Gambit
       /// @}
 
       /// Output entire decay table as an SLHAea file full of DECAY blocks
-      SLHAstruct as_slhaea(bool include_zero_bfs=false) const;
+      SLHAstruct getSLHAea(bool include_zero_bfs=false) const;
     
       /// Output entire decay table as an SLHA file full of DECAY blocks
-      void as_slha(str, bool include_zero_bfs=false) const;
+      void getSLHA(str, bool include_zero_bfs=false) const;
 
       /// Output a decay table entry as an SLHAea DECAY block, using input parameter to identify the entry.
       /// @{
-      SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
-      SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false) const;
-      SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false) const;
+      SLHAea::Block getSLHAea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
+      SLHAea::Block getSLHAea_block(str, bool include_zero_bfs=false) const;
+      SLHAea::Block getSLHAea_block(str, int, bool include_zero_bfs=false) const;
       /// @}
 
       /// Get entry in decay table for a given particle, adding the particle to the table if it is absent.
@@ -332,9 +332,9 @@ namespace Gambit
 
           /// Output this entry as an SLHAea DECAY block, using input parameter to identify the mother particle.
           /// @{
-          SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false) const;
-          SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false) const;
-          SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
+          SLHAea::Block getSLHAea_block(str, bool include_zero_bfs=false) const;
+          SLHAea::Block getSLHAea_block(str, int, bool include_zero_bfs=false) const;
+          SLHAea::Block getSLHAea_block(std::pair<int,int>, bool include_zero_bfs=false) const;
           /// @}
 
           /// Sum up the partial widths and return the result.

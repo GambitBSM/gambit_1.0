@@ -63,7 +63,7 @@ namespace Gambit
      /* command line flags */ 
      , processed_options(false)
      , show_runorder(false)
-     , resume(false)
+     , resume(true)
      , verbose_flag(false)
      , found_inifile(false)
     {}
@@ -102,7 +102,11 @@ namespace Gambit
                 "\n   -v/--verbose          Turn on verbose mode                              "
                 "\n   -d/--dryrun           List the function evaluation order computed based " 
                 "\n                           on inifile                                      "
-                "\n   -r/--resume           Resume a previously initiated scan                "
+                "\n   -r/--restart          Restart the scan defined by <inifile>. Existing   "
+                "\n                         output files for the run will be overwritten.     "
+                "\n                         Default behaviour in the absence of this option is"
+                "\n                         to attempt to resume the scan from any existing   "
+                "\n                         output.                                           "
                 "\n" << endl << endl; 
       }
       logger().disable();
@@ -125,8 +129,8 @@ namespace Gambit
         {"version", no_argument, 0, 10}, /*10 is just a unique integer key to identify this argument*/
         {"verbose", no_argument, 0, 'v'},
         {"help",    no_argument, 0, 'h'},
-        {"dryrun",  no_argument,0, 'd'},
-        {"resume",  no_argument,0, 'r'},
+        {"dryrun",  no_argument, 0, 'd'},
+        {"restart", no_argument, 0, 'r'},
         {0,0,0,0},
       };
 
@@ -161,8 +165,8 @@ namespace Gambit
             show_runorder = true; // Sorted out in dependency resolver
             break;
           case 'r':
-            // Turn on "resume" mode
-            resume = true;
+            // Restart scan (turn off "resume" mode, activate output overwrite)
+            resume = false;
             break;
           case 'f':
             // Argument must contain the ini-filename 
