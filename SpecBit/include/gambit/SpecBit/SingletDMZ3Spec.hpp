@@ -231,7 +231,8 @@ namespace Gambit
          {
             typename MTget::fmap0 tmp_map;
             tmp_map["vev"] = &Model::get_v;
-            tmp_map["lambda_hS"]= &Model::get_LamSH;  // ??? not sure why it wants it here
+            tmp_map["mu3"] = &Model::get_mu3;
+           // tmp_map["lambda_hS"]= &Model::get_LamSH;  // ??? not sure why it wants it here
             map_collection[Par::mass1].map0 = tmp_map;
          }
 
