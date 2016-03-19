@@ -37,9 +37,11 @@ namespace Gambit {
      addParameter(Par::dimensionless, "lambda_hS");
      addParameter(Par::dimensionless, "lambda_S");
      addParameter(Par::dimensionless, "lambda_h");
+     addParameter(Par::mass1, "mu3"      ); // cubic coupling for SSS
 
      addParameter(Par::Pole_Mass, "h0");
      addParameter(Par::Pole_Mass, "S" );
+    
   }
 
 }
