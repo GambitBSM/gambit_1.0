@@ -26,7 +26,7 @@ Printer:
   options:
     output_file: "results.hdf5"
     group: "/gambit_data3"
-    delete_file_if_exists: false
+    delete_file_if_exists: true
 
 #======== Scanner setup ========
 Scanner:
@@ -58,7 +58,7 @@ ObsLikes:
     capability:   normaldist_loglike
     module:       ExampleBit_A
     type:         double
-
+    printme:      false
 #======== Rule entries ========
 Rules:
   # None required

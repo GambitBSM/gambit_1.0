@@ -36,6 +36,7 @@
 
 #include "gambit/Elements/spectrum.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/file_lock.hpp"
 
 namespace Gambit
 {
@@ -321,6 +322,17 @@ namespace Gambit
      LE->add_to_SLHAea(slha);
      HE->add_to_SLHAea(slha);
      return slha;
+   }
+
+   /// Output spectrum contents as an SLHA file, using getSLHAea.
+   void Spectrum::getSLHA(str filename) const
+   {
+    Utils::FileLock mylock(filename);
+    mylock.get_lock();
+    std::ofstream ofs(filename);
+    ofs << getSLHAea();
+    ofs.close();
+    mylock.release_lock();
    }
 
    /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.

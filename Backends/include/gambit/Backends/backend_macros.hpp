@@ -115,7 +115,6 @@ namespace Gambit                                                            \
   {                                                                         \
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
     {                                                                       \
-                                                                            \
       void * pHandle;                                                       \
       void_voidFptr pSym;                                                   \
       std::vector<str> allowed_models;                                      \
@@ -132,6 +131,12 @@ namespace Gambit                                                            \
       /* Make backend path easily available to convenience functions. */    \
       extern const str backendDir = backendInfo().                          \
        path_dir(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));                \
+                                                                            \
+      /* Register the default version of this backend if loading classes.*/ \
+      BOOST_PP_IIF(DO_CLASSLOADING,                                         \
+        int default_ver_registered = set_default_bossed_version(            \
+         STRINGIFY(BACKENDNAME), STRINGIFY(CAT(Default_,BACKENDNAME)));     \
+      , )                                                                   \
     }                                                                       \
   }                                                                         \
 }                                                                           \
