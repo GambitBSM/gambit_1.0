@@ -189,8 +189,10 @@ namespace Gambit
     /// Get directory name from full path+filename (POSIX)
     std::string dir_name(const std::string& path)
     {
-       std::string result = path; // dirname may modify its input, so need modifiable storage for the input
-       result = dirname(result.c_str());
+       char buffer[1000]; // temporary buffer for dirname to work with (it is a C function)
+       str.copy(path, path.size());
+       buffer[path.size()] = '\0';
+       std::string result = dirname(&buffer[0]);
        return result;  
     }
 
