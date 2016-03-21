@@ -750,6 +750,7 @@ namespace Gambit
     /// Returns all the PPIDs found in the existing datasets
     std::vector<PPIDpair> HDF5Printer::verify_existing_output(const std::string& file, const std::string& group)
     {
+       std::vector<PPIDpair> prev_points;
        // Need to do combination before trying to get previous points.
        // Make sure a barrier or similar exists outside this function to make
        // sure master node does combination before workers try to retrieve 
@@ -759,10 +760,10 @@ namespace Gambit
        {
          /// Check if temporary combined hdf5 file exists (from previous resume!) and can be opened in read/write mode
          std::string msg;
-         bool file_readable=false;
+         bool combined_file_readable=false;
          if( HDF5::checkFileReadable(file, msg) )
          {
-           file_readable=true;                 
+           combined_file_readable=true;                 
          }
  
          if(myRank==0)
@@ -800,7 +801,7 @@ namespace Gambit
                // Ok all the temporary files exist: combine them
                // (but do it in non-resume mode, since any potentially existing output file is unreadable anyway)
                std::ostringstream logmsg;
-               if(file_readable)
+               if(combined_file_readable)
                {
                   logmsg << "HDF5Printer: Temporary combined output file detected (found "<<file<<")"<<std::endl;
                   logmsg << "             Will merge temporary files from last run into this file"<<std::endl;
@@ -819,141 +820,146 @@ namespace Gambit
             }
          }
 
-         // Open HDF5 file
-         bool oldfile; 
-         bool overwrite=false;
-         Utils::ensure_path_exists(file);
-         file_id = HDF5::openFile(file,overwrite,oldfile);
+         if(combined_file_readable)
+         { 
+            // Open HDF5 file
+            bool oldfile; 
+            bool overwrite=false;
+            Utils::ensure_path_exists(file);
+            file_id = HDF5::openFile(file,overwrite,oldfile);
     
-         // Check that group is readable
-         std::string msg2;
-         if(not HDF5::checkGroupReadable(file_id, group, msg2))   
-         {
-           // We are supposed to be resuming, but specified group was not readable in the output file, so we can't.
-           std::ostringstream errmsg;
-           errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) was unable to open the specified group ("<<group<<") within the existing output file ("<<file<<"). Resuming is therefore not possible; aborting run... (see below for IO error message)";
-           errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
-           errmsg << std::endl << "IO error message: " << msg2;
-           printer_error().raise(LOCAL_INFO, errmsg.str()); 
-         }
-
-         // Open requested group (creating it plus parents if needed)
-         group_id = HDF5::openGroup(file_id,group);
-
-         // Now for more serious checks: we will check every dataset in the
-         // target group and make sure they are all the same length, so that
-         // we can learn where to write new data.
-         // TODO: add routine to fix dataset lengths in case some datasets
-         // were not properly updated during termination of previous run.
-         
-         herr_t errcode;
-
-         // Storage for data collected during iteration
-         DSetData dsetdata;
-
-         // First learn what all the existing datasets are and find out their lengths
-         errcode = H5Literate(group_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, op_func_get_dset_lengths, &dsetdata);
-         logger()<<EOM;
-         if(errcode<0)
-         {
-            std::ostringstream errmsg;
-            errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file ("<<file<<")! Iteration through group '"<<group<<"' failed! Message was as follows:" <<std::endl;
-            errmsg << dsetdata.errmsg;
-            printer_error().raise(dsetdata.local_info, errmsg.str());
-         }
-
-         // Verify that all the dataset lengths are equal
-         for(size_t i=1; i<dsetdata.lengths.size(); i++)
-         {
-           if(dsetdata.lengths[i] != dsetdata.lengths[0])
-           {
+            // Check that group is readable
+            std::string msg2;
+            if(not HDF5::checkGroupReadable(file_id, group, msg2))   
+            {
+              // We are supposed to be resuming, but specified group was not readable in the output file, so we can't.
               std::ostringstream errmsg;
-              errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! Length of dataset '"<<dsetdata.names[i]<<"' ("<<dsetdata.lengths[i]<<") in group '"<<group<<"' of file '"<<file<<"' is inconsistent with the lengths of other datasets in this group ("<<dsetdata.lengths[0]<<"). It is planned for such inconsistencies to be fixable, but currently it is an error, sorry!";
-              printer_error().raise(LOCAL_INFO, errmsg.str());
-           }
+              errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) was unable to open the specified group ("<<group<<") within the existing output file ("<<file<<"). Resuming is therefore not possible; aborting run... (see below for IO error message)";
+              errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
+              errmsg << std::endl << "IO error message: " << msg2;
+              printer_error().raise(LOCAL_INFO, errmsg.str()); 
+            }
+
+            // Open requested group (creating it plus parents if needed)
+            group_id = HDF5::openGroup(file_id,group);
+
+            // Now for more serious checks: we will check every dataset in the
+            // target group and make sure they are all the same length, so that
+            // we can learn where to write new data.
+            // TODO: add routine to fix dataset lengths in case some datasets
+            // were not properly updated during termination of previous run.
+            
+            herr_t errcode;
+
+            // Storage for data collected during iteration
+            DSetData dsetdata;
+
+            // First learn what all the existing datasets are and find out their lengths
+            errcode = H5Literate(group_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, op_func_get_dset_lengths, &dsetdata);
+            logger()<<EOM;
+            if(errcode<0)
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file ("<<file<<")! Iteration through group '"<<group<<"' failed! Message was as follows:" <<std::endl;
+               errmsg << dsetdata.errmsg;
+               printer_error().raise(dsetdata.local_info, errmsg.str());
+            }
+
+            // Verify that all the dataset lengths are equal
+            for(size_t i=1; i<dsetdata.lengths.size(); i++)
+            {
+              if(dsetdata.lengths[i] != dsetdata.lengths[0])
+              {
+                 std::ostringstream errmsg;
+                 errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! Length of dataset '"<<dsetdata.names[i]<<"' ("<<dsetdata.lengths[i]<<") in group '"<<group<<"' of file '"<<file<<"' is inconsistent with the lengths of other datasets in this group ("<<dsetdata.lengths[0]<<"). It is planned for such inconsistencies to be fixable, but currently it is an error, sorry!";
+                 printer_error().raise(LOCAL_INFO, errmsg.str());
+              }
+            }
+
+            if(dsetdata.pointIDs.size()==0 or dsetdata.mpiranks.size()==0 or
+               dsetdata.pointIDs_isvalid.size()==0 or dsetdata.mpiranks_isvalid.size()==0)
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! 'pointID' and/or 'MPIrank' datasets were not correctly retrieved from the output dataset, or their lengths are zero. The latter may simply indicate that the existing HDF5 file contains no data, in which case you will need to start a new run" << std::endl;
+               errmsg << "   pointIDs.size()         = "<<dsetdata.pointIDs.size()<<std::endl;
+               errmsg << "   pointIDs_isvalid.size() = "<<dsetdata.pointIDs_isvalid.size()<<std::endl;
+               errmsg << "   mpiranks.size()         = "<<dsetdata.mpiranks.size()<<std::endl;
+               errmsg << "   mpiranks_isvalid.size() = "<<dsetdata.mpiranks_isvalid.size();
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+            if(dsetdata.pointIDs.size()!=dsetdata.lengths[0] or 
+               dsetdata.pointIDs_isvalid.size()!=dsetdata.lengths[0] or
+               dsetdata.mpiranks.size()!=dsetdata.lengths[0] or
+               dsetdata.mpiranks_isvalid.size()!=dsetdata.lengths[0])
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! 'pointID' and/or 'MPIrank' datasets were not correctly retrieved from the output dataset. The sizes of the retrieved data vectors are not consistent with the expected dataset length, and since the dataset lengths have already been error-checked, this can only be a bug in the code which reads these datasets. Please report this so it can be fixed." << std::endl;
+               errmsg << "   lengths[0]              = "<<dsetdata.lengths[0]<<std::endl;
+               errmsg << "   pointIDs.size()         = "<<dsetdata.pointIDs.size()<<std::endl;
+               errmsg << "   pointIDs_isvalid.size() = "<<dsetdata.pointIDs_isvalid.size()<<std::endl;
+               errmsg << "   mpiranks.size()         = "<<dsetdata.mpiranks.size()<<std::endl;
+               errmsg << "   mpiranks_isvalid.size() = "<<dsetdata.mpiranks_isvalid.size();
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+
+            // Gather the IDs for previous points
+            //bool allvalid = true;
+            unsigned long lastvalid = 0;
+            for(size_t i=0; i<dsetdata.pointIDs.size(); i++)
+            {
+              //std::cout<<"Examining PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<"), validity: ("<<dsetdata.pointIDs_isvalid[i]<<", "<<dsetdata.mpiranks_isvalid[i]<<")"<<std::endl;
+              if(dsetdata.pointIDs_isvalid[i] and dsetdata.mpiranks_isvalid[i])
+              {
+                 //std::cout<<"  Loading PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<")"<<std::endl;
+                 
+                 //if(allvalid==false) // REMOVED FOR NOW; since several resumes in a row can lead to several datasets stiched together with gaps in between.
+                 //{
+                 //   // If invalid pointIDs occur, it is only permitted at the end
+                 //   // of the dataset. If valid pointIDs are detected after that,
+                 //   // then there is a problem with the dataset.
+                 //   std::ostringstream errmsg;
+                 //   errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! While retrieving previous pointID and MPIrank entries, an entry with _isvalid==true was detected following one with _isvalid==false. The first _isvalid==false should mark the end of previously written data, so an _isvalid==true following that indicates corruption of the file" <<std::endl;
+                 //   errmsg << "  lastvalid = " << lastvalid << std::endl;
+                 //   errmsg << "  current slot = " << i;
+                 //   printer_error().raise(LOCAL_INFO, errmsg.str());
+                 //}  
+
+                 lastvalid = i;  // use to overwrite empty slots at end of last dataset
+
+                 //add_PPID_to_list(PPIDpair(dsetdata.pointIDs[i],dsetdata.mpiranks[i]));
+                 // Postpone actually adding the PPID, because this triggers writing of RA_pointID and RA_mpirank,
+                 // and we don't want to try and write those to this old file. Return the list, and then add it
+                 // after the verification is finished.
+                 prev_points.push_back(PPIDpair(dsetdata.pointIDs[i],dsetdata.mpiranks[i]));
+              }
+              else if(dsetdata.pointIDs_isvalid[i] or dsetdata.mpiranks_isvalid[i])
+              {
+                 std::ostringstream errmsg;
+                 errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! While retrieving previous pointID and MPIrank entries, an entry with pointID_isvalid==true but MPIrank_isvalid==false (or vice versa) was detected. This indicates corruption of the file";
+                 errmsg << "  index of problematic entry = "<<i<<std::endl;
+                 printer_error().raise(LOCAL_INFO, errmsg.str());
+              }
+              else
+              {
+                 //allvalid=false;  // don't need if we aren't checking for gaps in dataset
+              }
+            }
+
+            // Set the starting position for new output
+            //startpos = dsetdata.lengths[0]; // don't overwrite final is_valid==false entries
+            startpos = lastvalid+1;             // do overwrite final is_valid==false entries
+
+            // Checks finished, close file and group
+            HDF5::closeGroup(group_id);
+            HDF5::closeFile(file_id);
          }
-         if(dsetdata.pointIDs.size()==0 or dsetdata.mpiranks.size()==0 or
-            dsetdata.pointIDs_isvalid.size()==0 or dsetdata.mpiranks_isvalid.size()==0)
-         {
-            std::ostringstream errmsg;
-            errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! 'pointID' and/or 'MPIrank' datasets were not correctly retrieved from the output dataset, or their lengths are zero. The latter may simply indicate that the existing HDF5 file contains no data, in which case you will need to start a new run" << std::endl;
-            errmsg << "   pointIDs.size()         = "<<dsetdata.pointIDs.size()<<std::endl;
-            errmsg << "   pointIDs_isvalid.size() = "<<dsetdata.pointIDs_isvalid.size()<<std::endl;
-            errmsg << "   mpiranks.size()         = "<<dsetdata.mpiranks.size()<<std::endl;
-            errmsg << "   mpiranks_isvalid.size() = "<<dsetdata.mpiranks_isvalid.size();
-            printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
-         if(dsetdata.pointIDs.size()!=dsetdata.lengths[0] or 
-            dsetdata.pointIDs_isvalid.size()!=dsetdata.lengths[0] or
-            dsetdata.mpiranks.size()!=dsetdata.lengths[0] or
-            dsetdata.mpiranks_isvalid.size()!=dsetdata.lengths[0])
-         {
-            std::ostringstream errmsg;
-            errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! 'pointID' and/or 'MPIrank' datasets were not correctly retrieved from the output dataset. The sizes of the retrieved data vectors are not consistent with the expected dataset length, and since the dataset lengths have already been error-checked, this can only be a bug in the code which reads these datasets. Please report this so it can be fixed." << std::endl;
-            errmsg << "   lengths[0]              = "<<dsetdata.lengths[0]<<std::endl;
-            errmsg << "   pointIDs.size()         = "<<dsetdata.pointIDs.size()<<std::endl;
-            errmsg << "   pointIDs_isvalid.size() = "<<dsetdata.pointIDs_isvalid.size()<<std::endl;
-            errmsg << "   mpiranks.size()         = "<<dsetdata.mpiranks.size()<<std::endl;
-            errmsg << "   mpiranks_isvalid.size() = "<<dsetdata.mpiranks_isvalid.size();
-            printer_error().raise(LOCAL_INFO, errmsg.str());
-         }
-
-         // Gather the IDs for previous points
-         //bool allvalid = true;
-         unsigned long lastvalid = 0;
-         for(size_t i=0; i<dsetdata.pointIDs.size(); i++)
-         {
-           //std::cout<<"Examining PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<"), validity: ("<<dsetdata.pointIDs_isvalid[i]<<", "<<dsetdata.mpiranks_isvalid[i]<<")"<<std::endl;
-           if(dsetdata.pointIDs_isvalid[i] and dsetdata.mpiranks_isvalid[i])
-           {
-              //std::cout<<"  Loading PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<")"<<std::endl;
-              
-              //if(allvalid==false) // REMOVED FOR NOW; since several resumes in a row can lead to several datasets stiched together with gaps in between.
-              //{
-              //   // If invalid pointIDs occur, it is only permitted at the end
-              //   // of the dataset. If valid pointIDs are detected after that,
-              //   // then there is a problem with the dataset.
-              //   std::ostringstream errmsg;
-              //   errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! While retrieving previous pointID and MPIrank entries, an entry with _isvalid==true was detected following one with _isvalid==false. The first _isvalid==false should mark the end of previously written data, so an _isvalid==true following that indicates corruption of the file" <<std::endl;
-              //   errmsg << "  lastvalid = " << lastvalid << std::endl;
-              //   errmsg << "  current slot = " << i;
-              //   printer_error().raise(LOCAL_INFO, errmsg.str());
-              //}  
-
-              lastvalid = i;  // use to overwrite empty slots at end of last dataset
-
-              //add_PPID_to_list(PPIDpair(dsetdata.pointIDs[i],dsetdata.mpiranks[i]));
-              // Postpone actually adding the PPID, because this triggers writing of RA_pointID and RA_mpirank,
-              // and we don't want to try and write those to this old file. Return the list, and then add it
-              // after the verification is finished.
-              previous_points.push_back(PPIDpair(dsetdata.pointIDs[i],dsetdata.mpiranks[i]));
-           }
-           else if(dsetdata.pointIDs_isvalid[i] or dsetdata.mpiranks_isvalid[i])
-           {
-              std::ostringstream errmsg;
-              errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! While retrieving previous pointID and MPIrank entries, an entry with pointID_isvalid==true but MPIrank_isvalid==false (or vice versa) was detected. This indicates corruption of the file";
-              errmsg << "  index of problematic entry = "<<i<<std::endl;
-              printer_error().raise(LOCAL_INFO, errmsg.str());
-           }
-           else
-           {
-              //allvalid=false;  // don't need if we aren't checking for gaps in dataset
-           }
-         }
-
-         // Set the starting position for new output
-         //startpos = dsetdata.lengths[0]; // don't overwrite final is_valid==false entries
-         startpos = lastvalid+1;             // do overwrite final is_valid==false entries
-
-         // Checks finished, close file and group
-         HDF5::closeGroup(group_id);
-         HDF5::closeFile(file_id);
+         // else combined file not readable (probably doesn't exist), return no previous points
        }
        else
        {
          // TODO: Error? No reason to allow running this aside from in resume mode, I think.
        }
-       return previous_points;
+       return prev_points;
     }
 
     /// Ask the printer for the highest ID number known for a given rank
