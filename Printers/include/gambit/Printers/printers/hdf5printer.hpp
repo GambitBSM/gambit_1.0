@@ -401,7 +401,7 @@ namespace Gambit
 
       private:
         // String names for output file and group
-        std::string file;      // temporary combined output filename
+        std::string tmp_comb_file; // temporary combined output filename
         std::string tmpfile;   // temporary filename (unique to each process)
         std::string finalfile; // Combined results moved here only upon successful scan completion
         std::string group;     // HDF5 group location to store datasets

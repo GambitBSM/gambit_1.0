@@ -509,7 +509,7 @@ namespace Gambit
         // Name of file where combined results from previous (unfinished) runs end up
         std::ostringstream rename;
         rename << finalfile << "_temp_combined";
-        file = rename.str();
+        tmp_comb_file = rename.str();
 
         // HDF5 group (virtual "folder") inside output file in which to store datasets
         group = options.getValueOrDef<std::string>("/","group");
@@ -571,7 +571,7 @@ namespace Gambit
            {
              // If everything is ok, delete any existing temporary files, including temporary combined files
              std::vector<std::string> tmp_files = find_temporary_files();
-             tmp_files.push_back(file); // Adds temporary combined file to deletion list
+             tmp_files.push_back(tmp_comb_file); // Adds temporary combined file to deletion list
              for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
              {
                std::ostringstream command;
@@ -608,7 +608,7 @@ namespace Gambit
                           // EDIT! Ok seems that every process needs to do it to get the previous_points. Could split these tasks? 
           //{  
             /* Run checks (and potentially repairs) on existing output file */
-            previous_points = verify_existing_output(file,group);
+            previous_points = verify_existing_output(tmp_comb_file,group);
 
             // Use global function get_point_id to fast-forward ScannerBit to the
             // next unused pointID for this rank (actually we give it the highest known, it will iterate itself)
@@ -748,7 +748,7 @@ namespace Gambit
     /// Attempt to read an existing output file, and prepare it for
     /// resumed writing (e.g. fix up dataset lengths if data missing)
     /// Returns all the PPIDs found in the existing datasets
-    std::vector<PPIDpair> HDF5Printer::verify_existing_output(const std::string& file, const std::string& group)
+    std::vector<PPIDpair> HDF5Printer::verify_existing_output()
     {
        std::vector<PPIDpair> prev_points;
        // Need to do combination before trying to get previous points.
@@ -761,7 +761,7 @@ namespace Gambit
          /// Check if temporary combined hdf5 file exists (from previous resume!) and can be opened in read/write mode
          std::string msg;
          bool combined_file_readable=false;
-         if( HDF5::checkFileReadable(file, msg) )
+         if( HDF5::checkFileReadable(tmp_comb_file, msg) )
          {
            combined_file_readable=true;                 
          }
@@ -803,17 +803,17 @@ namespace Gambit
                std::ostringstream logmsg;
                if(combined_file_readable)
                {
-                  logmsg << "HDF5Printer: Temporary combined output file detected (found "<<file<<")"<<std::endl;
+                  logmsg << "HDF5Printer: Temporary combined output file detected (found "<<tmp_comb_file<<")"<<std::endl;
                   logmsg << "             Will merge temporary files from last run into this file"<<std::endl;
                   logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
                }
                else
                {
-                  logmsg << "HDF5Printer: No temporary combined output file detected (searched for "<<file<<")"<<std::endl;
+                  logmsg << "HDF5Printer: No temporary combined output file detected (searched for "<<tmp_comb_file<<")"<<std::endl;
                   logmsg << "             Will attempt to create it from temporary files from last run"<<std::endl;
                   logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
                }
-               logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<file<<"...";
+               logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<tmp_comb_file<<"...";
                std::cout << logmsg.str() << std::endl;
                logger() << LogTags::printers << logmsg.str();
                combine_output(tmp_files,false);
@@ -825,8 +825,8 @@ namespace Gambit
             // Open HDF5 file
             bool oldfile; 
             bool overwrite=false;
-            Utils::ensure_path_exists(file);
-            file_id = HDF5::openFile(file,overwrite,oldfile);
+            Utils::ensure_path_exists(tmp_comb_file);
+            file_id = HDF5::openFile(tmp_comb_file,overwrite,oldfile);
     
             // Check that group is readable
             std::string msg2;
@@ -834,7 +834,7 @@ namespace Gambit
             {
               // We are supposed to be resuming, but specified group was not readable in the output file, so we can't.
               std::ostringstream errmsg;
-              errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) was unable to open the specified group ("<<group<<") within the existing output file ("<<file<<"). Resuming is therefore not possible; aborting run... (see below for IO error message)";
+              errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) was unable to open the specified group ("<<group<<") within the existing output file ("<<tmp_comb_file<<"). Resuming is therefore not possible; aborting run... (see below for IO error message)";
               errmsg << std::endl << "(Strictly speaking we could allow the run to continue (if the scanner can find its necessary output files from the last run), however the printer output from that run is gone, so most likely the scan needs to start again).";
               errmsg << std::endl << "IO error message: " << msg2;
               printer_error().raise(LOCAL_INFO, errmsg.str()); 
@@ -860,7 +860,7 @@ namespace Gambit
             if(errcode<0)
             {
                std::ostringstream errmsg;
-               errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file ("<<file<<")! Iteration through group '"<<group<<"' failed! Message was as follows:" <<std::endl;
+               errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file ("<<tmp_comb_file<<")! Iteration through group '"<<group<<"' failed! Message was as follows:" <<std::endl;
                errmsg << dsetdata.errmsg;
                printer_error().raise(dsetdata.local_info, errmsg.str());
             }
@@ -871,7 +871,7 @@ namespace Gambit
               if(dsetdata.lengths[i] != dsetdata.lengths[0])
               {
                  std::ostringstream errmsg;
-                 errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! Length of dataset '"<<dsetdata.names[i]<<"' ("<<dsetdata.lengths[i]<<") in group '"<<group<<"' of file '"<<file<<"' is inconsistent with the lengths of other datasets in this group ("<<dsetdata.lengths[0]<<"). It is planned for such inconsistencies to be fixable, but currently it is an error, sorry!";
+                 errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! Length of dataset '"<<dsetdata.names[i]<<"' ("<<dsetdata.lengths[i]<<") in group '"<<group<<"' of file '"<<tmp_comb_file<<"' is inconsistent with the lengths of other datasets in this group ("<<dsetdata.lengths[0]<<"). It is planned for such inconsistencies to be fixable, but currently it is an error, sorry!";
                  printer_error().raise(LOCAL_INFO, errmsg.str());
               }
             }
@@ -1142,7 +1142,7 @@ namespace Gambit
       {
         tmp_file_list << *it << " ";
       }
-      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<group<<" "<<tmp_file_list.str()<<" 2>&1";
+      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<tmp_comb_file<<"  "<<group<<" "<<tmp_file_list.str()<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
                << "--------------------" << std::endl;
@@ -1179,7 +1179,7 @@ namespace Gambit
         // TODO! This does not permit adding different runs into the same hdf5 file
         // Need to make sure Greg's combine code can do this.
         std::ostringstream command2;
-        command2 <<"cp "<<file<<" "<<finalfile<<" && rm "<<file; // Note, deletes old file if successful
+        command2 <<"cp "<<tmp_comb_file<<" "<<finalfile<<" && rm "<<tmp_comb_file; // Note, deletes old file if successful
         FILE* fp = popen(command2.str().c_str(), "r");
         if(fp==NULL)
         {
