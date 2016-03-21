@@ -540,6 +540,13 @@ namespace Gambit
                      errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_on_restart' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
                      printer_error().raise(LOCAL_INFO, errmsg.str());
                   }
+                  else if(pclose(fp)!=0)
+                  {
+                     // Command returned exit code!=0, or pclose failed
+                     std::ostringstream errmsg;
+                     errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_on_restart' printer option; target filename is "<<finalfile<<")! Shell command failed to executed successfully, see stderr (command was '"<<command.str()<<"').";
+                     printer_error().raise(LOCAL_INFO, errmsg.str());
+                  }
                }
                else
                {
@@ -574,6 +581,13 @@ namespace Gambit
                   // Error running popen
                   std::ostringstream errmsg;
                   errmsg << "rank "<<myRank<<": Error deleting old temporary output file (attempting to do this because '--restart' flag was detected. Target for deletion was "<<*it<<")! popen failed to run the command (command was '"<<command.str()<<"')";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
+               else if(pclose(fp)!=0)
+               {
+                  // Command returned exit code!=0, or pclose failed
+                  std::ostringstream errmsg;
+                  errmsg << "rank "<<myRank<<": Error deleting old temporary output file (attempting to do this because '--restart' flag was detected. Target for deletion was "<<*it<<")! Shell command failed to execute successfully, please check stderr (command was '"<<command.str()<<"').";
                   printer_error().raise(LOCAL_INFO, errmsg.str());
                }
              }
@@ -1121,6 +1135,13 @@ namespace Gambit
          errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! popen failed to run the specified command (command was '"<<command.str()<<"')";
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
+      else if(pclose(fp)!=0)
+      {
+         // Command returned exit code!=0, or pclose failed
+         std::ostringstream errmsg;
+         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Shell command failed to execute successfully, please check stderr (command was '"<<command.str()<<"').";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
       // Something ran at least; get the stdout (plus redirected stderr)
       char buffer[512];
       // read output into a c++ stream via buffer
@@ -1152,7 +1173,14 @@ namespace Gambit
         {
            // Error running popen
            std::ostringstream errmsg;
-           errmsg << "rank "<<myRank<<": Error copying combined HDF5 data to final locatation during HDF5Printer finalise()! popen failed to run the specified copy (and delete) command (command was '"<<command2.str()<<"')";
+           errmsg << "rank "<<myRank<<": Error copying combined HDF5 data to final location during HDF5Printer finalise()! popen failed to run the specified copy (and delete) command (command was '"<<command2.str()<<"')";
+           printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        else if(pclose(fp)!=0)
+        {
+           // Command returned exit code!=0, or pclose failed
+           std::ostringstream errmsg;
+           errmsg << "rank "<<myRank<<": Error copying combined HDF5 data to final location during HDF5Printer finalise()! Shell command failed to execute successfully, please check stderr (command was '"<<command2.str()<<"').";
            printer_error().raise(LOCAL_INFO, errmsg.str());
         }
         // Success!
