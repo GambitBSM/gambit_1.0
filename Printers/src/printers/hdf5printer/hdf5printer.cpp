@@ -559,9 +559,9 @@ namespace Gambit
                    errmsg << "Error preparing pre-existing output file '"<<finalfile<<"' for writing via hdf5printer! The requested output group '"<<group<<" already exists in this file! Please take one of the following actions:"<<std::endl;
                    errmsg << "  1. Choose a new group via the 'group' option in the Printer section of your input YAML file;"<<std::endl;
                    errmsg << "  2. Delete the existing group from '"<<finalfile<<"';"<<std::endl;
-                   errmsg << "  3. Delete the existing output file, or set 'delete_file_on_restart: true' in your input YAML file to give GAMBIT permission to automatically delete it;"<<std::endl;
+                   errmsg << "  3. Delete the existing output file, or set 'delete_file_on_restart: true' in your input YAML file to give GAMBIT permission to automatically delete it (applies when -r/--restart flag used);"<<std::endl;
                    printer_error().raise(LOCAL_INFO, errmsg.str());
-               }
+                }
                 HDF5::closeFile(file_id);
              }
            }
