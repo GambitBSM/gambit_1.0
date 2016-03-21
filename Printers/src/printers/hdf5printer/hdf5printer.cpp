@@ -523,6 +523,7 @@ namespace Gambit
         {
            // Check whether a readable output file exists with the name that we want to use.
            std::string msg_finalfile;
+           std::cout << "File readable: " << finalfile << " : " << HDF5::checkFileReadable(finalfile, msg_finalfile) <<std::endl;
            if(HDF5::checkFileReadable(finalfile, msg_finalfile))
            {
              if(overwrite_file)
@@ -550,9 +551,9 @@ namespace Gambit
              else
              {
                 // File exists, so check if 'group' is readable, and throw error if it exists
-                std::cout << "Checking if file is readable: "<<finalfile<<std::endl;
                 file_id = HDF5::openFile(finalfile);
                 std::string msg_group;
+                std::cout << "Group readable: " << finalfile << " , " << group << " : " << HDF5::checkGroupReadable(file_id, group, msg_group) << std::endl;
                 if(HDF5::checkGroupReadable(file_id, group, msg_group))
                 {
                    // Group already exists, error!
