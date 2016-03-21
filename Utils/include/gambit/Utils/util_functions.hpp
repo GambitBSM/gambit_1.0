@@ -139,7 +139,7 @@ namespace Gambit
     std::string dirname(const std::string& path);
 
     /// Get file name from full path+filename (POSIX)
-    std::string basename(const std::string& path)
+    std::string basename(const std::string& path);
 
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
 
