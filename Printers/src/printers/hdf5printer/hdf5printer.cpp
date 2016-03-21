@@ -564,7 +564,7 @@ namespace Gambit
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                 }
                 HDF5::closeFile(file_id);
-                exit();
+                exit(1);
              }
            }
 
