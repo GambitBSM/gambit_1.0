@@ -564,9 +564,9 @@ namespace Gambit
              // If everything is ok, delete any existing temporary files, including temporary combined files
              std::vector<std::string> tmp_files = find_temporary_files();
              tmp_files.push_back(file); // Adds temporary combined file to deletion list
-             std::ostringstream command;
              for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
              {
+               std::ostringstream command;
                command << "rm "<<*it;
                FILE* fp = popen(command.str().c_str(), "r");
                if(fp==NULL)
@@ -706,7 +706,7 @@ namespace Gambit
                  std::cout << "Match! "<< ss.str() << " : " << rank << std::endl;
                  // TODO: check for failed read
                  ranks.push_back(rank);
-                 result.push_back(*it);
+                 result.push_back(output_dir+"/"+*it);
               }
            }
         }
