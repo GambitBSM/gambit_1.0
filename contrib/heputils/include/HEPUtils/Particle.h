@@ -11,6 +11,9 @@
 #include "HEPUtils/MathUtils.h"
 #include "HEPUtils/Vectors.h"
 
+// DEBUG
+#include <iostream>
+
 namespace HEPUtils {
 
 
@@ -38,13 +41,20 @@ namespace HEPUtils {
     /// @name Constructors
     //@{
 
+    // DEBUG: destructor
+    ~Particle() { std::cerr << "DEBUG: HEPutils: ~Particle(): destroying instance at " << this << std::endl; }
+
     /// Default constructor
     Particle()
-      : _pdgId(0), _prompt(false) { } //, _isol4(0.0) {  }
+      // : _pdgId(0), _prompt(false) { } //, _isol4(0.0) {  }
+      : _pdgId(0), _prompt(false) 
+      { std::cerr << "DEBUG: HEPutils: Particle: creating instance at " << this << std::endl; } 
 
     /// "Cartesian" constructor
     Particle(double px, double py, double pz, double E, int pdgid)
-      : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false) { } //, _isol4(0.0) {  }
+      // : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false) { } //, _isol4(0.0) {  }
+      : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false)
+      { std::cerr << "DEBUG: HEPutils: Particle: creating instance at " << this << std::endl; } 
 
     /// "Cartesian" constructor for massless particles - or close enough
     /// @todo AB: WTF?
@@ -53,15 +63,21 @@ namespace HEPUtils {
 
     /// 4-mom + PDG ID constructor
     Particle(const P4& mom, int pdgid)
-      : _p4(mom), _pdgId(pdgid), _prompt(false) { } //, _isol4(0.0) {  }
+      // : _p4(mom), _pdgId(pdgid), _prompt(false) { } //, _isol4(0.0) {  }
+      : _p4(mom), _pdgId(pdgid), _prompt(false)
+      { std::cerr << "DEBUG: HEPutils: Particle: creating instance at " << this << std::endl; } 
 
     /// Copy constructor
     Particle(const Particle& p)
-      : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt()) { } //, _isol4(p.isol()) {  }
+      // : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt()) { } //, _isol4(p.isol()) {  }
+      : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt())
+      { std::cerr << "DEBUG: HEPutils: Particle: creating instance at " << this << std::endl; } 
 
     /// Copy constructor from a pointer
     Particle(const Particle* p)
-      : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt()) { } //, _isol4(p->isol()) {  }
+      // : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt()) { } //, _isol4(p->isol()) {  }
+      : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt())
+      { std::cerr << "DEBUG: HEPutils: Particle: creating instance at " << this << std::endl; } 
 
     /// Copy assignment operator
     Particle& operator=(const Particle& p) {

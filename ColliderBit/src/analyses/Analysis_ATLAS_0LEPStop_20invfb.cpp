@@ -112,6 +112,15 @@ namespace Gambit {
 
 
       void analyze(const HEPUtils::Event* event) {
+
+        std::cerr << "DEBUG:" << std::cerr;
+        std::cerr << "DEBUG: ATLAS_0LEPStop_20invfb: particles in event:" << std::endl;
+        for (HEPUtils::Particle* p : event->particles()) 
+        {
+          std::cerr << "DEBUG: ATLAS_0LEPStop_20invfb: " << p << std::endl;
+        }
+        std::cerr << "DEBUG:" << std::cerr;
+
         HEPUtilsAnalysis::analyze(event);
 
 

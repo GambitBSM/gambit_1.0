@@ -3,6 +3,8 @@
 #include <memory>
 #include <iomanip>
 
+#include <iostream>
+
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/mt2w.h"
@@ -70,6 +72,15 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+
+        std::cerr << "DEBUG:" << std::cerr;
+        std::cerr << "DEBUG: CMS_1LEPDMTOP_20invfb: particles in event:" << std::endl;
+        for (HEPUtils::Particle* p : event->particles()) 
+        {
+          std::cerr << "DEBUG: CMS_1LEPDMTOP_20invfb: " << p << std::endl;
+        }
+        std::cerr << "DEBUG:" << std::cerr;
+
         HEPUtilsAnalysis::analyze(event);
 
         // Missing energy
