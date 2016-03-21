@@ -180,7 +180,7 @@ namespace Gambit
       else
       {
         std::string msg = "Utils::ls_dir function failed to open the directory '"+dir+"'!";
-        std::err << msg << std::endl;
+        std::cerr << msg << std::endl;
         abort();
       }
       return dir_contents;
@@ -190,7 +190,7 @@ namespace Gambit
     std::string dir_name(const std::string& path)
     {
        char buffer[1000]; // temporary buffer for dirname to work with (it is a C function)
-       str.copy(path, path.size());
+       path.copy(buffer, path.size()); //TODO: error if path.size()>1000
        buffer[path.size()] = '\0';
        std::string result = dirname(&buffer[0]);
        return result;  
