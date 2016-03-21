@@ -66,7 +66,7 @@ def cantor_pairing(x,y):
 
 #if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
 #
-runchecks=False
+runchecks=True
 #if len(sys.argv)==7:
 #   if "--runchecks" in sys.argv: 
 #      runchecks=True

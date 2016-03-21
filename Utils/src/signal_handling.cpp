@@ -65,7 +65,7 @@ namespace Gambit
    /// Add signal to record
    void SignalData::add_signal(int sig)
    {
-     std::cerr << " Adding signal " << sig << std::endl; // debugging
+     //std::cerr << " Adding signal " << sig << std::endl; // debugging
      if(N_signals<MAX_SIGNALS) {
         received_signals[N_signals] = sig;
         N_signals+=1;
