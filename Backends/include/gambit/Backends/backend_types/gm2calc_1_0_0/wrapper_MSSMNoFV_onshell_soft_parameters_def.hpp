@@ -16,284 +16,273 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       // Member functions: 
       inline void MSSMNoFV_onshell_soft_parameters::print(::std::basic_ostream<char, std::char_traits<char> >& arg_1) const
       {
-         wrapperbase::BEptr->print(arg_1);
+         get_BEptr()->print(arg_1);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::clear()
       {
-         wrapperbase::BEptr->clear();
+         get_BEptr()->clear();
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_TYd(const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYd_)
       {
-         wrapperbase::BEptr->set_TYd(TYd_);
+         get_BEptr()->set_TYd(TYd_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_TYd(int i, int k, double value)
       {
-         wrapperbase::BEptr->set_TYd(i, k, value);
+         get_BEptr()->set_TYd(i, k, value);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_TYe(const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYe_)
       {
-         wrapperbase::BEptr->set_TYe(TYe_);
+         get_BEptr()->set_TYe(TYe_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_TYe(int i, int k, double value)
       {
-         wrapperbase::BEptr->set_TYe(i, k, value);
+         get_BEptr()->set_TYe(i, k, value);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_TYu(const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYu_)
       {
-         wrapperbase::BEptr->set_TYu(TYu_);
+         get_BEptr()->set_TYu(TYu_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_TYu(int i, int k, double value)
       {
-         wrapperbase::BEptr->set_TYu(i, k, value);
+         get_BEptr()->set_TYu(i, k, value);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_BMu(double BMu_)
       {
-         wrapperbase::BEptr->set_BMu(BMu_);
+         get_BEptr()->set_BMu(BMu_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_mq2(const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& mq2_)
       {
-         wrapperbase::BEptr->set_mq2(mq2_);
+         get_BEptr()->set_mq2(mq2_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_mq2(int i, int k, double value)
       {
-         wrapperbase::BEptr->set_mq2(i, k, value);
+         get_BEptr()->set_mq2(i, k, value);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_ml2(const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& ml2_)
       {
-         wrapperbase::BEptr->set_ml2(ml2_);
+         get_BEptr()->set_ml2(ml2_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_ml2(int i, int k, double value)
       {
-         wrapperbase::BEptr->set_ml2(i, k, value);
+         get_BEptr()->set_ml2(i, k, value);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_mHd2(double mHd2_)
       {
-         wrapperbase::BEptr->set_mHd2(mHd2_);
+         get_BEptr()->set_mHd2(mHd2_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_mHu2(double mHu2_)
       {
-         wrapperbase::BEptr->set_mHu2(mHu2_);
+         get_BEptr()->set_mHu2(mHu2_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_md2(const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& md2_)
       {
-         wrapperbase::BEptr->set_md2(md2_);
+         get_BEptr()->set_md2(md2_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_md2(int i, int k, double value)
       {
-         wrapperbase::BEptr->set_md2(i, k, value);
+         get_BEptr()->set_md2(i, k, value);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_mu2(const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& mu2_)
       {
-         wrapperbase::BEptr->set_mu2(mu2_);
+         get_BEptr()->set_mu2(mu2_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_mu2(int i, int k, double value)
       {
-         wrapperbase::BEptr->set_mu2(i, k, value);
+         get_BEptr()->set_mu2(i, k, value);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_me2(const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& me2_)
       {
-         wrapperbase::BEptr->set_me2(me2_);
+         get_BEptr()->set_me2(me2_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_me2(int i, int k, double value)
       {
-         wrapperbase::BEptr->set_me2(i, k, value);
+         get_BEptr()->set_me2(i, k, value);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_MassB(double MassB_)
       {
-         wrapperbase::BEptr->set_MassB(MassB_);
+         get_BEptr()->set_MassB(MassB_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_MassWB(double MassWB_)
       {
-         wrapperbase::BEptr->set_MassWB(MassWB_);
+         get_BEptr()->set_MassWB(MassWB_);
       }
       
       inline void MSSMNoFV_onshell_soft_parameters::set_MassG(double MassG_)
       {
-         wrapperbase::BEptr->set_MassG(MassG_);
+         get_BEptr()->set_MassG(MassG_);
       }
       
       inline const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& MSSMNoFV_onshell_soft_parameters::get_TYd() const
       {
-         return wrapperbase::BEptr->get_TYd();
+         return get_BEptr()->get_TYd();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_TYd(int i, int k) const
       {
-         return wrapperbase::BEptr->get_TYd(i, k);
+         return get_BEptr()->get_TYd(i, k);
       }
       
       inline const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& MSSMNoFV_onshell_soft_parameters::get_TYe() const
       {
-         return wrapperbase::BEptr->get_TYe();
+         return get_BEptr()->get_TYe();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_TYe(int i, int k) const
       {
-         return wrapperbase::BEptr->get_TYe(i, k);
+         return get_BEptr()->get_TYe(i, k);
       }
       
       inline const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& MSSMNoFV_onshell_soft_parameters::get_TYu() const
       {
-         return wrapperbase::BEptr->get_TYu();
+         return get_BEptr()->get_TYu();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_TYu(int i, int k) const
       {
-         return wrapperbase::BEptr->get_TYu(i, k);
+         return get_BEptr()->get_TYu(i, k);
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_BMu() const
       {
-         return wrapperbase::BEptr->get_BMu();
+         return get_BEptr()->get_BMu();
       }
       
       inline const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& MSSMNoFV_onshell_soft_parameters::get_mq2() const
       {
-         return wrapperbase::BEptr->get_mq2();
+         return get_BEptr()->get_mq2();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_mq2(int i, int k) const
       {
-         return wrapperbase::BEptr->get_mq2(i, k);
+         return get_BEptr()->get_mq2(i, k);
       }
       
       inline const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& MSSMNoFV_onshell_soft_parameters::get_ml2() const
       {
-         return wrapperbase::BEptr->get_ml2();
+         return get_BEptr()->get_ml2();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_ml2(int i, int k) const
       {
-         return wrapperbase::BEptr->get_ml2(i, k);
+         return get_BEptr()->get_ml2(i, k);
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_mHd2() const
       {
-         return wrapperbase::BEptr->get_mHd2();
+         return get_BEptr()->get_mHd2();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_mHu2() const
       {
-         return wrapperbase::BEptr->get_mHu2();
+         return get_BEptr()->get_mHu2();
       }
       
       inline const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& MSSMNoFV_onshell_soft_parameters::get_md2() const
       {
-         return wrapperbase::BEptr->get_md2();
+         return get_BEptr()->get_md2();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_md2(int i, int k) const
       {
-         return wrapperbase::BEptr->get_md2(i, k);
+         return get_BEptr()->get_md2(i, k);
       }
       
       inline const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& MSSMNoFV_onshell_soft_parameters::get_mu2() const
       {
-         return wrapperbase::BEptr->get_mu2();
+         return get_BEptr()->get_mu2();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_mu2(int i, int k) const
       {
-         return wrapperbase::BEptr->get_mu2(i, k);
+         return get_BEptr()->get_mu2(i, k);
       }
       
       inline const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& MSSMNoFV_onshell_soft_parameters::get_me2() const
       {
-         return wrapperbase::BEptr->get_me2();
+         return get_BEptr()->get_me2();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_me2(int i, int k) const
       {
-         return wrapperbase::BEptr->get_me2(i, k);
+         return get_BEptr()->get_me2(i, k);
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_MassB() const
       {
-         return wrapperbase::BEptr->get_MassB();
+         return get_BEptr()->get_MassB();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_MassWB() const
       {
-         return wrapperbase::BEptr->get_MassWB();
+         return get_BEptr()->get_MassWB();
       }
       
       inline double MSSMNoFV_onshell_soft_parameters::get_MassG() const
       {
-         return wrapperbase::BEptr->get_MassG();
+         return get_BEptr()->get_MassG();
       }
       
       
       // Wrappers for original constructors: 
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters() :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters>(__factory0()),
-         MSSMNoFV_onshell_susy_parameters(wrapperbase::BEptr)
+         MSSMNoFV_onshell_susy_parameters(__factory0())
       {
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+         get_BEptr()->set_wptr(this);
+         get_BEptr()->set_delete_wrapper(false);
       }
       
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(const gm2calc::MSSMNoFV_onshell_susy_parameters& arg_1, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYd_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYe_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& TYu_, double BMu_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& mq2_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& ml2_, double mHd2_, double mHu2_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& md2_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& mu2_, const ::Eigen::Matrix<double, 3, 3, 0, 3, 3>& me2_, double MassB_, double MassWB_, double MassG_) :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters>(__factory1(arg_1, TYd_, TYe_, TYu_, BMu_, mq2_, ml2_, mHd2_, mHu2_, md2_, mu2_, me2_, MassB_, MassWB_, MassG_)),
-         MSSMNoFV_onshell_susy_parameters(wrapperbase::BEptr)
+         MSSMNoFV_onshell_susy_parameters(__factory1(arg_1, TYd_, TYe_, TYu_, BMu_, mq2_, ml2_, mHd2_, mHu2_, md2_, mu2_, me2_, MassB_, MassWB_, MassG_))
       {
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+         get_BEptr()->set_wptr(this);
+         get_BEptr()->set_delete_wrapper(false);
       }
       
       // Special pointer-based constructor: 
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters* in) :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters>(in),
-         MSSMNoFV_onshell_susy_parameters(wrapperbase::BEptr)
+         MSSMNoFV_onshell_susy_parameters(in)
       {
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-      }
-      
-      inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters* const & in, bool) :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters>(in, true),
-         MSSMNoFV_onshell_susy_parameters(wrapperbase::BEptr)
-      {
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+         get_BEptr()->set_wptr(this);
+         get_BEptr()->set_delete_wrapper(false);
       }
       
       // Copy constructor: 
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(const MSSMNoFV_onshell_soft_parameters& in) :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters>(in),
-         MSSMNoFV_onshell_susy_parameters(wrapperbase::BEptr)
+         MSSMNoFV_onshell_susy_parameters(in.get_BEptr()->pointer_copy__BOSS())
       {
-         wrapperbase::BEptr->can_delete_me(true);
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+         get_BEptr()->set_wptr(this);
+         get_BEptr()->set_delete_wrapper(false);
       }
       
       // Assignment operator: 
       inline gm2calc::MSSMNoFV_onshell_soft_parameters& MSSMNoFV_onshell_soft_parameters::operator=(const MSSMNoFV_onshell_soft_parameters& in)
       {
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters>::operator=(in);
-         MSSMNoFV_onshell_susy_parameters::operator=(in);
+         if (this != &in)
+         {
+            get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+         }
          return *this;
       }
       
@@ -301,15 +290,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       // Destructor: 
       inline gm2calc::MSSMNoFV_onshell_soft_parameters::~MSSMNoFV_onshell_soft_parameters()
       {
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters>::skip_delete = true;
+         if (get_BEptr() != 0)
+         {
+            get_BEptr()->set_delete_wrapper(false);
+            if (can_delete_BEptr())
+            {
+               delete BEptr;
+               BEptr = 0;
+            }
+         }
+         set_delete_BEptr(false);
       }
       
-      
-      // Member variable initialiser: 
-      inline void gm2calc::MSSMNoFV_onshell_soft_parameters::_memberVariablesInit()
+      // Returns correctly casted pointer to Abstract class: 
+      inline gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters* gm2calc::MSSMNoFV_onshell_soft_parameters::get_BEptr() const
       {
+         return dynamic_cast<gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters*>(BEptr);
       }
-      
    }
    
 }

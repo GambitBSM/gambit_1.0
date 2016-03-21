@@ -17,12 +17,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    namespace gm2calc
    {
       
-      class MSSMNoFV_onshell_problems : public WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_problems>
+      class MSSMNoFV_onshell_problems : public WrapperBase
       {
-         public:
-            typedef WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_problems> wrapperbase;
-            using WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_problems>::BEptr;
-      
             // Member variables: 
          public:
             // -- Static factory pointers: 
@@ -71,7 +67,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
             // Special pointer-based constructor: 
             MSSMNoFV_onshell_problems(gm2calc::Abstract_MSSMNoFV_onshell_problems* in);
-            MSSMNoFV_onshell_problems(gm2calc::Abstract_MSSMNoFV_onshell_problems* const & in, bool);
       
             // Copy constructor: 
             MSSMNoFV_onshell_problems(const MSSMNoFV_onshell_problems& in);
@@ -82,9 +77,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             // Destructor: 
             ~MSSMNoFV_onshell_problems();
       
-         private:
-            // Member variable initialiser: 
-            void _memberVariablesInit();
+            // Returns correctly casted pointer to Abstract class: 
+            gm2calc::Abstract_MSSMNoFV_onshell_problems* get_BEptr() const;
       
       };
    }

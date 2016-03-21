@@ -258,7 +258,7 @@ def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_ove
             use_args = args[:-remove_n_args]
 
         # Argument bracket
-        args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True, use_wrapper_class=True, use_wrapper_base_class=False)
+        args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True, use_wrapper_class=True)
 
         # Name of original function to call
         call_func_name = func_name

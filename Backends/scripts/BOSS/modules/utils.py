@@ -1345,9 +1345,12 @@ def getParentClasses(class_el, only_native_classes=False, only_loaded_classes=Fa
 
 # ====== getAllParentClasses ========
 
-def getAllParentClasses(class_el, only_native_classes=True, only_loaded_classes=False):
+def getAllParentClasses(class_el, only_native_classes=True, only_loaded_classes=False, return_dicts=False, reverse_order=False):
+
+    import modules.classutils as classutils
 
     parent_classes = []
+    done_parent_classes = []
 
     temp_class_list = [class_el]
     while len(temp_class_list) > 0:
@@ -1365,10 +1368,40 @@ def getAllParentClasses(class_el, only_native_classes=True, only_loaded_classes=
                 elif only_native_classes and not isNative(parent_class_el):
                     continue
                 else:
-                    parent_classes.append(parent_class_el)
-                    temp_class_list.append(parent_class_el)
+                    if parent_class_el not in done_parent_classes:
+                        temp_class_list.append(parent_class_el)
+                        if return_dicts:
+                            base_name_dict       = classutils.getClassNameDict(parent_class_el)
+                            abstr_base_name_dict = classutils.getClassNameDict(parent_class_el, abstract=True)
 
-    return parent_classes
+                            is_accepted_type = isAcceptedType(parent_class_el)
+                            is_native        = isNative(parent_class_el)
+                            is_fundamental   = isFundamental(parent_class_el)
+                            is_std           = isStdType(parent_class_el)
+                            is_loaded_class  = isLoadedClass(parent_class_el)
+
+                            temp_dict = OrderedDict([])
+                            temp_dict['class_name']       = base_name_dict
+                            temp_dict['abstr_class_name'] = abstr_base_name_dict
+                            temp_dict['wrapper_name']     = classutils.toWrapperType(base_name_dict['long'])
+                            temp_dict['id']               = parent_class_id
+
+                            temp_dict['accepted']         = is_accepted_type
+                            temp_dict['native']           = is_native
+                            temp_dict['fundamental']      = is_fundamental
+                            temp_dict['std']              = is_std
+                            temp_dict['loaded']           = is_loaded_class
+
+                            parent_classes.append(temp_dict)
+                            done_parent_classes.append(parent_class_el)
+                        else:
+                            parent_classes.append(parent_class_el)
+                            done_parent_classes.append(parent_class_el)
+
+    if reverse_order:
+        return parent_classes[::-1]
+    else:
+        return parent_classes
 
 # ====== END: getAllParentClasses ========
 

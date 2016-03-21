@@ -12,11 +12,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_soft_parameters*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_soft_parameters*);
 
 
 // Forward declaration for wrapper_creator.
-CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_soft_parameters* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters*);
+void wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -25,7 +29,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
    namespace gm2calc
    {
-      class Abstract_MSSMNoFV_onshell_soft_parameters : virtual public AbstractBase, virtual public gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters
+      class Abstract_MSSMNoFV_onshell_soft_parameters : virtual public gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters
       {
          public:
    
@@ -122,53 +126,67 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             virtual double get_MassG() const =0;
    
          public:
-            using gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters::pointerAssign__BOSS;
-            virtual void pointerAssign__BOSS(Abstract_MSSMNoFV_onshell_soft_parameters*) =0;
-            virtual Abstract_MSSMNoFV_onshell_soft_parameters* pointerCopy__BOSS() =0;
+            using gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters::pointer_assign__BOSS;
+            virtual void pointer_assign__BOSS(Abstract_MSSMNoFV_onshell_soft_parameters*) =0;
+            virtual Abstract_MSSMNoFV_onshell_soft_parameters* pointer_copy__BOSS() =0;
    
          private:
-            mutable MSSMNoFV_onshell_soft_parameters* wptr;
+            MSSMNoFV_onshell_soft_parameters* wptr;
+            bool delete_wrapper;
+         public:
+            MSSMNoFV_onshell_soft_parameters* get_wptr() { return wptr; }
+            void set_wptr(MSSMNoFV_onshell_soft_parameters* wptr_in) { wptr = wptr_in; }
+            bool get_delete_wrapper() { return delete_wrapper; }
+            void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
    
          public:
             Abstract_MSSMNoFV_onshell_soft_parameters()
             {
+               wptr = 0;
+               delete_wrapper = false;
             }
    
-            void wrapper__BOSS(MSSMNoFV_onshell_soft_parameters* wptr_in)
+            Abstract_MSSMNoFV_onshell_soft_parameters(const Abstract_MSSMNoFV_onshell_soft_parameters& in) : 
+               gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters(in)
             {
-               wptr = wptr_in;
-               is_wrapped(true);
-               can_delete_wrapper(true);
+               wptr = 0;
+               delete_wrapper = false;
             }
    
-            MSSMNoFV_onshell_soft_parameters* wrapper__BOSS()
+            Abstract_MSSMNoFV_onshell_soft_parameters& operator=(const Abstract_MSSMNoFV_onshell_soft_parameters&) { return *this; }
+   
+            virtual void init_wrapper()
             {
+               if (wptr == 0)
+               {
+                  wrapper_creator(this);
+                  delete_wrapper = true;
+               }
+            }
+   
+            MSSMNoFV_onshell_soft_parameters* get_init_wptr()
+            {
+               init_wrapper();
                return wptr;
+            }
+   
+            MSSMNoFV_onshell_soft_parameters& get_init_wref()
+            {
+               init_wrapper();
+               return *wptr;
             }
    
             virtual ~Abstract_MSSMNoFV_onshell_soft_parameters()
             {
-               if (can_delete_wrapper())
+               if (wptr != 0)
                {
-                  can_delete_me(false);
-                  wrapper_deleter(wptr);
-               }
-            }
-   
-            Abstract_MSSMNoFV_onshell_soft_parameters(const Abstract_MSSMNoFV_onshell_soft_parameters& in)
-             : AbstractBase(in), gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters(in)
-            {
-               if (is_wrapped() == false)
-               {
-                  wptr = wrapper_creator(this);
-                  is_wrapped(true);
-                  can_delete_wrapper(true);
-               }
-               else
-               {
-                  wptr = 0;
-                  is_wrapped(false);
-                  can_delete_wrapper(false);
+                  set_delete_BEptr(wptr, false);
+                  if (delete_wrapper == true)
+                  {
+                     wrapper_deleter(wptr);
+                     wptr = 0;
+                     delete_wrapper = false;
+                  }
                }
             }
       };

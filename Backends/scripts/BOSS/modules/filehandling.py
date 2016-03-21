@@ -340,17 +340,24 @@ def copyFilesToSourceTree(verbose=False):
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
-    # -- wrappercreator.hpp
-    if len(gb.classes_done) > 0:
-        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_creator_fname + cfg.header_extension)
-        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_creator_fname + cfg.header_extension)
-        source_target_tuples.append( (cp_source, cp_target) )
-        new_files.append(cp_target)
+    # # -- wrappercreator.hpp
+    # if len(gb.classes_done) > 0:
+    #     cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_creator_fname + cfg.header_extension)
+    #     cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_creator_fname + cfg.header_extension)
+    #     source_target_tuples.append( (cp_source, cp_target) )
+    #     new_files.append(cp_target)
 
-    # -- wrapperdeleter.hpp
+    # # -- wrapperdeleter.hpp
+    # if len(gb.classes_done) > 0:
+    #     cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.header_extension)
+    #     cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_deleter_fname + cfg.header_extension)
+    #     source_target_tuples.append( (cp_source, cp_target) )
+    #     new_files.append(cp_target)
+
+    # -- wrapperutils.hpp
     if len(gb.classes_done) > 0:
-        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.header_extension)
-        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_deleter_fname + cfg.header_extension)
+        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_utils_fname + cfg.header_extension)
+        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_utils_fname + cfg.header_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
@@ -368,17 +375,24 @@ def copyFilesToSourceTree(verbose=False):
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
-    # -- wrappercreator.cpp
-    if len(gb.classes_done) > 0:
-        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_creator_fname + cfg.source_extension)
-        cp_target = os.path.join(cfg.src_files_to, gb.wrapper_creator_fname + cfg.source_extension)
-        source_target_tuples.append( (cp_source, cp_target) )
-        new_files.append(cp_target)
+    # # -- wrappercreator.cpp
+    # if len(gb.classes_done) > 0:
+    #     cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_creator_fname + cfg.source_extension)
+    #     cp_target = os.path.join(cfg.src_files_to, gb.wrapper_creator_fname + cfg.source_extension)
+    #     source_target_tuples.append( (cp_source, cp_target) )
+    #     new_files.append(cp_target)
 
-    # -- wrapperdeleter.cpp
+    # # -- wrapperdeleter.cpp
+    # if len(gb.classes_done) > 0:
+    #     cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.source_extension)
+    #     cp_target = os.path.join(cfg.src_files_to, gb.wrapper_deleter_fname + cfg.source_extension)
+    #     source_target_tuples.append( (cp_source, cp_target) )
+    #     new_files.append(cp_target)
+
+    # -- wrapperutils.cpp
     if len(gb.classes_done) > 0:
-        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.source_extension)
-        cp_target = os.path.join(cfg.src_files_to, gb.wrapper_deleter_fname + cfg.source_extension)
+        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_utils_fname + cfg.source_extension)
+        cp_target = os.path.join(cfg.src_files_to, gb.wrapper_utils_fname + cfg.source_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
@@ -550,7 +564,7 @@ def parseFunctionSourceFiles():
 
 
         # Construct file name for xml file produced by castxml
-        xml_output_path = os.path.join(gb.boss_temp_dir, function_source_path.replace('/','_').replace('.','_') + '.xml' )
+        xml_output_path = os.path.join(gb.boss_temp_dir, function_source_path.replace('../','').replace('/','_').replace('.','_') + '.xml' )
 
         # List all include paths
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
