@@ -1135,13 +1135,6 @@ namespace Gambit
          errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! popen failed to run the specified command (command was '"<<command.str()<<"')";
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
-      else if(pclose(fp)!=0)
-      {
-         // Command returned exit code!=0, or pclose failed
-         std::ostringstream errmsg;
-         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Shell command failed to execute successfully, please check stderr (command was '"<<command.str()<<"').";
-         printer_error().raise(LOCAL_INFO, errmsg.str());
-      }
       // Something ran at least; get the stdout (plus redirected stderr)
       char buffer[512];
       // read output into a c++ stream via buffer
