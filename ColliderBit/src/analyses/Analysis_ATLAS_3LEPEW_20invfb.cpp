@@ -209,10 +209,10 @@ namespace Gambit {
         }
 
         vector<HEPUtils::Particle*> signalTaus;
-
         for (HEPUtils::Particle* tau : event->taus()) {
           if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
         }
+        ATLAS::applyTauEfficiencyR1(signalTaus);
 
         // Overlap removal
 
@@ -233,7 +233,7 @@ namespace Gambit {
         //cout << "AFTER REMOVAL nele nmuo njet " << signalElectrons.size() << " " << signalMuons.size() << " " << signalJets.size() << endl;
 
         //Now apply the tight electron selection
-        applyTightIDElectronSelection(signalElectrons);
+        ATLAS::applyTightIDElectronSelection(signalElectrons);
 
         int numElectrons=signalElectrons.size();
         int numMuons=signalMuons.size();

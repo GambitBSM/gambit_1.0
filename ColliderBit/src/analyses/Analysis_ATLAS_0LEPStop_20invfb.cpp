@@ -4,6 +4,7 @@
 #include <iomanip>
 
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
+#include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/mt2_bisect.h"
 
 using namespace std;
@@ -113,57 +114,46 @@ namespace Gambit {
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
 
+
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
-        // Now define vectors of baseline objects
-        vector<HEPUtils::Particle*> baselineElectrons;
 
+        // Baseline lepton objects
+        vector<HEPUtils::Particle*> baselineElectrons, baselineMuons, baselineTaus;
         for (HEPUtils::Particle* electron : event->electrons()) {
-
-          if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
+          if (electron->pT() > 10. && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
         }
-
-
-        vector<HEPUtils::Particle*> baselineMuons;
         for (HEPUtils::Particle* muon : event->muons()) {
-
-          if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
+          if (muon->pT() > 10. && muon->abseta() < 2.4) baselineMuons.push_back(muon);
         }
-
-
-
-        vector<HEPUtils::Particle*> baselineTaus;
         for (HEPUtils::Particle* tau : event->taus()) {
-
-          if (tau->pT() > 10. && fabs(tau->eta()) < 2.47) baselineTaus.push_back(tau);
+          if (tau->pT() > 10. && tau->abseta() < 2.47) baselineTaus.push_back(tau);
         }
+        ATLAS::applyTauEfficiencyR1(baselineTaus);
 
+
+        // Jets
         vector<HEPUtils::Jet*> baselineJets;
         vector<HEPUtils::Jet*> bJets;
         vector<HEPUtils::Jet*> nonBJets;
         vector<HEPUtils::Jet*> trueBJets; //for debugging
 
-        //Get b jets
-        //Note that we assume that b jets have previously been 100% tagged
-        //Now we use the new Buckley tagger
-
+        // Get b jets
+        /// @note We assume that b jets have previously been 100% tagged
+        //  Now we use the new Buckley tagger...   AB: ???!?
         const std::vector<double>  a = {0,10.};
         const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.7};
         HEPUtils::BinnedFn2D<double> _eff2d(a,b,c);
-
-
         for (HEPUtils::Jet* jet : event->jets()) {
-
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
           bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) {
             if(jet->btag() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.){
               bJets.push_back(jet);
-            }
-            else {
+            } else {
               nonBJets.push_back(jet);
             }
           }
@@ -298,11 +288,11 @@ namespace Gambit {
         }
 
         //mjjj combinations
-      
+
   HEPUtils::P4 mbjj0, mbjj1;
 
   double mindphi_12 = 9999.;
-        
+
   HEPUtils::P4 W1;
   HEPUtils::P4 W2;
   HEPUtils::P4 T1;
@@ -346,7 +336,7 @@ namespace Gambit {
             for(unsigned int l=k+1; l<selectNonBJets.size(); l++) {
         jet1.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
         jet2.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
-       
+
         if(jet1.deltaR_eta(jet2)<mindphi_12) {
                 j1 = k;
                 j2 = l;
@@ -354,20 +344,20 @@ namespace Gambit {
                 W1 = jet1+jet2;
 
               }
-        
+
             }
           }
 
-    
+
           double mindphi_w1j3 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
-          
+
       jet3.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
             if(jet3.deltaR_eta(W1)<mindphi_w1j3) {
               b1 = p;
               mindphi_w1j3 = jet3.deltaR_eta(W1);
               T1 = W1+jet3;
-    
+
             }
           }
 
@@ -375,7 +365,7 @@ namespace Gambit {
           for(unsigned int k=0; k<selectNonBJets.size(); k++) {
             for(unsigned int l=k; l<selectNonBJets.size(); l++) {
               if(k!=j1 && k!=j2 && l!=j1 && l!=j2) {
-              
+
     jet4.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
     jet5.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
 
@@ -384,7 +374,7 @@ namespace Gambit {
                   //j5 = l;
                   mindphi_45 = jet4.deltaR_eta(jet5);
                   W2 = jet4+jet5;
-    
+
                 }
               }
             }
@@ -392,14 +382,14 @@ namespace Gambit {
           double mindphi_w2j6 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
             if(p!=b1) {
-           
+
         jet6.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
 
               if(jet6.deltaR_eta(W2)<mindphi_w2j6) {
                 //j6 = p;
                 mindphi_w2j6 = jet6.deltaR_eta(W2);
                 T2 = W2+jet6;
-  
+
               }
             }
           }
@@ -658,10 +648,10 @@ namespace Gambit {
         return;
 
       }
-      
+
 
       void add(BaseAnalysis* other) {
-        // The base class add function handles the signal region vector and total # events. 
+        // The base class add function handles the signal region vector and total # events.
         HEPUtilsAnalysis::add(other);
 
         Analysis_ATLAS_0LEPStop_20invfb* specificOther

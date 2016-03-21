@@ -42,7 +42,7 @@ LibFortran:
   1.0:         ./Backends/examples/libfortran.so
 
 Pythia:
-  8.212:       ./Backends/installed/Pythia/8.212/lib/libpythia8.so
+  8.212.EM:    ./Backends/installed/Pythia/8.212.EM/lib/libpythia8.so
 
 gamLike:
   1.0.0:       ./Backends/installed/gamLike/1.0.0/lib/gamLike.so

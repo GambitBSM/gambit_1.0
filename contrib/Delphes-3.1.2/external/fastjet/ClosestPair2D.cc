@@ -42,9 +42,9 @@ using namespace std;
 
 //----------------------------------------------------------------------
 /// takes a point and sets a shuffle with the given shift...
-void ClosestPair2D::_point2shuffle(Point & point, Shuffle & shuffle, 
+void ClosestPair2D::_point2shuffle(Point & point, Shuffle & shuffle,
 				  unsigned int shift) {
-  
+
   Coord2D renorm_point = (point.coord - _left_corner)/_range;
   // make sure the point is sensible
   //cerr << point.coord.x <<" "<<point.coord.y<<endl;
@@ -52,7 +52,7 @@ void ClosestPair2D::_point2shuffle(Point & point, Shuffle & shuffle,
   assert(renorm_point.x <=1);
   assert(renorm_point.y >=0);
   assert(renorm_point.y <=1);
-  
+
   shuffle.x = static_cast<unsigned int>(twopow31 * renorm_point.x) + shift;
   shuffle.y = static_cast<unsigned int>(twopow31 * renorm_point.y) + shift;
   shuffle.point = &point;
@@ -74,8 +74,8 @@ bool ClosestPair2D::Shuffle::operator<(const Shuffle & q) const {
 
 
 //----------------------------------------------------------------------
-void ClosestPair2D::_initialize(const std::vector<Coord2D> & positions, 
-			     const Coord2D & left_corner, 
+void ClosestPair2D::_initialize(const std::vector<Coord2D> & positions,
+			     const Coord2D & left_corner,
 			     const Coord2D & right_corner,
 			     unsigned int max_size) {
 
@@ -143,11 +143,11 @@ void ClosestPair2D::_initialize(const std::vector<Coord2D> & positions,
     sort(shuffles.begin(), shuffles.end());
 
     // and create the search tree
-    _trees[ishift] = auto_ptr<Tree>(new Tree(shuffles, max_size));
+    _trees[ishift] = unique_ptr<Tree>(new Tree(shuffles, max_size));
 
     // now we look for the closest-pair candidates on this tree
     circulator circ = _trees[ishift]->somewhere(), start=circ;
-    // the actual range in which we search 
+    // the actual range in which we search
     unsigned int CP_range = min(_cp_search_range, n_positions-1);
     do {
       Point * this_point = circ->point;
@@ -171,13 +171,13 @@ void ClosestPair2D::_initialize(const std::vector<Coord2D> & positions,
   vector<double> mindists2(n_positions);
   for (unsigned int i = 0; i < n_positions; i++) {
     mindists2[i] = _points[i].neighbour_dist2;}
-  
-  _heap = auto_ptr<MinHeap>(new MinHeap(mindists2, max_size));
+
+  _heap = unique_ptr<MinHeap>(new MinHeap(mindists2, max_size));
 }
 
 
 //----------------------------------------------------------------------=
-void ClosestPair2D::closest_pair(unsigned int & ID1, unsigned int & ID2, 
+void ClosestPair2D::closest_pair(unsigned int & ID1, unsigned int & ID2,
 				 double & distance2) const {
   ID1 = _heap->minloc();
   ID2 = _ID(_points[ID1].neighbour);
@@ -238,7 +238,7 @@ void ClosestPair2D::_remove_from_search_tree(Point * point_to_remove) {
   // establish the range over which we search (a) for points that have
   // acquired a new neighbour and (b) for points which had ID as their
   // neighbour;
-  
+
   unsigned int CP_range = min(_cp_search_range, size()-1);
 
   // then, for each shift
@@ -249,13 +249,13 @@ void ClosestPair2D::_remove_from_search_tree(Point * point_to_remove) {
     circulator right_end = removed_circ.next();
     // remove the point
     _trees[ishift]->remove(removed_circ);
-    
+
     // next find the point CP_range points to the left
     circulator left_end  = right_end, orig_right_end = right_end;
     for (unsigned int i = 0; i < CP_range; i++) {left_end--;}
 
     if (size()-1 < _cp_search_range) {
-      // we have a smaller range now than before -- but when seeing who 
+      // we have a smaller range now than before -- but when seeing who
       // could have had ID as a neighbour, we still need to use the old
       // range for seeing how far back we search (but new separation between
       // points). [cf CCN28-42]
@@ -303,13 +303,13 @@ void ClosestPair2D::_deal_with_points_to_review() {
     // get the point to be considered
     Point * this_point = _points_under_review.back();
     // remove it from the list
-    _points_under_review.pop_back();  
-    
+    _points_under_review.pop_back();
+
     if (this_point->review_flag & _remove_heap_entry) {
       // make sure no other flags are on (it wouldn't be consistent?)
       assert(!(this_point->review_flag ^ _remove_heap_entry));
       _heap->remove(_ID(this_point));
-    } 
+    }
     // check to see if the _review_neighbour flag is on
     else {
       if (this_point->review_flag & _review_neighbour) {
@@ -334,7 +334,7 @@ void ClosestPair2D::_deal_with_points_to_review() {
     }
 
     // "delabel" the point
-    this_point->review_flag = 0; 
+    this_point->review_flag = 0;
 
   }
 
@@ -350,22 +350,22 @@ unsigned int ClosestPair2D::insert(const Coord2D & new_coord) {
 
   // set the point's coordinate
   new_point->coord = new_coord;
-  
+
   // now find it's neighbour in the search tree
   _insert_into_search_tree(new_point);
 
-  // sort out other points that may have been affected by this, 
+  // sort out other points that may have been affected by this,
   // and/or for which the heap needs to be updated
   _deal_with_points_to_review();
 
-  // 
+  //
   return _ID(new_point);
 }
 
 //----------------------------------------------------------------------
-unsigned int ClosestPair2D::replace(unsigned int ID1, unsigned int ID2, 
+unsigned int ClosestPair2D::replace(unsigned int ID1, unsigned int ID2,
 				    const Coord2D & position) {
-  
+
   // deletion from tree...
   Point * point_to_remove = & (_points[ID1]);
   _remove_from_search_tree(point_to_remove);
@@ -380,7 +380,7 @@ unsigned int ClosestPair2D::replace(unsigned int ID1, unsigned int ID2,
 
   // set the point's coordinate
   new_point->coord = position;
-  
+
   // now find it's neighbour in the search tree
   _insert_into_search_tree(new_point);
 
@@ -433,7 +433,7 @@ void ClosestPair2D::_insert_into_search_tree(Point * new_point) {
 
   // set the current distance to "infinity"
   new_point->neighbour_dist2 = numeric_limits<double>::max();
-  
+
   // establish how far we will be searching;
   unsigned int CP_range = min(_cp_search_range, size()-1);
 
@@ -441,7 +441,7 @@ void ClosestPair2D::_insert_into_search_tree(Point * new_point) {
     // create the shuffle
     Shuffle new_shuffle;
     _point2shuffle(*new_point, new_shuffle, _shifts[ishift]);
-    
+
     // insert it into the tree
     circulator new_circ = _trees[ishift]->insert(new_shuffle);
     new_point->circ[ishift] = new_circ;
@@ -452,7 +452,7 @@ void ClosestPair2D::_insert_into_search_tree(Point * new_point) {
     circulator left_edge  = new_circ;
     for (unsigned int i = 0; i < CP_range; i++) {left_edge--;}
 
-    // now 
+    // now
     do {
       Point * left_point  = left_edge->point;
       Point * right_point = right_edge->point;
@@ -491,4 +491,3 @@ void ClosestPair2D::_insert_into_search_tree(Point * new_point) {
 }
 
 FASTJET_END_NAMESPACE
-

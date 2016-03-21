@@ -113,7 +113,7 @@ namespace Gambit {
         // We now have the signal electrons, muons and jets: move on to the 0 lepton 2012 analysis
 
         // Calculate common variables and cuts first
-        applyMediumIDElectronSelection(signalElectrons);
+        ATLAS::applyMediumIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
@@ -343,7 +343,7 @@ namespace Gambit {
 
 
       void collect_results() {
-	
+
 	/*cout << "------------------------------------------------------------------------------------------------------------------------------ "<<endl;
         cout << "CUT FLOW: ATLAS 0 lepton paper "<<endl;
         cout << "------------------------------------------------------------------------------------------------------------------------------"<<endl;

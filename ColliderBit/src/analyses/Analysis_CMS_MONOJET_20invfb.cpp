@@ -91,6 +91,7 @@ namespace Gambit {
             baselineTaus.push_back(tau);
           }
         }
+        ATLAS::applyTauEfficiencyR1(baselineTaus);
 
         vector<HEPUtils::Jet*> baselineJets;
         vector<HEPUtils::P4> jets;
