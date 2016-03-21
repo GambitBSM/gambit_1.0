@@ -526,7 +526,7 @@ namespace Gambit
            std::cout << "File readable: " << finalfile << " : " << HDF5::checkFileReadable(finalfile, msg_finalfile) <<std::endl;
            if(HDF5::checkFileReadable(finalfile, msg_finalfile))
            {
-             if(overwrite_file)
+             if(overwrite_file and not resume)
              {
                 // Note: "not resume" means "start or restart"
                 // Delete existing output file
