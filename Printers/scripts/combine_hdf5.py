@@ -14,7 +14,7 @@ bufferlength = 100                # Must match setting in hdf5printer.hpp
 max_ppidpairs = 10*bufferlength #   "  "
 
 def usage():
-   print ("\nusage: python combine_hdf5.py <path-to-target-hdf5-file> <path-to-root-temporary-hdf5-file-name> <root group in hdf5 files> <Number of files> <resume> [--runchecks]"
+   print ("\nusage: python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ..."
           "\n"
           "Attempts to combine the data in a group of hdf5 files produced by HDF5Printer but by separate processes during a GAMBIT run.\n"
           "Use --runchecks flag to run some extra validity checks on the input and output data (warning: may be slow for large datasets)")
@@ -62,28 +62,27 @@ def cantor_pairing(x,y):
 
 #====Begin "main"=================================
 
-if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
-
-runchecks=False
-if len(sys.argv)==7:
-   if sys.argv[6]=="--runchecks": 
-      runchecks=True
-   else:
-      usage()
+#if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
+#
+#runchecks=False
+#if len(sys.argv)==7:
+#   if "--runchecks" in sys.argv: 
+#      runchecks=True
+#   else:
+#      usage()
+python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ...
 
 outfname = sys.argv[1]
-rootfname = sys.argv[2]
-group = sys.argv[3]
+group = sys.argv[2]
+tmp_files = sys.argv[3:]
+N = len(tmp_files)
 RA_group = group + "/RA"
-N = int(sys.argv[4])
-resume = bool(int(sys.argv[5]))
 
 print(os.getcwd())
 print "Target combined filename:", outfname
-print "Temporary file root name:", rootfname
 print "Root group: ", group
 print "Number of files to combine: ", N
-print "Resume:", resume
+print "Files to combine: ", tmp_files
 print ""
 print "Analysing input files..."
 
@@ -94,7 +93,7 @@ RA_dsets = [set([]) for i in range(N)]
 RA_dsets_exclude = set(["RA_pointID","RA_pointID_isvalid","RA_MPIrank","RA_MPIrank_isvalid"])
 sync_lengths = [0 for i in range(N)]
 RA_lengths = [0 for i in range(N)]
-fnames = ["{0}_temp_{1}".format(rootfname,i) for i in range(N)]
+fnames = tmp_files
 
 for i,fname in enumerate(fnames):
    print "   Opening {0}...".format(fname)
@@ -145,12 +144,8 @@ for i,fname in enumerate(fnames):
 
 print "Combined sync length = ", total_sync_length
 
-if resume:
-   print "Accessing existing output file for adding new data following resume..."
-   fout = h5py.File(outfname,'r+')
-else:
-   print "Creating new output file (will overwrite existing file!) for adding combined data"
-   fout = h5py.File(outfname,'w')
+print "Opening file {0} for adding combined data".format(outfname)
+fout = h5py.File(outfname,'a')
 
 if not group in fout:
    gout = fout.create_group(group)

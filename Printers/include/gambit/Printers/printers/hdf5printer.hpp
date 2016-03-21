@@ -243,6 +243,9 @@ namespace Gambit
         /// resumed writing (e.g. fix up dataset lengths if data missing)
         std::vector<PPIDpair> verify_existing_output(const std::string& file, const std::string& group);
 
+        /// Search the output directory for temporary files (pre-combination)
+        std::vector<std::string> find_temporary_files();
+
         /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
         void combine_output(const int N, const bool resume, const bool finalcombine);
 

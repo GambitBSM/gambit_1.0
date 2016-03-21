@@ -560,6 +560,23 @@ namespace Gambit
                   HDF5::closeFile(file_id);
                }
              }
+ 
+             // If everything is ok, delete any existing temporary files, including temporary combined files
+             std::vector<std::string> tmp_files = find_temporary_files();
+             tmp_files.push_back(file); // Adds temporary combined file to deletion list
+             std::ostringstream command;
+             for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
+             {
+               command << "rm "<<*it;
+               FILE* fp = popen(command.str().c_str(), "r");
+               if(fp==NULL)
+               {
+                  // Error running popen
+                  std::ostringstream errmsg;
+                  errmsg << "rank "<<myRank<<": Error deleting old temporary output file (attempting to do this because '--restart' flag was detected. Target for deletion was "<<*it<<")! popen failed to run the command (command was '"<<command.str()<<"')";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
+             }
            } // end if(not resume)
         }
         else
@@ -662,6 +679,42 @@ namespace Gambit
       #endif
     }
 
+    /// Search the output directory for temporary files (pre-combination)
+    std::vector<std::string> HDF5Printer::find_temporary_files()
+    {
+        // Autodetect temporary files from previous run.
+        std::string output_dir = Utils::dir_name(finalfile);
+        std::vector<std::string> files = Utils::ls_dir(output_dir); 
+        std::string tmp_base(Utils::base_name(finalfile) + "_temp_");
+        std::vector<int> ranks;
+        std::vector<std::string> result;
+
+        std::cout << "Matching against: " <<tmp_base<<std::endl;
+        for(auto it=files.begin(); it!=files.end(); ++it)
+        {
+           std::cout << (*it) << std::endl;
+           std::cout << it->substr(0,tmp_base.length()) << std::endl;
+           if (it->compare(0, tmp_base.length(), tmp_base) == 0)
+           {
+              // Matches format of temporary file! Extract the rank that produced it
+              std::stringstream ss;
+              ss << it->substr(tmp_base.length());
+              if(ss.str()!="combined") // don't count the temporary combined file in this list
+              {
+                 int rank;
+                 ss >> rank;
+                 std::cout << "Match! "<< ss.str() << " : " << rank << std::endl;
+                 // TODO: check for failed read
+                 ranks.push_back(rank);
+                 result.push_back(*it);
+              }
+           }
+        }
+        // TODO: check if all temporary files found (i.e. if output from some rank is missing)
+        return result;
+    }
+
+
     /// Attempt to read an existing output file, and prepare it for
     /// resumed writing (e.g. fix up dataset lengths if data missing)
     /// Returns all the PPIDs found in the existing datasets
@@ -685,36 +738,13 @@ namespace Gambit
          if(myRank==0)
          { 
             // Autodetect temporary files from previous run.
-            std::string output_dir = Utils::dir_name(finalfile);
-            std::vector<std::string> files = Utils::ls_dir(output_dir); 
-            std::string tmp_base(Utils::base_name(finalfile) + "_temp_");
-            std::vector<int> ranks;
-            std::cout << "Matching against: " <<tmp_base<<std::endl;
-            for(auto it=files.begin(); it!=files.end(); ++it)
-            {
-               std::cout << (*it) << std::endl;
-               std::cout << it->substr(0,tmp_base.length()) << std::endl;
-               if (it->compare(0, tmp_base.length(), tmp_base) == 0)
-               {
-                  // Matches format of temporary file! Extract the rank that produced it
-                  std::stringstream ss;
-                  ss << it->substr(tmp_base.length());
-                  int rank;
-                  ss >> rank;
-                  std::cout << "Match! "<< ss.str() << " : " << rank << std::endl;
-                  // TODO: check for failed read
-                  ranks.push_back(rank);
-               }
-            }
-            // TODO: Check that no files are missing (up to largest known rank)
+            std::string tmp_files = std::find_temporary_files();
 
             // Check if temporary files from previous run are readable.
-            for(auto it=ranks.begin(); it!=ranks.end(); ++it)
+            for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
             {
-               std::ostringstream tmpfile;
-               tmpfile << finalfile << "_temp_" << (*it);
                std::string msg2;
-               if(not HDF5::checkFileReadable(tmpfile.str(), msg2))
+               if(not HDF5::checkFileReadable(*it, msg2))
                {
                   // We are supposed to be resuming, but no readable output file was found, so we can't.
                   std::ostringstream errmsg;
@@ -744,7 +774,7 @@ namespace Gambit
             logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<file<<"...";
             std::cout << logmsg.str() << std::endl;
             logger() << LogTags::printers << logmsg.str();
-            combine_output(mpiSize,file_readable,false);
+            combine_output(tmp_files,file_readable,false);
          }
 
          // Open HDF5 file
@@ -1044,7 +1074,7 @@ namespace Gambit
              if(myRank==0)
              {
                 // Make sure all datasets etc are closed before doing this or else errors may occur.
-                combine_output(mpiSize,resume,true); 
+                combine_output(find_temporary_files(),resume,true); 
              }              
           }
           else
@@ -1056,10 +1086,15 @@ namespace Gambit
     }
 
     /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
-    void HDF5Printer::combine_output(const int N, const bool resume, const bool finalcombine)
+    void HDF5Printer::combine_output(const std::vector<std::string> tmp_files, const bool finalcombine)
     {
       std::ostringstream command;
-      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<finalfile<<" "<<group<<" "<<N<<" "<<resume<<" 2>&1";
+      std::ostringstream tmp_file_list;
+      for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
+      {
+        tmp_file_list << *it << " ";
+      }
+      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<group<<" "<<tmp_file_list<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
                << "--------------------" << std::endl;
