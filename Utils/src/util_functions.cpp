@@ -192,7 +192,7 @@ namespace Gambit
        char buffer[1000]; // temporary buffer for dirname to work with (it is a C function)
        path.copy(buffer, path.size()); //TODO: error if path.size()>1000
        buffer[path.size()] = '\0';
-       std::string result = dirname(&buffer[0]);
+       std::string result = dirname(&buffer[0]); // should use the C function...
        return result;  
     }
 
@@ -202,7 +202,7 @@ namespace Gambit
        char buffer[1000]; // temporary buffer for basename to work with (it is a C function)
        path.copy(buffer, path.size()); //TODO: error if path.size()>1000
        buffer[path.size()] = '\0';
-       std::string result = basename(&buffer[0]);
+       std::string result = basename(&buffer[0]); // should use the C function...
        return result;  
     }
 
