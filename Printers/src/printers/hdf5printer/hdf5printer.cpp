@@ -550,6 +550,7 @@ namespace Gambit
              else
              {
                 // File exists, so check if 'group' is readable, and throw error if it exists
+                std::cout << "Checking if file is readable: "<<finalfile<<std::endl;
                 file_id = HDF5::openFile(finalfile);
                 std::string msg_group;
                 if(HDF5::checkGroupReadable(file_id, group, msg_group))
@@ -563,6 +564,7 @@ namespace Gambit
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                 }
                 HDF5::closeFile(file_id);
+                exit();
              }
            }
 
