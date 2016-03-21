@@ -531,7 +531,7 @@ namespace Gambit
                   // Note: "not resume" means "start or restart"
                   // Delete existing output file
                   std::ostringstream command;
-                  command << "rm "<<finalfile;
+                  command << "rm -f "<<finalfile;
                   FILE* fp = popen(command.str().c_str(), "r");
                   if(fp==NULL)
                   {
@@ -574,7 +574,7 @@ namespace Gambit
              for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
              {
                std::ostringstream command;
-               command << "rm "<<*it;
+               command << "rm -f "<<*it;
                FILE* fp = popen(command.str().c_str(), "r");
                if(fp==NULL)
                {
@@ -728,7 +728,7 @@ namespace Gambit
         if(error_if_inconsistent)
         {
           std::vector<int> missing;
-          for(int i=0; i<ranks.size(); ++i)
+          for(size_t i=0; i<ranks.size(); ++i)
           {
             if(std::find(ranks.begin(), ranks.end(), i) == ranks.end())
             { missing.push_back(i); }
