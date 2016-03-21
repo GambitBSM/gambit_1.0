@@ -517,7 +517,7 @@ namespace Gambit
         // Delete final target file (or group) if one with same name already exists? (and if we are restarting the run)
         // This is just for convenience during testing; by default datasets will simply be replaced in/added to
         // existing target HDF5 files. This lets one combine data from many scans into one file if desired.
-        bool overwrite_file  = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+        bool overwrite_file  = options.getValueOrDef<bool>(false,"delete_file_on_restart");
          
         if(myRank==0)
         {
@@ -537,7 +537,7 @@ namespace Gambit
                   {
                      // Error running popen
                      std::ostringstream errmsg;
-                     errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_if_exists' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
+                     errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_on_restart' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
                      printer_error().raise(LOCAL_INFO, errmsg.str());
                   }
                }
@@ -553,7 +553,7 @@ namespace Gambit
                      errmsg << "Error preparing pre-existing output file '"<<finalfile<<"' for writing via hdf5printer! The requested output group '"<<group<<" already exists in this file! Please take one of the following actions:"<<std::endl;
                      errmsg << "  1. Choose a new group via the 'group' option in the Printer section of your input YAML file;"<<std::endl;
                      errmsg << "  2. Delete the existing group from '"<<finalfile<<"';"<<std::endl;
-                     errmsg << "  3. Delete the existing output file, or set 'delete_file_if_exists: true' in your input YAML file to give GAMBIT permission to automatically delete it;"<<std::endl;
+                     errmsg << "  3. Delete the existing output file, or set 'delete_file_on_restart: true' in your input YAML file to give GAMBIT permission to automatically delete it;"<<std::endl;
                      errmsg << "  4. Remove the '-r' command line flag from your invocation of GAMBIT, to allow GAMBIT to attempt to resume scanning from the existing output.";
                      printer_error().raise(LOCAL_INFO, errmsg.str());
                  }

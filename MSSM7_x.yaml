@@ -64,7 +64,7 @@ Printer:
   options:
     output_file: "MSSM7.hdf5"
     group: "/MSSM7"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 Scanner:
 

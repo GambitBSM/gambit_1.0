@@ -486,7 +486,7 @@ namespace Gambit
            bool overwrite = false;
            if(not resume) /* No overwrite allowed when resuming */
            {
-              overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+              overwrite = options.getValueOrDef<bool>(false,"delete_file_on_restart");
            }
            else
            {

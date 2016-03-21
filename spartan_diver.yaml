@@ -24,7 +24,7 @@ Printer:
   options:
      output_file: "gambit_output.hdf5"
      group: "/test/test2"
-     delete_file_if_exists: true
+     delete_file_on_restart: true
 
 #======== Scanner setup ========
 Scanner:
