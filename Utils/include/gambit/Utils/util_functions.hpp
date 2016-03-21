@@ -136,7 +136,10 @@ namespace Gambit
     std::vector<std::string> ls_dir(const std::string& dir);
 
     /// Get directory name from full path+filename (POSIX)
-    std::string dir_name(const std::string& path);
+    std::string dirname(const std::string& path);
+
+    /// Get file name from full path+filename (POSIX)
+    std::string basename(const std::string& path)
 
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
 

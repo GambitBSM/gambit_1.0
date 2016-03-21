@@ -171,7 +171,7 @@ namespace Gambit
 
       if( dp != NULL )
       {
-        while( ep = readdir(dp) )
+        while( (ep = readdir(dp)) )
         {
           dir_contents.push_back(ep->d_name);
         }
@@ -187,12 +187,22 @@ namespace Gambit
     }
 
     /// Get directory name from full path+filename (POSIX)
-    std::string dir_name(const std::string& path)
+    std::string dirname(const std::string& path)
     {
        char buffer[1000]; // temporary buffer for dirname to work with (it is a C function)
        path.copy(buffer, path.size()); //TODO: error if path.size()>1000
        buffer[path.size()] = '\0';
        std::string result = dirname(&buffer[0]);
+       return result;  
+    }
+
+    /// Get file name from full path+filename (POSIX)
+    std::string basename(const std::string& path)
+    {
+       char buffer[1000]; // temporary buffer for basename to work with (it is a C function)
+       path.copy(buffer, path.size()); //TODO: error if path.size()>1000
+       buffer[path.size()] = '\0';
+       std::string result = basename(&buffer[0]);
        return result;  
     }
 

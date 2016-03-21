@@ -685,13 +685,15 @@ namespace Gambit
          if(myRank==0)
          { 
             // Autodetect temporary files from previous run.
-            std::string output_dir = Utils::dir_name(finalfile);
+            std::string output_dir = Utils::dirname(finalfile);
             std::vector<std::string> files = Utils::ls_dir(output_dir); 
-            std::string tmp_base(finalfile + "_temp_");
+            std::string tmp_base(Utils::basename(finalfile) + "_temp_");
             std::vector<int> ranks;
+            std::cout << "Matching against: " <<tmp_base<<std::endl;
             for(auto it=files.begin(); it!=files.end(); ++it)
             {
                std::cout << (*it) << std::endl;
+               std::cout << it->substr(0,tmp_base.length()) << std::endl;
                if (it->compare(0, tmp_base.length(), tmp_base) == 0)
                {
                   // Matches format of temporary file! Extract the rank that produced it
@@ -699,7 +701,7 @@ namespace Gambit
                   ss << it->substr(tmp_base.length());
                   int rank;
                   ss >> rank;
-                  std::cout << ss.str() << " : " << rank << std::endl;
+                  std::cout << "Match! "<< ss.str() << " : " << rank << std::endl;
                   // TODO: check for failed read
                   ranks.push_back(rank);
                }
