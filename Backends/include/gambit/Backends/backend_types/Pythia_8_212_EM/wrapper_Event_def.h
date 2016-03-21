@@ -10,6 +10,8 @@
 
 #include "identification.hpp"
 
+#include <iostream>
+
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
     
@@ -17,455 +19,454 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void Event::init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, int startColTagIn)
+        inline void Event::init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, Pythia8::ParticleData* particleDataPtrIn, int startColTagIn)
         {
-            wrapperbase::BEptr->init__BOSS(headerIn, (*particleDataPtrIn).BEptr, startColTagIn);
+            get_BEptr()->init__BOSS(headerIn, (*particleDataPtrIn).get_BEptr(), startColTagIn);
         }
         
-        inline void Event::init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn)
+        inline void Event::init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, Pythia8::ParticleData* particleDataPtrIn)
         {
-            wrapperbase::BEptr->init__BOSS(headerIn, (*particleDataPtrIn).BEptr);
+            get_BEptr()->init__BOSS(headerIn, (*particleDataPtrIn).get_BEptr());
         }
         
         inline void Event::init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn)
         {
-            wrapperbase::BEptr->init__BOSS(headerIn);
+            get_BEptr()->init__BOSS(headerIn);
         }
         
         inline void Event::init()
         {
-            wrapperbase::BEptr->init__BOSS();
+            get_BEptr()->init__BOSS();
         }
         
         inline void Event::clear()
         {
-            wrapperbase::BEptr->clear();
+            get_BEptr()->clear();
         }
         
         inline void Event::reset()
         {
-            wrapperbase::BEptr->reset();
+            get_BEptr()->reset();
         }
         
         inline Pythia8::Particle& Event::operator[](int i)
         {
-            return wrapperbase::reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( wrapperbase::BEptr->operator_square_bracket_pair__BOSS(i) );
+            return get_BEptr()->operator_square_bracket_pair__BOSS(i).get_init_wref();
         }
         
         inline const Pythia8::Particle& Event::operator[](int i) const
         {
-            return wrapperbase::reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( const_cast<Pythia8::Abstract_Particle*>(wrapperbase::BEptr->operator_square_bracket_pair__BOSS(i)) );
+            return const_cast<Pythia8::Abstract_Particle&>(get_BEptr()->operator_square_bracket_pair__BOSS(i)).get_init_wref();
         }
         
         inline Pythia8::Particle& Event::front()
         {
-            return wrapperbase::reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( wrapperbase::BEptr->front__BOSS() );
+            return get_BEptr()->front__BOSS().get_init_wref();
         }
         
         inline Pythia8::Particle& Event::at(int i)
         {
-            return wrapperbase::reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( wrapperbase::BEptr->at__BOSS(i) );
+            return get_BEptr()->at__BOSS(i).get_init_wref();
         }
         
         inline Pythia8::Particle& Event::back()
         {
-            return wrapperbase::reference_returner< Pythia8::Particle, Pythia8::Abstract_Particle >( wrapperbase::BEptr->back__BOSS() );
+            return get_BEptr()->back__BOSS().get_init_wref();
         }
         
         inline int Event::size() const
         {
-            return wrapperbase::BEptr->size();
+            return get_BEptr()->size();
         }
         
-        inline int Event::append(WrapperBase< Pythia8::Abstract_Particle > entryIn)
+        inline int Event::append(Pythia8::Particle entryIn)
         {
-            return wrapperbase::BEptr->append__BOSS(*entryIn.BEptr);
+            return get_BEptr()->append__BOSS(*entryIn.get_BEptr());
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn, double polIn)
         {
-            return wrapperbase::BEptr->append(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m, scaleIn, polIn);
+            return get_BEptr()->append(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m, scaleIn, polIn);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m, scaleIn);
+            return get_BEptr()->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m, scaleIn);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e, double m)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m);
+            return get_BEptr()->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e, m);
         }
         
         inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e);
+            return get_BEptr()->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, px, py, pz, e);
         }
         
-        inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn, double polIn)
+        inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, Pythia8::Vec4 p, double m, double scaleIn, double polIn)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m, scaleIn, polIn);
+            return get_BEptr()->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.get_BEptr(), m, scaleIn, polIn);
         }
         
-        inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn)
+        inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, Pythia8::Vec4 p, double m, double scaleIn)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m, scaleIn);
+            return get_BEptr()->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.get_BEptr(), m, scaleIn);
         }
         
-        inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m)
+        inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, Pythia8::Vec4 p, double m)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr, m);
+            return get_BEptr()->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.get_BEptr(), m);
         }
         
-        inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p)
+        inline int Event::append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, Pythia8::Vec4 p)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.BEptr);
+            return get_BEptr()->append__BOSS(id, status, mother1, mother2, daughter1, daughter2, col, acol, *p.get_BEptr());
         }
         
         inline int Event::append(int id, int status, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn, double polIn)
         {
-            return wrapperbase::BEptr->append(id, status, col, acol, px, py, pz, e, m, scaleIn, polIn);
+            return get_BEptr()->append(id, status, col, acol, px, py, pz, e, m, scaleIn, polIn);
         }
         
         inline int Event::append(int id, int status, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, col, acol, px, py, pz, e, m, scaleIn);
+            return get_BEptr()->append__BOSS(id, status, col, acol, px, py, pz, e, m, scaleIn);
         }
         
         inline int Event::append(int id, int status, int col, int acol, double px, double py, double pz, double e, double m)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, col, acol, px, py, pz, e, m);
+            return get_BEptr()->append__BOSS(id, status, col, acol, px, py, pz, e, m);
         }
         
         inline int Event::append(int id, int status, int col, int acol, double px, double py, double pz, double e)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, col, acol, px, py, pz, e);
+            return get_BEptr()->append__BOSS(id, status, col, acol, px, py, pz, e);
         }
         
-        inline int Event::append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn, double polIn)
+        inline int Event::append(int id, int status, int col, int acol, Pythia8::Vec4 p, double m, double scaleIn, double polIn)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, col, acol, *p.BEptr, m, scaleIn, polIn);
+            return get_BEptr()->append__BOSS(id, status, col, acol, *p.get_BEptr(), m, scaleIn, polIn);
         }
         
-        inline int Event::append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn)
+        inline int Event::append(int id, int status, int col, int acol, Pythia8::Vec4 p, double m, double scaleIn)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, col, acol, *p.BEptr, m, scaleIn);
+            return get_BEptr()->append__BOSS(id, status, col, acol, *p.get_BEptr(), m, scaleIn);
         }
         
-        inline int Event::append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m)
+        inline int Event::append(int id, int status, int col, int acol, Pythia8::Vec4 p, double m)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, col, acol, *p.BEptr, m);
+            return get_BEptr()->append__BOSS(id, status, col, acol, *p.get_BEptr(), m);
         }
         
-        inline int Event::append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p)
+        inline int Event::append(int id, int status, int col, int acol, Pythia8::Vec4 p)
         {
-            return wrapperbase::BEptr->append__BOSS(id, status, col, acol, *p.BEptr);
+            return get_BEptr()->append__BOSS(id, status, col, acol, *p.get_BEptr());
         }
         
         inline void Event::setEvtPtr(int iSet)
         {
-            wrapperbase::BEptr->setEvtPtr(iSet);
+            get_BEptr()->setEvtPtr(iSet);
         }
         
         inline void Event::setEvtPtr()
         {
-            wrapperbase::BEptr->setEvtPtr__BOSS();
+            get_BEptr()->setEvtPtr__BOSS();
         }
         
         inline int Event::copy(int iCopy, int newStatus)
         {
-            return wrapperbase::BEptr->copy(iCopy, newStatus);
+            return get_BEptr()->copy(iCopy, newStatus);
         }
         
         inline int Event::copy(int iCopy)
         {
-            return wrapperbase::BEptr->copy__BOSS(iCopy);
+            return get_BEptr()->copy__BOSS(iCopy);
         }
         
         inline void Event::list(int precision) const
         {
-            wrapperbase::BEptr->list(precision);
+            get_BEptr()->list(precision);
         }
         
         inline void Event::list() const
         {
-            wrapperbase::BEptr->list__BOSS();
+            get_BEptr()->list__BOSS();
         }
         
         inline void Event::list(::std::basic_ostream<char, std::char_traits<char> >& os, int precision) const
         {
-            wrapperbase::BEptr->list(os, precision);
+            get_BEptr()->list(os, precision);
         }
         
         inline void Event::list(::std::basic_ostream<char, std::char_traits<char> >& os) const
         {
-            wrapperbase::BEptr->list__BOSS(os);
+            get_BEptr()->list__BOSS(os);
         }
         
         inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters, int precision) const
         {
-            wrapperbase::BEptr->list(showScaleAndVertex, showMothersAndDaughters, precision);
+            get_BEptr()->list(showScaleAndVertex, showMothersAndDaughters, precision);
         }
         
         inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters) const
         {
-            wrapperbase::BEptr->list__BOSS(showScaleAndVertex, showMothersAndDaughters);
+            get_BEptr()->list__BOSS(showScaleAndVertex, showMothersAndDaughters);
         }
         
         inline void Event::list(bool showScaleAndVertex) const
         {
-            wrapperbase::BEptr->list__BOSS(showScaleAndVertex);
+            get_BEptr()->list__BOSS(showScaleAndVertex);
         }
         
         inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters, ::std::basic_ostream<char, std::char_traits<char> >& os, int precision) const
         {
-            wrapperbase::BEptr->list(showScaleAndVertex, showMothersAndDaughters, os, precision);
+            get_BEptr()->list(showScaleAndVertex, showMothersAndDaughters, os, precision);
         }
         
         inline void Event::list(bool showScaleAndVertex, bool showMothersAndDaughters, ::std::basic_ostream<char, std::char_traits<char> >& os) const
         {
-            wrapperbase::BEptr->list__BOSS(showScaleAndVertex, showMothersAndDaughters, os);
+            get_BEptr()->list__BOSS(showScaleAndVertex, showMothersAndDaughters, os);
         }
         
         inline void Event::popBack(int nRemove)
         {
-            wrapperbase::BEptr->popBack(nRemove);
+            get_BEptr()->popBack(nRemove);
         }
         
         inline void Event::popBack()
         {
-            wrapperbase::BEptr->popBack__BOSS();
+            get_BEptr()->popBack__BOSS();
         }
         
         inline void Event::remove(int iFirst, int iLast)
         {
-            wrapperbase::BEptr->remove(iFirst, iLast);
+            get_BEptr()->remove(iFirst, iLast);
         }
         
         inline void Event::restorePtrs()
         {
-            wrapperbase::BEptr->restorePtrs();
+            get_BEptr()->restorePtrs();
         }
         
         inline void Event::saveSize()
         {
-            wrapperbase::BEptr->saveSize();
+            get_BEptr()->saveSize();
         }
         
         inline void Event::restoreSize()
         {
-            wrapperbase::BEptr->restoreSize();
+            get_BEptr()->restoreSize();
         }
         
         inline int Event::savedSizeValue()
         {
-            return wrapperbase::BEptr->savedSizeValue();
+            return get_BEptr()->savedSizeValue();
         }
         
         inline void Event::initColTag(int colTag)
         {
-            wrapperbase::BEptr->initColTag(colTag);
+            get_BEptr()->initColTag(colTag);
         }
         
         inline void Event::initColTag()
         {
-            wrapperbase::BEptr->initColTag__BOSS();
+            get_BEptr()->initColTag__BOSS();
         }
         
         inline int Event::lastColTag() const
         {
-            return wrapperbase::BEptr->lastColTag();
+            return get_BEptr()->lastColTag();
         }
         
         inline int Event::nextColTag()
         {
-            return wrapperbase::BEptr->nextColTag();
+            return get_BEptr()->nextColTag();
         }
         
         inline void Event::scale(double scaleIn)
         {
-            wrapperbase::BEptr->scale(scaleIn);
+            get_BEptr()->scale(scaleIn);
         }
         
         inline double Event::scale() const
         {
-            return wrapperbase::BEptr->scale();
+            return get_BEptr()->scale();
         }
         
         inline void Event::scaleSecond(double scaleSecondIn)
         {
-            wrapperbase::BEptr->scaleSecond(scaleSecondIn);
+            get_BEptr()->scaleSecond(scaleSecondIn);
         }
         
         inline double Event::scaleSecond() const
         {
-            return wrapperbase::BEptr->scaleSecond();
+            return get_BEptr()->scaleSecond();
         }
         
         inline ::std::vector<int, std::allocator<int> > Event::daughterList(int i) const
         {
-            return wrapperbase::BEptr->daughterList(i);
+            return get_BEptr()->daughterList(i);
         }
         
         inline void Event::rot(double theta, double phi)
         {
-            wrapperbase::BEptr->rot(theta, phi);
+            get_BEptr()->rot(theta, phi);
         }
         
         inline void Event::bst(double betaX, double betaY, double betaZ)
         {
-            wrapperbase::BEptr->bst(betaX, betaY, betaZ);
+            get_BEptr()->bst(betaX, betaY, betaZ);
         }
         
         inline void Event::bst(double betaX, double betaY, double betaZ, double gamma)
         {
-            wrapperbase::BEptr->bst(betaX, betaY, betaZ, gamma);
+            get_BEptr()->bst(betaX, betaY, betaZ, gamma);
         }
         
-        inline void Event::bst(const WrapperBase< Pythia8::Abstract_Vec4 >& vec)
+        inline void Event::bst(const Pythia8::Vec4& vec)
         {
-            wrapperbase::BEptr->bst__BOSS(*vec.BEptr);
+            get_BEptr()->bst__BOSS(*vec.get_BEptr());
         }
         
         inline void Event::clearJunctions()
         {
-            wrapperbase::BEptr->clearJunctions();
+            get_BEptr()->clearJunctions();
         }
         
         inline int Event::appendJunction(int kind, int col0, int col1, int col2)
         {
-            return wrapperbase::BEptr->appendJunction(kind, col0, col1, col2);
+            return get_BEptr()->appendJunction(kind, col0, col1, col2);
         }
         
         inline int Event::sizeJunction() const
         {
-            return wrapperbase::BEptr->sizeJunction();
+            return get_BEptr()->sizeJunction();
         }
         
         inline bool Event::remainsJunction(int i) const
         {
-            return wrapperbase::BEptr->remainsJunction(i);
+            return get_BEptr()->remainsJunction(i);
         }
         
         inline void Event::remainsJunction(int i, bool remainsIn)
         {
-            wrapperbase::BEptr->remainsJunction(i, remainsIn);
+            get_BEptr()->remainsJunction(i, remainsIn);
         }
         
         inline int Event::kindJunction(int i) const
         {
-            return wrapperbase::BEptr->kindJunction(i);
+            return get_BEptr()->kindJunction(i);
         }
         
         inline int Event::colJunction(int i, int j) const
         {
-            return wrapperbase::BEptr->colJunction(i, j);
+            return get_BEptr()->colJunction(i, j);
         }
         
         inline void Event::colJunction(int i, int j, int colIn)
         {
-            wrapperbase::BEptr->colJunction(i, j, colIn);
+            get_BEptr()->colJunction(i, j, colIn);
         }
         
         inline int Event::endColJunction(int i, int j) const
         {
-            return wrapperbase::BEptr->endColJunction(i, j);
+            return get_BEptr()->endColJunction(i, j);
         }
         
         inline void Event::endColJunction(int i, int j, int endColIn)
         {
-            wrapperbase::BEptr->endColJunction(i, j, endColIn);
+            get_BEptr()->endColJunction(i, j, endColIn);
         }
         
         inline int Event::statusJunction(int i, int j) const
         {
-            return wrapperbase::BEptr->statusJunction(i, j);
+            return get_BEptr()->statusJunction(i, j);
         }
         
         inline void Event::statusJunction(int i, int j, int statusIn)
         {
-            wrapperbase::BEptr->statusJunction(i, j, statusIn);
+            get_BEptr()->statusJunction(i, j, statusIn);
         }
         
         inline void Event::eraseJunction(int i)
         {
-            wrapperbase::BEptr->eraseJunction(i);
+            get_BEptr()->eraseJunction(i);
         }
         
         inline void Event::saveJunctionSize()
         {
-            wrapperbase::BEptr->saveJunctionSize();
+            get_BEptr()->saveJunctionSize();
         }
         
         inline void Event::restoreJunctionSize()
         {
-            wrapperbase::BEptr->restoreJunctionSize();
+            get_BEptr()->restoreJunctionSize();
         }
         
         inline void Event::listJunctions(::std::basic_ostream<char, std::char_traits<char> >& os) const
         {
-            wrapperbase::BEptr->listJunctions(os);
+            get_BEptr()->listJunctions(os);
         }
         
         inline void Event::listJunctions() const
         {
-            wrapperbase::BEptr->listJunctions__BOSS();
+            get_BEptr()->listJunctions__BOSS();
         }
         
         inline void Event::savePartonLevelSize()
         {
-            wrapperbase::BEptr->savePartonLevelSize();
+            get_BEptr()->savePartonLevelSize();
         }
         
         inline Pythia8::Event& Event::operator+=(const Pythia8::Event& addEvent)
         {
-            return wrapperbase::reference_returner< Pythia8::Event, Pythia8::Abstract_Event >( wrapperbase::BEptr->operator_plus_equal__BOSS(*addEvent.BEptr) );
+            return get_BEptr()->operator_plus_equal__BOSS(*addEvent.get_BEptr()).get_init_wref();
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::Event::Event(int capacity) :
-            WrapperBase<Pythia8::Abstract_Event>(__factory0(capacity))
+            WrapperBase(__factory0(capacity))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            // std::cerr << "DEBUG: (GAMBIT) Wr_Event(int) : created instance at: " << this << std::endl;
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Event::Event() :
-            WrapperBase<Pythia8::Abstract_Event>(__factory1())
+            WrapperBase(__factory1())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            // std::cerr << "DEBUG: (GAMBIT) Wr_Event() : created instance at: " << this << std::endl;
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Event::Event(Pythia8::Abstract_Event* in) :
-            WrapperBase<Pythia8::Abstract_Event>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::Event::Event(Pythia8::Abstract_Event* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_Event>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            // std::cerr << "DEBUG: (GAMBIT) Wr_Event(Abs_Event*) : created instance at: " << this << std::endl;
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::Event::Event(const Event& in) :
-            WrapperBase<Pythia8::Abstract_Event>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            // std::cerr << "DEBUG: (GAMBIT) Wr_Event(Wr_Event&) : created instance at: " << this << std::endl;
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::Event& Event::operator=(const Event& in)
         {
-            WrapperBase<Pythia8::Abstract_Event>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -473,14 +474,24 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Event::~Event()
         {
+            // std::cerr << "DEBUG: (GAMBIT) ~Wr_Event() : will destroy instance at: " << this << std::endl;
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::Event::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_Event* Pythia8::Event::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_Event*>(BEptr);
         }
-        
     }
     
 }

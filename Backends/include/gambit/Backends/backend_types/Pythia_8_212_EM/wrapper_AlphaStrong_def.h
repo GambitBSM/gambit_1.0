@@ -14,121 +14,116 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Member functions: 
         inline void AlphaStrong::init(double valueIn, int orderIn, int nfmaxIn, bool useCMWIn)
         {
-            wrapperbase::BEptr->init(valueIn, orderIn, nfmaxIn, useCMWIn);
+            get_BEptr()->init(valueIn, orderIn, nfmaxIn, useCMWIn);
         }
         
         inline void AlphaStrong::init(double valueIn, int orderIn, int nfmaxIn)
         {
-            wrapperbase::BEptr->init__BOSS(valueIn, orderIn, nfmaxIn);
+            get_BEptr()->init__BOSS(valueIn, orderIn, nfmaxIn);
         }
         
         inline void AlphaStrong::init(double valueIn, int orderIn)
         {
-            wrapperbase::BEptr->init__BOSS(valueIn, orderIn);
+            get_BEptr()->init__BOSS(valueIn, orderIn);
         }
         
         inline void AlphaStrong::init(double valueIn)
         {
-            wrapperbase::BEptr->init__BOSS(valueIn);
+            get_BEptr()->init__BOSS(valueIn);
         }
         
         inline void AlphaStrong::init()
         {
-            wrapperbase::BEptr->init__BOSS();
+            get_BEptr()->init__BOSS();
         }
         
         inline void AlphaStrong::setThresholds(double mcIn, double mbIn, double mtIn)
         {
-            wrapperbase::BEptr->setThresholds(mcIn, mbIn, mtIn);
+            get_BEptr()->setThresholds(mcIn, mbIn, mtIn);
         }
         
         inline double AlphaStrong::alphaS(double scale2)
         {
-            return wrapperbase::BEptr->alphaS(scale2);
+            return get_BEptr()->alphaS(scale2);
         }
         
         inline double AlphaStrong::alphaS1Ord(double scale2)
         {
-            return wrapperbase::BEptr->alphaS1Ord(scale2);
+            return get_BEptr()->alphaS1Ord(scale2);
         }
         
         inline double AlphaStrong::alphaS2OrdCorr(double scale2)
         {
-            return wrapperbase::BEptr->alphaS2OrdCorr(scale2);
+            return get_BEptr()->alphaS2OrdCorr(scale2);
         }
         
         inline double AlphaStrong::Lambda3() const
         {
-            return wrapperbase::BEptr->Lambda3();
+            return get_BEptr()->Lambda3();
         }
         
         inline double AlphaStrong::Lambda4() const
         {
-            return wrapperbase::BEptr->Lambda4();
+            return get_BEptr()->Lambda4();
         }
         
         inline double AlphaStrong::Lambda5() const
         {
-            return wrapperbase::BEptr->Lambda5();
+            return get_BEptr()->Lambda5();
         }
         
         inline double AlphaStrong::Lambda6() const
         {
-            return wrapperbase::BEptr->Lambda6();
+            return get_BEptr()->Lambda6();
         }
         
         inline double AlphaStrong::muThres(int idQ)
         {
-            return wrapperbase::BEptr->muThres(idQ);
+            return get_BEptr()->muThres(idQ);
         }
         
         inline double AlphaStrong::muThres2(int idQ)
         {
-            return wrapperbase::BEptr->muThres2(idQ);
+            return get_BEptr()->muThres2(idQ);
         }
         
         inline double AlphaStrong::facCMW(int nFin)
         {
-            return wrapperbase::BEptr->facCMW(nFin);
+            return get_BEptr()->facCMW(nFin);
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::AlphaStrong::AlphaStrong() :
-            WrapperBase<Pythia8::Abstract_AlphaStrong>(__factory0())
+            WrapperBase(__factory0())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::AlphaStrong::AlphaStrong(Pythia8::Abstract_AlphaStrong* in) :
-            WrapperBase<Pythia8::Abstract_AlphaStrong>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::AlphaStrong::AlphaStrong(Pythia8::Abstract_AlphaStrong* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_AlphaStrong>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::AlphaStrong::AlphaStrong(const AlphaStrong& in) :
-            WrapperBase<Pythia8::Abstract_AlphaStrong>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::AlphaStrong& AlphaStrong::operator=(const AlphaStrong& in)
         {
-            WrapperBase<Pythia8::Abstract_AlphaStrong>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -136,14 +131,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::AlphaStrong::~AlphaStrong()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::AlphaStrong::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_AlphaStrong* Pythia8::AlphaStrong::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_AlphaStrong*>(BEptr);
         }
-        
     }
     
 }

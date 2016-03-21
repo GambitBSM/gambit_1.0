@@ -16,58 +16,53 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void ResonanceDecays::init(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Rndm >* rndmPtrIn)
+        inline void ResonanceDecays::init(Pythia8::Info* infoPtrIn, Pythia8::ParticleData* particleDataPtrIn, Pythia8::Rndm* rndmPtrIn)
         {
-            wrapperbase::BEptr->init__BOSS((*infoPtrIn).BEptr, (*particleDataPtrIn).BEptr, (*rndmPtrIn).BEptr);
+            get_BEptr()->init__BOSS((*infoPtrIn).get_BEptr(), (*particleDataPtrIn).get_BEptr(), (*rndmPtrIn).get_BEptr());
         }
         
-        inline bool ResonanceDecays::next(WrapperBase< Pythia8::Abstract_Event >& process, int iDecNow)
+        inline bool ResonanceDecays::next(Pythia8::Event& process, int iDecNow)
         {
-            return wrapperbase::BEptr->next__BOSS(*process.BEptr, iDecNow);
+            return get_BEptr()->next__BOSS(*process.get_BEptr(), iDecNow);
         }
         
-        inline bool ResonanceDecays::next(WrapperBase< Pythia8::Abstract_Event >& process)
+        inline bool ResonanceDecays::next(Pythia8::Event& process)
         {
-            return wrapperbase::BEptr->next__BOSS(*process.BEptr);
+            return get_BEptr()->next__BOSS(*process.get_BEptr());
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::ResonanceDecays::ResonanceDecays() :
-            WrapperBase<Pythia8::Abstract_ResonanceDecays>(__factory0())
+            WrapperBase(__factory0())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::ResonanceDecays::ResonanceDecays(Pythia8::Abstract_ResonanceDecays* in) :
-            WrapperBase<Pythia8::Abstract_ResonanceDecays>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::ResonanceDecays::ResonanceDecays(Pythia8::Abstract_ResonanceDecays* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_ResonanceDecays>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::ResonanceDecays::ResonanceDecays(const ResonanceDecays& in) :
-            WrapperBase<Pythia8::Abstract_ResonanceDecays>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::ResonanceDecays& ResonanceDecays::operator=(const ResonanceDecays& in)
         {
-            WrapperBase<Pythia8::Abstract_ResonanceDecays>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -75,14 +70,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::ResonanceDecays::~ResonanceDecays()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::ResonanceDecays::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_ResonanceDecays* Pythia8::ResonanceDecays::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_ResonanceDecays*>(BEptr);
         }
-        
     }
     
 }

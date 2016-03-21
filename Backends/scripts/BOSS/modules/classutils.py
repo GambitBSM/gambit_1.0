@@ -549,14 +549,11 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
 
 
 
-# ====== constrFactoryFunctionCode ========
+# ====== getAcceptableConstructors ========
 
-def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[], skip_copy_constructors=False, use_wrapper_return=False, use_wrapper_args=False, add_include_statements=True, add_signatures_comment=True):
+def getAcceptableConstructors(class_el, skip_copy_constructors=False):
 
-    # Replace '*' and '&' in list of template types
-    template_types = [e.replace('*','P').replace('&','R') for e in template_types]
-
-    # Check for copy constructor. (We do not generate factory functions for copy constructors)
+    # Check for copy constructor?
     if skip_copy_constructors:
         has_copy_constructor, copy_constr_id = checkCopyConstructor(class_el, return_id=True)
 
@@ -570,7 +567,36 @@ def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[],
                     pass
                 else:
                     constructor_elements.append(el)
-                    
+
+    return constructor_elements
+
+# ====== END: getAcceptableConstructors ========
+
+
+
+# ====== constrFactoryFunctionCode ========
+
+def constrFactoryFunctionCode(class_el, class_name, indent=4, template_types=[], skip_copy_constructors=False, use_wrapper_return=False, use_wrapper_args=False, add_include_statements=True, add_signatures_comment=True):
+
+    # Replace '*' and '&' in list of template types
+    template_types = [e.replace('*','P').replace('&','R') for e in template_types]
+
+    # # Check for copy constructor. (We do not generate factory functions for copy constructors)
+    # if skip_copy_constructors:
+    #     has_copy_constructor, copy_constr_id = checkCopyConstructor(class_el, return_id=True)
+
+    # # Create list of all acceptable constructors of the class
+    # constructor_elements = []
+    # if 'members' in class_el.keys():
+    #     for mem_id in class_el.get('members').split():
+    #         el = gb.id_dict[mem_id]
+    #         if (el.tag == 'Constructor') and (el.get('access') == 'public'): #and ('artificial' not in el.keys()):  #(el.get('explicit') == "1"):
+    #             if skip_copy_constructors and (el.get('id') == copy_constr_id):
+    #                 pass
+    #             else:
+    #                 constructor_elements.append(el)
+
+    constructor_elements = getAcceptableConstructors(class_el, skip_copy_constructors=skip_copy_constructors)
 
     # If no public constructors are found, return nothing
     if len(constructor_elements) == 0:
@@ -1511,7 +1537,7 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
     #
     decl_code += '\n'
     decl_code += 2*indent + '// Destructor: \n'
-    decl_code += 2*indent + '~' + class_name['short'] + '();\n'
+    decl_code += 2*indent + 'virtual ~' + class_name['short'] + '();\n'
 
 
     #
@@ -1693,9 +1719,9 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
                 # Return-by-pointer
                 elif (not is_ref) and (pointerness > 0):  
                     if 'const' in return_type_kw:
-                        def_code += 'const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ').get_init_wptr();\n'
+                        def_code += 'const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ')->get_init_wptr();\n'
                     else:
-                        def_code += 'get_BEptr()->' + call_func_name + args_bracket_notypes + '.get_init_wptr();\n'
+                        def_code += 'get_BEptr()->' + call_func_name + args_bracket_notypes + '->get_init_wptr();\n'
                     # if is_const:
                     #     def_code += 'wrapperbase::pointer_returner< ' + return_type_simple + ', ' + abs_return_type_simple +  ' >( const_cast<' + abs_return_type_simple + '*>(wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ') );\n'
                     # else:
@@ -1704,9 +1730,9 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
                 # Return-by-value
                 else:  
                     if 'const' in return_type_kw:
-                        return_type + '( const_cast<' + abs_return_type_simple + '&>(get_BEptr()->' + call_func_name + args_bracket_notypes + ').get_init_wref() );\n'
+                        def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ')->get_init_wref() );\n'
                     else:
-                        return_type + '( get_BEptr()->' + call_func_name + args_bracket_notypes + '.get_init_wref() );\n'
+                        def_code += return_type + '( get_BEptr()->' + call_func_name + args_bracket_notypes + '->get_init_wref() );\n'
 
                     # if is_const:                        
                     #     def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(wrapperbase::BEptr->' + call_func_name + args_bracket_notypes + ') );\n'
@@ -1767,7 +1793,7 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
             if pointerness == 0:
                 common_init_list_code += indent + var_name + '( get_BEptr()->' + var_name + '_ref' + gb.code_suffix + '().get_init_wref()),\n'
             elif pointerness == 1:
-                common_init_list_code += indent + var_name + '( get_BEptr()->' + var_name + '_ref' + gb.code_suffix + '().get_init_wptr()),\n'
+                common_init_list_code += indent + var_name + '( get_BEptr()->' + var_name + '_ref' + gb.code_suffix + '()->get_init_wptr()),\n'
                 # common_init_list_code += indent + var_name + '(wrapperbase::BEptr->' + var_name + '_ref' + gb.code_suffix + '()),\n'
             else:
                 raise Exception('The BOSS wrapper class system cannot presently handle member variables that have a pointerness > 1')

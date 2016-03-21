@@ -19,12 +19,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class ParticleDataEntry : public WrapperBase<Pythia8::Abstract_ParticleDataEntry>
+        class ParticleDataEntry : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_ParticleDataEntry> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_ParticleDataEntry>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -55,7 +51,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
                 void setDefaults();
         
-                void initPtr(WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn);
+                void initPtr(Pythia8::ParticleData* particleDataPtrIn);
         
                 void setAll(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nameIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > antiNameIn, int spinTypeIn, int chargeTypeIn, int colTypeIn, double m0In, double mWidthIn, double mMinIn, double mMaxIn, double tau0In);
         
@@ -247,11 +243,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 Pythia8::DecayChannel& pickChannel();
         
-                void setResonancePtr(WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn);
-        
-                Pythia8::ResonanceWidths* getResonancePtr();
-        
-                void resInit(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn);
+                void resInit(Pythia8::Info* infoPtrIn, Pythia8::Settings* settingsPtrIn, Pythia8::ParticleData* particleDataPtrIn, Pythia8::Couplings* couplingsPtrIn);
         
                 double resWidth(int idSgn, double mHat, int idIn, bool openOnly, bool setBR);
         
@@ -305,7 +297,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 ParticleDataEntry(Pythia8::Abstract_ParticleDataEntry* in);
-                ParticleDataEntry(Pythia8::Abstract_ParticleDataEntry* const & in, bool);
         
                 // Copy constructor: 
                 ParticleDataEntry(const ParticleDataEntry& in);
@@ -314,11 +305,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 ParticleDataEntry& operator=(const ParticleDataEntry& in);
         
                 // Destructor: 
-                ~ParticleDataEntry();
+                virtual ~ParticleDataEntry();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_ParticleDataEntry* get_BEptr() const;
         
         };
     }

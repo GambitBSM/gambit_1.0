@@ -15,12 +15,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Parm : public WrapperBase<Pythia8::Abstract_Parm>
+        class Parm : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Parm> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Parm>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -56,7 +52,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Parm(Pythia8::Abstract_Parm* in);
-                Parm(Pythia8::Abstract_Parm* const & in, bool);
         
                 // Copy constructor: 
                 Parm(const Parm& in);
@@ -65,11 +60,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Parm& operator=(const Parm& in);
         
                 // Destructor: 
-                ~Parm();
+                virtual ~Parm();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Parm* get_BEptr() const;
         
         };
     }

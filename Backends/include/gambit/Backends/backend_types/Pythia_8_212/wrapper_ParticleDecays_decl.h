@@ -23,12 +23,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class ParticleDecays : public WrapperBase<Pythia8::Abstract_ParticleDecays>
+        class ParticleDecays : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_ParticleDecays> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_ParticleDecays>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -38,7 +34,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                bool decay(int iDec, WrapperBase< Pythia8::Abstract_Event >& event);
+                bool decay(int iDec, Pythia8::Event& event);
         
                 bool moreToDo() const;
         
@@ -49,7 +45,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 ParticleDecays(Pythia8::Abstract_ParticleDecays* in);
-                ParticleDecays(Pythia8::Abstract_ParticleDecays* const & in, bool);
         
                 // Copy constructor: 
                 ParticleDecays(const ParticleDecays& in);
@@ -58,11 +53,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 ParticleDecays& operator=(const ParticleDecays& in);
         
                 // Destructor: 
-                ~ParticleDecays();
+                virtual ~ParticleDecays();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_ParticleDecays* get_BEptr() const;
         
         };
     }

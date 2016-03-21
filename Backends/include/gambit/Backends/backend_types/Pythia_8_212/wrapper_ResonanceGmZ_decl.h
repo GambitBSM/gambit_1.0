@@ -5,7 +5,6 @@
 #include "forward_decls_wrapper_classes.h"
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_ResonanceGmZ.h"
-#include "wrapper_ResonanceWidths_decl.h"
 
 #include "identification.hpp"
 
@@ -15,12 +14,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class ResonanceGmZ : public WrapperBase<Pythia8::Abstract_ResonanceGmZ>, public ResonanceWidths
+        class ResonanceGmZ : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_ResonanceGmZ> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_ResonanceGmZ>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -36,7 +31,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 ResonanceGmZ(Pythia8::Abstract_ResonanceGmZ* in);
-                ResonanceGmZ(Pythia8::Abstract_ResonanceGmZ* const & in, bool);
         
                 // Copy constructor: 
                 ResonanceGmZ(const ResonanceGmZ& in);
@@ -45,11 +39,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 ResonanceGmZ& operator=(const ResonanceGmZ& in);
         
                 // Destructor: 
-                ~ResonanceGmZ();
+                virtual ~ResonanceGmZ();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_ResonanceGmZ* get_BEptr() const;
         
         };
     }

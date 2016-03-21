@@ -12,7 +12,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Hist*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Hist*);
+
+
+// Forward declaration for wrapper_creator.
+void wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_Hist*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -21,11 +29,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_Hist : virtual public AbstractBase
+        class Abstract_Hist : public virtual AbstractBase
         {
             public:
     
-                virtual Pythia8::Abstract_Hist* operator_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
+                virtual Pythia8::Abstract_Hist& operator_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
     
                 virtual void book(::std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double, double) =0;
     
@@ -73,52 +81,82 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void takeSqrt() =0;
     
-                virtual Pythia8::Abstract_Hist* operator_plus_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
+                virtual Pythia8::Abstract_Hist& operator_plus_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
     
-                virtual Pythia8::Abstract_Hist* operator_minus_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
+                virtual Pythia8::Abstract_Hist& operator_minus_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
     
-                virtual Pythia8::Abstract_Hist* operator_asterix_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
+                virtual Pythia8::Abstract_Hist& operator_asterix_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
     
-                virtual Pythia8::Abstract_Hist* operator_slash_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
+                virtual Pythia8::Abstract_Hist& operator_slash_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
     
-                virtual Pythia8::Abstract_Hist* operator_plus_equal__BOSS(double) =0;
+                virtual Pythia8::Abstract_Hist& operator_plus_equal__BOSS(double) =0;
     
-                virtual Pythia8::Abstract_Hist* operator_minus_equal__BOSS(double) =0;
+                virtual Pythia8::Abstract_Hist& operator_minus_equal__BOSS(double) =0;
     
-                virtual Pythia8::Abstract_Hist* operator_asterix_equal__BOSS(double) =0;
+                virtual Pythia8::Abstract_Hist& operator_asterix_equal__BOSS(double) =0;
     
-                virtual Pythia8::Abstract_Hist* operator_slash_equal__BOSS(double) =0;
+                virtual Pythia8::Abstract_Hist& operator_slash_equal__BOSS(double) =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_Hist*) =0;
-                virtual Abstract_Hist* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_Hist*) =0;
+                virtual Abstract_Hist* pointer_copy__BOSS() =0;
     
             private:
-                mutable Hist* wptr;
+                Hist* wptr;
+                bool delete_wrapper;
+            public:
+                Hist* get_wptr() { return wptr; }
+                void set_wptr(Hist* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_Hist()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(Hist* wptr_in)
+                Abstract_Hist(const Abstract_Hist&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                Hist* wrapper__BOSS()
+                Abstract_Hist& operator=(const Abstract_Hist&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    if (wptr == 0)
+                    {
+                        wrapper_creator(this);
+                        delete_wrapper = true;
+                    }
+                }
+    
+                Hist* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                Hist& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_Hist()
                 {
-                    if (can_delete_wrapper())
+                    if (wptr != 0)
                     {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
+                        set_delete_BEptr(wptr, false);
+                        if (delete_wrapper == true)
+                        {
+                            wrapper_deleter(wptr);
+                            wptr = 0;
+                            delete_wrapper = false;
+                        }
                     }
                 }
         };

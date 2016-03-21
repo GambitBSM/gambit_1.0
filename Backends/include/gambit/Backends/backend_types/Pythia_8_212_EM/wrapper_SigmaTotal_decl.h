@@ -17,12 +17,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class SigmaTotal : public WrapperBase<Pythia8::Abstract_SigmaTotal>
+        class SigmaTotal : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_SigmaTotal> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_SigmaTotal>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -32,7 +28,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void init(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn);
+                void init(Pythia8::Info* infoPtrIn, Pythia8::Settings& settings, Pythia8::ParticleData* particleDataPtrIn);
         
                 bool calc(int idA, int idB, double eCM);
         
@@ -95,7 +91,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 SigmaTotal(Pythia8::Abstract_SigmaTotal* in);
-                SigmaTotal(Pythia8::Abstract_SigmaTotal* const & in, bool);
         
                 // Copy constructor: 
                 SigmaTotal(const SigmaTotal& in);
@@ -104,11 +99,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 SigmaTotal& operator=(const SigmaTotal& in);
         
                 // Destructor: 
-                ~SigmaTotal();
+                virtual ~SigmaTotal();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_SigmaTotal* get_BEptr() const;
         
         };
     }

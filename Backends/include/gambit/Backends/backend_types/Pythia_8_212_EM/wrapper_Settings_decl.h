@@ -18,12 +18,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Settings : public WrapperBase<Pythia8::Abstract_Settings>
+        class Settings : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Settings> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Settings>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -33,7 +29,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void initPtr(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn);
+                void initPtr(Pythia8::Info* infoPtrIn);
         
                 bool init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > startFile, bool append, ::std::basic_ostream<char, std::char_traits<char> >& os);
         
@@ -188,7 +184,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Settings(Pythia8::Abstract_Settings* in);
-                Settings(Pythia8::Abstract_Settings* const & in, bool);
         
                 // Copy constructor: 
                 Settings(const Settings& in);
@@ -197,11 +192,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Settings& operator=(const Settings& in);
         
                 // Destructor: 
-                ~Settings();
+                virtual ~Settings();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Settings* get_BEptr() const;
         
         };
     }

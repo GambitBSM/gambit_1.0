@@ -17,12 +17,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Hist : public WrapperBase<Pythia8::Abstract_Hist>
+        class Hist : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Hist> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Hist>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -75,7 +71,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int getEntries() const;
         
-                bool sameSize(const WrapperBase< Pythia8::Abstract_Hist >& h) const;
+                bool sameSize(const Pythia8::Hist& h) const;
         
                 void takeLog(bool tenLog);
         
@@ -111,7 +107,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Hist(Pythia8::Abstract_Hist* in);
-                Hist(Pythia8::Abstract_Hist* const & in, bool);
         
                 // Copy constructor: 
                 Hist(const Hist& in);
@@ -120,11 +115,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Hist& operator=(const Hist& in);
         
                 // Destructor: 
-                ~Hist();
+                virtual ~Hist();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Hist* get_BEptr() const;
         
         };
     }

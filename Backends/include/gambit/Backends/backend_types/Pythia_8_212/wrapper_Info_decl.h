@@ -18,12 +18,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Info : public WrapperBase<Pythia8::Abstract_Info>
+        class Info : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Info> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Info>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -424,7 +420,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Info(Pythia8::Abstract_Info* in);
-                Info(Pythia8::Abstract_Info* const & in, bool);
         
                 // Copy constructor: 
                 Info(const Info& in);
@@ -433,11 +428,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Info& operator=(const Info& in);
         
                 // Destructor: 
-                ~Info();
+                virtual ~Info();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Info* get_BEptr() const;
         
         };
     }

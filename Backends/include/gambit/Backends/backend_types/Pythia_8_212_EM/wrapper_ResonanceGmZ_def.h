@@ -15,45 +15,35 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Wrappers for original constructors: 
         inline Pythia8::ResonanceGmZ::ResonanceGmZ(int idResIn) :
-            WrapperBase<Pythia8::Abstract_ResonanceGmZ>(__factory0(idResIn)),
-            ResonanceWidths(wrapperbase::BEptr)
+            WrapperBase(__factory0(idResIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::ResonanceGmZ::ResonanceGmZ(Pythia8::Abstract_ResonanceGmZ* in) :
-            WrapperBase<Pythia8::Abstract_ResonanceGmZ>(in),
-            ResonanceWidths(wrapperbase::BEptr)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::ResonanceGmZ::ResonanceGmZ(Pythia8::Abstract_ResonanceGmZ* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_ResonanceGmZ>(in, true),
-            ResonanceWidths(wrapperbase::BEptr)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::ResonanceGmZ::ResonanceGmZ(const ResonanceGmZ& in) :
-            WrapperBase<Pythia8::Abstract_ResonanceGmZ>(in),
-            ResonanceWidths(wrapperbase::BEptr)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::ResonanceGmZ& ResonanceGmZ::operator=(const ResonanceGmZ& in)
         {
-            WrapperBase<Pythia8::Abstract_ResonanceGmZ>::operator=(in);
-            ResonanceWidths::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -61,15 +51,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::ResonanceGmZ::~ResonanceGmZ()
         {
-            WrapperBase<Pythia8::Abstract_ResonanceWidths>::skip_delete = true;
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::ResonanceGmZ::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_ResonanceGmZ* Pythia8::ResonanceGmZ::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_ResonanceGmZ*>(BEptr);
         }
-        
     }
     
 }

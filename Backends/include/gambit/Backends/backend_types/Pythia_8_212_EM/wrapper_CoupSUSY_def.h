@@ -16,410 +16,327 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void CoupSUSY::initSUSY(WrapperBase< Pythia8::Abstract_SusyLesHouches >* slhaPtrIn, WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn)
+        inline void CoupSUSY::initSUSY(Pythia8::SusyLesHouches* slhaPtrIn, Pythia8::Info* infoPtrIn, Pythia8::ParticleData* particleDataPtrIn, Pythia8::Settings* settingsPtrIn)
         {
-            wrapperbase::BEptr->initSUSY__BOSS((*slhaPtrIn).BEptr, (*infoPtrIn).BEptr, (*particleDataPtrIn).BEptr, (*settingsPtrIn).BEptr);
+            get_BEptr()->initSUSY__BOSS((*slhaPtrIn).get_BEptr(), (*infoPtrIn).get_BEptr(), (*particleDataPtrIn).get_BEptr(), (*settingsPtrIn).get_BEptr());
         }
         
         inline ::std::complex<double> CoupSUSY::getLsqqG(int iGenSq, int idQ)
         {
-            return wrapperbase::BEptr->getLsqqG(iGenSq, idQ);
+            return get_BEptr()->getLsqqG(iGenSq, idQ);
         }
         
         inline ::std::complex<double> CoupSUSY::getRsqqG(int iGenSq, int idQ)
         {
-            return wrapperbase::BEptr->getRsqqG(iGenSq, idQ);
+            return get_BEptr()->getRsqqG(iGenSq, idQ);
         }
         
         inline ::std::complex<double> CoupSUSY::getLsqsqZ(int idSq1, int idSq2)
         {
-            return wrapperbase::BEptr->getLsqsqZ(idSq1, idSq2);
+            return get_BEptr()->getLsqsqZ(idSq1, idSq2);
         }
         
         inline ::std::complex<double> CoupSUSY::getRsqsqZ(int idSq1, int idSq2)
         {
-            return wrapperbase::BEptr->getRsqsqZ(idSq1, idSq2);
+            return get_BEptr()->getRsqsqZ(idSq1, idSq2);
         }
         
         inline ::std::complex<double> CoupSUSY::getLsqqX(int iSq, int idQ, int iNeut)
         {
-            return wrapperbase::BEptr->getLsqqX(iSq, idQ, iNeut);
+            return get_BEptr()->getLsqqX(iSq, idQ, iNeut);
         }
         
         inline ::std::complex<double> CoupSUSY::getRsqqX(int iSq, int idQ, int iNeut)
         {
-            return wrapperbase::BEptr->getRsqqX(iSq, idQ, iNeut);
+            return get_BEptr()->getRsqqX(iSq, idQ, iNeut);
         }
         
         inline int CoupSUSY::idNeut(int idChi)
         {
-            return wrapperbase::BEptr->idNeut(idChi);
+            return get_BEptr()->idNeut(idChi);
         }
         
         inline int CoupSUSY::idChar(int idChi)
         {
-            return wrapperbase::BEptr->idChar(idChi);
+            return get_BEptr()->idChar(idChi);
         }
         
         inline int CoupSUSY::idSup(int iSup)
         {
-            return wrapperbase::BEptr->idSup(iSup);
+            return get_BEptr()->idSup(iSup);
         }
         
         inline int CoupSUSY::idSdown(int iSdown)
         {
-            return wrapperbase::BEptr->idSdown(iSdown);
+            return get_BEptr()->idSdown(iSdown);
         }
         
         inline int CoupSUSY::idSlep(int iSlep)
         {
-            return wrapperbase::BEptr->idSlep(iSlep);
+            return get_BEptr()->idSlep(iSlep);
         }
         
         inline int CoupSUSY::typeNeut(int idPDG)
         {
-            return wrapperbase::BEptr->typeNeut(idPDG);
+            return get_BEptr()->typeNeut(idPDG);
         }
         
         inline int CoupSUSY::typeChar(int idPDG)
         {
-            return wrapperbase::BEptr->typeChar(idPDG);
+            return get_BEptr()->typeChar(idPDG);
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::CoupSUSY::CoupSUSY() :
-            WrapperBase<Pythia8::Abstract_CoupSUSY>(__factory0()),
-            Couplings(wrapperbase::BEptr),
-            isInit(wrapperbase::BEptr->isInit_ref__BOSS()),
-            isNMSSM(wrapperbase::BEptr->isNMSSM_ref__BOSS()),
-            mWpole(wrapperbase::BEptr->mWpole_ref__BOSS()),
-            wWpole(wrapperbase::BEptr->wWpole_ref__BOSS()),
-            mZpole(wrapperbase::BEptr->mZpole_ref__BOSS()),
-            wZpole(wrapperbase::BEptr->wZpole_ref__BOSS()),
-            mW(wrapperbase::BEptr->mW_ref__BOSS()),
-            mZ(wrapperbase::BEptr->mZ_ref__BOSS()),
-            sin2W(wrapperbase::BEptr->sin2W_ref__BOSS()),
-            sinW(wrapperbase::BEptr->sinW_ref__BOSS()),
-            cosW(wrapperbase::BEptr->cosW_ref__BOSS()),
-            tanb(wrapperbase::BEptr->tanb_ref__BOSS()),
-            cosb(wrapperbase::BEptr->cosb_ref__BOSS()),
-            sinb(wrapperbase::BEptr->sinb_ref__BOSS()),
-            muHiggs(wrapperbase::BEptr->muHiggs_ref__BOSS()),
-            alphaHiggs(wrapperbase::BEptr->alphaHiggs_ref__BOSS()),
-            mAHiggs(wrapperbase::BEptr->mAHiggs_ref__BOSS()),
-            LsddG(wrapperbase::BEptr->LsddG_ref__BOSS()),
-            RsddG(wrapperbase::BEptr->RsddG_ref__BOSS()),
-            LsuuG(wrapperbase::BEptr->LsuuG_ref__BOSS()),
-            RsuuG(wrapperbase::BEptr->RsuuG_ref__BOSS()),
-            OLpp(wrapperbase::BEptr->OLpp_ref__BOSS()),
-            ORpp(wrapperbase::BEptr->ORpp_ref__BOSS()),
-            OLp(wrapperbase::BEptr->OLp_ref__BOSS()),
-            ORp(wrapperbase::BEptr->ORp_ref__BOSS()),
-            OL(wrapperbase::BEptr->OL_ref__BOSS()),
-            OR(wrapperbase::BEptr->OR_ref__BOSS()),
-            LqqZ(wrapperbase::BEptr->LqqZ_ref__BOSS()),
-            RqqZ(wrapperbase::BEptr->RqqZ_ref__BOSS()),
-            LsdsdZ(wrapperbase::BEptr->LsdsdZ_ref__BOSS()),
-            RsdsdZ(wrapperbase::BEptr->RsdsdZ_ref__BOSS()),
-            LsusuZ(wrapperbase::BEptr->LsusuZ_ref__BOSS()),
-            RsusuZ(wrapperbase::BEptr->RsusuZ_ref__BOSS()),
-            LudW(wrapperbase::BEptr->LudW_ref__BOSS()),
-            RudW(wrapperbase::BEptr->RudW_ref__BOSS()),
-            LsusdW(wrapperbase::BEptr->LsusdW_ref__BOSS()),
-            RsusdW(wrapperbase::BEptr->RsusdW_ref__BOSS()),
-            LsddX(wrapperbase::BEptr->LsddX_ref__BOSS()),
-            RsddX(wrapperbase::BEptr->RsddX_ref__BOSS()),
-            LsuuX(wrapperbase::BEptr->LsuuX_ref__BOSS()),
-            RsuuX(wrapperbase::BEptr->RsuuX_ref__BOSS()),
-            LsduX(wrapperbase::BEptr->LsduX_ref__BOSS()),
-            RsduX(wrapperbase::BEptr->RsduX_ref__BOSS()),
-            LsudX(wrapperbase::BEptr->LsudX_ref__BOSS()),
-            RsudX(wrapperbase::BEptr->RsudX_ref__BOSS()),
-            LllZ(wrapperbase::BEptr->LllZ_ref__BOSS()),
-            RllZ(wrapperbase::BEptr->RllZ_ref__BOSS()),
-            LlvW(wrapperbase::BEptr->LlvW_ref__BOSS()),
-            RlvW(wrapperbase::BEptr->RlvW_ref__BOSS()),
-            LslslZ(wrapperbase::BEptr->LslslZ_ref__BOSS()),
-            RslslZ(wrapperbase::BEptr->RslslZ_ref__BOSS()),
-            LsvsvZ(wrapperbase::BEptr->LsvsvZ_ref__BOSS()),
-            RsvsvZ(wrapperbase::BEptr->RsvsvZ_ref__BOSS()),
-            LslsvW(wrapperbase::BEptr->LslsvW_ref__BOSS()),
-            RslsvW(wrapperbase::BEptr->RslsvW_ref__BOSS()),
-            LsvvX(wrapperbase::BEptr->LsvvX_ref__BOSS()),
-            RsvvX(wrapperbase::BEptr->RsvvX_ref__BOSS()),
-            LsllX(wrapperbase::BEptr->LsllX_ref__BOSS()),
-            RsllX(wrapperbase::BEptr->RsllX_ref__BOSS()),
-            LsvlX(wrapperbase::BEptr->LsvlX_ref__BOSS()),
-            RsvlX(wrapperbase::BEptr->RsvlX_ref__BOSS()),
-            LslvX(wrapperbase::BEptr->LslvX_ref__BOSS()),
-            RslvX(wrapperbase::BEptr->RslvX_ref__BOSS()),
-            rvLLE(wrapperbase::BEptr->rvLLE_ref__BOSS()),
-            rvLQD(wrapperbase::BEptr->rvLQD_ref__BOSS()),
-            rvUDD(wrapperbase::BEptr->rvUDD_ref__BOSS()),
-            isLLE(wrapperbase::BEptr->isLLE_ref__BOSS()),
-            isLQD(wrapperbase::BEptr->isLQD_ref__BOSS()),
-            isUDD(wrapperbase::BEptr->isUDD_ref__BOSS()),
-            Rusq(wrapperbase::BEptr->Rusq_ref__BOSS()),
-            Rdsq(wrapperbase::BEptr->Rdsq_ref__BOSS()),
-            Rsl(wrapperbase::BEptr->Rsl_ref__BOSS()),
-            Rsv(wrapperbase::BEptr->Rsv_ref__BOSS())
+            Couplings(__factory0()),
+            isInit( get_BEptr()->isInit_ref__BOSS()),
+            isNMSSM( get_BEptr()->isNMSSM_ref__BOSS()),
+            mWpole( get_BEptr()->mWpole_ref__BOSS()),
+            wWpole( get_BEptr()->wWpole_ref__BOSS()),
+            mZpole( get_BEptr()->mZpole_ref__BOSS()),
+            wZpole( get_BEptr()->wZpole_ref__BOSS()),
+            mW( get_BEptr()->mW_ref__BOSS()),
+            mZ( get_BEptr()->mZ_ref__BOSS()),
+            sin2W( get_BEptr()->sin2W_ref__BOSS()),
+            sinW( get_BEptr()->sinW_ref__BOSS()),
+            cosW( get_BEptr()->cosW_ref__BOSS()),
+            tanb( get_BEptr()->tanb_ref__BOSS()),
+            cosb( get_BEptr()->cosb_ref__BOSS()),
+            sinb( get_BEptr()->sinb_ref__BOSS()),
+            muHiggs( get_BEptr()->muHiggs_ref__BOSS()),
+            alphaHiggs( get_BEptr()->alphaHiggs_ref__BOSS()),
+            mAHiggs( get_BEptr()->mAHiggs_ref__BOSS()),
+            LsddG( get_BEptr()->LsddG_ref__BOSS()),
+            RsddG( get_BEptr()->RsddG_ref__BOSS()),
+            LsuuG( get_BEptr()->LsuuG_ref__BOSS()),
+            RsuuG( get_BEptr()->RsuuG_ref__BOSS()),
+            OLpp( get_BEptr()->OLpp_ref__BOSS()),
+            ORpp( get_BEptr()->ORpp_ref__BOSS()),
+            OLp( get_BEptr()->OLp_ref__BOSS()),
+            ORp( get_BEptr()->ORp_ref__BOSS()),
+            OL( get_BEptr()->OL_ref__BOSS()),
+            OR( get_BEptr()->OR_ref__BOSS()),
+            LqqZ( get_BEptr()->LqqZ_ref__BOSS()),
+            RqqZ( get_BEptr()->RqqZ_ref__BOSS()),
+            LsdsdZ( get_BEptr()->LsdsdZ_ref__BOSS()),
+            RsdsdZ( get_BEptr()->RsdsdZ_ref__BOSS()),
+            LsusuZ( get_BEptr()->LsusuZ_ref__BOSS()),
+            RsusuZ( get_BEptr()->RsusuZ_ref__BOSS()),
+            LudW( get_BEptr()->LudW_ref__BOSS()),
+            RudW( get_BEptr()->RudW_ref__BOSS()),
+            LsusdW( get_BEptr()->LsusdW_ref__BOSS()),
+            RsusdW( get_BEptr()->RsusdW_ref__BOSS()),
+            LsddX( get_BEptr()->LsddX_ref__BOSS()),
+            RsddX( get_BEptr()->RsddX_ref__BOSS()),
+            LsuuX( get_BEptr()->LsuuX_ref__BOSS()),
+            RsuuX( get_BEptr()->RsuuX_ref__BOSS()),
+            LsduX( get_BEptr()->LsduX_ref__BOSS()),
+            RsduX( get_BEptr()->RsduX_ref__BOSS()),
+            LsudX( get_BEptr()->LsudX_ref__BOSS()),
+            RsudX( get_BEptr()->RsudX_ref__BOSS()),
+            LllZ( get_BEptr()->LllZ_ref__BOSS()),
+            RllZ( get_BEptr()->RllZ_ref__BOSS()),
+            LlvW( get_BEptr()->LlvW_ref__BOSS()),
+            RlvW( get_BEptr()->RlvW_ref__BOSS()),
+            LslslZ( get_BEptr()->LslslZ_ref__BOSS()),
+            RslslZ( get_BEptr()->RslslZ_ref__BOSS()),
+            LsvsvZ( get_BEptr()->LsvsvZ_ref__BOSS()),
+            RsvsvZ( get_BEptr()->RsvsvZ_ref__BOSS()),
+            LslsvW( get_BEptr()->LslsvW_ref__BOSS()),
+            RslsvW( get_BEptr()->RslsvW_ref__BOSS()),
+            LsvvX( get_BEptr()->LsvvX_ref__BOSS()),
+            RsvvX( get_BEptr()->RsvvX_ref__BOSS()),
+            LsllX( get_BEptr()->LsllX_ref__BOSS()),
+            RsllX( get_BEptr()->RsllX_ref__BOSS()),
+            LsvlX( get_BEptr()->LsvlX_ref__BOSS()),
+            RsvlX( get_BEptr()->RsvlX_ref__BOSS()),
+            LslvX( get_BEptr()->LslvX_ref__BOSS()),
+            RslvX( get_BEptr()->RslvX_ref__BOSS()),
+            rvLLE( get_BEptr()->rvLLE_ref__BOSS()),
+            rvLQD( get_BEptr()->rvLQD_ref__BOSS()),
+            rvUDD( get_BEptr()->rvUDD_ref__BOSS()),
+            isLLE( get_BEptr()->isLLE_ref__BOSS()),
+            isLQD( get_BEptr()->isLQD_ref__BOSS()),
+            isUDD( get_BEptr()->isUDD_ref__BOSS()),
+            Rusq( get_BEptr()->Rusq_ref__BOSS()),
+            Rdsq( get_BEptr()->Rdsq_ref__BOSS()),
+            Rsl( get_BEptr()->Rsl_ref__BOSS()),
+            Rsv( get_BEptr()->Rsv_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::CoupSUSY::CoupSUSY(Pythia8::Abstract_CoupSUSY* in) :
-            WrapperBase<Pythia8::Abstract_CoupSUSY>(in),
-            Couplings(wrapperbase::BEptr),
-            isInit(wrapperbase::BEptr->isInit_ref__BOSS()),
-            isNMSSM(wrapperbase::BEptr->isNMSSM_ref__BOSS()),
-            mWpole(wrapperbase::BEptr->mWpole_ref__BOSS()),
-            wWpole(wrapperbase::BEptr->wWpole_ref__BOSS()),
-            mZpole(wrapperbase::BEptr->mZpole_ref__BOSS()),
-            wZpole(wrapperbase::BEptr->wZpole_ref__BOSS()),
-            mW(wrapperbase::BEptr->mW_ref__BOSS()),
-            mZ(wrapperbase::BEptr->mZ_ref__BOSS()),
-            sin2W(wrapperbase::BEptr->sin2W_ref__BOSS()),
-            sinW(wrapperbase::BEptr->sinW_ref__BOSS()),
-            cosW(wrapperbase::BEptr->cosW_ref__BOSS()),
-            tanb(wrapperbase::BEptr->tanb_ref__BOSS()),
-            cosb(wrapperbase::BEptr->cosb_ref__BOSS()),
-            sinb(wrapperbase::BEptr->sinb_ref__BOSS()),
-            muHiggs(wrapperbase::BEptr->muHiggs_ref__BOSS()),
-            alphaHiggs(wrapperbase::BEptr->alphaHiggs_ref__BOSS()),
-            mAHiggs(wrapperbase::BEptr->mAHiggs_ref__BOSS()),
-            LsddG(wrapperbase::BEptr->LsddG_ref__BOSS()),
-            RsddG(wrapperbase::BEptr->RsddG_ref__BOSS()),
-            LsuuG(wrapperbase::BEptr->LsuuG_ref__BOSS()),
-            RsuuG(wrapperbase::BEptr->RsuuG_ref__BOSS()),
-            OLpp(wrapperbase::BEptr->OLpp_ref__BOSS()),
-            ORpp(wrapperbase::BEptr->ORpp_ref__BOSS()),
-            OLp(wrapperbase::BEptr->OLp_ref__BOSS()),
-            ORp(wrapperbase::BEptr->ORp_ref__BOSS()),
-            OL(wrapperbase::BEptr->OL_ref__BOSS()),
-            OR(wrapperbase::BEptr->OR_ref__BOSS()),
-            LqqZ(wrapperbase::BEptr->LqqZ_ref__BOSS()),
-            RqqZ(wrapperbase::BEptr->RqqZ_ref__BOSS()),
-            LsdsdZ(wrapperbase::BEptr->LsdsdZ_ref__BOSS()),
-            RsdsdZ(wrapperbase::BEptr->RsdsdZ_ref__BOSS()),
-            LsusuZ(wrapperbase::BEptr->LsusuZ_ref__BOSS()),
-            RsusuZ(wrapperbase::BEptr->RsusuZ_ref__BOSS()),
-            LudW(wrapperbase::BEptr->LudW_ref__BOSS()),
-            RudW(wrapperbase::BEptr->RudW_ref__BOSS()),
-            LsusdW(wrapperbase::BEptr->LsusdW_ref__BOSS()),
-            RsusdW(wrapperbase::BEptr->RsusdW_ref__BOSS()),
-            LsddX(wrapperbase::BEptr->LsddX_ref__BOSS()),
-            RsddX(wrapperbase::BEptr->RsddX_ref__BOSS()),
-            LsuuX(wrapperbase::BEptr->LsuuX_ref__BOSS()),
-            RsuuX(wrapperbase::BEptr->RsuuX_ref__BOSS()),
-            LsduX(wrapperbase::BEptr->LsduX_ref__BOSS()),
-            RsduX(wrapperbase::BEptr->RsduX_ref__BOSS()),
-            LsudX(wrapperbase::BEptr->LsudX_ref__BOSS()),
-            RsudX(wrapperbase::BEptr->RsudX_ref__BOSS()),
-            LllZ(wrapperbase::BEptr->LllZ_ref__BOSS()),
-            RllZ(wrapperbase::BEptr->RllZ_ref__BOSS()),
-            LlvW(wrapperbase::BEptr->LlvW_ref__BOSS()),
-            RlvW(wrapperbase::BEptr->RlvW_ref__BOSS()),
-            LslslZ(wrapperbase::BEptr->LslslZ_ref__BOSS()),
-            RslslZ(wrapperbase::BEptr->RslslZ_ref__BOSS()),
-            LsvsvZ(wrapperbase::BEptr->LsvsvZ_ref__BOSS()),
-            RsvsvZ(wrapperbase::BEptr->RsvsvZ_ref__BOSS()),
-            LslsvW(wrapperbase::BEptr->LslsvW_ref__BOSS()),
-            RslsvW(wrapperbase::BEptr->RslsvW_ref__BOSS()),
-            LsvvX(wrapperbase::BEptr->LsvvX_ref__BOSS()),
-            RsvvX(wrapperbase::BEptr->RsvvX_ref__BOSS()),
-            LsllX(wrapperbase::BEptr->LsllX_ref__BOSS()),
-            RsllX(wrapperbase::BEptr->RsllX_ref__BOSS()),
-            LsvlX(wrapperbase::BEptr->LsvlX_ref__BOSS()),
-            RsvlX(wrapperbase::BEptr->RsvlX_ref__BOSS()),
-            LslvX(wrapperbase::BEptr->LslvX_ref__BOSS()),
-            RslvX(wrapperbase::BEptr->RslvX_ref__BOSS()),
-            rvLLE(wrapperbase::BEptr->rvLLE_ref__BOSS()),
-            rvLQD(wrapperbase::BEptr->rvLQD_ref__BOSS()),
-            rvUDD(wrapperbase::BEptr->rvUDD_ref__BOSS()),
-            isLLE(wrapperbase::BEptr->isLLE_ref__BOSS()),
-            isLQD(wrapperbase::BEptr->isLQD_ref__BOSS()),
-            isUDD(wrapperbase::BEptr->isUDD_ref__BOSS()),
-            Rusq(wrapperbase::BEptr->Rusq_ref__BOSS()),
-            Rdsq(wrapperbase::BEptr->Rdsq_ref__BOSS()),
-            Rsl(wrapperbase::BEptr->Rsl_ref__BOSS()),
-            Rsv(wrapperbase::BEptr->Rsv_ref__BOSS())
+            Couplings(in),
+            isInit( get_BEptr()->isInit_ref__BOSS()),
+            isNMSSM( get_BEptr()->isNMSSM_ref__BOSS()),
+            mWpole( get_BEptr()->mWpole_ref__BOSS()),
+            wWpole( get_BEptr()->wWpole_ref__BOSS()),
+            mZpole( get_BEptr()->mZpole_ref__BOSS()),
+            wZpole( get_BEptr()->wZpole_ref__BOSS()),
+            mW( get_BEptr()->mW_ref__BOSS()),
+            mZ( get_BEptr()->mZ_ref__BOSS()),
+            sin2W( get_BEptr()->sin2W_ref__BOSS()),
+            sinW( get_BEptr()->sinW_ref__BOSS()),
+            cosW( get_BEptr()->cosW_ref__BOSS()),
+            tanb( get_BEptr()->tanb_ref__BOSS()),
+            cosb( get_BEptr()->cosb_ref__BOSS()),
+            sinb( get_BEptr()->sinb_ref__BOSS()),
+            muHiggs( get_BEptr()->muHiggs_ref__BOSS()),
+            alphaHiggs( get_BEptr()->alphaHiggs_ref__BOSS()),
+            mAHiggs( get_BEptr()->mAHiggs_ref__BOSS()),
+            LsddG( get_BEptr()->LsddG_ref__BOSS()),
+            RsddG( get_BEptr()->RsddG_ref__BOSS()),
+            LsuuG( get_BEptr()->LsuuG_ref__BOSS()),
+            RsuuG( get_BEptr()->RsuuG_ref__BOSS()),
+            OLpp( get_BEptr()->OLpp_ref__BOSS()),
+            ORpp( get_BEptr()->ORpp_ref__BOSS()),
+            OLp( get_BEptr()->OLp_ref__BOSS()),
+            ORp( get_BEptr()->ORp_ref__BOSS()),
+            OL( get_BEptr()->OL_ref__BOSS()),
+            OR( get_BEptr()->OR_ref__BOSS()),
+            LqqZ( get_BEptr()->LqqZ_ref__BOSS()),
+            RqqZ( get_BEptr()->RqqZ_ref__BOSS()),
+            LsdsdZ( get_BEptr()->LsdsdZ_ref__BOSS()),
+            RsdsdZ( get_BEptr()->RsdsdZ_ref__BOSS()),
+            LsusuZ( get_BEptr()->LsusuZ_ref__BOSS()),
+            RsusuZ( get_BEptr()->RsusuZ_ref__BOSS()),
+            LudW( get_BEptr()->LudW_ref__BOSS()),
+            RudW( get_BEptr()->RudW_ref__BOSS()),
+            LsusdW( get_BEptr()->LsusdW_ref__BOSS()),
+            RsusdW( get_BEptr()->RsusdW_ref__BOSS()),
+            LsddX( get_BEptr()->LsddX_ref__BOSS()),
+            RsddX( get_BEptr()->RsddX_ref__BOSS()),
+            LsuuX( get_BEptr()->LsuuX_ref__BOSS()),
+            RsuuX( get_BEptr()->RsuuX_ref__BOSS()),
+            LsduX( get_BEptr()->LsduX_ref__BOSS()),
+            RsduX( get_BEptr()->RsduX_ref__BOSS()),
+            LsudX( get_BEptr()->LsudX_ref__BOSS()),
+            RsudX( get_BEptr()->RsudX_ref__BOSS()),
+            LllZ( get_BEptr()->LllZ_ref__BOSS()),
+            RllZ( get_BEptr()->RllZ_ref__BOSS()),
+            LlvW( get_BEptr()->LlvW_ref__BOSS()),
+            RlvW( get_BEptr()->RlvW_ref__BOSS()),
+            LslslZ( get_BEptr()->LslslZ_ref__BOSS()),
+            RslslZ( get_BEptr()->RslslZ_ref__BOSS()),
+            LsvsvZ( get_BEptr()->LsvsvZ_ref__BOSS()),
+            RsvsvZ( get_BEptr()->RsvsvZ_ref__BOSS()),
+            LslsvW( get_BEptr()->LslsvW_ref__BOSS()),
+            RslsvW( get_BEptr()->RslsvW_ref__BOSS()),
+            LsvvX( get_BEptr()->LsvvX_ref__BOSS()),
+            RsvvX( get_BEptr()->RsvvX_ref__BOSS()),
+            LsllX( get_BEptr()->LsllX_ref__BOSS()),
+            RsllX( get_BEptr()->RsllX_ref__BOSS()),
+            LsvlX( get_BEptr()->LsvlX_ref__BOSS()),
+            RsvlX( get_BEptr()->RsvlX_ref__BOSS()),
+            LslvX( get_BEptr()->LslvX_ref__BOSS()),
+            RslvX( get_BEptr()->RslvX_ref__BOSS()),
+            rvLLE( get_BEptr()->rvLLE_ref__BOSS()),
+            rvLQD( get_BEptr()->rvLQD_ref__BOSS()),
+            rvUDD( get_BEptr()->rvUDD_ref__BOSS()),
+            isLLE( get_BEptr()->isLLE_ref__BOSS()),
+            isLQD( get_BEptr()->isLQD_ref__BOSS()),
+            isUDD( get_BEptr()->isUDD_ref__BOSS()),
+            Rusq( get_BEptr()->Rusq_ref__BOSS()),
+            Rdsq( get_BEptr()->Rdsq_ref__BOSS()),
+            Rsl( get_BEptr()->Rsl_ref__BOSS()),
+            Rsv( get_BEptr()->Rsv_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::CoupSUSY::CoupSUSY(Pythia8::Abstract_CoupSUSY* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_CoupSUSY>(in, true),
-            Couplings(wrapperbase::BEptr),
-            isInit(wrapperbase::BEptr->isInit_ref__BOSS()),
-            isNMSSM(wrapperbase::BEptr->isNMSSM_ref__BOSS()),
-            mWpole(wrapperbase::BEptr->mWpole_ref__BOSS()),
-            wWpole(wrapperbase::BEptr->wWpole_ref__BOSS()),
-            mZpole(wrapperbase::BEptr->mZpole_ref__BOSS()),
-            wZpole(wrapperbase::BEptr->wZpole_ref__BOSS()),
-            mW(wrapperbase::BEptr->mW_ref__BOSS()),
-            mZ(wrapperbase::BEptr->mZ_ref__BOSS()),
-            sin2W(wrapperbase::BEptr->sin2W_ref__BOSS()),
-            sinW(wrapperbase::BEptr->sinW_ref__BOSS()),
-            cosW(wrapperbase::BEptr->cosW_ref__BOSS()),
-            tanb(wrapperbase::BEptr->tanb_ref__BOSS()),
-            cosb(wrapperbase::BEptr->cosb_ref__BOSS()),
-            sinb(wrapperbase::BEptr->sinb_ref__BOSS()),
-            muHiggs(wrapperbase::BEptr->muHiggs_ref__BOSS()),
-            alphaHiggs(wrapperbase::BEptr->alphaHiggs_ref__BOSS()),
-            mAHiggs(wrapperbase::BEptr->mAHiggs_ref__BOSS()),
-            LsddG(wrapperbase::BEptr->LsddG_ref__BOSS()),
-            RsddG(wrapperbase::BEptr->RsddG_ref__BOSS()),
-            LsuuG(wrapperbase::BEptr->LsuuG_ref__BOSS()),
-            RsuuG(wrapperbase::BEptr->RsuuG_ref__BOSS()),
-            OLpp(wrapperbase::BEptr->OLpp_ref__BOSS()),
-            ORpp(wrapperbase::BEptr->ORpp_ref__BOSS()),
-            OLp(wrapperbase::BEptr->OLp_ref__BOSS()),
-            ORp(wrapperbase::BEptr->ORp_ref__BOSS()),
-            OL(wrapperbase::BEptr->OL_ref__BOSS()),
-            OR(wrapperbase::BEptr->OR_ref__BOSS()),
-            LqqZ(wrapperbase::BEptr->LqqZ_ref__BOSS()),
-            RqqZ(wrapperbase::BEptr->RqqZ_ref__BOSS()),
-            LsdsdZ(wrapperbase::BEptr->LsdsdZ_ref__BOSS()),
-            RsdsdZ(wrapperbase::BEptr->RsdsdZ_ref__BOSS()),
-            LsusuZ(wrapperbase::BEptr->LsusuZ_ref__BOSS()),
-            RsusuZ(wrapperbase::BEptr->RsusuZ_ref__BOSS()),
-            LudW(wrapperbase::BEptr->LudW_ref__BOSS()),
-            RudW(wrapperbase::BEptr->RudW_ref__BOSS()),
-            LsusdW(wrapperbase::BEptr->LsusdW_ref__BOSS()),
-            RsusdW(wrapperbase::BEptr->RsusdW_ref__BOSS()),
-            LsddX(wrapperbase::BEptr->LsddX_ref__BOSS()),
-            RsddX(wrapperbase::BEptr->RsddX_ref__BOSS()),
-            LsuuX(wrapperbase::BEptr->LsuuX_ref__BOSS()),
-            RsuuX(wrapperbase::BEptr->RsuuX_ref__BOSS()),
-            LsduX(wrapperbase::BEptr->LsduX_ref__BOSS()),
-            RsduX(wrapperbase::BEptr->RsduX_ref__BOSS()),
-            LsudX(wrapperbase::BEptr->LsudX_ref__BOSS()),
-            RsudX(wrapperbase::BEptr->RsudX_ref__BOSS()),
-            LllZ(wrapperbase::BEptr->LllZ_ref__BOSS()),
-            RllZ(wrapperbase::BEptr->RllZ_ref__BOSS()),
-            LlvW(wrapperbase::BEptr->LlvW_ref__BOSS()),
-            RlvW(wrapperbase::BEptr->RlvW_ref__BOSS()),
-            LslslZ(wrapperbase::BEptr->LslslZ_ref__BOSS()),
-            RslslZ(wrapperbase::BEptr->RslslZ_ref__BOSS()),
-            LsvsvZ(wrapperbase::BEptr->LsvsvZ_ref__BOSS()),
-            RsvsvZ(wrapperbase::BEptr->RsvsvZ_ref__BOSS()),
-            LslsvW(wrapperbase::BEptr->LslsvW_ref__BOSS()),
-            RslsvW(wrapperbase::BEptr->RslsvW_ref__BOSS()),
-            LsvvX(wrapperbase::BEptr->LsvvX_ref__BOSS()),
-            RsvvX(wrapperbase::BEptr->RsvvX_ref__BOSS()),
-            LsllX(wrapperbase::BEptr->LsllX_ref__BOSS()),
-            RsllX(wrapperbase::BEptr->RsllX_ref__BOSS()),
-            LsvlX(wrapperbase::BEptr->LsvlX_ref__BOSS()),
-            RsvlX(wrapperbase::BEptr->RsvlX_ref__BOSS()),
-            LslvX(wrapperbase::BEptr->LslvX_ref__BOSS()),
-            RslvX(wrapperbase::BEptr->RslvX_ref__BOSS()),
-            rvLLE(wrapperbase::BEptr->rvLLE_ref__BOSS()),
-            rvLQD(wrapperbase::BEptr->rvLQD_ref__BOSS()),
-            rvUDD(wrapperbase::BEptr->rvUDD_ref__BOSS()),
-            isLLE(wrapperbase::BEptr->isLLE_ref__BOSS()),
-            isLQD(wrapperbase::BEptr->isLQD_ref__BOSS()),
-            isUDD(wrapperbase::BEptr->isUDD_ref__BOSS()),
-            Rusq(wrapperbase::BEptr->Rusq_ref__BOSS()),
-            Rdsq(wrapperbase::BEptr->Rdsq_ref__BOSS()),
-            Rsl(wrapperbase::BEptr->Rsl_ref__BOSS()),
-            Rsv(wrapperbase::BEptr->Rsv_ref__BOSS())
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::CoupSUSY::CoupSUSY(const CoupSUSY& in) :
-            WrapperBase<Pythia8::Abstract_CoupSUSY>(in),
-            Couplings(wrapperbase::BEptr),
-            isInit(wrapperbase::BEptr->isInit_ref__BOSS()),
-            isNMSSM(wrapperbase::BEptr->isNMSSM_ref__BOSS()),
-            mWpole(wrapperbase::BEptr->mWpole_ref__BOSS()),
-            wWpole(wrapperbase::BEptr->wWpole_ref__BOSS()),
-            mZpole(wrapperbase::BEptr->mZpole_ref__BOSS()),
-            wZpole(wrapperbase::BEptr->wZpole_ref__BOSS()),
-            mW(wrapperbase::BEptr->mW_ref__BOSS()),
-            mZ(wrapperbase::BEptr->mZ_ref__BOSS()),
-            sin2W(wrapperbase::BEptr->sin2W_ref__BOSS()),
-            sinW(wrapperbase::BEptr->sinW_ref__BOSS()),
-            cosW(wrapperbase::BEptr->cosW_ref__BOSS()),
-            tanb(wrapperbase::BEptr->tanb_ref__BOSS()),
-            cosb(wrapperbase::BEptr->cosb_ref__BOSS()),
-            sinb(wrapperbase::BEptr->sinb_ref__BOSS()),
-            muHiggs(wrapperbase::BEptr->muHiggs_ref__BOSS()),
-            alphaHiggs(wrapperbase::BEptr->alphaHiggs_ref__BOSS()),
-            mAHiggs(wrapperbase::BEptr->mAHiggs_ref__BOSS()),
-            LsddG(wrapperbase::BEptr->LsddG_ref__BOSS()),
-            RsddG(wrapperbase::BEptr->RsddG_ref__BOSS()),
-            LsuuG(wrapperbase::BEptr->LsuuG_ref__BOSS()),
-            RsuuG(wrapperbase::BEptr->RsuuG_ref__BOSS()),
-            OLpp(wrapperbase::BEptr->OLpp_ref__BOSS()),
-            ORpp(wrapperbase::BEptr->ORpp_ref__BOSS()),
-            OLp(wrapperbase::BEptr->OLp_ref__BOSS()),
-            ORp(wrapperbase::BEptr->ORp_ref__BOSS()),
-            OL(wrapperbase::BEptr->OL_ref__BOSS()),
-            OR(wrapperbase::BEptr->OR_ref__BOSS()),
-            LqqZ(wrapperbase::BEptr->LqqZ_ref__BOSS()),
-            RqqZ(wrapperbase::BEptr->RqqZ_ref__BOSS()),
-            LsdsdZ(wrapperbase::BEptr->LsdsdZ_ref__BOSS()),
-            RsdsdZ(wrapperbase::BEptr->RsdsdZ_ref__BOSS()),
-            LsusuZ(wrapperbase::BEptr->LsusuZ_ref__BOSS()),
-            RsusuZ(wrapperbase::BEptr->RsusuZ_ref__BOSS()),
-            LudW(wrapperbase::BEptr->LudW_ref__BOSS()),
-            RudW(wrapperbase::BEptr->RudW_ref__BOSS()),
-            LsusdW(wrapperbase::BEptr->LsusdW_ref__BOSS()),
-            RsusdW(wrapperbase::BEptr->RsusdW_ref__BOSS()),
-            LsddX(wrapperbase::BEptr->LsddX_ref__BOSS()),
-            RsddX(wrapperbase::BEptr->RsddX_ref__BOSS()),
-            LsuuX(wrapperbase::BEptr->LsuuX_ref__BOSS()),
-            RsuuX(wrapperbase::BEptr->RsuuX_ref__BOSS()),
-            LsduX(wrapperbase::BEptr->LsduX_ref__BOSS()),
-            RsduX(wrapperbase::BEptr->RsduX_ref__BOSS()),
-            LsudX(wrapperbase::BEptr->LsudX_ref__BOSS()),
-            RsudX(wrapperbase::BEptr->RsudX_ref__BOSS()),
-            LllZ(wrapperbase::BEptr->LllZ_ref__BOSS()),
-            RllZ(wrapperbase::BEptr->RllZ_ref__BOSS()),
-            LlvW(wrapperbase::BEptr->LlvW_ref__BOSS()),
-            RlvW(wrapperbase::BEptr->RlvW_ref__BOSS()),
-            LslslZ(wrapperbase::BEptr->LslslZ_ref__BOSS()),
-            RslslZ(wrapperbase::BEptr->RslslZ_ref__BOSS()),
-            LsvsvZ(wrapperbase::BEptr->LsvsvZ_ref__BOSS()),
-            RsvsvZ(wrapperbase::BEptr->RsvsvZ_ref__BOSS()),
-            LslsvW(wrapperbase::BEptr->LslsvW_ref__BOSS()),
-            RslsvW(wrapperbase::BEptr->RslsvW_ref__BOSS()),
-            LsvvX(wrapperbase::BEptr->LsvvX_ref__BOSS()),
-            RsvvX(wrapperbase::BEptr->RsvvX_ref__BOSS()),
-            LsllX(wrapperbase::BEptr->LsllX_ref__BOSS()),
-            RsllX(wrapperbase::BEptr->RsllX_ref__BOSS()),
-            LsvlX(wrapperbase::BEptr->LsvlX_ref__BOSS()),
-            RsvlX(wrapperbase::BEptr->RsvlX_ref__BOSS()),
-            LslvX(wrapperbase::BEptr->LslvX_ref__BOSS()),
-            RslvX(wrapperbase::BEptr->RslvX_ref__BOSS()),
-            rvLLE(wrapperbase::BEptr->rvLLE_ref__BOSS()),
-            rvLQD(wrapperbase::BEptr->rvLQD_ref__BOSS()),
-            rvUDD(wrapperbase::BEptr->rvUDD_ref__BOSS()),
-            isLLE(wrapperbase::BEptr->isLLE_ref__BOSS()),
-            isLQD(wrapperbase::BEptr->isLQD_ref__BOSS()),
-            isUDD(wrapperbase::BEptr->isUDD_ref__BOSS()),
-            Rusq(wrapperbase::BEptr->Rusq_ref__BOSS()),
-            Rdsq(wrapperbase::BEptr->Rdsq_ref__BOSS()),
-            Rsl(wrapperbase::BEptr->Rsl_ref__BOSS()),
-            Rsv(wrapperbase::BEptr->Rsv_ref__BOSS())
+            Couplings(in.get_BEptr()->pointer_copy__BOSS()),
+            isInit( get_BEptr()->isInit_ref__BOSS()),
+            isNMSSM( get_BEptr()->isNMSSM_ref__BOSS()),
+            mWpole( get_BEptr()->mWpole_ref__BOSS()),
+            wWpole( get_BEptr()->wWpole_ref__BOSS()),
+            mZpole( get_BEptr()->mZpole_ref__BOSS()),
+            wZpole( get_BEptr()->wZpole_ref__BOSS()),
+            mW( get_BEptr()->mW_ref__BOSS()),
+            mZ( get_BEptr()->mZ_ref__BOSS()),
+            sin2W( get_BEptr()->sin2W_ref__BOSS()),
+            sinW( get_BEptr()->sinW_ref__BOSS()),
+            cosW( get_BEptr()->cosW_ref__BOSS()),
+            tanb( get_BEptr()->tanb_ref__BOSS()),
+            cosb( get_BEptr()->cosb_ref__BOSS()),
+            sinb( get_BEptr()->sinb_ref__BOSS()),
+            muHiggs( get_BEptr()->muHiggs_ref__BOSS()),
+            alphaHiggs( get_BEptr()->alphaHiggs_ref__BOSS()),
+            mAHiggs( get_BEptr()->mAHiggs_ref__BOSS()),
+            LsddG( get_BEptr()->LsddG_ref__BOSS()),
+            RsddG( get_BEptr()->RsddG_ref__BOSS()),
+            LsuuG( get_BEptr()->LsuuG_ref__BOSS()),
+            RsuuG( get_BEptr()->RsuuG_ref__BOSS()),
+            OLpp( get_BEptr()->OLpp_ref__BOSS()),
+            ORpp( get_BEptr()->ORpp_ref__BOSS()),
+            OLp( get_BEptr()->OLp_ref__BOSS()),
+            ORp( get_BEptr()->ORp_ref__BOSS()),
+            OL( get_BEptr()->OL_ref__BOSS()),
+            OR( get_BEptr()->OR_ref__BOSS()),
+            LqqZ( get_BEptr()->LqqZ_ref__BOSS()),
+            RqqZ( get_BEptr()->RqqZ_ref__BOSS()),
+            LsdsdZ( get_BEptr()->LsdsdZ_ref__BOSS()),
+            RsdsdZ( get_BEptr()->RsdsdZ_ref__BOSS()),
+            LsusuZ( get_BEptr()->LsusuZ_ref__BOSS()),
+            RsusuZ( get_BEptr()->RsusuZ_ref__BOSS()),
+            LudW( get_BEptr()->LudW_ref__BOSS()),
+            RudW( get_BEptr()->RudW_ref__BOSS()),
+            LsusdW( get_BEptr()->LsusdW_ref__BOSS()),
+            RsusdW( get_BEptr()->RsusdW_ref__BOSS()),
+            LsddX( get_BEptr()->LsddX_ref__BOSS()),
+            RsddX( get_BEptr()->RsddX_ref__BOSS()),
+            LsuuX( get_BEptr()->LsuuX_ref__BOSS()),
+            RsuuX( get_BEptr()->RsuuX_ref__BOSS()),
+            LsduX( get_BEptr()->LsduX_ref__BOSS()),
+            RsduX( get_BEptr()->RsduX_ref__BOSS()),
+            LsudX( get_BEptr()->LsudX_ref__BOSS()),
+            RsudX( get_BEptr()->RsudX_ref__BOSS()),
+            LllZ( get_BEptr()->LllZ_ref__BOSS()),
+            RllZ( get_BEptr()->RllZ_ref__BOSS()),
+            LlvW( get_BEptr()->LlvW_ref__BOSS()),
+            RlvW( get_BEptr()->RlvW_ref__BOSS()),
+            LslslZ( get_BEptr()->LslslZ_ref__BOSS()),
+            RslslZ( get_BEptr()->RslslZ_ref__BOSS()),
+            LsvsvZ( get_BEptr()->LsvsvZ_ref__BOSS()),
+            RsvsvZ( get_BEptr()->RsvsvZ_ref__BOSS()),
+            LslsvW( get_BEptr()->LslsvW_ref__BOSS()),
+            RslsvW( get_BEptr()->RslsvW_ref__BOSS()),
+            LsvvX( get_BEptr()->LsvvX_ref__BOSS()),
+            RsvvX( get_BEptr()->RsvvX_ref__BOSS()),
+            LsllX( get_BEptr()->LsllX_ref__BOSS()),
+            RsllX( get_BEptr()->RsllX_ref__BOSS()),
+            LsvlX( get_BEptr()->LsvlX_ref__BOSS()),
+            RsvlX( get_BEptr()->RsvlX_ref__BOSS()),
+            LslvX( get_BEptr()->LslvX_ref__BOSS()),
+            RslvX( get_BEptr()->RslvX_ref__BOSS()),
+            rvLLE( get_BEptr()->rvLLE_ref__BOSS()),
+            rvLQD( get_BEptr()->rvLQD_ref__BOSS()),
+            rvUDD( get_BEptr()->rvUDD_ref__BOSS()),
+            isLLE( get_BEptr()->isLLE_ref__BOSS()),
+            isLQD( get_BEptr()->isLQD_ref__BOSS()),
+            isUDD( get_BEptr()->isUDD_ref__BOSS()),
+            Rusq( get_BEptr()->Rusq_ref__BOSS()),
+            Rdsq( get_BEptr()->Rdsq_ref__BOSS()),
+            Rsl( get_BEptr()->Rsl_ref__BOSS()),
+            Rsv( get_BEptr()->Rsv_ref__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::CoupSUSY& CoupSUSY::operator=(const CoupSUSY& in)
         {
-            WrapperBase<Pythia8::Abstract_CoupSUSY>::operator=(in);
-            Couplings::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -427,15 +344,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::CoupSUSY::~CoupSUSY()
         {
-            WrapperBase<Pythia8::Abstract_Couplings>::skip_delete = true;
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::CoupSUSY::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_CoupSUSY* Pythia8::CoupSUSY::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_CoupSUSY*>(BEptr);
         }
-        
     }
     
 }

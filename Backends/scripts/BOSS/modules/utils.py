@@ -77,6 +77,15 @@ def isLoadable(class_el, print_warning=False, check_pure_virtual_members=True):
             infomsg.ClassNotLoadable(class_name['long_templ'], reason).printMessage()
         return is_loadable
 
+    # - Check that class has at least one public constructor.
+    constructor_elements = classutils.getAcceptableConstructors(class_el, skip_copy_constructors=True)
+    if len(constructor_elements) == 0:
+        is_loadable = False
+        if print_warning:
+            reason = "No (acceptable) public constructors identified."
+            infomsg.ClassNotLoadable(class_name['long_templ'], reason).printMessage()
+        return is_loadable
+
     # - Check for pure virtual members.
     if check_pure_virtual_members:
         pure_virtual_members = classutils.pureVirtualMembers(class_el)

@@ -16,231 +16,226 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Member functions: 
         inline void Hist::book(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn, double xMinIn, double xMaxIn)
         {
-            wrapperbase::BEptr->book(titleIn, nBinIn, xMinIn, xMaxIn);
+            get_BEptr()->book(titleIn, nBinIn, xMinIn, xMaxIn);
         }
         
         inline void Hist::book(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn, double xMinIn)
         {
-            wrapperbase::BEptr->book__BOSS(titleIn, nBinIn, xMinIn);
+            get_BEptr()->book__BOSS(titleIn, nBinIn, xMinIn);
         }
         
         inline void Hist::book(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn)
         {
-            wrapperbase::BEptr->book__BOSS(titleIn, nBinIn);
+            get_BEptr()->book__BOSS(titleIn, nBinIn);
         }
         
         inline void Hist::book(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn)
         {
-            wrapperbase::BEptr->book__BOSS(titleIn);
+            get_BEptr()->book__BOSS(titleIn);
         }
         
         inline void Hist::book()
         {
-            wrapperbase::BEptr->book__BOSS();
+            get_BEptr()->book__BOSS();
         }
         
         inline void Hist::name(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn)
         {
-            wrapperbase::BEptr->name(titleIn);
+            get_BEptr()->name(titleIn);
         }
         
         inline void Hist::name()
         {
-            wrapperbase::BEptr->name__BOSS();
+            get_BEptr()->name__BOSS();
         }
         
         inline void Hist::null()
         {
-            wrapperbase::BEptr->null();
+            get_BEptr()->null();
         }
         
         inline void Hist::fill(double x, double w)
         {
-            wrapperbase::BEptr->fill(x, w);
+            get_BEptr()->fill(x, w);
         }
         
         inline void Hist::fill(double x)
         {
-            wrapperbase::BEptr->fill__BOSS(x);
+            get_BEptr()->fill__BOSS(x);
         }
         
         inline void Hist::table(::std::basic_ostream<char, std::char_traits<char> >& os, bool printOverUnder, bool xMidBin) const
         {
-            wrapperbase::BEptr->table(os, printOverUnder, xMidBin);
+            get_BEptr()->table(os, printOverUnder, xMidBin);
         }
         
         inline void Hist::table(::std::basic_ostream<char, std::char_traits<char> >& os, bool printOverUnder) const
         {
-            wrapperbase::BEptr->table__BOSS(os, printOverUnder);
+            get_BEptr()->table__BOSS(os, printOverUnder);
         }
         
         inline void Hist::table(::std::basic_ostream<char, std::char_traits<char> >& os) const
         {
-            wrapperbase::BEptr->table__BOSS(os);
+            get_BEptr()->table__BOSS(os);
         }
         
         inline void Hist::table() const
         {
-            wrapperbase::BEptr->table__BOSS();
+            get_BEptr()->table__BOSS();
         }
         
         inline void Hist::table(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool printOverUnder, bool xMidBin) const
         {
-            wrapperbase::BEptr->table(fileName, printOverUnder, xMidBin);
+            get_BEptr()->table(fileName, printOverUnder, xMidBin);
         }
         
         inline void Hist::table(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName, bool printOverUnder) const
         {
-            wrapperbase::BEptr->table__BOSS(fileName, printOverUnder);
+            get_BEptr()->table__BOSS(fileName, printOverUnder);
         }
         
         inline void Hist::table(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > fileName) const
         {
-            wrapperbase::BEptr->table__BOSS(fileName);
+            get_BEptr()->table__BOSS(fileName);
         }
         
         inline double Hist::getBinContent(int iBin) const
         {
-            return wrapperbase::BEptr->getBinContent(iBin);
+            return get_BEptr()->getBinContent(iBin);
         }
         
         inline int Hist::getEntries() const
         {
-            return wrapperbase::BEptr->getEntries();
+            return get_BEptr()->getEntries();
         }
         
-        inline bool Hist::sameSize(const WrapperBase< Pythia8::Abstract_Hist >& h) const
+        inline bool Hist::sameSize(const Pythia8::Hist& h) const
         {
-            return wrapperbase::BEptr->sameSize__BOSS(*h.BEptr);
+            return get_BEptr()->sameSize__BOSS(*h.get_BEptr());
         }
         
         inline void Hist::takeLog(bool tenLog)
         {
-            wrapperbase::BEptr->takeLog(tenLog);
+            get_BEptr()->takeLog(tenLog);
         }
         
         inline void Hist::takeLog()
         {
-            wrapperbase::BEptr->takeLog__BOSS();
+            get_BEptr()->takeLog__BOSS();
         }
         
         inline void Hist::takeSqrt()
         {
-            wrapperbase::BEptr->takeSqrt();
+            get_BEptr()->takeSqrt();
         }
         
         inline Pythia8::Hist& Hist::operator+=(const Pythia8::Hist& h)
         {
-            return wrapperbase::reference_returner< Pythia8::Hist, Pythia8::Abstract_Hist >( wrapperbase::BEptr->operator_plus_equal__BOSS(*h.BEptr) );
+            return get_BEptr()->operator_plus_equal__BOSS(*h.get_BEptr()).get_init_wref();
         }
         
         inline Pythia8::Hist& Hist::operator-=(const Pythia8::Hist& h)
         {
-            return wrapperbase::reference_returner< Pythia8::Hist, Pythia8::Abstract_Hist >( wrapperbase::BEptr->operator_minus_equal__BOSS(*h.BEptr) );
+            return get_BEptr()->operator_minus_equal__BOSS(*h.get_BEptr()).get_init_wref();
         }
         
         inline Pythia8::Hist& Hist::operator*=(const Pythia8::Hist& h)
         {
-            return wrapperbase::reference_returner< Pythia8::Hist, Pythia8::Abstract_Hist >( wrapperbase::BEptr->operator_asterix_equal__BOSS(*h.BEptr) );
+            return get_BEptr()->operator_asterix_equal__BOSS(*h.get_BEptr()).get_init_wref();
         }
         
         inline Pythia8::Hist& Hist::operator/=(const Pythia8::Hist& h)
         {
-            return wrapperbase::reference_returner< Pythia8::Hist, Pythia8::Abstract_Hist >( wrapperbase::BEptr->operator_slash_equal__BOSS(*h.BEptr) );
+            return get_BEptr()->operator_slash_equal__BOSS(*h.get_BEptr()).get_init_wref();
         }
         
         inline Pythia8::Hist& Hist::operator+=(double f)
         {
-            return wrapperbase::reference_returner< Pythia8::Hist, Pythia8::Abstract_Hist >( wrapperbase::BEptr->operator_plus_equal__BOSS(f) );
+            return get_BEptr()->operator_plus_equal__BOSS(f).get_init_wref();
         }
         
         inline Pythia8::Hist& Hist::operator-=(double f)
         {
-            return wrapperbase::reference_returner< Pythia8::Hist, Pythia8::Abstract_Hist >( wrapperbase::BEptr->operator_minus_equal__BOSS(f) );
+            return get_BEptr()->operator_minus_equal__BOSS(f).get_init_wref();
         }
         
         inline Pythia8::Hist& Hist::operator*=(double f)
         {
-            return wrapperbase::reference_returner< Pythia8::Hist, Pythia8::Abstract_Hist >( wrapperbase::BEptr->operator_asterix_equal__BOSS(f) );
+            return get_BEptr()->operator_asterix_equal__BOSS(f).get_init_wref();
         }
         
         inline Pythia8::Hist& Hist::operator/=(double f)
         {
-            return wrapperbase::reference_returner< Pythia8::Hist, Pythia8::Abstract_Hist >( wrapperbase::BEptr->operator_slash_equal__BOSS(f) );
+            return get_BEptr()->operator_slash_equal__BOSS(f).get_init_wref();
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::Hist::Hist() :
-            WrapperBase<Pythia8::Abstract_Hist>(__factory0())
+            WrapperBase(__factory0())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Hist::Hist(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn, double xMinIn, double xMaxIn) :
-            WrapperBase<Pythia8::Abstract_Hist>(__factory1(titleIn, nBinIn, xMinIn, xMaxIn))
+            WrapperBase(__factory1(titleIn, nBinIn, xMinIn, xMaxIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Hist::Hist(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn, double xMinIn) :
-            WrapperBase<Pythia8::Abstract_Hist>(__factory2(titleIn, nBinIn, xMinIn))
+            WrapperBase(__factory2(titleIn, nBinIn, xMinIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Hist::Hist(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, int nBinIn) :
-            WrapperBase<Pythia8::Abstract_Hist>(__factory3(titleIn, nBinIn))
+            WrapperBase(__factory3(titleIn, nBinIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Hist::Hist(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn) :
-            WrapperBase<Pythia8::Abstract_Hist>(__factory4(titleIn))
+            WrapperBase(__factory4(titleIn))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         inline Pythia8::Hist::Hist(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > titleIn, const Pythia8::Hist& h) :
-            WrapperBase<Pythia8::Abstract_Hist>(__factory5(titleIn, h))
+            WrapperBase(__factory5(titleIn, h))
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Hist::Hist(Pythia8::Abstract_Hist* in) :
-            WrapperBase<Pythia8::Abstract_Hist>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::Hist::Hist(Pythia8::Abstract_Hist* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_Hist>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::Hist::Hist(const Hist& in) :
-            WrapperBase<Pythia8::Abstract_Hist>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::Hist& Hist::operator=(const Hist& in)
         {
-            WrapperBase<Pythia8::Abstract_Hist>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -248,14 +243,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Hist::~Hist()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::Hist::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_Hist* Pythia8::Hist::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_Hist*>(BEptr);
         }
-        
     }
     
 }

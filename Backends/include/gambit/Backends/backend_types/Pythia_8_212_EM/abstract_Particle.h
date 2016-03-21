@@ -13,8 +13,18 @@
 
 #include "identification.hpp"
 
+#include <iostream>
+
+// Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Particle*, bool);
+
+
 // Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Particle*);
+
+
+// Forward declaration for wrapper_creator.
+void wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_Particle*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -23,11 +33,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_Particle : virtual public AbstractBase
+        class Abstract_Particle : public virtual AbstractBase
         {
             public:
     
-                virtual Pythia8::Abstract_Particle* operator_equal__BOSS(const Pythia8::Abstract_Particle&) =0;
+                virtual Pythia8::Abstract_Particle& operator_equal__BOSS(const Pythia8::Abstract_Particle&) =0;
     
                 virtual void setEvtPtr__BOSS(Pythia8::Abstract_Event*) =0;
     
@@ -293,7 +303,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool isHadron() const =0;
     
-                virtual Pythia8::Abstract_ParticleDataEntry* particleDataEntry__BOSS() const =0;
+                virtual Pythia8::Abstract_ParticleDataEntry& particleDataEntry__BOSS() const =0;
     
                 virtual void rescale3(double) =0;
     
@@ -320,35 +330,68 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual void offsetCol(int) =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_Particle*) =0;
-                virtual Abstract_Particle* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_Particle*) =0;
+                virtual Abstract_Particle* pointer_copy__BOSS() =0;
     
             private:
-                mutable Particle* wptr;
+                Particle* wptr;
+                bool delete_wrapper;
+            public:
+                Particle* get_wptr() { return wptr; }
+                void set_wptr(Particle* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_Particle()
                 {
+                    // std::cerr << "DEBUG: (GAMBIT) Abstract_Particle() : created new instance at: " << this << std::endl;
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(Particle* wptr_in)
+                Abstract_Particle(const Abstract_Particle&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    // std::cerr << "DEBUG: (GAMBIT) Abstract_Particle(Abstract_Particle&) : created new instance at: " << this << std::endl;
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                Particle* wrapper__BOSS()
+                Abstract_Particle& operator=(const Abstract_Particle&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    if (wptr == 0)
+                    {
+                        wrapper_creator(this);
+                        delete_wrapper = true;
+                    }
+                }
+    
+                Particle* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                Particle& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_Particle()
                 {
-                    if (can_delete_wrapper())
+                    // std::cerr << "DEBUG: (GAMBIT) ~Abstract_Particle() : destroying instance at: " << this << std::endl;
+                    if (wptr != 0)
                     {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
+                        set_delete_BEptr(wptr, false);
+                        if (delete_wrapper == true)
+                        {
+                            wrapper_deleter(wptr);
+                            wptr = 0;
+                            delete_wrapper = false;
+                        }
                     }
                 }
         };

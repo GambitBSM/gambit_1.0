@@ -22,12 +22,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class SLHAinterface : public WrapperBase<Pythia8::Abstract_SLHAinterface>
+        class SLHAinterface : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_SLHAinterface> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_SLHAinterface>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -35,19 +31,19 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // -- Other member variables: 
             public:
-                Pythia8::SusyLesHouches slha;
-                Pythia8::CoupSUSY coupSUSY;
+                Pythia8::SusyLesHouches& slha;
+                Pythia8::CoupSUSY& coupSUSY;
                 int& meMode;
         
                 // Member functions: 
             public:
-                void setPtr(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn);
+                void setPtr(Pythia8::Info* infoPtrIn);
         
-                void init(WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_Rndm >* rndmPtr, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtr, bool& useSHLAcouplings, ::std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >& ParticleDataBuffer);
+                void init(Pythia8::Settings& settings, Pythia8::Rndm* rndmPtr, Pythia8::Couplings* couplingsPtrIn, Pythia8::ParticleData* particleDataPtr, bool& useSHLAcouplings, ::std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >& ParticleDataBuffer);
         
-                bool initSLHA(WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtr);
+                bool initSLHA(Pythia8::Settings& settings, Pythia8::ParticleData* particleDataPtr);
         
-                void pythia2slha(WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtr);
+                void pythia2slha(Pythia8::ParticleData* particleDataPtr);
         
         
                 // Wrappers for original constructors: 
@@ -56,7 +52,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 SLHAinterface(Pythia8::Abstract_SLHAinterface* in);
-                SLHAinterface(Pythia8::Abstract_SLHAinterface* const & in, bool);
         
                 // Copy constructor: 
                 SLHAinterface(const SLHAinterface& in);
@@ -65,11 +60,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 SLHAinterface& operator=(const SLHAinterface& in);
         
                 // Destructor: 
-                ~SLHAinterface();
+                virtual ~SLHAinterface();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_SLHAinterface* get_BEptr() const;
         
         };
     }

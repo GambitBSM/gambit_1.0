@@ -19,12 +19,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class SusyLesHouches : public WrapperBase<Pythia8::Abstract_SusyLesHouches>
+        class SusyLesHouches : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_SusyLesHouches> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -94,7 +90,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 SusyLesHouches(Pythia8::Abstract_SusyLesHouches* in);
-                SusyLesHouches(Pythia8::Abstract_SusyLesHouches* const & in, bool);
         
                 // Copy constructor: 
                 SusyLesHouches(const SusyLesHouches& in);
@@ -103,11 +98,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 SusyLesHouches& operator=(const SusyLesHouches& in);
         
                 // Destructor: 
-                ~SusyLesHouches();
+                virtual ~SusyLesHouches();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_SusyLesHouches* get_BEptr() const;
         
         };
     }

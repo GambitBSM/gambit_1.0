@@ -18,12 +18,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class SlowJet : public WrapperBase<Pythia8::Abstract_SlowJet>
+        class SlowJet : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_SlowJet> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_SlowJet>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -37,9 +33,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                bool analyze(const WrapperBase< Pythia8::Abstract_Event >& event);
+                bool analyze(const Pythia8::Event& event);
         
-                bool setup(const WrapperBase< Pythia8::Abstract_Event >& event);
+                bool setup(const Pythia8::Event& event);
         
                 bool doStep();
         
@@ -96,7 +92,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 SlowJet(Pythia8::Abstract_SlowJet* in);
-                SlowJet(Pythia8::Abstract_SlowJet* const & in, bool);
         
                 // Copy constructor: 
                 SlowJet(const SlowJet& in);
@@ -105,11 +100,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 SlowJet& operator=(const SlowJet& in);
         
                 // Destructor: 
-                ~SlowJet();
+                virtual ~SlowJet();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_SlowJet* get_BEptr() const;
         
         };
     }

@@ -15,7 +15,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::CoupSUSY*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::CoupSUSY*);
+
+
+// Forward declaration for wrapper_creator.
+void wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_CoupSUSY*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -24,7 +32,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_CoupSUSY : virtual public AbstractBase, virtual public Pythia8::Abstract_Couplings
+        class Abstract_CoupSUSY : virtual public Pythia8::Abstract_Couplings
         {
             public:
     
@@ -203,36 +211,67 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual int typeChar(int) =0;
     
             public:
-                using Pythia8::Abstract_Couplings::pointerAssign__BOSS;
-                virtual void pointerAssign__BOSS(Abstract_CoupSUSY*) =0;
-                virtual Abstract_CoupSUSY* pointerCopy__BOSS() =0;
+                using Pythia8::Abstract_Couplings::pointer_assign__BOSS;
+                virtual void pointer_assign__BOSS(Abstract_CoupSUSY*) =0;
+                virtual Abstract_CoupSUSY* pointer_copy__BOSS() =0;
     
             private:
-                mutable CoupSUSY* wptr;
+                CoupSUSY* wptr;
+                bool delete_wrapper;
+            public:
+                CoupSUSY* get_wptr() { return wptr; }
+                void set_wptr(CoupSUSY* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_CoupSUSY()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(CoupSUSY* wptr_in)
+                Abstract_CoupSUSY(const Abstract_CoupSUSY& in) : 
+                    Pythia8::Abstract_CoupSM(in), Pythia8::Abstract_Couplings(in)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                CoupSUSY* wrapper__BOSS()
+                Abstract_CoupSUSY& operator=(const Abstract_CoupSUSY&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    if (wptr == 0)
+                    {
+                        wrapper_creator(this);
+                        delete_wrapper = true;
+                    }
+                }
+    
+                CoupSUSY* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                CoupSUSY& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_CoupSUSY()
                 {
-                    if (can_delete_wrapper())
+                    if (wptr != 0)
                     {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
+                        set_delete_BEptr(wptr, false);
+                        if (delete_wrapper == true)
+                        {
+                            wrapper_deleter(wptr);
+                            wptr = 0;
+                            delete_wrapper = false;
+                        }
                     }
                 }
         };

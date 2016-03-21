@@ -18,12 +18,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class CoupSM : public WrapperBase<Pythia8::Abstract_CoupSM>
+        class CoupSM : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_CoupSM> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_CoupSM>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -33,7 +29,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void init(WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_Rndm >* rndmPtrIn);
+                void init(Pythia8::Settings& settings, Pythia8::Rndm* rndmPtrIn);
         
                 double alphaS(double scale2);
         
@@ -98,7 +94,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 CoupSM(Pythia8::Abstract_CoupSM* in);
-                CoupSM(Pythia8::Abstract_CoupSM* const & in, bool);
         
                 // Copy constructor: 
                 CoupSM(const CoupSM& in);
@@ -107,11 +102,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 CoupSM& operator=(const CoupSM& in);
         
                 // Destructor: 
-                ~CoupSM();
+                virtual ~CoupSM();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_CoupSM* get_BEptr() const;
         
         };
     }
