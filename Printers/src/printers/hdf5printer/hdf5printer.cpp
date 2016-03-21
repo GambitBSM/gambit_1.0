@@ -608,7 +608,7 @@ namespace Gambit
                           // EDIT! Ok seems that every process needs to do it to get the previous_points. Could split these tasks? 
           //{  
             /* Run checks (and potentially repairs) on existing output file */
-            previous_points = verify_existing_output(tmp_comb_file,group);
+            previous_points = verify_existing_output();
 
             // Use global function get_point_id to fast-forward ScannerBit to the
             // next unused pointID for this rank (actually we give it the highest known, it will iterate itself)

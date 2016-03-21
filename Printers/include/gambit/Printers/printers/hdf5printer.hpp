@@ -241,7 +241,7 @@ namespace Gambit
 
         /// Attempt to read an existing output file, and prepare it for
         /// resumed writing (e.g. fix up dataset lengths if data missing)
-        std::vector<PPIDpair> verify_existing_output(const std::string& file, const std::string& group);
+        std::vector<PPIDpair> verify_existing_output();
 
         /// Search the output directory for temporary files (pre-combination)
         std::vector<std::string> find_temporary_files(const bool error_if_inconsistent=false);
