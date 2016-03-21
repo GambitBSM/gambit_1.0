@@ -187,7 +187,7 @@ namespace Gambit
     }
 
     /// Get directory name from full path+filename (POSIX)
-    std::string dirname(const std::string& path)
+    std::string dir_name(const std::string& path)
     {
        char buffer[1000]; // temporary buffer for dirname to work with (it is a C function)
        path.copy(buffer, path.size()); //TODO: error if path.size()>1000
@@ -197,7 +197,7 @@ namespace Gambit
     }
 
     /// Get file name from full path+filename (POSIX)
-    std::string basename(const std::string& path)
+    std::string base_name(const std::string& path)
     {
        char buffer[1000]; // temporary buffer for basename to work with (it is a C function)
        path.copy(buffer, path.size()); //TODO: error if path.size()>1000
