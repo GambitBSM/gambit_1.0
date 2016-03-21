@@ -1123,7 +1123,7 @@ namespace Gambit
       {
         tmp_file_list << *it << " ";
       }
-      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<group<<" "<<tmp_file_list<<" 2>&1";
+      command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<group<<" "<<tmp_file_list.str()<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
                << "--------------------" << std::endl;
