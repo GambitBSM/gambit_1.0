@@ -244,10 +244,10 @@ namespace Gambit
         std::vector<PPIDpair> verify_existing_output(const std::string& file, const std::string& group);
 
         /// Search the output directory for temporary files (pre-combination)
-        std::vector<std::string> find_temporary_files();
+        std::vector<std::string> find_temporary_files(const bool error_if_inconsistent=false);
 
         /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
-        void combine_output(const int N, const bool resume, const bool finalcombine);
+        void combine_output(const std::vector<std::string> tmp_files, const bool finalcombine);
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type

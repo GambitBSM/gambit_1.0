@@ -680,7 +680,7 @@ namespace Gambit
     }
 
     /// Search the output directory for temporary files (pre-combination)
-    std::vector<std::string> HDF5Printer::find_temporary_files()
+    std::vector<std::string> HDF5Printer::find_temporary_files(const bool error_if_inconsistent)
     {
         // Autodetect temporary files from previous run.
         std::string output_dir = Utils::dir_name(finalfile);
@@ -710,7 +710,22 @@ namespace Gambit
               }
            }
         }
-        // TODO: check if all temporary files found (i.e. if output from some rank is missing)
+        // Check if all temporary files found (i.e. if output from some rank is missing)
+        if(error_if_inconsistent)
+        {
+          std::vector<int> missing;
+          for(int i=0; i<ranks.size(); ++i)
+          {
+            if(std::find(ranks.begin(), ranks.end(), i) == ranks.end())
+            { missing.push_back(i); }
+          }
+          if( missing.size()>0 )
+          {
+             std::ostringstream errmsg;
+             errmsg << "HDF5Printer is attempting to resume from a previous run, but could not locate all the expected temporary output files (found "<<ranks.size()<<" temporary files, but are missing the files from the following ranks: "<<missing<<")! Resuming is therefore not possible; aborting run...";
+             printer_error().raise(LOCAL_INFO, errmsg.str()); 
+          }
+        }
         return result;
     }
 
@@ -738,7 +753,7 @@ namespace Gambit
          if(myRank==0)
          { 
             // Autodetect temporary files from previous run.
-            std::string tmp_files = std::find_temporary_files();
+            std::vector<std::string> tmp_files = find_temporary_files(true);
 
             // Check if temporary files from previous run are readable.
             for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
@@ -774,7 +789,7 @@ namespace Gambit
             logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<file<<"...";
             std::cout << logmsg.str() << std::endl;
             logger() << LogTags::printers << logmsg.str();
-            combine_output(tmp_files,file_readable,false);
+            combine_output(tmp_files,false);
          }
 
          // Open HDF5 file
@@ -1074,7 +1089,7 @@ namespace Gambit
              if(myRank==0)
              {
                 // Make sure all datasets etc are closed before doing this or else errors may occur.
-                combine_output(find_temporary_files(),resume,true); 
+                combine_output(find_temporary_files(true),true); 
              }              
           }
           else
