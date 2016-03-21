@@ -193,8 +193,7 @@ for dsetname,dt in sorted(all_RA_dsets):
 
 # Copy data from separate sync datasets into combined datasets
 nextempty=init_output_length
-for i in range(N):
-   fname = "{0}_temp_{1}".format(rootfname,i)
+for fname in fnames:
    print "Copying sync data from file {0} to file {1}...".format(fname,outfname)
    fin = files[fname]
 
@@ -213,8 +212,7 @@ for i in range(N):
       nextempty+=dset_length
 
 # Copy data from RA datasets into combined dataset
-for i in range(N):
-   fname = "{0}_temp_{1}".format(rootfname,i)
+for fname in fnames:
    fin = files[fname]
    if "RA_MPIrank" in fin[RA_group]:
       print "RA data detected in file {0}; copying it to file {1}...".format(fname,outfname)
@@ -408,9 +406,8 @@ for i in range(N):
 
 
 # If everything has been successful, delete the temporary files
-for i in range(N):
-   fname = "{0}_temp_{1}".format(rootfname,i)
-   print "Deleting temporary HDF5 file...".format(fname,outfname)
+for fname in fnames:
+   print "Deleting temporary HDF5 file {0}...".format(fname)
    os.remove(fname)
 
 print "Data combination completed"
