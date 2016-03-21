@@ -70,7 +70,6 @@ def cantor_pairing(x,y):
 #      runchecks=True
 #   else:
 #      usage()
-python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ...
 
 outfname = sys.argv[1]
 group = sys.argv[2]
