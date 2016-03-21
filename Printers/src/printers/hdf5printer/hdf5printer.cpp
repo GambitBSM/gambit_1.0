@@ -521,53 +521,54 @@ namespace Gambit
          
         if(myRank==0)
         {
+           // Check whether a readable output file exists with the name that we want to use.
+           std::string msg_finalfile;
+           if(HDF5::checkFileReadable(finalfile, msg_finalfile))
+           {
+             if(overwrite_file)
+             {
+                // Note: "not resume" means "start or restart"
+                // Delete existing output file
+                std::ostringstream command;
+                command << "rm -f "<<finalfile;
+                FILE* fp = popen(command.str().c_str(), "r");
+                if(fp==NULL)
+                {
+                   // Error running popen
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_on_restart' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+                else if(pclose(fp)!=0)
+                {
+                   // Command returned exit code!=0, or pclose failed
+                   std::ostringstream errmsg;
+                   errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_on_restart' printer option; target filename is "<<finalfile<<")! Shell command failed to executed successfully, see stderr (command was '"<<command.str()<<"').";
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+                }
+             }
+             else
+             {
+                // File exists, so check if 'group' is readable, and throw error if it exists
+                file_id = HDF5::openFile(finalfile);
+                std::string msg_group;
+                if(HDF5::checkGroupReadable(file_id, group, msg_group))
+                {
+                   // Group already exists, error!
+                   std::ostringstream errmsg;
+                   errmsg << "Error preparing pre-existing output file '"<<finalfile<<"' for writing via hdf5printer! The requested output group '"<<group<<" already exists in this file! Please take one of the following actions:"<<std::endl;
+                   errmsg << "  1. Choose a new group via the 'group' option in the Printer section of your input YAML file;"<<std::endl;
+                   errmsg << "  2. Delete the existing group from '"<<finalfile<<"';"<<std::endl;
+                   errmsg << "  3. Delete the existing output file, or set 'delete_file_on_restart: true' in your input YAML file to give GAMBIT permission to automatically delete it;"<<std::endl;
+                   printer_error().raise(LOCAL_INFO, errmsg.str());
+               }
+                HDF5::closeFile(file_id);
+             }
+           }
+
+           // If we are not in resume mode, need to delete any temporary files left lying around in our target directory from previous incomplete runs 
            if(not resume)
            {
-             std::string msg_finalfile;
-             if(HDF5::checkFileReadable(finalfile, msg_finalfile))
-             {
-               if(overwrite_file)
-               {
-                  // Note: "not resume" means "start or restart"
-                  // Delete existing output file
-                  std::ostringstream command;
-                  command << "rm -f "<<finalfile;
-                  FILE* fp = popen(command.str().c_str(), "r");
-                  if(fp==NULL)
-                  {
-                     // Error running popen
-                     std::ostringstream errmsg;
-                     errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_on_restart' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
-                     printer_error().raise(LOCAL_INFO, errmsg.str());
-                  }
-                  else if(pclose(fp)!=0)
-                  {
-                     // Command returned exit code!=0, or pclose failed
-                     std::ostringstream errmsg;
-                     errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_on_restart' printer option; target filename is "<<finalfile<<")! Shell command failed to executed successfully, see stderr (command was '"<<command.str()<<"').";
-                     printer_error().raise(LOCAL_INFO, errmsg.str());
-                  }
-               }
-               else
-               {
-                  // File exists, so check if 'group' is readable, and throw error if it exists
-                  file_id = HDF5::openFile(finalfile);
-                  std::string msg_group;
-                  if(HDF5::checkGroupReadable(file_id, group, msg_group))
-                  {
-                     // Group already exists, error!
-                     std::ostringstream errmsg;
-                     errmsg << "Error preparing pre-existing output file '"<<finalfile<<"' for writing via hdf5printer! The requested output group '"<<group<<" already exists in this file! Please take one of the following actions:"<<std::endl;
-                     errmsg << "  1. Choose a new group via the 'group' option in the Printer section of your input YAML file;"<<std::endl;
-                     errmsg << "  2. Delete the existing group from '"<<finalfile<<"';"<<std::endl;
-                     errmsg << "  3. Delete the existing output file, or set 'delete_file_on_restart: true' in your input YAML file to give GAMBIT permission to automatically delete it;"<<std::endl;
-                     errmsg << "  4. Remove the '-r' command line flag from your invocation of GAMBIT, to allow GAMBIT to attempt to resume scanning from the existing output.";
-                     printer_error().raise(LOCAL_INFO, errmsg.str());
-                 }
-                  HDF5::closeFile(file_id);
-               }
-             }
- 
              // If everything is ok, delete any existing temporary files, including temporary combined files
              std::vector<std::string> tmp_files = find_temporary_files();
              tmp_files.push_back(file); // Adds temporary combined file to deletion list
@@ -769,41 +770,53 @@ namespace Gambit
             // Autodetect temporary files from previous run.
             std::vector<std::string> tmp_files = find_temporary_files(true);
 
-            // Check if temporary files from previous run are readable.
-            for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
+            if(tmp_files.size()==0)
             {
-               std::string msg2;
-               if(not HDF5::checkFileReadable(*it, msg2))
+               // No temporary files exist
+               // This is ok, could just be starting a new run
+               // But we could also have just finished a run and accidentally tried to continue
+               // it -- the responsibility for checking this is left to the calling code, because
+               // we could also be trying to store the output of this run in a pre-existing hdf5
+               // file, so we cannot assume that a pre-existing file is a problem.
+            }
+            else 
+            {
+               // Check if temporary files from previous run are readable.
+               for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
                {
-                  // We are supposed to be resuming, but no readable output file was found, so we can't.
-                  std::ostringstream errmsg;
-                  errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate/read all the required temporary files from the previous run (possibly there is no unfinished run to continue from). Resuming is therefore not possible; aborting run... (see below for IO error messages)";
-                  errmsg << std::endl << "IO message for temporary combined output file read attempt: ";
-                  errmsg << std::endl << "    " << msg;
-                  errmsg << std::endl << "IO message for temporary uncombined output file read attempt: ";
-                  errmsg << std::endl << "    " << msg2;
-                  printer_error().raise(LOCAL_INFO, errmsg.str()); 
+                  std::string msg2;
+                  if(not HDF5::checkFileReadable(*it, msg2))
+                  {
+                     // We are supposed to be resuming, but no readable output file was found, so we can't.
+                     std::ostringstream errmsg;
+                     errmsg << "Error! GAMBIT is in resume mode, however the chosen output system (HDF5Printer) could not locate/read all the required temporary files from the previous run (possibly there is no unfinished run to continue from). Resuming is therefore not possible; aborting run... (see below for IO error messages)";
+                     errmsg << std::endl << "IO message for temporary combined output file read attempt: ";
+                     errmsg << std::endl << "    " << msg;
+                     errmsg << std::endl << "IO message for temporary uncombined output file read attempt: ";
+                     errmsg << std::endl << "    " << msg2;
+                     printer_error().raise(LOCAL_INFO, errmsg.str()); 
+                  }
                }
+               // Ok all the temporary files exist: combine them
+               // (but do it in non-resume mode, since any potentially existing output file is unreadable anyway)
+               std::ostringstream logmsg;
+               if(file_readable)
+               {
+                  logmsg << "HDF5Printer: Temporary combined output file detected (found "<<file<<")"<<std::endl;
+                  logmsg << "             Will merge temporary files from last run into this file"<<std::endl;
+                  logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
+               }
+               else
+               {
+                  logmsg << "HDF5Printer: No temporary combined output file detected (searched for "<<file<<")"<<std::endl;
+                  logmsg << "             Will attempt to create it from temporary files from last run"<<std::endl;
+                  logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
+               }
+               logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<file<<"...";
+               std::cout << logmsg.str() << std::endl;
+               logger() << LogTags::printers << logmsg.str();
+               combine_output(tmp_files,false);
             }
-            // Ok all the temporary files exist: combine them
-            // (but do it in non-resume mode, since any potentially existing output file is unreadable anyway)
-            std::ostringstream logmsg;
-            if(file_readable)
-            {
-               logmsg << "HDF5Printer: Temporary combined output file detected (found "<<file<<")"<<std::endl;
-               logmsg << "             Will merge temporary files from last run into this file"<<std::endl;
-               logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
-            }
-            else
-            {
-               logmsg << "HDF5Printer: No temporary combined output file detected (searched for "<<file<<")"<<std::endl;
-               logmsg << "             Will attempt to create it from temporary files from last run"<<std::endl;
-               logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
-            }
-            logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<file<<"...";
-            std::cout << logmsg.str() << std::endl;
-            logger() << LogTags::printers << logmsg.str();
-            combine_output(tmp_files,false);
          }
 
          // Open HDF5 file
