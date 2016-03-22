@@ -282,7 +282,7 @@ for fname in fnames:
                Nmatches = np.sum(ID==ids)
                if Nmatches>1:
                   print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
-                  Match = np.sum(p==pid & r==rank)
+                  Match = np.sum((p==pid) & (r==rank))
                   if Match>1:
                     print "   ...MPIrank/pointID duplicate count: ", Match
 
