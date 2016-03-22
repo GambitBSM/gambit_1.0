@@ -532,6 +532,7 @@ namespace Gambit
                 // Delete existing output file
                 std::ostringstream command;
                 command << "rm -f "<<finalfile;
+                logger() << LogTags::printers << LogTags::info << LogTags::debug << "Running shell command: " << command.str() << EOM;
                 FILE* fp = popen(command.str().c_str(), "r");
                 if(fp==NULL)
                 {
@@ -579,6 +580,7 @@ namespace Gambit
              {
                std::ostringstream command;
                command << "rm -f "<<*it;
+               logger() << LogTags::printers << LogTags::info << LogTags::debug << "Running shell command: " << command.str() << EOM;
                FILE* fp = popen(command.str().c_str(), "r");
                if(fp==NULL)
                {
@@ -1148,7 +1150,7 @@ namespace Gambit
       command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<tmp_comb_file<<"  "<<group<<" "<<tmp_file_list.str()<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
-               << "--------------------" << std::endl;
+               << EOM;
       FILE* fp = popen(command.str().c_str(), "r");
       if(fp==NULL)
       {
@@ -1183,6 +1185,7 @@ namespace Gambit
         // Need to make sure Greg's combine code can do this.
         std::ostringstream command2;
         command2 <<"cp "<<tmp_comb_file<<" "<<finalfile<<" && rm "<<tmp_comb_file; // Note, deletes old file if successful
+        logger() << LogTags::printers << LogTags::info << LogTags::debug << "Running shell command: " << command2.str() << EOM;
         FILE* fp = popen(command2.str().c_str(), "r");
         if(fp==NULL)
         {
