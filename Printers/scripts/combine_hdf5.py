@@ -117,6 +117,7 @@ for i,fname in enumerate(fnames):
       raise ValueError("File '{0}' does not contain the group '{1}!'".format(fname,RA_group))
    print "      ...done"
 
+print "sync_lengths: ", sync_lengths
 total_sync_length = sum(sync_lengths)
 
 # Make sure all sync dsets have the same length

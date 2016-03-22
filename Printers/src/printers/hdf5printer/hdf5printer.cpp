@@ -646,12 +646,11 @@ namespace Gambit
         // Open requested file 
         bool oldfile; 
         Utils::ensure_path_exists(tmpfile);
-        //file_id = HDF5::openFile(tmpfile,overwrite,oldfile);
-        file_id = HDF5::openFile(tmpfile,true,oldfile); // Now that this is a temp file, we always want to overwrite it
+        file_id = HDF5::openFile(tmpfile,false,oldfile); // Don't overwrite existing file; we will check here if it exists (via oldfile) and throw an error if it does.
         if(oldfile)
         {
            std::ostringstream errmsg;
-           errmsg << "Error! HDF5Printer attempted to open a temporary file for storing output data ("<<tmpfile<<"), however it found an existing file of the same name! This is a bug; existing files should be overwritten.";
+           errmsg << "Error! HDF5Printer attempted to open a temporary file for storing output data ("<<tmpfile<<"), however it found an existing file of the same name! This is a bug; pre-existing temporary files should already have been analysed and deleted before this point in the code.";
            printer_error().raise(LOCAL_INFO, errmsg.str()); 
         }
 
@@ -1179,9 +1178,6 @@ namespace Gambit
       logger() << output.str() << std::endl;
       logger() << "--------------------" << std::endl;
       logger() << "end HDF5 combination script output" << EOM;
-
-      logger() << "Where is my message?" << EOM;
-
       if(rc!=0)
       {
          // Python error occurred
