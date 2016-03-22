@@ -455,5 +455,3 @@ for fname in fnames:
    os.remove(fname)
 
 print "Data combination completed"
-
-raise ValueError("STOP")
