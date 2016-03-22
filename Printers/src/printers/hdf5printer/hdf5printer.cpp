@@ -1166,19 +1166,19 @@ namespace Gambit
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
       // Something ran at least; get the stdout (plus redirected stderr)
-      char buffer[512];
+      char buffer[2048];
       // read output into a c++ stream via buffer
       std::ostringstream output;
       while(fgets(buffer, sizeof(buffer), fp) != NULL) {
           output << buffer;
       }
-      logger() << LogTags::printers << LogTags::debug << LogTags::info
-               << "Stdout/stderr captured from HDF5printer combination script" << std::endl
-               << "--------------------" << std::endl
-               << output.str() << std::endl
-               << "--------------------" << std::endl
-               << "end HDF5 combination script output" << EOM;
       int rc = pclose(fp);
+      logger() << LogTags::printers << LogTags::debug << LogTags::info;
+      logger() << "Stdout/stderr captured from HDF5printer combination script" << std::endl;
+      logger() << "--------------------" << std::endl;
+      logger() << output.str() << std::endl;
+      logger() << "--------------------" << std::endl;
+      logger() << "end HDF5 combination script output" << EOM;
       if(rc!=0)
       {
          // Python error occurred
