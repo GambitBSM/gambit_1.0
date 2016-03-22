@@ -15,6 +15,9 @@ Jonathan
 --------
 DONE DarkBit_types.hpp: 266	:    // FIXME: DDHaloS structure udpate [this is not needed in the code and commented out now]
 DONE DarkBit_rollcall.hpp: 1023     :     //  FIXME:: Conditional dependency below doesn't seem to work with standalones.
+src/SingletDM.cpp                        // FIXME: Add getValue documentation
+src/SimpleLikelihoods.cpp                // FIXME: Add getValue documentation
+src/DirectDetection.cpp                  // FIXME: Add getValue documentation
 
 gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep?
 GamYields.cpp: 468	:        // FIXME: Update energy validty ranges
@@ -35,6 +38,7 @@ DarkBit_rollcall.hpp: 185	:      // FIXME: Is model MSSM30atQ enough?
 
 Pat
 ---
+src/SunNeutrinos.cpp                     // FIXME: Add getValue documentation
 DONE DarkBit_types.hpp:  61	:// FIXME: What to include to allow DarkBit_warning() ?
 DONE DarkBit_types.hpp: 360	:                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "addChanel: Channel already exists --> ignoring new one.");
 DONE DarkBit_types.hpp: 404	:                    //FIXME: DarkBit_warning().raise(LOCAL_INFO, "getChannel: Channel unknown, returning dummy.");
@@ -65,6 +69,10 @@ MSSM.cpp: 164	:        // FIXME: If this the right place to set SLHAstruct model
 
 Torsten
 -------
+GamYields.cpp +        // FIXME: What to do with channels that return zero (ee, uu, dd, ss)?
+src/GamYields.cpp                        // FIXME: Add getValue documentation
+src/RelicDensity.cpp                     // FIXME: Add getValue documentation
+src/MSSM.cpp                             // FIXME: Add getValue documentation
 ProcessCatalog.hpp: 148	:        // FIXME: rename thresholdResonances to TH_resonances_thresholds
 DarkSUSY.cpp:  90	:     * FIXME: Fix BackendIniBit_error problems?
 DarkSUSY.cpp: 247	:  // FIXME: add channel codes!
@@ -140,7 +148,13 @@ DONE MSSM.cpp: 345	:      // FIXME: Get meson masses from somewhere else?
 DONE SingletDM.cpp: 332	:      // FIXME: Get meson masses from somewhere
 DONE   -- Pat: there is nowhere else in the code that defines or uses meson masses.  I think the most appropriate (for now) would be to put them in Elements/include/.../numerical_constants.cpp, maybe in a const map initialised with some function defined in a new source file Elements/src/numerical_constants.cpp.
 
-GamYields.cpp +        // FIXME: What to do with channels that return zero (ee, uu, dd, ss)?
+src/DarkBit.cpp                          // FIXME: Add getValue documentation
+src/Cascades.cpp                         // FIXME: Add getValue documentation
+src/Sloppy.cpp                           // FIXME: Add getValue documentation
+examples/DarkBit_standalone_MSSM.cpp     // FIXME: Add getValue documentation
+examples/DarkBit_standalone_WIMP.cp      // FIXME: Add getValue documentation
+
+
 
 After sanity checks of DS and MO results
 ----------------------------------------

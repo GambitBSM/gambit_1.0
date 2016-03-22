@@ -54,6 +54,7 @@ namespace Gambit {
       std::set<std::string> missingFinalStates;
       std::string DMid= *Dep::DarkMatter_ID;
 
+      /// Option ignore_all<bool>: Ignore all missing final states (default false)
       if ( runOptions->getValueOrDef(false, "ignore_all") ) return;
 
       TH_Process process = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
@@ -64,6 +65,7 @@ namespace Gambit {
       {
         if ( it->nFinalStates == 2 )
         {
+      /// Option ignore_two_body<bool>: Ignore two-body missing final states (default false)
           if ( not runOptions->getValueOrDef(false, "ignore_two_body") )
           {
             #ifdef DARKBIT_DEBUG
@@ -81,6 +83,7 @@ namespace Gambit {
         }
         else if ( it->nFinalStates == 3 )
         {
+      /// Option ignore_three_body<bool>: Ignore three-body missing final states (default false)
           if ( not runOptions->getValueOrDef(false, "ignore_three_body") )
           {
             #ifdef DARKBIT_DEBUG
@@ -181,6 +184,7 @@ namespace Gambit {
 
       std::string DMid= *Dep::DarkMatter_ID;
 
+      /// Option line_width<double>: Set relative line width used in gamma-ray spectra (default 0.03)
       double line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
 
       // Get annihilation process from process catalog

@@ -40,6 +40,7 @@ namespace Gambit {
     {
       list.clear();
       using namespace Pipes::cascadeMC_FinalStates;  
+      // FIXME: Add getValue documentation
       list = runOptions->getValueOrDef<std::vector<std::string> >(
           list,"cMC_finalStates");       
 #ifdef DARKBIT_DEBUG
@@ -82,7 +83,9 @@ namespace Gambit {
       using namespace Pipes::cascadeMC_LoopManager;     
       std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
       // Get YAML options
+      // FIXME: Add getValue documentation
       int cMC_minEvents = runOptions->getValueOrDef<int>(2, "cMC_minEvents");
+      // FIXME: Add getValue documentation
       int cMC_maxEvents = runOptions->getValueOrDef<int>(10000, "cMC_maxEvents");
 
 
@@ -198,8 +201,10 @@ namespace Gambit {
       {
         case MC_INIT:
           cMC_maxChainLength = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
           cMC_Emin           = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<double> (-1, "cMC_Emin"); 
           return;
         case MC_NEXT_STATE:
@@ -385,24 +390,33 @@ namespace Gambit {
         case MC_INIT:
           // Initialization
           cMC_minSpecSamples     = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<int>   (5,      "cMC_minSpecSamples");    
           cMC_maxSpecSamples     = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<int>   (25,     "cMC_maxSpecSamples"); 
           cMC_specValidThreshold = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<double>(0.0,    "cMC_specValidThreshold");
           cMC_endCheckFrequency  = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
           cMC_gammaBGPower       = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
           cMC_gammaRelError      = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
           // FIXME: This sets equal binning for all particle types.  Each
           // particle type should be allowed to have different binning.
           cMC_NhistBins          = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");                 
           cMC_binLow             = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");      
           cMC_binHigh            = 
+      // FIXME: Add getValue documentation
             runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");  
           histList.clear();
           return;

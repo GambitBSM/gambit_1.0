@@ -117,6 +117,7 @@ namespace Gambit {
       filename << "_" << counter << ".yml";
       counter++;
       */
+      /// Option filename<std::string>: Output filename (default UnitTest.yaml)
       filename << runOptions->getValueOrDef<std::string>("UnitTest.yaml", "filename");
 
       std::ofstream os;
@@ -142,9 +143,12 @@ namespace Gambit {
 
         // Output gamma-ray spectrum (grid be set in YAML file).
         double x_min = 
+          /// Option GA_AnnYield::Emin<double>: Minimum energy in GeV (default 0.1)
           runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
         double x_max = 
+          /// Option GA_AnnYield::Emax<double>: Maximum energy in GeV (default 1e4)
           runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
+          /// Option GA_AnnYield::nbins<int>: Number of energy bins (default 26)
         int n = runOptions->getValueOrDef<double>(26, "GA_AnnYield", "nbins");
         // from 0.1 to 500 GeV
         std::vector<double> x = Funk::logspace(log10(x_min), log10(x_max), n);
