@@ -19,7 +19,7 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/ProcessCatalog.hpp"
 
-#define DARKBIT_DEBUG
+//#define DARKBIT_DEBUG
 
 namespace Gambit {
   namespace DarkBit {

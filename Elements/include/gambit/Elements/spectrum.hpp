@@ -149,6 +149,9 @@ namespace Gambit
          /// over SMINPUTS.
          SLHAstruct getSLHAea() const;
 
+         /// Output spectrum contents as an SLHA file, using getSLHAea.
+         void getSLHA(str) const;
+
          /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
          const std::map<int, int>& PDG_translator() const;
          

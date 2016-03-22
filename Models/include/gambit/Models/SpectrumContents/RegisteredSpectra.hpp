@@ -31,6 +31,8 @@ namespace Gambit {
     struct SMHiggs         : SubSpectrumContents { SMHiggs(); };
     struct ScalarSingletDM : SubSpectrumContents { ScalarSingletDM(); };
     struct MSSM            : SubSpectrumContents { MSSM(); };
+    struct SingletDM       : SubSpectrumContents { SingletDM(); };
+    struct SingletDMZ3     : SubSpectrumContents { SingletDMZ3(); };
 
  }
 }

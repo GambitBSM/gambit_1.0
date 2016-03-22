@@ -47,7 +47,7 @@ namespace Gambit {
      * 3) Put together the full spectrum.
      *
      */
-#define DARKBIT_DEBUG
+
     void GA_missingFinalStates(std::vector<std::string> &result)
     {
       using namespace Pipes::GA_missingFinalStates;
@@ -102,16 +102,16 @@ namespace Gambit {
       {
           if ((*Dep::TH_ProcessCatalog).find(*it, "") == NULL) 
           {
-#ifdef DARKBIT_DEBUG
-            std::cout << "Erasing (because no decays known): " << *it << std::endl;
-#endif
+            #ifdef DARKBIT_DEBUG
+              std::cout << "Erasing (because no decays known): " << *it << std::endl;
+            #endif
             missingFinalStates.erase(it++);
           }
           else
           {
-#ifdef DARKBIT_DEBUG
-            std::cout << "Keeping (because decay known): " << *it << std::endl;
-#endif
+            #ifdef DARKBIT_DEBUG
+              std::cout << "Keeping (because decay known): " << *it << std::endl;
+            #endif
             ++it;
           }
       }
@@ -126,7 +126,6 @@ namespace Gambit {
 
       result.assign(missingFinalStates.begin(), missingFinalStates.end());
     }
-#undef DARKBIT_DEBUG
 
     /*! \brief Boosts an energy spectrum of isotropic particles into another
      *         frame (and isotropizes again).
@@ -265,47 +264,47 @@ namespace Gambit {
             spec1 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]), gamma1, 0.0);
           }
 
-#ifdef DARKBIT_DEBUG
-          std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
-          std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
-          Funk::Funk chnSpec = (Funk::zero("v", "E") 
-            +  spec0 
-            +  spec1)-> set("v", 0.);
-          std::vector<double> y = chnSpec->bind("E")->vect(x);
-          os << it->finalStateIDs[0] << it->finalStateIDs[1] << ":\n";
-          os << "  E: [";
-          for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
-            os << *it2 << ", ";
-          os  << "]\n";
-          os << "  dNdE: [";
-          for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
-            os << *it2 << ", ";
-          os  << "]\n";
-#endif
+          #ifdef DARKBIT_DEBUG
+            std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
+            std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
+            Funk::Funk chnSpec = (Funk::zero("v", "E") 
+              +  spec0 
+              +  spec1)-> set("v", 0.);
+            std::vector<double> y = chnSpec->bind("E")->vect(x);
+            os << it->finalStateIDs[0] << it->finalStateIDs[1] << ":\n";
+            os << "  E: [";
+            for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
+              os << *it2 << ", ";
+            os  << "]\n";
+            os << "  dNdE: [";
+            for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
+              os << *it2 << ", ";
+            os  << "]\n";
+          #endif
 
           Yield = Yield + (spec0 + spec1) * it->genRate;
         }
       } // End adding two-body final states
           
-#ifdef DARKBIT_DEBUG
-      std::vector<std::string> test1 = initVector<std::string> ("h0_1_test","h0_2_test","h0_2_test","h0_1_test","WH_test", "A0_test", "h0_1_test", "W+");
-      std::vector<std::string> test2 = initVector<std::string> ("A0_test",  "A0_test",  "Z0_test",  "Z0_test",  "WH_test", "Z0_test", "h0_2_test", "W-");
-    
-      for(size_t i=0; i<test1.size();i++)
-      {
-          Funk::Funk chnSpec = (*Dep::SimYieldTable)(test1[i], test2[i], "gamma", Ecm);
-          std::vector<double> y = chnSpec->bind("E")->vect(x);
-          os << test1[i] << test2[i] << ":\n";
-          os << "  E: [";
-          for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
-            os << *it2 << ", ";
-          os  << "]\n";
-          os << "  dNdE: [";
-          for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
-            os << *it2 << ", ";
-          os  << "]\n";
-      }
-#endif
+      #ifdef DARKBIT_DEBUG
+        std::vector<std::string> test1 = initVector<std::string> ("h0_1_test","h0_2_test","h0_2_test","h0_1_test","WH_test", "A0_test", "h0_1_test", "W+");
+        std::vector<std::string> test2 = initVector<std::string> ("A0_test",  "A0_test",  "Z0_test",  "Z0_test",  "WH_test", "Z0_test", "h0_2_test", "W-");
+      
+        for(size_t i=0; i<test1.size();i++)
+        {
+            Funk::Funk chnSpec = (*Dep::SimYieldTable)(test1[i], test2[i], "gamma", Ecm);
+            std::vector<double> y = chnSpec->bind("E")->vect(x);
+            os << test1[i] << test2[i] << ":\n";
+            os << "  E: [";
+            for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
+              os << *it2 << ", ";
+            os  << "]\n";
+            os << "  dNdE: [";
+            for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
+              os << *it2 << ", ";
+            os  << "]\n";
+        }
+      #endif
       
       // Adding three-body final states
       //
@@ -353,26 +352,26 @@ namespace Gambit {
           Funk::Funk dsigmavde = it->genRate->gsl_integration(
               "E1", E1_low, E1_high);
 
-#ifdef DARKBIT_DEBUG
-          Funk::Funk chnSpec = (Funk::zero("v", "E") + dsigmavde)-> set("v", 0.);
-          std::vector<double> y = chnSpec->bind("E")->vect(x);
-          os << it->finalStateIDs[0] << it->finalStateIDs[1] << it->finalStateIDs[2] << ":\n";
-          os << "  E: [";
-          for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
-            os << *it2 << ", ";
-          os  << "]\n";
-          os << "  dNdE: [";
-          for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
-            os << *it2 << ", ";
-          os  << "]\n";
-#endif
+          #ifdef DARKBIT_DEBUG
+            Funk::Funk chnSpec = (Funk::zero("v", "E") + dsigmavde)-> set("v", 0.);
+            std::vector<double> y = chnSpec->bind("E")->vect(x);
+            os << it->finalStateIDs[0] << it->finalStateIDs[1] << it->finalStateIDs[2] << ":\n";
+            os << "  E: [";
+            for (std::vector<double>::iterator it2 = x.begin(); it2 != x.end(); it2++)
+              os << *it2 << ", ";
+            os  << "]\n";
+            os << "  dNdE: [";
+            for (std::vector<double>::iterator it2 = y.begin(); it2 != y.end(); it2++)
+              os << *it2 << ", ";
+            os  << "]\n";
+          #endif
 
           Yield = Yield + dsigmavde;
         }
       }
-#ifdef DARKBIT_DEBUG
-      if(debug) os.close();
-#endif
+      #ifdef DARKBIT_DEBUG
+        if(debug) os.close();
+      #endif
 
       result = Funk::ifelse(1e-6 - Funk::var("v"), Yield/(mass*mass), 
           Funk::throwError("Spectrum currently only defined for v=0."));

@@ -202,7 +202,7 @@ namespace Gambit
       const Spectrum* spec = *Dep::SingletDM_spectrum;
       const SubSpectrum* he = spec->get_HE();
       double mass = spec->get(Par::Pole_Mass,"S");
-      double lambda = he->get(Par::mass1,"lambda_hS");
+      double lambda = he->get(Par::dimensionless,"lambda_hS");
       double mh = spec->get(Par::Pole_Mass,"h0_1");
 
       // FIXME: Double check expressions (taken from Cline et al. 2013)
@@ -276,7 +276,7 @@ namespace Gambit
       const SMInputs& SMI   = spec->get_SMInputs();
 
       // Import couplings
-      double lambda = he->get(Par::mass1,"lambda_hS");
+      double lambda = he->get(Par::dimensionless,"lambda_hS");
       double v = he->get(Par::mass1,"vev");
 
       // Get SM pole masses

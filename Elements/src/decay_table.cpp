@@ -139,18 +139,18 @@ namespace Gambit
   }
 
   /// Output entire decay table as an SLHA file full of DECAY blocks
-  void DecayTable::as_slha(str filename, bool include_zero_bfs) const
+  void DecayTable::getSLHA(str filename, bool include_zero_bfs) const
   {
     Utils::FileLock mylock(filename);
     mylock.get_lock();
     std::ofstream ofs(filename);
-    ofs << as_slhaea(include_zero_bfs);
+    ofs << getSLHAea(include_zero_bfs);
     ofs.close();
     mylock.release_lock();
   }
 
   /// Output entire decay table as an SLHAea file full of DECAY blocks
-  SLHAstruct DecayTable::as_slhaea(bool include_zero_bfs) const
+  SLHAstruct DecayTable::getSLHAea(bool include_zero_bfs) const
   {
     SLHAstruct slha;
     std::map<str, std::set<str> > calculator_map;
@@ -162,7 +162,7 @@ namespace Gambit
     {
       auto entry = particle->second;
       if (entry.calculator != "") calculator_map[entry.calculator].insert(entry.calculator_version);
-      slha.push_back(entry.as_slhaea_block(particle->first, include_zero_bfs));
+      slha.push_back(entry.getSLHAea_block(particle->first, include_zero_bfs));
     }
 
     // Construct the calculator info
@@ -202,9 +202,9 @@ namespace Gambit
 
   /// Output a decay table entry as an SLHAea DECAY block
   /// @{
-  SLHAea::Block DecayTable::as_slhaea_block(std::pair<int,int> p, bool z) const { return particles.at(p).as_slhaea_block(Models::ParticleDB().long_name(p), z); }
-  SLHAea::Block DecayTable::as_slhaea_block(str p, bool z)                const { return particles.at(Models::ParticleDB().pdg_pair(p)).as_slhaea_block(p, z); }
-  SLHAea::Block DecayTable::as_slhaea_block(str p, int i, bool z)         const { return particles.at(Models::ParticleDB().pdg_pair(p,i)).as_slhaea_block(Models::ParticleDB().long_name(p,i), z); }
+  SLHAea::Block DecayTable::getSLHAea_block(std::pair<int,int> p, bool z) const { return particles.at(p).getSLHAea_block(Models::ParticleDB().long_name(p), z); }
+  SLHAea::Block DecayTable::getSLHAea_block(str p, bool z)                const { return particles.at(Models::ParticleDB().pdg_pair(p)).getSLHAea_block(p, z); }
+  SLHAea::Block DecayTable::getSLHAea_block(str p, int i, bool z)         const { return particles.at(Models::ParticleDB().pdg_pair(p,i)).getSLHAea_block(Models::ParticleDB().long_name(p,i), z); }
   /// @}
 
 
@@ -363,9 +363,9 @@ namespace Gambit
 
   /// Output a decay table entry as an SLHAea DECAY block
   /// @{
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, bool z)         const { return as_slhaea_block(Models::ParticleDB().pdg_pair(p), z); }
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, int i, bool z)  const { return as_slhaea_block(Models::ParticleDB().pdg_pair(p,i), z); }
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(std::pair<int,int> p, bool include_zero_bfs) const
+  SLHAea::Block DecayTable::Entry::getSLHAea_block(str p, bool z)         const { return getSLHAea_block(Models::ParticleDB().pdg_pair(p), z); }
+  SLHAea::Block DecayTable::Entry::getSLHAea_block(str p, int i, bool z)  const { return getSLHAea_block(Models::ParticleDB().pdg_pair(p,i), z); }
+  SLHAea::Block DecayTable::Entry::getSLHAea_block(std::pair<int,int> p, bool include_zero_bfs) const
   {
     // Make sure the particle actually exists in the database
     if (not Models::ParticleDB().has_particle(p))
