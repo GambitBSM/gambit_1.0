@@ -146,7 +146,7 @@ print "Combined sync length = ", total_sync_length
 
 print "Opening file for adding combined data:"
 print "   {0}".format(outfname)
-fout = h5py.File(outfname,'r+')
+fout = h5py.File(outfname,'w')
 
 if not group in fout:
    gout = fout.create_group(group)
