@@ -244,7 +244,9 @@ for fname in fnames:
          copy_dset(item,gout[itemname],nextempty)
    if(dset_length==None):
       print "No sync dsets found! Nothing copied!"
-   else: 
+   else:
+      print "Re-checking combined file for duplicates..."
+      check_for_duplicates(fout,group) 
       nextempty+=dset_length
 
 # Copy data from RA datasets into combined dataset
