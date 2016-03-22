@@ -39,13 +39,12 @@ namespace Gambit
   /// Constructor
   Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
    DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
-   Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+   const str &purpose, Printers::BaseBasePrinter& printer
   #ifdef WITH_MPI
     , GMPI::Comm& comm
   #endif
   ) 
   : dependencyResolver (dependencyResolver), 
-    prior              (prior),
     printer            (printer),
     functorMap         (functorMap),
     #ifdef WITH_MPI
@@ -90,13 +89,10 @@ namespace Gambit
   }
 
   /// Do the prior transformation and populate the parameter map
-  void Likelihood_Container::setParameters (const std::vector<double> &vec)
+  void Likelihood_Container::setParameters (const std::unordered_map<std::string, double> &parameterMap)
   {
     // Clear the parameter map to make sure no junk from the last iteration gets left in there
-    parameterMap.clear();
-
-    // Do the prior transformation, saving the real parameter values in the parameterMap
-    prior.transform(vec, parameterMap);
+    //parameterMap.clear();
 
     // Set up a stream containing the parameter values, for diagnostic output
     std::ostringstream parstream;
@@ -146,7 +142,7 @@ namespace Gambit
   }
 
   /// Evaluate total likelihood function
-  double Likelihood_Container::main (const std::vector<double> &in)
+  double Likelihood_Container::main (std::unordered_map<std::string, double> &in)
   {
     /// Unblock system signals (these are blocked to prevent external scanner 
     /// codes from getting interrupted while they are performing sensitive

@@ -164,7 +164,7 @@ scanner_plugin(reweight, version(1, 0, 0))
     std::cout << "Running demo 'reweight' plugin for ScannerBit." << std::endl;
 
     // Retrieve the external likelihood calculator
-    scan_ptr<double (const std::vector<double>&)> LogLike;
+    like_ptr LogLike;
     LogLike = get_purpose(get_inifile_value<std::string>("LogLike"));
 
     // Create the unit hypercube

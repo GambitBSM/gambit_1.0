@@ -174,19 +174,15 @@ int main(int argc, char* argv[])
     // If true, bail out (just wanted the run order, not a scan); otherwise, keep going.
     if (not Core().show_runorder)
     {
-      Scanner::Plugins::plugin_info.iniFile(iniFile.getScannerNode(), printerManager);
-      //Define the prior
-      Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
-  
       //Define the likelihood container object for the scanner
-      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, prior, *(printerManager.printerptr)
+      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, *(printerManager.printerptr)
         #ifdef WITH_MPI
         , errorComm
         #endif
       );
  
       //Create the master scan manager 
-      Scanner::Scan_Manager scan(&factory, iniFile.getScannerNode(), &prior, &printerManager);
+      Scanner::Scan_Manager scan(&factory, iniFile, &printerManager);
 
       // Signal handing can be set to trigger a longjmp back to here upon receiving some signal
       signaldata().havejumped = setjmp(signaldata().env);

@@ -246,7 +246,7 @@ namespace Gambit
                 {
                     for (auto it = node.begin(), end = node.end(); it != end; ++it)
                     {
-                        if (it->second.as<std::string>() != "priors")
+                        if (it->first.as<std::string>() != "priors")
                         {
                             out << "\x1b[01m\x1b[04m" << it->first.as<std::string>() << "\x1b[0m\n" << std::endl;
                             out << it->second.as<std::string>() << "\n" << std::endl;
@@ -428,10 +428,11 @@ namespace Gambit
                 return plugins[0];
             }
 
-            void pluginInfo::iniFile(const Options &options_in, printer_interface &printerIn)
+            void pluginInfo::iniFile(const Options &options_in, printer_interface &printerIn, Priors::BasePrior &prior_in)
             {
                 options = options_in;
                 printer = &printerIn;
+                prior = &prior_in;
                 if (options.getNode().IsMap())
                 {
                     if (options.hasKey("default_output_path"))
@@ -490,23 +491,23 @@ namespace Gambit
                     Proto_Plugin_Details &detail = selectedPlugins[type][tag];
                     YAML::Node plugin_options = options.getNode(type + "s", tag);
                     
-                    //if (!plugin_options.hasKey("default_output_path"))
+                    //if (!plugin_options["default_output_path"])
                         plugin_options["default_output_path"] = options.getValue<std::string>("default_output_path");
                     
-                    //if (!plugin_options.hasKey("likelihood: model_invalid_for_lnlike_below"]))
+                    if (!plugin_options["likelihood: model_invalid_for_lnlike_below"])
                         plugin_options["likelihood: model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
                     
-                    //if (!plugin_options.hasKey("model_invalid_for_lnlike_below"))
+                    if (!plugin_options["model_invalid_for_lnlike_below"])
                         plugin_options["model_invalid_for_lnlike_below"] = options.getValue<double>("model_invalid_for_lnlike_below");
                     
-                    return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, plugin_options);
+                    return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, prior, plugin_options);
                 }
                 else
                 {
                     scan_err << "Plugin \"" << tag << "\" of type \"" << type << "\" is not defined under the \"Scanner\""
                             << " subsection in the inifile" << scan_end;
                                 
-                    return Plugin_Interface_Details(plugins.find(type, "", "", ""), printer, options.getOptions(type + "s", tag).getNode());
+                    return Plugin_Interface_Details(plugins.find(type, "", "", ""), printer, prior, options.getOptions(type + "s", tag).getNode());
                 }
             }
             
@@ -514,9 +515,8 @@ namespace Gambit
             {
                 for (auto it = resume_data.begin(), end = resume_data.end(); it != end; ++it)
                 {
-                    std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files");
-                    std::cout << path << std::endl; getchar();
-                    std::ofstream out((path + "/" + it->first).c_str(), std::ofstream::binary);
+                    std::string path = Gambit::Utils::ensure_path_exists(def_out_path + "/temp_files/" + it->first);
+                    std::ofstream out((path).c_str(), std::ofstream::binary);
                     for (auto v_it = it->second.begin(), v_end = it->second.end(); v_it != v_end; ++v_it)
                     {
                         (*v_it)->print(out);

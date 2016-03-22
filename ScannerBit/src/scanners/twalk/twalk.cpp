@@ -26,7 +26,7 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
 {
     int plugin_main ()
     {
-        scan_ptr<double (const std::vector<double>&)> LogLike = get_purpose(get_inifile_value<std::string>("purpose", "LogLike"));
+        like_ptr LogLike = get_purpose(get_inifile_value<std::string>("purpose", "LogLike"));
         int dim = get_dimension();
         
         int numtasks;
@@ -60,7 +60,7 @@ scanner_plugin(twalk, version(1, 0, 0, beta))
     }
 }
 
-void TWalk(Gambit::Scanner::scan_ptr<double(const std::vector<double>&)> LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
+void TWalk(Gambit::Scanner::like_ptr LogLike, Gambit::Scanner::printer_interface &printer, Gambit::Scanner::resume_params_func set_resume_params, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const double tol, const int NThreads, const bool hyper_grid, const int cut)
 {
     std::vector<double> chisq(NThreads);
     std::vector<double> aNext(ma, 0.0);

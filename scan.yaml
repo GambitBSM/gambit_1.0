@@ -67,7 +67,7 @@ Scanner:
 
   use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: multinest
+  use_scanner: raster
   #find_shift
   #find_kernel
   #object_detection
@@ -128,15 +128,19 @@ Scanner:
       like: LogLike
       nlive: 2000
       tol: 0.1
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
           
     gnest:
       plugin: gnest
       file_name: "output_file"
       like: LogLike
       live_number: 2000
+      
+    raster:
+      plugin: raster
+      like: LogLike
+      parameters:
+        "EggBox::param_0": [.1, .9]
+        #"EggBox::param_1": [.2, .3]
           
     bin_grid:
       plugin: bin_grid
@@ -377,14 +381,11 @@ Scanner:
     EggBox:
       plugin: EggBox
       purpose: LogLike
-      options:
-        Printer:
-          printer: ascii
-          #options:
-          output_file: "gambit_output2.txt"
       parameters:
-        param...2:
-          prior_type: flat
+        param_0:
+          prior_type: none
+          #range: [0, 1]
+        param_1:
           range: [0, 1]
 
     gaussian:

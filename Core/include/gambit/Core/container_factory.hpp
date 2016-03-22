@@ -50,7 +50,7 @@ namespace Gambit
   registry
   {
     typedef void* factory_type(const std::map<str, primary_model_functor *> &, 
-     DRes::DependencyResolver &b, IniParser::IniFile &c, Priors::CompositePrior &d, const str &purpose, Printers::BaseBasePrinter& p
+     DRes::DependencyResolver &b, IniParser::IniFile &c, const str &purpose, Printers::BaseBasePrinter& p
      #ifdef WITH_MPI
      , GMPI::Comm& comm
      #endif
@@ -62,7 +62,6 @@ namespace Gambit
   {
     private:
       DRes::DependencyResolver &dependencyResolver;
-      Priors::CompositePrior &prior;
       IniParser::IniFile &iniFile;
       std::map<str, primary_model_functor *> functorMap;   
       Printers::BaseBasePrinter &printer;
@@ -72,7 +71,7 @@ namespace Gambit
 
     public:
       Likelihood_Container_Factory(const gambit_core &core, DRes::DependencyResolver &dependencyResolver, 
-       IniParser::IniFile &iniFile, Priors::CompositePrior &prior, Printers::BaseBasePrinter& printer
+       IniParser::IniFile &iniFile, Printers::BaseBasePrinter& printer
        #ifdef WITH_MPI
        , GMPI::Comm& comm
        #endif

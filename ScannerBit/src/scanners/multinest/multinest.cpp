@@ -39,7 +39,7 @@ namespace Gambit
 }
 
 /// Typedef for the ScannerBit pointer to the external loglikelihood function
-typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
+typedef Gambit::Scanner::like_ptr scanPtr;
 
 
 /// =================================================
@@ -231,7 +231,7 @@ namespace Gambit {
          //if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
          //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
          
-         double lnew = (*boundLogLike)(unitpars); 
+         double lnew = boundLogLike(unitpars); 
 
          // Extract the primary printer from the printer manager
          //printer* primary_stream( boundPrinter.get_stream() );

@@ -55,10 +55,10 @@ namespace Gambit
         template <typename T>
         class Multi_Scanner_Plugin_Function;
         
-        LOAD_FUNC_TEMPLATE(Scanner_Plugin_Function, double (const std::vector<double> &));
+        LOAD_FUNC_TEMPLATE(Scanner_Plugin_Function, double (std::unordered_map<std::string, double> &));
         LOAD_FUNC_TEMPLATE(Scanner_Plugin_Function, void (const std::vector<double> &, std::unordered_map<std::string, double> &));
-        LOAD_FUNC_TEMPLATE(Scanner_Plugin_Function, std::vector<double> (const std::vector<double> &));
-        LOAD_MULTI_FUNC_TEMPLATE(Multi_Scanner_Plugin_Function, double(const std::vector<double> &));
+        LOAD_FUNC_TEMPLATE(Scanner_Plugin_Function, std::vector<double> (std::unordered_map<std::string, double> &));
+        LOAD_MULTI_FUNC_TEMPLATE(Multi_Scanner_Plugin_Function, double(std::unordered_map<std::string, double> &));
         
         inline std::map<std::string, std::vector<std::string>> convert_to_map(const std::vector<std::string> &vec)
         {
@@ -127,13 +127,13 @@ namespace Gambit
             std::unordered_map<std::string, Gambit::type_index> purpose_index;
                 
         public:
-            Plugin_Function_Factory(const Priors::CompositePrior &prior, const std::map< std::string, std::vector<std::pair<std::string, std::string>> > &names) 
+            Plugin_Function_Factory(const Priors::CompositePrior &prior, std::map< std::string, std::vector<std::pair<std::string, std::string>> > &names) 
                     : names(names), prior(prior)
             {
                 parameters = convert_to_map(prior.getParameters());
-                purpose_index["Likelihood"] = typeid(double (const std::vector<double> &));
-                purpose_index["LogLike"] = typeid(double (const std::vector<double> &));
-                purpose_index["Observable"] = typeid(std::vector<double> (const std::vector<double> &));
+                purpose_index["Likelihood"] = typeid(double (std::unordered_map<std::string, double> &));
+                purpose_index["LogLike"] = typeid(double (std::unordered_map<std::string, double> &));
+                purpose_index["Observable"] = typeid(std::vector<double> (std::unordered_map<std::string, double> &));
                 purpose_index["Prior"] = typeid(void (const std::vector<double> &, std::unordered_map<std::string, double> &));
             }
             

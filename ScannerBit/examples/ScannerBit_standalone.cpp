@@ -167,11 +167,9 @@ int main(int argc, char **argv)
             Printers::BasePrinter& printer (*printerManager.printerptr); 
             //Printers::BasePrinter printerManager();
             printerInterface = &printerManager;
-            //Define the prior
-            Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
 
             //Create the master scan manager 
-            Scanner::Scan_Manager scan(0, iniFile.getScannerNode(), &prior, &printerManager);
+            Scanner::Scan_Manager scan(0, iniFile, &printerManager);
 
             //Do the scan!
             logger() << "Starting scan." << EOM;

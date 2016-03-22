@@ -30,12 +30,11 @@ namespace Gambit
 {
 
   Likelihood_Container_Factory::Likelihood_Container_Factory(const gambit_core &core, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, Printers::BaseBasePrinter& printer
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Printers::BaseBasePrinter& printer
   #ifdef WITH_MPI
     , GMPI::Comm& comm
   #endif
   ) : dependencyResolver(dependencyResolver)
-    , prior(prior)
     , iniFile(iniFile)
     , printer(printer)
     #ifdef WITH_MPI
@@ -43,8 +42,8 @@ namespace Gambit
     #endif
   {
     functorMap = core.getActiveModelFunctors();
-    
-    std::vector<std::string> priorKeys = prior.getParameters();
+    //GM: I NEED TO LOOK INTO THIS!!!
+    /*std::vector<std::string> priorKeys = prior.getParameters();
     std::vector<std::string> gambitKeys;
     
     for (std::map<std::string, primary_model_functor *>::iterator act_it = functorMap.begin(); act_it != functorMap.end(); act_it++)
@@ -77,12 +76,12 @@ namespace Gambit
         err << "Parameter " << *it << " is in the inifile but is not required by GAMBIT." << std::endl;
         Scanner::scan_error().raise(LOCAL_INFO, err.str());
       }
-    }
+    }*/
   }
     
   void * Likelihood_Container_Factory::operator() (const std::string &purpose) const
   {
-    return __scanner_factories__["GAMBIT_Scanner_Target_Function"](functorMap, dependencyResolver, iniFile, prior, purpose, printer
+    return __scanner_factories__["GAMBIT_Scanner_Target_Function"](functorMap, dependencyResolver, iniFile, purpose, printer
       #ifdef WITH_MPI
        , myComm
       #endif

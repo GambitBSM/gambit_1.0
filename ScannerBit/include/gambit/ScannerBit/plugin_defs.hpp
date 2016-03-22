@@ -36,20 +36,22 @@
 #include "gambit/ScannerBit/printer_interface.hpp"
 #include "gambit/Utils/type_index.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
+#include "gambit/ScannerBit/base_prior.hpp"
 
 namespace Gambit
 {
 
     namespace Scanner
     {
-
+        typedef Priors::BasePrior prior_interface;
+        
         class resume_params_func
         {
         private:
             std::string name;
             
         public:
-            resume_params_func(const std::string name_in)
+            resume_params_func(const std::string &name_in)
             {
                 int rank;
 #ifdef WITH_MPI
@@ -122,6 +124,7 @@ namespace Gambit
                 std::string tag;
                 YAML::Node node;
                 printer_interface *printer;
+                prior_interface *prior;
                 std::vector <void *> inputData;
                 std::vector <void (*)(pluginData &)> inits;
                 std::map<std::string, factoryBase *> outputFuncs;
@@ -129,8 +132,8 @@ namespace Gambit
                 void (*deconstructor)();
                 bool loaded;
                 
-                pluginData(std::string name, std::string type, std::string version) 
-                        : name(name), type(type), version(version), deconstructor(NULL), loaded(false)
+                pluginData(const std::string &name, const std::string &type, const std::string &version_in) 
+                        : name(name), type(type), version(version_in), deconstructor(NULL), loaded(false)
                 {
                     std::string::size_type posLast = version.find("_");
                     std::string major_version = version.substr(0, posLast);

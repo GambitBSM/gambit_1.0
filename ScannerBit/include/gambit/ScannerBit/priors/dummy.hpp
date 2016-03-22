@@ -24,31 +24,56 @@
 
 namespace Gambit
 {
-        namespace Priors
+    namespace Priors
+    {
+        class Dummy : public BasePrior
         {
-                class Dummy : public BasePrior
-                {
-                private:
-                        std::vector<std::string> param_names;
-                        
-                public: 
-                        // Constructor
-                        Dummy(const std::vector<std::string>& param, const Options&) : BasePrior(param.size()), param_names(param)
-                        { 
-                        }
-                        
-                        void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &outputMap) const
-                        {
-                                auto it_vec = unitpars.begin();
-                                for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
-                                {
-                                        outputMap[*it] = *(it_vec++);
-                                }
-                        }
-                };
+        private:
+            std::vector<std::string> param_names;
                 
-                LOAD_PRIOR(dummy, Dummy)
-        }
+        public: 
+            // Constructor
+            Dummy(const std::vector<std::string>& param, const Options&) : BasePrior(param.size()), param_names(param)
+            { 
+            }
+            
+            void transform(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap) const
+            {
+                auto it_vec = unitpars.begin();
+                for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
+                {
+                    outputMap[*it] = *(it_vec++);
+                }
+            }
+        };
+        
+        class None : public BasePrior
+        {
+        private:
+            std::vector<std::string> param_names;
+                
+        public: 
+            None(const std::vector<std::string>& param, const Options&) : param_names(param)
+            { 
+            }
+            
+            void transform(const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
+            {
+                for (auto it = param_names.begin(), end = param_names.end(); it != end; it++)
+                {
+                    if (outputMap.find(*it) == outputMap.end())
+                    {
+                        scan_err << "Parameter " << *it << " prior is specified as 'none'"
+                                 << " and the scanner has not inputed a value for it." 
+                                 << scan_end;
+                    }
+                }
+            }
+        };
+        
+        LOAD_PRIOR(dummy, Dummy)
+        LOAD_PRIOR(none, None)
+    }
 }
 
 #endif

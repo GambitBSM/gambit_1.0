@@ -405,6 +405,7 @@ namespace Gambit
                     }
                 }
                 
+                H5Fflush(new_file, H5F_SCOPE_GLOBAL);
                 H5Gclose(new_group);
                 H5Fclose(new_file);
                 
@@ -413,12 +414,12 @@ namespace Gambit
                     std::system(("rm -f " + file + ".temp.bak").c_str());
                 }
                 
-                /*for (int i = 0, end = group_name.size(); i < end; i++)
+                for (int i = 0, end = group_name.size(); i < end; i++)
                 {
                     std::stringstream ss;
                     ss << i;
                     std::system(("rm -f " + root_file_name + "_temp_" + ss.str()).c_str());
-                }*/
+                }
             }
         }
     }
