@@ -51,8 +51,10 @@ namespace Gambit {
               // Error deleting file, but probably it just didn't exist to delete
               logger()<<LogTags::utils<<LogTags::warn<<"Failed to delete file '"<<fname<<"'! Maybe it didn't exist in the first place."<<EOM;
             }
-            // else deleted file with no problem       
-            logger()<<LogTags::utils<<LogTags::info<<"Deleted pre-existing file "<<fname<<" (because overwrite=true)"<<EOM;
+            else// else deleted file with no problem       
+            {
+              logger()<<LogTags::utils<<LogTags::info<<"Deleted pre-existing file "<<fname<<" (because overwrite=true)"<<EOM;
+            }
           }          
 
           errorsOff();

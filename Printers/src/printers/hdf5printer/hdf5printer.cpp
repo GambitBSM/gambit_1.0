@@ -647,7 +647,7 @@ namespace Gambit
         bool oldfile; 
         Utils::ensure_path_exists(tmpfile);
         //file_id = HDF5::openFile(tmpfile,overwrite,oldfile);
-        file_id = HDF5::openFile(tmpfile,true,oldfile); // Now that this is a temp file, we always want to overwrite it (it should only still exist if some error occurred finalising the last run, so starting a new run should mean that it can be discarded)
+        file_id = HDF5::openFile(tmpfile,true,oldfile); // Now that this is a temp file, we always want to overwrite it
         if(oldfile)
         {
            std::ostringstream errmsg;
@@ -1154,7 +1154,7 @@ namespace Gambit
         tmp_file_list << *it << " ";
       }
       command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<tmp_comb_file<<"  "<<group<<" "<<tmp_file_list.str()<<" 2>&1";
-      logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
+      logger() << LogTags::printers << "Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
                << EOM;
       FILE* fp = popen(command.str().c_str(), "r");
@@ -1172,7 +1172,7 @@ namespace Gambit
       while(fgets(buffer, sizeof(buffer), fp) != NULL) {
           output << buffer;
       }
-      logger() << LogTags::printers << LogTags::debug
+      logger() << LogTags::printers << LogTags::debug << LogTags::info
                << "Stdout/stderr captured from HDF5printer combination script" << std::endl
                << "--------------------" << std::endl
                << output.str() << std::endl
@@ -1183,7 +1183,7 @@ namespace Gambit
       {
          // Python error occurred
          std::ostringstream errmsg;
-         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call is below:" << std::endl << output.str();
+         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call can be found in the log files."
          printer_error().raise(LOCAL_INFO, errmsg.str());              
       }
       // Otherwise everything should be ok!
