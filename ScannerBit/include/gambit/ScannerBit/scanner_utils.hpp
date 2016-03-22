@@ -177,11 +177,11 @@ namespace Gambit
             {
                 std::string plug = node.as<std::string>();
                 
-                std::string::size_type pos = plug.find_first_of(",;:.");
+                std::string::size_type pos = plug.find_first_of(",;");
                 while (pos != std::string::npos)
                 {
                     plug[pos] = ' ';
-                    pos = plug.find_first_of(",;:.", pos + 1);
+                    pos = plug.find_first_of(",;", pos + 1);
                 }
                 
                 std::stringstream ss;
