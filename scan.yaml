@@ -67,7 +67,7 @@ Scanner:
 
   use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: raster
+  use_scanner: random
   #find_shift
   #find_kernel
   #object_detection
@@ -103,7 +103,7 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 100
+      point_number: 10
       like: LogLike
           
     toy:
@@ -383,10 +383,15 @@ Scanner:
       purpose: LogLike
       parameters:
         param_0:
-          prior_type: none
+          prior_type: plugin
+          plugin: flat
           #range: [0, 1]
         param_1:
           range: [0, 1]
+          
+    flat:
+      plugin: flat_prior
+      range: [0, 1]
 
     gaussian:
       plugin: gaussian

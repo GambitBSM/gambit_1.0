@@ -166,8 +166,8 @@ namespace Gambit
             public:
                 pluginInfo() : keepRunning(true), funcCalculating(false) {}
                 ///Enter plugin inifile
-                void iniFile(const Options &, printer_interface &, Priors::BasePrior &);
-                
+                void iniFile(const Options &);
+                void printer_prior(printer_interface &, Priors::BasePrior &);
                 bool keep_running() const {return keepRunning;}
                 void set_running(bool b){keepRunning = b;}
                 bool func_calculating() const {return funcCalculating;}

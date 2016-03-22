@@ -51,6 +51,10 @@ twalk: |
   Convergence inifile options:
       tolerance (1.001): The accuracy of the second order moment (1 is perfect).
       cut: (1000):       Number of burn-in points that are not considered.
+      
+  Auxillary output variables:
+      mult:     Multiplicity (weight) of each point.
+      chains:   Chain number that each point is a member of.  Rejected points have chain number of -1.
     
 MultiNest: |
   #remove_newlines
@@ -71,7 +75,7 @@ MultiNest: |
       nClsPar (dim):   No. of parameters to do mode separation on. Default set to parameter dimension.
   #remove_newlines
       updInt (1000):   after how many iterations feedback is required & the output 
-                     files should be updated (*10 for dumper)
+  files should be updated (*10 for dumper)
   #dont_remove_newlines
       Ztol (-1E90):    all the modes with logZ < Ztol are ignored
       maxModes (100):  expected max no. of modes (used only for memory allocation)
@@ -81,4 +85,27 @@ MultiNest: |
       outfile (0):     write output files?
       logZero (-1E90): points with loglike < logZero will be ignored by MultiNest
       maxiter (0):     Max no. of iterations, a non-positive value means infinity.
+      
+  Auxillary output variables:
+      Posterior:    Statistical weight of each point.
+      live_points:  Boolean, true if the point is a live point.  False otherwise.
   
+raster: |
+  #remove_newlines
+  The Raster scanner prints an user defined set of points.  Any non-specified parameters will be randomly chosen and transformed by the priors.  Note that any specified point must use the "none"
+  prior.  The parameters can be specified with a number or vector.  Different parameters can have
+  different vector lengths.  If different lengths are specified, then the parameters will short
+  vector lengths values will be repeated.
+  
+  Inifile options:
+      like:         The purpose to use for the likelihood.
+      parameters:   The parameters specified by the user.
+      
+  Example inifile entry:
+  
+    raster_example:
+      plugin: raster
+      like: LogLike
+      parameters:
+        "model::param_1": [0, 1]
+        "model::param_2": 0.5

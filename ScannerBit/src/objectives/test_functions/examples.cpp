@@ -134,9 +134,9 @@ objective_plugin(flat_prior, version(1, 0, 0))
     
     plugin_constructor
     {
-        //keys = get_keys();
-        //set_dimension(keys.size());
-        //range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
+        keys = get_keys();
+        set_dimension(keys.size());
+        range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
     }
     
     void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)

@@ -52,6 +52,8 @@ namespace Gambit
         {
             options = iniFile.getScannerNode();
             
+            Plugins::plugin_info.iniFile(options);
+            
             if (options.hasKey("use_objectives"))
             {
                 std::map< std::string, std::vector<std::pair<std::string, std::string>> > names;
@@ -109,23 +111,23 @@ namespace Gambit
                     }
 
                     prior = new Gambit::Priors::CompositePrior(paramNode, iniFile.getPriorsNode());
-                    factory = new Plugin_Function_Factory(*prior, names);
-                    has_local_factory = true;
-                        
+                    factory = new Plugin_Function_Factory(prior->getParameters(), names);
+                    Plugins::plugin_info.printer_prior(*printerInterface, *prior);
+                    has_local_factory = true;                        
                 }
                 else
                 {
+                    prior = new Gambit::Priors::CompositePrior(iniFile.getParametersNode(), iniFile.getPriorsNode());
                     factory = factoryIn;
-                    prior = new Priors::CompositePrior(iniFile.getParametersNode(), iniFile.getPriorsNode());
+                    Plugins::plugin_info.printer_prior(*printerInterface, *prior);
                 }
             }
             else
             {
+                prior = new Gambit::Priors::CompositePrior(iniFile.getParametersNode(), iniFile.getPriorsNode());
                 factory = factoryIn;
-                prior = new Priors::CompositePrior(iniFile.getParametersNode(), iniFile.getPriorsNode());
-            }
-            
-            Plugins::plugin_info.iniFile(options, *printerInterface, *prior);
+                Plugins::plugin_info.printer_prior(*printerInterface, *prior);
+            }   
         }
         
         int Scan_Manager::Run()

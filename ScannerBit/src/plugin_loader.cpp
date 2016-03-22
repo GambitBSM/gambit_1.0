@@ -428,11 +428,10 @@ namespace Gambit
                 return plugins[0];
             }
 
-            void pluginInfo::iniFile(const Options &options_in, printer_interface &printerIn, Priors::BasePrior &prior_in)
+            void pluginInfo::iniFile(const Options &options_in)
             {
                 options = options_in;
-                printer = &printerIn;
-                prior = &prior_in;
+            
                 if (options.getNode().IsMap())
                 {
                     if (options.hasKey("default_output_path"))
@@ -482,6 +481,12 @@ namespace Gambit
                 {
                     scan_err << "Plugins subsection is not of the \"Map\" YAML format." << scan_end;
                 }
+            }
+            
+            void pluginInfo::printer_prior(printer_interface &printerIn, Priors::BasePrior &prior_in)
+            {
+                printer = &printerIn;
+                prior = &prior_in;
             }
             
             Plugins::Plugin_Interface_Details pluginInfo::operator()(const std::string &type, const std::string &tag)
