@@ -410,6 +410,38 @@ for fname in fnames:
                print "   Copying RA data for dataset", itemname
                outdset[target_mask] = indset[mask_in][fancyindices]  
 
+# DEBUGGING
+# Check for duplicates in combined output
+print "   Checking combined output for duplicate keys..."
+
+pointIDs_out         = fout[group]["pointID"]
+mpiranks_out         = fout[group]["MPIrank"]
+pointIDs_isvalid_out = np.array(fout[group]["pointID_isvalid"][:],dtype=np.bool)
+mpiranks_isvalid_out = np.array(fout[group]["MPIrank_isvalid"][:],dtype=np.bool)
+
+mask_out = (pointIDs_isvalid_out & mpiranks_isvalid_out) 
+
+# convert entries to single values to facilitate fast comparison
+IDs_out = cantor_pairing( 
+            np.array(pointIDs_out[mask_out],dtype=np.longlong),
+            np.array(mpiranks_out[mask_out],dtype=np.longlong)
+            )
+
+ids  = IDs_out
+pid  = pointIDs_out[mask_out]
+rank = mpiranks_out[mask_out]
+error = False
+for ID,p,r in zip(ids,pid,rank):
+   Nmatches = np.sum(ID==ids)
+   if Nmatches>1:
+      print "   Error!", ID, "is duplicated {0} times!".format(Nmatches)
+      error = True
+      Match = np.sum((p==pid) & (r==rank))
+      if Match>1:
+        print "   ...MPIrank/pointID duplicate count: ", Match
+   if error:
+      ValueError("Duplicates detected in output dataset!")
+     
 
 # If everything has been successful, delete the temporary files
 print "Deleting temporary HDF5 files..."
