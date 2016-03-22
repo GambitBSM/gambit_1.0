@@ -532,7 +532,7 @@ namespace Gambit
                 // Delete existing output file
                 std::ostringstream command;
                 command << "rm -f "<<finalfile;
-                logger() << LogTags::printers << LogTags::info << LogTags::debug << "Running shell command: " << command.str() << EOM;
+                logger() << LogTags::printers << LogTags::info << "Running shell command: " << command.str() << EOM;
                 FILE* fp = popen(command.str().c_str(), "r");
                 if(fp==NULL)
                 {
@@ -580,7 +580,7 @@ namespace Gambit
              {
                std::ostringstream command;
                command << "rm -f "<<*it;
-               logger() << LogTags::printers << LogTags::info << LogTags::debug << "Running shell command: " << command.str() << EOM;
+               logger() << LogTags::printers << LogTags::info << "Running shell command: " << command.str() << EOM;
                FILE* fp = popen(command.str().c_str(), "r");
                if(fp==NULL)
                {
@@ -826,7 +826,7 @@ namespace Gambit
                logmsg << "Attempting combination into: "<< std::endl;
                logmsg << "   " << tmp_comb_file;
                std::cout << logmsg.str() << std::endl;
-               logger() << LogTags::printers << LogTags::info << LogTags::debug << logmsg.str() << EOM;
+               logger() << LogTags::printers << LogTags::info << logmsg.str() << EOM;
                combine_output(tmp_files,false);
             }
          }
@@ -1173,7 +1173,7 @@ namespace Gambit
           output << buffer;
       }
       int rc = pclose(fp);
-      logger() << LogTags::printers << LogTags::debug << LogTags::info;
+      logger() << LogTags::printers << LogTags::info;
       logger() << "Stdout/stderr captured from HDF5printer combination script" << std::endl;
       logger() << "--------------------" << std::endl;
       logger() << output.str() << std::endl;
@@ -1197,7 +1197,7 @@ namespace Gambit
         // Need to make sure Greg's combine code can do this.
         std::ostringstream command2;
         command2 <<"cp "<<tmp_comb_file<<" "<<finalfile<<" && rm "<<tmp_comb_file; // Note, deletes old file if successful
-        logger() << LogTags::printers << LogTags::info << LogTags::debug << "Running shell command: " << command2.str() << EOM;
+        logger() << LogTags::printers << LogTags::info << "Running shell command: " << command2.str() << EOM;
         FILE* fp = popen(command2.str().c_str(), "r");
         if(fp==NULL)
         {
