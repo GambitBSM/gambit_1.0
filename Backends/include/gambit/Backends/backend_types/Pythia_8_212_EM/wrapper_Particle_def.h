@@ -9,8 +9,6 @@
 
 #include "identification.hpp"
 
-#include <iostream>
-
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
     
@@ -748,7 +746,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle() :
             WrapperBase(__factory0())
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -756,7 +753,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn, double mIn, double scaleIn, double polIn) :
             WrapperBase(__factory1(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn, eIn, mIn, scaleIn, polIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -764,7 +760,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn, double mIn, double scaleIn) :
             WrapperBase(__factory2(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn, eIn, mIn, scaleIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -772,7 +767,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn, double mIn) :
             WrapperBase(__factory3(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn, eIn, mIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -780,7 +774,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn) :
             WrapperBase(__factory4(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn, eIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -788,7 +781,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn) :
             WrapperBase(__factory5(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -796,7 +788,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn) :
             WrapperBase(__factory6(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -804,7 +795,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn) :
             WrapperBase(__factory7(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -812,7 +802,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn) :
             WrapperBase(__factory8(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -820,7 +809,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn) :
             WrapperBase(__factory9(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -828,7 +816,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In) :
             WrapperBase(__factory10(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -836,7 +823,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In) :
             WrapperBase(__factory11(idIn, statusIn, mother1In, mother2In, daughter1In))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -844,7 +830,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In) :
             WrapperBase(__factory12(idIn, statusIn, mother1In, mother2In))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -852,7 +837,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In) :
             WrapperBase(__factory13(idIn, statusIn, mother1In))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -860,7 +844,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn) :
             WrapperBase(__factory14(idIn, statusIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -868,7 +851,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn) :
             WrapperBase(__factory15(idIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -876,7 +858,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn, double mIn, double scaleIn, double polIn) :
             WrapperBase(__factory16(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pIn, mIn, scaleIn, polIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -884,7 +865,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn, double mIn, double scaleIn) :
             WrapperBase(__factory17(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pIn, mIn, scaleIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -892,7 +872,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn, double mIn) :
             WrapperBase(__factory18(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pIn, mIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -900,7 +879,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn) :
             WrapperBase(__factory19(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pIn))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -909,7 +887,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(Pythia8::Abstract_Particle* in) :
             WrapperBase(in)
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -918,7 +895,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle(const Particle& in) :
             WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Particle(?) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -937,7 +913,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Particle::~Particle()
         {
-            // std::cerr << "DEBUG: (GAMBIT) ~Wr_Particle() : will destroy instance at: " << this << std::endl;
             if (get_BEptr() != 0)
             {
                 get_BEptr()->set_delete_wrapper(false);

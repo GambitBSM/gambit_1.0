@@ -65,38 +65,40 @@ namespace Gambit {
 
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
+        HEPUtils::Event* eventClone = event->clone();
 
         // Missing energy
-        //HEPUtils::P4 ptot = event->missingmom();
-        double met = event->met();
+        //HEPUtils::P4 ptot = eventClone->missingmom();
+        double met = eventClone->met();
 
         // Now define vectors of baseline objects
 
         vector<HEPUtils::Particle*> baselineElectrons;
-        for (HEPUtils::Particle* electron : event->electrons()) {
+        for (HEPUtils::Particle* electron : eventClone->electrons()) {
           if (electron->pT() > 10. && fabs(electron->eta()) < 2.5) {
             baselineElectrons.push_back(electron);
           }
         }
         vector<HEPUtils::Particle*> baselineMuons;
-        for (HEPUtils::Particle* muon : event->muons()) {
+        for (HEPUtils::Particle* muon : eventClone->muons()) {
           if (muon->pT() > 10. && fabs(muon->eta()) < 2.5) {
             baselineMuons.push_back(muon);
           }
         }
 
         vector<HEPUtils::Particle*> baselineTaus;
-        for (HEPUtils::Particle* tau : event->taus()) {
+        for (HEPUtils::Particle* tau : eventClone->taus()) {
           if (tau->pT() > 20. && fabs(tau->eta()) < 2.3) {
             baselineTaus.push_back(tau);
           }
         }
+        /// @TODO ATLAS? Really?
         ATLAS::applyTauEfficiencyR1(baselineTaus);
 
         vector<HEPUtils::Jet*> baselineJets;
         vector<HEPUtils::P4> jets;
 
-        for (HEPUtils::Jet* jet : event->jets()) {
+        for (HEPUtils::Jet* jet : eventClone->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 4.5) {
             baselineJets.push_back(jet);
           }
@@ -179,6 +181,7 @@ namespace Gambit {
         if(nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 500.)_num500++;
         if(nJets > 0 && baselineJets[0]->pT() > 110. && fabs(baselineJets[0]->eta()) < 2.4 && nJets <=2 && dPhiJ1J2 < 2.5 && nLeptons==0 && met > 550.)_num550++;
 
+        delete eventClone;
         return;
 
       }

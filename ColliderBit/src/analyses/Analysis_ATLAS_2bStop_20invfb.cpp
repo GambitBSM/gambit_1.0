@@ -54,27 +54,28 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
+        HEPUtils::Event* eventClone = event->clone();
+
         std::cerr << "DEBUG:" << std::cerr;
-        std::cerr << "DEBUG: ATLAS_2bStop_20invfb: particles in event:" << std::endl;
-        for (HEPUtils::Particle* p : event->particles()) 
+        std::cerr << "DEBUG: ATLAS_2bStop_20invfb: particles in eventClone:" << std::endl;
+        for (HEPUtils::Particle* p : eventClone->particles())
         {
           std::cerr << "DEBUG: ATLAS_2bStop_20invfb: " << p << std::endl;
         }
         std::cerr << "DEBUG:" << std::cerr;
 
-        HEPUtilsAnalysis::analyze(event);
-
         // Missing energy
-        HEPUtils::P4 ptot = event->missingmom();
-        double met = event->met();
+        HEPUtils::P4 ptot = eventClone->missingmom();
+        double met = eventClone->met();
 
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineElectrons;
-        for (HEPUtils::Particle* electron : event->electrons()) {
+        for (HEPUtils::Particle* electron : eventClone->electrons()) {
           if (electron->pT() > 7. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
         }
         vector<HEPUtils::Particle*> baselineMuons;
-        for (HEPUtils::Particle* muon : event->muons()) {
+        for (HEPUtils::Particle* muon : eventClone->muons()) {
           if (muon->pT() > 6. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
 
@@ -87,7 +88,7 @@ namespace Gambit {
         vector<HEPUtils::Jet*> bJets;
         vector<HEPUtils::Jet*> trueBJets; //for debugging
 
-        for (HEPUtils::Jet* jet : event->jets()) {
+        for (HEPUtils::Jet* jet : eventClone->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.9) baselineJets.push_back(jet);
         }
 
@@ -368,6 +369,7 @@ namespace Gambit {
         if(cut_ElectronVeto && cut_MuonVeto && cut_METGt250 && passSRBJetCut && passSRBbJetCut && cut_dPhiJets && cut_METmeff3 && ht3<50.) _numSRB ++;
 
 
+        delete eventClone;
         return;
 
       }

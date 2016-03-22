@@ -104,31 +104,33 @@ namespace Gambit {
 
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
+        HEPUtils::Event* eventClone = event->clone();
 
         // Missing energy
-        HEPUtils::P4 ptot = event->missingmom();
-        double met = event->met();
+        HEPUtils::P4 ptot = eventClone->missingmom();
+        double met = eventClone->met();
         double missingPhi = ptot.phi();
 
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> signalElectrons;
-        for (HEPUtils::Particle* electron : event->electrons()) {
+        for (HEPUtils::Particle* electron : eventClone->electrons()) {
           if (electron->pT() > 10. && fabs(electron->eta()) < 2.4) signalElectrons.push_back(electron);
         }
         vector<HEPUtils::Particle*> signalMuons;
-        for (HEPUtils::Particle* muon : event->muons()) {
+        for (HEPUtils::Particle* muon : eventClone->muons()) {
           if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) signalMuons.push_back(muon);
         }
         vector<HEPUtils::Particle*> signalTaus;
-        for (HEPUtils::Particle* tau : event->taus()) {
+        for (HEPUtils::Particle* tau : eventClone->taus()) {
           if (tau->pT() > 20. && fabs(tau->eta()) < 2.4) signalTaus.push_back(tau);
         }
+        /// @TODO ATLAS? Really?
         ATLAS::applyTauEfficiencyR1(signalTaus);
 
         vector<HEPUtils::Jet*> signalJets;
         vector<HEPUtils::Jet*> bJets;
 
-        for (HEPUtils::Jet* jet : event->jets()) {
+        for (HEPUtils::Jet* jet : eventClone->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 2.5) signalJets.push_back(jet);
           if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 30.) bJets.push_back(jet);
         }
@@ -347,6 +349,7 @@ namespace Gambit {
           }
         */
 
+        delete eventClone;
         return;
       }
 

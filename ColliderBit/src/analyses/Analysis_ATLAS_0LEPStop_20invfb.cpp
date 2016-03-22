@@ -112,32 +112,31 @@ namespace Gambit {
 
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
+        HEPUtils::Event* eventClone = event->clone();
 
         std::cerr << "DEBUG:" << std::cerr;
-        std::cerr << "DEBUG: ATLAS_0LEPStop_20invfb: particles in event:" << std::endl;
-        for (HEPUtils::Particle* p : event->particles()) 
+        std::cerr << "DEBUG: ATLAS_0LEPStop_20invfb: particles in eventClone:" << std::endl;
+        for (HEPUtils::Particle* p : eventClone->particles())
         {
           std::cerr << "DEBUG: ATLAS_0LEPStop_20invfb: " << p << std::endl;
         }
         std::cerr << "DEBUG:" << std::cerr;
 
-        HEPUtilsAnalysis::analyze(event);
-
-
         // Missing energy
-        HEPUtils::P4 ptot = event->missingmom();
-        double met = event->met();
+        HEPUtils::P4 ptot = eventClone->missingmom();
+        double met = eventClone->met();
 
 
         // Baseline lepton objects
         vector<HEPUtils::Particle*> baselineElectrons, baselineMuons, baselineTaus;
-        for (HEPUtils::Particle* electron : event->electrons()) {
+        for (HEPUtils::Particle* electron : eventClone->electrons()) {
           if (electron->pT() > 10. && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
         }
-        for (HEPUtils::Particle* muon : event->muons()) {
+        for (HEPUtils::Particle* muon : eventClone->muons()) {
           if (muon->pT() > 10. && muon->abseta() < 2.4) baselineMuons.push_back(muon);
         }
-        for (HEPUtils::Particle* tau : event->taus()) {
+        for (HEPUtils::Particle* tau : eventClone->taus()) {
           if (tau->pT() > 10. && tau->abseta() < 2.47) baselineTaus.push_back(tau);
         }
         ATLAS::applyTauEfficiencyR1(baselineTaus);
@@ -156,7 +155,7 @@ namespace Gambit {
         const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.7};
         HEPUtils::BinnedFn2D<double> _eff2d(a,b,c);
-        for (HEPUtils::Jet* jet : event->jets()) {
+        for (HEPUtils::Jet* jet : eventClone->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
           bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) {
@@ -298,20 +297,20 @@ namespace Gambit {
 
         //mjjj combinations
 
-  HEPUtils::P4 mbjj0, mbjj1;
+        HEPUtils::P4 mbjj0, mbjj1;
 
-  double mindphi_12 = 9999.;
+        double mindphi_12 = 9999.;
 
-  HEPUtils::P4 W1;
-  HEPUtils::P4 W2;
-  HEPUtils::P4 T1;
-  HEPUtils::P4 T2;
-  HEPUtils::P4 jet1;
-  HEPUtils::P4 jet2;
-  HEPUtils::P4 jet3;
-  HEPUtils::P4 jet4;
-  HEPUtils::P4 jet5;
-  HEPUtils::P4 jet6;
+        HEPUtils::P4 W1;
+        HEPUtils::P4 W2;
+        HEPUtils::P4 T1;
+        HEPUtils::P4 T2;
+        HEPUtils::P4 jet1;
+        HEPUtils::P4 jet2;
+        HEPUtils::P4 jet3;
+        HEPUtils::P4 jet4;
+        HEPUtils::P4 jet5;
+        HEPUtils::P4 jet6;
 
         //Need to form top quark four vectors from jets
         //Use the two leading b jets as the b jets (a slight departure from ATLAS which uses the two jets with the highest b weight)
@@ -361,7 +360,7 @@ namespace Gambit {
           double mindphi_w1j3 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
 
-      jet3.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
+            jet3.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
             if(jet3.deltaR_eta(W1)<mindphi_w1j3) {
               b1 = p;
               mindphi_w1j3 = jet3.deltaR_eta(W1);
@@ -370,15 +369,15 @@ namespace Gambit {
             }
           }
 
-    double mindphi_45 = 9999.;
+          double mindphi_45 = 9999.;
           for(unsigned int k=0; k<selectNonBJets.size(); k++) {
             for(unsigned int l=k; l<selectNonBJets.size(); l++) {
               if(k!=j1 && k!=j2 && l!=j1 && l!=j2) {
 
-    jet4.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
-    jet5.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
+                jet4.setXYZE(selectNonBJets[k]->mom().px(),selectNonBJets[k]->mom().py(),selectNonBJets[k]->mom().pz(),selectNonBJets[k]->E());
+                jet5.setXYZE(selectNonBJets[l]->mom().px(),selectNonBJets[l]->mom().py(),selectNonBJets[l]->mom().pz(),selectNonBJets[l]->E());
 
-    if(jet4.deltaR_eta(jet5)<mindphi_45) {
+                if(jet4.deltaR_eta(jet5)<mindphi_45) {
                   //j4 = k;
                   //j5 = l;
                   mindphi_45 = jet4.deltaR_eta(jet5);
@@ -392,7 +391,7 @@ namespace Gambit {
           for(unsigned int p=0; p<selectBJets.size(); p++) {
             if(p!=b1) {
 
-        jet6.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
+              jet6.setXYZE(selectBJets[p]->mom().px(),selectBJets[p]->mom().py(),selectBJets[p]->mom().pz(),selectBJets[p]->E());
 
               if(jet6.deltaR_eta(W2)<mindphi_w2j6) {
                 //j6 = p;
@@ -653,7 +652,7 @@ namespace Gambit {
         if(isSRC2)_numSRC2++;
         if(isSRC3)_numSRC3++;
 
-
+        delete eventClone;
         return;
 
       }

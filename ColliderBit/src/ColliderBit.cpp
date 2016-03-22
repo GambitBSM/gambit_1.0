@@ -116,8 +116,10 @@ namespace Gambit
     bool eventsGenerated;
     int nEvents;
     /// Analysis stuff
+    bool useATLAS;
     std::vector<std::string> analysisNamesATLAS;
     HEPUtilsAnalysisContainer globalAnalysesATLAS;
+    bool useCMS;
     std::vector<std::string> analysisNamesCMS;
     HEPUtilsAnalysisContainer globalAnalysesCMS;
 
@@ -408,7 +410,7 @@ namespace Gambit
       using namespace Pipes::getBuckFastATLAS;
       bool partonOnly;
       double antiktR;
-      if (*Loop::iteration == INIT)
+      if (*Loop::iteration == INIT and useATLAS)
       {
         result.clear();
         // Setup new BuckFast:
@@ -424,7 +426,7 @@ namespace Gambit
       using namespace Pipes::getBuckFastCMS;
       bool partonOnly;
       double antiktR;
-      if (*Loop::iteration == INIT)
+      if (*Loop::iteration == INIT and useCMS)
       {
         result.clear();
         // Setup new BuckFast
@@ -457,11 +459,16 @@ namespace Gambit
     void getATLASAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getATLASAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
+        useATLAS = runOptions->getValueOrDef<bool>(true, "useATLAS");
+        std::cerr << "\n\n DEBUG: useATLAS = " << useATLAS << "\n\n";
+        if (!useATLAS) return;
         GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
         globalAnalysesATLAS.clear();
         globalAnalysesATLAS.init(analysisNamesATLAS);
         return;
       }
+
+      if (!useATLAS) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -493,11 +500,16 @@ namespace Gambit
     void getCMSAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getCMSAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
+        useCMS = runOptions->getValueOrDef<bool>(true, "useCMS");
+        std::cerr << "\n\n DEBUG: useCMS = " << useCMS << "\n\n";
+        if (!useCMS) return;
         GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
         globalAnalysesCMS.clear();
         globalAnalysesCMS.init(analysisNamesCMS);
         return;
       }
+
+      if (!useCMS) return;
 
       if (*Loop::iteration == START_SUBPROCESS)
       {
@@ -564,7 +576,7 @@ namespace Gambit
 
     void smearEventATLAS(HEPUtils::Event& result) {
       using namespace Pipes::smearEventATLAS;
-      if (*Loop::iteration <= BASE_INIT) return;
+      if (*Loop::iteration <= BASE_INIT or !useATLAS) return;
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
@@ -573,7 +585,7 @@ namespace Gambit
 
     void smearEventCMS(HEPUtils::Event& result) {
       using namespace Pipes::smearEventCMS;
-      if (*Loop::iteration <= BASE_INIT) return;
+      if (*Loop::iteration <= BASE_INIT or !useCMS) return;
       result.clear();
 
       // Get the next event from Pythia8, convert to HEPUtils::Event, and smear it
@@ -597,6 +609,7 @@ namespace Gambit
     void runATLASAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runATLASAnalyses;
+      if (!useATLAS) return;
       if (*Loop::iteration == FINALIZE && eventsGenerated) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
@@ -609,6 +622,7 @@ namespace Gambit
       if (*Loop::iteration <= BASE_INIT) return;
 
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
+      std::cerr << "\n\n DEBUG: Running ATLAS... \n\n";
       Dep::ATLASAnalysisContainer->analyze(*Dep::ATLASSmearedEvent);
     }
 
@@ -617,6 +631,7 @@ namespace Gambit
     void runCMSAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runCMSAnalyses;
+      if (!useCMS) return;
       if (*Loop::iteration == FINALIZE && eventsGenerated) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
@@ -629,6 +644,7 @@ namespace Gambit
       if (*Loop::iteration <= BASE_INIT) return;
 
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
+      std::cerr << "\n\n DEBUG: Running CMS... \n\n";
       Dep::CMSAnalysisContainer->analyze(*Dep::CMSSmearedEvent);
     }
 
@@ -649,9 +665,13 @@ namespace Gambit
         result = 0.;
         return;
       }
-      ColliderLogLikes analysisResults = (*Dep::ATLASAnalysisNumbers);
-      analysisResults.insert(analysisResults.end(),
-              Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
+      ColliderLogLikes analysisResults;
+      if(useATLAS)
+        analysisResults.insert(analysisResults.end(),
+                Dep::ATLASAnalysisNumbers->begin(), Dep::ATLASAnalysisNumbers->end());
+      if(useCMS)
+        analysisResults.insert(analysisResults.end(),
+                Dep::CMSAnalysisNumbers->begin(), Dep::CMSAnalysisNumbers->end());
 
       // Loop over analyses and calculate the total observed dll
       double total_dll_obs = 0;

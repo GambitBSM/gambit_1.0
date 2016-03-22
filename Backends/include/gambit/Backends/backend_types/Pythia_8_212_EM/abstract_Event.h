@@ -14,8 +14,6 @@
 
 #include "identification.hpp"
 
-#include <iostream>
-
 // Forward declaration needed by the destructor pattern.
 void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Event*, bool);
 
@@ -218,14 +216,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             public:
                 Abstract_Event()
                 {
-                    // std::cerr << "DEBUG: (GAMBIT) Abs_Event() : created new instance at: " << this << std::endl;
                     wptr = 0;
                     delete_wrapper = false;
                 }
     
                 Abstract_Event(const Abstract_Event&)
                 {
-                    // std::cerr << "DEBUG: (GAMBIT) Abs_Event(Abs_Event&) : created new instance at: " << this << std::endl;
                     wptr = 0;
                     delete_wrapper = false;
                 }
@@ -255,7 +251,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual ~Abstract_Event()
                 {
-                    // std::cerr << "DEBUG: (GAMBIT) ~Abs_Event() : destroying instance at: " << this << std::endl;
                     if (wptr != 0)
                     {
                         set_delete_BEptr(wptr, false);

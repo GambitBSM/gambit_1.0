@@ -80,7 +80,7 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 10
+      point_number: 1
       output_file:  output
       like:  Likelihood
       files:
@@ -218,6 +218,8 @@ Rules:
   - capability: ATLASAnalysisContainer
     function: getATLASAnalysisContainer
     options:  
+      #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
+      useATLAS: true
       analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
                            "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
                            "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
@@ -226,6 +228,8 @@ Rules:
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:  
+      #useCMS defaults to true anyways. Set it to false to ignore all these analyses
+      useCMS: true
       analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
                          "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
 
@@ -235,7 +239,7 @@ Rules:
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
-      nEvents: 10000
+      nEvents: 1000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
 

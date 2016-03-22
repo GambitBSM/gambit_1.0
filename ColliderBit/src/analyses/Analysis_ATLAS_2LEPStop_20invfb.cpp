@@ -62,32 +62,32 @@ namespace Gambit {
       }
 
       void analyze(const HEPUtils::Event* event) {
+        HEPUtilsAnalysis::analyze(event);
+        HEPUtils::Event* eventClone = event->clone();
 
         std::cerr << "DEBUG:" << std::cerr;
-        std::cerr << "DEBUG: ATLAS_2LEPStop_20invfb: particles in event:" << std::endl;
-        for (HEPUtils::Particle* p : event->particles()) 
+        std::cerr << "DEBUG: ATLAS_2LEPStop_20invfb: particles in eventClone:" << std::endl;
+        for (HEPUtils::Particle* p : eventClone->particles())
         {
           std::cerr << "DEBUG: ATLAS_2LEPStop_20invfb: " << p << std::endl;
         }
         std::cerr << "DEBUG:" << std::cerr;
 
-        HEPUtilsAnalysis::analyze(event);
-
         // Missing energy
-        HEPUtils::P4 ptot = event->missingmom();
-        //double met = event->met();
+        HEPUtils::P4 ptot = eventClone->missingmom();
+        //double met = eventClone->met();
 
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineElectrons;
-        for (HEPUtils::Particle* electron : event->electrons()) {
+        for (HEPUtils::Particle* electron : eventClone->electrons()) {
           if (electron->pT() > 10. && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
         }
         vector<HEPUtils::Particle*> baselineMuons;
-        for (HEPUtils::Particle* muon : event->muons()) {
+        for (HEPUtils::Particle* muon : eventClone->muons()) {
           if (muon->pT() > 10. && muon->abseta() < 2.4) baselineMuons.push_back(muon);
         }
         vector<HEPUtils::Particle*> baselineTaus;
-        for (HEPUtils::Particle* tau : event->taus()) {
+        for (HEPUtils::Particle* tau : eventClone->taus()) {
           if (tau->pT() > 10. && tau->abseta() < 2.47) baselineTaus.push_back(tau);
         }
         ATLAS::applyTauEfficiencyR1(baselineTaus);
@@ -95,7 +95,7 @@ namespace Gambit {
         vector<HEPUtils::Jet*> baselineJets;
         vector<HEPUtils::Jet*> bJets;
         vector<HEPUtils::Jet*> trueBJets; //for debugging
-        for (HEPUtils::Jet* jet : event->jets()) {
+        for (HEPUtils::Jet* jet : eventClone->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 2.5) baselineJets.push_back(jet);
           if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
         }
@@ -352,6 +352,7 @@ namespace Gambit {
         if(cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib && cut_MT2110 && nJets>=2) _numSRM110DF++;
         if(cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib && cut_MT2120) _numSRM120DF++;
 
+        delete eventClone;
         return;
       }
 

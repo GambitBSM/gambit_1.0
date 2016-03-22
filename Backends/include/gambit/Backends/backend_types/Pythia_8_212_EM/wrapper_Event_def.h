@@ -10,8 +10,6 @@
 
 #include "identification.hpp"
 
-#include <iostream>
-
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
     
@@ -429,7 +427,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Event::Event(int capacity) :
             WrapperBase(__factory0(capacity))
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Event(int) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -437,7 +434,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Event::Event() :
             WrapperBase(__factory1())
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Event() : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -446,7 +442,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Event::Event(Pythia8::Abstract_Event* in) :
             WrapperBase(in)
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Event(Abs_Event*) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -455,7 +450,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Event::Event(const Event& in) :
             WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            // std::cerr << "DEBUG: (GAMBIT) Wr_Event(Wr_Event&) : created instance at: " << this << std::endl;
             get_BEptr()->set_wptr(this);
             get_BEptr()->set_delete_wrapper(false);
         }
@@ -474,7 +468,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Event::~Event()
         {
-            // std::cerr << "DEBUG: (GAMBIT) ~Wr_Event() : will destroy instance at: " << this << std::endl;
             if (get_BEptr() != 0)
             {
                 get_BEptr()->set_delete_wrapper(false);
