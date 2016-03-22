@@ -30,6 +30,9 @@
 //#define NDEBUG
 #include <assert.h>
 
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/util_macros.hpp"
+
 #include "boost/shared_ptr.hpp"
 #include "boost/enable_shared_from_this.hpp"
 
@@ -911,7 +914,9 @@ namespace Funk
             {
                 std::string msg = "FunkBase::resolve() encountered internal problem when resolving " + *it1 + ".\n";
                             msg+= " --- Actual arguments of object: " + args_string(arguments);
-                throw std::runtime_error(msg);
+                // PS this is no use in GAMBIT, as it doesn't trigger GAMBIT's exception system fully (because it is not a GAMBIT exception).
+                //throw std::invalid_argument(msg);
+                Gambit::utils_error().raise(LOCAL_INFO, msg);
             }
         }
 
@@ -995,7 +1000,9 @@ namespace Funk
             std::string msg = "FunkBase::bind() tries to resolve wrong arguments.\n";
                         msg+= " --- Arguments that are supposed to be bound: " + args_string(bound_arguments) + "\n";
                         msg+= " --- Actual arguments of object: " + args_string(arguments);
-            throw std::invalid_argument(msg);
+            // PS this is no use in GAMBIT, as it doesn't trigger GAMBIT's exception system fully (because it is not a GAMBIT exception).
+            //throw std::invalid_argument(msg);
+            Gambit::utils_error().raise(LOCAL_INFO, msg);
         }
         this->resolve(datamap, datalen, bindID, argmap);
         return shared_ptr<FunkBound>(new FunkBound(shared_from_this(), datalen, bindID));
@@ -1339,7 +1346,10 @@ namespace Funk
             {
               (void)bindID;
               (void)data;
-              throw std::invalid_argument("Funk::ThrowError says: " + msg);
+              // PS this is no use in GAMBIT, as it doesn't trigger GAMBIT's exception system fully (because it is not a GAMBIT exception).
+              //throw std::invalid_argument("Funk::ThrowError says: " + msg);
+              Gambit::utils_error().raise(LOCAL_INFO, "Funk::ThrowError says: " + msg);
+              return 0;
             }
 
         private:
@@ -1603,7 +1613,9 @@ namespace Funk
         {
             std::string msg = "augment_with_singularities(): takes only functions with one argument.\n";
                         msg+= "  --- Actual arguments are: " + args_string(f->getArgs());
-            throw std::invalid_argument(msg);
+            // PS this is no use in GAMBIT, as it doesn't trigger GAMBIT's exception system fully (because it is not a GAMBIT exception).
+            //throw std::invalid_argument(msg);
+            Gambit::utils_error().raise(LOCAL_INFO, msg);
         }
 
         std::string arg = f->getArgs()[0];
