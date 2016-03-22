@@ -198,7 +198,7 @@ for fname in fnames:
    print "Copying sync data from file:"
    print "   {0}".format(fname)
    print "to file:"
-   print "   {1}".format(outfname)
+   print "   {0}".format(outfname)
    fin = files[fname]
 
    dset_length=None
@@ -222,7 +222,7 @@ for fname in fnames:
       print "RA data detected in file:"
       print "   {0}".format(fname)
       print "Copying it to file:"
-      print "   {1}".format(outfname)
+      print "   {0}".format(outfname)
       
       # Get write targets
       dset_length=fin[RA_group]["RA_MPIrank"].shape[0]        
