@@ -126,8 +126,9 @@ for i,fname in enumerate(fnames):
    print "   Opening: {0}".format(fname)
    f = h5py.File(fname,'r')
    files[fname] = f
-   print "      Analysing..."
-  
+   print "Checking temporary file for duplicates..."
+   check_for_duplicates(f,group) 
+   print "      Analysing..."  
    datasets = []
    tmp_dset_metadata = {}
    tmp_RA_dset_metadata = {}
