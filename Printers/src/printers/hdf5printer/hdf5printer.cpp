@@ -912,10 +912,11 @@ namespace Gambit
 
             // Gather the IDs for previous points
             //bool allvalid = true;
+            logger() << LogTags::info << "Gathering MPIrank/pointID pairs from previous scan data" << EOM;
             unsigned long lastvalid = 0;
             for(size_t i=0; i<dsetdata.pointIDs.size(); i++)
             {
-              //std::cout<<"Examining PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<"), validity: ("<<dsetdata.pointIDs_isvalid[i]<<", "<<dsetdata.mpiranks_isvalid[i]<<")"<<std::endl;
+              //std::cout <<"Examining PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<"), validity: ("<<dsetdata.pointIDs_isvalid[i]<<", "<<dsetdata.mpiranks_isvalid[i]<<")"<<std::endl;
               if(dsetdata.pointIDs_isvalid[i] and dsetdata.mpiranks_isvalid[i])
               {
                  //std::cout<<"  Loading PPID["<<i<<"] from previous scan data: ("<<dsetdata.pointIDs[i]<<", "<<dsetdata.mpiranks[i]<<")"<<std::endl;
@@ -965,6 +966,13 @@ namespace Gambit
               {
                  //allvalid=false;  // don't need if we aren't checking for gaps in dataset
               }
+            }
+            logger() << LogTags::info << "Gathered "<<prev_points.size()<<" MPIrank/pointID pairs from previous scan data" << EOM;
+            if(prev_points.size()==0)
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! Failed to gather any MPIrank/pointID pairs from previous scan data! This is a bug in the HDF5Printer, because if the existing HDF5 file is empty or corrupt then a different error should have been raised before now. Please report this error."
+               printer_error().raise(LOCAL_INFO, errmsg.str());
             }
 
             // Set the starting position for new output
