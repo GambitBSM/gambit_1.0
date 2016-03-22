@@ -40,7 +40,7 @@ def check_lengths(d):
       if length==None: 
          length=value
       elif length!=value:
-         ValueError("Length of dataset '{0}' is inconsistent with the others in the target group! (length was {1}; previous dataset had length={2})".format(key,value,length)) 
+         raise ValueError("Length of dataset '{0}' is inconsistent with the others in the target group! (length was {1}; previous dataset had length={2})".format(key,value,length)) 
    return length 
 
 def copy_dset(indset,outdset,nextempty):
@@ -85,7 +85,7 @@ def check_for_duplicates(fout,group):
          if Match>1:
            print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(p,r,Match)
       if error==True:
-         ValueError("Duplicates detected in output dataset!")
+         raise ValueError("Duplicates detected in output dataset!")
 
 
 #====Begin "main"=================================
@@ -435,7 +435,7 @@ for fname in fnames:
                outdset = fout[group][itemname]
                #Check that types match
                if indset.dtype!=outdset.dtype:
-                  ValueError("Type mismatch detected between dataset {0} in file {1} (dtype={2}), and matching dataset in output file {3} (dtype={3})".format(itemname,fname,indset.dtype,outfname,outdset.dtype)) 
+                  raise ValueError("Type mismatch detected between dataset {0} in file {1} (dtype={2}), and matching dataset in output file {3} (dtype={3})".format(itemname,fname,indset.dtype,outfname,outdset.dtype)) 
                #can't do the fancy list-indexing directly on the hdf5 dataset (the boolean assignment should be ok though) 
                print "   Copying RA data for dataset", itemname
                outdset[target_mask] = indset[mask_in][fancyindices]  
