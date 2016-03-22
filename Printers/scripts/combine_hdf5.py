@@ -282,11 +282,9 @@ for fname in fnames:
                Nmatches = np.sum(ID==ids)
                if Nmatches>1:
                   print "   Warning!", ID, "is duplicated {0} times!".format(Nmatches)
-                  pMatch = np.sum(p==pid)
-                  rMatch = np.sum(r==rank)
-                  if pMatch>1 or rMatch>1:
-                    print "   ...pointID duplicate count: ", pMatch
-                    print "   ...MPIrank duplicate count: ", rMatch
+                  Match = np.sum(p==pid & r==rank)
+                  if Match>1:
+                    print "   ...MPIrank/pointID duplicate count: ", Match
 
          # Find which IDs in the output dataset are write targets
          target_mask_small = np.in1d(IDs_out,IDs_in)
