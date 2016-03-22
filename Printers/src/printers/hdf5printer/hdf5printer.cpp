@@ -1154,9 +1154,9 @@ namespace Gambit
         tmp_file_list << *it << " ";
       }
       command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<tmp_comb_file<<"  "<<group<<" "<<tmp_file_list.str()<<" 2>&1";
-      logger() << LogTags::printers << "Running HDF5 data combination script..." << std::endl
-               << "> " << command.str() << std::endl
-               << EOM;
+      logger() << LogTags::printers << "Running HDF5 data combination script..." << std::endl;
+      logger() << "> " << command.str() << std::endl;
+      logger() << EOM;
       FILE* fp = popen(command.str().c_str(), "r");
       if(fp==NULL)
       {
@@ -1179,6 +1179,9 @@ namespace Gambit
       logger() << output.str() << std::endl;
       logger() << "--------------------" << std::endl;
       logger() << "end HDF5 combination script output" << EOM;
+
+      logger() << "Where is my message?" << EOM;
+
       if(rc!=0)
       {
          // Python error occurred
