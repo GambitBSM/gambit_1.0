@@ -11,7 +11,7 @@ import sys
 chunksize = 1000
 
 bufferlength = 100                # Must match setting in hdf5printer.hpp
-max_ppidpairs = 10*bufferlength #   "  "
+max_ppidpairs = 10*bufferlength   #   "  "
 
 def usage():
    print ("\nusage: python combine_hdf5.py <path-to-target-hdf5-file> <root group in hdf5 files> <tmp file 1> <tmp file 2> ..."
@@ -77,6 +77,8 @@ def check_for_duplicates(fout,group):
    rank = mpiranks_out[mask_out]
    error = False
    for ID,p,r in zip(ids,pid,rank):
+      if(p==1 and r==0):
+         print "   Detected entry ({0},{1})".format(p,r)
       Nmatches = np.sum(ID==ids)
       if Nmatches>1:
          print "   Error!", ID, "is duplicated {0} times!".format(Nmatches)
@@ -126,8 +128,9 @@ for i,fname in enumerate(fnames):
    print "   Opening: {0}".format(fname)
    f = h5py.File(fname,'r')
    files[fname] = f
-   print "Checking temporary file for duplicates..."
-   check_for_duplicates(f,group) 
+   if runchecks:
+      print "Checking temporary file for duplicates..."
+      check_for_duplicates(f,group) 
    print "      Analysing..."  
    datasets = []
    tmp_dset_metadata = {}
@@ -180,8 +183,9 @@ fout = h5py.File(outfname,'a')
 if not group in fout:
    gout = fout.create_group(group)
 else:
-   print "Checking existing combined output for duplicates..."
-   check_for_duplicates(fout,group) 
+   if runchecks:
+      print "Checking existing combined output for duplicates..."
+      check_for_duplicates(fout,group) 
    gout = fout[group]
 
 # Check for existing dsets in the output (and get their lengths if they exist)
@@ -245,8 +249,9 @@ for fname in fnames:
    if(dset_length==None):
       print "No sync dsets found! Nothing copied!"
    else:
-      print "Re-checking combined file for duplicates..."
-      check_for_duplicates(fout,group) 
+      if runchecks:
+         print "Re-checking combined file for duplicates..."
+         check_for_duplicates(fout,group) 
       nextempty+=dset_length
 
 # Copy data from RA datasets into combined dataset
@@ -445,8 +450,9 @@ for fname in fnames:
 
 # DEBUGGING
 # Check for duplicates in combined output
-print "Checking final combined output for duplicates..."
-check_for_duplicates(fout,group) 
+if runchecks:
+   print "Checking final combined output for duplicates..."
+   check_for_duplicates(fout,group) 
 
 # If everything has been successful, delete the temporary files
 print "Deleting temporary HDF5 files..."
