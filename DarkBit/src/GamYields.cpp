@@ -400,47 +400,45 @@ namespace Gambit {
         result.addChannel(dNdE, str_flav_to_mass(P1), str_flav_to_mass(P2), FINAL, EcmMin, EcmMax);  
 
         // specifies also center of mass energy range
-        // FIXME: Update energy validity ranges
-        ADD_CHANNEL(12, "Z0", "Z0", "gamma", 91.2*2, 10000.)
-        ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
-        ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 10000.)
-        ADD_CHANNEL(15, "e+", "e-", "gamma", 0., 10000.)
-        ADD_CHANNEL(16, "nu_mu", "nubar_mu", "gamma", 0., 10000.)
-        ADD_CHANNEL(17, "mu+", "mu-", "gamma", 0., 10000.)
-        ADD_CHANNEL(18, "nu_tau", "nubar_tau", "gamma", 0., 10000.)
-        ADD_CHANNEL(19, "tau+", "tau-", "gamma", 0., 10000.)
-        ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 10000.)
-        ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(22, "c", "cbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(23, "s", "sbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(24, "t", "tbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(25, "b", "bbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(26, "g", "g", "gamma", 0., 10000.)
+        // FIXME: What to do with channels that return zero (ee, uu, dd, ss)?
+        ADD_CHANNEL(12, "Z0", "Z0", "gamma", 91.2*2, 100000.)
+        ADD_CHANNEL(13, "W+", "W-", "gamma", 80.25*2, 100000.)
+        ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(15, "e+", "e-", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(16, "nu_mu", "nubar_mu", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(17, "mu+", "mu-", "gamma", 0.10566*2, 100000.)
+        ADD_CHANNEL(18, "nu_tau", "nubar_tau", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(19, "tau+", "tau-", "gamma", 1.7841*2, 100000.)
+        ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(22, "c", "cbar", "gamma", 1.35*2, 100000.)
+        ADD_CHANNEL(23, "s", "sbar", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(24, "t", "tbar", "gamma", 175.0*2, 100000.)
+        ADD_CHANNEL(25, "b", "bbar", "gamma", 5.0*2, 100000.)
+        ADD_CHANNEL(26, "g", "g", "gamma", 0., 100000.)
         // FIXME: Double-check validity of neutrino channels
 #undef ADD_CHANNEL
 
         // Add approximations for single-particle cases.
-        // FIXME: Update energy validity ranges
         // FIXME: We could actually use boosted rest-frame spectra instead -- discuss
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 12, yieldk, flag);
-        result.addChannel(dNdE/2, "Z0", "gamma", 91.2, 10000.);
+        result.addChannel(dNdE/2, "Z0", "gamma", 91.2, 50000.);
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 13, yieldk, flag);
-        result.addChannel(dNdE/2, "W+", "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, "W-", "gamma", 0., 10000.);
-        // FIXME: This is a bad approximation to final state radiation, I suppose
+        result.addChannel(dNdE/2, "W+", "gamma", 80.25, 50000.);
+        result.addChannel(dNdE/2, "W-", "gamma", 80.25, 50000.);
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 15, yieldk, flag);
-        result.addChannel(dNdE/2, str_flav_to_mass("e+"), "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("e-"), "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("e+"), "gamma", 0., 50000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("e-"), "gamma", 0., 50000.);
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 17, yieldk, flag);
-        result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0., 10000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("mu+"), "gamma", 0.10566, 50000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("mu-"), "gamma", 0.10566, 50000.);        
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 19, yieldk, flag);
-        result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 0., 10000.);
-        // Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades.
+        result.addChannel(dNdE/2, str_flav_to_mass("tau+"), "gamma", 1.7841, 50000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tau-"), "gamma", 1.7841, 50000.);
+        // FIXME: Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades.
         dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 24, yieldk, flag);
-        result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 0., 10000.);
-        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 0., 10000.);        
+        result.addChannel(dNdE/2, str_flav_to_mass("t"),    "gamma", 175., 50000.);
+        result.addChannel(dNdE/2, str_flav_to_mass("tbar"), "gamma", 175., 50000.);        
         
         // Approximations for mixed quark channels
         Funk::Funk dNdE_u = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), 
@@ -457,26 +455,26 @@ namespace Gambit {
                               Funk::var("mwimp"), Funk::var("E"), 25, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  
                   
         // FIXME: Update energy validty ranges
-        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("u"), str_flav_to_mass("bbar"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("ubar"), str_flav_to_mass("d"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("ubar"), str_flav_to_mass("s"), "gamma", 0., 10000.); 
-        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("ubar"), str_flav_to_mass("b"), "gamma", 0., 10000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("u"), str_flav_to_mass("dbar"), "gamma", 0., 100000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("u"), str_flav_to_mass("sbar"), "gamma", 0., 100000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("u"), str_flav_to_mass("bbar"), "gamma", 0., 100000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_d), str_flav_to_mass("ubar"), str_flav_to_mass("d"), "gamma", 0., 100000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_s), str_flav_to_mass("ubar"), str_flav_to_mass("s"), "gamma", 0., 100000.); 
+        result.addChannel(0.5*(dNdE_u+dNdE_b), str_flav_to_mass("ubar"), str_flav_to_mass("b"), "gamma", 0., 100000.); 
 
-        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("c"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("c"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("c"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);        
-        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("cbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("cbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);   
-        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("cbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);        
+        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("c"), str_flav_to_mass("dbar"), "gamma", 0., 100000.);    
+        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("c"), str_flav_to_mass("sbar"), "gamma", 0., 100000.);   
+        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("c"), str_flav_to_mass("bbar"), "gamma", 0., 100000.);        
+        result.addChannel(0.5*(dNdE_c+dNdE_d), str_flav_to_mass("cbar"), str_flav_to_mass("d"), "gamma", 0., 100000.);    
+        result.addChannel(0.5*(dNdE_c+dNdE_s), str_flav_to_mass("cbar"), str_flav_to_mass("s"), "gamma", 0., 100000.);   
+        result.addChannel(0.5*(dNdE_c+dNdE_b), str_flav_to_mass("cbar"), str_flav_to_mass("b"), "gamma", 0., 100000.);        
 
-        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("t"), str_flav_to_mass("dbar"), "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("t"), str_flav_to_mass("sbar"), "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("t"), str_flav_to_mass("bbar"), "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 10000.);    
-        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 10000.);            
-        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 10000.);    
+        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("t"), str_flav_to_mass("dbar"), "gamma", 0., 100000.);    
+        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("t"), str_flav_to_mass("sbar"), "gamma", 0., 100000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("t"), str_flav_to_mass("bbar"), "gamma", 0., 100000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_d), str_flav_to_mass("tbar"), str_flav_to_mass("d"), "gamma", 0., 100000.);    
+        result.addChannel(0.5*(dNdE_t+dNdE_s), str_flav_to_mass("tbar"), str_flav_to_mass("s"), "gamma", 0., 100000.);            
+        result.addChannel(0.5*(dNdE_t+dNdE_b), str_flav_to_mass("tbar"), str_flav_to_mass("b"), "gamma", 0., 100000.);    
    
         initialized = true;
       }
