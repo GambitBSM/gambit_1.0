@@ -179,10 +179,9 @@ fout = h5py.File(outfname,'a')
 if not group in fout:
    gout = fout.create_group(group)
 else:
+   print "Checking existing combined output for duplicates..."
+   check_for_duplicates(fout,group) 
    gout = fout[group]
-
-print "Checking existing combined output for duplicates..."
-check_for_duplicates(fout,group) 
 
 # Check for existing dsets in the output (and get their lengths if they exist)
 existing_dsets = {}
