@@ -77,7 +77,7 @@ tmp_files = sys.argv[3:]
 N = len(tmp_files)
 RA_group = group + "/RA"
 
-print(os.getcwd())
+print "Working directory: ", (os.getcwd())
 print "Target combined filename:", outfname
 print "Root group: ", group
 print "Number of files to combine: ", N
@@ -95,7 +95,7 @@ RA_lengths = [0 for i in range(N)]
 fnames = tmp_files
 
 for i,fname in enumerate(fnames):
-   print "   Opening {0}...".format(fname)
+   print "   Opening: {0}".format(fname)
    f = h5py.File(fname,'r')
    files[fname] = f
    print "      Analysing..."
@@ -143,7 +143,8 @@ for i,fname in enumerate(fnames):
 
 print "Combined sync length = ", total_sync_length
 
-print "Opening file {0} for adding combined data".format(outfname)
+print "Opening file for adding combined data:"
+print "   {0}".format(outfname)
 fout = h5py.File(outfname,'a')
 
 if not group in fout:
@@ -194,7 +195,10 @@ for dsetname,dt in sorted(all_RA_dsets):
 # Copy data from separate sync datasets into combined datasets
 nextempty=init_output_length
 for fname in fnames:
-   print "Copying sync data from file {0} to file {1}...".format(fname,outfname)
+   print "Copying sync data from file:"
+   print "   {0}".format(fname)
+   print "to file:"
+   print "   {1}".format(outfname)
    fin = files[fname]
 
    dset_length=None
@@ -215,7 +219,10 @@ for fname in fnames:
 for fname in fnames:
    fin = files[fname]
    if "RA_MPIrank" in fin[RA_group]:
-      print "RA data detected in file {0}; copying it to file {1}...".format(fname,outfname)
+      print "RA data detected in file:"
+      print "   {0}".format(fname)
+      print "Copying it to file:"
+      print "   {1}".format(outfname)
       
       # Get write targets
       dset_length=fin[RA_group]["RA_MPIrank"].shape[0]        
@@ -404,8 +411,9 @@ for fname in fnames:
 
 
 # If everything has been successful, delete the temporary files
+print "Deleting temporary HDF5 files..."
 for fname in fnames:
-   print "Deleting temporary HDF5 file {0}...".format(fname)
+   print "   {0}".format(fname)
    os.remove(fname)
 
 print "Data combination completed"

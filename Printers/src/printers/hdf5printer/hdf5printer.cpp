@@ -818,9 +818,14 @@ namespace Gambit
                   logmsg << "             Will attempt to create it from temporary files from last run"<<std::endl;
                   logmsg << "             If run completes, results will be moved to "<<finalfile<<std::endl;
                }
-               logmsg << "HDF5Printer: Temporary files detected, attempting combination into "<<tmp_comb_file<<"...";
+               logmsg << std::endl << "HDF5Printer: Detected the following temporary files: " << std::endl;
+               for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
+                  logmsg << "   " << *it << std::endl;
+               }
+               logmsg << "Attempting combination into: "<< std::endl
+               logmsg << "   " << tmp_comb_file;
                std::cout << logmsg.str() << std::endl;
-               logger() << LogTags::printers << logmsg.str();
+               logger() << LogTags::printers << LogTags::info << LogTags::debug << logmsg.str() << EOM;
                combine_output(tmp_files,false);
             }
          }
@@ -1166,7 +1171,10 @@ namespace Gambit
       while(fgets(buffer, sizeof(buffer), fp) != NULL) {
           output << buffer;
       }
-      logger() << LogTags::printers << output.str() << std::endl
+      logger() << LogTags::printers << LogTags::debug
+               << "Stdout/stderr captured from HDF5printer combination script" << std::endl
+               << "--------------------" << std::endl
+               << output.str() << std::endl
                << "--------------------" << std::endl
                << "end HDF5 combination script output" << EOM;
       int rc = pclose(fp);
