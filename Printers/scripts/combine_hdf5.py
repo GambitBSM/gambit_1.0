@@ -83,8 +83,8 @@ def check_for_duplicates(fout,group):
          error = True
          Match = np.sum((p==pid) & (r==rank))
          if Match>1:
-           print "   ...MPIrank/pointID duplicate count: ", Match
-      if error:
+           print "   ...MPIrank/pointID ({0},{1}) duplicate count: {2}".format(p,r,Match)
+      if error==True:
          ValueError("Duplicates detected in output dataset!")
 
 
