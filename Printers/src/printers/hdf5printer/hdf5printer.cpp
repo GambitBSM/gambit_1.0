@@ -820,9 +820,10 @@ namespace Gambit
                }
                logmsg << std::endl << "HDF5Printer: Detected the following temporary files: " << std::endl;
                for(auto it=tmp_files.begin(); it!=tmp_files.end(); ++it)
+               {
                   logmsg << "   " << *it << std::endl;
                }
-               logmsg << "Attempting combination into: "<< std::endl
+               logmsg << "Attempting combination into: "<< std::endl;
                logmsg << "   " << tmp_comb_file;
                std::cout << logmsg.str() << std::endl;
                logger() << LogTags::printers << LogTags::info << LogTags::debug << logmsg.str() << EOM;
