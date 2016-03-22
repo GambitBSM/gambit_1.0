@@ -41,8 +41,6 @@ def check_lengths(d):
          length=value
       elif length!=value:
          ValueError("Length of dataset '{0}' is inconsistent with the others in the target group! (length was {1}; previous dataset had length={2})".format(key,value,length)) 
-   if(length==None):
-     length = 0 # Default value if there are no dsets to measure
    return length 
 
 def copy_dset(indset,outdset,nextempty):
