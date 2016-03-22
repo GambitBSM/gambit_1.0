@@ -833,10 +833,8 @@ namespace Gambit
          if(combined_file_readable)
          { 
             // Open HDF5 file
-            bool oldfile; 
-            bool overwrite=false;
             Utils::ensure_path_exists(tmp_comb_file);
-            file_id = HDF5::openFile(tmp_comb_file,overwrite,oldfile);
+            file_id = HDF5::openFile(tmp_comb_file);
     
             // Check that group is readable
             std::string msg2;
@@ -940,6 +938,20 @@ namespace Gambit
                  // Postpone actually adding the PPID, because this triggers writing of RA_pointID and RA_mpirank,
                  // and we don't want to try and write those to this old file. Return the list, and then add it
                  // after the verification is finished.
+
+                 // Debugging check to see whether duplicate points exist in the previous dataset
+                 bool debug=true
+                 if(debug)
+                 {
+                    PPIDpair current_id(dsetdata.pointIDs[i],dsetdata.mpiranks[i]);
+                    if( std::find(prev_points.begin(), prev_points.end(), current_it) != prev_points.end())
+                    {
+                       std::ostringstream errmsg;
+                       errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! Duplicate point IDs detected while retrieving previous pointID and MPIrank entries. File was: " << tmp_comb_file << ", group: " << group;
+                       printer_error().raise(LOCAL_INFO, errmsg.str());
+                    }
+                 }
+
                  prev_points.push_back(PPIDpair(dsetdata.pointIDs[i],dsetdata.mpiranks[i]));
               }
               else if(dsetdata.pointIDs_isvalid[i] or dsetdata.mpiranks_isvalid[i])
