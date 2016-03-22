@@ -944,7 +944,7 @@ namespace Gambit
                  if(debug)
                  {
                     PPIDpair current_id(dsetdata.pointIDs[i],dsetdata.mpiranks[i]);
-                    if( std::find(prev_points.begin(), prev_points.end(), current_it) != prev_points.end() )
+                    if( std::find(prev_points.begin(), prev_points.end(), current_id) != prev_points.end() )
                     {
                        std::ostringstream errmsg;
                        errmsg << "Error in HDF5Printer while attempting to resume from existing HDF5 file! Duplicate point IDs detected while retrieving previous pointID and MPIrank entries. File was: " << tmp_comb_file << ", group: " << group;
