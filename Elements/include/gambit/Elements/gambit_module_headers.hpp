@@ -40,5 +40,6 @@
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/threadsafe_rng.hpp"
 #include "gambit/Logs/logger.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 
 #endif /* defined(__gambit_module_headers_hpp__) */

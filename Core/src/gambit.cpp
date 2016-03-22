@@ -30,20 +30,30 @@ void do_cleanup() { Gambit::Scanner::Plugins::plugin_info.dump(); }
 
 #ifdef WITH_MPI
 bool use_mpi_abort = true; // Set later via inifile value
+
+/// Broadcast signal to shutdown all processes
+void broadcast_shutdown_signal(GMPI::Comm& errorComm)
+{
+  if(GMPI::Is_initialized())
+  {
+    // Broadcast signal to all processes (might not work if something errornous is occuring)
+    MPI_Request req_null = MPI_REQUEST_NULL;
+    int tmp_buf = 2; // This is the emergency shutdown code defined in signal_handling.hpp. Would be nice to connect the two directly to improve future-safety, but just doing the simple thing for now.
+    errorComm.IsendToAll(&tmp_buf, 1, errorComm.mytag, &req_null);
+    logger() << LogTags::core << LogTags::info << "Emergency shutdown signal broadcast to all processes" << EOM;
+  }
+}
+
+/// Broadcast emergency shutdown command to all processes, or abort if set to do so
 void do_emergency_MPI_shutdown(GMPI::Comm& errorComm)
 {
   if(GMPI::Is_initialized())
   {
-    // Broadcast emergency shutdown signal to all processes (desperate 
-    // attempt to stop everything; no guarantee of success)
-    MPI_Request req_null = MPI_REQUEST_NULL;
-    int tmp_buf;
-    errorComm.IsendToAll(&tmp_buf, 1, errorComm.mytag, &req_null);
-    logger() << LogTags::core << LogTags::info << "Emergency shutdown signal broadcast to all processes" << EOM;
+    logger() << LogTags::core << LogTags::info << "Broadcasting emergency shutdown signal to all processes" << EOM;
+    broadcast_shutdown_signal(errorComm);
     if(use_mpi_abort)      
     {
-      // Another desperate attempt to kill all process, also not guaranteed
-      // to succeed
+      // Another desperate attempt to kill all process, also not guaranteed to succeed
       logger() << LogTags::core << LogTags::info << "Calling MPI_Abort..." << EOM;
       errorComm.Abort();
     }
@@ -85,10 +95,11 @@ int main(int argc, char* argv[])
   #ifdef WITH_MPI
     GMPI::Comm errorComm;
     errorComm.dup(MPI_COMM_WORLD); // duplicates the COMM_WORLD context
-    int rank = errorComm.Get_rank();
-    signaldata().rank = rank;      // set variable for use in signal handlers
     const int ERROR_TAG=1;         // Tag for error messages
     errorComm.mytag = ERROR_TAG;
+    int rank = errorComm.Get_rank();
+    signaldata().set_MPI_comm(&errorComm); // Provide a communicator for signal handling routines to use.
+    signaldata().rank = rank;      // set variable for use in signal handlers
   #endif
 
   try
@@ -267,7 +278,14 @@ int main(int argc, char* argv[])
       cout     << ss.str();    
       logger() << ss.str() << EOM;
     }
-    return EXIT_SUCCESS;
+    // This will attempt to broadcast a shutdown signal to all processes, I think there is no harm in attempting this...
+    // TODO: Ahh wait can't do this, or else it might try to abort and kill the other processes before they can do their
+    // emergency shutdown. Need to make a function that just broadcasts the signal, and definitely does not try to
+    // Abort.
+    //#ifdef WITH_MPI
+    //do_emergency_MPI_shutdown(errorComm);
+    //#endif     
+   return EXIT_SUCCESS;
   }
 
   catch (const std::exception& e)

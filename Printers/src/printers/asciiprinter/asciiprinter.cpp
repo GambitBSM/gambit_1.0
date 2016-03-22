@@ -498,7 +498,7 @@ is a unique record for every rank/pointID pair.";
               else
               {
                 // print an entry from the results vector
-                my_fstream<<std::setw(colwidth)<<std::scientific<<(*results)[j]; //<<"\t";
+                my_fstream<<std::setw(colwidth+5)<<std::scientific<<(*results)[j]; //<<"\t";
               }
             }
             // Result printed
@@ -543,7 +543,9 @@ is a unique record for every rank/pointID pair.";
 
     void asciiPrinter::_print(int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     { template_print(value,label,IDcode,thread,pointID); }
-    void asciiPrinter::_print(double const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    void asciiPrinter::_print(bool const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
+    { template_print(value,label,IDcode,thread,pointID); }
+   void asciiPrinter::_print(double const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     { template_print(value,label,IDcode,thread,pointID); }
     #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
     void asciiPrinter::_print(unsigned int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)

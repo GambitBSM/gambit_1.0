@@ -137,7 +137,7 @@ namespace Gambit
               << "\n   Label      : " << label                    \
               << "\n   vertexID   : " << vertexID                 \
               << "\n   Type       : " << STRINGIFY(elem);         \
-          printer_warning().raise(LOCAL_INFO,err.str());          \
+          printer_error().raise(LOCAL_INFO,err.str());          \
         }
 
         #define ADD_VIRTUAL_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(VPRINT, _, TYPES)

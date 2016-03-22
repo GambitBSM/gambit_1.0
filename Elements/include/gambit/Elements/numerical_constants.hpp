@@ -16,6 +16,7 @@
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
 ///  \date   2015 Apr
+///  \date   2016 Mar
 //
 ///  *********************************************
 
@@ -38,6 +39,17 @@ namespace Gambit
   const double m_proton = m_proton_amu * atomic_mass_unit;      // proton mass (GeV/c^2)
   const double m_neutron = m_neutron_amu * atomic_mass_unit;    // neutron mass (GeV/c^2)    
 
+  static const struct Mesons_masses
+  {
+    static constexpr double pi0 = 0.135;          // neutral pion mass (GeV/c^2)
+    static constexpr double pi_plus = 0.1396;     // charged pion mass (GeV/c^2)
+    static constexpr double pi_minus = 0.1396;    // charged pion mass (GeV/c^2)
+    static constexpr double eta = 0.547;          // eta mass (GeV/c^2)
+    static constexpr double rho0 = 0.775;         // neutral rho meson mass (GeV/c^2)
+    static constexpr double rho_plus = 0.775;     // charged rho meson mass (GeV/c^2)
+    static constexpr double rho_minus = 0.775;    // charged rho meson mass (GeV/c^2)
+    static constexpr double omega = 0.7827;       // omega meson mass (GeV/c^2)
+  } meson_masses;
 }
 
 #endif //#defined __numerical_constants_hpp__

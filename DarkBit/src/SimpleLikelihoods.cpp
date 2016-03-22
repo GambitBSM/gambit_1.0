@@ -95,13 +95,8 @@ namespace Gambit {
       // Integate spectrum 
       // (the zero velocity limit of the differential annihilation
       // cross-section as function of individual final state photons)
-      //std::ofstream os;
-      //os.open("test.dat");
-      //(*Dep::GA_AnnYield)->writeToFile(Funk::logspace(-1., 5., 10000), os);
-      //os.close();
-      // TODO: Make this take ->set_epsrel(1e-3)
       double AnnYieldint = (*Dep::GA_AnnYield)->
-        set("v", 0.)->gsl_integration("E", 1, 100)->bind()->eval();
+        set("v", 0.)->gsl_integration("E", 1, 100)->set_epsabs(0)->set_epsrel(1e-3)->bind()->eval();
       logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
       // Calculate phi-value
@@ -124,8 +119,10 @@ namespace Gambit {
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
+      x = Funk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
+
 
       result += BEreq::lnL(1, x, y);
 
@@ -143,6 +140,7 @@ namespace Gambit {
 
       // from 0.1 to 500 GeV
       std::vector<double> x = Funk::logspace(-1, 2.698, 100);
+      x = Funk::augmentSingl(x, (*Dep::GA_AnnYield)->set("v",0));
       std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI*fraction*fraction)->
         set("v", 0)->bind("E")->vect(x);
 
@@ -252,15 +250,10 @@ namespace Gambit {
       logger() << "lnL_vesc yields " << result << EOM;
     }
 
-    /*! \brief Helper function to dump gamma-ray spectra.
-     *
-     * NOTE: DEPRECATED!! (replaced by UnitTest)
-     * TODO: Delete
-     */
+    /// \brief Helper function to dump gamma-ray spectra.
     void dump_GammaSpectrum(double &result)
     {
       using namespace Pipes::dump_GammaSpectrum;
-      // Construct interpolated function, using GAMBIT base functions.
       Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
       std::string filename = runOptions->getValueOrDef<std::string>(
           "dNdE.dat", "filename");
@@ -268,9 +261,9 @@ namespace Gambit {
       std::ofstream myfile (filename);
       if (myfile.is_open())
       {
-        for (int i = 0; i<=50; i++)
+        for (int i = 0; i<=1200; i++)
         {
-          double energy = pow(10., i/10. - 2.);
+          double energy = pow(10., i/200. - 2.);
 
           myfile << energy << " " << spectrum->bind("E")->eval(energy) << "\n";
         }

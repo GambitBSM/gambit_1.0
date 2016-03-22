@@ -29,7 +29,7 @@ using namespace DarkBit::Accessors;    // Helper functions that provide some inf
 using namespace BackendIniBit::Functown;    // Functors wrapping the backend initialisation functions
 
 QUICK_FUNCTION(DarkBit, decay_rates, NEW_CAPABILITY, createDecays, DecayTable, ())
-QUICK_FUNCTION(DarkBit, MSSM_spectrum, OLD_CAPABILITY, createSpectrum, const Spectrum*, ())
+QUICK_FUNCTION(DarkBit, SingletDM_spectrum, OLD_CAPABILITY, createSpectrum, const Spectrum*, ())
 QUICK_FUNCTION(DarkBit, cascadeMC_gammaSpectra, OLD_CAPABILITY, CMC_dummy, DarkBit::stringFunkMap, ())
 
 namespace Gambit
@@ -49,17 +49,18 @@ namespace Gambit
       std::string inputFileName = "input.slha";
 
       Models::SingletDMModel singletmodel;
-      singletmodel.HiggsPoleMass   = 123; // *myPipe::Param.at("mH");
-      singletmodel.HiggsVEV        = 123; // 1. / sqrt(sqrt(2.)*sminputs.GF);
-      singletmodel.SingletPoleMass = 123; // *myPipe::Param.at("mS");
-      singletmodel.SingletLambda   = 123; // *myPipe::Param.at("lambda_hS");
+      singletmodel.HiggsPoleMass   = 125.; // *myPipe::Param.at("mH");
+      singletmodel.HiggsVEV        = 246.; // 1. / sqrt(sqrt(2.)*sminputs.GF);
+      singletmodel.SingletPoleMass = 100.; // *myPipe::Param.at("mS");
+      singletmodel.SingletLambda   = 0.05; // *myPipe::Param.at("lambda_hS");
 
       SLHAstruct slhaea = read_SLHA(inputFileName);      
-      mySpec = singlet_spectrum_from_SLHAea(singletmodel, slhaea);     
+      mySpec = spectrum_from_SLHAea<Models::ScalarSingletDMSimpleSpec, Models::SingletDMModel>(singletmodel, slhaea);
       outSpec = &mySpec;
     }
 
     // Create decay object from SLHA file input.slha
+    // FIXME: Include invisible Higgs contribution
     void createDecays(DecayTable& outDecays)
     {
       std::string inputFileName = "input.slha";
@@ -95,12 +96,17 @@ int main()
   logger().initialise(loggerinfo);
 
   model_warning().set_fatal(true);
-  DarkBit::DarkBit_error().set_fatal(false);
+  DarkBit::DarkBit_error().set_fatal(true);
 
   logger()<<"Running DarkBit standalone example"<<LogTags::info<<EOM;
 
 
-    // ---- Initialize models ----
+  // ---- Initialize models ----
+
+  // Initialize SingletDM model
+  ModelParameters* SingletDM_primary_parameters = Models::SingletDM::Functown::primary_parameters.getcontentsPtr();
+  SingletDM_primary_parameters->setValue("mS", 100.);
+  SingletDM_primary_parameters->setValue("lambda_hS", 0.05);
 
   // Initialize LocalHalo model
   ModelParameters* LocalHalo_primary_parameters = Models::LocalHalo::Functown::primary_parameters.getcontentsPtr();
@@ -131,37 +137,47 @@ int main()
 
   // ---- Initialize backends ----
 
-  // Initialize nulike backend
-  Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);  // FIXME: Not nice; Q: Alternatives?
-  nulike_1_0_2_init.reset_and_calculate();
+//  // Initialize nulike backend
+//  Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);
+//  nulike_1_0_2_init.reset_and_calculate();
   
   // Initialize gamLike backend
   gamLike_1_0_0_init.reset_and_calculate();
 
-  // Initialize MicrOmegas backend
-  MicrOmegas_3_6_9_2_init.resolveDependency(&createSpectrum);
-  MicrOmegas_3_6_9_2_init.reset_and_calculate();
+  // Initialize MicrOmegas backend (specific for SingletDM)
+  //MicrOmegasSingletDM_3_6_9_2_init.resolveDependency(&createSpectrum);
+  MicrOmegasSingletDM_3_6_9_2_init.notifyOfModel("SingletDM");
+  MicrOmegasSingletDM_3_6_9_2_init.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+  MicrOmegasSingletDM_3_6_9_2_init.reset_and_calculate();
 
   // Initialize DarkSUSY backend
-  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
-  DarkSUSY_5_1_3_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DarkSUSY_5_1_3_init.reset_and_calculate();
-  DarkSUSY_PointInit_MSSM.notifyOfModel("MSSM30atQ");
-  DarkSUSY_PointInit_MSSM.resolveDependency(&createSpectrum);
-  DarkSUSY_PointInit_MSSM.resolveDependency(&createDecays);
-  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::init_diskless);
-  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsgive_model_isasugra);
-  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dssusy_isasugra);
-  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dssusy);
-  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsSLHAread);
-  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsprep);
-  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dswwidth);
-  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mssmpar);
-  DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
-  DarkSUSY_PointInit_MSSM.reset_and_calculate();
+//  DarkSUSY_PointInit_MSSM.notifyOfModel("MSSM30atQ");
+//  DarkSUSY_PointInit_MSSM.resolveDependency(&createSpectrum);
+//  DarkSUSY_PointInit_MSSM.resolveDependency(&createDecays);
+//  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::init_diskless);
+//  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsgive_model_isasugra);
+//  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dssusy_isasugra);
+//  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dssusy);
+//  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsSLHAread);
+//  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsprep);
+//  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dswwidth);
+//  DarkSUSY_PointInit_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mssmpar);
+//  DarkSUSY_PointInit_MSSM.setOption<bool>("use_dsSLHAread", true);
+//  DarkSUSY_PointInit_MSSM.reset_and_calculate();
+
+  // Initialize DarkSUSY Local Halo Model
+  DarkSUSY_PointInit_LocalHalo_func.notifyOfModel("LocalHalo");
+  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
+  DarkSUSY_PointInit_LocalHalo_func.resolveDependency(&RD_fraction_fixed);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmisodf);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmframevelcom);
+  DarkSUSY_PointInit_LocalHalo_func.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmnoclue);
+  DarkSUSY_PointInit_LocalHalo_func.reset_and_calculate();
 
   // Initialize DDCalc0 backend
-  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);  // FIXME: Isn't there a smarter way?
+  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);
   DDCalc0_0_0_init.notifyOfModel("LocalHalo");
   DDCalc0_0_0_init.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
   DDCalc0_0_0_init.resolveDependency(&RD_fraction_fixed);
@@ -171,15 +187,15 @@ int main()
   // ---- Relic density ----
 
   // Relic density calculation with MicrOmegas
-  RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::darkOmega);
+  RD_oh2_MicrOmegas.resolveBackendReq(&Backends::MicrOmegasSingletDM_3_6_9_2::Functown::darkOmega);
   RD_oh2_MicrOmegas.reset_and_calculate();
 
-  // Relic density calculation with DarkSUSY (the sloppy version)
-  RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
-  RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
-  RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
-  RD_oh2_DarkSUSY.reset_and_calculate();
-  // FIXME: Use "general" version instead
+//  // Relic density calculation with DarkSUSY (the sloppy version)
+//  RD_oh2_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
+//  RD_oh2_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsrdomega);
+//  RD_oh2_DarkSUSY.setOption<int>("fast", 1);  // 0: normal; 1: fast; 2: dirty
+//  RD_oh2_DarkSUSY.reset_and_calculate();
+//  // FIXME: Use "general" version instead
 
   // Calculate WMAP likelihoods, based on MicrOmegas result
   lnL_oh2_Simple.resolveDependency(&RD_oh2_MicrOmegas);
@@ -189,62 +205,65 @@ int main()
   // ---- Set up basic internal structures for direct & indirect detection ----
 
   // Set identifier for DM particle
-  DarkMatter_ID_MSSM30atQ.notifyOfModel("MSSM30atQ");
-  DarkMatter_ID_MSSM30atQ.reset_and_calculate();
+  DarkMatter_ID_SingletDM.notifyOfModel("SingletDM");
+  DarkMatter_ID_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+  DarkMatter_ID_SingletDM.reset_and_calculate();
 
   // Set up process catalog based on DarkSUSY annihilation rates
-  TH_ProcessCatalog_MSSM.resolveDependency(&DarkSUSY_PointInit_MSSM);
-  TH_ProcessCatalog_MSSM.resolveDependency(&createSpectrum);
-  TH_ProcessCatalog_MSSM.resolveDependency(&createDecays);
-  TH_ProcessCatalog_MSSM.resolveDependency(&DarkMatter_ID_MSSM30atQ);
-  TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dssigmav);
-  TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsIBffdxdy);
-  TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsIBhhdxdy);
-  TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsIBwhdxdy);
-  TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsIBwwdxdy);
-  TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::IBintvars);
-  TH_ProcessCatalog_MSSM.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::setMassesForIB);
-  TH_ProcessCatalog_MSSM.reset_and_calculate();
+  TH_ProcessCatalog_SingletDM.notifyOfModel("SingletDM");
+  TH_ProcessCatalog_SingletDM.resolveDependency(&Models::SingletDM::Functown::primary_parameters);
+  TH_ProcessCatalog_SingletDM.resolveDependency(&createSpectrum);
+  TH_ProcessCatalog_SingletDM.resolveDependency(&createDecays);
+  TH_ProcessCatalog_SingletDM.reset_and_calculate();
 
   // Assume for direct and indirect detection likelihoods that dark matter
   // density is always the measured one (despite relic density results)
   RD_fraction_fixed.reset_and_calculate();
 
   // Set generic WIMP mass object
-  mwimp_generic.resolveDependency(&TH_ProcessCatalog_MSSM);
-  mwimp_generic.resolveDependency(&DarkMatter_ID_MSSM30atQ);
+  mwimp_generic.resolveDependency(&TH_ProcessCatalog_SingletDM);
+  mwimp_generic.resolveDependency(&DarkMatter_ID_SingletDM);
   mwimp_generic.reset_and_calculate();
 
   // Set generic annihilation rate in late universe (v->0 limit)  // FIXME: Check limit
-  sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_MSSM);
-  sigmav_late_universe.resolveDependency(&DarkMatter_ID_MSSM30atQ);
+  sigmav_late_universe.resolveDependency(&TH_ProcessCatalog_SingletDM);
+  sigmav_late_universe.resolveDependency(&DarkMatter_ID_SingletDM);
   sigmav_late_universe.reset_and_calculate();
 
 
   // ---- Direct detection -----
 
   // Calculate DD couplings with Micromegas
-  DD_couplings_MicrOmegas.notifyOfModel("MSSM30atQ");
+  /*
+  DD_couplings_MicrOmegas.notifyOfModel("SingletDM");
   DD_couplings_MicrOmegas.notifyOfModel("nuclear_params_fnq");
   DD_couplings_MicrOmegas.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
   DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::nucleonAmplitudes);
   DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::FeScLoop);
   DD_couplings_MicrOmegas.resolveBackendReq(&Backends::MicrOmegas_3_6_9_2::Functown::mocommon_);
   DD_couplings_MicrOmegas.reset_and_calculate();
+  */
 
-  // Calculate DD couplings with DarkSUSY
-  DD_couplings_DarkSUSY.notifyOfModel("nuclear_params_fnq");
-  DD_couplings_DarkSUSY.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
-  DD_couplings_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
-  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsddgpgn);
-  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mspctm);
-  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::ddcom);
-  DD_couplings_DarkSUSY.reset_and_calculate();
+  DD_couplings_SingletDM.notifyOfModel("nuclear_params_fnq");
+  DD_couplings_SingletDM.notifyOfModel("SingletDM");
+  // NOTE: Should also resolve SingletDM parameters, but not relevant here
+  DD_couplings_SingletDM.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
+  DD_couplings_SingletDM.resolveDependency(&createSpectrum);
+  DD_couplings_SingletDM.reset_and_calculate();
+
+//  // Calculate DD couplings with DarkSUSY
+//  DD_couplings_DarkSUSY.notifyOfModel("nuclear_params_fnq");
+//  DD_couplings_DarkSUSY.resolveDependency(&Models::nuclear_params_fnq::Functown::primary_parameters);
+//  DD_couplings_DarkSUSY.resolveDependency(&DarkSUSY_PointInit_MSSM);
+//  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsddgpgn);
+//  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::mspctm);
+//  DD_couplings_DarkSUSY.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::ddcom);
+//  DD_couplings_DarkSUSY.reset_and_calculate();
 
   // Push WIMP paramters to DDCalc0 backend
-  SetWIMP_DDCalc0.resolveDependency(&DD_couplings_DarkSUSY);  // Use DarkSUSY parameters
-  SetWIMP_DDCalc0.resolveDependency(&TH_ProcessCatalog_MSSM);
-  SetWIMP_DDCalc0.resolveDependency(&DarkMatter_ID_MSSM30atQ);
+  SetWIMP_DDCalc0.resolveDependency(&DD_couplings_SingletDM);  // Use DarkSUSY parameters
+  SetWIMP_DDCalc0.resolveDependency(&TH_ProcessCatalog_SingletDM);
+  SetWIMP_DDCalc0.resolveDependency(&DarkMatter_ID_SingletDM);
   SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_SetWIMP_mG);
   SetWIMP_DDCalc0.resolveBackendReq(&Backends::DDCalc0_0_0::Functown::DDCalc0_GetWIMP_msigma);
   SetWIMP_DDCalc0.reset_and_calculate();
@@ -260,12 +279,12 @@ int main()
   LUX_2013_LogLikelihood_DDCalc0.reset_and_calculate();
 
   // Set generic scattering cross-section for later use
-  sigma_SI_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+  sigma_SI_p_simple.resolveDependency(&DD_couplings_SingletDM);
   sigma_SI_p_simple.resolveDependency(&mwimp_generic);
   sigma_SI_p_simple.reset_and_calculate();
 
   // Set generic scattering cross-section for later use
-  sigma_SD_p_simple.resolveDependency(&DD_couplings_MicrOmegas);
+  sigma_SD_p_simple.resolveDependency(&DD_couplings_SingletDM);
   sigma_SD_p_simple.resolveDependency(&mwimp_generic);
   sigma_SD_p_simple.reset_and_calculate();
 
@@ -277,16 +296,17 @@ int main()
   SimYieldTable_DarkSUSY.reset_and_calculate();
 
   // Collect missing final states for simulation in cascade MC
-  GA_missingFinalStates.resolveDependency(&TH_ProcessCatalog_MSSM);
+  GA_missingFinalStates.resolveDependency(&TH_ProcessCatalog_SingletDM);
   GA_missingFinalStates.resolveDependency(&SimYieldTable_DarkSUSY);
-  GA_missingFinalStates.resolveDependency(&DarkMatter_ID_MSSM30atQ);
+  GA_missingFinalStates.resolveDependency(&DarkMatter_ID_SingletDM);
   GA_missingFinalStates.reset_and_calculate();
+
 
   // Infer for which type of final states particles MC should be performed
   cascadeMC_FinalStates.reset_and_calculate();
 
   // Collect decay information for cascade MC
-  cascadeMC_DecayTable.resolveDependency(&TH_ProcessCatalog_MSSM);
+  cascadeMC_DecayTable.resolveDependency(&TH_ProcessCatalog_SingletDM);
   cascadeMC_DecayTable.resolveDependency(&SimYieldTable_DarkSUSY);
   cascadeMC_DecayTable.reset_and_calculate();
 
@@ -294,7 +314,7 @@ int main()
   cascadeMC_LoopManager.resolveDependency(&GA_missingFinalStates);
   cascadeMC_LoopManager.resolveDependency(&cascadeMC_DecayTable);
   cascadeMC_LoopManager.resolveDependency(&SimYieldTable_DarkSUSY);
-  cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_MSSM);
+  cascadeMC_LoopManager.resolveDependency(&TH_ProcessCatalog_SingletDM);
   std::vector<functor*> nested_functions = initVector<functor*>(
       &cascadeMC_InitialState, &cascadeMC_GenerateChain, &cascadeMC_Histograms, &cascadeMC_EventCount);
   cascadeMC_LoopManager.setNestedList(nested_functions);
@@ -313,7 +333,7 @@ int main()
   // Generate histogram for cascade MC
   cascadeMC_Histograms.resolveDependency(&cascadeMC_InitialState);
   cascadeMC_Histograms.resolveDependency(&cascadeMC_GenerateChain);
-  cascadeMC_Histograms.resolveDependency(&TH_ProcessCatalog_MSSM);
+  cascadeMC_Histograms.resolveDependency(&TH_ProcessCatalog_SingletDM);
   cascadeMC_Histograms.resolveDependency(&SimYieldTable_DarkSUSY);
   cascadeMC_Histograms.resolveDependency(&cascadeMC_FinalStates);
   cascadeMC_Histograms.resolveLoopManager(&cascadeMC_LoopManager);
@@ -335,9 +355,9 @@ int main()
   cascadeMC_gammaSpectra.reset_and_calculate();
 
   // Calculate total gamma-ray yield (cascade MC + tabulated results)
-  GA_AnnYield_General.resolveDependency(&TH_ProcessCatalog_MSSM);
+  GA_AnnYield_General.resolveDependency(&TH_ProcessCatalog_SingletDM);
   GA_AnnYield_General.resolveDependency(&SimYieldTable_DarkSUSY);
-  GA_AnnYield_General.resolveDependency(&DarkMatter_ID_MSSM30atQ);
+  GA_AnnYield_General.resolveDependency(&DarkMatter_ID_SingletDM);
   GA_AnnYield_General.resolveDependency(&cascadeMC_gammaSpectra);
   GA_AnnYield_General.reset_and_calculate();
 
@@ -348,55 +368,52 @@ int main()
   lnL_FermiLATdwarfs_gamLike.reset_and_calculate();
 
 
-  // ---- IceCube limits ----
-
-  // Infer WIMP capture rate in Sun
-  capture_rate_Sun_constant_xsec.notifyOfModel("LocalHalo");
-  capture_rate_Sun_constant_xsec.resolveDependency(&Models::LocalHalo::Functown::primary_parameters);
-  capture_rate_Sun_constant_xsec.resolveDependency(&mwimp_generic);
-  capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SI_p_simple);
-  capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SD_p_simple);
-  capture_rate_Sun_constant_xsec.resolveDependency(&RD_fraction_fixed);
-  capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dshmcom);
-  capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsntcapsuntab);
-  capture_rate_Sun_constant_xsec.reset_and_calculate();
-
-  // Infer WIMP equilibration time in Sun
-  equilibration_time_Sun.resolveDependency(&sigmav_late_universe);
-  equilibration_time_Sun.resolveDependency(&mwimp_generic);
-  equilibration_time_Sun.resolveDependency(&capture_rate_Sun_constant_xsec);
-  equilibration_time_Sun.reset_and_calculate();
-
-  // Infer WIMP annihilation rate in Sun
-  annihilation_rate_Sun.resolveDependency(&equilibration_time_Sun);
-  annihilation_rate_Sun.resolveDependency(&capture_rate_Sun_constant_xsec);
-  annihilation_rate_Sun.reset_and_calculate();
-
-  // Infer neutrino yield from Sun
-  nuyield_from_DS.resolveDependency(&TH_ProcessCatalog_MSSM);
-  nuyield_from_DS.resolveDependency(&mwimp_generic);
-  nuyield_from_DS.resolveDependency(&sigmav_late_universe);
-  nuyield_from_DS.resolveDependency(&sigma_SI_p_simple);
-  nuyield_from_DS.resolveDependency(&sigma_SD_p_simple);
-  nuyield_from_DS.resolveDependency(&DarkMatter_ID_MSSM30atQ);
-  nuyield_from_DS.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsgenericwimp_nusetup);
-  nuyield_from_DS.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::neutrino_yield);
-  nuyield_from_DS.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DS_neutral_h_decay_channels);
-  nuyield_from_DS.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DS_charged_h_decay_channels);
-  nuyield_from_DS.reset_and_calculate();
-
-  // Calculate number of events at IceCube
-  IC79WH_full.resolveDependency(&mwimp_generic);
-  IC79WH_full.resolveDependency(&annihilation_rate_Sun);
-  IC79WH_full.resolveDependency(&nuyield_from_DS);
-  IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_bounds);
-  IC79WH_full.reset_and_calculate();
-  // FIXME: Code up other analyses
-
-  // Calculate IceCube likelihood
-  IC79WH_loglike.resolveDependency(&IC79WH_full);
-  IC79WH_loglike.reset_and_calculate();
-  // FIXME: Code up other analyses
+//  // ---- IceCube limits ----
+//
+//  // Infer WIMP capture rate in Sun
+//  capture_rate_Sun_constant_xsec.resolveDependency(&mwimp_generic);
+//  capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SI_p_simple);
+//  capture_rate_Sun_constant_xsec.resolveDependency(&sigma_SD_p_simple);
+//  capture_rate_Sun_constant_xsec.resolveDependency(&DarkSUSY_PointInit_LocalHalo_func);
+//  capture_rate_Sun_constant_xsec.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsntcapsuntab);
+//  capture_rate_Sun_constant_xsec.reset_and_calculate();
+//
+//  // Infer WIMP equilibration time in Sun
+//  equilibration_time_Sun.resolveDependency(&sigmav_late_universe);
+//  equilibration_time_Sun.resolveDependency(&mwimp_generic);
+//  equilibration_time_Sun.resolveDependency(&capture_rate_Sun_constant_xsec);
+//  equilibration_time_Sun.reset_and_calculate();
+//
+//  // Infer WIMP annihilation rate in Sun
+//  annihilation_rate_Sun.resolveDependency(&equilibration_time_Sun);
+//  annihilation_rate_Sun.resolveDependency(&capture_rate_Sun_constant_xsec);
+//  annihilation_rate_Sun.reset_and_calculate();
+//
+//  // Infer neutrino yield from Sun
+//  nuyield_from_DS.resolveDependency(&TH_ProcessCatalog_SingletDM);
+//  nuyield_from_DS.resolveDependency(&mwimp_generic);
+//  nuyield_from_DS.resolveDependency(&sigmav_late_universe);
+//  nuyield_from_DS.resolveDependency(&sigma_SI_p_simple);
+//  nuyield_from_DS.resolveDependency(&sigma_SD_p_simple);
+//  nuyield_from_DS.resolveDependency(&DarkMatter_ID_SingletDM);
+//  nuyield_from_DS.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::dsgenericwimp_nusetup);
+//  nuyield_from_DS.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::neutrino_yield);
+//  nuyield_from_DS.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DS_neutral_h_decay_channels);
+//  nuyield_from_DS.resolveBackendReq(&Backends::DarkSUSY_5_1_3::Functown::DS_charged_h_decay_channels);
+//  nuyield_from_DS.reset_and_calculate();
+//
+//  // Calculate number of events at IceCube
+//  IC79WH_full.resolveDependency(&mwimp_generic);
+//  IC79WH_full.resolveDependency(&annihilation_rate_Sun);
+//  IC79WH_full.resolveDependency(&nuyield_from_DS);
+//  IC79WH_full.resolveBackendReq(&Backends::nulike_1_0_2::Functown::nulike_bounds);
+//  IC79WH_full.reset_and_calculate();
+//  // FIXME: Code up other analyses
+//
+//  // Calculate IceCube likelihood
+//  IC79WH_loglike.resolveDependency(&IC79WH_full);
+//  IC79WH_loglike.reset_and_calculate();
+//  // FIXME: Code up other analyses
   
 
   // ---- Dump results on screen ----
@@ -408,6 +425,8 @@ int main()
   // Retrieve and print DarkSUSY result
   oh2 = RD_oh2_DarkSUSY(0);
   logger() << "Relic density from DarkSUSY: " << oh2 << LogTags::info << EOM;
+
+  std::cout << "Done!" << std::endl;
 
   return 0;
 }

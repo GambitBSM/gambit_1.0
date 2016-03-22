@@ -239,8 +239,8 @@ namespace Gambit
          loggerinfo[tags] = Utils::ensure_path_exists(prefix + filename);
      }
       // Initialise global LogMaster object
-      if(logNode["separate_file_per_process"])
-         logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>());
+      //if(logNode["separate_file_per_process"])
+      //   logger().set_separate_file_per_process(logNode["separate_file_per_process"].as<bool>()); // THIS IS NOW FORBIDDEN. Always using separate files. Will write a script to combine log files post run.
       if(logNode["log_debug_messages"])
          logger().set_log_debug_messages(logNode["log_debug_messages"].as<bool>());
       logger().initialise(loggerinfo);

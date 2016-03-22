@@ -1371,7 +1371,7 @@ namespace Gambit
       logger() << EOM;
 
       // Read ini entries
-      use_regex    = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
+      use_regex    = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");
       print_timing = boundIniFile->getValueOrDef<bool>(false, "print_timing_data");
       if ( use_regex )    logger() << "Using regex for string comparison." << endl;
       if ( print_timing ) logger() << "Will output timing information for all functors (via printer system)" << endl;
@@ -1420,7 +1420,7 @@ namespace Gambit
 
         // Check if we wanted to output this observable to the printer system.
         //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        if(printme)      masterGraph[fromVertex]->setPrintRequirement(true);
+        masterGraph[fromVertex]->setPrintRequirement(printme);
         // Check if the flag to output timing data is set
         if(print_timing) masterGraph[fromVertex]->setTimingPrintRequirement(true);
 
