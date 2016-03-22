@@ -1183,7 +1183,7 @@ namespace Gambit
       {
          // Python error occurred
          std::ostringstream errmsg;
-         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call can be found in the log files."
+         errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call can be found in the log files.";
          printer_error().raise(LOCAL_INFO, errmsg.str());              
       }
       // Otherwise everything should be ok!
