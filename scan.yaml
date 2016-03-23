@@ -67,7 +67,7 @@ Scanner:
 
   use_objectives: EggBox
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: random
+  use_scanner: raster
   #find_shift
   #find_kernel
   #object_detection
@@ -139,7 +139,7 @@ Scanner:
       plugin: raster
       like: LogLike
       parameters:
-        "EggBox::param_0": [.1, .9]
+        "EggBox::param_0": 3.14
         #"EggBox::param_1": [.2, .3]
           
     bin_grid:
@@ -383,8 +383,8 @@ Scanner:
       purpose: LogLike
       parameters:
         param_0:
-          prior_type: plugin
-          plugin: flat
+          prior_type: none
+          #plugin: flat
           #range: [0, 1]
         param_1:
           range: [0, 1]

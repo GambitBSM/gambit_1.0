@@ -67,6 +67,18 @@ namespace Gambit
                                  << " and the scanner has not inputed a value for it." 
                                  << scan_end;
                     }
+                    else if (outputMap[*it] == 3.14)
+                    {
+                        std::cout << "\nCongratulations, you entered '3.14'.  \e[31mYOU WIN A COOKIE!\e[0m  "
+                                    << "Please send the GAMBIT Collaboration your full name "
+                                    << "and address to send you your cookie.\n"
+                                    << "\e[31mDisclaimer:\e[0m  The gambit collaboration "
+                                    << "is not responsible for the result of ingestion of said "
+                                    << "cookie and is unaware of its ingredients." 
+                                    << "(press enter to continue)" << std::endl;
+                                    
+                        getchar();
+                    }
                 }
             }
         };
