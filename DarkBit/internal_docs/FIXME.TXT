@@ -164,18 +164,7 @@ DONE examples/DarkBit_standalone_WIMP.cp      // FIXME: Add getValue documentati
 DONE change yield table identifiers to mass eigenstates (after JE confirms)
 DONE Check DarkBit::get_MSSM_spectrum_from_file necessary?
 DONE Check usage of genRateMisc in GAMBIT (for section 3.5.1)
-
-Email:
-Send reminder about FIXME points (in particular IB radiation), Paper
-
-Questions for everybody:
-Discuss: What to do if dNdE integrations are failing?
-What about kinematically closed channels?
-what to do with states like gamma Z0?  Needs to be fixed
-
-Coding:
-Move funktions.cpp around
-check invalid_point exceptions
+DONE check invalid_point exceptions
 
 Paper writing me:
 Finish IDM section, 2.3.1
@@ -185,6 +174,9 @@ Update gamma-ray likelihoods in sec 3.5.2
 
 After sanity checks of DS and MO results
 ----------------------------------------
+What to do if dNdE integrations are failing?
+What about kinematically closed channels?
+what to do with states like gamma Z0?  Needs to be fixed
 MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */ (they do look correct)
 ProcessCatalog.cpp: everywhere : // FIXME: Check consisteny of kinematics in general (is v>0 correctly taken into account for final state particles everywhere?)
 Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
@@ -195,6 +187,7 @@ decay_chain.cpp: 535	:          // FIXME: Make sure that decay widths are correc
 funktion.cpp :  // FIXME: Decide how to handle integration errors and problems
 DarkBit.cpp : Figure out why spectra don't agree
 Standalone:  Use general relic density codes
+Move funktions.cpp around
 
 LATER: SunNeutrinos.cpp:  84	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
 LATER: SunNeutrinos.cpp: 160	:      // FIXME needs to be fixed once BFs are available directly from TH_Process
