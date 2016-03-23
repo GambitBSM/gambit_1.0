@@ -9,7 +9,6 @@ from collections import OrderedDict
 import os
 import copy
 
-# import modules.cfg as cfg
 import modules.active_cfg as active_cfg
 exec("import configs." + active_cfg.module_name + " as cfg")
 
@@ -84,7 +83,6 @@ def run():
         gb.symbol_name_counter += 1
 
         # New source file name
-        # new_source_file_name = gb.function_files_prefix + func_name['short'].lower() + '_f' + str(func_i) + gb.code_suffix + cfg.source_extension
         new_source_file_name = gb.function_files_prefix + func_el.get('name') + cfg.source_extension
         new_source_file_path = os.path.join(cfg.extra_output_dir, new_source_file_name)
 
@@ -97,9 +95,6 @@ def run():
         include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"' )
         include_statements.append( '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"' )
         
-        # include_statements += utils.getIncludeStatements(func_el, convert_loaded_to='wrapper_decl', input_element='function', use_full_path=True)
-        # include_statements += utils.getIncludeStatements(func_el, convert_loaded_to='wrapper_def', input_element='function', use_full_path=True)
-
         # - Then check if we have a header file for the function in question.
         #   If not, declare the original function as 'extern'
         file_el = gb.id_dict[func_el.get('file')]
@@ -135,9 +130,6 @@ def run():
         # Generate code for wrapper class version
         #
         
-        # Construct a wrapper function name, eg "someFunction_f7__BOSS"
-        # wr_func_name = func_el.get('name') + '_f' + str(func_i) + gb.code_suffix
-
         # Register the wrapper name
         func_name['wr_name'] = wr_func_name
 
@@ -312,96 +304,4 @@ def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_ove
 # ====== END: generateFunctionWrapperClassVersion ========
 
 
-
-# # ====== generateFunctionWrapperClassVersion ========
-
-# # Function for generating a source file containing wrapper
-# # functions that make use of the wrapper classes.
-
-# def generateFunctionWrapperClassVersion(func_el, func_name, namespaces, n_overloads):
-
-#     new_code = ''
-
-
-#     #
-#     # Get info on function
-#     #
-
-
-#     # Identify arguments, translate argument type of loaded classes
-#     # and construct the argument bracket
-#     args = funcutils.getArgs(func_el)
-#     w_args = funcutils.constrWrapperArgs(args, add_ref=True)
-
-#     # Identify return type 
-#     return_type_dict = utils.findType( gb.id_dict[func_el.get('returns')] )
-#     return_el     = return_type_dict['el']
-#     pointerness   = return_type_dict['pointerness']
-#     is_ref        = return_type_dict['is_reference']
-#     return_kw     = return_type_dict['cv_qualifiers']
-    
-#     return_kw_str = ' '.join(return_kw) + ' '*bool(len(return_kw))
-
-#     return_type   = return_type_dict['name'] + '*'*pointerness + '&'*is_ref
-
-
-#     #
-#     # Wrapper function
-#     #
-
-#     wrapper_code = '// Wrapper function(s)\n'
-
-#     # Wrapper function name
-#     wr_func_name = func_name['short'] + gb.code_suffix
-
-#     # Check constness
-#     if ('const' in func_el.keys()) and (func_el.get('const')=='1'):
-#         is_const = True
-#     else:
-#         is_const = False
-
-#     # One function for each set of default arguments
-#     for remove_n_args in range(n_overloads+1):
-
-#         if remove_n_args == 0:
-#             use_args   = args
-#             use_w_args = w_args
-#         else:
-#             use_args   = args[:-remove_n_args]
-#             use_w_args = w_args[:-remove_n_args]
-
-#         args_bracket_wrapper = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True, use_wrapper_class=True)
-#         args_bracket_wrapper_notypes = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=False, cast_to_original=True, wrapper_to_pointer=True)
-
-#         # Name of function to call
-#         call_func_name = func_name['short']
-
-#         # Convert return type if loaded class
-#         if utils.isLoadedClass(return_el):
-#             wrapper_return_type = classutils.toWrapperType(return_type, remove_reference=True)
-#         else:
-#             wrapper_return_type = return_type
-
-#         # Write declaration line
-#         wrapper_code += return_kw_str + wrapper_return_type + ' ' + wr_func_name + args_bracket_wrapper + is_const*' const' + '\n'
-
-#         # Write function body
-#         indent = ' '*cfg.indent
-#         wrapper_code += '{\n'
-
-#         if return_type == 'void':
-#             wrapper_code += indent
-#         else:
-#             wrapper_code += indent + 'return '
-
-#         wrapper_code += call_func_name + args_bracket_wrapper_notypes + ';\n'
-
-#         wrapper_code += '}\n'
-#         wrapper_code += '\n'
-
-#     new_code += wrapper_code
-
-#     return new_code
-
-# # ====== END: generateFunctionWrapperClassVersion ========
 

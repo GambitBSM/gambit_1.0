@@ -340,20 +340,6 @@ def copyFilesToSourceTree(verbose=False):
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
-    # # -- wrappercreator.hpp
-    # if len(gb.classes_done) > 0:
-    #     cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_creator_fname + cfg.header_extension)
-    #     cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_creator_fname + cfg.header_extension)
-    #     source_target_tuples.append( (cp_source, cp_target) )
-    #     new_files.append(cp_target)
-
-    # # -- wrapperdeleter.hpp
-    # if len(gb.classes_done) > 0:
-    #     cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.header_extension)
-    #     cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_deleter_fname + cfg.header_extension)
-    #     source_target_tuples.append( (cp_source, cp_target) )
-    #     new_files.append(cp_target)
-
     # -- wrapperutils.hpp
     if len(gb.classes_done) > 0:
         cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_utils_fname + cfg.header_extension)
@@ -374,20 +360,6 @@ def copyFilesToSourceTree(verbose=False):
         cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
-
-    # # -- wrappercreator.cpp
-    # if len(gb.classes_done) > 0:
-    #     cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_creator_fname + cfg.source_extension)
-    #     cp_target = os.path.join(cfg.src_files_to, gb.wrapper_creator_fname + cfg.source_extension)
-    #     source_target_tuples.append( (cp_source, cp_target) )
-    #     new_files.append(cp_target)
-
-    # # -- wrapperdeleter.cpp
-    # if len(gb.classes_done) > 0:
-    #     cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.source_extension)
-    #     cp_target = os.path.join(cfg.src_files_to, gb.wrapper_deleter_fname + cfg.source_extension)
-    #     source_target_tuples.append( (cp_source, cp_target) )
-    #     new_files.append(cp_target)
 
     # -- wrapperutils.cpp
     if len(gb.classes_done) > 0:
@@ -826,7 +798,4 @@ def resetSourceCode(reset_info_file_name):
     print
 
 # ====== END: resetSourceCode ========
-
-
-
 

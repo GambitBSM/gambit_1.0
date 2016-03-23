@@ -9,7 +9,6 @@ from collections import OrderedDict
 import os
 import warnings
 
-# import modules.cfg as cfg
 import modules.active_cfg as active_cfg
 exec("import configs." + active_cfg.module_name + " as cfg")
 import modules.gb as gb
@@ -182,19 +181,6 @@ def run():
                               construct_assignment_operator, has_copy_constructor, copy_constructor_id)
 
 
-        # #
-        # # Construct function for creating a pointer-to-wrapper ('wrapper_creator')
-        # #
-
-        # constrWrapperCreator(class_name)
-        
-
-        # #
-        # # Construct function for deleting a pointer-to-wrapper ('wrapper_deleter')
-        # #
-
-        # constrWrapperDeleter(class_name)
-
         #
         # Construct utility functions for dealing with pointer-to-wrapper from Abstract class.
         # ('wrapper_creator', 'wrapper_deleter', 'set_delete_BEptr')
@@ -259,9 +245,6 @@ def constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namesp
     include_statements  = ['#include "' + os.path.join(gb.gambit_backend_incl_dir, 'abstractbase.hpp') + '"']
     include_statements += ['#include "' + gb.frwd_decls_abs_fname + cfg.header_extension + '"']
     include_statements += ['#include "' + gb.frwd_decls_wrp_fname + cfg.header_extension + '"']
-    # include_statements += ['#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_abs_fname + cfg.header_extension) + '"']
-    # include_statements += ['#include "' + os.path.join(gb.gambit_backend_types_basedir, gb.gambit_backend_name_full, gb.frwd_decls_wrp_fname + cfg.header_extension) + '"']
-    # include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='abstract', exclude_types=[class_name], include_parents=True, use_full_path=False, forward_declared='include')
     include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='wrapper_decl', exclude_types=[class_name], include_parents=True, use_full_path=False, forward_declared='include')
     include_statements += ['#include <cstddef>']
     include_statements_code = '\n'.join(include_statements) + 2*'\n'
@@ -617,8 +600,6 @@ def generateClassMemberInterface(class_el, class_name, abstr_class_name, namespa
 
         # - Generate include statements for the new source file
         include_statements = []
-        # include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='abstract', input_element='class', use_full_path=True, forward_declared='include')
-        # include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='abstract', input_element='class', use_full_path=True, forward_declared='exclude')
         include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='none', input_element='class', use_full_path=True, forward_declared='only')
         include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='wrapper', input_element='class', use_full_path=True, forward_declared='exclude')
         include_statements.append('#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"')
@@ -647,10 +628,6 @@ def generateClassMemberInterface(class_el, class_name, abstr_class_name, namespa
 # Generate factory functions source file
 
 def generateFactoryFunctions(class_el, class_name, is_template):
-
-    # # Prepare entry in global dict with factory function info
-    # if class_name['long'] not in gb.factory_info.keys():
-    #     gb.factory_info[class_name['long']] = []
 
     # If class contains pure virtual members, do not generate any factory functions
     if class_name['long_templ'] in gb.contains_pure_virtual_members:
@@ -733,95 +710,6 @@ def generateWrapperHeader(class_el, class_name, abstr_class_name, namespaces, sh
     gb.new_code[wrapper_header_path]['code_tuples'].append( (0, wrapper_header_content) )
 
 # ====== END: generateWrapperHeader ========
-
-
-
-# # ====== constrWrapperCreator ========
-
-# # Construct function for creating a wrapper pointer ('wrapper_creator')
-
-# def constrWrapperCreator(class_name):
-
-#     wrapper_class_name = classutils.toWrapperType(class_name['long'], include_namespace=True)
-#     abstr_class_name = classutils.toAbstractType(class_name['long'], include_namespace=True)
-
-#     # Include statement for the header file
-#     wrapper_include_statement_decl = '#include "' + gb.new_header_files[class_name['long']]['wrapper_fullpath'] + '"\n'
-
-#     # Function declaration
-#     w_creator_decl  = '\n'
-#     w_creator_decl += wrapper_class_name + '* wrapper_creator(' + abstr_class_name + '*);\n'
-
-#     # Function implementation
-#     w_creator_impl  = '\n'
-#     w_creator_impl += wrapper_class_name + '* wrapper_creator(' + abstr_class_name + '* abs_ptr)\n'
-#     w_creator_impl += '{\n'
-#     w_creator_impl += ' '*cfg.indent + 'return new ' + wrapper_class_name + '(abs_ptr);\n'
-#     w_creator_impl += '}\n'
-
-#     # Register code
-#     w_creator_header_path = os.path.join(cfg.extra_output_dir, gb.wrapper_creator_fname + cfg.header_extension)
-#     w_creator_source_path = os.path.join(cfg.extra_output_dir, gb.wrapper_creator_fname + cfg.source_extension)
-
-#     if w_creator_header_path not in gb.new_code.keys():
-#         gb.new_code[w_creator_header_path] = {'code_tuples':[], 'add_include_guard':True}
-
-#         gb.new_code[w_creator_header_path]['code_tuples'].append( (0, '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"\n') )
-#         gb.new_code[w_creator_header_path]['code_tuples'].append( (0, '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.abstract_typedefs_fname + cfg.header_extension) + '"\n') )
-
-#     gb.new_code[w_creator_header_path]['code_tuples'].append( (0, wrapper_include_statement_decl) )        
-#     gb.new_code[w_creator_header_path]['code_tuples'].append( (-1, w_creator_decl) )        
-
-#     if w_creator_source_path not in gb.new_code.keys():
-#         w_creator_include = '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_creator_fname + cfg.header_extension) + '"\n'
-#         gb.new_code[w_creator_source_path] = {'code_tuples':[(0,w_creator_include)], 'add_include_guard':False}
-#     gb.new_code[w_creator_source_path]['code_tuples'].append( (-1, w_creator_impl) )        
-
-# # ====== END: constrWrapperCreator ========
-
-
-
-# # ====== constrWrapperDeleter ========
-
-# # Construct function for deleting a pointer-to-wrapper ('wrapper_deleter')
-
-# def constrWrapperDeleter(class_name):
-
-#     wrapper_class_name = classutils.toWrapperType(class_name['long'], include_namespace=True)
-
-#     # Include statement for the header file
-#     wrapper_include_statement_decl = '#include "' + gb.new_header_files[class_name['long']]['wrapper_fullpath'] + '"\n'
-
-#     # Function declaration
-#     w_deleter_decl  = '\n'
-#     w_deleter_decl += 'void wrapper_deleter(' + wrapper_class_name + '*);\n'
-
-#     # Function implementation
-#     w_deleter_impl  = '\n'
-#     w_deleter_impl += 'void wrapper_deleter(' + wrapper_class_name + '* wptr)\n'
-#     w_deleter_impl += '{\n'
-#     w_deleter_impl += ' '*cfg.indent + 'delete wptr;\n'
-#     w_deleter_impl += '}\n'
-
-#     # Register code
-#     w_deleter_header_path = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.header_extension)
-#     w_deleter_source_path = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.source_extension)
-
-#     if w_deleter_header_path not in gb.new_code.keys():
-#         gb.new_code[w_deleter_header_path] = {'code_tuples':[], 'add_include_guard':True}
-
-#         gb.new_code[w_deleter_header_path]['code_tuples'].append( (0, '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_typedefs_fname + cfg.header_extension) + '"\n') )
-
-#     gb.new_code[w_deleter_header_path]['code_tuples'].append( (0, wrapper_include_statement_decl) )        
-#     gb.new_code[w_deleter_header_path]['code_tuples'].append( (-1, w_deleter_decl) )        
-
-#     if w_deleter_source_path not in gb.new_code.keys():
-#         w_deleter_include = '#include "' + os.path.join(gb.gambit_backend_incl_dir, gb.wrapper_deleter_fname + cfg.header_extension) + '"\n'
-#         gb.new_code[w_deleter_source_path] = {'code_tuples':[(0,w_deleter_include)], 'add_include_guard':False}
-#     gb.new_code[w_deleter_source_path]['code_tuples'].append( (-1, w_deleter_impl) )        
-
-# # ====== END: constrWrapperDeleter ========
-
 
 
 # ====== constrWrapperUtils ========

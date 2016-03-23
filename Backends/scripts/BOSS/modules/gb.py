@@ -10,7 +10,6 @@ import os
 
 import modules.active_cfg as active_cfg
 exec("import configs." + active_cfg.module_name + " as cfg")
-#import modules.cfg as cfg
 
 
 # ~~~~~ BOSS global variables and containers ~~~~~
@@ -29,10 +28,8 @@ parents_of_loaded_classes = []
 contains_pure_virtual_members = []
 
 file_dict               = OrderedDict()
-# all_classes_dict        = OrderedDict()
 std_types_dict          = OrderedDict()
 typedef_dict            = OrderedDict()
-# class_dict              = OrderedDict()
 loaded_classes_in_xml   = OrderedDict()
 func_dict               = OrderedDict()
 new_header_files        = OrderedDict()
@@ -77,8 +74,6 @@ general_src_file_prefix = 'BOSS_'
 factory_file_prefix     = general_src_file_prefix + 'factory_'
 function_files_prefix   = general_src_file_prefix + 'func_'
 func_return_utils_fname = general_src_file_prefix + 'function_return_utils'
-# wrapper_creator_fname   = general_src_file_prefix + 'wrappercreator'
-# wrapper_deleter_fname   = general_src_file_prefix + 'wrapperdeleter'
 wrapper_utils_fname     = general_src_file_prefix + 'wrapperutils'
 frwd_decls_abs_fname    = 'forward_decls_abstract_classes'
 frwd_decls_wrp_fname    = 'forward_decls_wrapper_classes'

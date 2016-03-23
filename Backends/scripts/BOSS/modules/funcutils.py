@@ -10,7 +10,6 @@ from collections import OrderedDict
 import copy
 import warnings
 
-# import modules.cfg as cfg
 import modules.active_cfg as active_cfg
 exec("import configs." + active_cfg.module_name + " as cfg")
 
@@ -306,7 +305,6 @@ def constrWrapperBody(return_type, func_name, args, return_is_loaded_class, keyw
         if return_is_loaded_class:
             if is_ref:
                 w_func_body += func_name + args_bracket_notypes + ';\n'
-                # w_func_body += func_name + args_bracket_notypes + '.get_init_wref();\n'
             elif (not is_ref) and (pointerness > 0):
                 w_func_body += func_name + args_bracket_notypes + ';\n'
             else:
@@ -534,50 +532,6 @@ def getFunctionNameDict(func_el):
 
     # Get information about the arguments
     args = getArgs(func_el)
-
-
-    # #
-    # # Start filling the name dict
-    # #
-    
-    # # If two or more functions have the same name, the return type will
-    # # be part of the 'demangled' entry. Otherwise it will not.
-    
-    # if (return_type + ' ') == func_el.get('demangled')[:len(return_type)+1]:
-    
-    #     func_name['long_templ_return_args']  = func_el.get('demangled')
-    
-    #     # Remove return type
-    #     if return_type == 'void':
-    #         func_name['long_templ_args'] = func_name['long_templ_return_args']
-    #     else:
-    #         func_name['long_templ_args'] = func_name['long_templ_return_args'].replace(return_type,'',1).strip()
-
-    # else:
-
-    #     func_name['long_templ_args']  = func_el.get('demangled')
-    
-    #     # Add return type
-    #     if return_type == 'void':
-    #         func_name['long_templ_return_args'] = func_name['long_templ_args']
-    #     else:
-    #         func_name['long_templ_return_args'] = return_type + ' ' + func_name['long_templ_args']
-
-
-    # # Remove argument bracket
-    # func_name['long_templ'], args_bracket = utils.removeArgumentBracket(func_name['long_templ_args'], return_args_bracket=True)
-
-    # # Remove template bracket
-    # func_name['long'], template_bracket = utils.removeTemplateBracket(func_name['long_templ'], return_bracket=True)
-
-    # # Remove namespace
-    # func_name['short'] = utils.removeNamespace(func_name['long'])
-
-    # # Combine short name and template bracket
-    # func_name['short_templ'] = func_name['short'] + template_bracket
-
-    # # Combine short name, template bracket and argument bracket
-    # func_name['short_templ_args'] = func_name['short_templ'] + args_bracket
 
 
     #
