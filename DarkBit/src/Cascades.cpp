@@ -376,9 +376,9 @@ namespace Gambit {
       static int    cMC_minSpecSamples;
       static int    cMC_maxSpecSamples;
       static double cMC_specValidThreshold;
-      static int    cMC_endCheckFrequency; 
-      static double cMC_gammaBGPower;
-      static double cMC_gammaRelError;      
+//      static int    cMC_endCheckFrequency; 
+//      static double cMC_gammaBGPower;
+//      static double cMC_gammaRelError;      
       static int    cMC_NhistBins;
       static double cMC_binLow;
       static double cMC_binHigh;
@@ -398,15 +398,13 @@ namespace Gambit {
           cMC_specValidThreshold = 
       // FIXME: Add getValue documentation
             runOptions->getValueOrDef<double>(0.0,    "cMC_specValidThreshold");
-          cMC_endCheckFrequency  = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
-          cMC_gammaBGPower       = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
-          cMC_gammaRelError      = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
+//          cMC_endCheckFrequency  = 
+//            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
+//          cMC_gammaBGPower       = 
+//            runOptions->getValueOrDef<double>(-2.5,   "cMC_gammaBGPower");
+//          cMC_gammaRelError      = 
+//            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
+
           // FIXME: This sets equal binning for all particle types.  Each
           // particle type should be allowed to have different binning.
           cMC_NhistBins          = 
@@ -562,6 +560,10 @@ namespace Gambit {
           }  
         }
       }
+      // Note: Spectrum-dependent convergence checks are commented out for the
+      // moment.  A fixed-number-of-runs scheme seems to work as well and is
+      // less dependent on user input.
+      /*
       // Check if finished every cMC_endCheckFrequency events
       if((*Loop::iteration % cMC_endCheckFrequency) == 0)
       {   
@@ -573,7 +575,7 @@ namespace Gambit {
         {
           // End conditions currently only implemented for gamma final state
           if(*it=="gamma")
-          {                  
+          {
             SimpleHist hist;
 #pragma omp critical (cascadeMC_histList)
             hist = histList[*Dep::cascadeMC_InitialState][*it];
@@ -604,7 +606,8 @@ namespace Gambit {
         {
           Loop::wrapup();
         }
-      }        
+      }
+      */
     }
 
     // Convenience function for getting a Funk::Funk object of a given spectrum.

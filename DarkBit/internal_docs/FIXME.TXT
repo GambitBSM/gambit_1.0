@@ -148,6 +148,7 @@ DONE ProcessCatalog.cpp: 224	:              // FIXME: Implement this also for th
 DONE MSSM.cpp: 345	:      // FIXME: Get meson masses from somewhere else?
 DONE SingletDM.cpp: 332	:      // FIXME: Get meson masses from somewhere
 DONE   -- Pat: there is nowhere else in the code that defines or uses meson masses.  I think the most appropriate (for now) would be to put them in Elements/include/.../numerical_constants.cpp, maybe in a const map initialised with some function defined in a new source file Elements/src/numerical_constants.cpp.
+DONE Cascade.cpp :  Check convergence criteria (I just removed it)
 
 src/DarkBit.cpp                          // FIXME: Add getValue documentation
 src/Cascades.cpp                         // FIXME: Add getValue documentation
@@ -156,10 +157,8 @@ examples/DarkBit_standalone_MSSM.cpp     // FIXME: Add getValue documentation
 examples/DarkBit_standalone_WIMP.cp      // FIXME: Add getValue documentation
 
 
-
 After sanity checks of DS and MO results
 ----------------------------------------
-Cascade.cpp :  Check convergence criteria
 MSSM.cpp: 505	:        /* FIXME: Double-check that import works correctly */ (they do look correct)
 ProcessCatalog.cpp: everywhere : // FIXME: Check consisteny of kinematics in general (is v>0 correctly taken into account for final state particles everywhere?)
 Cascades.cpp: 320	:      // FIXME: Double-check that sampling is done correctly
