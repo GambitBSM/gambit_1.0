@@ -52,15 +52,6 @@
 #define MODULE DarkBit
 START_MODULE
 
-  #define CAPABILITY MSSM_spectrum
-  START_CAPABILITY
-    #define FUNCTION get_MSSM_spectrum_from_file
-      START_FUNCTION(SLHAstruct)
-      ALLOW_MODELS(MSSM25atQ)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
   // Backend point initialization --------------------------
 
   // Function to initialize DarkSUSY to a specific model point.

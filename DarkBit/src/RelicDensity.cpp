@@ -360,6 +360,7 @@ namespace Gambit {
           Weff = Weff + 
             it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
+        // FIXME: Should we add genRateMisc to Weff?
         if ( Weff->getNArgs() != 1 )
           DarkBit_error().raise(LOCAL_INFO, 
               "RD_eff_annrate_from_ProcessCatalog: Wrong number of arguments.\n"

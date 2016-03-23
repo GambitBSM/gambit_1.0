@@ -35,43 +35,6 @@ namespace Gambit {
 
     //////////////////////////////////////////////////////////////////////////
     //
-    //                       Convenience functions
-    //
-    //////////////////////////////////////////////////////////////////////////
-
-    /// Retrieve MSSM spectra directly from a list of SLHA files
-    void get_MSSM_spectrum_from_file(SLHAstruct &result)
-    {
-      using namespace Pipes::get_MSSM_spectrum_from_file;
-      // Static counter running in a loop over all filenames
-      static unsigned int counter = 0;
-      SLHAstruct spectrum;
-
-      // Read filename from yaml file
-      std::vector<std::string> filenames = 
-      /// Option filename<std::string>: Input SLHA filename (required)
-        runOptions->getValue<std::vector<std::string> >("filenames");
-
-      std::string filename = filenames[counter];
-
-      logger() << "Reading SLHA file: " << filename << std::endl;
-      std::ifstream ifs(filename.c_str());
-      if(!ifs.good())
-      {
-        logger() << "ERROR: SLHA file not found." << std::endl;
-        exit(1);
-      }
-      ifs >> spectrum;
-      ifs.close();
-      result = spectrum;
-      counter++;
-      if ( counter >= filenames.size() )
-        counter = 0;
-    }
-
-
-    //////////////////////////////////////////////////////////////////////////
-    //
     //                    Backend point initialization
     //
     //////////////////////////////////////////////////////////////////////////

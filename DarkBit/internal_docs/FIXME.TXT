@@ -75,6 +75,7 @@ MSSM.cpp: 164	:        // FIXME: If this the right place to set SLHAstruct model
 Torsten
 -------
 DONE GamYields.cpp +        // FIXME: What to do with channels that return zero (ee, uu, dd, ss)?
+RelicDensity.cpp: 363        // FIXME: Should we add genRateMisc to Weff?
 src/GamYields.cpp                        // FIXME: Add getValue documentation
 src/RelicDensity.cpp                     // FIXME: Add getValue documentation
 src/MSSM.cpp                             // FIXME: Add getValue documentation
@@ -161,6 +162,8 @@ DONE src/Sloppy.cpp                           // FIXME: Add getValue documentati
 DONE examples/DarkBit_standalone_MSSM.cpp     // FIXME: Add getValue documentation
 DONE examples/DarkBit_standalone_WIMP.cp      // FIXME: Add getValue documentation
 DONE change yield table identifiers to mass eigenstates (after JE confirms)
+DONE Check DarkBit::get_MSSM_spectrum_from_file necessary?
+DONE Check usage of genRateMisc in GAMBIT (for section 3.5.1)
 
 Email:
 Send reminder about FIXME points (in particular IB radiation), Paper
@@ -171,10 +174,8 @@ What about kinematically closed channels?
 what to do with states like gamma Z0?  Needs to be fixed
 
 Coding:
-Check DarkBit::get_MSSM_spectrum_from_file necessary?
-check invalid_point exceptions
 Move funktions.cpp around
-Check usage of genRateMisc in GAMBIT (for section 3.5.1)
+check invalid_point exceptions
 
 Paper writing me:
 Finish IDM section, 2.3.1
