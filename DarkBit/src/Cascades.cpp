@@ -39,10 +39,10 @@ namespace Gambit {
     void cascadeMC_FinalStates(std::vector<std::string> &list)
     {
       list.clear();
+      list.push_back("gamma");
       using namespace Pipes::cascadeMC_FinalStates;  
-      // FIXME: Add getValue documentation
-      list = runOptions->getValueOrDef<std::vector<std::string> >(
-          list,"cMC_finalStates");       
+      /// Option cMC_finalStates<std::vector<std::string>>: List of final states to simulate (default is ["gamma"])
+      list = runOptions->getValueOrDef<std::vector<std::string>>(list, "cMC_finalStates");       
 #ifdef DARKBIT_DEBUG
       std::cout << "Final states to generate: " << list.size() << std::endl;
       for(size_t i=0; i < list.size(); i++)
@@ -82,10 +82,9 @@ namespace Gambit {
     {
       using namespace Pipes::cascadeMC_LoopManager;     
       std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
+      int cMC_minEvents = 2;  // runOptions->getValueOrDef<int>(2, "cMC_minEvents");
       // Get YAML options
-      // FIXME: Add getValue documentation
-      int cMC_minEvents = runOptions->getValueOrDef<int>(2, "cMC_minEvents");
-      // FIXME: Add getValue documentation
+      /// Option cMC_maxEvents<int>: Maximum number of cascade MC runs (default 10000)
       int cMC_maxEvents = runOptions->getValueOrDef<int>(10000, "cMC_maxEvents");
 
 
@@ -200,12 +199,10 @@ namespace Gambit {
       switch(*Loop::iteration)
       {
         case MC_INIT:
-          cMC_maxChainLength = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
-          cMC_Emin           = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double> (-1, "cMC_Emin"); 
+          /// Option cMC_maxChainLength<int>: Maximum chain length, -1 is infinite (default -1)
+          cMC_maxChainLength = runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
+          /// Option cMC_Emin<double>: Cutoff energy for cascade particles (default 0)
+          cMC_Emin = runOptions->getValueOrDef<double> (-1, "cMC_Emin"); 
           return;
         case MC_NEXT_STATE:
         case MC_FINALIZE:
@@ -389,15 +386,12 @@ namespace Gambit {
       {
         case MC_INIT:
           // Initialization
-          cMC_minSpecSamples     = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>   (5,      "cMC_minSpecSamples");    
-          cMC_maxSpecSamples     = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>   (25,     "cMC_maxSpecSamples"); 
-          cMC_specValidThreshold = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(0.0,    "cMC_specValidThreshold");
+          /// Option cMC_minSpecSamples<int>: FIXME (default 5)
+          cMC_minSpecSamples = runOptions->getValueOrDef<int>   (5, "cMC_minSpecSamples");    
+          /// Option cMC_maxSpecSamples<int>: FIXME (default 25)
+          cMC_maxSpecSamples = runOptions->getValueOrDef<int>   (25, "cMC_maxSpecSamples"); 
+          /// Option cMC_specValidThreshold<double>: FIXME (default 0.)
+          cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0, "cMC_specValidThreshold");
 //          cMC_endCheckFrequency  = 
 //            runOptions->getValueOrDef<int>   (25,     "cMC_endCheckFrequency");
 //          cMC_gammaBGPower       = 
@@ -405,17 +399,13 @@ namespace Gambit {
 //          cMC_gammaRelError      = 
 //            runOptions->getValueOrDef<double>(0.01,   "cMC_gammaRelError");   
 
-          // FIXME: This sets equal binning for all particle types.  Each
-          // particle type should be allowed to have different binning.
-          cMC_NhistBins          = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");                 
-          cMC_binLow             = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");      
-          cMC_binHigh            = 
-      // FIXME: Add getValue documentation
-            runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");  
+          // Note: use same binning for all particle species
+          /// Option cMC_NhistBins<int>: Number of histogram bins (default 70)
+          cMC_NhistBins = runOptions->getValueOrDef<int>   (70,     "cMC_NhistBins");                 
+          /// Option cMC_binLow<double>: Histogram min energy in VeV (default 0.001)
+          cMC_binLow = runOptions->getValueOrDef<double>(0.001,  "cMC_binLow");      
+          /// Option cMC_binHigh<double>: Histogram max energy in VeV (default 10000)
+          cMC_binHigh = runOptions->getValueOrDef<double>(10000.0,"cMC_binHigh");  
           histList.clear();
           return;
         case MC_NEXT_STATE:

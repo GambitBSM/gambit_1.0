@@ -48,6 +48,7 @@ namespace Gambit
     {
       using namespace Pipes::createSpectrum;
       static Spectrum mySpec;
+      /// Option inputFileName<std::string>: Input SLHA (required)
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
       mySpec = spectrum_from_SLHA<MSSMSimpleSpec>(inputFileName);
@@ -58,6 +59,7 @@ namespace Gambit
     void createDecays(DecayTable& outDecays)
     {
       using namespace Pipes::createDecays;
+      /// Option inputFileName<std::string>: Input SLHA (required)
       std::string inputFileName = runOptions->getValue<std::string>("filename");
       std::cout << "Loading: " << inputFileName << std::endl;
       outDecays = DecayTable(inputFileName);

@@ -102,9 +102,12 @@ namespace Gambit
       catalog.particleProperties.insert(std::pair<string, TH_ParticleProperty> \
       (Name , TH_ParticleProperty(Mass, spinX2)));    
 
+      /// Option mWIMP<double>: WIMP mass in GeV (required)
       double mWIMP = runOptions->getValue<double>("mWIMP");
+      /// Option sv<double>: Cross-section in cm3/s (required)
       double sv = runOptions->getValue<double>("sv");
       double b = 0;  // defined as sv(v) = sv(v=0) + b*(sv=0)*v**2
+      /// Option brList<std::vector<double>>: List of branching ratios (required)
       auto brList = runOptions->getValue<std::vector<double>>("brList");
 
       // FIXME: Use various channels include 3-body and complicated cascade
@@ -185,9 +188,13 @@ namespace Gambit
     void DD_couplings_WIMP(DarkBit::DD_couplings& result)
     {
       using namespace Pipes::DD_couplings_WIMP;
+      /// Option gps<double>: gps (default 0)
       result.gps = runOptions->getValueOrDef<double>(0., "gps");
+      /// Option gns<double>: gns (default 0)
       result.gns = runOptions->getValueOrDef<double>(0., "gns");
+      /// Option gpa<double>: gpa (default 0)
       result.gpa = runOptions->getValueOrDef<double>(0., "gpa");
+      /// Option gna<double>: gna (default 0)
       result.gna = runOptions->getValueOrDef<double>(0., "gna");
       std::cout << "DD_coupling says" << std::endl;
       std::cout << result.gps << std::endl;
