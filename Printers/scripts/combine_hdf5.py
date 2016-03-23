@@ -94,7 +94,7 @@ def check_for_duplicates(fout,group):
 
 #if len(sys.argv)!=6 and len(sys.argv)!=7: usage()
 #
-runchecks=True
+runchecks=False
 #if len(sys.argv)==7:
 #   if "--runchecks" in sys.argv: 
 #      runchecks=True

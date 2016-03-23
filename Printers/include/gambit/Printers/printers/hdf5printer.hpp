@@ -239,9 +239,13 @@ namespace Gambit
         /// Clear previous points list
         void clear_previous_points() { std::vector<PPIDpair>().swap(previous_points); } // This technique also shrinks the capacity of the vector, which 'clear' does not do.
 
-        /// Attempt to read an existing output file, and prepare it for
-        /// resumed writing (e.g. fix up dataset lengths if data missing)
-        std::vector<PPIDpair> verify_existing_output();
+        /// Scan for existing temporary files, in preparation for combining them
+        /// Should only do this if scan is resuming, and if we are process rank 0.
+        void prepare_and_combine_tmp_files();
+
+        /// Gather MPIrank/pointID pairs from an existing output file
+        /// Along the way, verify that datasets in the output file have consistent lengths
+        std::vector<PPIDpair> gather_old_PPIDs();
 
         /// Search the output directory for temporary files (pre-combination)
         std::vector<std::string> find_temporary_files(const bool error_if_inconsistent=false);
