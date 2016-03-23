@@ -74,7 +74,7 @@ namespace Gambit
                                     << "and address to send you your cookie.\n"
                                     << "\e[31mDisclaimer:\e[0m  The gambit collaboration "
                                     << "is not responsible for the result of ingestion of said "
-                                    << "cookie and is unaware of its ingredients." 
+                                    << "cookie and is unaware of its ingredients.  " 
                                     << "(press enter to continue)" << std::endl;
                                     
                         getchar();
