@@ -139,8 +139,13 @@ MAKE_INTERFACE  // Creates CMSSM_interface class
 MAKE_INTERFACE
 #undef MODELNAME
 
-#define MODELNAME SSDM
-#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary NSM model headers etc.
+#define MODELNAME SingletDMZ3
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary SingletDMZ3 model headers etc.
+MAKE_INTERFACE
+#undef MODELNAME
+
+#define MODELNAME SingletDM
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary SingletDM model headers etc.
 MAKE_INTERFACE
 #undef MODELNAME
 

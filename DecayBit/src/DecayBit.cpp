@@ -2640,7 +2640,7 @@ namespace Gambit
       const Spectrum* spec = *Dep::SingletDM_spectrum;
       const SubSpectrum* he = spec->get_HE();
       double mass = spec->get(Par::Pole_Mass,"S");
-      double lambda = he->get(Par::mass1,"lambda_hS");
+      double lambda = he->get(Par::dimensionless,"lambda_hS");
       double v0 = he->get(Par::mass1,"vev");
       double mhpole = spec->get(Par::Pole_Mass,"h0_1");
 

@@ -16,10 +16,12 @@
 
 #include <vector>
 #include <limits>
+#include <fstream>
 
 #include "gambit/ScannerBit/scanners/diver/diver.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
 
 /// =================================================
@@ -58,12 +60,31 @@ scanner_plugin(Diver, version(1, 0, 0))
   }
   
   int plugin_main (void)
-  {
+  {   
+    // Path to save Diver samples, resume files, etc 
+    str defpath = get_inifile_value<str>("default_output_path");
+    str root = Utils::ensure_path_exists(get_inifile_value<str>("path",defpath+"Diver/native"));
 
-    // Simple Diver run parameters
+    // Ask the printer if this is a resumed run or not, and check that the necessary files exist if so.
+    bool resume = get_printer().resume_mode();
+    if (resume)
+    {
+      std::ifstream f(root+".rparam");
+      std::ifstream g(root+".devo");
+      if (not f.good() or not g.good())
+      {
+        scan_err << "Cannot resume previous Diver run because one or both of" << endl
+                 << " " << root+".rparam" << endl
+                 << " " << root+".devo" << endl
+                 << "is missing.  This is probably because your last run didn't " << endl
+                 << "complete even one generation.  Please restart the scan with -r." << scan_end;
+      }
+      f.close();
+      g.close();
+    }
+
+    // Other Diver run parameters
     int    nPar                = get_dimension();                                         // Dimensionality of the parameter space
-    str    defpath             = get_inifile_value<str>("default_output_path");           // from gambit global default
-    str    root                = get_inifile_value<str>("path",defpath+"diver_native");   // Path to save samples, resume files, etc 
     int    nDerived            =                                                 0;       // Number of derived quantities to output (GAMBIT printers handle these).
     int    nDiscrete           = get_inifile_value<int>   ("nDiscrete",          0);      // Number of parameters that are to be treated as discrete
     bool   partitionDiscrete   = get_inifile_value<bool>  ("partitionDiscrete",  false);  // Split the population evenly amongst discrete parameters and evolve separately
@@ -84,8 +105,7 @@ scanner_plugin(Diver, version(1, 0, 0))
     double maxNodePop          =                                                 1.9;     // Population at which node is partitioned in binary space partitioning for posterior
     double Ztolerance          =                                                 0.1;     // Input tolerance in log-evidence
     int    savecount           = get_inifile_value<int>   ("savecount",          1);      // Save progress every savecount generations
-    bool   resume              = get_inifile_value<bool>  ("resume",             false);  // Restart from a previous run
-    bool   native_output       = get_inifile_value<bool>  ("full_native_output", false);  // Output .raw file (Diver native sample output format)
+    bool   native_output       = get_inifile_value<bool>  ("full_native_output", true);   // Output .raw file (Diver native sample output format)
     int    verbose             = get_inifile_value<int>   ("verbosity",          0);      // Output verbosity: 0=only error messages, 1=basic info, 2=civ-level info, 3+=population info
     double (*prior)(const double[], const int, void*&) =                         NULL;    // Pointer to prior function, only used if doBayesian = true.                          
     void*  context             = &data;                                                   // Pointer to GAMBIT likelihood function and printers, passed through to objective function. 

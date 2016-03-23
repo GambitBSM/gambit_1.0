@@ -30,7 +30,7 @@ namespace Gambit {
      setName("ScalarSingletDM");
 
      addParameter(Par::mass1, "vev"      );
-     addParameter(Par::mass1, "lambda_hS");
+     addParameter(Par::dimensionless, "lambda_hS");
 
      addParameter(Par::Pole_Mass, "h0");
      addParameter(Par::Pole_Mass, "S" );

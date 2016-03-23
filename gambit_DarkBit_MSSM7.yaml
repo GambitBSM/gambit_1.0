@@ -56,7 +56,7 @@ Priors:
 
 Printer:
 
-  printer: hdf5
+  printer: ascii #hdf5
 
   options:
     output_file: "runs/MSSM7/samples/MSSM7.hdf5"
@@ -149,14 +149,15 @@ Rules:
 
   - capability: DarkSUSY_PointInit
     options:
-      use_dsSLHAread: false
-#      debug_SLHA_filenames:
+      use_dsSLHAread: true
+      debug_SLHA_filenames:
 #      - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
 ##      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
 ##      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
 ##      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
 ##      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
 ##      - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+       - /Users/troms/bin/gambit_private/DS_mains/RelicDensity_debug.slha
 
   # Choose to implement the relic density as an upper bound, not a detection
   - capability: lnL_oh2

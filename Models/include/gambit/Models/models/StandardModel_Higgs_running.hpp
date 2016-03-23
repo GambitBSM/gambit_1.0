@@ -24,7 +24,7 @@
 #define MODEL StandardModel_Higgs_running
   START_MODEL
 
-  DEFINEPARS(mH2)
+  DEFINEPARS(mH,QEWSB)
 
  #undef MODEL
 #endif 

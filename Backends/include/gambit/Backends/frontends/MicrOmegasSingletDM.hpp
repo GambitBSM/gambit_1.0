@@ -63,10 +63,10 @@ BE_INI_FUNCTION
      // Currently only works correctly in unitary gauge
      *ForceUG=1;
 
-     error = assignVal((char*)"MS", *Param["mass"]);
+     error = assignVal((char*)"MS", *Param["mS"]);
      if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "Unable to set DM mass in"
              "MicrOmegas. MicrOmegas error code: " + std::to_string(error));
-     error = assignVal((char*)"lambda", *Param["lambda"]);
+     error = assignVal((char*)"lambda", *Param["lambda_hS"]);
      if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "Unable to set lambda in"
              "MicrOmegas. MicrOmegas error code: " + std::to_string(error));
      error = sortOddParticles(byVal(cdmName));

@@ -283,18 +283,18 @@ namespace Gambit
 
   struct DS_HMFRAMEVELCOM
   {
-      double veX;
-      double veY;
-      double veZ;
-      double vspX;
-      double vspY;
-      double vspZ;
-      double v_obs;
+      Fdouble veX;
+      Fdouble veY;
+      Fdouble veZ;
+      Fdouble vspX;
+      Fdouble vspY;
+      Fdouble vspZ;
+      Fdouble v_obs;
   };
 
   struct DS_HMNOCLUE
   {
-      double vobs;        // speed of earth observer with respect to halo
+      Fdouble vobs;        // speed of earth observer with respect to halo
                           // yearly averaged ????
   };
 

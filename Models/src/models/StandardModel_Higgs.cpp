@@ -47,12 +47,20 @@ void MODEL_NAMESPACE::StandardModel_Higgs_to_StandardModel_Higgs_running (const 
   USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
   logger()<<"Running interpret_as_parent calculations for SM_Higgs --> SM_Higgs_.."<<LogTags::info<<EOM;
   
-  double tree_level_H_mass,mh2;
-  tree_level_H_mass=myP.getValue("mH");
+
+  targetP.setValue("mH", myP.getValue("mH"));
+
+  targetP.setValue("QEWSB", 173.34); // default value top mass scale
   
-  mh2=0.5*pow(tree_level_H_mass,2);
-  
-  targetP.setValue("mH2", mh2);
+
+
+//  double tree_level_H_mass,mh2;
+//  tree_level_H_mass=myP.getValue("mH");
+//  
+//  mh2=0.5*pow(tree_level_H_mass,2);
+//  
+//  targetP.setValue("mH2", mh2);
+
   
    // Done! Check that everything is ok if desired.
    #ifdef SMHIGGS_DBUG

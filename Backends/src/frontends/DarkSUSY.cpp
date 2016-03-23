@@ -32,7 +32,7 @@
 ///
 ///  \author Joakim Edsjo
 ///          (edsjo@fysik.su.se)
-///  \date 2015 Aug
+///  \date 2015 Aug, 2016 Mar
 ///
 ///  *********************************************
 
@@ -47,7 +47,7 @@
 // Some ad-hoc DarkSUSY global state.
 BE_NAMESPACE
 {
-  const double min_chi01_width = 1.e-10;
+  const double min_chi01_rwidth = 5.e-3; // 0.5%  to avoid numerical problems
   const std::vector<str> IBfinalstate = initVector<str>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
   std::vector<double> DSparticle_mass;
   std::vector<double> GAMBITparticle_mass;
@@ -87,7 +87,7 @@ BE_INI_FUNCTION
     scan_level = false;
 
     /*
-     * CW: TODO FIXME Fix BackendIniBit_error problems
+     * FIXME: Fix BackendIniBit_error problems?
     if (runOptions->hasKey("dddn"))
     {
       if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
@@ -112,38 +112,6 @@ BE_INI_FUNCTION
     */
 
   }
-
-  // Initialization of local DM halo parameters.
-  if (ModelInUse("LocalHalo"))
-  {
-    double rho0 = *Param["rho0"];
-    double vrot = *Param["vrot"];
-    double vearth = *Param["vearth"];
-    double vd_3d = sqrt(3./2.)*(*Param["v0"]);
-    double vesc = *Param["vesc"];
-
-    dshmcom->rho0 = rho0;
-    dshmcom->rhox = rho0;
-    dshmcom->v_sun = vrot;
-    dshmcom->v_earth = vearth;
-
-    dshmframevelcom->v_obs = vrot;
-
-    dshmisodf->vd_3d = vd_3d;
-    dshmisodf->vgalesc = vesc;
-
-    dshmnoclue->vobs = vrot;
-
-    logger() << "Updating DarkSUSY halo parameters:" << EOM;
-    logger() << "    rho0 [GeV/cm^3] = " << rho0 << EOM;
-    logger() << "    rho0_eff [GeV/cm^3] = " << rho0 << EOM;
-    logger() << "    v_sun [km/s]  = " << vrot<< EOM;
-    logger() << "    v_earth [km/s]  = " << vearth << EOM;
-    logger() << "    v_obs [km/s]  = " << vrot << EOM;
-    logger() << "    vd_3d [km/s]  = " << vd_3d << EOM;
-    logger() << "    v_esc [km/s]  = " << vesc << EOM;
-  }
-
 }
 END_BE_INI_FUNCTION
 
@@ -244,7 +212,7 @@ BE_NAMESPACE
 
   /// Translates GAMBIT string identifiers to the SUSY
   /// particle codes used internally in DS (as stored in common block /pacodes/)
-  //TODO: add channel codes!
+  // FIXME: add channel codes!
   int DSparticle_code(const str& particleID)
   {
     int kpart;
@@ -360,6 +328,15 @@ BE_NAMESPACE
     using SLHAea::to;
     const std::complex<double> imagi(0.0, 1.0);
     DS_PACODES *DSpart = &(*pacodes);
+
+    /*
+    // FIXME: Joakim --> would this be need for anything / should this be
+    // checked?
+    SLHAea::Block modsel_block("MODSEL");
+    modsel_block.push_back("BLOCK MODSEL");
+    modsel_block.push_back("6 3 # FV");
+    mySLHA.push_back(modsel_block);
+    */
 
     // Define required blocks and raise an error if a block is missing
     required_block("SMINPUTS", mySLHA);
@@ -698,7 +675,7 @@ BE_NAMESPACE
     widths->width(DSpart->ksqd(6)) = myDecays.at(std::pair<int,int>(2000005,0)).width_in_GeV;
 
     // Set up neutralino widths.  Give the lightest some small nonzero width to avoid internal numerical issues in DS.
-    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_width);
+    widths->width(DSpart->kn(1)) = std::max(myDecays.at(std::pair<int,int>(1000022,0)).width_in_GeV, min_chi01_rwidth * to<double>(mySLHA.at("MASS").at(1000022).at(1))); 
     widths->width(DSpart->kn(2)) = myDecays.at(std::pair<int,int>(1000023,0)).width_in_GeV;
     widths->width(DSpart->kn(3)) = myDecays.at(std::pair<int,int>(1000025,0)).width_in_GeV;
     widths->width(DSpart->kn(4)) = myDecays.at(std::pair<int,int>(1000035,0)).width_in_GeV;
@@ -715,9 +692,10 @@ BE_NAMESPACE
 
     #ifdef DARKSUSY_DEBUG
       // Spit out spectrum and width files for debug purposes
-      int u = 6;
-      dswspectrum(u);
-      dswwidth(u);
+      int u1 = 49;
+      int u2 = 50;
+      dswspectrum(u1);
+      dswwidth(u2);
     #endif
 
     return 0;  // everything OK (hah. maybe.)
@@ -786,7 +764,7 @@ BE_NAMESPACE
 /* PS: I have made the mods requested, but these functions cannot work as designed,
  * because DarkBit::TH_ParticleProperty is a module type, not a backend type.
  * Make it a backend type or move these functions back into DarkBit.
- *
+ * FIXME: Fix the IB mass setting routines
   void registerMassesForIB(
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
@@ -801,6 +779,7 @@ BE_NAMESPACE
 */
 
   //PS: this can't compile anyway, as particleProperties is not defined
+  //FIXME: Fix the IB mass setting routines
   void setMassesForIB(bool set)
   {
     if (set)

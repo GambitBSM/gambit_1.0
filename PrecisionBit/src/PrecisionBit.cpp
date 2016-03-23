@@ -83,6 +83,20 @@ namespace Gambit
         //PrecisionBit_error().raise(LOCAL_INFO, err.str());
       }
 
+      // Just scrub this point now if sinW2 is negative in the MSSM,
+      // as negative sinW2 can cause instability in other routines
+      // (and this point should be excluded because this is waaay off
+      // the observed value).
+      if (SW2MSSM <= 0.0)
+      {
+        std::ostringstream err;
+        err << "Sin^2 thetaW_effective is less than zero." << endl
+            << "Value computed by FeynHiggs: " << SW2MSSM << endl
+            << "Invalidating immediately to prevent downstream instability.";
+        invalid_point().raise(err.str());
+        //PrecisionBit_error().raise(LOCAL_INFO, err.str());
+      }
+
       #ifdef PRECISIONBIT_DEBUG
         // Just die if any of the other observables look really suspicious.
         str nans;
