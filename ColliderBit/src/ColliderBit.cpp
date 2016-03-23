@@ -460,7 +460,6 @@ namespace Gambit
       using namespace Pipes::getATLASAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
         useATLAS = runOptions->getValueOrDef<bool>(true, "useATLAS");
-        std::cerr << "\n\n DEBUG: useATLAS = " << useATLAS << "\n\n";
         if (!useATLAS) return;
         GET_COLLIDER_RUNOPTION(analysisNamesATLAS, std::vector<std::string>);
         globalAnalysesATLAS.clear();
@@ -501,7 +500,6 @@ namespace Gambit
       using namespace Pipes::getCMSAnalysisContainer;
       if (*Loop::iteration == BASE_INIT) {
         useCMS = runOptions->getValueOrDef<bool>(true, "useCMS");
-        std::cerr << "\n\n DEBUG: useCMS = " << useCMS << "\n\n";
         if (!useCMS) return;
         GET_COLLIDER_RUNOPTION(analysisNamesCMS, std::vector<std::string>);
         globalAnalysesCMS.clear();
@@ -622,7 +620,6 @@ namespace Gambit
       if (*Loop::iteration <= BASE_INIT) return;
 
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
-      std::cerr << "\n\n DEBUG: Running ATLAS... \n\n";
       Dep::ATLASAnalysisContainer->analyze(*Dep::ATLASSmearedEvent);
     }
 
@@ -644,7 +641,6 @@ namespace Gambit
       if (*Loop::iteration <= BASE_INIT) return;
 
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
-      std::cerr << "\n\n DEBUG: Running CMS... \n\n";
       Dep::CMSAnalysisContainer->analyze(*Dep::CMSSmearedEvent);
     }
 
@@ -3659,4 +3655,3 @@ namespace Gambit
 
   }
 }
-#undef DEBUG

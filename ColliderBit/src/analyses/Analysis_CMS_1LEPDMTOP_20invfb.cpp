@@ -75,14 +75,6 @@ namespace Gambit {
         HEPUtilsAnalysis::analyze(event);
         HEPUtils::Event* eventClone = event->clone();
 
-        std::cerr << "DEBUG:" << std::cerr;
-        std::cerr << "DEBUG: CMS_1LEPDMTOP_20invfb: particles in eventClone:" << std::endl;
-        for (HEPUtils::Particle* p : eventClone->particles())
-        {
-          std::cerr << "DEBUG: CMS_1LEPDMTOP_20invfb: " << p << std::endl;
-        }
-        std::cerr << "DEBUG:" << std::cerr;
-
         // Missing energy
         HEPUtils::P4 ptot = eventClone->missingmom();
         double met = eventClone->met();

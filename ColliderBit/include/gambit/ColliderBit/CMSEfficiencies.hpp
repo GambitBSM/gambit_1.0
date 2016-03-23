@@ -60,32 +60,13 @@ namespace Gambit {
       /// @brief Randomly filter the supplied particle list by parameterised muon efficiency
       inline void applyMuonEff(std::vector<HEPUtils::Particle*>& muons) {
         if(muons.empty()) return;
-        std::cerr << "DEBUG: " << std::endl;
-        std::cerr << "DEBUG: new applyMuonEffCMS call, with muons vector at " << &muons << std::endl;
-        std::cerr << "DEBUG: " << std::endl;
-        std::cerr << "DEBUG: muons vector contains:" << std::endl;
-        for (HEPUtils::Particle* p : muons) 
-        {
-          std::cerr << "DEBUG: " << p << std::endl;
-        }
-        std::cerr << "DEBUG:" << std::endl;
-        auto keptMuonsEnd = muons.end();
-        keptMuonsEnd = std::remove_if(muons.begin(), keptMuonsEnd,
-                                      [](const HEPUtils::Particle* p) {
-                                        if (p->abseta() > 2.4 || p->pT() < 10) {
-                                          // DEBUG
-                                          std::cerr << "DEBUG: applyMuonEff says..." << std::endl;
-                                          std::cerr << "DEBUG: (1) will delete " << p << std::endl;
-                                          return true; 
-                                        }
-                                        const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
-                                        if (HEPUtils::rand01() > eff) {
-                                          // DEBUG
-                                          std::cerr << "DEBUG: applyMuonEff says..." << std::endl;
-                                          std::cerr << "DEBUG: (2) will delete " << p << std::endl;
-                                          return true; 
-                                        }
-                                        return false; } );
+        auto keptMuonsEnd = std::remove_if(muons.begin(), muons.end(),
+                                           [](const HEPUtils::Particle* p) {
+                                             if (p->abseta() > 2.4 || p->pT() < 10)
+                                               return true; 
+                                             const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
+                                             return (HEPUtils::rand01() > eff);
+                                           } );
         // vectors erase most efficiently from the end...
         // no delete is necessary, because all analyses destroy their eventClone after analysis
         while (keptMuonsEnd != muons.end())
