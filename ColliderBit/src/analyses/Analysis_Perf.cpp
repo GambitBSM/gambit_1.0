@@ -150,23 +150,22 @@ namespace Gambit {
 
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
-        HEPUtils::Event* eventClone = event->clone();
 
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineElectrons;
-        for (HEPUtils::Particle* electron : eventClone->electrons()) {
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && electron->abseta() < 2.47 &&
-              !object_in_cone(*eventClone, *electron, 0.1*electron->pT(), 0.2)) baselineElectrons.push_back(electron);
+              !object_in_cone(*event, *electron, 0.1*electron->pT(), 0.2)) baselineElectrons.push_back(electron);
         }
         vector<HEPUtils::Particle*> baselineMuons;
-        for (HEPUtils::Particle* muon : eventClone->muons()) {
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 10. && muon->abseta() < 2.4 &&
-              !object_in_cone(*eventClone, *muon, 1.8, 0.2)) baselineMuons.push_back(muon);
+              !object_in_cone(*event, *muon, 1.8, 0.2)) baselineMuons.push_back(muon);
         }
 
         // Get b jets with efficiency and mistag (fake) rates
         vector<HEPUtils::Jet*> baselineJets, bJets; // trueBJets; //for debugging
-        for (HEPUtils::Jet* jet : eventClone->jets()) {
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && jet->abseta() < 5.0) baselineJets.push_back(jet);
           if (jet->abseta() < 2.5 && jet->pT() > 20.) {
             const double rnum = HEPUtils::rand01();
@@ -209,7 +208,7 @@ namespace Gambit {
 
         // Hadronic taus
         vector<HEPUtils::Particle*> signalTaus;
-        for (HEPUtils::Particle* tau : eventClone->taus()) {
+        for (HEPUtils::Particle* tau : event->taus()) {
           if (tau->pT() > 20. && tau->abseta() < 2.47) signalTaus.push_back(tau);
         }
         // Apply Run 2 medium hadronic tau efficiency
@@ -224,10 +223,10 @@ namespace Gambit {
         #ifndef EXCLUDE_DELPHES
 
         // MET
-        _hmet->Fill(eventClone->met());
+        _hmet->Fill(event->met());
 
-        if(signalElectrons.size()==1 && signalMuons.size()==0)_hmet_1_electron->Fill(eventClone->met());
-        if(signalMuons.size()==1 && signalElectrons.size()==0)_hmet_1_muon->Fill(eventClone->met());
+        if(signalElectrons.size()==1 && signalMuons.size()==0)_hmet_1_electron->Fill(event->met());
+        if(signalMuons.size()==1 && signalElectrons.size()==0)_hmet_1_muon->Fill(event->met());
 
 
         // Electrons
@@ -324,7 +323,6 @@ namespace Gambit {
         if (signalMuons.size() > 1) _hMuon2Pt->Fill(signalMuons[1]->pT());
 
         #endif
-        delete eventClone;
 
       }
 

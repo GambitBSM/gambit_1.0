@@ -113,22 +113,21 @@ namespace Gambit {
 
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
-        HEPUtils::Event* eventClone = event->clone();
 
         // Missing energy
-        HEPUtils::P4 ptot = eventClone->missingmom();
-        double met = eventClone->met();
+        HEPUtils::P4 ptot = event->missingmom();
+        double met = event->met();
 
 
         // Baseline lepton objects
         vector<HEPUtils::Particle*> baselineElectrons, baselineMuons, baselineTaus;
-        for (HEPUtils::Particle* electron : eventClone->electrons()) {
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
         }
-        for (HEPUtils::Particle* muon : eventClone->muons()) {
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 10. && muon->abseta() < 2.4) baselineMuons.push_back(muon);
         }
-        for (HEPUtils::Particle* tau : eventClone->taus()) {
+        for (HEPUtils::Particle* tau : event->taus()) {
           if (tau->pT() > 10. && tau->abseta() < 2.47) baselineTaus.push_back(tau);
         }
         ATLAS::applyTauEfficiencyR1(baselineTaus);
@@ -147,7 +146,7 @@ namespace Gambit {
         const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.7};
         HEPUtils::BinnedFn2D<double> _eff2d(a,b,c);
-        for (HEPUtils::Jet* jet : eventClone->jets()) {
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
           bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) {
@@ -644,7 +643,6 @@ namespace Gambit {
         if(isSRC2)_numSRC2++;
         if(isSRC3)_numSRC3++;
 
-        delete eventClone;
         return;
 
       }

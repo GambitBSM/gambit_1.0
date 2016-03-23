@@ -68,7 +68,7 @@ namespace Gambit {
                                              return (HEPUtils::rand01() > eff);
                                            } );
         // vectors erase most efficiently from the end...
-        // no delete is necessary, because all analyses destroy their eventClone after analysis
+        // no delete is necessary, because we are only forgetting a pointer owned by the original event.
         while (keptMuonsEnd != muons.end())
           muons.pop_back();
       }

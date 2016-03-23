@@ -73,24 +73,23 @@ namespace Gambit {
 
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
-        HEPUtils::Event* eventClone = event->clone();
 
         // Missing energy
-        HEPUtils::P4 ptot = eventClone->missingmom();
-        double met = eventClone->met();
+        HEPUtils::P4 ptot = event->missingmom();
+        double met = event->met();
 
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineLeptons;
 
         vector<HEPUtils::Particle*> baselineElectrons;
-        for (HEPUtils::Particle* electron : eventClone->electrons()) {
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 30. && fabs(electron->eta()) < 2.5) {
             baselineElectrons.push_back(electron);
             baselineLeptons.push_back(electron);
           }
         }
         vector<HEPUtils::Particle*> baselineMuons;
-        for (HEPUtils::Particle* muon : eventClone->muons()) {
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 30. && fabs(muon->eta()) < 2.1) {
             baselineMuons.push_back(muon);
             baselineLeptons.push_back(muon);
@@ -108,7 +107,7 @@ namespace Gambit {
         const std::vector<double> c = {0.60};
         HEPUtils::BinnedFn2D<double> _eff2d(a,b,c);
 
-        for (HEPUtils::Jet* jet : eventClone->jets()) {
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 30. && fabs(jet->eta()) < 4.0) {
             baselineJets.push_back(jet);
             //LorentzVector j1 (jet->mom().px(),jet->mom().py(),jet->mom().pz(),jet->mom().E()) ;
@@ -200,7 +199,6 @@ namespace Gambit {
 
         if(passPresel && met > 320. && mT > 160. && MT2W > 300. && dPhiMin12 > 1.2)_numSR++;
 
-        delete eventClone;
         return;
       }
 

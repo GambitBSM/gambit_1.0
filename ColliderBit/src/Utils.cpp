@@ -18,7 +18,7 @@ namespace Gambit {
                                                return !random_bool(eff);
                                              } );
       // vectors erase most efficiently from the end
-      // no delete is necessary, because all analyses destroy their eventClone after analysis
+      // no delete is necessary, because we are only forgetting a pointer owned by the original event.
       while (keptParticlesEnd != particles.end())
         particles.pop_back();
     }
@@ -32,7 +32,7 @@ namespace Gambit {
                                                return !random_bool(eff_etapt, p->abseta(), p->pT());
                                              } );
       // vectors erase most efficiently from the end
-      // no delete is necessary, because all analyses destroy their eventClone after analysis
+      // no delete is necessary, because we are only forgetting a pointer owned by the original event.
       while (keptParticlesEnd != particles.end())
         particles.pop_back();
     }

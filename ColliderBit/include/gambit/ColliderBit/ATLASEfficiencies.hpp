@@ -314,7 +314,7 @@ namespace Gambit {
                                              else return !random_bool(_eff_E80, e_eta);
                                            } );
         // vectors erase most efficiently from the end...
-        // no delete is necessary, because all analyses destroy their eventClone after analysis
+        // no delete is necessary, because we are only forgetting a pointer owned by the original event.
         while (keptElectronsEnd != electrons.end())
           electrons.pop_back();
 
@@ -447,7 +447,7 @@ namespace Gambit {
                                              else return !random_bool(_eff_E80, e_eta);
                                            } );
         // vectors erase most efficiently from the end...
-        // no delete is necessary, because all analyses destroy their eventClone after analysis
+        // no delete is necessary, because we are only forgetting a pointer owned by the original event.
         while (keptElectronsEnd != electrons.end())
           electrons.pop_back();
 

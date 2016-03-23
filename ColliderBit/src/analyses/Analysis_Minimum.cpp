@@ -36,24 +36,23 @@ namespace Gambit {
 
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
-        HEPUtils::Event* eventClone = event->clone();
 
         // Get the missing energy in the event
-        double met = eventClone->met();
+        double met = event->met();
 
         // Now define vectors of baseline objects,  including:
 	// - retrieval of electron, muon and jets from the event)
 	// - application of basic pT and eta cuts
         vector<HEPUtils::Particle*> baselineElectrons;
-        for (HEPUtils::Particle* electron : eventClone->electrons()) {
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
         }
         vector<HEPUtils::Particle*> baselineMuons;
-        for (HEPUtils::Particle* muon : eventClone->muons()) {
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
         vector<HEPUtils::Jet*> baselineJets;
-        for (HEPUtils::Jet* jet : eventClone->jets()) {
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
         }
 
@@ -73,7 +72,6 @@ namespace Gambit {
 	// Dummy signal region: need 2 jets, met > 150 and no leptons
 
 	if((nElectrons+nMuons)==0 && nJets==2 && met>150.)_numSR++;
-        delete eventClone;
 
       }
       
