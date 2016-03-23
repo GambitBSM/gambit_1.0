@@ -18,6 +18,7 @@ DONE DarkBit_rollcall.hpp: 1023     :     //  FIXME:: Conditional dependency bel
 src/SingletDM.cpp                        // FIXME: Add getValue documentation
 src/SimpleLikelihoods.cpp                // FIXME: Add getValue documentation
 src/DirectDetection.cpp                  // FIXME: Add getValue documentation
+src/GamYields.cpp 427: // FIXME: Make sure that approximate light-quark channels are used consistently everywhere
 
 gambit_SingletDM_hdf5_bad_process_catalog.yaml :  Delete or keep?
 GamYields.cpp: 468	:        // FIXME: Update energy validty ranges

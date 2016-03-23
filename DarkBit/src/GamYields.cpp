@@ -413,14 +413,18 @@ namespace Gambit {
         ADD_CHANNEL(17, "mu+", "mu-", "gamma", 0.10566*2, 100000.)
         ADD_CHANNEL(18, "nu_tau", "nubar_tau", "gamma", 0., 100000.)  // Zero
         ADD_CHANNEL(19, "tau+", "tau-", "gamma", 1.7841*2, 100000.)
-        ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 100000.)  // Zero
-        ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 100000.)  // Zero
+        //ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(22, "u", "ubar", "gamma", 1.35*2, 100000.)  // approx by cc
+        //ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(22, "d", "dbar", "gamma", 1.35*2, 100000.)  // approx by cc
         ADD_CHANNEL(22, "c", "cbar", "gamma", 1.35*2, 100000.)
-        ADD_CHANNEL(23, "s", "sbar", "gamma", 0., 100000.)  // Zero
+        //ADD_CHANNEL(23, "s", "sbar", "gamma", 0., 100000.)  // Zero
+        ADD_CHANNEL(22, "s", "sbar", "gamma", 1.35*2, 100000.)  // approx by cc
         ADD_CHANNEL(24, "t", "tbar", "gamma", 175.0*2, 100000.)
         ADD_CHANNEL(25, "b", "bbar", "gamma", 5.0*2, 100000.)
         ADD_CHANNEL(26, "g", "g", "gamma", 0., 100000.)
         // FIXME: Double-check validity of neutrino channels
+        // FIXME: Make sure that approximate light-quark channels are used consistently everywhere
 #undef ADD_CHANNEL
 
         // Add approximations for single-particle cases.
