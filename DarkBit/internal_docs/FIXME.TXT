@@ -156,6 +156,10 @@ src/Sloppy.cpp                           // FIXME: Add getValue documentation
 examples/DarkBit_standalone_MSSM.cpp     // FIXME: Add getValue documentation
 examples/DarkBit_standalone_WIMP.cp      // FIXME: Add getValue documentation
 
+- improve offshell treatment
+- change yield table identifiers to mass eigenstates (JE confirm)
+- what to do with states like gamma Z0?  Needs to be fixed.  (need Z0 yields for smaller width?)
+
 
 After sanity checks of DS and MO results
 ----------------------------------------
