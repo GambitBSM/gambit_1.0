@@ -90,10 +90,6 @@ source_extension = '.cc'
 indent = 4
 
 extra_output_dir       = 'BOSS_output'
-abstr_header_prefix    = 'abstract_'
-wrapper_header_prefix  = 'wrapper_'
-factory_file_prefix    = 'factory_'
-function_files_prefix  = 'function_'
 
 
 # ~~~~~ Information about other known types ~~~~~
