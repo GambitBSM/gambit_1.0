@@ -239,14 +239,17 @@ namespace Gambit
        // if(separate_file_per_process){ std::cout << "true; log messages will be stored in separate files for each MPI process (filename will be appended with underscore + MPI rank)"; }
        // else{ std::cout << "false; log messages from separate MPI processes will be merged into one file (orchestrated by the OS; some mangling of concurrently written log messages may occur. Set this separate_file_per_process to 'True' if this mangling is a problem for you)";}
        // #endif
-       std::cout << std::endl << "  log_debug_messages = ";
-       if(log_debug_messages){ std::cout << "true; log messages tagged as 'Debug' WILL be logged. Warning! This may lead to very large log files!";}
+       std::ostringstream logmsg;
+       logmsg << "  log_debug_messages = ";
+       if(log_debug_messages){ logmsg << "true; log messages tagged as 'Debug' WILL be logged. Warning! This may lead to very large log files!";}
        else{ 
           // Add "Debug" tag to the global ignore list
           ignore.insert(LogTag::debug);
-          std::cout << "false; log messages tagged as 'Debug' will NOT be logged";
+          logmsg << "false; log messages tagged as 'Debug' will NOT be logged";
        }
-       std::cout << std::endl;
+ 
+       std::cout << logmsg.str() << std::endl;
+       *this << LogTag::logs << LogTag::debug << logmsg.str() << EOM;
 
        // Iterate through map and build the logger objects
        for(std::vector<std::pair< std::set<std::string>, std::string >>::iterator infopair = loggerinfo.begin();

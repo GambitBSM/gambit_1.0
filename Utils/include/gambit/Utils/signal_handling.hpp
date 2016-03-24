@@ -56,6 +56,7 @@ namespace Gambit
 
        /// Saved information on calling environment for longjmp
        jmp_buf env;
+       bool jumppoint_set; // Check if jump point has been set yet.
        int havejumped = 1; // Store result of setjmp here so we can use it to test if a jump point has been set
                            // Value will be zero on first invocation of setjmp. Will be set to the argument
                            // of longjmp when the jump executes and returns to the setjmp point. 
