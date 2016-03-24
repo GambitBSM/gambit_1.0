@@ -17,11 +17,11 @@ Parameters:
   #MSSM25atQ:           !import LesHouches.in.MSSM_1.yaml
   CMSSM:
       M0:
-        fixed_value: 1500
+        fixed_value: 1000
       M12:
         fixed_value: 600
       A0:
-        fixed_value: -3000
+        fixed_value: 0
       TanBeta:
         fixed_value: 30
       SignMu:
@@ -80,7 +80,7 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 2
+      point_number: 5
       output_file:  output
       like:  Likelihood
       files:
@@ -206,7 +206,7 @@ Rules:
     function: getBuckFastCMS
     options:
       partonOnly: false
-      antiktR: 0.5
+      antiktR: 0.4
 
   - capability: SimpleSmearingSim
     type: "Gambit::ColliderBit::BuckFastIdentity"
@@ -220,18 +220,14 @@ Rules:
     options:  
       #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
       useATLAS: true
-      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
-                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
-                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
-                           "ATLAS_3LEPEW_20invfb"]
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb"]
 
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:  
       #useCMS defaults to true anyways. Set it to false to ignore all these analyses
       useCMS: true
-      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
-                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
+      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb"]
 
   - capability: ConvertedScatteringEvent
     function: convertPythia8ParticleEvent
@@ -239,7 +235,7 @@ Rules:
   - capability:  ColliderOperator
     function: operateLHCLoop
     options:
-      nEvents: 1000
+      nEvents: 200000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
 
@@ -247,13 +243,15 @@ Rules:
     function:  getPythia
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
-      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_doc_path: "Backends/installed/Pythia/8.212.EM/share/Pythia8/xmldoc/"
       Pythia_SUSY_LHC_8TeV: ["Print:quiet = on",
                              "PartonLevel:MPI = off",
                              "PartonLevel:ISR = on",
                              "PartonLevel:FSR = on",
                              "HadronLevel:all = on",
-                             "TauDecays:mode = 0"]
+                             "SUSY:all = on",
+                             "TauDecays:mode = 0",
+                             "Main:timesAllowErrors = 100"]
 
   - capability: LHC_Combined_LogLike
     backends:
