@@ -57,6 +57,7 @@ namespace Gambit {
       else
         convertPythia8ParticleEvent(eventIn, eventOut);
 
+      /* MJW debug- make this the same as ATLAS temporarily
       // Electron smearing and efficiency
       CMS::applyElectronTrackingEff(eventOut.electrons());
       CMS::smearElectronEnergy(eventOut.electrons());
@@ -73,7 +74,25 @@ namespace Gambit {
       CMS::smearTaus(eventOut.taus());
 
       // Smear jet momenta
-      CMS::smearJets(eventOut.jets());
+      CMS::smearJets(eventOut.jets());*/
+
+      // Electron smearing and efficiency
+      ATLAS::applyElectronTrackingEff(eventOut.electrons());
+      ATLAS::smearElectronEnergy(eventOut.electrons());
+      ATLAS::applyElectronEff(eventOut.electrons());
+
+      // Muon smearing and efficiency
+      ATLAS::applyMuonTrackEff(eventOut.muons());
+      ATLAS::smearMuonMomentum(eventOut.muons());
+      ATLAS::applyMuonEff(eventOut.muons());
+
+      // Apply hadronic tau reco efficiency *in the analyses* -- it's specific to LHC run & working-point
+      //ATLAS::applyTauEfficiency(eventOut.taus());
+      //Smear taus
+      ATLAS::smearTaus(eventOut.taus());
+
+      // Smear jet momenta
+      ATLAS::smearJets(eventOut.jets());
 
       // Unset b-tags outside |eta|=5
       /// @todo Same as DELPHES... but surely we can't actually do b-tags outside |eta| < 2.5? (or even less, due to jet radius)
