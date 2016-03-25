@@ -77,6 +77,7 @@ Torsten
 DONE GamYields.cpp +        // FIXME: What to do with channels that return zero (ee, uu, dd, ss)?
 RelicDensity.cpp: 363        // FIXME: Should we add genRateMisc to Weff?
 src/GamYields.cpp                        // FIXME: Add getValue documentation
+What about kinematically closed channels?  These are currently ignored when calculating gamma-ray yields
 src/RelicDensity.cpp                     // FIXME: Add getValue documentation
 src/MSSM.cpp                             // FIXME: Add getValue documentation
 ProcessCatalog.hpp: 148	:        // FIXME: rename thresholdResonances to TH_resonances_thresholds
@@ -165,11 +166,11 @@ DONE change yield table identifiers to mass eigenstates (after JE confirms)
 DONE Check DarkBit::get_MSSM_spectrum_from_file necessary?
 DONE Check usage of genRateMisc in GAMBIT (for section 3.5.1)
 DONE check invalid_point exceptions
+DONE Finish IDM section, 2.3.1
 
 Paper writing me:
-Finish IDM section, 2.3.1
-Finish cascade decay section 4.4
 Update gamma-ray likelihoods in sec 3.5.2
+Finish cascade decay section 4.4
 
 
 After sanity checks of DS and MO results
