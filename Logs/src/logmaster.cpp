@@ -606,7 +606,7 @@ namespace Gambit
     {
        init_memory();
        current_backend[omp_get_thread_num()] = i;
-       *this<<"setting current_backend="<<i;
+       *this<<"Setting current_backend="<<i;
        *this<<logs<<debug<<EOM;
        // TODO: Activate std::out and std::err redirection, if requested in inifile
     }
@@ -617,7 +617,7 @@ namespace Gambit
        cb_test = current_backend[omp_get_thread_num()];
        if (cb_test == -1) return;
        current_backend[omp_get_thread_num()] = -1;
-       *this<<"restoring current_backend="<<-1;
+       *this<<"Restoring current_backend="<<-1;
        *this<<logs<<debug<<EOM;
        // TODO: Restore std::out and std::err to normal
     }
