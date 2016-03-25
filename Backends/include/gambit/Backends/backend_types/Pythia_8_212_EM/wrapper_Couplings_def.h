@@ -15,49 +15,38 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         // Wrappers for original constructors: 
         inline Pythia8::Couplings::Couplings() :
-            WrapperBase<Pythia8::Abstract_Couplings>(__factory0()),
-            CoupSM(wrapperbase::BEptr),
-            isSUSY(wrapperbase::BEptr->isSUSY_ref__BOSS())
+            CoupSM(__factory0()),
+            isSUSY( get_BEptr()->isSUSY_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Couplings::Couplings(Pythia8::Abstract_Couplings* in) :
-            WrapperBase<Pythia8::Abstract_Couplings>(in),
-            CoupSM(wrapperbase::BEptr),
-            isSUSY(wrapperbase::BEptr->isSUSY_ref__BOSS())
+            CoupSM(in),
+            isSUSY( get_BEptr()->isSUSY_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::Couplings::Couplings(Pythia8::Abstract_Couplings* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_Couplings>(in, true),
-            CoupSM(wrapperbase::BEptr),
-            isSUSY(wrapperbase::BEptr->isSUSY_ref__BOSS())
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::Couplings::Couplings(const Couplings& in) :
-            WrapperBase<Pythia8::Abstract_Couplings>(in),
-            CoupSM(wrapperbase::BEptr),
-            isSUSY(wrapperbase::BEptr->isSUSY_ref__BOSS())
+            CoupSM(in.get_BEptr()->pointer_copy__BOSS()),
+            isSUSY( get_BEptr()->isSUSY_ref__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::Couplings& Couplings::operator=(const Couplings& in)
         {
-            WrapperBase<Pythia8::Abstract_Couplings>::operator=(in);
-            CoupSM::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -65,15 +54,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Couplings::~Couplings()
         {
-            WrapperBase<Pythia8::Abstract_CoupSM>::skip_delete = true;
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::Couplings::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_Couplings* Pythia8::Couplings::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_Couplings*>(BEptr);
         }
-        
     }
     
 }

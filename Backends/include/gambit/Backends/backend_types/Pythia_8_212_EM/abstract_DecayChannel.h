@@ -9,7 +9,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::DecayChannel*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::DecayChannel*);
+
+
+// Forward declaration for wrapper_creator.
+void wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_DecayChannel*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -18,7 +26,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_DecayChannel : virtual public AbstractBase
+        class Abstract_DecayChannel : public virtual AbstractBase
         {
             public:
     
@@ -71,35 +79,65 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual double openSec(int) const =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_DecayChannel*) =0;
-                virtual Abstract_DecayChannel* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_DecayChannel*) =0;
+                virtual Abstract_DecayChannel* pointer_copy__BOSS() =0;
     
             private:
-                mutable DecayChannel* wptr;
+                DecayChannel* wptr;
+                bool delete_wrapper;
+            public:
+                DecayChannel* get_wptr() { return wptr; }
+                void set_wptr(DecayChannel* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_DecayChannel()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(DecayChannel* wptr_in)
+                Abstract_DecayChannel(const Abstract_DecayChannel&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                DecayChannel* wrapper__BOSS()
+                Abstract_DecayChannel& operator=(const Abstract_DecayChannel&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    if (wptr == 0)
+                    {
+                        wrapper_creator(this);
+                        delete_wrapper = true;
+                    }
+                }
+    
+                DecayChannel* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                DecayChannel& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_DecayChannel()
                 {
-                    if (can_delete_wrapper())
+                    if (wptr != 0)
                     {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
+                        set_delete_BEptr(wptr, false);
+                        if (delete_wrapper == true)
+                        {
+                            wrapper_deleter(wptr);
+                            wptr = 0;
+                            delete_wrapper = false;
+                        }
                     }
                 }
         };

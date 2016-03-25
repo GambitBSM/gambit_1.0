@@ -62,15 +62,15 @@ namespace Gambit {
         if(muons.empty()) return;
         auto keptMuonsEnd = std::remove_if(muons.begin(), muons.end(),
                                            [](const HEPUtils::Particle* p) {
-                                             if (p->abseta() > 2.4 || p->pT() < 10) { delete p; return true; }
+                                             if (p->abseta() > 2.4 || p->pT() < 10)
+                                               return true; 
                                              const double eff = 0.95 * (p->abseta() < 1.5 ? 1 : exp(0.5 - 5e-4*p->pT()));
-                                             if (HEPUtils::rand01() > eff) { delete p; return true; }
-                                             return false;
+                                             return (HEPUtils::rand01() > eff);
                                            } );
         // vectors erase most efficiently from the end...
-        // no delete is necessary, because erase destroys the elements it removes
+        // no delete is necessary, because we are only forgetting a pointer owned by the original event.
         while (keptMuonsEnd != muons.end())
-          muons.erase(--muons.end());
+          muons.pop_back();
       }
 
 
@@ -114,9 +114,9 @@ namespace Gambit {
             double smeared_E = d(gen);
             if (smeared_E < 0) smeared_E = 0;
             // double smeared_pt = smeared_E/cosh(e->eta()); ///< @todo Should be cosh(|eta|)?
-            // std::cout << "BEFORE eta " << electron->eta() << std::endl;
+            // std::cout << "BEFORE eta " << electron->eta() << std::std::endl;
             e->set_mom(HEPUtils::P4::mkEtaPhiME(e->eta(), e->phi(), e->mass(), smeared_E));
-            // std::cout << "AFTER eta " << electron->eta() << std::endl;
+            // std::cout << "AFTER eta " << electron->eta() << std::std::endl;
           }
         }
       }
@@ -155,7 +155,7 @@ namespace Gambit {
           double smeared_pt = d(gen);
           if (smeared_pt < 0) smeared_pt = 0;
           // const double smeared_E = smeared_pt*cosh(mu->eta()); ///< @todo Should be cosh(|eta|)?
-          // std::cout << "Muon pt " << mu_pt << " smeared " << smeared_pt << endl;
+          // std::cout << "Muon pt " << mu_pt << " smeared " << smeared_pt << std::endl;
           p->set_mom(HEPUtils::P4::mkEtaPhiMPt(p->eta(), p->phi(), p->mass(), smeared_pt));
         }
       }

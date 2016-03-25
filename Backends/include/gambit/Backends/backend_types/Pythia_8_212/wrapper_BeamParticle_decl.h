@@ -23,12 +23,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class BeamParticle : public WrapperBase<Pythia8::Abstract_BeamParticle>
+        class BeamParticle : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_BeamParticle> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_BeamParticle>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -112,11 +108,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool isUnresolvedLepton();
         
-                bool remnantFlavours(WrapperBase< Pythia8::Abstract_Event >& event, bool isDIS);
+                bool remnantFlavours(Pythia8::Event& event, bool isDIS);
         
-                bool remnantFlavours(WrapperBase< Pythia8::Abstract_Event >& event);
+                bool remnantFlavours(Pythia8::Event& event);
         
-                bool remnantColours(WrapperBase< Pythia8::Abstract_Event >& event, ::std::vector<int, std::allocator<int> >& colFrom, ::std::vector<int, std::allocator<int> >& colTo);
+                bool remnantColours(Pythia8::Event& event, ::std::vector<int, std::allocator<int> >& colFrom, ::std::vector<int, std::allocator<int> >& colTo);
         
                 double xRemnant(int i);
         
@@ -138,11 +134,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double pyShare() const;
         
-                bool remnantFlavoursNew(WrapperBase< Pythia8::Abstract_Event >& event);
+                bool remnantFlavoursNew(Pythia8::Event& event);
         
-                void findColSetup(WrapperBase< Pythia8::Abstract_Event >& event);
+                void findColSetup(Pythia8::Event& event);
         
-                void setInitialCol(WrapperBase< Pythia8::Abstract_Event >& event);
+                void setInitialCol(Pythia8::Event& event);
         
                 void updateCol(::std::vector<std::pair<int, int>, std::allocator<std::pair<int, int> > > colourChanges);
         
@@ -155,7 +151,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 BeamParticle(Pythia8::Abstract_BeamParticle* in);
-                BeamParticle(Pythia8::Abstract_BeamParticle* const & in, bool);
         
                 // Copy constructor: 
                 BeamParticle(const BeamParticle& in);
@@ -164,11 +159,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 BeamParticle& operator=(const BeamParticle& in);
         
                 // Destructor: 
-                ~BeamParticle();
+                virtual ~BeamParticle();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_BeamParticle* get_BEptr() const;
         
         };
     }

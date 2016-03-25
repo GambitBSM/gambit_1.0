@@ -17,12 +17,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Rndm : public WrapperBase<Pythia8::Abstract_Rndm>
+        class Rndm : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Rndm> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Rndm>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -61,7 +57,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Rndm(Pythia8::Abstract_Rndm* in);
-                Rndm(Pythia8::Abstract_Rndm* const & in, bool);
         
                 // Copy constructor: 
                 Rndm(const Rndm& in);
@@ -70,11 +65,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Rndm& operator=(const Rndm& in);
         
                 // Destructor: 
-                ~Rndm();
+                virtual ~Rndm();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Rndm* get_BEptr() const;
         
         };
     }

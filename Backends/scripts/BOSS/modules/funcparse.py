@@ -80,12 +80,12 @@ def run():
         #
 
         # Construct a wrapper function name, eg "someFunction__BOSS_7"
-        wr_func_name = func_el.get('name') + gb.code_suffix + str(gb.symbol_name_counter)
+        wr_func_name = func_el.get('name') + gb.code_suffix + '_' + str(gb.symbol_name_counter)
         gb.symbol_name_counter += 1
 
         # New source file name
-        # new_source_file_name = cfg.function_files_prefix + func_name['short'].lower() + '_f' + str(func_i) + gb.code_suffix + cfg.source_extension
-        new_source_file_name = cfg.function_files_prefix + wr_func_name + cfg.source_extension
+        # new_source_file_name = gb.function_files_prefix + func_name['short'].lower() + '_f' + str(func_i) + gb.code_suffix + cfg.source_extension
+        new_source_file_name = gb.function_files_prefix + func_el.get('name') + cfg.source_extension
         new_source_file_path = os.path.join(cfg.extra_output_dir, new_source_file_name)
 
         # Get include statements
@@ -258,7 +258,7 @@ def generateFunctionWrapperClassVersion(func_el, wr_func_name, namespaces, n_ove
             use_args = args[:-remove_n_args]
 
         # Argument bracket
-        args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True, use_wrapper_class=True, use_wrapper_base_class=False)
+        args_bracket = funcutils.constrArgsBracket(use_args, include_arg_name=True, include_arg_type=True, include_namespace=True, use_wrapper_class=True)
 
         # Name of original function to call
         call_func_name = func_name

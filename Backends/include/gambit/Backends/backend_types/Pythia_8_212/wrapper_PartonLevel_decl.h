@@ -12,7 +12,6 @@
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
-#include "wrapper_UserHooks_decl.h"
 #include "wrapper_Event_decl.h"
 #include <vector>
 #include "wrapper_ResonanceDecays_decl.h"
@@ -25,12 +24,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class PartonLevel : public WrapperBase<Pythia8::Abstract_PartonLevel>
+        class PartonLevel : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_PartonLevel> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_PartonLevel>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -40,13 +35,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                bool next(WrapperBase< Pythia8::Abstract_Event >& process, WrapperBase< Pythia8::Abstract_Event >& event);
+                bool next(Pythia8::Event& process, Pythia8::Event& event);
         
-                void setupShowerSys(WrapperBase< Pythia8::Abstract_Event >& process, WrapperBase< Pythia8::Abstract_Event >& event);
+                void setupShowerSys(Pythia8::Event& process, Pythia8::Event& event);
         
-                bool resonanceShowers(WrapperBase< Pythia8::Abstract_Event >& process, WrapperBase< Pythia8::Abstract_Event >& event, bool skipForR);
+                bool resonanceShowers(Pythia8::Event& process, Pythia8::Event& event, bool skipForR);
         
-                bool wzDecayShowers(WrapperBase< Pythia8::Abstract_Event >& event);
+                bool wzDecayShowers(Pythia8::Event& event);
         
                 bool hasVetoed() const;
         
@@ -73,7 +68,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 PartonLevel(Pythia8::Abstract_PartonLevel* in);
-                PartonLevel(Pythia8::Abstract_PartonLevel* const & in, bool);
         
                 // Copy constructor: 
                 PartonLevel(const PartonLevel& in);
@@ -82,11 +76,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 PartonLevel& operator=(const PartonLevel& in);
         
                 // Destructor: 
-                ~PartonLevel();
+                virtual ~PartonLevel();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_PartonLevel* get_BEptr() const;
         
         };
     }

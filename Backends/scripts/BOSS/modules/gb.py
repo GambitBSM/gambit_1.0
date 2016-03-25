@@ -51,6 +51,7 @@ function_file_dict      = OrderedDict()
 wr_func_names           = OrderedDict()
 
 symbol_name_counter     = 1
+function_name_counter   = 1
 
 
 gambit_backend_namespace    = 'CAT_3(BACKENDNAME,_,SAFE_VERSION)'
@@ -70,9 +71,15 @@ code_suffix          = '__BOSS'
 abstr_class_prefix   = 'Abstract_'
 wrapper_class_prefix = 'Wrapper_'
 
-
-func_return_utils_fname = 'function_return_utils'
-wrapper_deleter_fname   = 'wrapperdeleter'
+abstr_header_prefix     = 'abstract_'
+wrapper_header_prefix   = 'wrapper_'
+general_src_file_prefix = 'BOSS_'
+factory_file_prefix     = general_src_file_prefix + 'factory_'
+function_files_prefix   = general_src_file_prefix + 'func_'
+func_return_utils_fname = general_src_file_prefix + 'function_return_utils'
+# wrapper_creator_fname   = general_src_file_prefix + 'wrappercreator'
+# wrapper_deleter_fname   = general_src_file_prefix + 'wrapperdeleter'
+wrapper_utils_fname     = general_src_file_prefix + 'wrapperutils'
 frwd_decls_abs_fname    = 'forward_decls_abstract_classes'
 frwd_decls_wrp_fname    = 'forward_decls_wrapper_classes'
 wrapper_typedefs_fname  = 'wrappertypedefs'

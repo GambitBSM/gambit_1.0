@@ -19,12 +19,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class CoupSUSY : public WrapperBase<Pythia8::Abstract_CoupSUSY>, public Couplings
+        class CoupSUSY : public Couplings
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_CoupSUSY> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -108,7 +104,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void initSUSY(WrapperBase< Pythia8::Abstract_SusyLesHouches >* slhaPtrIn, WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn);
+                void initSUSY(Pythia8::SusyLesHouches* slhaPtrIn, Pythia8::Info* infoPtrIn, Pythia8::ParticleData* particleDataPtrIn, Pythia8::Settings* settingsPtrIn);
         
                 ::std::complex<double> getLsqqG(int iGenSq, int idQ);
         
@@ -143,7 +139,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 CoupSUSY(Pythia8::Abstract_CoupSUSY* in);
-                CoupSUSY(Pythia8::Abstract_CoupSUSY* const & in, bool);
         
                 // Copy constructor: 
                 CoupSUSY(const CoupSUSY& in);
@@ -152,11 +147,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 CoupSUSY& operator=(const CoupSUSY& in);
         
                 // Destructor: 
-                ~CoupSUSY();
+                virtual ~CoupSUSY();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_CoupSUSY* get_BEptr() const;
         
         };
     }

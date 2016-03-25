@@ -17,1006 +17,996 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Member functions: 
         inline void Info::list(::std::basic_ostream<char, std::char_traits<char> >& os) const
         {
-            wrapperbase::BEptr->list(os);
+            get_BEptr()->list(os);
         }
         
         inline void Info::list() const
         {
-            wrapperbase::BEptr->list__BOSS();
+            get_BEptr()->list__BOSS();
         }
         
         inline int Info::idA() const
         {
-            return wrapperbase::BEptr->idA();
+            return get_BEptr()->idA();
         }
         
         inline int Info::idB() const
         {
-            return wrapperbase::BEptr->idB();
+            return get_BEptr()->idB();
         }
         
         inline double Info::pzA() const
         {
-            return wrapperbase::BEptr->pzA();
+            return get_BEptr()->pzA();
         }
         
         inline double Info::pzB() const
         {
-            return wrapperbase::BEptr->pzB();
+            return get_BEptr()->pzB();
         }
         
         inline double Info::eA() const
         {
-            return wrapperbase::BEptr->eA();
+            return get_BEptr()->eA();
         }
         
         inline double Info::eB() const
         {
-            return wrapperbase::BEptr->eB();
+            return get_BEptr()->eB();
         }
         
         inline double Info::mA() const
         {
-            return wrapperbase::BEptr->mA();
+            return get_BEptr()->mA();
         }
         
         inline double Info::mB() const
         {
-            return wrapperbase::BEptr->mB();
+            return get_BEptr()->mB();
         }
         
         inline double Info::eCM() const
         {
-            return wrapperbase::BEptr->eCM();
+            return get_BEptr()->eCM();
         }
         
         inline double Info::s() const
         {
-            return wrapperbase::BEptr->s();
+            return get_BEptr()->s();
         }
         
         inline bool Info::tooLowPTmin() const
         {
-            return wrapperbase::BEptr->tooLowPTmin();
+            return get_BEptr()->tooLowPTmin();
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::name() const
         {
-            return wrapperbase::BEptr->name();
+            return get_BEptr()->name();
         }
         
         inline int Info::code() const
         {
-            return wrapperbase::BEptr->code();
+            return get_BEptr()->code();
         }
         
         inline int Info::nFinal() const
         {
-            return wrapperbase::BEptr->nFinal();
+            return get_BEptr()->nFinal();
         }
         
         inline bool Info::isResolved() const
         {
-            return wrapperbase::BEptr->isResolved();
+            return get_BEptr()->isResolved();
         }
         
         inline bool Info::isDiffractiveA() const
         {
-            return wrapperbase::BEptr->isDiffractiveA();
+            return get_BEptr()->isDiffractiveA();
         }
         
         inline bool Info::isDiffractiveB() const
         {
-            return wrapperbase::BEptr->isDiffractiveB();
+            return get_BEptr()->isDiffractiveB();
         }
         
         inline bool Info::isDiffractiveC() const
         {
-            return wrapperbase::BEptr->isDiffractiveC();
+            return get_BEptr()->isDiffractiveC();
         }
         
         inline bool Info::isNonDiffractive() const
         {
-            return wrapperbase::BEptr->isNonDiffractive();
+            return get_BEptr()->isNonDiffractive();
         }
         
         inline bool Info::isMinBias() const
         {
-            return wrapperbase::BEptr->isMinBias();
+            return get_BEptr()->isMinBias();
         }
         
         inline bool Info::isLHA() const
         {
-            return wrapperbase::BEptr->isLHA();
+            return get_BEptr()->isLHA();
         }
         
         inline bool Info::atEndOfFile() const
         {
-            return wrapperbase::BEptr->atEndOfFile();
+            return get_BEptr()->atEndOfFile();
         }
         
         inline bool Info::hasSub(int i) const
         {
-            return wrapperbase::BEptr->hasSub(i);
+            return get_BEptr()->hasSub(i);
         }
         
         inline bool Info::hasSub() const
         {
-            return wrapperbase::BEptr->hasSub__BOSS();
+            return get_BEptr()->hasSub__BOSS();
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::nameSub(int i) const
         {
-            return wrapperbase::BEptr->nameSub(i);
+            return get_BEptr()->nameSub(i);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::nameSub() const
         {
-            return wrapperbase::BEptr->nameSub__BOSS();
+            return get_BEptr()->nameSub__BOSS();
         }
         
         inline int Info::codeSub(int i) const
         {
-            return wrapperbase::BEptr->codeSub(i);
+            return get_BEptr()->codeSub(i);
         }
         
         inline int Info::codeSub() const
         {
-            return wrapperbase::BEptr->codeSub__BOSS();
+            return get_BEptr()->codeSub__BOSS();
         }
         
         inline int Info::nFinalSub(int i) const
         {
-            return wrapperbase::BEptr->nFinalSub(i);
+            return get_BEptr()->nFinalSub(i);
         }
         
         inline int Info::nFinalSub() const
         {
-            return wrapperbase::BEptr->nFinalSub__BOSS();
+            return get_BEptr()->nFinalSub__BOSS();
         }
         
         inline int Info::id1(int i) const
         {
-            return wrapperbase::BEptr->id1(i);
+            return get_BEptr()->id1(i);
         }
         
         inline int Info::id1() const
         {
-            return wrapperbase::BEptr->id1__BOSS();
+            return get_BEptr()->id1__BOSS();
         }
         
         inline int Info::id2(int i) const
         {
-            return wrapperbase::BEptr->id2(i);
+            return get_BEptr()->id2(i);
         }
         
         inline int Info::id2() const
         {
-            return wrapperbase::BEptr->id2__BOSS();
+            return get_BEptr()->id2__BOSS();
         }
         
         inline double Info::x1(int i) const
         {
-            return wrapperbase::BEptr->x1(i);
+            return get_BEptr()->x1(i);
         }
         
         inline double Info::x1() const
         {
-            return wrapperbase::BEptr->x1__BOSS();
+            return get_BEptr()->x1__BOSS();
         }
         
         inline double Info::x2(int i) const
         {
-            return wrapperbase::BEptr->x2(i);
+            return get_BEptr()->x2(i);
         }
         
         inline double Info::x2() const
         {
-            return wrapperbase::BEptr->x2__BOSS();
+            return get_BEptr()->x2__BOSS();
         }
         
         inline double Info::y(int i) const
         {
-            return wrapperbase::BEptr->y(i);
+            return get_BEptr()->y(i);
         }
         
         inline double Info::y() const
         {
-            return wrapperbase::BEptr->y__BOSS();
+            return get_BEptr()->y__BOSS();
         }
         
         inline double Info::tau(int i) const
         {
-            return wrapperbase::BEptr->tau(i);
+            return get_BEptr()->tau(i);
         }
         
         inline double Info::tau() const
         {
-            return wrapperbase::BEptr->tau__BOSS();
+            return get_BEptr()->tau__BOSS();
         }
         
         inline int Info::id1pdf(int i) const
         {
-            return wrapperbase::BEptr->id1pdf(i);
+            return get_BEptr()->id1pdf(i);
         }
         
         inline int Info::id1pdf() const
         {
-            return wrapperbase::BEptr->id1pdf__BOSS();
+            return get_BEptr()->id1pdf__BOSS();
         }
         
         inline int Info::id2pdf(int i) const
         {
-            return wrapperbase::BEptr->id2pdf(i);
+            return get_BEptr()->id2pdf(i);
         }
         
         inline int Info::id2pdf() const
         {
-            return wrapperbase::BEptr->id2pdf__BOSS();
+            return get_BEptr()->id2pdf__BOSS();
         }
         
         inline double Info::x1pdf(int i) const
         {
-            return wrapperbase::BEptr->x1pdf(i);
+            return get_BEptr()->x1pdf(i);
         }
         
         inline double Info::x1pdf() const
         {
-            return wrapperbase::BEptr->x1pdf__BOSS();
+            return get_BEptr()->x1pdf__BOSS();
         }
         
         inline double Info::x2pdf(int i) const
         {
-            return wrapperbase::BEptr->x2pdf(i);
+            return get_BEptr()->x2pdf(i);
         }
         
         inline double Info::x2pdf() const
         {
-            return wrapperbase::BEptr->x2pdf__BOSS();
+            return get_BEptr()->x2pdf__BOSS();
         }
         
         inline double Info::pdf1(int i) const
         {
-            return wrapperbase::BEptr->pdf1(i);
+            return get_BEptr()->pdf1(i);
         }
         
         inline double Info::pdf1() const
         {
-            return wrapperbase::BEptr->pdf1__BOSS();
+            return get_BEptr()->pdf1__BOSS();
         }
         
         inline double Info::pdf2(int i) const
         {
-            return wrapperbase::BEptr->pdf2(i);
+            return get_BEptr()->pdf2(i);
         }
         
         inline double Info::pdf2() const
         {
-            return wrapperbase::BEptr->pdf2__BOSS();
+            return get_BEptr()->pdf2__BOSS();
         }
         
         inline double Info::QFac(int i) const
         {
-            return wrapperbase::BEptr->QFac(i);
+            return get_BEptr()->QFac(i);
         }
         
         inline double Info::QFac() const
         {
-            return wrapperbase::BEptr->QFac__BOSS();
+            return get_BEptr()->QFac__BOSS();
         }
         
         inline double Info::Q2Fac(int i) const
         {
-            return wrapperbase::BEptr->Q2Fac(i);
+            return get_BEptr()->Q2Fac(i);
         }
         
         inline double Info::Q2Fac() const
         {
-            return wrapperbase::BEptr->Q2Fac__BOSS();
+            return get_BEptr()->Q2Fac__BOSS();
         }
         
         inline bool Info::isValence1() const
         {
-            return wrapperbase::BEptr->isValence1();
+            return get_BEptr()->isValence1();
         }
         
         inline bool Info::isValence2() const
         {
-            return wrapperbase::BEptr->isValence2();
+            return get_BEptr()->isValence2();
         }
         
         inline double Info::alphaS(int i) const
         {
-            return wrapperbase::BEptr->alphaS(i);
+            return get_BEptr()->alphaS(i);
         }
         
         inline double Info::alphaS() const
         {
-            return wrapperbase::BEptr->alphaS__BOSS();
+            return get_BEptr()->alphaS__BOSS();
         }
         
         inline double Info::alphaEM(int i) const
         {
-            return wrapperbase::BEptr->alphaEM(i);
+            return get_BEptr()->alphaEM(i);
         }
         
         inline double Info::alphaEM() const
         {
-            return wrapperbase::BEptr->alphaEM__BOSS();
+            return get_BEptr()->alphaEM__BOSS();
         }
         
         inline double Info::QRen(int i) const
         {
-            return wrapperbase::BEptr->QRen(i);
+            return get_BEptr()->QRen(i);
         }
         
         inline double Info::QRen() const
         {
-            return wrapperbase::BEptr->QRen__BOSS();
+            return get_BEptr()->QRen__BOSS();
         }
         
         inline double Info::Q2Ren(int i) const
         {
-            return wrapperbase::BEptr->Q2Ren(i);
+            return get_BEptr()->Q2Ren(i);
         }
         
         inline double Info::Q2Ren() const
         {
-            return wrapperbase::BEptr->Q2Ren__BOSS();
+            return get_BEptr()->Q2Ren__BOSS();
         }
         
         inline double Info::scalup(int i) const
         {
-            return wrapperbase::BEptr->scalup(i);
+            return get_BEptr()->scalup(i);
         }
         
         inline double Info::scalup() const
         {
-            return wrapperbase::BEptr->scalup__BOSS();
+            return get_BEptr()->scalup__BOSS();
         }
         
         inline double Info::mHat(int i) const
         {
-            return wrapperbase::BEptr->mHat(i);
+            return get_BEptr()->mHat(i);
         }
         
         inline double Info::mHat() const
         {
-            return wrapperbase::BEptr->mHat__BOSS();
+            return get_BEptr()->mHat__BOSS();
         }
         
         inline double Info::sHat(int i) const
         {
-            return wrapperbase::BEptr->sHat(i);
+            return get_BEptr()->sHat(i);
         }
         
         inline double Info::sHat() const
         {
-            return wrapperbase::BEptr->sHat__BOSS();
+            return get_BEptr()->sHat__BOSS();
         }
         
         inline double Info::tHat(int i) const
         {
-            return wrapperbase::BEptr->tHat(i);
+            return get_BEptr()->tHat(i);
         }
         
         inline double Info::tHat() const
         {
-            return wrapperbase::BEptr->tHat__BOSS();
+            return get_BEptr()->tHat__BOSS();
         }
         
         inline double Info::uHat(int i) const
         {
-            return wrapperbase::BEptr->uHat(i);
+            return get_BEptr()->uHat(i);
         }
         
         inline double Info::uHat() const
         {
-            return wrapperbase::BEptr->uHat__BOSS();
+            return get_BEptr()->uHat__BOSS();
         }
         
         inline double Info::pTHat(int i) const
         {
-            return wrapperbase::BEptr->pTHat(i);
+            return get_BEptr()->pTHat(i);
         }
         
         inline double Info::pTHat() const
         {
-            return wrapperbase::BEptr->pTHat__BOSS();
+            return get_BEptr()->pTHat__BOSS();
         }
         
         inline double Info::pT2Hat(int i) const
         {
-            return wrapperbase::BEptr->pT2Hat(i);
+            return get_BEptr()->pT2Hat(i);
         }
         
         inline double Info::pT2Hat() const
         {
-            return wrapperbase::BEptr->pT2Hat__BOSS();
+            return get_BEptr()->pT2Hat__BOSS();
         }
         
         inline double Info::m3Hat(int i) const
         {
-            return wrapperbase::BEptr->m3Hat(i);
+            return get_BEptr()->m3Hat(i);
         }
         
         inline double Info::m3Hat() const
         {
-            return wrapperbase::BEptr->m3Hat__BOSS();
+            return get_BEptr()->m3Hat__BOSS();
         }
         
         inline double Info::m4Hat(int i) const
         {
-            return wrapperbase::BEptr->m4Hat(i);
+            return get_BEptr()->m4Hat(i);
         }
         
         inline double Info::m4Hat() const
         {
-            return wrapperbase::BEptr->m4Hat__BOSS();
+            return get_BEptr()->m4Hat__BOSS();
         }
         
         inline double Info::thetaHat(int i) const
         {
-            return wrapperbase::BEptr->thetaHat(i);
+            return get_BEptr()->thetaHat(i);
         }
         
         inline double Info::thetaHat() const
         {
-            return wrapperbase::BEptr->thetaHat__BOSS();
+            return get_BEptr()->thetaHat__BOSS();
         }
         
         inline double Info::phiHat(int i) const
         {
-            return wrapperbase::BEptr->phiHat(i);
+            return get_BEptr()->phiHat(i);
         }
         
         inline double Info::phiHat() const
         {
-            return wrapperbase::BEptr->phiHat__BOSS();
+            return get_BEptr()->phiHat__BOSS();
         }
         
         inline double Info::weight() const
         {
-            return wrapperbase::BEptr->weight();
+            return get_BEptr()->weight();
         }
         
         inline double Info::weightSum() const
         {
-            return wrapperbase::BEptr->weightSum();
+            return get_BEptr()->weightSum();
         }
         
         inline double Info::lhaStrategy() const
         {
-            return wrapperbase::BEptr->lhaStrategy();
+            return get_BEptr()->lhaStrategy();
         }
         
         inline int Info::nISR() const
         {
-            return wrapperbase::BEptr->nISR();
+            return get_BEptr()->nISR();
         }
         
         inline int Info::nFSRinProc() const
         {
-            return wrapperbase::BEptr->nFSRinProc();
+            return get_BEptr()->nFSRinProc();
         }
         
         inline int Info::nFSRinRes() const
         {
-            return wrapperbase::BEptr->nFSRinRes();
+            return get_BEptr()->nFSRinRes();
         }
         
         inline double Info::pTmaxMPI() const
         {
-            return wrapperbase::BEptr->pTmaxMPI();
+            return get_BEptr()->pTmaxMPI();
         }
         
         inline double Info::pTmaxISR() const
         {
-            return wrapperbase::BEptr->pTmaxISR();
+            return get_BEptr()->pTmaxISR();
         }
         
         inline double Info::pTmaxFSR() const
         {
-            return wrapperbase::BEptr->pTmaxFSR();
+            return get_BEptr()->pTmaxFSR();
         }
         
         inline double Info::pTnow() const
         {
-            return wrapperbase::BEptr->pTnow();
+            return get_BEptr()->pTnow();
         }
         
         inline double Info::a0MPI() const
         {
-            return wrapperbase::BEptr->a0MPI();
+            return get_BEptr()->a0MPI();
         }
         
         inline double Info::bMPI() const
         {
-            return wrapperbase::BEptr->bMPI();
+            return get_BEptr()->bMPI();
         }
         
         inline double Info::enhanceMPI() const
         {
-            return wrapperbase::BEptr->enhanceMPI();
+            return get_BEptr()->enhanceMPI();
         }
         
         inline double Info::eMPI(int i) const
         {
-            return wrapperbase::BEptr->eMPI(i);
+            return get_BEptr()->eMPI(i);
         }
         
         inline int Info::nMPI() const
         {
-            return wrapperbase::BEptr->nMPI();
+            return get_BEptr()->nMPI();
         }
         
         inline int Info::codeMPI(int i) const
         {
-            return wrapperbase::BEptr->codeMPI(i);
+            return get_BEptr()->codeMPI(i);
         }
         
         inline double Info::pTMPI(int i) const
         {
-            return wrapperbase::BEptr->pTMPI(i);
+            return get_BEptr()->pTMPI(i);
         }
         
         inline int Info::iAMPI(int i) const
         {
-            return wrapperbase::BEptr->iAMPI(i);
+            return get_BEptr()->iAMPI(i);
         }
         
         inline int Info::iBMPI(int i) const
         {
-            return wrapperbase::BEptr->iBMPI(i);
+            return get_BEptr()->iBMPI(i);
         }
         
         inline ::std::vector<int, std::allocator<int> > Info::codesHard()
         {
-            return wrapperbase::BEptr->codesHard();
+            return get_BEptr()->codesHard();
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::nameProc(int i)
         {
-            return wrapperbase::BEptr->nameProc(i);
+            return get_BEptr()->nameProc(i);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::nameProc()
         {
-            return wrapperbase::BEptr->nameProc__BOSS();
+            return get_BEptr()->nameProc__BOSS();
         }
         
         inline long int Info::nTried(int i)
         {
-            return wrapperbase::BEptr->nTried(i);
+            return get_BEptr()->nTried(i);
         }
         
         inline long int Info::nTried()
         {
-            return wrapperbase::BEptr->nTried__BOSS();
+            return get_BEptr()->nTried__BOSS();
         }
         
         inline long int Info::nSelected(int i)
         {
-            return wrapperbase::BEptr->nSelected(i);
+            return get_BEptr()->nSelected(i);
         }
         
         inline long int Info::nSelected()
         {
-            return wrapperbase::BEptr->nSelected__BOSS();
+            return get_BEptr()->nSelected__BOSS();
         }
         
         inline long int Info::nAccepted(int i)
         {
-            return wrapperbase::BEptr->nAccepted(i);
+            return get_BEptr()->nAccepted(i);
         }
         
         inline long int Info::nAccepted()
         {
-            return wrapperbase::BEptr->nAccepted__BOSS();
+            return get_BEptr()->nAccepted__BOSS();
         }
         
         inline double Info::sigmaGen(int i)
         {
-            return wrapperbase::BEptr->sigmaGen(i);
+            return get_BEptr()->sigmaGen(i);
         }
         
         inline double Info::sigmaGen()
         {
-            return wrapperbase::BEptr->sigmaGen__BOSS();
+            return get_BEptr()->sigmaGen__BOSS();
         }
         
         inline double Info::sigmaErr(int i)
         {
-            return wrapperbase::BEptr->sigmaErr(i);
+            return get_BEptr()->sigmaErr(i);
         }
         
         inline double Info::sigmaErr()
         {
-            return wrapperbase::BEptr->sigmaErr__BOSS();
+            return get_BEptr()->sigmaErr__BOSS();
         }
         
         inline int Info::getCounter(int i) const
         {
-            return wrapperbase::BEptr->getCounter(i);
+            return get_BEptr()->getCounter(i);
         }
         
         inline void Info::setCounter(int i, int value)
         {
-            wrapperbase::BEptr->setCounter(i, value);
+            get_BEptr()->setCounter(i, value);
         }
         
         inline void Info::setCounter(int i)
         {
-            wrapperbase::BEptr->setCounter__BOSS(i);
+            get_BEptr()->setCounter__BOSS(i);
         }
         
         inline void Info::addCounter(int i, int value)
         {
-            wrapperbase::BEptr->addCounter(i, value);
+            get_BEptr()->addCounter(i, value);
         }
         
         inline void Info::addCounter(int i)
         {
-            wrapperbase::BEptr->addCounter__BOSS(i);
+            get_BEptr()->addCounter__BOSS(i);
         }
         
         inline void Info::errorReset()
         {
-            wrapperbase::BEptr->errorReset();
+            get_BEptr()->errorReset();
         }
         
         inline void Info::errorMsg(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn, bool showAlways, ::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            wrapperbase::BEptr->errorMsg(messageIn, extraIn, showAlways, os);
+            get_BEptr()->errorMsg(messageIn, extraIn, showAlways, os);
         }
         
         inline void Info::errorMsg(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn, bool showAlways)
         {
-            wrapperbase::BEptr->errorMsg__BOSS(messageIn, extraIn, showAlways);
+            get_BEptr()->errorMsg__BOSS(messageIn, extraIn, showAlways);
         }
         
         inline void Info::errorMsg(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > extraIn)
         {
-            wrapperbase::BEptr->errorMsg__BOSS(messageIn, extraIn);
+            get_BEptr()->errorMsg__BOSS(messageIn, extraIn);
         }
         
         inline void Info::errorMsg(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > messageIn)
         {
-            wrapperbase::BEptr->errorMsg__BOSS(messageIn);
+            get_BEptr()->errorMsg__BOSS(messageIn);
         }
         
         inline int Info::errorTotalNumber()
         {
-            return wrapperbase::BEptr->errorTotalNumber();
+            return get_BEptr()->errorTotalNumber();
         }
         
         inline void Info::errorStatistics(::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            wrapperbase::BEptr->errorStatistics(os);
+            get_BEptr()->errorStatistics(os);
         }
         
         inline void Info::errorStatistics()
         {
-            wrapperbase::BEptr->errorStatistics__BOSS();
+            get_BEptr()->errorStatistics__BOSS();
         }
         
         inline void Info::setTooLowPTmin(bool lowPTminIn)
         {
-            wrapperbase::BEptr->setTooLowPTmin(lowPTminIn);
+            get_BEptr()->setTooLowPTmin(lowPTminIn);
         }
         
         inline void Info::setValence(bool isVal1In, bool isVal2In)
         {
-            wrapperbase::BEptr->setValence(isVal1In, isVal2In);
+            get_BEptr()->setValence(isVal1In, isVal2In);
         }
         
         inline void Info::hasHistory(bool hasHistoryIn)
         {
-            wrapperbase::BEptr->hasHistory(hasHistoryIn);
+            get_BEptr()->hasHistory(hasHistoryIn);
         }
         
         inline bool Info::hasHistory()
         {
-            return wrapperbase::BEptr->hasHistory();
+            return get_BEptr()->hasHistory();
         }
         
         inline void Info::zNowISR(double zNowIn)
         {
-            wrapperbase::BEptr->zNowISR(zNowIn);
+            get_BEptr()->zNowISR(zNowIn);
         }
         
         inline double Info::zNowISR()
         {
-            return wrapperbase::BEptr->zNowISR();
+            return get_BEptr()->zNowISR();
         }
         
         inline void Info::pT2NowISR(double pT2NowIn)
         {
-            wrapperbase::BEptr->pT2NowISR(pT2NowIn);
+            get_BEptr()->pT2NowISR(pT2NowIn);
         }
         
         inline double Info::pT2NowISR()
         {
-            return wrapperbase::BEptr->pT2NowISR();
+            return get_BEptr()->pT2NowISR();
         }
         
         inline double Info::getWeightCKKWL() const
         {
-            return wrapperbase::BEptr->getWeightCKKWL();
+            return get_BEptr()->getWeightCKKWL();
         }
         
         inline void Info::setWeightCKKWL(double weightIn)
         {
-            wrapperbase::BEptr->setWeightCKKWL(weightIn);
+            get_BEptr()->setWeightCKKWL(weightIn);
         }
         
         inline double Info::mergingWeight() const
         {
-            return wrapperbase::BEptr->mergingWeight();
+            return get_BEptr()->mergingWeight();
         }
         
         inline double Info::mergingWeightNLO() const
         {
-            return wrapperbase::BEptr->mergingWeightNLO();
+            return get_BEptr()->mergingWeightNLO();
         }
         
         inline double Info::getWeightFIRST() const
         {
-            return wrapperbase::BEptr->getWeightFIRST();
+            return get_BEptr()->getWeightFIRST();
         }
         
         inline void Info::setWeightFIRST(double weightIn)
         {
-            wrapperbase::BEptr->setWeightFIRST(weightIn);
+            get_BEptr()->setWeightFIRST(weightIn);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::header(const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >& key)
         {
-            return wrapperbase::BEptr->header(key);
+            return get_BEptr()->header(key);
         }
         
         inline ::std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > Info::headerKeys()
         {
-            return wrapperbase::BEptr->headerKeys();
+            return get_BEptr()->headerKeys();
         }
         
         inline int Info::nProcessesLHEF()
         {
-            return wrapperbase::BEptr->nProcessesLHEF();
+            return get_BEptr()->nProcessesLHEF();
         }
         
         inline double Info::sigmaLHEF(int iProcess)
         {
-            return wrapperbase::BEptr->sigmaLHEF(iProcess);
+            return get_BEptr()->sigmaLHEF(iProcess);
         }
         
         inline void Info::setLHEF3InitInfo()
         {
-            wrapperbase::BEptr->setLHEF3InitInfo();
+            get_BEptr()->setLHEF3InitInfo();
         }
         
         inline void Info::setLHEF3EventInfo()
         {
-            wrapperbase::BEptr->setLHEF3EventInfo();
+            get_BEptr()->setLHEF3EventInfo();
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getEventAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace)
         {
-            return wrapperbase::BEptr->getEventAttribute(key, doRemoveWhitespace);
+            return get_BEptr()->getEventAttribute(key, doRemoveWhitespace);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getEventAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->getEventAttribute__BOSS(key);
+            return get_BEptr()->getEventAttribute__BOSS(key);
         }
         
         inline int Info::LHEFversion()
         {
-            return wrapperbase::BEptr->LHEFversion();
+            return get_BEptr()->LHEFversion();
         }
         
         inline unsigned int Info::getInitrwgtSize()
         {
-            return wrapperbase::BEptr->getInitrwgtSize();
+            return get_BEptr()->getInitrwgtSize();
         }
         
         inline unsigned int Info::getGeneratorSize()
         {
-            return wrapperbase::BEptr->getGeneratorSize();
+            return get_BEptr()->getGeneratorSize();
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getGeneratorValue(unsigned int n)
         {
-            return wrapperbase::BEptr->getGeneratorValue(n);
+            return get_BEptr()->getGeneratorValue(n);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getGeneratorValue()
         {
-            return wrapperbase::BEptr->getGeneratorValue__BOSS();
+            return get_BEptr()->getGeneratorValue__BOSS();
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getGeneratorAttribute(unsigned int n, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace)
         {
-            return wrapperbase::BEptr->getGeneratorAttribute(n, key, doRemoveWhitespace);
+            return get_BEptr()->getGeneratorAttribute(n, key, doRemoveWhitespace);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getGeneratorAttribute(unsigned int n, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->getGeneratorAttribute__BOSS(n, key);
+            return get_BEptr()->getGeneratorAttribute__BOSS(n, key);
         }
         
         inline unsigned int Info::getWeightsDetailedSize()
         {
-            return wrapperbase::BEptr->getWeightsDetailedSize();
+            return get_BEptr()->getWeightsDetailedSize();
         }
         
         inline double Info::getWeightsDetailedValue(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > n)
         {
-            return wrapperbase::BEptr->getWeightsDetailedValue(n);
+            return get_BEptr()->getWeightsDetailedValue(n);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getWeightsDetailedAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > n, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace)
         {
-            return wrapperbase::BEptr->getWeightsDetailedAttribute(n, key, doRemoveWhitespace);
+            return get_BEptr()->getWeightsDetailedAttribute(n, key, doRemoveWhitespace);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getWeightsDetailedAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > n, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->getWeightsDetailedAttribute__BOSS(n, key);
+            return get_BEptr()->getWeightsDetailedAttribute__BOSS(n, key);
         }
         
         inline unsigned int Info::getWeightsCompressedSize()
         {
-            return wrapperbase::BEptr->getWeightsCompressedSize();
+            return get_BEptr()->getWeightsCompressedSize();
         }
         
         inline double Info::getWeightsCompressedValue(unsigned int n)
         {
-            return wrapperbase::BEptr->getWeightsCompressedValue(n);
+            return get_BEptr()->getWeightsCompressedValue(n);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getWeightsCompressedAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key, bool doRemoveWhitespace)
         {
-            return wrapperbase::BEptr->getWeightsCompressedAttribute(key, doRemoveWhitespace);
+            return get_BEptr()->getWeightsCompressedAttribute(key, doRemoveWhitespace);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getWeightsCompressedAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->getWeightsCompressedAttribute__BOSS(key);
+            return get_BEptr()->getWeightsCompressedAttribute__BOSS(key);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getScalesValue(bool doRemoveWhitespace)
         {
-            return wrapperbase::BEptr->getScalesValue(doRemoveWhitespace);
+            return get_BEptr()->getScalesValue(doRemoveWhitespace);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Info::getScalesValue()
         {
-            return wrapperbase::BEptr->getScalesValue__BOSS();
+            return get_BEptr()->getScalesValue__BOSS();
         }
         
         inline double Info::getScalesAttribute(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > key)
         {
-            return wrapperbase::BEptr->getScalesAttribute(key);
+            return get_BEptr()->getScalesAttribute(key);
         }
         
         inline void Info::setHeader(const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >& key, const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >& val)
         {
-            wrapperbase::BEptr->setHeader(key, val);
+            get_BEptr()->setHeader(key, val);
         }
         
         inline void Info::setAbortPartonLevel(bool abortIn)
         {
-            wrapperbase::BEptr->setAbortPartonLevel(abortIn);
+            get_BEptr()->setAbortPartonLevel(abortIn);
         }
         
         inline bool Info::getAbortPartonLevel()
         {
-            return wrapperbase::BEptr->getAbortPartonLevel();
+            return get_BEptr()->getAbortPartonLevel();
         }
         
         inline bool Info::hasUnresolvedBeams() const
         {
-            return wrapperbase::BEptr->hasUnresolvedBeams();
+            return get_BEptr()->hasUnresolvedBeams();
         }
         
         inline bool Info::hasPomPsystem() const
         {
-            return wrapperbase::BEptr->hasPomPsystem();
+            return get_BEptr()->hasPomPsystem();
         }
         
         inline bool Info::isHardDiffractive() const
         {
-            return wrapperbase::BEptr->isHardDiffractive();
+            return get_BEptr()->isHardDiffractive();
         }
         
         inline bool Info::isHardDiffractiveA() const
         {
-            return wrapperbase::BEptr->isHardDiffractiveA();
+            return get_BEptr()->isHardDiffractiveA();
         }
         
         inline bool Info::isHardDiffractiveB() const
         {
-            return wrapperbase::BEptr->isHardDiffractiveB();
+            return get_BEptr()->isHardDiffractiveB();
         }
         
         inline double Info::xPomeronA() const
         {
-            return wrapperbase::BEptr->xPomeronA();
+            return get_BEptr()->xPomeronA();
         }
         
         inline double Info::xPomeronB() const
         {
-            return wrapperbase::BEptr->xPomeronB();
+            return get_BEptr()->xPomeronB();
         }
         
         inline double Info::tPomeronA() const
         {
-            return wrapperbase::BEptr->tPomeronA();
+            return get_BEptr()->tPomeronA();
         }
         
         inline double Info::tPomeronB() const
         {
-            return wrapperbase::BEptr->tPomeronB();
+            return get_BEptr()->tPomeronB();
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::Info::Info() :
-            WrapperBase<Pythia8::Abstract_Info>(__factory0()),
-            LHEFversionSave(wrapperbase::BEptr->LHEFversionSave_ref__BOSS()),
-            sigmaLHEFSave(wrapperbase::BEptr->sigmaLHEFSave_ref__BOSS()),
-            eventAttributes(wrapperbase::BEptr->eventAttributes_ref__BOSS()),
-            weights_detailed(wrapperbase::BEptr->weights_detailed_ref__BOSS()),
-            weights_compressed(wrapperbase::BEptr->weights_compressed_ref__BOSS())
+            WrapperBase(__factory0()),
+            LHEFversionSave( get_BEptr()->LHEFversionSave_ref__BOSS()),
+            sigmaLHEFSave( get_BEptr()->sigmaLHEFSave_ref__BOSS()),
+            eventAttributes( get_BEptr()->eventAttributes_ref__BOSS()),
+            weights_detailed( get_BEptr()->weights_detailed_ref__BOSS()),
+            weights_compressed( get_BEptr()->weights_compressed_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Info::Info(Pythia8::Abstract_Info* in) :
-            WrapperBase<Pythia8::Abstract_Info>(in),
-            LHEFversionSave(wrapperbase::BEptr->LHEFversionSave_ref__BOSS()),
-            sigmaLHEFSave(wrapperbase::BEptr->sigmaLHEFSave_ref__BOSS()),
-            eventAttributes(wrapperbase::BEptr->eventAttributes_ref__BOSS()),
-            weights_detailed(wrapperbase::BEptr->weights_detailed_ref__BOSS()),
-            weights_compressed(wrapperbase::BEptr->weights_compressed_ref__BOSS())
+            WrapperBase(in),
+            LHEFversionSave( get_BEptr()->LHEFversionSave_ref__BOSS()),
+            sigmaLHEFSave( get_BEptr()->sigmaLHEFSave_ref__BOSS()),
+            eventAttributes( get_BEptr()->eventAttributes_ref__BOSS()),
+            weights_detailed( get_BEptr()->weights_detailed_ref__BOSS()),
+            weights_compressed( get_BEptr()->weights_compressed_ref__BOSS())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::Info::Info(Pythia8::Abstract_Info* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_Info>(in, true),
-            LHEFversionSave(wrapperbase::BEptr->LHEFversionSave_ref__BOSS()),
-            sigmaLHEFSave(wrapperbase::BEptr->sigmaLHEFSave_ref__BOSS()),
-            eventAttributes(wrapperbase::BEptr->eventAttributes_ref__BOSS()),
-            weights_detailed(wrapperbase::BEptr->weights_detailed_ref__BOSS()),
-            weights_compressed(wrapperbase::BEptr->weights_compressed_ref__BOSS())
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::Info::Info(const Info& in) :
-            WrapperBase<Pythia8::Abstract_Info>(in),
-            LHEFversionSave(wrapperbase::BEptr->LHEFversionSave_ref__BOSS()),
-            sigmaLHEFSave(wrapperbase::BEptr->sigmaLHEFSave_ref__BOSS()),
-            eventAttributes(wrapperbase::BEptr->eventAttributes_ref__BOSS()),
-            weights_detailed(wrapperbase::BEptr->weights_detailed_ref__BOSS()),
-            weights_compressed(wrapperbase::BEptr->weights_compressed_ref__BOSS())
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS()),
+            LHEFversionSave( get_BEptr()->LHEFversionSave_ref__BOSS()),
+            sigmaLHEFSave( get_BEptr()->sigmaLHEFSave_ref__BOSS()),
+            eventAttributes( get_BEptr()->eventAttributes_ref__BOSS()),
+            weights_detailed( get_BEptr()->weights_detailed_ref__BOSS()),
+            weights_compressed( get_BEptr()->weights_compressed_ref__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::Info& Info::operator=(const Info& in)
         {
-            WrapperBase<Pythia8::Abstract_Info>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -1024,14 +1014,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Info::~Info()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::Info::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_Info* Pythia8::Info::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_Info*>(BEptr);
         }
-        
     }
     
 }

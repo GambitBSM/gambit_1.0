@@ -1,4 +1,5 @@
 #include "gambit/ColliderBit/Utils.hpp"
+#include <iostream>
 using namespace std;
 
 namespace Gambit {
@@ -10,16 +11,16 @@ namespace Gambit {
       return HEPUtils::rand01() < eff;
     }
 
-
     void filtereff(std::vector<HEPUtils::Particle*>& particles, double eff) {
       if(particles.empty()) return;
       auto keptParticlesEnd = std::remove_if(particles.begin(), particles.end(),
-                                             [&](const HEPUtils::Particle*) {
-                                               return !random_bool(eff); } );
+                                             [&](HEPUtils::Particle*) {
+                                               return !random_bool(eff);
+                                             } );
       // vectors erase most efficiently from the end
-      // no delete is necessary, because erase destroys the elements it removes
+      // no delete is necessary, because we are only forgetting a pointer owned by the original event.
       while (keptParticlesEnd != particles.end())
-        particles.erase(--particles.end());
+        particles.pop_back();
     }
 
 
@@ -28,11 +29,12 @@ namespace Gambit {
       if(particles.empty()) return;
       auto keptParticlesEnd = std::remove_if(particles.begin(), particles.end(),
                                              [&](const HEPUtils::Particle* p) {
-                                               return !random_bool(eff_etapt, p->abseta(), p->pT()); } );
+                                               return !random_bool(eff_etapt, p->abseta(), p->pT());
+                                             } );
       // vectors erase most efficiently from the end
-      // no delete is necessary, because erase destroys the elements it removes
+      // no delete is necessary, because we are only forgetting a pointer owned by the original event.
       while (keptParticlesEnd != particles.end())
-        particles.erase(--particles.end());
+        particles.pop_back();
     }
 
 

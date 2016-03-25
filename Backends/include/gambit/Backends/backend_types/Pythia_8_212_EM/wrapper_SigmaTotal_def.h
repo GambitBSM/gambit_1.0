@@ -14,183 +14,178 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void SigmaTotal::init(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_Settings >& settings, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn)
+        inline void SigmaTotal::init(Pythia8::Info* infoPtrIn, Pythia8::Settings& settings, Pythia8::ParticleData* particleDataPtrIn)
         {
-            wrapperbase::BEptr->init__BOSS((*infoPtrIn).BEptr, *settings.BEptr, (*particleDataPtrIn).BEptr);
+            get_BEptr()->init__BOSS((*infoPtrIn).get_BEptr(), *settings.get_BEptr(), (*particleDataPtrIn).get_BEptr());
         }
         
         inline bool SigmaTotal::calc(int idA, int idB, double eCM)
         {
-            return wrapperbase::BEptr->calc(idA, idB, eCM);
+            return get_BEptr()->calc(idA, idB, eCM);
         }
         
         inline bool SigmaTotal::hasSigmaTot() const
         {
-            return wrapperbase::BEptr->hasSigmaTot();
+            return get_BEptr()->hasSigmaTot();
         }
         
         inline double SigmaTotal::sigmaTot() const
         {
-            return wrapperbase::BEptr->sigmaTot();
+            return get_BEptr()->sigmaTot();
         }
         
         inline double SigmaTotal::sigmaEl() const
         {
-            return wrapperbase::BEptr->sigmaEl();
+            return get_BEptr()->sigmaEl();
         }
         
         inline double SigmaTotal::sigmaXB() const
         {
-            return wrapperbase::BEptr->sigmaXB();
+            return get_BEptr()->sigmaXB();
         }
         
         inline double SigmaTotal::sigmaAX() const
         {
-            return wrapperbase::BEptr->sigmaAX();
+            return get_BEptr()->sigmaAX();
         }
         
         inline double SigmaTotal::sigmaXX() const
         {
-            return wrapperbase::BEptr->sigmaXX();
+            return get_BEptr()->sigmaXX();
         }
         
         inline double SigmaTotal::sigmaAXB() const
         {
-            return wrapperbase::BEptr->sigmaAXB();
+            return get_BEptr()->sigmaAXB();
         }
         
         inline double SigmaTotal::sigmaND() const
         {
-            return wrapperbase::BEptr->sigmaND();
+            return get_BEptr()->sigmaND();
         }
         
         inline bool SigmaTotal::calcMBRxsecs(int idA, int idB, double eCM)
         {
-            return wrapperbase::BEptr->calcMBRxsecs(idA, idB, eCM);
+            return get_BEptr()->calcMBRxsecs(idA, idB, eCM);
         }
         
         inline double SigmaTotal::ddpMax() const
         {
-            return wrapperbase::BEptr->ddpMax();
+            return get_BEptr()->ddpMax();
         }
         
         inline double SigmaTotal::sdpMax() const
         {
-            return wrapperbase::BEptr->sdpMax();
+            return get_BEptr()->sdpMax();
         }
         
         inline double SigmaTotal::dpepMax() const
         {
-            return wrapperbase::BEptr->dpepMax();
+            return get_BEptr()->dpepMax();
         }
         
         inline double SigmaTotal::bSlopeEl() const
         {
-            return wrapperbase::BEptr->bSlopeEl();
+            return get_BEptr()->bSlopeEl();
         }
         
         inline double SigmaTotal::bSlopeXB(double sX) const
         {
-            return wrapperbase::BEptr->bSlopeXB(sX);
+            return get_BEptr()->bSlopeXB(sX);
         }
         
         inline double SigmaTotal::bSlopeAX(double sX) const
         {
-            return wrapperbase::BEptr->bSlopeAX(sX);
+            return get_BEptr()->bSlopeAX(sX);
         }
         
         inline double SigmaTotal::bSlopeXX(double sX1, double sX2) const
         {
-            return wrapperbase::BEptr->bSlopeXX(sX1, sX2);
+            return get_BEptr()->bSlopeXX(sX1, sX2);
         }
         
         inline double SigmaTotal::mMinXB() const
         {
-            return wrapperbase::BEptr->mMinXB();
+            return get_BEptr()->mMinXB();
         }
         
         inline double SigmaTotal::mMinAX() const
         {
-            return wrapperbase::BEptr->mMinAX();
+            return get_BEptr()->mMinAX();
         }
         
         inline double SigmaTotal::mMinAXB() const
         {
-            return wrapperbase::BEptr->mMinAXB();
+            return get_BEptr()->mMinAXB();
         }
         
         inline double SigmaTotal::cRes() const
         {
-            return wrapperbase::BEptr->cRes();
+            return get_BEptr()->cRes();
         }
         
         inline double SigmaTotal::mResXB() const
         {
-            return wrapperbase::BEptr->mResXB();
+            return get_BEptr()->mResXB();
         }
         
         inline double SigmaTotal::mResAX() const
         {
-            return wrapperbase::BEptr->mResAX();
+            return get_BEptr()->mResAX();
         }
         
         inline double SigmaTotal::sProton() const
         {
-            return wrapperbase::BEptr->sProton();
+            return get_BEptr()->sProton();
         }
         
         inline double SigmaTotal::bMinSlopeXB() const
         {
-            return wrapperbase::BEptr->bMinSlopeXB();
+            return get_BEptr()->bMinSlopeXB();
         }
         
         inline double SigmaTotal::bMinSlopeAX() const
         {
-            return wrapperbase::BEptr->bMinSlopeAX();
+            return get_BEptr()->bMinSlopeAX();
         }
         
         inline double SigmaTotal::bMinSlopeXX() const
         {
-            return wrapperbase::BEptr->bMinSlopeXX();
+            return get_BEptr()->bMinSlopeXX();
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::SigmaTotal::SigmaTotal() :
-            WrapperBase<Pythia8::Abstract_SigmaTotal>(__factory0())
+            WrapperBase(__factory0())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::SigmaTotal::SigmaTotal(Pythia8::Abstract_SigmaTotal* in) :
-            WrapperBase<Pythia8::Abstract_SigmaTotal>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::SigmaTotal::SigmaTotal(Pythia8::Abstract_SigmaTotal* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_SigmaTotal>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::SigmaTotal::SigmaTotal(const SigmaTotal& in) :
-            WrapperBase<Pythia8::Abstract_SigmaTotal>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::SigmaTotal& SigmaTotal::operator=(const SigmaTotal& in)
         {
-            WrapperBase<Pythia8::Abstract_SigmaTotal>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -198,14 +193,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::SigmaTotal::~SigmaTotal()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::SigmaTotal::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_SigmaTotal* Pythia8::SigmaTotal::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_SigmaTotal*>(BEptr);
         }
-        
     }
     
 }

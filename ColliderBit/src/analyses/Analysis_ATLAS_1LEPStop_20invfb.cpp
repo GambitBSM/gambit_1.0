@@ -201,6 +201,7 @@ namespace Gambit {
 
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
+
         // Missing energy
         HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();

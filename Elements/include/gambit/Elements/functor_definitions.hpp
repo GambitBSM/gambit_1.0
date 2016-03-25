@@ -94,6 +94,15 @@ namespace Gambit
     {
       if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
       {
+        if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
+        {
+          std::ostringstream ss;
+          ss << "Sorry, the function " << origin() << "::" << name()
+           << " cannot be used" << endl << "because it requires classes from a backend that you do not have installed."
+           << endl << "Missing backends: ";
+          for (auto it = missing_backends.begin(); it != missing_backends.end(); ++it) ss << endl << "  " << *it;
+          backend_error().raise(LOCAL_INFO, ss.str());
+        }
         boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
         int thread_num = omp_get_thread_num();
         init_memory();                               // Init memory if this is the first run through.
@@ -217,6 +226,22 @@ namespace Gambit
     {
       if(not signaldata().shutdown_begun())          // If shutdown signal has been received, skip everything
       {
+        if (myStatus == -3)                          // Do an explicit status check to hold standalone writers' hands
+        {
+          std::ostringstream ss;
+          ss << "Sorry, the function " << origin() << "::" << name()
+           << " cannot be used" << endl << "because it requires classes from a backend that you do not have installed."
+           << endl << "Missing backends: ";
+          for (auto it = missing_backends.begin(); it != missing_backends.end(); ++it) ss << endl << "  " << *it;
+          backend_error().raise(LOCAL_INFO, ss.str());
+        }
+        else if (myStatus == -4)
+        {
+          std::ostringstream ss;
+          ss << "Sorry, the backend initialisation function " << name()
+          << " cannot be used" << endl << "because it initialises a backend that you do not have installed!";                 
+          backend_error().raise(LOCAL_INFO, ss.str());    
+        }
         boost::io::ios_flags_saver ifs(cout);        // Don't allow module functions to change the output precision of cout
         int thread_num = omp_get_thread_num();
         init_memory();                               // Init memory if this is the first run through.

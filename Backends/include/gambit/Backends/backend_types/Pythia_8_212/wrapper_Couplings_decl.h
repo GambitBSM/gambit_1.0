@@ -15,12 +15,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Couplings : public WrapperBase<Pythia8::Abstract_Couplings>, public CoupSM
+        class Couplings : public CoupSM
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Couplings> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Couplings>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -38,7 +34,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Couplings(Pythia8::Abstract_Couplings* in);
-                Couplings(Pythia8::Abstract_Couplings* const & in, bool);
         
                 // Copy constructor: 
                 Couplings(const Couplings& in);
@@ -47,11 +42,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Couplings& operator=(const Couplings& in);
         
                 // Destructor: 
-                ~Couplings();
+                virtual ~Couplings();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Couplings* get_BEptr() const;
         
         };
     }

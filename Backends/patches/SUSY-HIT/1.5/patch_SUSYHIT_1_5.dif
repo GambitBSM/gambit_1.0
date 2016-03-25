@@ -1,0 +1,1331 @@
+diff -rupN SUSY-HIT_1_5_unpatched/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
+--- SUSY-HIT_1_5_unpatched/hdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-07 15:28:57.837894259 +0000
+@@ -164,7 +164,7 @@ c end change susyhit
+       COMMON/SLHA_vals_HDEC/islhai,islhao
+ 
+       CALL READ_HDEC(TGBET,AMABEG,AMAEND,NMA)
+-      if(islhao.ne.1) then
++      if(islhao.eq.0) then                       !Modified by GAMBIT.
+          CALL HEAD_HDEC(TGBET,AMABEG)
+       endif
+ 
+@@ -182,7 +182,7 @@ c       CALL WRITE_HDEC(TGBET)
+ c end change susyhit
+  9999  CONTINUE
+ 
+-      CALL CLOSE_HDEC
++      if(islhao.eq.0) CALL CLOSE_HDEC            !Modified by GAMBIT.
+ 
+ c change susyhit
+ c      STOP
+@@ -327,8 +327,8 @@ c -- given by the slhaspectrum.in file -
+ c -- parameters to be defined which are not given by the --
+ c -- slhaspectrum.in file --
+ 
+-      islhai  = 1
+-      islhao  = 1
++      islhai  = 2                                !Modified by GAMBIT.
++      islhao  = 2                                !Modified by GAMBIT.
+       ihiggs  = 5
+       imodel  = 1
+       nnlo    = 1
+@@ -350,11 +350,13 @@ c -- initialization of the check array -
+          check(i1) = 0
+       end do
+ 
+-      if(islhai.eq.1) then
++      if(islhai.ge.1) then                       !Added by GAMBIT.
++        if(islhai.eq.1) then
+ c change susyhit
+          open(ninlha,file='slhaspectrum.in')
+ c end change susyhit
+          call SLHA_read_leshouches_HDEC(ninlha)
++        endif                                    !Added by GAMBIT.
+ 
+ c -- G_F --
+          if(smval(2).ne.0.D0) then
+@@ -503,8 +505,9 @@ c -- the mass mb(mb)_MSbar --
+       fmtau = amtau
+       fms = ams
+       fmc = amc
++      if(ishai.eq.2) fmb = massval(34)           !Added by GAMBIT.
+ c -- calculation of the mb pole mass from mb(mb)_MSbar --
+-      if(smval(5).ne.0.D0) then
++      if(smval(5).ne.0.D0 .and. ishai.ne.2) then !Modified by GAMBIT.
+        del = 1.d-10
+        mbl = mbmsbar
+        mbu = 2*mbmsbar
+@@ -2342,7 +2345,7 @@ c ----------------------------- c
+ 
+        close(nout)
+ 
+-      else
++      elseif (islhao .eq. 0) then                !Modified by GAMBIT.
+ 
+       IF(IHIGGS.EQ.0)THEN
+       WRITE(NSA,20)AMSM,SMBRB,SMBRL,SMBRM,SMBRS,SMBRC,SMBRT
+@@ -5620,8 +5623,8 @@ c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        WHHSB(I,J)=3*GF*AMZ**4/2.D0/DSQRT(2.D0)/PI*GHBB(I,J)**2*
+      .       LAMB_HDEC(AMSB(I)**2/AMH**2,AMSB(J)**2/AMH**2)/AMH
+      .      *SUSY
+-       write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1,
+-     .           WHHSB(I,J)/SUSY,WHHSB(I,J)
++c       write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1, !Commented out by GAMBIT
++c     .           WHHSB(I,J)/SUSY,WHHSB(I,J)                    !Commented out by GAMBIT
+ c      write(6,*)'H -> sbot: ',I,J,AMH,AMSB(I),AMSB(J),SUSY-1
+       ELSE
+       WHHSB(I,J)=0.D0
+diff -rupN SUSY-HIT_1_5_unpatched/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bod.f
+--- SUSY-HIT_1_5_unpatched/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-07 15:35:18.745887438 +0000
+@@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision sdgf,amz,amw,pi,g2
+       double precision width_bchiW, width_jchiw, width_tot3bod
+       double precision amt, amb, amtau, mfd(3), mfu(3), mfe(3)
+-      double precision DcharL(3,6,2), EcharR(3,6,2), 
++      double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2), ccharl(3,6,2), fcharr(3,6,2)
+       double precision gneutul(3,4,6), 
+      . gneutur(3,4,6), gneutdl(3,4,6), gneutdr(3,4,6)
+@@ -53,7 +53,7 @@ c---- end ramona changed
+ 
+ c---- common block for parameters entering the couplings
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_mixmat/uu,vv,zz,zp
+       COMMON/SD_mixang/alp_mssm,tanbeta
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+@@ -251,7 +251,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+      . stbchiwchib, stbchiwbt, stbchiwchit
+       double precision xmuw, xmut(3), xmub, xmuneut, xmuchar(2),
+      . xmusb(6)
+-      double precision DcharL(3,6,2), EcharR(3,6,2), 
++      double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2), ccharl(3,6,2), fcharr(3,6,2)
+       double precision gneutul(3,4,6), 
+      . gneutur(3,4,6), gneutdl(3,4,6), gneutdr(3,4,6)
+@@ -277,7 +277,7 @@ c----- end ramona changed
+       common/Wcharneutcoup/CchaneutL, CchaneutR
+       common/squarkWcoup/gsqsqW
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/SD_mwmzpole/amwp,amzp
+       common/ratio3bod/ratiotopcharg
+@@ -560,7 +560,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+      . stjchiwchib, stjchiwbt, stjchiwchit
+       double precision xmuw, xmut(3), xmub, xmuneut, xmuchar(2),
+      . xmusb(6)
+-      double precision DcharL(3,6,2), EcharR(3,6,2), 
++      double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2), ccharl(3,6,2), fcharr(3,6,2)
+       double precision gneutul(3,4,6), 
+      . gneutur(3,4,6), gneutdl(3,4,6), gneutdr(3,4,6)
+@@ -585,7 +585,7 @@ c----- end ramona changed
+       common/Wcharneutcoup/CchaneutL, CchaneutR
+       common/squarkWcoup/gsqsqW
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/SD_mwmzpole/amwp,amzp
+ c---- ramona cahnged 2/2/15
+diff -rupN SUSY-HIT_1_5_unpatched/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bod.f
+--- SUSY-HIT_1_5_unpatched/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-07 15:34:10.329888663 +0000
+@@ -34,7 +34,7 @@ c----- end ramona added
+      .msd2(3,3), td(3,3), tu(3,3),
+      . usqmix(6,6), dsqmix(6,6)
+       double precision sinbeta,alsew,g2ew,g1ew, time
+-      double precision sigma, DcharL(3,6,2), EcharR(3,6,2), 
++      double precision sigma, DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision sigbtau
+       double precision mfin(100),pfout(4,100), etot,  wt, ampwchabtau
+@@ -95,7 +95,7 @@ c----- end ramona added
+ 
+       COMMON/SD_param/sdgf,amz,amw,pi,g2
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/msfermion/ amsupq, amsdownq, amslepton, amsneutrino
+       COMMON/SD_weinberg/sw,cw
+       COMMON/SD_mixang/alp_mssm,tanbeta
+@@ -532,7 +532,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -584,7 +584,7 @@ c------ end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -1715,7 +1715,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -1768,7 +1768,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -2942,7 +2942,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -2995,7 +2995,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -3429,7 +3429,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -3482,7 +3482,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -3917,7 +3917,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -3970,7 +3970,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -4418,7 +4418,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -4468,7 +4468,7 @@ c----- end ramona changed
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -4793,7 +4793,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -4846,7 +4846,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -5866,7 +5866,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -5919,7 +5919,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -7156,7 +7156,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup, zwi2
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -7209,7 +7209,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -7591,7 +7591,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup, zwi2
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -7645,7 +7645,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -8102,7 +8102,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup, zwi2
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -8155,7 +8155,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+@@ -8616,7 +8616,7 @@ cccccccccccccccccccccccccccccccccccccccc
+       double precision ampSMfer, ampcharsup, zwi2
+       double precision matrixelements
+       double precision alsew,g2ew,g1ew
+-       double precision DcharL(3,6,2), EcharR(3,6,2), 
++       double precision DcharL(3,6,6), EcharR(3,6,6),         !Modified by GAMBIT 
+      . cchaneutL(4,2), cchaneutR(4,2) 
+       double precision ampcharslepton, ampintslepsneut, ampintwslep
+        double precision gXb2R, gXc2L, gXc2R,gbd3R, gcd3L, gxb2l,
+@@ -8669,7 +8669,7 @@ c----- end ramona added
+       common/charneutchaHicoup/QchncL, QchncR
+       COMMON/SD_coupewsb/alsew,g2ew,g1ew
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/SD_hmass/ama,aml,amh,amch,amar
+ c----- ramona added 4/11/14
+       COMMON/SD_mwmzpole/amwp,amzp
+diff -rupN SUSY-HIT_1_5_unpatched/makefile installed/SUSY-HIT/1.5/makefile
+--- SUSY-HIT_1_5_unpatched/makefile	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/makefile	2016-03-07 15:28:57.837894259 +0000
+@@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
+ OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
+ OBJS3 = susylha.o hgaga.o hdecay.o
+ 
+-FC=gfortran
++FF=gfortran
++
++FC=$(FF)
++FFLAGS= -O2 -fPIC
+ 
+ .f.o: 
+-	$(FC) -c -finit-local-zero -fbacktrace -fno-align-commons $*.f
++	$(FC) $(FFLAGS) -c $*.f
+ 
+ susyhit:$(OBJS1) $(OBJS2) $(OBJS3) 
+ 	$(FC) $(OBJS1) $(OBJS2) $(OBJS3) -o run
+ 
++libsusyhit.so:$(OBJS1) $(OBJS2) $(OBJS3)
++	$(FC) -shared -o $@ $(OBJS1) $(OBJS2) $(OBJS3)
++
+ clean: 
+-	rm -f *.o
+\ No newline at end of file
++	rm -f *.o
+diff -rupN SUSY-HIT_1_5_unpatched/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
+--- SUSY-HIT_1_5_unpatched/sdecay.f	2015-02-22 18:14:22.000000000 +0000
++++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-07 15:32:06.397890883 +0000
+@@ -98,7 +98,12 @@ c  file.]
+ c                                                                      c
+ c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
+ 
+-      program sdecay
++      !Added by GAMBIT to make 100% sure 'unlikely' matches the fortran value.
++      double precision function s_hit_unlikely()
++        s_hit_unlikely = -123456789D0
++      end
++
++      subroutine sdecay                          !Modified by GAMBIT.
+ 
+       implicit double precision (a-h,m,o-z)
+       double precision neutwchar,neutzneut,neuthcchar,neuthlneut,
+@@ -117,6 +122,7 @@ c cccccccccccccccccccccccccccccccccccccc
+      .       aeval(3,3),yuval(3,3),ydval(3,3),yeval(3,3),qvalue(1:22),
+      .       extval(0:100),m_softval(1:100)
+       double precision nl,nq
++      logical qcdcorrstok(2),qcdcorrsbok(2),qcdcorrchok(2),qcdcorrglok!Added by GAMBIT
+       integer nx1t,ny1t,nnlo,imod(1:2)
+ c--- ramona chnaged on 6/6/13 size of array check
+       integer check(1:30)
+@@ -448,7 +454,7 @@ c -- useful when SDECAY is linked to oth
+       COMMON/SD_stoploop/brgamma,brgammaup,brgammagluino
+       COMMON/SD_stop4body/brgamma4bod,brgammaup4bod,brgammagluino4bod,
+      .          br4bodoffshelltau
+-      COMMON/SD_stopwidth/stoptot4
++      COMMON/SD_stopwidth/stoptot4,stoptot       !Modified by GAMBIT
+       COMMON/SD_sbot2body/brsb1neutt,brsb2neutt,brsb1chart,brsb2chart,
+      .          brsb1hcst,brsb2hcst,brsb1wst,brsb2wst,brsb1glui,
+      .          brsb2glui,brsb2hl,brsb2hh,brsb2ha,brsb2zbot
+@@ -474,7 +480,7 @@ c -- useful when SDECAY is linked to oth
+       COMMON/SD_topwidth/toptot2
+ c---- ramona changed 18/3/2013
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/msfermion/ amsupq, amsdownq, amslepton, amsneutrino
+ c------ end ramona changed
+ c----- ramona added for alex output 25/11/14
+@@ -514,6 +520,8 @@ c----- if iflag3bod2bod=2 2 body decay s
+ c----- end ramona added
+ 
+ 
++      if (.false.) then                          !Added by GAMBIT.
++
+       open(ninshs,file='susyhit.in',status='unknown')
+ 
+ c -- read in susyhit.in --
+@@ -553,6 +561,384 @@ c-----ramona chnaged 7/6/13
+       print*, "output only in SLHA2 format"
+       flagoutput=1d0
+       flagshsin=2d0
++      endif                                      !Added by GAMBIT.
++
++      else                                       !This whole clause added by GAMBIT.
++
++        !Internal SUSY-HIT operational flags
++        flagshsin=0d0
++        flagoutput=2d0
++        i4bod=1
++
++        !SUSY-HIT common blocks already initialised by GAMBIT:
++        !checkfavvio
++        !flavviolation
++        !susyhitin
++        !sd_leshouches1
++        !sd_leshouches2
++        !slha_leshouches1_hdec
++        !slha_leshouches2_hdec
++        !sd_mbmb
++        !sd_selectron
++
++        !HDECAY widths and branching fractions needing initialisation to zero.
++        abrb = 0.d0
++        abrl = 0.d0
++        abrm = 0.d0
++        abrs = 0.d0
++        abrc = 0.d0
++        abrt = 0.d0
++        abrg = 0.d0
++        abrga = 0.d0
++        abrzga = 0.d0
++        abrz = 0.d0
++        awdth = 0.d0
++        hlbrb = 0.d0
++        hlbrl = 0.d0
++        hlbrm = 0.d0
++        hlbrs = 0.d0
++        hlbrc = 0.d0
++        hlbrt = 0.d0
++        hlbrg = 0.d0
++        hlbrga = 0.d0
++        hlbrzga = 0.d0
++        hlbrw = 0.d0
++        hlbrz = 0.d0
++        hlbra = 0.d0
++        hlbraz = 0.d0
++        hlbrhw = 0.d0
++        hlwdth = 0.d0
++        hhbrb = 0.d0
++        hhbrl = 0.d0
++        hhbrm = 0.d0
++        hhbrs = 0.d0
++        hhbrc = 0.d0
++        hhbrt = 0.d0
++        hhbrg = 0.d0
++        hhbrga = 0.d0
++        hhbrzga = 0.d0
++        hhbrw = 0.d0
++        hhbrz = 0.d0
++        hhbrh = 0.d0
++        hhbra = 0.d0
++        hhbraz = 0.d0
++        hhbrhw = 0.d0
++        hhwdth = 0.d0
++        hcbrb = 0.d0
++        hcbrl = 0.d0
++        hcbrm = 0.d0
++        hcbrbu = 0.d0
++        hcbrs = 0.d0
++        hcbrc = 0.d0
++        hcbrt = 0.d0
++        hcbrw = 0.d0
++        hcbra = 0.d0
++        hcwdth = 0.d0
++        hlbrsc = 0.d0
++        hlbrsn = 0.d0
++        hhbrsc = 0.d0
++        hhbrsn = 0.d0
++        habrsc = 0.d0
++        habrsn = 0.d0
++        hcbrsu = 0.d0
++        hlbrcht = 0.d0
++        hhbrcht = 0.d0
++        habrcht = 0.d0
++        hlbrnet = 0.d0
++        hhbrnet = 0.d0
++        habrnet = 0.d0
++        hcbrcnt = 0.d0
++        hlbrsl = 0.d0
++        hhbrsl = 0.d0
++        hcbrsl = 0.d0
++        habrsl = 0.d0
++        habrst = 0.d0
++        habrsb = 0.d0
++        hhbrsq = 0.d0
++        hhbrst = 0.d0
++        hhbrsb = 0.d0
++        hhbrsqt = 0.d0
++        hcbrsq = 0.d0
++        hcbrstb = 0.d0
++        hcbrsqt = 0.d0
++        hlbrsq = 0.d0
++        hlbrsqt = 0.d0
++        bhlslnl = 0.d0
++        bhlslel = 0.d0
++        bhlsler = 0.d0
++        bhlsqul = 0.d0
++        bhlsqur = 0.d0
++        bhlsqdl = 0.d0
++        bhlsqdr = 0.d0
++        bhlst = 0.d0
++        bhlsb = 0.d0
++        bhlstau = 0.d0
++        bhhslnl = 0.d0
++        bhhslel = 0.d0
++        bhhsler = 0.d0
++        bhhsqul = 0.d0
++        bhhsqur = 0.d0
++        bhhsqdl = 0.d0
++        bhhsqdr = 0.d0
++        bhhst = 0.d0
++        bhhsb = 0.d0
++        bhhstau = 0.d0
++        bhastau = 0.d0
++        bhasb = 0.d0
++        bhast = 0.d0
++        bhcsl00 = 0.d0
++        bhcsl11 = 0.d0
++        bhcsl21 = 0.d0
++        bhcsq = 0.d0
++        bhcstb = 0.d0
++        whlgd = 0.d0
++        whhgd = 0.d0
++        whagd = 0.d0
++        whcgd = 0.d0
++      
++        !SDECAY widths and branching fractions needing initialisation to zero.
++        brcharst1 = 0.d0
++        brcharst2 = 0.d0
++        brcharsb1 = 0.d0
++        brcharsb2 = 0.d0
++        brcharsupl = 0.d0
++        brcharsupr = 0.d0
++        brcharsdownl = 0.d0
++        brcharsdownr = 0.d0
++        brcharsnel = 0.d0
++        brcharsn1 = 0.d0
++        brcharsn2 = 0.d0
++        brcharsell = 0.d0
++        brcharselr = 0.d0
++        brcharstau1 = 0.d0
++        brcharstau2 = 0.d0
++        brcharhcneut = 0.d0
++        brcharwneut = 0.d0
++        brcharzchic = 0.d0
++        brcharhlchic = 0.d0
++        brcharhhchic = 0.d0
++        brcharhachic = 0.d0
++        brcharwgravitino = 0.d0
++        brcharhcgravitino = 0.d0
++        brntaunut = 0.d0
++        brnelnue = 0.d0
++        brnmunumu = 0.d0
++        brnupdb = 0.d0
++        brnchsb = 0.d0
++        brntopbb = 0.d0
++        brglupdb = 0.d0
++        brglchsb = 0.d0
++        brgltopbb = 0.d0
++        brchee = 0.d0
++        brchmumu = 0.d0
++        brchtautau = 0.d0
++        brchnene = 0.d0
++        brchnmunmu = 0.d0
++        brchntauntau = 0.d0
++        brchupup = 0.d0
++        brchdodo = 0.d0
++        brchchch = 0.d0
++        brchstst = 0.d0
++        brchtoptop = 0.d0
++        brchbotbot = 0.d0
++        chartot = 0.d0
++        brneutst1 = 0.d0
++        brneutst2 = 0.d0
++        brneutsb1 = 0.d0
++        brneutsb2 = 0.d0
++        brneutsupl = 0.d0
++        brneutsupr = 0.d0
++        brneutsdownl = 0.d0
++        brneutsdownr = 0.d0
++        brneutsnel = 0.d0
++        brneutsn1 = 0.d0
++        brneutsn2 = 0.d0
++        brneutsell = 0.d0
++        brneutselr = 0.d0
++        brneutstau1 = 0.d0
++        brneutstau2 = 0.d0
++        brneutwchar = 0.d0
++        brneuthcchar = 0.d0
++        brneutzneut = 0.d0
++        brneuthlneut = 0.d0
++        brneuthhneut = 0.d0
++        brneuthaneut = 0.d0
++        brneutgamgrav = 0.d0
++        brneutzgrav = 0.d0
++        brneuthlgrav = 0.d0
++        brneuthhgrav = 0.d0
++        brneuthagrav = 0.d0
++        brneutup = 0.d0
++        brneutdow = 0.d0
++        brneutch = 0.d0
++        brneutst = 0.d0
++        brneutbot = 0.d0
++        brneuttop = 0.d0
++        brneutel = 0.d0
++        brneutmu = 0.d0
++        brneuttau = 0.d0
++        brneutnue = 0.d0
++        brneutnumu = 0.d0
++        brneutnutau = 0.d0
++        brchubd = 0.d0
++        brchcbs = 0.d0
++        brchtbb = 0.d0
++        brchelne = 0.d0
++        brchmunmu = 0.d0
++        brchtauntau = 0.d0
++        brglup = 0.d0
++        brgldo = 0.d0
++        brglch = 0.d0
++        brglst = 0.d0
++        brgltop = 0.d0
++        brglbot = 0.d0
++        brnraddec = 0.d0
++        neuttot = 0.d0
++        brgst1 = 0.d0
++        brgst2 = 0.d0
++        brgsb1 = 0.d0
++        brgsb2 = 0.d0
++        brgsupl = 0.d0
++        brgsupr = 0.d0
++        brgsdownl = 0.d0
++        brgsdownr = 0.d0
++        brgoup = 0.d0
++        brgoch = 0.d0
++        brgodn = 0.d0
++        brgost = 0.d0
++        brgotp = 0.d0
++        brgobt = 0.d0
++        brgoud = 0.d0
++        brgocs = 0.d0
++        brgotb = 0.d0
++        brhcst1b = 0.d0
++        brwst1b = 0.d0
++        brglnjgluon = 0.d0
++        gluitot = 0.d0
++        brsuplnup = 0.d0
++        brsuplcdow = 0.d0
++        brsuplglui = 0.d0
++        brsuprnup = 0.d0
++        brsuprcdow = 0.d0
++        brsuprglui = 0.d0
++        supltot2 = 0.d0
++        suprtot2 = 0.d0
++        brsdowlndow = 0.d0
++        brsdowlchup = 0.d0
++        brsdowlglui = 0.d0
++        brsdowrndow = 0.d0
++        brsdowrchup = 0.d0
++        brsdowrglui = 0.d0
++        sdowltot2 = 0.d0
++        sdowrtot2 = 0.d0
++        brst1neutt = 0.d0
++        brst2neutt = 0.d0
++        brst1charb = 0.d0
++        brst1hcsb = 0.d0
++        brst1wsb = 0.d0
++        brst2charb = 0.d0
++        brst2hcsb = 0.d0
++        brst2wsb = 0.d0
++        brst1glui = 0.d0
++        brst2glui = 0.d0
++        brst2hl = 0.d0
++        brst2hh = 0.d0
++        brst2ha = 0.d0
++        brst2ztop = 0.d0
++        brstopw = 0.d0
++        brstoph = 0.d0
++        brststau = 0.d0
++        brstsntau = 0.d0
++        brstsel = 0.d0
++        brstbsbst = 0.d0
++        brstbbsbt = 0.d0
++        brsttausbnu = 0.d0
++        brstelsbnu = 0.d0
++        brstupsbdow = 0.d0
++        brstsnel = 0.d0
++        brst2st1tt = 0.d0
++        brst2st1startt = 0.d0
++        brst2st1bb = 0.d0
++        brst2st1uu = 0.d0
++        brst2st1dd = 0.d0
++        brst2st1ee = 0.d0
++        brst2st1nunu = 0.d0
++        brst2st1tautau = 0.d0
++        brgamma = 0.d0
++        brgammaup = 0.d0
++        brgammagluino = 0.d0
++        brgamma4bod = 0.d0
++        brgammaup4bod = 0.d0
++        brgammagluino4bod = 0.d0
++        br4bodoffshelltau = 0.d0
++        stoptot4 = 0.d0
++        stoptot = 0.d0
++        brsb1neutt = 0.d0
++        brsb2neutt = 0.d0
++        brsb1chart = 0.d0
++        brsb2chart = 0.d0
++        brsb1hcst = 0.d0
++        brsb2hcst = 0.d0
++        brsb1wst = 0.d0
++        brsb2wst = 0.d0
++        brsb1glui = 0.d0
++        brsb2glui = 0.d0
++        brsb2hl = 0.d0
++        brsb2hh = 0.d0
++        brsb2ha = 0.d0
++        brsb2zbot = 0.d0
++        brsbstau = 0.d0
++        brsbsntau = 0.d0
++        brsbsel = 0.d0
++        brsbtstsb = 0.d0
++        brsbtbstb = 0.d0
++        brsbtaustnu = 0.d0
++        brsbelstnu = 0.d0
++        brsbupstdow = 0.d0
++        brsbsnel = 0.d0
++        brsb2sb1bb = 0.d0
++        brsb2sb1starbb = 0.d0
++        brsb2sb1tt = 0.d0
++        brsb2sb1uu = 0.d0
++        brsb2sb1dd = 0.d0
++        brsb2sb1ee = 0.d0
++        brsb2sb1nunu = 0.d0
++        brsb2sb1tautau = 0.d0
++        sbottot = 0.d0
++        brsellneute = 0.d0
++        brsellcharnue = 0.d0
++        brselrneute = 0.d0
++        brselrcharnue = 0.d0
++        selltot2 = 0.d0
++        selrtot2 = 0.d0
++        brsnellneut = 0.d0
++        brsnellchar = 0.d0
++        sneltot2 = 0.d0
++        brstau1neut = 0.d0
++        brstau2neut = 0.d0
++        brstau1char = 0.d0
++        brstau1hcsn = 0.d0
++        brstau1wsn = 0.d0
++        brstau2char = 0.d0
++        brstau2hcsn = 0.d0
++        brstau2wsn = 0.d0
++        brstau2hl = 0.d0
++        brstau2hh = 0.d0
++        brstau2ha = 0.d0
++        brstau2ztau = 0.d0
++        brstautaugrav = 0.d0
++        stau1tot2 = 0.d0
++        stau2tot2 = 0.d0
++        brsntauneut = 0.d0
++        brsntauchar = 0.d0
++        brsntau1wstau = 0.d0
++        brsntau1hcstau = 0.d0
++        sntautot2 = 0.d0
++        brtopbw = 0.d0
++        brtopbh = 0.d0
++        brtopneutrstop = 0.d0
++        toptot2 = 0.d0
++
+       endif
+ c---- end ramona chnaged
+ c -- The following flags are not read in any more but hard-coded for - c
+@@ -747,7 +1133,11 @@ c -- the 2-body decays and 2-body total
+          do i=1,2,1
+             chartot2nlo(i) = chartot2lo(i)+qcdcharst1(i)+qcdcharst2(i)+
+      .           qcdcharsb1(i)+qcdcharsb2(i)+2.D0*(qcdcharsupl(i)+
+-     .           qcdcharsupr(i)+qcdcharsdownl(i)+qcdcharsdownr(i)) 
++     .           qcdcharsupr(i)+qcdcharsdownl(i)+qcdcharsdownr(i))
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++            qcdcorrchok(i) = chartot2nlo(i) .ge. 0.D0
++            if (.not.qcdcorrchok(i)) chartot2nlo(i) =
++     .       chartot2lo(i) / (2.D0 - chartot2nlo(i) / chartot2lo(i)) 
+          end do
+       endif
+ 
+@@ -821,6 +1211,46 @@ c ------------------------ the total wid
+ 
+ c -------------------- the chargino branching ratios ----------------- c
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      do i=1,2,1
++         if(.not.qcdcorrchok(i)) then
++            brcharst1(i)    = charst1(i)/chartot2lo(i)
++            brcharst2(i)    = charst2(i)/chartot2lo(i)
++            brcharsb1(i)    = charsb1(i)/chartot2lo(i)
++            brcharsb2(i)    = charsb2(i)/chartot2lo(i)
++            brcharsupl(i)   = charsupl(i)/chartot2lo(i)
++            brcharsupr(i)   = charsupr(i)/chartot2lo(i)
++            brcharsdownl(i) = charsdownl(i)/chartot2lo(i)
++            brcharsdownr(i) = charsdownr(i)/chartot2lo(i)
++            brcharsnel(i)   = charsnel(i)/chartot2lo(i)
++            brcharsn1(i)    = charsn1(i)/chartot2lo(i)
++            brcharsn2(i)    = charsn2(i)/chartot2lo(i)
++            brcharsell(i)   = charsell(i)/chartot2lo(i)
++            brcharselr(i)   = charselr(i)/chartot2lo(i)
++            brcharstau1(i)  = charstau1(i)/chartot2lo(i)
++            brcharstau2(i)  = charstau2(i)/chartot2lo(i)
++            do j=1,4,1
++               brcharhcneut(i,j) = charhcneut(i,j)/chartot2lo(i)
++               brcharwneut(i,j)  = charwneut(i,j)/chartot2lo(i)
++            end do
++        endif
++      end do
++      if(.not.qcdcorrchok(2)) then
++         brcharzchic  = char2zchic1/chartot2lo(2)
++         brcharhlchic = char2hlchic1/chartot2lo(2)
++         brcharhhchic = char2hhchic1/chartot2lo(2)
++         brcharhachic = char2hachic1/chartot2lo(2)
++      endif
++
++      if(flagnlspgmsb.eq.1.D0) then
++         do i=1,2,1
++            if(.not.qcdcorrchok(i)) then
++               brcharwgravitino(i)  = charwgravitino(i)/chartot2lo(i)
++               brcharhcgravitino(i) = charhcgravitino(i)/chartot2lo(i)
++            endif
++         end do
++      endif
++
+ c -- for the 2-body decays --
+ 
+       if(flagqcd.eq.1.D0)  then
+@@ -837,6 +1267,7 @@ c -- for the 2-body decays --
+       endif
+ 
+       do i=1,2,1
++         if(qcdcorrchok(i)) then                                     !Added by GAMBIT
+          brcharst1(i)    = charst1(i)/chartot(i)
+          brcharst2(i)    = charst2(i)/chartot(i)
+          brcharsb1(i)    = charsb1(i)/chartot(i)
+@@ -852,20 +1283,27 @@ c -- for the 2-body decays --
+          brcharselr(i)   = charselr(i)/chartot(i)
+          brcharstau1(i)  = charstau1(i)/chartot(i)
+          brcharstau2(i)  = charstau2(i)/chartot(i)
++         endif                                                       !Added by GAMBIT
+          do j=1,4,1
++         if(qcdcorrchok(i)) then                                     !Added by GAMBIT
+             brcharhcneut(i,j) = charhcneut(i,j)/chartot(i)
+             brcharwneut(i,j)  = charwneut(i,j)/chartot(i)
++         endif                                                       !Added by GAMBIT
+          end do
+       end do
++      if(qcdcorrchok(2)) then                                        !Added by GAMBIT
+       brcharzchic  = char2zchic1/chartot(2)
+       brcharhlchic = char2hlchic1/chartot(2)
+       brcharhhchic = char2hhchic1/chartot(2)
+       brcharhachic = char2hachic1/chartot(2)
++      endif                                                          !Added by GAMBIT
+ 
+       if(flagnlspgmsb.eq.1.D0) then
+          do i=1,2,1
++         if(qcdcorrchok(i)) then                                     !Added by GAMBIT
+             brcharwgravitino(i)  = charwgravitino(i)/chartot(i)
+             brcharhcgravitino(i) = charhcgravitino(i)/chartot(i)
++         endif                                                       !Added by GAMBIT
+          end do
+       endif
+ 
+@@ -874,6 +1312,8 @@ c -- for the 3-body decays --
+       do i=1,2,1
+          if(chartot2(i).eq.0.D0.and.flagmulti.eq.1.D0) then
+             do j=1,4,1
++               write(*,*) 'Yo I am setting your 3 bodies man...'
++               stop
+                brntaunut(i,j) = xchitau(i,j)/chartot(i)
+                brnelnue(i,j)  = xchiel(i,j)/chartot(i)
+                brnmunumu(i,j) = xchimu(i,j)/chartot(i)
+@@ -1307,6 +1747,11 @@ c -- the 2-body decays and 2-body total
+      .                   +2.D0*qcdgsupr+2.D0*qcdgsdownl+2.D0*qcdgsdownr)
+      .            + gluitot2lo
+ 
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++      qcdcorrglok = gluitot2nlo .ge. 0.D0
++      if (.not.qcdcorrglok) gluitot2nlo =
++     . gluitot2lo / (2.D0 - gluitot2nlo / gluitot2lo)
++
+       if(flagqcd.eq.0.D0) then
+          gluitot2 = gluitot2lo
+       elseif(flagqcd.eq.1.D0) then
+@@ -1380,6 +1825,18 @@ c ------------------------ the total wid
+ 
+ c -------------------- the gluino branching ratios ------------------- c
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrglok) then
++        brgst1    = gst1/gluitot2lo
++        brgst2    = gst2/gluitot2lo
++        brgsb1    = gsb1/gluitot2lo
++        brgsb2    = gsb2/gluitot2lo
++        brgsupl   = gsupl/gluitot2lo
++        brgsupr   = gsupr/gluitot2lo
++        brgsdownl = gsdownl/gluitot2lo
++        brgsdownr = gsdownr/gluitot2lo
++      endif
++
+ c -- for the 2-body decays --
+ 
+       if(flagqcd.eq.1.D0) then
+@@ -1393,14 +1850,14 @@ c -- for the 2-body decays --
+          gsdownr = gsdownr+qcdgsdownr
+       endif
+ 
+-      brgst1    = gst1/gluitot
+-      brgst2    = gst2/gluitot
+-      brgsb1    = gsb1/gluitot
+-      brgsb2    = gsb2/gluitot
+-      brgsupl   = gsupl/gluitot
+-      brgsupr   = gsupr/gluitot
+-      brgsdownl = gsdownl/gluitot
+-      brgsdownr = gsdownr/gluitot
++      if (qcdcorrglok) brgst1    = gst1/gluitot      !Modified by GAMBIT
++      if (qcdcorrglok) brgst2    = gst2/gluitot      !Modified by GAMBIT
++      if (qcdcorrglok) brgsb1    = gsb1/gluitot      !Modified by GAMBIT
++      if (qcdcorrglok) brgsb2    = gsb2/gluitot      !Modified by GAMBIT
++      if (qcdcorrglok) brgsupl   = gsupl/gluitot     !Modified by GAMBIT
++      if (qcdcorrglok) brgsupr   = gsupr/gluitot     !Modified by GAMBIT
++      if (qcdcorrglok) brgsdownl = gsdownl/gluitot   !Modified by GAMBIT
++      if (qcdcorrglok) brgsdownr = gsdownr/gluitot   !Modified by GAMBIT
+ 
+       if(flagnlspgmsb.eq.1.D0) then
+          brggravgl = ggravgl/gluitot
+@@ -1714,6 +2171,14 @@ c -- the 2-body decays and 2-body total
+      .            qcdst2hl+qcdst2hh+qcdst2ha+qcdst2ztop+qcdst2wsb(1)+
+      .            qcdst2wsb(2)
+ 
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++      do i = 1,2,1
++         qcdcorrstok(i) = stoptot2nlo(i) .ge. 0.D0
++         if (.not.qcdcorrstok(i)) stoptot2nlo(i) =
++     .    stoptot2lo(i) / (2.D0 - stoptot2nlo(i) / stoptot2lo(i))
++      enddo
++
++
+       if(flagqcd.eq.0.D0) then
+          do i=1,2,1
+             stoptot2(i) = stoptot2lo(i)
+@@ -1818,7 +2283,8 @@ c ------------------------ the total wid
+             if(stoptotmulti(1).ne.0.D0) then
+                stoptot(1) = stoptotmulti(1)+stoptotrad(1)
+             else
+-               stoptot(1) = sigma4bodtot+stoptotrad(1)
++               stoptot(1) = stoptotrad(1)
++               if (sigma4bodtot.gt.0.D0) stoptot(1) = stoptot(1) + sigma4bodtot
+             endif
+          else
+             stoptot(1) = stoptot2(1)
+@@ -1837,6 +2303,39 @@ c ------------------------ the total wid
+ 
+ c ---------------------- the stop branching ratios ------------------- c
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrstok(1)) then
++
++        do i=1,4,1
++           brst1neutt(i) = st1neutt(i)/stoptot2lo(1)
++        end do
++        do i=1,2,1
++           brst1charb(i) = st1charb(i)/stoptot2lo(1)
++           brst1hcsb(i)  = st1hcsb(i)/stoptot2lo(1)
++           brst1wsb(i)   = st1wsb(i)/stoptot2lo(1)
++        end do
++        brst1glui = st1glui/stoptot2lo(1)
++
++      endif
++
++      if(.not.qcdcorrstok(2)) then
++
++        do i=1,4,1
++           brst2neutt(i) = st2neutt(i)/stoptot2lo(2)
++        end do
++        do i=1,2,1
++           brst2charb(i) = st2charb(i)/stoptot2lo(2)
++           brst2hcsb(i)  = st2hcsb(i)/stoptot2lo(2)
++           brst2wsb(i)   = st2wsb(i)/stoptot2lo(2)
++        end do
++        brst2glui = st2glui/stoptot2lo(2)
++        brst2hl   = st2hl/stoptot2lo(2)
++        brst2hh   = st2hh/stoptot2lo(2)
++        brst2ha   = st2ha/stoptot2lo(2)
++        brst2ztop = st2ztop/stoptot2lo(2)
++
++      endif
++
+ c -- for the 2-body decays --
+ 
+       if(flagqcd.eq.1.D0) then
+@@ -1861,23 +2360,23 @@ c -- for the 2-body decays --
+       endif
+ 
+       do i=1,4,1
+-         brst1neutt(i) = st1neutt(i)/stoptot(1)
+-         brst2neutt(i) = st2neutt(i)/stoptot(2)
++         if(qcdcorrstok(1)) brst1neutt(i) = st1neutt(i)/stoptot(1)   !Modified by GAMBIT
++         if(qcdcorrstok(2)) brst2neutt(i) = st2neutt(i)/stoptot(2)   !Modified by GAMBIT
+       end do
+       do i=1,2,1
+-         brst1charb(i) = st1charb(i)/stoptot(1)
+-         brst1hcsb(i)  = st1hcsb(i)/stoptot(1)
+-         brst1wsb(i)   = st1wsb(i)/stoptot(1)
+-         brst2charb(i) = st2charb(i)/stoptot(2)
+-         brst2hcsb(i)  = st2hcsb(i)/stoptot(2)
+-         brst2wsb(i)   = st2wsb(i)/stoptot(2)
+-      end do
+-      brst1glui = st1glui/stoptot(1)
+-      brst2glui = st2glui/stoptot(2)
+-      brst2hl   = st2hl/stoptot(2)
+-      brst2hh   = st2hh/stoptot(2)
+-      brst2ha   = st2ha/stoptot(2)
+-      brst2ztop = st2ztop/stoptot(2)
++         if(qcdcorrstok(1)) brst1charb(i) = st1charb(i)/stoptot(1)   !Modified by GAMBIT
++         if(qcdcorrstok(1)) brst1hcsb(i)  = st1hcsb(i)/stoptot(1)    !Modified by GAMBIT
++         if(qcdcorrstok(1)) brst1wsb(i)   = st1wsb(i)/stoptot(1)     !Modified by GAMBIT
++         if(qcdcorrstok(2)) brst2charb(i) = st2charb(i)/stoptot(2)   !Modified by GAMBIT
++         if(qcdcorrstok(2)) brst2hcsb(i)  = st2hcsb(i)/stoptot(2)    !Modified by GAMBIT
++         if(qcdcorrstok(2)) brst2wsb(i)   = st2wsb(i)/stoptot(2)     !Modified by GAMBIT
++      end do
++      if(qcdcorrstok(1)) brst1glui = st1glui/stoptot(1)              !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2glui = st2glui/stoptot(2)              !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2hl   = st2hl/stoptot(2)                !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2hh   = st2hh/stoptot(2)                !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2ha   = st2ha/stoptot(2)                !Modified by GAMBIT
++      if(qcdcorrstok(2)) brst2ztop = st2ztop/stoptot(2)              !Modified by GAMBIT
+ 
+ c -- for the 3-body and loop decays --
+ 
+@@ -2043,6 +2542,14 @@ c -- the 2-body decays and 2-body total
+      .               qcdsb2hcst(2)+qcdsb2hl+qcdsb2hh+qcdsb2ha +
+      .               qcdsb2zbot+qcdsb2wst(1)+qcdsb2wst(2)
+ 
++c --- PS added: when QCD corrections are <-100%, use as 1/(1-correction) instead of 1+correction
++      do i = 1,2,1
++         qcdcorrsbok(i) = sbottot2nlo(i) .ge. 0.D0
++         if (.not.qcdcorrsbok(i)) sbottot2nlo(i) =
++     .    sbottot2lo(i) / (2.D0 - sbottot2nlo(i) / sbottot2lo(2))
++      enddo
++
++
+       if(flagqcd.eq.0.D0) then
+          do i=1,2,1
+             sbottot2(i) = sbottot2lo(i)
+@@ -2101,6 +2608,39 @@ c ------------------------ the total wid
+ 
+ c --------------------- the sbottom branching ratios ----------------- c
+ 
++c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
++      if(.not.qcdcorrsbok(1)) then
++
++        do i=1,4,1
++           brsb1neutt(i) = sb1neutt(i)/sbottot2lo(1)
++        end do
++        do i=1,2,1
++           brsb1chart(i) = sb1chart(i)/sbottot2lo(1)
++           brsb1hcst(i)  = sb1hcst(i)/sbottot2lo(1)
++           brsb1wst(i)   = sb1wst(i)/sbottot2lo(1)
++        end do
++        brsb1glui = sb1glui/sbottot2lo(1)
++
++      endif
++
++      if(.not.qcdcorrsbok(2)) then
++
++        do i=1,4,1
++           brsb2neutt(i) = sb2neutt(i)/sbottot2lo(2)
++        end do
++        do i=1,2,1
++           brsb2chart(i) = sb2chart(i)/sbottot2lo(2)
++           brsb2hcst(i)  = sb2hcst(i)/sbottot2lo(2)
++           brsb2wst(i)   = sb2wst(i)/sbottot2lo(2)
++        end do
++        brsb2glui = sb2glui/sbottot2lo(2)
++        brsb2hl   = sb2hl/sbottot2lo(2)
++        brsb2hh   = sb2hh/sbottot2lo(2)
++        brsb2ha   = sb2ha/sbottot2lo(2)
++        brsb2zbot = sb2zbot/sbottot2lo(2)
++
++      endif
++
+ c -- for the 2-body decays --
+ 
+       if(flagqcd.eq.1.D0) then
+@@ -2125,23 +2665,23 @@ c -- for the 2-body decays --
+       endif
+ 
+       do i=1,4,1
+-         brsb1neutt(i)=sb1neutt(i)/sbottot2(1)
+-         brsb2neutt(i)=sb2neutt(i)/sbottot2(2)
++         if(qcdcorrsbok(1)) brsb1neutt(i)=sb1neutt(i)/sbottot2(1)    !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2neutt(i)=sb2neutt(i)/sbottot2(2)    !Modified by GAMBIT
+       end do
+       do i=1,2,1
+-         brsb1chart(i) = sb1chart(i)/sbottot2(1)
+-         brsb2chart(i) = sb2chart(i)/sbottot2(2)
+-         brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)
+-         brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)
+-         brsb1wst(i)   = sb1wst(i)/sbottot2(1)
+-         brsb2wst(i)   = sb2wst(i)/sbottot2(2)
+-      end do
+-      brsb1glui = sb1glui/sbottot2(1)
+-      brsb2glui = sb2glui/sbottot2(2)
+-      brsb2hl   = sb2hl/sbottot2(2)
+-      brsb2hh   = sb2hh/sbottot2(2)
+-      brsb2ha   = sb2ha/sbottot2(2)
+-      brsb2zbot = sb2zbot/sbottot2(2)
++         if(qcdcorrsbok(1)) brsb1chart(i) = sb1chart(i)/sbottot2(1)  !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2chart(i) = sb2chart(i)/sbottot2(2)  !Modified by GAMBIT
++         if(qcdcorrsbok(1)) brsb1hcst(i)  = sb1hcst(i)/sbottot2(1)   !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2hcst(i)  = sb2hcst(i)/sbottot2(2)   !Modified by GAMBIT
++         if(qcdcorrsbok(1)) brsb1wst(i)   = sb1wst(i)/sbottot2(1)    !Modified by GAMBIT
++         if(qcdcorrsbok(2)) brsb2wst(i)   = sb2wst(i)/sbottot2(2)    !Modified by GAMBIT
++      end do
++      if(qcdcorrsbok(1)) brsb1glui = sb1glui/sbottot2(1)             !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2glui = sb2glui/sbottot2(2)             !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2hl   = sb2hl/sbottot2(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2hh   = sb2hh/sbottot2(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2ha   = sb2ha/sbottot2(2)               !Modified by GAMBIT
++      if(qcdcorrsbok(2)) brsb2zbot = sb2zbot/sbottot2(2)             !Modified by GAMBIT
+ 
+ c -- for the 3-body decays --
+ 
+@@ -2533,8 +3073,8 @@ c --------------------------------------
+ 
+ 
+ c---- ramona chnaged 27/5/13--- flavour violation only with SLHA Output so far
+-      if((flagoutput.eq.1.D0).or.(ifavvio.eq.1)) then
+-!      if(flagoutput.eq.1.D0) then
++c      if((flagoutput.eq.1.D0).or.(ifavvio.eq.1)) then !Commented out by GAMBIT.
++      if(flagoutput.eq.1.D0) then                !Reinstated by GAMBIT.
+ c---- end ramona changed
+ c ------------------ output a la Les Houches accord ------------------ c
+ 
+@@ -8392,7 +8932,7 @@ c      write(nout,102) bhcgd(2),2,ic2,ig
+ 
+ c ---------------- output not a la Les Houches accord ---------------- c
+ 
+-      else
++      elseif(flagoutput.eq.0.D0) then            !Modified by GAMBIT.
+ 
+       write(21,*)
+       write(21,*) "                              ======================"
+@@ -11767,8 +12307,8 @@ c------ ramona chnaged 27/5/13
+      . usqmix(6,6), dsqmix(6,6), amsneutrino(3)
+        integer ifavvio
+       COMMON/msfermion/amsupq, amsdownq, amslepton, amsneutrino
+-            COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++      COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
++     .tu, usqmix, dsqmix, ifavvio
+ c------end ramona chnaged
+ c -------------- common block given by SD_read_leshouches ------------ c
+       COMMON/SD_leshouches1/spinfo1,spinfo2,modselval,mincom,extcom,
+@@ -12190,7 +12730,7 @@ c -- mb(mb)_MSbar --
+          call SD_runmbmb(amzp,runmbz)
+       endif
+ 
+-      if(flagshsin.eq.1.D0) then
++      if(flagshsin.le.1.D0) then                 !Modified by GAMBIT.
+          samb = massval(34)
+       endif
+ 
+@@ -12465,7 +13005,7 @@ c---- end ramona changed
+       common/SD_selectron/selmix
+ c----ramona changed 7/6/13
+             COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+ c---- end ramona chnaged
+ c -- i_sd_mbmb = 0 ensures that the routine is called which calulates --
+ c -- the mbpole mass from mb(mb)_MSbar = smval(5)                 --
+@@ -15618,7 +16158,7 @@ c---------------------------------------
+       double precision sinbeta,alsew,g2ew,g1ew, ams, amc
+       COMMON/SD_param/sdgf,amz,amw,pi,g2
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/msfermion/ amsupq, amsdownq, amslepton, amsneutrino
+       COMMON/SD_weinberg/sw,cw
+       COMMON/SD_mixang/alp_mssm,tanbeta
+@@ -15666,7 +16206,7 @@ c---------------------------------------
+      . usqmix(6,6), dsqmix(6,6)
+       double precision g3, left, right
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+      	common/alfas/g3
+          
+ 	left=(g3*Usqmix(j, i)/dSqrt(2d0))
+@@ -15685,7 +16225,7 @@ c----- quartic sup coupling for flavor v
+      . usqmix(6,6), dsqmix(6,6)
+       double precision g3
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       common/alfas/g3
+ 	 coupfavquartic=1d0/12d0*g3**2*(
+      -     ((USQMIX(j,1))*USQMIX(iint,1) + 
+@@ -29742,7 +30282,7 @@ c---end ramona changed
+      
+       COMMON/SD_refscale/amuref
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/msfermion/amsupq, amsdownq, amslepton, amsneutrino
+       COMMON/SD_param/gf,amz,amw,pi,g2
+       COMMON/SD_massgino/amneut,xmneut,amchar,xmchar
+@@ -29838,7 +30378,7 @@ c---end ramona changed
+      
+       COMMON/SD_refscale/amuref
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/msfermion/amsupq, amsdownq, amslepton, amsneutrino
+       COMMON/SD_param/gf,amz,amw,pi,g2
+       COMMON/SD_massgino/amneut,xmneut,amchar,xmchar
+@@ -37107,14 +37647,14 @@ c --------------------------------------
+       AXX=SD_AX(xmu1,xmu2,xmu3)
+       BXX=SD_BX(xmu1,xmu2,xmu3)
+ 
+-      CALL SD_GAUS(NX,AXX,BXX,RX,WX)
++      CALL SD_GAUS(NX,AXX,BXX,RX,WX,1000)
+       SX=0.D0
+       DO  1 K=1,NX
+          X=RX(K)
+          AYX=SD_AY(xmu1,xmu2,xmu3,X)
+          BYX=SD_BY(xmu1,xmu2,xmu3,X)
+ 
+-         CALL SD_GAUS(NY,AYX,BYX,RY,WY)
++         CALL SD_GAUS(NY,AYX,BYX,RY,WY,1000)
+          SY=0.D0
+          DO 2 J=1,NY
+ 
+@@ -37129,7 +37669,7 @@ c --------------------------------------
+ 
+ c -------------------------------------------------------------------- c
+ 
+-      SUBROUTINE SD_GAUS(N,A,B,X,W)
++      SUBROUTINE SD_GAUS(N,A,B,X,W,LENGTH)
+ C     GAUSS-LEGENDRE INTEGRATION FROM A TO B (WEIGHT = 1.)
+ C     CALCULATES GAUSSIAN POINTS X AND WEIGHTS W
+ C                      FOR N=4,6,8,12,16,24,32 ;
+@@ -37138,7 +37678,7 @@ C     THE INTERVAL [A,B] AND N INTO CORR
+ C     N MUST BE EVEN AND >= 4,IF IT IS NOT,IT IS CHANGED !
+ C
+       IMPLICIT REAL*8 (A-H,O-Z)
+-      DIMENSION XG(16,7),DG(16,7),YG(16),EG(16),X(1),W(1),NI(7),NG(7)
++      DIMENSION XG(16,7),DG(16,7),YG(16),EG(16),X(LENGTH),W(LENGTH),NI(7),NG(7)
+       DATA NBEG,NA,NI,NG /9*0,4,6,8,12,16,24,32/
+       DATA XG/ .43056815579702629D 0, .16999052179242813D 0, 14*0.D0,
+      X         .46623475710157601D 0, .33060469323313226D 0,
+@@ -37715,7 +38255,7 @@ c---------------------------------------
+       double precision sinbeta,alsew,g2ew,g1ew
+       COMMON/SD_param/sdgf,amz,amw,pi,g2
+       COMMON/flavviolation/vckm, msq2, msd2, msu2, td, 
+-     .tu, usqmix, ifavvio, dsqmix
++     .tu, usqmix, dsqmix, ifavvio
+       COMMON/msfermion/ amsupq, amsdownq, amslepton, amsneutrino
+       COMMON/SD_weinberg/sw,cw
+       COMMON/SD_mixang/alp_mssm,tanbeta

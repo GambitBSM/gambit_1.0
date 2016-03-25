@@ -314,9 +314,9 @@ namespace Gambit {
                                              else return !random_bool(_eff_E80, e_eta);
                                            } );
         // vectors erase most efficiently from the end...
-        // no delete is necessary, because erase destroys the elements it removes
+        // no delete is necessary, because we are only forgetting a pointer owned by the original event.
         while (keptElectronsEnd != electrons.end())
-          electrons.erase(--electrons.end());
+          electrons.pop_back();
 
 /** @TODO: compare my lambda function above to the original code.... The original code said "keep"
            while I am doing "remove_if", so I negated every boolean with !.
@@ -447,9 +447,9 @@ namespace Gambit {
                                              else return !random_bool(_eff_E80, e_eta);
                                            } );
         // vectors erase most efficiently from the end...
-        // no delete is necessary, because erase destroys the elements it removes
+        // no delete is necessary, because we are only forgetting a pointer owned by the original event.
         while (keptElectronsEnd != electrons.end())
-          electrons.erase(--electrons.end());
+          electrons.pop_back();
 
       }
 

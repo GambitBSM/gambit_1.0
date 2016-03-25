@@ -559,6 +559,11 @@ START_MODULE
     START_FUNCTION(DecayTable)
     #undef FUNCTION
 
+    #define FUNCTION all_decays_as_SLHA
+    START_FUNCTION(str)
+    DEPENDENCY(decay_rates, DecayTable)
+    #undef FUNCTION
+
     #define FUNCTION all_decays
     START_FUNCTION(DecayTable)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 

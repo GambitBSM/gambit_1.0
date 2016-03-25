@@ -32,6 +32,7 @@
 
 #include "gambit/Elements/sminputs.hpp"
 #include "gambit/Elements/spec.hpp"
+#include "gambit/Models/SpectrumContents/RegisteredSpectra.hpp"
 
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 
@@ -46,6 +47,8 @@ namespace Gambit
    template <>
    struct SpecTraits<SpecBit::QedQcdWrapper> 
    {
+      static std::string name() { return "QedQcdWrapper"; }
+      typedef SpectrumContents::SM Contents;
       typedef softsusy::QedQcd Model;
       typedef SMInputs         Input;
    };
@@ -71,7 +74,6 @@ namespace Gambit
             const Model& get_Model() const { return qedqcd; }
             const Input& get_Input() const { return sminputs; }
 
-            virtual int get_index_offset() const;  /***/   
             virtual int get_numbers_stable_particles() const;  /***/
    
             /// Add QEDQCD information to an SLHAea object

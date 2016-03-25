@@ -20,12 +20,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Event : public WrapperBase<Pythia8::Abstract_Event>
+        class Event : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Event> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Event>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -36,9 +32,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, int startColTagIn);
+                void init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, Pythia8::ParticleData* particleDataPtrIn, int startColTagIn);
         
-                void init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn);
+                void init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn, Pythia8::ParticleData* particleDataPtrIn);
         
                 void init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > headerIn);
         
@@ -60,7 +56,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int size() const;
         
-                int append(WrapperBase< Pythia8::Abstract_Particle > entryIn);
+                int append(Pythia8::Particle entryIn);
         
                 int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn, double polIn);
         
@@ -70,13 +66,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, double px, double py, double pz, double e);
         
-                int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn, double polIn);
+                int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, Pythia8::Vec4 p, double m, double scaleIn, double polIn);
         
-                int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn);
+                int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, Pythia8::Vec4 p, double m, double scaleIn);
         
-                int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m);
+                int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, Pythia8::Vec4 p, double m);
         
-                int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p);
+                int append(int id, int status, int mother1, int mother2, int daughter1, int daughter2, int col, int acol, Pythia8::Vec4 p);
         
                 int append(int id, int status, int col, int acol, double px, double py, double pz, double e, double m, double scaleIn, double polIn);
         
@@ -86,13 +82,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int append(int id, int status, int col, int acol, double px, double py, double pz, double e);
         
-                int append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn, double polIn);
+                int append(int id, int status, int col, int acol, Pythia8::Vec4 p, double m, double scaleIn, double polIn);
         
-                int append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m, double scaleIn);
+                int append(int id, int status, int col, int acol, Pythia8::Vec4 p, double m, double scaleIn);
         
-                int append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p, double m);
+                int append(int id, int status, int col, int acol, Pythia8::Vec4 p, double m);
         
-                int append(int id, int status, int col, int acol, WrapperBase< Pythia8::Abstract_Vec4 > p);
+                int append(int id, int status, int col, int acol, Pythia8::Vec4 p);
         
                 void setEvtPtr(int iSet);
         
@@ -158,7 +154,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void bst(double betaX, double betaY, double betaZ, double gamma);
         
-                void bst(const WrapperBase< Pythia8::Abstract_Vec4 >& vec);
+                void bst(const Pythia8::Vec4& vec);
         
                 void clearJunctions();
         
@@ -206,7 +202,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Event(Pythia8::Abstract_Event* in);
-                Event(Pythia8::Abstract_Event* const & in, bool);
         
                 // Copy constructor: 
                 Event(const Event& in);
@@ -215,11 +210,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Event& operator=(const Event& in);
         
                 // Destructor: 
-                ~Event();
+                virtual ~Event();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Event* get_BEptr() const;
         
         };
     }

@@ -2778,8 +2778,14 @@ namespace Gambit
 
       }
 
-      //cout << "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
+    }
 
+    /// Spit out the full decay table as an SLHA file and return the filename as result.
+    void all_decays_as_SLHA(str& filename)
+    {
+      using namespace Pipes::all_decays_as_SLHA;
+      filename = runOptions->getValueOrDef<str>("GAMBIT_decays.slha", "filename");
+      Dep::decay_rates->as_slha(filename);
     }
 
     /// Read an SLHA file in and use it to create a GAMBIT DecayTable

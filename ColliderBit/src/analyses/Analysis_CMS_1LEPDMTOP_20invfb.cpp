@@ -3,6 +3,8 @@
 #include <memory>
 #include <iomanip>
 
+#include <iostream>
+
 #include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/mt2w.h"

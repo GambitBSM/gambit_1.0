@@ -15,12 +15,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class AlphaEM : public WrapperBase<Pythia8::Abstract_AlphaEM>
+        class AlphaEM : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_AlphaEM> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_AlphaEM>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -30,7 +26,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void init(int orderIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtr);
+                void init(int orderIn, Pythia8::Settings* settingsPtr);
         
                 double alphaEM(double scale2);
         
@@ -41,7 +37,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 AlphaEM(Pythia8::Abstract_AlphaEM* in);
-                AlphaEM(Pythia8::Abstract_AlphaEM* const & in, bool);
         
                 // Copy constructor: 
                 AlphaEM(const AlphaEM& in);
@@ -50,11 +45,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 AlphaEM& operator=(const AlphaEM& in);
         
                 // Destructor: 
-                ~AlphaEM();
+                virtual ~AlphaEM();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_AlphaEM* get_BEptr() const;
         
         };
     }

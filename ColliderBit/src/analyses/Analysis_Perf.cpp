@@ -151,7 +151,6 @@ namespace Gambit {
       void analyze(const HEPUtils::Event* event) {
         HEPUtilsAnalysis::analyze(event);
 
-
         // Now define vectors of baseline objects
         vector<HEPUtils::Particle*> baselineElectrons;
         for (HEPUtils::Particle* electron : event->electrons()) {

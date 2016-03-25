@@ -12,7 +12,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::LHdecayTable*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::LHdecayTable*);
+
+
+// Forward declaration for wrapper_creator.
+void wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_LHdecayTable*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -21,7 +29,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_LHdecayTable : virtual public AbstractBase
+        class Abstract_LHdecayTable : public virtual AbstractBase
         {
             public:
     
@@ -52,35 +60,65 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual Pythia8::Abstract_LHdecayChannel* getChannel__BOSS(int) =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_LHdecayTable*) =0;
-                virtual Abstract_LHdecayTable* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_LHdecayTable*) =0;
+                virtual Abstract_LHdecayTable* pointer_copy__BOSS() =0;
     
             private:
-                mutable LHdecayTable* wptr;
+                LHdecayTable* wptr;
+                bool delete_wrapper;
+            public:
+                LHdecayTable* get_wptr() { return wptr; }
+                void set_wptr(LHdecayTable* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_LHdecayTable()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(LHdecayTable* wptr_in)
+                Abstract_LHdecayTable(const Abstract_LHdecayTable&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                LHdecayTable* wrapper__BOSS()
+                Abstract_LHdecayTable& operator=(const Abstract_LHdecayTable&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    if (wptr == 0)
+                    {
+                        wrapper_creator(this);
+                        delete_wrapper = true;
+                    }
+                }
+    
+                LHdecayTable* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                LHdecayTable& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_LHdecayTable()
                 {
-                    if (can_delete_wrapper())
+                    if (wptr != 0)
                     {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
+                        set_delete_BEptr(wptr, false);
+                        if (delete_wrapper == true)
+                        {
+                            wrapper_deleter(wptr);
+                            wptr = 0;
+                            delete_wrapper = false;
+                        }
                     }
                 }
         };

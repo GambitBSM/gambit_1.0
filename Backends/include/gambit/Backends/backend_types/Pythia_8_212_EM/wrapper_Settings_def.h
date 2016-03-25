@@ -15,413 +15,408 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void Settings::initPtr(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn)
+        inline void Settings::initPtr(Pythia8::Info* infoPtrIn)
         {
-            wrapperbase::BEptr->initPtr__BOSS((*infoPtrIn).BEptr);
+            get_BEptr()->initPtr__BOSS((*infoPtrIn).get_BEptr());
         }
         
         inline bool Settings::init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > startFile, bool append, ::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            return wrapperbase::BEptr->init(startFile, append, os);
+            return get_BEptr()->init(startFile, append, os);
         }
         
         inline bool Settings::init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > startFile, bool append)
         {
-            return wrapperbase::BEptr->init__BOSS(startFile, append);
+            return get_BEptr()->init__BOSS(startFile, append);
         }
         
         inline bool Settings::init(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > startFile)
         {
-            return wrapperbase::BEptr->init__BOSS(startFile);
+            return get_BEptr()->init__BOSS(startFile);
         }
         
         inline bool Settings::init()
         {
-            return wrapperbase::BEptr->init__BOSS();
+            return get_BEptr()->init__BOSS();
         }
         
         inline bool Settings::reInit(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > startFile, ::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            return wrapperbase::BEptr->reInit(startFile, os);
+            return get_BEptr()->reInit(startFile, os);
         }
         
         inline bool Settings::reInit(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > startFile)
         {
-            return wrapperbase::BEptr->reInit__BOSS(startFile);
+            return get_BEptr()->reInit__BOSS(startFile);
         }
         
         inline bool Settings::reInit()
         {
-            return wrapperbase::BEptr->reInit__BOSS();
+            return get_BEptr()->reInit__BOSS();
         }
         
         inline bool Settings::readString(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > line, bool warn, ::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            return wrapperbase::BEptr->readString(line, warn, os);
+            return get_BEptr()->readString(line, warn, os);
         }
         
         inline bool Settings::readString(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > line, bool warn)
         {
-            return wrapperbase::BEptr->readString__BOSS(line, warn);
+            return get_BEptr()->readString__BOSS(line, warn);
         }
         
         inline bool Settings::readString(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > line)
         {
-            return wrapperbase::BEptr->readString__BOSS(line);
+            return get_BEptr()->readString__BOSS(line);
         }
         
         inline bool Settings::readingFailed()
         {
-            return wrapperbase::BEptr->readingFailed();
+            return get_BEptr()->readingFailed();
         }
         
         inline bool Settings::writeFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > toFile, bool writeAll)
         {
-            return wrapperbase::BEptr->writeFile(toFile, writeAll);
+            return get_BEptr()->writeFile(toFile, writeAll);
         }
         
         inline bool Settings::writeFile(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > toFile)
         {
-            return wrapperbase::BEptr->writeFile__BOSS(toFile);
+            return get_BEptr()->writeFile__BOSS(toFile);
         }
         
         inline bool Settings::writeFile(::std::basic_ostream<char, std::char_traits<char> >& os, bool writeAll)
         {
-            return wrapperbase::BEptr->writeFile(os, writeAll);
+            return get_BEptr()->writeFile(os, writeAll);
         }
         
         inline bool Settings::writeFile(::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            return wrapperbase::BEptr->writeFile__BOSS(os);
+            return get_BEptr()->writeFile__BOSS(os);
         }
         
         inline bool Settings::writeFile()
         {
-            return wrapperbase::BEptr->writeFile__BOSS();
+            return get_BEptr()->writeFile__BOSS();
         }
         
         inline void Settings::listAll(::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            wrapperbase::BEptr->listAll(os);
+            get_BEptr()->listAll(os);
         }
         
         inline void Settings::listAll()
         {
-            wrapperbase::BEptr->listAll__BOSS();
+            get_BEptr()->listAll__BOSS();
         }
         
         inline void Settings::listChanged(::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            wrapperbase::BEptr->listChanged(os);
+            get_BEptr()->listChanged(os);
         }
         
         inline void Settings::listChanged()
         {
-            wrapperbase::BEptr->listChanged__BOSS();
+            get_BEptr()->listChanged__BOSS();
         }
         
         inline void Settings::list(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > match, ::std::basic_ostream<char, std::char_traits<char> >& os)
         {
-            wrapperbase::BEptr->list(match, os);
+            get_BEptr()->list(match, os);
         }
         
         inline void Settings::list(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > match)
         {
-            wrapperbase::BEptr->list__BOSS(match);
+            get_BEptr()->list__BOSS(match);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Settings::output(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, bool fullLine)
         {
-            return wrapperbase::BEptr->output(keyIn, fullLine);
+            return get_BEptr()->output(keyIn, fullLine);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Settings::output(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->output__BOSS(keyIn);
+            return get_BEptr()->output__BOSS(keyIn);
         }
         
         inline void Settings::resetAll()
         {
-            wrapperbase::BEptr->resetAll();
+            get_BEptr()->resetAll();
         }
         
         inline bool Settings::isFlag(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->isFlag(keyIn);
+            return get_BEptr()->isFlag(keyIn);
         }
         
         inline bool Settings::isMode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->isMode(keyIn);
+            return get_BEptr()->isMode(keyIn);
         }
         
         inline bool Settings::isParm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->isParm(keyIn);
+            return get_BEptr()->isParm(keyIn);
         }
         
         inline bool Settings::isWord(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->isWord(keyIn);
+            return get_BEptr()->isWord(keyIn);
         }
         
         inline bool Settings::isFVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->isFVec(keyIn);
+            return get_BEptr()->isFVec(keyIn);
         }
         
         inline bool Settings::isMVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->isMVec(keyIn);
+            return get_BEptr()->isMVec(keyIn);
         }
         
         inline bool Settings::isPVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->isPVec(keyIn);
+            return get_BEptr()->isPVec(keyIn);
         }
         
         inline void Settings::addFlag(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, bool defaultIn)
         {
-            wrapperbase::BEptr->addFlag(keyIn, defaultIn);
+            get_BEptr()->addFlag(keyIn, defaultIn);
         }
         
         inline void Settings::addMode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, int defaultIn, bool hasMinIn, bool hasMaxIn, int minIn, int maxIn, bool optOnlyIn)
         {
-            wrapperbase::BEptr->addMode(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn, optOnlyIn);
+            get_BEptr()->addMode(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn, optOnlyIn);
         }
         
         inline void Settings::addMode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, int defaultIn, bool hasMinIn, bool hasMaxIn, int minIn, int maxIn)
         {
-            wrapperbase::BEptr->addMode__BOSS(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn);
+            get_BEptr()->addMode__BOSS(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn);
         }
         
         inline void Settings::addParm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, double defaultIn, bool hasMinIn, bool hasMaxIn, double minIn, double maxIn)
         {
-            wrapperbase::BEptr->addParm(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn);
+            get_BEptr()->addParm(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn);
         }
         
         inline void Settings::addWord(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > defaultIn)
         {
-            wrapperbase::BEptr->addWord(keyIn, defaultIn);
+            get_BEptr()->addWord(keyIn, defaultIn);
         }
         
         inline void Settings::addFVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::vector<bool, std::allocator<bool> > defaultIn)
         {
-            wrapperbase::BEptr->addFVec(keyIn, defaultIn);
+            get_BEptr()->addFVec(keyIn, defaultIn);
         }
         
         inline void Settings::addMVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::vector<int, std::allocator<int> > defaultIn, bool hasMinIn, bool hasMaxIn, int minIn, int maxIn)
         {
-            wrapperbase::BEptr->addMVec(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn);
+            get_BEptr()->addMVec(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn);
         }
         
         inline void Settings::addPVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::vector<double, std::allocator<double> > defaultIn, bool hasMinIn, bool hasMaxIn, double minIn, double maxIn)
         {
-            wrapperbase::BEptr->addPVec(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn);
+            get_BEptr()->addPVec(keyIn, defaultIn, hasMinIn, hasMaxIn, minIn, maxIn);
         }
         
         inline bool Settings::flag(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->flag(keyIn);
+            return get_BEptr()->flag(keyIn);
         }
         
         inline int Settings::mode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->mode(keyIn);
+            return get_BEptr()->mode(keyIn);
         }
         
         inline double Settings::parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->parm(keyIn);
+            return get_BEptr()->parm(keyIn);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Settings::word(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->word(keyIn);
+            return get_BEptr()->word(keyIn);
         }
         
         inline ::std::vector<bool, std::allocator<bool> > Settings::fvec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->fvec(keyIn);
+            return get_BEptr()->fvec(keyIn);
         }
         
         inline ::std::vector<int, std::allocator<int> > Settings::mvec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->mvec(keyIn);
+            return get_BEptr()->mvec(keyIn);
         }
         
         inline ::std::vector<double, std::allocator<double> > Settings::pvec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->pvec(keyIn);
+            return get_BEptr()->pvec(keyIn);
         }
         
         inline bool Settings::flagDefault(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->flagDefault(keyIn);
+            return get_BEptr()->flagDefault(keyIn);
         }
         
         inline int Settings::modeDefault(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->modeDefault(keyIn);
+            return get_BEptr()->modeDefault(keyIn);
         }
         
         inline double Settings::parmDefault(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->parmDefault(keyIn);
+            return get_BEptr()->parmDefault(keyIn);
         }
         
         inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > Settings::wordDefault(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->wordDefault(keyIn);
+            return get_BEptr()->wordDefault(keyIn);
         }
         
         inline ::std::vector<bool, std::allocator<bool> > Settings::fvecDefault(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->fvecDefault(keyIn);
+            return get_BEptr()->fvecDefault(keyIn);
         }
         
         inline ::std::vector<int, std::allocator<int> > Settings::mvecDefault(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->mvecDefault(keyIn);
+            return get_BEptr()->mvecDefault(keyIn);
         }
         
         inline ::std::vector<double, std::allocator<double> > Settings::pvecDefault(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            return wrapperbase::BEptr->pvecDefault(keyIn);
+            return get_BEptr()->pvecDefault(keyIn);
         }
         
         inline void Settings::flag(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, bool nowIn)
         {
-            wrapperbase::BEptr->flag(keyIn, nowIn);
+            get_BEptr()->flag(keyIn, nowIn);
         }
         
         inline bool Settings::mode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, int nowIn)
         {
-            return wrapperbase::BEptr->mode(keyIn, nowIn);
+            return get_BEptr()->mode(keyIn, nowIn);
         }
         
         inline void Settings::parm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, double nowIn)
         {
-            wrapperbase::BEptr->parm(keyIn, nowIn);
+            get_BEptr()->parm(keyIn, nowIn);
         }
         
         inline void Settings::word(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > nowIn)
         {
-            wrapperbase::BEptr->word(keyIn, nowIn);
+            get_BEptr()->word(keyIn, nowIn);
         }
         
         inline void Settings::fvec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::vector<bool, std::allocator<bool> > nowIn)
         {
-            wrapperbase::BEptr->fvec(keyIn, nowIn);
+            get_BEptr()->fvec(keyIn, nowIn);
         }
         
         inline void Settings::mvec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::vector<int, std::allocator<int> > nowIn)
         {
-            wrapperbase::BEptr->mvec(keyIn, nowIn);
+            get_BEptr()->mvec(keyIn, nowIn);
         }
         
         inline void Settings::pvec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::vector<double, std::allocator<double> > nowIn)
         {
-            wrapperbase::BEptr->pvec(keyIn, nowIn);
+            get_BEptr()->pvec(keyIn, nowIn);
         }
         
         inline void Settings::forceMode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, int nowIn)
         {
-            wrapperbase::BEptr->forceMode(keyIn, nowIn);
+            get_BEptr()->forceMode(keyIn, nowIn);
         }
         
         inline void Settings::forceParm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, double nowIn)
         {
-            wrapperbase::BEptr->forceParm(keyIn, nowIn);
+            get_BEptr()->forceParm(keyIn, nowIn);
         }
         
         inline void Settings::forceMVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::vector<int, std::allocator<int> > nowIn)
         {
-            wrapperbase::BEptr->forceMVec(keyIn, nowIn);
+            get_BEptr()->forceMVec(keyIn, nowIn);
         }
         
         inline void Settings::forcePVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn, ::std::vector<double, std::allocator<double> > nowIn)
         {
-            wrapperbase::BEptr->forcePVec(keyIn, nowIn);
+            get_BEptr()->forcePVec(keyIn, nowIn);
         }
         
         inline void Settings::resetFlag(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            wrapperbase::BEptr->resetFlag(keyIn);
+            get_BEptr()->resetFlag(keyIn);
         }
         
         inline void Settings::resetMode(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            wrapperbase::BEptr->resetMode(keyIn);
+            get_BEptr()->resetMode(keyIn);
         }
         
         inline void Settings::resetParm(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            wrapperbase::BEptr->resetParm(keyIn);
+            get_BEptr()->resetParm(keyIn);
         }
         
         inline void Settings::resetWord(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            wrapperbase::BEptr->resetWord(keyIn);
+            get_BEptr()->resetWord(keyIn);
         }
         
         inline void Settings::resetFVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            wrapperbase::BEptr->resetFVec(keyIn);
+            get_BEptr()->resetFVec(keyIn);
         }
         
         inline void Settings::resetMVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            wrapperbase::BEptr->resetMVec(keyIn);
+            get_BEptr()->resetMVec(keyIn);
         }
         
         inline void Settings::resetPVec(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > keyIn)
         {
-            wrapperbase::BEptr->resetPVec(keyIn);
+            get_BEptr()->resetPVec(keyIn);
         }
         
         inline bool Settings::getIsInit()
         {
-            return wrapperbase::BEptr->getIsInit();
+            return get_BEptr()->getIsInit();
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::Settings::Settings() :
-            WrapperBase<Pythia8::Abstract_Settings>(__factory0())
+            WrapperBase(__factory0())
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Settings::Settings(Pythia8::Abstract_Settings* in) :
-            WrapperBase<Pythia8::Abstract_Settings>(in)
+            WrapperBase(in)
         {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-        }
-        
-        inline Pythia8::Settings::Settings(Pythia8::Abstract_Settings* const & in, bool) :
-            WrapperBase<Pythia8::Abstract_Settings>(in, true)
-        {
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Copy constructor: 
         inline Pythia8::Settings::Settings(const Settings& in) :
-            WrapperBase<Pythia8::Abstract_Settings>(in)
+            WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
         {
-            wrapperbase::BEptr->can_delete_me(true);
-            wrapperbase::BEptr->wrapper__BOSS(this);
-            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            get_BEptr()->set_wptr(this);
+            get_BEptr()->set_delete_wrapper(false);
         }
         
         // Assignment operator: 
         inline Pythia8::Settings& Settings::operator=(const Settings& in)
         {
-            WrapperBase<Pythia8::Abstract_Settings>::operator=(in);
+            if (this != &in)
+            {
+                get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+            }
             return *this;
         }
         
@@ -429,14 +424,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::Settings::~Settings()
         {
+            if (get_BEptr() != 0)
+            {
+                get_BEptr()->set_delete_wrapper(false);
+                if (can_delete_BEptr())
+                {
+                    delete BEptr;
+                    BEptr = 0;
+                }
+            }
+            set_delete_BEptr(false);
         }
         
-        
-        // Member variable initialiser: 
-        inline void Pythia8::Settings::_memberVariablesInit()
+        // Returns correctly casted pointer to Abstract class: 
+        inline Pythia8::Abstract_Settings* Pythia8::Settings::get_BEptr() const
         {
+            return dynamic_cast<Pythia8::Abstract_Settings*>(BEptr);
         }
-        
     }
     
 }

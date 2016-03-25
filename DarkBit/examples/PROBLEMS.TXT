@@ -1,0 +1,33 @@
+Things to be solved before release
+(CW 21/02/2016)
+
+1) Now we are ignoring MPI exception thrown in:
+      Backends/src/frontends/MicrOmegas.cpp
+      DarkBit/src/MSSM.cpp
+
+  Should MPI be explicitely initialized in standalone?
+
+2) Backend functions must be set active before backend initialization
+
+3) What to do if models should *not* be set and default values be used?
+
+4) Updates: Use general RD codes, code up all DD and IceCube likelihoods
+
+
+Dump:
+
+$ grep FIXME Backends/include/gambit/Backends/frontends/gamLike.hpp Backends/src/frontends/MicrOmegas.cpp  Backends/src/frontends/gamLike.cpp DarkBit/examples/DarkBit_standalone_example.cpp  DarkBit/src/MSSM.cpp DarkBit/src/Sloppy.cpp Elements/src/ini_functions.cpp
+Backends/src/frontends/MicrOmegas.cpp:        // FIXME: Throw reasonable error here?
+DarkBit/examples/DarkBit_standalone_example.cpp:  Backends::nulike_1_0_2::Functown::nulike_bounds.setStatus(2);  // FIXME: Not nice; Q: Alternatives?
+DarkBit/examples/DarkBit_standalone_example.cpp:  DarkSUSY_5_1_3_init.notifyOfModel("LocalHalo");  // FIXME: Q: What to do if we do *not* want to set LocalHalo?
+DarkBit/examples/DarkBit_standalone_example.cpp:  Backends::DDCalc0_0_0::Functown::DDCalc0_LUX_2013_CalcRates.setStatus(2);  // FIXME: Isn't there a smarter way?
+DarkBit/examples/DarkBit_standalone_example.cpp:  // FIXME: Use "general" version instead
+DarkBit/examples/DarkBit_standalone_example.cpp:  // Set generic annihilation rate in late universe (v->0 limit)  // FIXME: Check limit
+DarkBit/examples/DarkBit_standalone_example.cpp:  // FIXME: Code up other analyses
+DarkBit/examples/DarkBit_standalone_example.cpp:  // FIXME: Code up other analyses
+DarkBit/src/MSSM.cpp:        // FIXME: Should be done somewhere upstream
+DarkBit/src/MSSM.cpp:            // FIXME: Throw reasonable error here?
+DarkBit/src/MSSM.cpp:          result = true;  // FIXME: Need some error checks
+DarkBit/src/MSSM.cpp:// FIXME: Should be deprecated
+DarkBit/src/MSSM.cpp:      // FIXME: Get meson masses from somewhere
+DarkBit/src/MSSM.cpp:      // FIXME: This should return the lightest neutralino identifier
