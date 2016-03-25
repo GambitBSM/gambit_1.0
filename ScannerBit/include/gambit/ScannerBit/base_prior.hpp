@@ -39,11 +39,18 @@ namespace Gambit
         {
         private:
             unsigned int param_size;
+            
+        protected:
+            std::vector<std::string> param_names;
 
         public:
-            BasePrior() : param_size(0) {}
+            BasePrior() : param_size(0), param_names(0) {}
 
-            BasePrior(const int param_size) : param_size(param_size) {}
+            BasePrior(const int param_size) : param_size(param_size), param_names(0) {}
+            
+            BasePrior(const std::vector<std::string> &param_names, const int param_size = 0) : param_size(param_size), param_names(param_names) {}
+            
+            BasePrior(const std::string &param_name, const int param_size = 0) : param_size(param_size), param_names(1, param_name) {}
             
             virtual void transform(const std::vector<double> &, std::unordered_map<std::string, double> &) const = 0;
             
@@ -51,9 +58,11 @@ namespace Gambit
 
             inline unsigned int size() const {return param_size;}
             
-            inline void setSize(const unsigned int size){param_size = size;}
+            inline void setSize(const unsigned int size) {param_size = size;}
             
             inline unsigned int & sizeRef(){return param_size;}
+            
+            inline std::vector<std::string> getParameters() const {return param_names;}
 
             virtual ~BasePrior () {}
         };

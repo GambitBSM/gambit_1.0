@@ -192,8 +192,14 @@ int main(int argc, char* argv[])
         #endif
       );
  
+      //Make scanner yaml node
+      YAML::Node scanner_node;
+      scanner_node["Scanner"] = iniFile.getScannerNode();
+      scanner_node["Parameters"] = iniFile.getParametersNode();
+      scanner_node["Priors"] = iniFile.getPriorsNode();
+      
       //Create the master scan manager 
-      Scanner::Scan_Manager scan(&factory, iniFile, &printerManager);
+      Scanner::Scan_Manager scan(scanner_node, &printerManager, &factory);
 
       // Signal handing can be set to trigger a longjmp back to here upon receiving some signal
       signaldata().havejumped = setjmp(signaldata().env);

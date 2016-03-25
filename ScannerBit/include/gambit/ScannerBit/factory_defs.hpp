@@ -101,11 +101,12 @@ namespace Gambit
                 return ret_val;
             }
             
-            void setPurpose(const std::string p){purpose = p;}
-            void setPrinter(printer* p){main_printer = p;}
-            void setPrior(Priors::BasePrior *p){prior = p;}
-            printer &getPrinter(){return *main_printer;}
-            Priors::BasePrior &getPrior(){return *prior;}
+            void setPurpose(const std::string p) {purpose = p;}
+            void setPrinter(printer* p) {main_printer = p;}
+            void setPrior(Priors::BasePrior *p) {prior = p;}
+            printer &getPrinter() {return *main_printer;}
+            Priors::BasePrior &getPrior() {return *prior;}
+            std::vector<std::string> getParameters() {return prior->getParameters();}
             std::string getPurpose() const {return purpose;}
             int getRank() const {return rank;}
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}

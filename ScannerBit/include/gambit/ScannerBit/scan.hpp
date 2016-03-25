@@ -46,7 +46,7 @@ namespace Gambit
             bool has_local_factory;
 
         public:
-            Scan_Manager (const Factory_Base*, const IniParser::Parser &, printer_interface* = 0);
+            Scan_Manager (const YAML::Node &node, printer_interface*, const Factory_Base* factory = 0);
             ~Scan_Manager();
             int Run();                       
         };             

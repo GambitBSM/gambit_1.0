@@ -98,21 +98,21 @@ namespace Gambit
             class classFactory : public factoryBase
             {
             private:
-                    std::vector<T *> ptrs;
+                std::vector<T *> ptrs;
                     
             public:
-                    void *operator()()
-                    {
-                        T *ptr = new T;
-                        ptrs.push_back(ptr);
-                        return (void*) ptr;
-                    }
-                    
-                    ~classFactory()
-                    {
-                        for (auto it = ptrs.begin(), end = ptrs.end(); it != end; it++)
-                            delete *it;
-                    }
+                void *operator()()
+                {
+                    T *ptr = new T;
+                    ptrs.push_back(ptr);
+                    return (void*) ptr;
+                }
+                
+                ~classFactory()
+                {
+                    for (auto it = ptrs.begin(), end = ptrs.end(); it != end; it++)
+                        delete *it;
+                }
             };
             
             /// Structure that holds all the data provided by plugins about themselves.

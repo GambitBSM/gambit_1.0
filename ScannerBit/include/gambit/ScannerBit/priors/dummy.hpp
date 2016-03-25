@@ -29,11 +29,10 @@ namespace Gambit
         class Dummy : public BasePrior
         {
         private:
-            std::vector<std::string> param_names;
                 
         public: 
             // Constructor
-            Dummy(const std::vector<std::string>& param, const Options&) : BasePrior(param.size()), param_names(param)
+            Dummy(const std::vector<std::string>& param, const Options&) : BasePrior(param, param.size())
             { 
             }
             
@@ -50,10 +49,9 @@ namespace Gambit
         class None : public BasePrior
         {
         private:
-            std::vector<std::string> param_names;
                 
         public: 
-            None(const std::vector<std::string>& param, const Options&) : param_names(param)
+            None(const std::vector<std::string>& param, const Options&) : BasePrior(param)
             { 
             }
             

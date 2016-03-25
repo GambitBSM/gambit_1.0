@@ -254,28 +254,6 @@ namespace Gambit
       //    param1:
       //      fixed_value: 5.678
       // Parameter must have no entries besides the value for this syntax to be valid
-
-      // loop through models
-      /*for (YAML::const_iterator itm = parametersNode.begin(); itm!=parametersNode.end(); ++itm)
-      {
-        std::string model = itm->first.as<std::string>();
-        // loop through parameters  
-        for (YAML::const_iterator itp = parametersNode[model].begin(); itp!=parametersNode[model].end(); ++itp)
-        {
-          std::string param = itp->first.as<std::string>();
-          const YAML::Node& param_entry = itp->second;
-          if(param_entry.IsScalar())
-          {
-            // if the entry is just a scalar, delete the parameter node and replace it with the expansion
-            double value = param_entry.as<double>();
-            //parametersNode[model].remove(param);
-            // Overwrite
-            YAML::Node newparam;
-            newparam["fixed_value"] = value;
-            parametersNode[model][param] = newparam;
-          }
-        }
-      }*/
     }
 
     /// Getters for key/value section

@@ -144,7 +144,7 @@ namespace Gambit
         {
         private:
             // Name of the parameter that this prior is supposed to transform
-            std::string myparameter;
+            std::string &myparameter;
             // Ranges for parameters
             double lower;
             double upper;
@@ -156,7 +156,7 @@ namespace Gambit
         public:
     
             // Constructor
-            RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(1), myparameter(param[0]), scale(1.0), shift(0.0), scale_out(1.0), shift_out(0.0)
+            RangePrior1D(const std::vector<std::string>& param, const Options& options) : BasePrior(param, 1), myparameter(param_names[0]), scale(1.0), shift(0.0), scale_out(1.0), shift_out(0.0)
             {
                 // Read the entries we need from the options
                 if ( not options.hasKey("range") )

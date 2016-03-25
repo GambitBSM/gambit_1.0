@@ -27,12 +27,11 @@ namespace Gambit
         class Plugin : public BasePrior
         {
         private:
-            std::vector<std::string> param_names;
             typedef Scanner::Plugins::Plugin_Interface<double (const std::vector<double> &), void (const std::vector<double> &, std::unordered_map<std::string,double> &)> plugin_type;
             mutable plugin_type *plugin;
                 
         public:
-            Plugin(const std::vector<std::string>& params, const Options& options)
+            Plugin(const std::vector<std::string>& params, const Options& options) : BasePrior(params)
             {
                 std::string plugin_name;
                 if (options.hasKey("plugin"))
@@ -44,7 +43,7 @@ namespace Gambit
                     scan_err << "Plugin prior:  need to specify plugin with \"plugin\" tag." << scan_end;
                     plugin_name = "";
                 }
-                plugin = new plugin_type("objective", plugin_name, params, sizeRef());
+                plugin = new plugin_type("objective", plugin_name, param_names, sizeRef());
             }
                 
             void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &outputMap) const

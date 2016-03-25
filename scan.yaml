@@ -65,9 +65,9 @@ Printer:
 
 Scanner:
 
-  use_objectives: EggBox
+  use_objectives: gaussian
   #use_scanner: gal_0, gal_1, gal_2, gal_3, gal_4, gal_5, gal_6, gal_m
-  use_scanner: raster
+  use_scanner: random
   #find_shift
   #find_kernel
   #object_detection
@@ -103,7 +103,7 @@ Scanner:
 
     random:
       plugin: random_sampler
-      point_number: 10
+      point_number: 10000000
       like: LogLike
           
     toy:
@@ -395,7 +395,7 @@ Scanner:
 
     gaussian:
       plugin: gaussian
-      purpose: LogLike2
+      purpose: LogLike
       #options:
       #  cov: [[0.01, 0.0], [0.0, 0.01]]
       #  mean: [1.5, 1.5]
@@ -404,7 +404,7 @@ Scanner:
         ##  same_as: "gaussian::param_0"
         ##  scale: -2
         ##  shift: -1
-        param...2:
+        param...20:
           range: [-5, 5]
         params...2: 
           fixed_value: [-1, 1]
