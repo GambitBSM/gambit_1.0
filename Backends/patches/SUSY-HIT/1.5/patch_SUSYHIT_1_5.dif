@@ -1,6 +1,6 @@
 diff -rupN SUSY_HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
 --- SUSY_HIT_1_5_pristine/hdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-26 00:19:19.325836227 +0000
++++ installed/SUSY-HIT/1.5/hdecay.f	2016-03-26 00:21:44.389833629 +0000
 @@ -164,7 +164,7 @@ c end change susyhit
        COMMON/SLHA_vals_HDEC/islhai,islhao
  
@@ -78,7 +78,7 @@ diff -rupN SUSY_HIT_1_5_pristine/hdecay.f installed/SUSY-HIT/1.5/hdecay.f
        WHHSB(I,J)=0.D0
 diff -rupN SUSY_HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bod.f
 --- SUSY_HIT_1_5_pristine/lightst3bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-26 00:19:19.325836227 +0000
++++ installed/SUSY-HIT/1.5/lightst3bod.f	2016-03-26 00:21:44.389833629 +0000
 @@ -13,7 +13,7 @@ cccccccccccccccccccccccccccccccccccccccc
        double precision sdgf,amz,amw,pi,g2
        double precision width_bchiW, width_jchiw, width_tot3bod
@@ -135,7 +135,7 @@ diff -rupN SUSY_HIT_1_5_pristine/lightst3bod.f installed/SUSY-HIT/1.5/lightst3bo
  c---- ramona cahnged 2/2/15
 diff -rupN SUSY_HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bod.f
 --- SUSY_HIT_1_5_pristine/lightst4bod.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-26 00:19:19.329836227 +0000
++++ installed/SUSY-HIT/1.5/lightst4bod.f	2016-03-26 00:21:44.393833629 +0000
 @@ -34,7 +34,7 @@ c----- end ramona added
       .msd2(3,3), td(3,3), tu(3,3),
       . usqmix(6,6), dsqmix(6,6)
@@ -372,7 +372,7 @@ diff -rupN SUSY_HIT_1_5_pristine/lightst4bod.f installed/SUSY-HIT/1.5/lightst4bo
        COMMON/SD_mwmzpole/amwp,amzp
 diff -rupN SUSY_HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
 --- SUSY_HIT_1_5_pristine/makefile	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/makefile	2016-03-26 00:19:19.329836227 +0000
++++ installed/SUSY-HIT/1.5/makefile	2016-03-26 00:21:44.393833629 +0000
 @@ -2,13 +2,19 @@ OBJS1 = bsg.o twoloophiggs.o suspect2.o
  OBJS2 = sdecay.o lightst4bod.o Xvegas.o lightst3bod.o
  OBJS3 = susylha.o hgaga.o hdecay.o
@@ -399,7 +399,7 @@ diff -rupN SUSY_HIT_1_5_pristine/makefile installed/SUSY-HIT/1.5/makefile
 +	rm -f *.o
 diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
 --- SUSY_HIT_1_5_pristine/sdecay.f	2015-02-22 18:14:22.000000000 +0000
-+++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-26 00:19:19.333836227 +0000
++++ installed/SUSY-HIT/1.5/sdecay.f	2016-03-26 00:22:04.233833274 +0000
 @@ -98,7 +98,12 @@ c  file.]
  c                                                                      c
  c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc c
@@ -1210,7 +1210,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
        endif
  
 +c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
-+      if(.not.qcdcorrsdlok)
++      if(.not.qcdcorrsdlok) then
 +        do i=1,4,1
 +           brsdowlndow(i) = sdowlneutdow(i)/sdowltot2lo
 +        end do
@@ -1221,7 +1221,7 @@ diff -rupN SUSY_HIT_1_5_pristine/sdecay.f installed/SUSY-HIT/1.5/sdecay.f
 +      endif
 +
 +c --- PS added: when QCD corrections are <-100%, get 2-body BFs at tree-level
-+      if(.not.qcdcorrsdrok)
++      if(.not.qcdcorrsdrok) then
 +        do i=1,4,1
 +           brsdowrndow(i) = sdowrneutdow(i)/sdowrtot2lo
 +        end do
