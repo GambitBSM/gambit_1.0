@@ -32,7 +32,6 @@ class InfoMessage(object):
         """        
         if self.tag not in self.__class__.tags_done:
             self.__class__.tags_done.add(self.tag)
-            # print '  INFO: ' + self.msg
             print '  - ' + self.msg
 
 # ====== END: Info message base class ========

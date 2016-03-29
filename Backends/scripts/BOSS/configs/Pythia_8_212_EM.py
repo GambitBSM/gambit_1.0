@@ -20,19 +20,19 @@ castxml_cc_opt = ''         # Additional option string passed to the compiler in
 # ~~~~~ GAMBIT-specific options ~~~~~
 
 gambit_backend_name    = 'Pythia'
-gambit_backend_version = '8.212'
+gambit_backend_version = '8.212.EM'
 gambit_base_namespace  = ''
 
 
 # ~~~~~ Information about the external code ~~~~~
 
 # Use either absolute paths or paths relative to the main BOSS directory.
-input_files   = ['../../../Backends/installed/Pythia/8.212/include/Pythia8/Pythia.h']
-include_paths = ['../../../Backends/installed/Pythia/8.212/include', '../../../contrib/slhaea/include']
-base_paths    = ['../../../Backends/installed/Pythia/8.212/']
+input_files   = ['../../../Backends/installed/Pythia/8.212.EM/include/Pythia8/Pythia.h']
+include_paths = ['../../../Backends/installed/Pythia/8.212.EM/include', '../../../contrib/slhaea/include']
+base_paths    = ['../../../Backends/installed/Pythia/8.212.EM/']
 
-header_files_to = '../../../Backends/installed/Pythia/8.212/include'
-src_files_to    = '../../../Backends/installed/Pythia/8.212/src'
+header_files_to = '../../../Backends/installed/Pythia/8.212.EM/include'
+src_files_to    = '../../../Backends/installed/Pythia/8.212.EM/src'
 
 
 load_classes = [
