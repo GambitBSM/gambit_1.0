@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
-// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2016 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of MCUtils code in other projects is permitted provided this
 // notice is retained and the MCUtils namespace and include path are changed.
@@ -124,13 +124,13 @@ namespace MCUtils {
     /// Check to see if this is a valid meson
     inline bool isMeson(int pid) {
       if (_extraBits(pid) > 0) return false;
-      if (abs(pid) <= 100) return false;
+      const int aid = abs(pid);
+      if (aid == 130 || aid == 310 || aid == 210) return true; //< special cases for kaons
+      if (aid <= 100) return false;
       if (_digit(nq1,pid) != 0) return false;
       if (_digit(nq2,pid) == 0) return false;
       if (_digit(nq3,pid) == 0) return false;
       if (_digit(nq2,pid) < _digit(nq3,pid)) return false;
-      const int aid = abs(pid);
-      if (aid == 130 || aid == 310 || aid == 210) return true;
       // EvtGen uses some odd numbers
       /// @todo Remove special-casing for EvtGen
       if (aid == 150 || aid == 350 || aid == 510 || aid == 530) return true;
@@ -148,14 +148,16 @@ namespace MCUtils {
       if (_extraBits(pid) > 0) return false;
       if (abs(pid) <= 100) return false;
       if (_fundamentalID(pid) <= 100 && _fundamentalID(pid) > 0) return false;
-      if (abs(pid) == 2110 || abs(pid) == 2210) return true;
-      if (_digit(nq1,pid) == 0) return false;
-      if (_digit(nq2,pid) == 0) return false;
-      if (_digit(nq3,pid) == 0) return false;
-      if (_digit(nq1,pid) < _digit(nq2,pid)) return false;
-      if (_digit(nq2,pid) < _digit(nq3,pid)) return false;
-      if (_digit(nj,pid) > 0  && _digit(nq3,pid) > 0 && _digit(nq2,pid) > 0 && _digit(nq1,pid) > 0) return true;
-      return false;
+      if (abs(pid) == 2110 || abs(pid) == 2210) return true; ///< @todo Why this special case with nJ = 0? What are these? Not listed in RPP MC doc...
+      if (_digit(nj,pid) == 0) return false;
+      if (_digit(nq1,pid) == 0 || _digit(nq2,pid) == 0 || _digit(nq3,pid) == 0) return false;
+      return true;
+      /// @todo This is more correct by the definition, but the PDG's entries 1212, 1214, 1216, 1218 and 2122, 2124, 2126, 2128 come out as invalid
+      // if ((_digit(nq1,pid) >= _digit(nq2,pid) && _digit(nq2,pid) >= _digit(nq3,pid)) ||
+      //     (_digit(nq1,pid) > _digit(nq3,pid) && _digit(nq3,pid) > _digit(nq2,pid)) || //< case 6b for lighter quarks in J=1
+      //     (_digit(nq3,pid) > _digit(nq1,pid) && _digit(nq1,pid) > _digit(nq2,pid))) //< case 6e for extra states in excited multiplets
+      //   return true;
+      // return false;
     }
 
     // Check to see if this is a valid diquark
@@ -201,8 +203,8 @@ namespace MCUtils {
     /// Is this a valid hadron ID?
     inline bool isHadron(int pid) {
       if (_extraBits(pid) > 0) return false;
-      if (isMeson(pid))   return true;
-      if (isBaryon(pid))  return true;
+      if (isMeson(pid)) return true;
+      if (isBaryon(pid)) return true;
       if (isPentaquark(pid)) return true;
       return false;
     }
@@ -287,7 +289,7 @@ namespace MCUtils {
       // Check that it fits into a standard non-nucleus convention
       if (isBSM(pid)) return true;
       if (isHadron(pid)) return true;
-      if (_digit(n,pid) == 9 && _digit(nr,pid) == 0) return false; // could only have been a tentative hadron
+      if (_digit(n,pid) == 9 && _digit(nr,pid) == 0) return false; // could only have been a tentative hadron, but !isHadron
       if (isDiquark(pid)) return true;
       if (isReggeon(pid)) return true;
       // // Quark digit orderings required by the standard
@@ -406,8 +408,8 @@ namespace MCUtils {
     /// @name Charge functions
     //@{
 
-    /// Three times the charge (as integer)
-    inline int threeCharge(int pid) {
+    /// Three times the EM charge (as integer)
+    inline int charge3(int pid) {
       static int ch100[100] = { -1, 2,-1, 2,-1, 2,-1, 2, 0, 0,
                                 -3, 0,-3, 0,-3, 0,-3, 0, 0, 0,
                                 0, 0, 0, 3, 0, 0, 0, 0, 0, 0,
@@ -451,9 +453,18 @@ namespace MCUtils {
       return charge;
     }
 
+    /// Alias for charge3
+    /// @deprecated Prefer charge3
+    inline int threeCharge(int pid) { return charge3(pid); }
 
-    /// Return the charge (as floating point)
-    inline double charge(int pid) { return threeCharge(pid)/3.0; }
+    /// Return the absolute value of 3 times the EM charge
+    inline int abscharge3(int pid) { return std::abs(charge3(pid)); }
+
+    /// Return the EM charge (as floating point)
+    inline double charge(int pid) { return charge3(pid)/3.0; }
+
+    /// Return the EM charge (as floating point)
+    inline double abscharge(int pid) { return std::abs(charge(pid)); }
 
     //@}
 
@@ -463,12 +474,12 @@ namespace MCUtils {
 
     /// Determine if the particle is electrically charged
     inline bool isCharged(int pid) {
-      return threeCharge(pid) != 0;
+      return charge3(pid) != 0;
     }
 
     /// Determine if the particle is electrically neutral
     inline bool isNeutral(int pid) {
-      return threeCharge(pid) == 0;
+      return charge3(pid) == 0;
     }
 
     //@}
