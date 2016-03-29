@@ -76,7 +76,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 PartonLevel& operator=(const PartonLevel& in);
         
                 // Destructor: 
-                virtual ~PartonLevel();
+                ~PartonLevel();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_PartonLevel* get_BEptr() const;

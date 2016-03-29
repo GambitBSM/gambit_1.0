@@ -192,7 +192,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Settings& operator=(const Settings& in);
         
                 // Destructor: 
-                virtual ~Settings();
+                ~Settings();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Settings* get_BEptr() const;

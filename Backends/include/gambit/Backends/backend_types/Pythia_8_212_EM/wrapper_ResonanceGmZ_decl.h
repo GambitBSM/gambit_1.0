@@ -39,7 +39,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 ResonanceGmZ& operator=(const ResonanceGmZ& in);
         
                 // Destructor: 
-                virtual ~ResonanceGmZ();
+                ~ResonanceGmZ();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_ResonanceGmZ* get_BEptr() const;

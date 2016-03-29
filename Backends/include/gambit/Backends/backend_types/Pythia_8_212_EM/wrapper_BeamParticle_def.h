@@ -37,7 +37,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 BeamParticle::p() const
         {
-            return Pythia8::Vec4( get_BEptr()->p__BOSS()->get_init_wref() );
+            return Pythia8::Vec4( get_BEptr()->p__BOSS() );
         }
         
         inline double BeamParticle::px() const

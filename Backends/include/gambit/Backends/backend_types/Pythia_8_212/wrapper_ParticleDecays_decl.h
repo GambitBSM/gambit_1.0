@@ -53,7 +53,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 ParticleDecays& operator=(const ParticleDecays& in);
         
                 // Destructor: 
-                virtual ~ParticleDecays();
+                ~ParticleDecays();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_ParticleDecays* get_BEptr() const;

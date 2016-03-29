@@ -253,7 +253,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 Particle::p() const
         {
-            return Pythia8::Vec4( get_BEptr()->p__BOSS()->get_init_wref() );
+            return Pythia8::Vec4( get_BEptr()->p__BOSS() );
         }
         
         inline double Particle::px() const
@@ -298,7 +298,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 Particle::vProd() const
         {
-            return Pythia8::Vec4( get_BEptr()->vProd__BOSS()->get_init_wref() );
+            return Pythia8::Vec4( get_BEptr()->vProd__BOSS() );
         }
         
         inline double Particle::xProd() const
@@ -443,7 +443,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 Particle::vDec() const
         {
-            return Pythia8::Vec4( get_BEptr()->vDec__BOSS()->get_init_wref() );
+            return Pythia8::Vec4( get_BEptr()->vDec__BOSS() );
         }
         
         inline double Particle::xDec() const

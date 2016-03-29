@@ -60,7 +60,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 SLHAinterface& operator=(const SLHAinterface& in);
         
                 // Destructor: 
-                virtual ~SLHAinterface();
+                ~SLHAinterface();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_SLHAinterface* get_BEptr() const;

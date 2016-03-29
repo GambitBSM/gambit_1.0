@@ -305,7 +305,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 ParticleDataEntry& operator=(const ParticleDataEntry& in);
         
                 // Destructor: 
-                virtual ~ParticleDataEntry();
+                ~ParticleDataEntry();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_ParticleDataEntry* get_BEptr() const;

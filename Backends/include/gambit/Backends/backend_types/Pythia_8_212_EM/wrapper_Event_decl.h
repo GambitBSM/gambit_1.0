@@ -210,7 +210,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Event& operator=(const Event& in);
         
                 // Destructor: 
-                virtual ~Event();
+                ~Event();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Event* get_BEptr() const;

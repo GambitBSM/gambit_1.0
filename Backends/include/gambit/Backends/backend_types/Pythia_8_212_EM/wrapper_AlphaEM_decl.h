@@ -45,7 +45,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 AlphaEM& operator=(const AlphaEM& in);
         
                 // Destructor: 
-                virtual ~AlphaEM();
+                ~AlphaEM();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_AlphaEM* get_BEptr() const;

@@ -147,7 +147,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 CoupSUSY& operator=(const CoupSUSY& in);
         
                 // Destructor: 
-                virtual ~CoupSUSY();
+                ~CoupSUSY();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_CoupSUSY* get_BEptr() const;

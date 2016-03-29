@@ -372,7 +372,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Particle& operator=(const Particle& in);
         
                 // Destructor: 
-                virtual ~Particle();
+                ~Particle();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Particle* get_BEptr() const;

@@ -100,7 +100,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 SlowJet& operator=(const SlowJet& in);
         
                 // Destructor: 
-                virtual ~SlowJet();
+                ~SlowJet();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_SlowJet* get_BEptr() const;

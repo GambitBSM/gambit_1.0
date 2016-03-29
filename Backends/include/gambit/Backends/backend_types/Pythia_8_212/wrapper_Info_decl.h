@@ -428,7 +428,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Info& operator=(const Info& in);
         
                 // Destructor: 
-                virtual ~Info();
+                ~Info();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Info* get_BEptr() const;

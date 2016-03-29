@@ -138,7 +138,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Vec4& operator=(const Vec4& in);
         
                 // Destructor: 
-                virtual ~Vec4();
+                ~Vec4();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Vec4* get_BEptr() const;

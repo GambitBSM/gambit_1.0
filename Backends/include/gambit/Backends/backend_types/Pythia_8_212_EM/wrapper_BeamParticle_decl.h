@@ -159,7 +159,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 BeamParticle& operator=(const BeamParticle& in);
         
                 // Destructor: 
-                virtual ~BeamParticle();
+                ~BeamParticle();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_BeamParticle* get_BEptr() const;

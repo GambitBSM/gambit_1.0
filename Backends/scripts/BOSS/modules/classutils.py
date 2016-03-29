@@ -342,6 +342,8 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     class_decl += ' '*(n_indents+1)*indent + 'public:\n'
     class_decl += ' '*(n_indents+2)*indent +  abstr_class_name['short'] + '()\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
+    if gb.debug_mode:
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' ctor" << std::endl;\n' 
     class_decl += ' '*(n_indents+3)*indent + 'wptr = 0;\n'
     class_decl += ' '*(n_indents+3)*indent + 'delete_wrapper = false;\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
@@ -372,6 +374,8 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
         class_decl += ' '*(n_indents+2)*indent + abstr_class_name['short'] + '(const ' + abstr_class_name['short'] + '& in) : \n'
         class_decl += ' '*(n_indents+3)*indent + parent_cctors_line
     class_decl += ' '*(n_indents+2)*indent + '{\n'
+    if gb.debug_mode:
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' copy ctor" << std::endl;\n' 
     class_decl += ' '*(n_indents+3)*indent + 'wptr = 0;\n'
     class_decl += ' '*(n_indents+3)*indent + 'delete_wrapper = false;\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
@@ -387,8 +391,8 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     class_decl += ' '*(n_indents+2)*indent + '{\n'
     class_decl += ' '*(n_indents+3)*indent + 'if (wptr == 0)\n'
     class_decl += ' '*(n_indents+3)*indent + '{\n'
-    # class_decl += ' '*(n_indents+4)*indent + 'wptr = wrapper_creator(this);\n'
-    class_decl += ' '*(n_indents+4)*indent + 'wrapper_creator(this);\n'
+    class_decl += ' '*(n_indents+4)*indent + 'wptr = wrapper_creator(this);\n'
+    # class_decl += ' '*(n_indents+4)*indent + 'wrapper_creator(this);\n'
     class_decl += ' '*(n_indents+4)*indent + 'delete_wrapper = true;\n'
     class_decl += ' '*(n_indents+3)*indent + '}\n'
     class_decl += ' '*(n_indents+2)*indent + '}\n'
@@ -413,6 +417,8 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     class_decl += '\n'
     class_decl += ' '*(n_indents+2)*indent + 'virtual ~' + abstr_class_name['short'] + '()\n'
     class_decl += ' '*(n_indents+2)*indent + '{\n'
+    if gb.debug_mode:
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (BEGIN)" << std::endl;\n' 
     class_decl += ' '*(n_indents+3)*indent + 'if (wptr != 0)\n'
     class_decl += ' '*(n_indents+3)*indent + '{\n'
     class_decl += ' '*(n_indents+4)*indent + 'set_delete_BEptr(wptr, false);\n'
@@ -420,9 +426,15 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     class_decl += ' '*(n_indents+4)*indent + '{\n'
     class_decl += ' '*(n_indents+5)*indent + 'wrapper_deleter(wptr);\n'
     class_decl += ' '*(n_indents+5)*indent + 'wptr = 0;\n'
+    # Set wptr = 0 in all parent classes as well
+    for parent_dict in all_parent_classes:
+        if parent_dict['loaded']:
+            class_decl += ' '*(n_indents+5)*indent + parent_dict['abstr_class_name']['long_templ'] + '::set_wptr(0);\n'
     class_decl += ' '*(n_indents+5)*indent + 'delete_wrapper = false;\n'
     class_decl += ' '*(n_indents+4)*indent + '}\n'
     class_decl += ' '*(n_indents+3)*indent + '}\n'
+    if gb.debug_mode:
+        class_decl += ' '*(n_indents+3)*indent + 'std::cerr << "DEBUG: " << this << " ' + abstr_class_name['short'] + ' dtor (END)" << std::endl;\n' 
     class_decl += ' '*(n_indents+2)*indent + '}\n'
 
 
@@ -440,8 +452,8 @@ def constrAbstractClassDecl(class_el, class_name, abstr_class_name, namespaces, 
     # - Add forward declaration of wrapper_creator function (needed by the 'destructor pattern')
     frwd_decl_creator  = '\n'
     frwd_decl_creator += '// Forward declaration for wrapper_creator.\n'
-    # frwd_decl_creator += gb.gambit_backend_namespace + '::' + class_name['long'] + '* wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
-    frwd_decl_creator += 'void wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
+    frwd_decl_creator += gb.gambit_backend_namespace + '::' + class_name['long'] + '* wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
+    # frwd_decl_creator += 'void wrapper_creator(' + gb.gambit_backend_namespace + '::' + abstr_class_name['long'] + '*);\n'
     frwd_decl_creator += '\n'
 
     class_decl = frwd_decl_creator + class_decl
@@ -1423,7 +1435,8 @@ def constrWrapperDecl(class_name, abstr_class_name, loaded_parent_classes, class
     #
     decl_code += '\n'
     decl_code += 2*indent + '// Destructor: \n'
-    decl_code += 2*indent + 'virtual ~' + class_name['short'] + '();\n'
+    # decl_code += 2*indent + 'virtual ~' + class_name['short'] + '();\n'
+    decl_code += 2*indent + '~' + class_name['short'] + '();\n'
 
 
     #
@@ -1597,9 +1610,11 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
                 # Return-by-value
                 else:  
                     if 'const' in return_type_kw:
-                        def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ')->get_init_wref() );\n'
+                        # def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ')->get_init_wref() );\n'
+                        def_code += return_type + '( const_cast<' + abs_return_type_simple + '*>(get_BEptr()->' + call_func_name + args_bracket_notypes + ') );\n'
                     else:
-                        def_code += return_type + '( get_BEptr()->' + call_func_name + args_bracket_notypes + '->get_init_wref() );\n'
+                        # def_code += return_type + '( get_BEptr()->' + call_func_name + args_bracket_notypes + '->get_init_wref() );\n'
+                        def_code += return_type + '( get_BEptr()->' + call_func_name + args_bracket_notypes + ' );\n'
            
             else:                
                 def_code += 'get_BEptr()->' + call_func_name + args_bracket_notypes + ';\n'
@@ -1617,6 +1632,8 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     common_init_list_code   = ''
 
     common_constructor_body = ''
+    if gb.debug_mode:
+        common_constructor_body += indent + 'std::cerr << "DEBUG: " << this << " ' + short_wrapper_class_name + ' ctor" << std::endl;\n'
     common_constructor_body += indent + 'get_BEptr()->set_wptr(this);\n'
     common_constructor_body += indent + 'get_BEptr()->set_delete_wrapper(false);\n'
 
@@ -1788,6 +1805,8 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     def_code += '// Destructor: \n'
     def_code += do_inline*'inline ' + class_name['long'] + '::~' + class_name['short'] + '()\n'
     def_code += '{\n'
+    if gb.debug_mode:
+        def_code += indent + 'std::cerr << "DEBUG: " << this << " ' + short_wrapper_class_name + ' dtor (BEGIN)" << std::endl;\n'
     def_code +=   indent + 'if (get_BEptr() != 0)\n'
     def_code +=   indent + '{\n'
     def_code += 2*indent + 'get_BEptr()->set_delete_wrapper(false);\n'
@@ -1798,6 +1817,8 @@ def constrWrapperDef(class_name, abstr_class_name, loaded_parent_classes, class_
     def_code += 2*indent + '}\n'
     def_code +=   indent + '}\n'
     def_code +=   indent + 'set_delete_BEptr(false);\n'
+    if gb.debug_mode:
+        def_code += indent + 'std::cerr << "DEBUG: " << this << " ' + short_wrapper_class_name + ' dtor (END)" << std::endl;\n'
     def_code += '}\n'
 
 
@@ -1924,6 +1945,10 @@ def generateWrapperHeaderCode(class_el, class_name, abstr_class_name, namespaces
 
     # - Header where NULL is defined
     decl_code_include_statements.append( '#include <cstddef>' )
+
+    # - If debug_mode, include <iostream> for some output
+    if gb.debug_mode:
+        decl_code_include_statements.append( '#include <iostream>' )        
 
     # - Header with forward declarations to all wrapper classes
     decl_code_include_statements.append( '#include "' + gb.frwd_decls_wrp_fname + cfg.header_extension + '"')

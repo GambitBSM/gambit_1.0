@@ -62,7 +62,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 LHdecayChannel& operator=(const LHdecayChannel& in);
         
                 // Destructor: 
-                virtual ~LHdecayChannel();
+                ~LHdecayChannel();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_LHdecayChannel* get_BEptr() const;

@@ -98,7 +98,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 SusyLesHouches& operator=(const SusyLesHouches& in);
         
                 // Destructor: 
-                virtual ~SusyLesHouches();
+                ~SusyLesHouches();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_SusyLesHouches* get_BEptr() const;

@@ -60,7 +60,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Parm& operator=(const Parm& in);
         
                 // Destructor: 
-                virtual ~Parm();
+                ~Parm();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Parm* get_BEptr() const;

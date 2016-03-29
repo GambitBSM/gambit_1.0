@@ -73,7 +73,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 LHdecayTable& operator=(const LHdecayTable& in);
         
                 // Destructor: 
-                virtual ~LHdecayTable();
+                ~LHdecayTable();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_LHdecayTable* get_BEptr() const;

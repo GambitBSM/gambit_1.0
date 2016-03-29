@@ -129,7 +129,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Pythia& operator=(const Pythia& in);
         
                 // Destructor: 
-                virtual ~Pythia();
+                ~Pythia();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Pythia* get_BEptr() const;

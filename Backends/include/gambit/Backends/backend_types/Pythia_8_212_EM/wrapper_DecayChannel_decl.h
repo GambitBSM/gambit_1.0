@@ -110,7 +110,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 DecayChannel& operator=(const DecayChannel& in);
         
                 // Destructor: 
-                virtual ~DecayChannel();
+                ~DecayChannel();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_DecayChannel* get_BEptr() const;

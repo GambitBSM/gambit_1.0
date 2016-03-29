@@ -17,7 +17,7 @@ void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Vec4*);
 
 
 // Forward declaration for wrapper_creator.
-void wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_Vec4*);
+CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Vec4* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_Vec4*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -156,7 +156,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 {
                     if (wptr == 0)
                     {
-                        wrapper_creator(this);
+                        wptr = wrapper_creator(this);
                         delete_wrapper = true;
                     }
                 }

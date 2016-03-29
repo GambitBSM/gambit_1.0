@@ -72,7 +72,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 AlphaStrong& operator=(const AlphaStrong& in);
         
                 // Destructor: 
-                virtual ~AlphaStrong();
+                ~AlphaStrong();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_AlphaStrong* get_BEptr() const;

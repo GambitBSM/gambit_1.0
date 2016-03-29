@@ -214,7 +214,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 Vec4::operator-()
         {
-            return Pythia8::Vec4( get_BEptr()->operator_minus__BOSS()->get_init_wref() );
+            return Pythia8::Vec4( get_BEptr()->operator_minus__BOSS() );
         }
         
         inline Pythia8::Vec4& Vec4::operator+=(const Pythia8::Vec4& v)

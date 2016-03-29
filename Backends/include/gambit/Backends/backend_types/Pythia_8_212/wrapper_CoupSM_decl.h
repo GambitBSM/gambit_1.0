@@ -102,7 +102,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 CoupSM& operator=(const CoupSM& in);
         
                 // Destructor: 
-                virtual ~CoupSM();
+                ~CoupSM();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_CoupSM* get_BEptr() const;

@@ -76,7 +76,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::LHdecayChannel LHdecayTable::getChannel(int iChannel)
         {
-            return Pythia8::LHdecayChannel( get_BEptr()->getChannel__BOSS(iChannel)->get_init_wref() );
+            return Pythia8::LHdecayChannel( get_BEptr()->getChannel__BOSS(iChannel) );
         }
         
         

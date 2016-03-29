@@ -115,7 +115,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Hist& operator=(const Hist& in);
         
                 // Destructor: 
-                virtual ~Hist();
+                ~Hist();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Hist* get_BEptr() const;

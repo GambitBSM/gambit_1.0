@@ -16,6 +16,8 @@ exec("import configs." + active_cfg.module_name + " as cfg")
 
 boss_temp_dir = 'temp'
 
+debug_mode = False
+
 new_code                = OrderedDict()
 xml_file_name           = ''
 

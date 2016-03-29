@@ -247,6 +247,8 @@ def constrAbstractClassHeaderCode(class_el, class_name, abstr_class_name, namesp
     include_statements += ['#include "' + gb.frwd_decls_wrp_fname + cfg.header_extension + '"']
     include_statements += utils.getIncludeStatements(class_el, convert_loaded_to='wrapper_decl', exclude_types=[class_name], include_parents=True, use_full_path=False, forward_declared='include')
     include_statements += ['#include <cstddef>']
+    if gb.debug_mode: 
+        include_statements += ['#include <iostream>']
     include_statements_code = '\n'.join(include_statements) + 2*'\n'
     class_decl += include_statements_code
 
@@ -729,35 +731,35 @@ def constrWrapperUtils(class_name):
     wr_utils_impl = ''
 
 
-    # #
-    # # wrapper_creator
-    # #
-
-    # # Function declaration
-    # wr_utils_decl  = '\n'
-    # wr_utils_decl += wrapper_class_name + '* wrapper_creator(' + abstr_class_name + '*);\n'
-
-    # # Function implementation
-    # wr_utils_impl  = '\n'
-    # wr_utils_impl += wrapper_class_name + '* wrapper_creator(' + abstr_class_name + '* abs_ptr)\n'
-    # wr_utils_impl += '{\n'
-    # wr_utils_impl += ' '*cfg.indent + 'return new ' + wrapper_class_name + '(abs_ptr);\n'
-    # wr_utils_impl += '}\n'
-
     #
     # wrapper_creator
     #
 
     # Function declaration
     wr_utils_decl  = '\n'
-    wr_utils_decl += 'void wrapper_creator(' + abstr_class_name + '*);\n'
+    wr_utils_decl += wrapper_class_name + '* wrapper_creator(' + abstr_class_name + '*);\n'
 
     # Function implementation
     wr_utils_impl  = '\n'
-    wr_utils_impl += 'void wrapper_creator(' + abstr_class_name + '* abs_ptr)\n'
+    wr_utils_impl += wrapper_class_name + '* wrapper_creator(' + abstr_class_name + '* abs_ptr)\n'
     wr_utils_impl += '{\n'
-    wr_utils_impl += ' '*cfg.indent + 'abs_ptr->set_wptr( new ' + wrapper_class_name + '(abs_ptr) );\n'
+    wr_utils_impl += ' '*cfg.indent + 'return new ' + wrapper_class_name + '(abs_ptr);\n'
     wr_utils_impl += '}\n'
+
+    # #
+    # # wrapper_creator
+    # #
+
+    # # Function declaration
+    # wr_utils_decl  = '\n'
+    # wr_utils_decl += 'void wrapper_creator(' + abstr_class_name + '*);\n'
+
+    # # Function implementation
+    # wr_utils_impl  = '\n'
+    # wr_utils_impl += 'void wrapper_creator(' + abstr_class_name + '* abs_ptr)\n'
+    # wr_utils_impl += '{\n'
+    # wr_utils_impl += ' '*cfg.indent + 'abs_ptr->set_wptr( new ' + wrapper_class_name + '(abs_ptr) );\n'
+    # wr_utils_impl += '}\n'
 
 
     #

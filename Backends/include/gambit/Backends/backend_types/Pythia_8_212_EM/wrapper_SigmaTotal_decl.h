@@ -99,7 +99,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 SigmaTotal& operator=(const SigmaTotal& in);
         
                 // Destructor: 
-                virtual ~SigmaTotal();
+                ~SigmaTotal();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_SigmaTotal* get_BEptr() const;

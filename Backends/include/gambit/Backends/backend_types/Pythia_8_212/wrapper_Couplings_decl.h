@@ -42,7 +42,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Couplings& operator=(const Couplings& in);
         
                 // Destructor: 
-                virtual ~Couplings();
+                ~Couplings();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Couplings* get_BEptr() const;

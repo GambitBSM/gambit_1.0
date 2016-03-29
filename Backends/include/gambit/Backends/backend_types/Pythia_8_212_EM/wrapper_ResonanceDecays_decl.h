@@ -51,7 +51,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 ResonanceDecays& operator=(const ResonanceDecays& in);
         
                 // Destructor: 
-                virtual ~ResonanceDecays();
+                ~ResonanceDecays();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_ResonanceDecays* get_BEptr() const;

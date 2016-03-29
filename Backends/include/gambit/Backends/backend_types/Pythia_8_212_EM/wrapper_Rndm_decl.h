@@ -65,7 +65,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Rndm& operator=(const Rndm& in);
         
                 // Destructor: 
-                virtual ~Rndm();
+                ~Rndm();
         
                 // Returns correctly casted pointer to Abstract class: 
                 Pythia8::Abstract_Rndm* get_BEptr() const;
