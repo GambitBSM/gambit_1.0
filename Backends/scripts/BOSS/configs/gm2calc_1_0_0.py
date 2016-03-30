@@ -80,6 +80,13 @@ extra_output_dir = 'BOSS_output'
 
 # ~~~~~ Information about other known types ~~~~~
 
+# Dictionary key: type name
+# Dictionary value: header file with containing type declaration.
+#
+# Example:
+#   known_classes = {"SomeNamespace::KnownClassOne" : "path_to_header/KnownClassOne.hpp", 
+#                    "AnotherNamespace::KnownClassTwo" : "path_to_header/KnownClassTwo.hpp" }
+
 known_classes = { 
     "Eigen::Matrix" : "<Eigen/Core>",
     "Eigen::Array" : "<Eigen/Core>",

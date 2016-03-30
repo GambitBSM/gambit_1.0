@@ -32,7 +32,9 @@ namespace Gambit {
       int fast;  // 0: standard; 1: fast; 2: dirty
 
       // Set options via ini-file
+      // FIXME: Add getValue documentation
       omtype = runOptions->getValueOrDef<int>(1, "omtype");
+      // FIXME: Add getValue documentation
       fast = runOptions->getValueOrDef<int>(0, "fast");
 
       // Output

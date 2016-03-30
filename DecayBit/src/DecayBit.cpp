@@ -2640,7 +2640,7 @@ namespace Gambit
       const Spectrum* spec = *Dep::SingletDM_spectrum;
       const SubSpectrum* he = spec->get_HE();
       double mass = spec->get(Par::Pole_Mass,"S");
-      double lambda = he->get(Par::mass1,"lambda_hS");
+      double lambda = he->get(Par::dimensionless,"lambda_hS");
       double v0 = he->get(Par::mass1,"vev");
       double mhpole = spec->get(Par::Pole_Mass,"h0_1");
 
@@ -2778,7 +2778,12 @@ namespace Gambit
 
       }
 
-      //cout << "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
+      /// Spit out the full decay table as an SLHA file.
+      if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
+      {
+        str filename = runOptions->getValueOrDef<str>("GAMBIT_decays.slha", "SLHA_output_filename");
+        decays.getSLHA(filename);
+      }
 
     }
 

@@ -14,9 +14,12 @@
 ///
 ///  *********************************************
 
+#include <fstream>
+
 #include "gambit/Elements/decay_table.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/version.hpp"
+#include "gambit/Utils/file_lock.hpp"
 
 #include <boost/lexical_cast.hpp>
 
@@ -135,8 +138,19 @@ namespace Gambit
     }
   }
 
+  /// Output entire decay table as an SLHA file full of DECAY blocks
+  void DecayTable::getSLHA(str filename, bool include_zero_bfs) const
+  {
+    Utils::FileLock mylock(filename);
+    mylock.get_lock();
+    std::ofstream ofs(filename);
+    ofs << getSLHAea(include_zero_bfs);
+    ofs.close();
+    mylock.release_lock();
+  }
+
   /// Output entire decay table as an SLHAea file full of DECAY blocks
-  SLHAstruct DecayTable::as_slhaea(bool include_zero_bfs) const
+  SLHAstruct DecayTable::getSLHAea(bool include_zero_bfs) const
   {
     SLHAstruct slha;
     std::map<str, std::set<str> > calculator_map;
@@ -148,7 +162,7 @@ namespace Gambit
     {
       auto entry = particle->second;
       if (entry.calculator != "") calculator_map[entry.calculator].insert(entry.calculator_version);
-      slha.push_back(entry.as_slhaea_block(particle->first, include_zero_bfs));
+      slha.push_back(entry.getSLHAea_block(particle->first, include_zero_bfs));
     }
 
     // Construct the calculator info
@@ -188,9 +202,9 @@ namespace Gambit
 
   /// Output a decay table entry as an SLHAea DECAY block
   /// @{
-  SLHAea::Block DecayTable::as_slhaea_block(std::pair<int,int> p, bool z) const { return particles.at(p).as_slhaea_block(Models::ParticleDB().long_name(p), z); }
-  SLHAea::Block DecayTable::as_slhaea_block(str p, bool z)                const { return particles.at(Models::ParticleDB().pdg_pair(p)).as_slhaea_block(p, z); }
-  SLHAea::Block DecayTable::as_slhaea_block(str p, int i, bool z)         const { return particles.at(Models::ParticleDB().pdg_pair(p,i)).as_slhaea_block(Models::ParticleDB().long_name(p,i), z); }
+  SLHAea::Block DecayTable::getSLHAea_block(std::pair<int,int> p, bool z) const { return particles.at(p).getSLHAea_block(Models::ParticleDB().long_name(p), z); }
+  SLHAea::Block DecayTable::getSLHAea_block(str p, bool z)                const { return particles.at(Models::ParticleDB().pdg_pair(p)).getSLHAea_block(p, z); }
+  SLHAea::Block DecayTable::getSLHAea_block(str p, int i, bool z)         const { return particles.at(Models::ParticleDB().pdg_pair(p,i)).getSLHAea_block(Models::ParticleDB().long_name(p,i), z); }
   /// @}
 
 
@@ -274,11 +288,31 @@ namespace Gambit
     }
   }
 
+  /// Make sure no NaNs have been passed to the DecayTable by nefarious backends
+  void DecayTable::Entry::check_BF_validity(double BF, double error, std::multiset< std::pair<int,int> >& key) const
+  {
+    if (Utils::isnan(BF) or Utils::isnan(error))
+    {
+      std::ostringstream msg;
+      msg << "NaN detected in attempt to set decay table branching fraction. " << endl
+          << "Final states are: " << endl;
+      for(auto it = key.begin(); it !=key.end(); ++it)
+      {
+        msg << "  " << Models::ParticleDB().long_name(*it) << endl;
+      }
+      msg << "BF: " << BF << endl << "error: " << error << endl;
+      msg << "Total width (GeV): " << width_in_GeV << " +" << positive_error << " -" << negative_error << endl;
+      msg << "Decay calculator: " << calculator << " " << calculator_version;
+      utils_error().raise(LOCAL_INFO, msg.str());
+    }
+  }
+
   /// Set branching fraction for decay to a given final state. 1. PDG-context integer pairs (vector)
   void DecayTable::Entry::set_BF(double BF, double error, const std::vector<std::pair<int,int> >& daughters)
   {
     std::multiset< std::pair<int,int> > key(daughters.begin(), daughters.end());
     check_particles_exist(key);
+    check_BF_validity(BF, error, key);
     channels[key] = std::pair<double, double>(BF, error);
   }
 
@@ -288,6 +322,7 @@ namespace Gambit
     std::multiset< std::pair<int,int> > key;
     for (auto p = daughters.begin(); p != daughters.end(); ++p) key.insert(Models::ParticleDB().pdg_pair(*p));
     check_particles_exist(key);
+    check_BF_validity(BF, error, key);
     channels[key] = std::pair<double, double>(BF, error);
   }
 
@@ -328,9 +363,9 @@ namespace Gambit
 
   /// Output a decay table entry as an SLHAea DECAY block
   /// @{
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, bool z)         const { return as_slhaea_block(Models::ParticleDB().pdg_pair(p), z); }
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, int i, bool z)  const { return as_slhaea_block(Models::ParticleDB().pdg_pair(p,i), z); }
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(std::pair<int,int> p, bool include_zero_bfs) const
+  SLHAea::Block DecayTable::Entry::getSLHAea_block(str p, bool z)         const { return getSLHAea_block(Models::ParticleDB().pdg_pair(p), z); }
+  SLHAea::Block DecayTable::Entry::getSLHAea_block(str p, int i, bool z)  const { return getSLHAea_block(Models::ParticleDB().pdg_pair(p,i), z); }
+  SLHAea::Block DecayTable::Entry::getSLHAea_block(std::pair<int,int> p, bool include_zero_bfs) const
   {
     // Make sure the particle actually exists in the database
     if (not Models::ParticleDB().has_particle(p))

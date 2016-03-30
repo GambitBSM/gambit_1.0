@@ -22,8 +22,8 @@
 // Let's go.
 LOAD_LIBRARY
 
-// Can't do anything non-MSSM or non-diagonal with SUSY-HIT
-BE_ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
+// SUSY-HIT only works with diagonal MSSM models where first and second generation sfermions are degenerate. 
+BE_ALLOW_MODELS(NUHM2, MSSM20atQ)
 
 // Functions
 BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")               // Converted SUSY-HIT main routine

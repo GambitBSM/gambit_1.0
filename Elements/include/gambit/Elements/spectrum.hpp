@@ -28,6 +28,10 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2015 May 
 ///
+///  \author Abram Krislock
+///          (a.m.b.krislock@fys.uio.no)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 #ifndef __Spectrum_hpp__
@@ -35,6 +39,7 @@
 
 #include <complex>
 
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/Elements/sminputs.hpp"
 #include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/partmap.hpp"
@@ -127,6 +132,14 @@ namespace Gambit
          double get(const Par::Tags partype, const std::pair<str,int> shortpr) const;
          /// @}
 
+         /// @{ Getters which first check the sanity of the thing they are returning
+         double safeget(const Par::Tags partype, const std::string& mass) const; 
+         double safeget(const Par::Tags partype, const std::string& mass, const int index) const; 
+         double safeget(const Par::Tags partype, const int pdg_code, const int context) const;
+         double safeget(const Par::Tags partype, const std::pair<int,int> pdgpr) const;
+         double safeget(const Par::Tags partype, const std::pair<str,int> shortpr) const;
+         /// @}
+
          /// @}
    
          /// SLHAea object getter
@@ -135,6 +148,9 @@ namespace Gambit
          /// entries are overwritten at each step, so HE takes precendence over LE, and LE takes precedence
          /// over SMINPUTS.
          SLHAstruct getSLHAea() const;
+
+         /// Output spectrum contents as an SLHA file, using getSLHAea.
+         void getSLHA(str) const;
 
          /// PDG code translation map, for special cases where an SLHA file has been read in and the PDG codes changed.
          const std::map<int, int>& PDG_translator() const;

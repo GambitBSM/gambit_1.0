@@ -47,13 +47,22 @@ namespace Gambit {
      addParameter(Par::Pole_Mass, "Z0"   , scalar);
      addParameter(Par::Pole_Mass, "W+"   , scalar);
 
-     addParameter(Par::Pole_Mass, "t" , scalar);
-     addParameter(Par::Pole_Mass, "b" , scalar);
+     addParameter(Par::Pole_Mass, "u_3" , scalar);
+     addParameter(Par::Pole_Mass, "d_3" , scalar);
 
      addParameter(Par::Pole_Mass, "e-", v3);
      addParameter(Par::Pole_Mass, "nu", v3);
  
      addParameter(Par::Pole_Mixing, "sinW2", scalar);
+
+     // Nearest flavour 'aliases' for the SM mass eigenstates
+     addParameter(Par::Pole_Mass, "t" , scalar);
+     addParameter(Par::Pole_Mass, "b" , scalar);
+
+     addParameter(Par::Pole_Mass, "e-"  , scalar);
+     addParameter(Par::Pole_Mass, "mu-" , scalar);
+     addParameter(Par::Pole_Mass, "tau-", scalar);
+
   }
 
 }

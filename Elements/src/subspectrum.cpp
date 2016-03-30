@@ -17,6 +17,10 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2014, 2015 Jan - Jul
 ///
+///  \author Abram Krislock
+///          (a.m.b.krislock@fys.uio.no)
+///  \date 2016 Feb
+///
 ///  *********************************************
 
 #include <fstream>
@@ -124,6 +128,65 @@ namespace Gambit
                         const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
    {
       return get( partype, shortpr.first, shortpr.second, check_antiparticle);
+   }
+
+   /// @}
+
+   /// @{ safeget functions, by Abram
+
+   double SubSpectrum::safeget(const Par::Tags partype, 
+                        const str& mass, SafeBool check_antiparticle) const
+   {
+      double result = get( partype, mass, check_antiparticle);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double SubSpectrum::safeget(const Par::Tags partype, 
+                        const str& mass, int index, SafeBool check_antiparticle) const
+   {
+      double result = get( partype, mass, index, check_antiparticle);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   /// @TODO: correct variable names? --Abram
+   double SubSpectrum::safeget(const Par::Tags partype,
+                        const str& mass, int pdg_code, int context) const
+   {
+      double result = get( partype, mass, pdg_code, context);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double SubSpectrum::safeget(const Par::Tags partype, 
+                        const int pdg_code, const int context, SafeBool check_antiparticle) const
+   {
+      double result = get( partype, pdg_code, context, check_antiparticle);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double SubSpectrum::safeget(const Par::Tags partype, 
+                        const std::pair<int,int> pdgpr, SafeBool check_antiparticle) const
+   {
+      double result = get( partype, pdgpr, check_antiparticle);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
+   }
+
+   double SubSpectrum::safeget(const Par::Tags partype, 
+                        const std::pair<str,int> shortpr, SafeBool check_antiparticle) const
+   {
+      double result = get( partype, shortpr, check_antiparticle);
+      if (Utils::isnan(result))
+         utils_error().raise(LOCAL_INFO,"SubSpectrum parameter is nan!!");
+      return result;
    }
 
    /// @}

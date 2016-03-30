@@ -30,6 +30,13 @@ namespace Gambit {
   namespace Printers {
 
     namespace HDF5 { 
+      /// Create or open hdf5 file (ignoring feedback regarding whether file already existed)
+      hid_t openFile(const std::string& fname, bool overwrite)
+      {
+         bool tmp;
+         return openFile(fname,overwrite,tmp);
+      }
+
       /// Create or open hdf5 file
       /// third argument "oldfile" is used to report whether an existing file was opened (true if yes)
       hid_t openFile(const std::string& fname, bool overwrite, bool& oldfile)
@@ -44,8 +51,10 @@ namespace Gambit {
               // Error deleting file, but probably it just didn't exist to delete
               logger()<<LogTags::utils<<LogTags::warn<<"Failed to delete file '"<<fname<<"'! Maybe it didn't exist in the first place."<<EOM;
             }
-            // else deleted file with no problem       
-            logger()<<LogTags::utils<<LogTags::info<<"Deleted pre-existing file "<<fname<<" (because overwrite=true)"<<EOM;
+            else// else deleted file with no problem       
+            {
+              logger()<<LogTags::utils<<LogTags::info<<"Deleted pre-existing file "<<fname<<" (because overwrite=true)"<<EOM;
+            }
           }          
 
           errorsOff();

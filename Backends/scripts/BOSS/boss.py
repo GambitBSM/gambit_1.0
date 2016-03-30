@@ -12,7 +12,7 @@
 # BOSS makes use of CastXML to parse the C++ source code.
 #
 # Default usage:
-# ./boss [list of class header files]
+# ./boss configs/some_config_file.py
 # 
 
 import xml.etree.ElementTree as ET
@@ -26,16 +26,6 @@ import pickle
 import copy
 from collections import OrderedDict
 from optparse import OptionParser
-
-# import modules.cfg as cfg
-# import modules.gb as gb
-# import modules.classutils as classutils
-# import modules.classparse as classparse
-# import modules.funcparse as funcparse
-# import modules.funcutils as funcutils
-# import modules.utils as utils
-# import modules.filehandling as filehandling
-# import modules.infomsg as infomsg
 
 
 # ====== main ========
@@ -289,7 +279,7 @@ def main():
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
 
         # Timeout limit and process poll interval [seconds]
-        timeout = 100.
+        timeout = 600.
         poll = 0.2
 
         # Run castxml
@@ -415,10 +405,6 @@ def main():
         gb.xml_file_name = xml_file
         utils.initGlobalXMLdicts(xml_file, id_and_name_only=True)
 
-        # # Set the global dicts for the current xml file
-        # gb.id_dict   = gb.all_id_dict[xml_file]
-        # gb.name_dict = gb.all_name_dict[xml_file]
-
         # Loop over all named elements in the xml file
         for full_name, el in gb.name_dict.items():
 
@@ -488,10 +474,6 @@ def main():
         # Initialise global dicts
         gb.xml_file_name = xml_file
         utils.initGlobalXMLdicts(xml_file, id_and_name_only=True)
-
-        # # Set the global dicts for the current xml file
-        # gb.id_dict   = gb.all_id_dict[xml_file]
-        # gb.name_dict = gb.all_name_dict[xml_file]
 
         # Loop over all named elements in the xml file
         for full_name, el in gb.name_dict.items():

@@ -242,7 +242,18 @@ namespace Gambit
       if ( s1 == "" ) return true;
       if ( s1 == "*" ) return true;
 #ifdef HAVE_REGEX_H
-      if (with_regex) if (std::regex_match(s2, std::regex(s1))) return true;
+      try
+      {
+        if (with_regex) if (std::regex_match(s2, std::regex(s1))) return true;
+      }
+      catch (std::regex_error & err)
+      {
+        std::ostringstream errmsg;
+        errmsg << "ERROR during regex string comparison." << std::endl;
+        errmsg << "  Comparing regular expression: " << s1 << std::endl;
+        errmsg << "  with test string: " << s2 << std::endl;
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
+      }
 #endif
       return false;
     }
@@ -258,8 +269,8 @@ namespace Gambit
         match1 = match2 = false;
         for (auto it2 = it1->begin(); it2 != it1->end(); it2++)
         {
-          if (s1 == *it2) match1 = true;
-          if (stringComp(*it2, s2, with_regex)) match2 = true;
+          if (s2 == *it2) match1 = true;
+          if (stringComp(s1, *it2, with_regex)) match2 = true;
         }
         if (match1 and match2) return true;
       }
@@ -1360,7 +1371,7 @@ namespace Gambit
       logger() << EOM;
 
       // Read ini entries
-      use_regex    = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
+      use_regex    = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");
       print_timing = boundIniFile->getValueOrDef<bool>(false, "print_timing_data");
       if ( use_regex )    logger() << "Using regex for string comparison." << endl;
       if ( print_timing ) logger() << "Will output timing information for all functors (via printer system)" << endl;
@@ -1408,8 +1419,7 @@ namespace Gambit
         //logger() << EOM;
 
         // Check if we wanted to output this observable to the printer system.
-        //if ( printme and (toVertex==OBSLIKE_VERTEXID) )
-        if(printme)      masterGraph[fromVertex]->setPrintRequirement(true);
+        if ( toVertex==OBSLIKE_VERTEXID ) masterGraph[fromVertex]->setPrintRequirement(printme);
         // Check if the flag to output timing data is set
         if(print_timing) masterGraph[fromVertex]->setTimingPrintRequirement(true);
 

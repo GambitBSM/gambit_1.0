@@ -34,6 +34,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release_03")
   SET(CMAKE_BUILD_TYPE Release CACHE STRING "${CMAKE_BUILD_TYPE_STRING}" FORCE)
   SET(FORCE_03 TRUE)
 endif()
+message("${Yellow}-- Build type is set to ${CMAKE_BUILD_TYPE} ${ColourReset}")
 
 # Set certain policies to NEW
 foreach(p
@@ -109,9 +110,6 @@ elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source -fpp")
 endif()
 
-# Check for optional packages and disable sections of GAMBIT accordingly
-include(cmake/optional.cmake)
-
 # Set output paths
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
 set(mybindir ${PROJECT_SOURCE_DIR})
@@ -186,19 +184,6 @@ else()
   message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
 endif()
 
-# Check for yaml-cpp
-# Ben: Commented out for now because we are using a contrib yaml-cpp, but perhaps
-# we want to modify this so that users can use a custom yaml-cpp install instead
-# if they desire (with some restriction; version must be greater than 0.5.3 due
-# to memory leak bug in earlier versions.)
-# Actually might not need the set C_FLAGS etc, I didn't check what happens if
-# you remove them.
-#find_package(yaml-cpp REQUIRED)
-#if (YAMLCPP_FOUND)
-#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${YamlCpp_C_FLAGS}")
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${YamlCpp_CXX_FLAGS}")
-#endif()
-
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
 
@@ -237,6 +222,9 @@ else()
   set(GAMBIT_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   set(GAMBIT_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")
 endif()
+
+# Check for optional packages and disable sections of GAMBIT accordingly
+include(cmake/optional.cmake)
 
 # Set the version number (later to come directly from git tag)
 set(GAMBIT_VERSION_MAJOR 1)

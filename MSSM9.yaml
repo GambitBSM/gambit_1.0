@@ -74,7 +74,7 @@ Printer:
   options:
     output_file: "MSSM9.hdf5"
     group: "/MSSM9"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 Scanner:
 
