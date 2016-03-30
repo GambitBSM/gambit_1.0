@@ -26,7 +26,7 @@ LOAD_LIBRARY
 // BE_ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
 
 // Functions from gm2_1loop.h
-BE_FUNCTION(gm2calc_mssmnofv_calculate_amu_1loop, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_amu_1loop", "calculate_amu_1loop")
+BE_FUNCTION(gm2calc_mssmnofv_calculate_amu_1loop, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_amu_1loop", "gm2calc_mssmnofv_calculate_amu_1loop")
 BE_FUNCTION(gm2calc_mssmnofv_calculate_amu_1loop_non_tan_beta_resummed, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_amu_1loop_non_tan_beta_resummed", "gm2calc_mssmnofv_calculate_amu_1loop_non_tan_beta_resummed")
 BE_FUNCTION(gm2calc_mssmnofv_amuChi0, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amuChi0", "gm2calc_mssmnofv_amuChi0")
 BE_FUNCTION(gm2calc_mssmnofv_amuChipm, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amuChipm", "gm2calc_mssmnofv_amuChipm")

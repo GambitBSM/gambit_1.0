@@ -186,9 +186,12 @@ START_MODULE
     BACKEND_REQ(gm2calc_mssmnofv_set_Ad, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_Ae, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_scale, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
-    // BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
-    // BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_1loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
-    // BACKEND_REQ(gm2calc_mssmnofv_convert_to_onshell, (libgm2calc), void, (const gm2calc_c::MSSMNoFV_onshell*))
+    // 
+    BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_1loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_mssmnofv_convert_to_onshell, (libgm2calc), gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_error_str, (libgm2calc), const char*, (gm2calc_c::gm2calc_error))
+    // 
     BACKEND_REQ(gm2calc_mssmnofv_free, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*))
     BACKEND_OPTION( (gm2calc_c), (libgm2calc) )
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
