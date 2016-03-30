@@ -16,7 +16,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_mass_eigenstates*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_mass_eigenstates*);
+
+
+// Forward declaration for wrapper_creator.
+CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_mass_eigenstates* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -25,7 +33,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
    namespace gm2calc
    {
-      class Abstract_MSSMNoFV_onshell_mass_eigenstates : virtual public AbstractBase, virtual public gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters
+      class Abstract_MSSMNoFV_onshell_mass_eigenstates : virtual public gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters
       {
          public:
    
@@ -47,13 +55,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
             virtual void set_physical__BOSS(const gm2calc::Abstract_MSSMNoFV_onshell_physical&) =0;
    
-            virtual const gm2calc::Abstract_MSSMNoFV_onshell_physical* get_physical__BOSS() const =0;
+            virtual const gm2calc::Abstract_MSSMNoFV_onshell_physical& get_physical__BOSS() const =0;
    
-            virtual gm2calc::Abstract_MSSMNoFV_onshell_physical* get_physical__BOSS() =0;
+            virtual gm2calc::Abstract_MSSMNoFV_onshell_physical& get_physical__BOSS() =0;
    
-            virtual const gm2calc::Abstract_MSSMNoFV_onshell_problems* get_problems__BOSS() const =0;
+            virtual const gm2calc::Abstract_MSSMNoFV_onshell_problems& get_problems__BOSS() const =0;
    
-            virtual gm2calc::Abstract_MSSMNoFV_onshell_problems* get_problems__BOSS() =0;
+            virtual gm2calc::Abstract_MSSMNoFV_onshell_problems& get_problems__BOSS() =0;
    
             virtual int solve_ewsb_tree_level() =0;
    
@@ -372,36 +380,69 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             virtual double v() const =0;
    
          public:
-            using gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters::pointerAssign__BOSS;
-            virtual void pointerAssign__BOSS(Abstract_MSSMNoFV_onshell_mass_eigenstates*) =0;
-            virtual Abstract_MSSMNoFV_onshell_mass_eigenstates* pointerCopy__BOSS() =0;
+            using gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters::pointer_assign__BOSS;
+            virtual void pointer_assign__BOSS(Abstract_MSSMNoFV_onshell_mass_eigenstates*) =0;
+            virtual Abstract_MSSMNoFV_onshell_mass_eigenstates* pointer_copy__BOSS() =0;
    
          private:
-            mutable MSSMNoFV_onshell_mass_eigenstates* wptr;
+            MSSMNoFV_onshell_mass_eigenstates* wptr;
+            bool delete_wrapper;
+         public:
+            MSSMNoFV_onshell_mass_eigenstates* get_wptr() { return wptr; }
+            void set_wptr(MSSMNoFV_onshell_mass_eigenstates* wptr_in) { wptr = wptr_in; }
+            bool get_delete_wrapper() { return delete_wrapper; }
+            void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
    
          public:
             Abstract_MSSMNoFV_onshell_mass_eigenstates()
             {
+               wptr = 0;
+               delete_wrapper = false;
             }
    
-            void wrapper__BOSS(MSSMNoFV_onshell_mass_eigenstates* wptr_in)
+            Abstract_MSSMNoFV_onshell_mass_eigenstates(const Abstract_MSSMNoFV_onshell_mass_eigenstates& in) : 
+               gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters(in), gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters(in)
             {
-               wptr = wptr_in;
-               is_wrapped(true);
-               can_delete_wrapper(true);
+               wptr = 0;
+               delete_wrapper = false;
             }
    
-            MSSMNoFV_onshell_mass_eigenstates* wrapper__BOSS()
+            Abstract_MSSMNoFV_onshell_mass_eigenstates& operator=(const Abstract_MSSMNoFV_onshell_mass_eigenstates&) { return *this; }
+   
+            virtual void init_wrapper()
             {
+               if (wptr == 0)
+               {
+                  wptr = wrapper_creator(this);
+                  delete_wrapper = true;
+               }
+            }
+   
+            MSSMNoFV_onshell_mass_eigenstates* get_init_wptr()
+            {
+               init_wrapper();
                return wptr;
+            }
+   
+            MSSMNoFV_onshell_mass_eigenstates& get_init_wref()
+            {
+               init_wrapper();
+               return *wptr;
             }
    
             virtual ~Abstract_MSSMNoFV_onshell_mass_eigenstates()
             {
-               if (can_delete_wrapper())
+               if (wptr != 0)
                {
-                  can_delete_me(false);
-                  wrapper_deleter(wptr);
+                  set_delete_BEptr(wptr, false);
+                  if (delete_wrapper == true)
+                  {
+                     wrapper_deleter(wptr);
+                     wptr = 0;
+                     gm2calc::Abstract_MSSMNoFV_onshell_susy_parameters::set_wptr(0);
+                     gm2calc::Abstract_MSSMNoFV_onshell_soft_parameters::set_wptr(0);
+                     delete_wrapper = false;
+                  }
                }
             }
       };

@@ -16,121 +16,116 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       // Member functions: 
       inline void MSSMNoFV_onshell_problems::clear()
       {
-         wrapperbase::BEptr->clear();
+         get_BEptr()->clear();
       }
       
       inline void MSSMNoFV_onshell_problems::clear_problems()
       {
-         wrapperbase::BEptr->clear_problems();
+         get_BEptr()->clear_problems();
       }
       
       inline void MSSMNoFV_onshell_problems::clear_warnings()
       {
-         wrapperbase::BEptr->clear_warnings();
+         get_BEptr()->clear_warnings();
       }
       
       inline void MSSMNoFV_onshell_problems::flag_no_convergence_Mu_MassB_MassWB(double arg_1, unsigned int arg_2)
       {
-         wrapperbase::BEptr->flag_no_convergence_Mu_MassB_MassWB(arg_1, arg_2);
+         get_BEptr()->flag_no_convergence_Mu_MassB_MassWB(arg_1, arg_2);
       }
       
       inline void MSSMNoFV_onshell_problems::flag_no_convergence_me2(double arg_1, unsigned int arg_2)
       {
-         wrapperbase::BEptr->flag_no_convergence_me2(arg_1, arg_2);
+         get_BEptr()->flag_no_convergence_me2(arg_1, arg_2);
       }
       
       inline void MSSMNoFV_onshell_problems::flag_tachyon(const ::std::basic_string<char, std::char_traits<char>, std::allocator<char> >& arg_1)
       {
-         wrapperbase::BEptr->flag_tachyon(arg_1);
+         get_BEptr()->flag_tachyon(arg_1);
       }
       
       inline void MSSMNoFV_onshell_problems::unflag_no_convergence_Mu_MassB_MassWB()
       {
-         wrapperbase::BEptr->unflag_no_convergence_Mu_MassB_MassWB();
+         get_BEptr()->unflag_no_convergence_Mu_MassB_MassWB();
       }
       
       inline void MSSMNoFV_onshell_problems::unflag_no_convergence_me2()
       {
-         wrapperbase::BEptr->unflag_no_convergence_me2();
+         get_BEptr()->unflag_no_convergence_me2();
       }
       
       inline bool MSSMNoFV_onshell_problems::have_tachyon() const
       {
-         return wrapperbase::BEptr->have_tachyon();
+         return get_BEptr()->have_tachyon();
       }
       
       inline bool MSSMNoFV_onshell_problems::have_problem() const
       {
-         return wrapperbase::BEptr->have_problem();
+         return get_BEptr()->have_problem();
       }
       
       inline bool MSSMNoFV_onshell_problems::have_warning() const
       {
-         return wrapperbase::BEptr->have_warning();
+         return get_BEptr()->have_warning();
       }
       
       inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > MSSMNoFV_onshell_problems::get_warnings() const
       {
-         return wrapperbase::BEptr->get_warnings();
+         return get_BEptr()->get_warnings();
       }
       
       inline ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > MSSMNoFV_onshell_problems::get_problems() const
       {
-         return wrapperbase::BEptr->get_problems();
+         return get_BEptr()->get_problems();
       }
       
       inline void MSSMNoFV_onshell_problems::print(::std::basic_ostream<char, std::char_traits<char> >& arg_1) const
       {
-         wrapperbase::BEptr->print(arg_1);
+         get_BEptr()->print(arg_1);
       }
       
       inline void MSSMNoFV_onshell_problems::print_problems(::std::basic_ostream<char, std::char_traits<char> >& arg_1) const
       {
-         wrapperbase::BEptr->print_problems(arg_1);
+         get_BEptr()->print_problems(arg_1);
       }
       
       inline void MSSMNoFV_onshell_problems::print_warnings(::std::basic_ostream<char, std::char_traits<char> >& arg_1) const
       {
-         wrapperbase::BEptr->print_warnings(arg_1);
+         get_BEptr()->print_warnings(arg_1);
       }
       
       
       // Wrappers for original constructors: 
       inline gm2calc::MSSMNoFV_onshell_problems::MSSMNoFV_onshell_problems() :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_problems>(__factory0())
+         WrapperBase(__factory0())
       {
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+         get_BEptr()->set_wptr(this);
+         get_BEptr()->set_delete_wrapper(false);
       }
       
       // Special pointer-based constructor: 
       inline gm2calc::MSSMNoFV_onshell_problems::MSSMNoFV_onshell_problems(gm2calc::Abstract_MSSMNoFV_onshell_problems* in) :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_problems>(in)
+         WrapperBase(in)
       {
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-      }
-      
-      inline gm2calc::MSSMNoFV_onshell_problems::MSSMNoFV_onshell_problems(gm2calc::Abstract_MSSMNoFV_onshell_problems* const & in, bool) :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_problems>(in, true)
-      {
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+         get_BEptr()->set_wptr(this);
+         get_BEptr()->set_delete_wrapper(false);
       }
       
       // Copy constructor: 
       inline gm2calc::MSSMNoFV_onshell_problems::MSSMNoFV_onshell_problems(const MSSMNoFV_onshell_problems& in) :
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_problems>(in)
+         WrapperBase(in.get_BEptr()->pointer_copy__BOSS())
       {
-         wrapperbase::BEptr->can_delete_me(true);
-         wrapperbase::BEptr->wrapper__BOSS(this);
-         wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+         get_BEptr()->set_wptr(this);
+         get_BEptr()->set_delete_wrapper(false);
       }
       
       // Assignment operator: 
       inline gm2calc::MSSMNoFV_onshell_problems& MSSMNoFV_onshell_problems::operator=(const MSSMNoFV_onshell_problems& in)
       {
-         WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_problems>::operator=(in);
+         if (this != &in)
+         {
+            get_BEptr()->pointer_assign__BOSS(in.get_BEptr());
+         }
          return *this;
       }
       
@@ -138,14 +133,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       // Destructor: 
       inline gm2calc::MSSMNoFV_onshell_problems::~MSSMNoFV_onshell_problems()
       {
+         if (get_BEptr() != 0)
+         {
+            get_BEptr()->set_delete_wrapper(false);
+            if (can_delete_BEptr())
+            {
+               delete BEptr;
+               BEptr = 0;
+            }
+         }
+         set_delete_BEptr(false);
       }
       
-      
-      // Member variable initialiser: 
-      inline void gm2calc::MSSMNoFV_onshell_problems::_memberVariablesInit()
+      // Returns correctly casted pointer to Abstract class: 
+      inline gm2calc::Abstract_MSSMNoFV_onshell_problems* gm2calc::MSSMNoFV_onshell_problems::get_BEptr() const
       {
+         return dynamic_cast<gm2calc::Abstract_MSSMNoFV_onshell_problems*>(BEptr);
       }
-      
    }
    
 }

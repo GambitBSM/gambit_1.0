@@ -11,7 +11,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_physical*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_physical*);
+
+
+// Forward declaration for wrapper_creator.
+CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::MSSMNoFV_onshell_physical* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::gm2calc::Abstract_MSSMNoFV_onshell_physical*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -20,7 +28,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    
    namespace gm2calc
    {
-      class Abstract_MSSMNoFV_onshell_physical : virtual public AbstractBase
+      class Abstract_MSSMNoFV_onshell_physical : public virtual AbstractBase
       {
          public:
    
@@ -131,35 +139,65 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             virtual ::Eigen::Matrix<std::complex<double>, 2, 2, 0, 2, 2>& UP_ref__BOSS() =0;
    
          public:
-            virtual void pointerAssign__BOSS(Abstract_MSSMNoFV_onshell_physical*) =0;
-            virtual Abstract_MSSMNoFV_onshell_physical* pointerCopy__BOSS() =0;
+            virtual void pointer_assign__BOSS(Abstract_MSSMNoFV_onshell_physical*) =0;
+            virtual Abstract_MSSMNoFV_onshell_physical* pointer_copy__BOSS() =0;
    
          private:
-            mutable MSSMNoFV_onshell_physical* wptr;
+            MSSMNoFV_onshell_physical* wptr;
+            bool delete_wrapper;
+         public:
+            MSSMNoFV_onshell_physical* get_wptr() { return wptr; }
+            void set_wptr(MSSMNoFV_onshell_physical* wptr_in) { wptr = wptr_in; }
+            bool get_delete_wrapper() { return delete_wrapper; }
+            void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
    
          public:
             Abstract_MSSMNoFV_onshell_physical()
             {
+               wptr = 0;
+               delete_wrapper = false;
             }
    
-            void wrapper__BOSS(MSSMNoFV_onshell_physical* wptr_in)
+            Abstract_MSSMNoFV_onshell_physical(const Abstract_MSSMNoFV_onshell_physical&)
             {
-               wptr = wptr_in;
-               is_wrapped(true);
-               can_delete_wrapper(true);
+               wptr = 0;
+               delete_wrapper = false;
             }
    
-            MSSMNoFV_onshell_physical* wrapper__BOSS()
+            Abstract_MSSMNoFV_onshell_physical& operator=(const Abstract_MSSMNoFV_onshell_physical&) { return *this; }
+   
+            virtual void init_wrapper()
             {
+               if (wptr == 0)
+               {
+                  wptr = wrapper_creator(this);
+                  delete_wrapper = true;
+               }
+            }
+   
+            MSSMNoFV_onshell_physical* get_init_wptr()
+            {
+               init_wrapper();
                return wptr;
+            }
+   
+            MSSMNoFV_onshell_physical& get_init_wref()
+            {
+               init_wrapper();
+               return *wptr;
             }
    
             virtual ~Abstract_MSSMNoFV_onshell_physical()
             {
-               if (can_delete_wrapper())
+               if (wptr != 0)
                {
-                  can_delete_me(false);
-                  wrapper_deleter(wptr);
+                  set_delete_BEptr(wptr, false);
+                  if (delete_wrapper == true)
+                  {
+                     wrapper_deleter(wptr);
+                     wptr = 0;
+                     delete_wrapper = false;
+                  }
                }
             }
       };

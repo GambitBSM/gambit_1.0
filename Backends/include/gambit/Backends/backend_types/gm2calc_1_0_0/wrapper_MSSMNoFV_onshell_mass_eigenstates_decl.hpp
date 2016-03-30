@@ -21,12 +21,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
    namespace gm2calc
    {
       
-      class MSSMNoFV_onshell_mass_eigenstates : public WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates>, public MSSMNoFV_onshell_soft_parameters
+      class MSSMNoFV_onshell_mass_eigenstates : public MSSMNoFV_onshell_soft_parameters
       {
-         public:
-            typedef WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates> wrapperbase;
-            using WrapperBase<gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates>::BEptr;
-      
             // Member variables: 
          public:
             // -- Static factory pointers: 
@@ -52,7 +48,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
             void reorder_pole_masses();
       
-            void set_physical(const WrapperBase< gm2calc::Abstract_MSSMNoFV_onshell_physical >& arg_1);
+            void set_physical(const gm2calc::MSSMNoFV_onshell_physical& arg_1);
       
             const gm2calc::MSSMNoFV_onshell_physical& get_physical() const;
       
@@ -385,7 +381,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
       
             // Special pointer-based constructor: 
             MSSMNoFV_onshell_mass_eigenstates(gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates* in);
-            MSSMNoFV_onshell_mass_eigenstates(gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates* const & in, bool);
       
             // Copy constructor: 
             MSSMNoFV_onshell_mass_eigenstates(const MSSMNoFV_onshell_mass_eigenstates& in);
@@ -396,9 +391,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             // Destructor: 
             ~MSSMNoFV_onshell_mass_eigenstates();
       
-         private:
-            // Member variable initialiser: 
-            void _memberVariablesInit();
+            // Returns correctly casted pointer to Abstract class: 
+            gm2calc::Abstract_MSSMNoFV_onshell_mass_eigenstates* get_BEptr() const;
       
       };
    }
