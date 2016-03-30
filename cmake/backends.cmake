@@ -470,7 +470,6 @@ set_target_properties(darksusy
                       ddcalc
                       gamlike
                       nulike
-                      fastsim
                       gm2calc
                       gm2calc_c
                       PROPERTIES EXCLUDE_FROM_ALL 1)
