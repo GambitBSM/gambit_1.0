@@ -108,8 +108,8 @@ namespace Gambit {
       result.clear();
 
       std::vector<FJNS::PseudoJet> bhadrons; //< for input to FastJet b-tagging
-      std::vector<HEPUtils::Particle*> bpartons;
-      std::vector<HEPUtils::Particle*> tauCandidates;
+      std::vector<HEPUtils::Particle> bpartons;
+      std::vector<HEPUtils::Particle> tauCandidates;
       HEPUtils::P4 pout; //< Sum of momenta outside acceptance
 
       // Make a first pass of non-final particles to gather b-hadrons and taus
@@ -128,8 +128,7 @@ namespace Gambit {
           }
 
           if(isGoodB){
-            HEPUtils::Particle* tmpB = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-            bpartons.push_back(tmpB);
+            bpartons.push_back(HEPUtils::Particle(mk_p4(p.p()), p.id()));
           }
 
         }
@@ -152,8 +151,7 @@ namespace Gambit {
           }
 
           if (isGoodTau) {
-            HEPUtils::Particle* tmpTau = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-            tauCandidates.push_back(tmpTau);
+            tauCandidates.push_back(HEPUtils::Particle(mk_p4(p.p()), p.id()));
           }
         }
       }
@@ -203,7 +201,7 @@ namespace Gambit {
 
         HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
         for (auto& pb : bpartons) {
-          if (jetMom.deltaR_eta(pb->mom()) < 0.4) {
+          if (jetMom.deltaR_eta(pb.mom()) < 0.4) {
             isB = true;
             break;
           }
@@ -211,7 +209,7 @@ namespace Gambit {
 
         bool isTau = false;
         for (auto& ptau : tauCandidates){
-          if (jetMom.deltaR_eta(ptau->mom()) < 0.5){
+          if (jetMom.deltaR_eta(ptau.mom()) < 0.5){
             isTau = true;
             break;
           }
@@ -251,7 +249,7 @@ namespace Gambit {
     void BuckFastBase::convertPythia8PartonEvent(const Pythia8::Event& pevt, HEPUtils::Event& result) const {
       result.clear();
 
-      std::vector<HEPUtils::Particle*> tauCandidates;
+      std::vector<HEPUtils::Particle> tauCandidates;
 
       // Make a first pass of non-final particles to gather taus
       for (int i = 0; i < pevt.size(); ++i) {
@@ -273,8 +271,7 @@ namespace Gambit {
           }
 
           if (isGoodTau) {
-            HEPUtils::Particle* tmpTau = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-            tauCandidates.push_back(tmpTau);
+            tauCandidates.push_back(HEPUtils::Particle(mk_p4(p.p()), p.id()));
           }
         }
       }
@@ -334,7 +331,7 @@ namespace Gambit {
         bool isTau=false;
         for(auto& ptau : tauCandidates){
           HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
-          if(jetMom.deltaR_eta(ptau->mom()) < 0.5){
+          if(jetMom.deltaR_eta(ptau.mom()) < 0.5){
             isTau=true;
             break;
           }
