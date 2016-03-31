@@ -99,10 +99,12 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/printer_id_tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/hdf5_combine_tools.hpp"
 
 #include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Utils/model_parameters.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Logs/logger.hpp"
 
@@ -514,27 +516,53 @@ namespace Gambit
         // HDF5 group (virtual "folder") inside output file in which to store datasets
         group = options.getValueOrDef<std::string>("/","group");
 
-        // Delete final target file if one with same name already exists?
-        // TODO: rank 0 only!
-        bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists"); //TODO; UNUSED! Need this.
-          
+        // Delete final target file (or group) if one with same name already exists? (and if we are restarting the run)
+        // This is just for convenience during testing; by default datasets will simply be replaced in/added to
+        // existing target HDF5 files. This lets one combine data from many scans into one file if desired.
+        bool overwrite_file  = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+         
         if(myRank==0)
         {
-           std::string msg_finalfile;
-           if(HDF5::checkFileReadable(finalfile, msg_finalfile) and overwrite)
+           if(not resume)
            {
-              // Delete existing output file
-              std::ostringstream command;
-              command << "rm "<<finalfile;
-              FILE* fp = popen(command.str().c_str(), "r");
-              if(fp==NULL)
-              {
-                 // Error running popen
-                 std::ostringstream errmsg;
-                 errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_if_exists' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
-                 printer_error().raise(LOCAL_INFO, errmsg.str());
-              }
-           }
+             std::string msg_finalfile;
+             if(HDF5::checkFileReadable(finalfile, msg_finalfile))
+             {
+               if(overwrite_file)
+               {
+                  // Note: "not resume" means "start or restart"
+                  // Delete existing output file
+                  std::ostringstream command;
+                  command << "rm "<<finalfile;
+                  FILE* fp = popen(command.str().c_str(), "r");
+                  if(fp==NULL)
+                  {
+                     // Error running popen
+                     std::ostringstream errmsg;
+                     errmsg << "rank "<<myRank<<": Error deleting existing output file (requested by 'delete_file_if_exists' printer option; target filename is "<<finalfile<<")! popen failed to run the command (command was '"<<command.str()<<"')";
+                     printer_error().raise(LOCAL_INFO, errmsg.str());
+                  }
+               }
+               else
+               {
+                  // File exists, so check if 'group' is readable, and throw error if it exists
+                  file_id = HDF5::openFile(finalfile);
+                  std::string msg_group;
+                  if(HDF5::checkGroupReadable(file_id, group, msg_group))
+                  {
+                     // Group already exists, error!
+                     std::ostringstream errmsg;
+                     errmsg << "Error preparing pre-existing output file '"<<finalfile<<"' for writing via hdf5printer! The requested output group '"<<group<<" already exists in this file! Please take one of the following actions:"<<std::endl;
+                     errmsg << "  1. Choose a new group via the 'group' option in the Printer section of your input YAML file;"<<std::endl;
+                     errmsg << "  2. Delete the existing group from '"<<finalfile<<"';"<<std::endl;
+                     errmsg << "  3. Delete the existing output file, or set 'delete_file_if_exists: true' in your input YAML file to give GAMBIT permission to automatically delete it;"<<std::endl;
+                     errmsg << "  4. Remove the '-r' command line flag from your invocation of GAMBIT, to allow GAMBIT to attempt to resume scanning from the existing output.";
+                     printer_error().raise(LOCAL_INFO, errmsg.str());
+                 }
+                  HDF5::closeFile(file_id);
+               }
+             }
+           } // end if(not resume)
         }
         else
         {
@@ -1010,7 +1038,7 @@ namespace Gambit
     /// Combine temporary hdf5 output files from each process into a single coherent hdf5 file.
     void HDF5Printer::combine_output(const int N, const bool resume, const bool finalcombine)
     {
-      std::ostringstream command;
+      /*std::ostringstream command;
       command << "python "<< GAMBIT_DIR <<"/Printers/scripts/combine_hdf5.py "<<file<<"  "<<finalfile<<" "<<group<<" "<<N<<" "<<resume<<" 2>&1";
       logger() << LogTags::printers << "rank "<<myRank<<": Running HDF5 data combination script..." << std::endl
                << "> " << command.str() << std::endl
@@ -1040,7 +1068,8 @@ namespace Gambit
          std::ostringstream errmsg;
          errmsg << "rank "<<myRank<<": Error running HDF5 data combination script during HDF5Printer finalise()! Script ran, but return code != 0 was encountered; stdout and stderr from the system call is below:" << std::endl << output.str();
          printer_error().raise(LOCAL_INFO, errmsg.str());              
-      }
+      }*/
+      Gambit::Printers::HDF5::combine_hdf5_files(file, finalfile, group, N, resume);
       // Otherwise everything should be ok!
       if(finalcombine)
       {

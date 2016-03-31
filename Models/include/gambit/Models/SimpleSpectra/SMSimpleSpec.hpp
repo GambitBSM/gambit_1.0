@@ -69,7 +69,7 @@ namespace Gambit
       struct SpecTraits<SMSimpleSpec> 
       {
           static std::string name() { return "SMSimpleSpec"; }
-          typedef SpectrumContents::SM Contents;
+          typedef SpectrumContents::SM_slha Contents;
           typedef SMea     Model;
           typedef DummyInput Input; // DummyInput is just an empty struct
       };

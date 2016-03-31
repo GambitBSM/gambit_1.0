@@ -167,11 +167,15 @@ int main(int argc, char **argv)
             Printers::BasePrinter& printer (*printerManager.printerptr); 
             //Printers::BasePrinter printerManager();
             printerInterface = &printerManager;
-            //Define the prior
-            Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
 
-            //Create the master scan manager 
-            Scanner::Scan_Manager scan(0, iniFile.getScannerNode(), &prior, &printerManager);
+            //Make scanner yaml node
+      YAML::Node scanner_node;
+      scanner_node["Scanner"] = iniFile.getScannerNode();
+      scanner_node["Parameters"] = iniFile.getParametersNode();
+      scanner_node["Priors"] = iniFile.getPriorsNode();
+      
+      //Create the master scan manager 
+      Scanner::Scan_Manager scan(scanner_node, &printerManager, 0);
 
             //Do the scan!
             logger() << "Starting scan." << EOM;

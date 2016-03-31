@@ -68,12 +68,13 @@ namespace Gambit
             friend class scan_ptr<ret (args...)>;
             
             printer *main_printer;
+            Priors::BasePrior *prior;
             std::string purpose;
             int rank;
  
             virtual void deleter(Function_Base <ret (args...)> *in) const
             {
-                    delete in;
+                delete in;
             }
             
             virtual const std::type_info & type() const {return typeid(ret (args...));}
@@ -82,33 +83,30 @@ namespace Gambit
             Function_Base() : rank(0)
             {
 #ifdef WITH_MPI
-                    GMPI::Comm world;
-                    rank = world.Get_rank();
+                GMPI::Comm world;
+                rank = world.Get_rank();
 #endif
             }
-            
-            
             
             virtual ret main(const args&...) = 0;
             virtual ~Function_Base(){} 
             
             ret operator () (const args&... params) 
             {
-                    Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
-                    unsigned long long int id = ++Gambit::Printers::get_point_id();
-                    ret ret_val = main(params...);
-                    Gambit::Scanner::Plugins::plugin_info.set_calculating(false);
-                    if (sizeof...(params) == 1)
-                            main_printer->print(params..., "unitCubeParameters", rank, id);
-                    main_printer->print(ret_val, purpose, rank, id);
-                    main_printer->print(int(id), "pointID", rank, id);
-                    main_printer->print(rank, "MPIrank", rank, id);
-                    return ret_val;
+                Gambit::Scanner::Plugins::plugin_info.set_calculating(true);
+                ++Gambit::Printers::get_point_id();
+                ret ret_val = main(params...);
+                Gambit::Scanner::Plugins::plugin_info.set_calculating(false);
+                
+                return ret_val;
             }
             
-            void setPurpose(const std::string p){purpose = p;}
-            void setPrinter(printer* p){main_printer = p;}
-            printer *getPrinter(){return main_printer;}
+            void setPurpose(const std::string p) {purpose = p;}
+            void setPrinter(printer* p) {main_printer = p;}
+            void setPrior(Priors::BasePrior *p) {prior = p;}
+            printer &getPrinter() {return *main_printer;}
+            Priors::BasePrior &getPrior() {return *prior;}
+            std::vector<std::string> getParameters() {return prior->getParameters();}
             std::string getPurpose() const {return purpose;}
             int getRank() const {return rank;}
             unsigned long long int getPtID() const {return Gambit::Printers::get_point_id();}
@@ -194,6 +192,48 @@ namespace Gambit
             ret operator()(const args&... params)
             {
                 return (*this)->operator()(params...);
+            }
+        };
+        
+        class like_ptr : public scan_ptr<double (std::unordered_map<std::string, double> &)>
+        {
+        private:
+            typedef scan_ptr<double (std::unordered_map<std::string, double> &)> s_ptr;
+            std::unordered_map<std::string, double> map;
+            
+        public:
+            like_ptr(){}
+            like_ptr(const like_ptr &in) : s_ptr (in){}
+            //like_ptr(like_ptr &&in) : s_ptr (std::move(in)) {}
+            like_ptr(void *in) : s_ptr(in) {}
+            
+            double operator()(const std::vector<double> &vec)
+            {
+                static int rank = (*this)->getRank();
+                (*this)->getPrior().transform(vec, map);
+                double ret_val = (*this)->operator()(map);
+                unsigned long long int id = Gambit::Printers::get_point_id();
+                (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
+                (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
+                (*this)->getPrinter().print(int(id), "pointID", rank, id);
+                (*this)->getPrinter().print(rank, "MPIrank", rank, id);
+                
+                return ret_val;
+            }
+            
+            double operator()(std::unordered_map<std::string, double> &map, const std::vector<double> &vec = std::vector<double>())
+            {
+                static int rank = (*this)->getRank();
+                (*this)->getPrior().transform(vec, map);
+                double ret_val = (*this)->operator()(map);
+                unsigned long long int id = Gambit::Printers::get_point_id();
+                if (vec.size() > 0)
+                    (*this)->getPrinter().print(vec, "unitCubeParameters", rank, id);
+                (*this)->getPrinter().print(ret_val, (*this)->getPurpose(), rank, id);
+                (*this)->getPrinter().print(int(id), "pointID", rank, id);
+                (*this)->getPrinter().print(rank, "MPIrank", rank, id);
+                
+                return ret_val;
             }
         };
         

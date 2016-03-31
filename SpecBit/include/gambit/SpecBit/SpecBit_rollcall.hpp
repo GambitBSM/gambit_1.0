@@ -33,7 +33,7 @@ START_MODULE
   /// Module function declarations for SpecBit_MSSM.cpp
   #include "gambit/SpecBit/SpecBit_MSSM_rollcall.hpp"
 
-  #include "gambit/SpecBit/SpecBit_SSDM_rollcall.hpp"
+  #include "gambit/SpecBit/SpecBit_VS_rollcall.hpp"
 
   /// Module function declarations for SpecBit_SingletDM.cpp
   #include "gambit/SpecBit/SpecBit_SingletDM_rollcall.hpp"
@@ -69,16 +69,6 @@ START_MODULE
   //   #undef FUNCTION
 
   // #undef CAPABILITY
-
-  #define CAPABILITY dump_spectrum_slha
-  START_CAPABILITY
-
-    #define FUNCTION dump_spectrum
-      START_FUNCTION(double)
-      DEPENDENCY(SM_subspectrum, const SubSpectrum*)
-    #undef FUNCTION
-
-  #undef CAPABILITY
 
 
 #undef MODULE

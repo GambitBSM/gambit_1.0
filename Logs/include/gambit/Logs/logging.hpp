@@ -34,6 +34,7 @@
 // Gambit
 #include "gambit/Logs/logger.hpp" // Minimal declarations needed to use logger -- most code should only need to include this.
 #include "gambit/Logs/log_tags.hpp"
+#include "gambit/Utils/file_lock.hpp"
 //#include "gambit/Utils/util_functions.hpp"
 
 

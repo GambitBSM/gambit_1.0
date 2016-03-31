@@ -126,7 +126,8 @@ namespace Gambit
         /// @{ Setters for behaviour options 
         /// Must be used before "initialise" in order to have any effect
         /// Choose whether a separate log file for each MPI process is used
-        void set_separate_file_per_process(bool flag) {separate_file_per_process=flag;}
+        /// NOW FORBIDDEN! Always must be true to avoid concurrent write access issues
+        ///void set_separate_file_per_process(bool flag) {separate_file_per_process=flag;}
 
         /// Choose whether "Debug" tagged log messages will be ignored (i.e. not logged)
         void set_log_debug_messages(bool flag) {log_debug_messages=flag;}

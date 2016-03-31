@@ -39,13 +39,12 @@ namespace Gambit
   /// Constructor
   Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
    DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
-   Priors::CompositePrior &prior, const str &purpose, Printers::BaseBasePrinter& printer
+   const str &purpose, Printers::BaseBasePrinter& printer
   #ifdef WITH_MPI
     , GMPI::Comm& comm
   #endif
   ) 
   : dependencyResolver (dependencyResolver), 
-    prior              (prior),
     printer            (printer),
     functorMap         (functorMap),
     #ifdef WITH_MPI
@@ -90,10 +89,10 @@ namespace Gambit
   }
 
   /// Do the prior transformation and populate the parameter map
-  void Likelihood_Container::setParameters (const std::vector<double> &vec)
+  void Likelihood_Container::setParameters (const std::unordered_map<std::string, double> &parameterMap)
   {
-    // Do the prior transformation, saving the real parameter values in the parameterMap
-    prior.transform(vec, parameterMap);
+    // Clear the parameter map to make sure no junk from the last iteration gets left in there
+    //parameterMap.clear();
 
     // Set up a stream containing the parameter values, for diagnostic output
     std::ostringstream parstream;
@@ -108,8 +107,23 @@ namespace Gambit
       for (auto par_it = paramkeys.begin(), par_end = paramkeys.end(); par_it != par_end; par_it++)
       {
         str key = act_it->first + "::" + *par_it;
-        parstream << "    " << *par_it << ": " << parameterMap[key] << endl;
-        act_it->second->getcontentsPtr()->setValue(*par_it, parameterMap[key]);
+        auto tmp_it = parameterMap.find(key);
+        if(tmp_it == parameterMap.end())
+        {
+           std::ostringstream err;
+           err << "Error! Failed to set parameter '"<<key<<"' following prior transformation! The parameter could not be found in the map returned by the prior. This probably means that the prior you are using contains a bug." << std::endl;
+           err << "The parameters and values that *were* returned by the prior were:" <<std::endl;
+           if(parameterMap.size()==0){ err << "None! Size of map was zero." << std::endl; } 
+           else {
+             for (auto par_jt = parameterMap.begin(); par_jt != parameterMap.end(); ++par_jt)
+             {
+               err << par_jt->first << "=" << par_jt->second << std::endl;
+             }
+           }
+           core_error().raise(LOCAL_INFO,err.str());
+        }
+        parstream << "    " << *par_it << ": " << tmp_it->second << endl;
+        act_it->second->getcontentsPtr()->setValue(*par_it, tmp_it->second);
       }
     }
 
@@ -128,8 +142,10 @@ namespace Gambit
   }
 
   /// Evaluate total likelihood function
-  double Likelihood_Container::main (const std::vector<double> &in)
+  double Likelihood_Container::main (std::unordered_map<std::string, double> &in)
   {
+    double lnlike = 0;
+
     /// Unblock system signals (these are blocked to prevent external scanner 
     /// codes from getting interrupted while they are performing sensitive
     /// tasks, like writing to disk; i.e. we do not trust them to have 
@@ -139,7 +155,6 @@ namespace Gambit
     /// Check for signals to abort run
     signaldata().check_for_shutdown_signal();
 
-    double lnlike = 0;
     bool compute_aux = true;
     setParameters(in);
 
@@ -269,19 +284,6 @@ namespace Gambit
 
     if (debug) cout << "log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
-
-    #ifdef WITH_MPI
-    /// Check for shutdown signals from other processes
-    if(errorComm.Iprobe(MPI_ANY_SOURCE, errorComm.mytag))
-    {
-      int tmp_buf;
-      MPI_Status msg_status;
-      errorComm.Recv(&tmp_buf, 1, MPI_ANY_SOURCE, errorComm.mytag, &msg_status);
-      // Set flag to begin emergency shutdown
-      signaldata().set_shutdown_begun(1);
-      logger() << LogTags::core << LogTags::info << "Received emergency shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
-    }
-    #endif
 
     /// Check once more for signals to abort run
     signaldata().check_for_shutdown_signal();

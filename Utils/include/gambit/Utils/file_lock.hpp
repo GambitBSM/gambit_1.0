@@ -62,9 +62,12 @@ namespace Gambit {
           /// Bool to indicate if we already have the lock
           bool have_lock;
 
+          /// Bool to indicate that hard errors should be thrown rather than gambit errors (e.g. for use in loggers)
+          bool hard_errors;
+
         public:
           /// Constructor
-          FileLock(const std::string& fname);
+          FileLock(const std::string& fname, const bool harderrs=false);
 
           /// Destructor
           /// Closing the file descriptor will automatically release any lock we might have

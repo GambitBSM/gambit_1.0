@@ -272,6 +272,134 @@ namespace Gambit
          return timedout;
       }
 
+      /// This is a fancy barrier that waits a certain amount of time after the FIRST process
+      /// enters before unlocking (so that other action can be taken). This means that all the
+      /// processes that enter the barrier *do* get synchronised, even if the barrier unlocks.
+      /// This helps the synchronisation to be achieved next time.
+      bool Comm::BarrierWithCommonTimeout(std::chrono::duration<double> timeout, 
+                                          const int tag_entered, 
+                                          const int tag_timeleft, 
+                                          std::ostream& errorlog)
+      {
+         std::size_t mpiSize = Get_size(); 
+         std::size_t myRank  = Get_rank();
+         bool timedout = false;
+
+         std::vector<bool> entered(mpiSize,false); // should init to "false"
+         entered[myRank] = true; // we know that we have entered the barrier
+         errorlog << "Entered BarrierWithCommonTimeout; timeout="<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count()<<" ms; tag_entered="<<tag_entered<<"; tag_timeleft="<<tag_timeleft<<std::endl;
+         if(mpiSize>1)
+         {
+            int null_recv_buffer = 0; // To receive the null messages
+            MPI_Status status;
+
+            // First, tell all other processes that we have entered the barrier
+            IsendToAll(&null_send_buffer, 1, tag_entered, &req_null);
+
+            // Setup timeout interval and sleep time             
+            unsigned int Nchecks = 100; // Check for messages 100 times evenly spaced over the timeout interval
+            std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+
+            struct timespec sleeptime;
+            sleeptime.tv_sec = 0;
+            sleeptime.tv_nsec = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count() / Nchecks;
+
+            // Vector to keep track of processes from which we have received "time remaining" counts.
+            std::vector<bool>  received_timeleft(mpiSize,false);
+            received_timeleft[myRank] = true; // Don't need to message ourselves
+
+            // Vector to keep track of processes to which we have sent *our* "time remaining" counts.
+            std::vector<bool>  sent_timeleft(mpiSize,false);
+            sent_timeleft[myRank] = true; // Don't need to message ourselves
+ 
+            // Now, loop and wait for all other processes to send their own entering signals
+            while( not timedout and std::find(entered.begin(), entered.end(), false) != entered.end() ) // Pass when 'false' cannot be found
+            {
+               // Check whether other processes have entered the barrier
+               for(std::size_t source=0;source<mpiSize;source++)
+               {
+                  //std::cerr<<"rank "<<myRank<<": has process "<<source<<" entered BarrierWithTimeout? "<<entered[source]<<std::endl;
+                  if(not entered[source])
+                  {
+                     if( Iprobe(source, tag_entered, &status) )
+                     {
+                        // Ok the source has now reached this barrier.
+                        entered[source] = true;
+                        Recv(&null_recv_buffer, 1, source, tag_entered);
+                        errorlog << "Process "<<source<<" entered BarrierWithCommonTimeout."<<std::endl;
+                    } 
+                  }
+                  else
+                  {
+                    // Send our "timeleft" data to processes waiting in this loop, if we haven't already done so
+                    if(not sent_timeleft[source])
+                    {
+                      unsigned long buf_timeleft;
+                      std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+                      std::chrono::duration<double> our_timeleft = timeout - (current - start);
+                      buf_timeleft = std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count();
+                      Isend(&buf_timeleft, 1, source, tag_timeleft, &req_null); 
+                      sent_timeleft[source] = true;
+                      errorlog << "Sent our_timeleft ("<<buf_timeleft<<" ms) to process "<<source<<std::endl;
+                   }
+
+                    // From processes that we know are waiting in this loop, check for messages from them with their time_left data
+                    if(not received_timeleft[source] and Iprobe(source, tag_timeleft, &status) )
+                    {
+                       // Ok the source is trying to tell us how much time they have left in their Barrier, record this.
+                       received_timeleft[source] = true;
+                       unsigned long buf_timeleft;
+                       Recv(&buf_timeleft, 1, source, tag_timeleft);
+                       errorlog << "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<std::endl;
+                       //Update our own timeleft to reflect this
+                       //i.e. subtract difference between our timeleft and theirs from total timeout time.
+                       std::chrono::milliseconds their_timeleft(buf_timeleft);
+                       std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+                       std::chrono::duration<double> our_timeleft = timeout - (current - start);
+                       std::chrono::duration<double> diff = our_timeleft - their_timeleft;
+                       if(diff>std::chrono::milliseconds(100)) // We have more time left than them, need to correct. But ignore discrepances of less than 100 ms.
+                       {
+                          timeout = timeout - diff; 
+                          // Debug
+                          errorlog << "Adjusting timeout; process "<<source<<" reports that it has "<<std::chrono::duration_cast<std::chrono::milliseconds>(their_timeleft).count()<<" ms until timeout, but we have "<<std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count()<<" ms left. Our remaining time is longer than theirs, so we will subtract "<<std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()<<" ms to improve synchronisation." << std::endl;
+                       }
+                    } 
+                  }
+               }
+
+               // While waiting, could do work here.
+  
+               //std::cerr << "rank " << myRank <<": sleeping... (total timeout = "<<std::chrono::duration_cast<std::chrono::seconds>(timeout).count()<<"; sleeptime = "<<sleeptime.tv_nsec*1e-9<<")"<< std::endl;
+               // sleep (is a busy sleep, but at least will avoid slamming MPI with constant Iprobes)
+               nanosleep(&sleeptime,NULL);
+
+               // Check if timeout interval has been exceeded
+               std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
+               std::chrono::duration<double> time_waited = current - start;
+               //std::cerr << "rank " << myRank <<": time_waited = "<<std::chrono::duration_cast<std::chrono::seconds>(time_waited).count() << std::endl;
+               
+               if(time_waited >= timeout) timedout = true;
+               errorlog << "End of wait loop; time left to timeout: "<<std::chrono::duration_cast<std::chrono::milliseconds>(timeout - time_waited).count()<<" ms"<<std::endl;
+            }
+         }
+
+         // if we timed out, spit out some errors
+         if(timedout)
+         {
+            errorlog << "rank " << myRank << ": timed out in BarrierWithCommonTimeout (tag_entered="<<tag_entered<<") waiting for the following process(es): ";
+            for(std::size_t source=0;source<mpiSize;source++)
+            {
+               if(not entered[source]) errorlog << source << ", ";
+            }
+            errorlog << std::endl;
+            /// Need to clear out any remaining MPI messages we might have missed.
+
+         }
+         errorlog << "Leaving BarrierWithCommonTimeout (tag_entered="<<tag_entered<<")"<<std::endl;
+         return timedout;
+      }
+
+
 
       /// @}
 

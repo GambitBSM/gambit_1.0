@@ -140,15 +140,16 @@ namespace Gambit
 
         // Scanner-friendly types to print
         void _print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void _print(bool const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(triplet<double> const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
-        void _print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
 
         // Scanner-unfriendly print functions
         #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
         // unsigned int is chosen somewhat arbitrarily just to demonstrate this requirement. Will be more important if other
         // fancier types need to be disabled.
+        void _print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(unsigned int const&,        const std::string& label, const int IDcode, const uint rank, const ulong pointID); 
         #endif      
 
@@ -211,6 +212,7 @@ namespace Gambit
         /// Record a set of labels for each printer item: used to write "info" file explain what is in each column
         std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
         bool info_file_written = false; // Flag to let us know that the info file has been written
+
     };
 
     // Register printer so it can be constructed via inifile instructions
