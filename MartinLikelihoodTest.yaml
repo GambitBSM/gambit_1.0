@@ -3,21 +3,17 @@ Parameters:
   #SM nuisance parameters.
   StandardModel_SLHA2: !import StandardModel_SLHA2_MSSM_scan.yaml
 
-  # Set CMSSM parameters (and priors) here
   CMSSM:
     M0:
-      range: [50, 10000]
-      prior_type: log
+      fixed_value: 1000
     M12:
-      range: [50, 10000]
-      prior_type: log
+      fixed_value: 600
     A0:
-      range: [-10000, 10000]
-      prior_type: flat
+      fixed_value: 0
     TanBeta:
-      range: [3.0, 70]
-      prior_type: flat
-    SignMu: 1
+      fixed_value: 30
+    SignMu:
+      fixed_value: 1
 
 Priors:
 
@@ -25,59 +21,64 @@ Priors:
 
 Printer:
 
-  # These lines tell GAMBIT to use the hdf5 printer
-  # Can switch to the ascii printer by commenting out and
-  # using the ascii lines below
-
   printer: hdf5
 
   options:
     output_file: "CMSSM.hdf5"
     group: "/CMSSM"
-    delete_file_on_restart: true
-
-  #printer: ascii
-
-  #options:
-  #  output_file: "gambit_output.txt"
-
 
 Scanner:
 
-  # Choose which scanner to use
-  # Default is multinest
-  # Random scanner setup is given below (can switch by using use_scanner: random)
+  use_scanner: random
 
- use_scanner: multinest
+  scanners:
 
- scanners:
-   multinest:
-     plugin: MultiNest
-     like:  LogLike
-     nlive: 20000
-     tol: 0.0001
+    multinest:
+      plugin: MultiNest
+      like:  Likelihood
+      nlive: 200
+      tol: 0.01
+      aux_printer_txt_options:
+      aux_printer_stats_options:
+      aux_printer_live_options:
 
-    #random:
-    #  plugin: random_sampler
-    #  point_number: 1
-    #  output_file:  output
-    #  like:  Likelihood
-    #  files:
-    #    output_file: "weights ..."
+
+    grid:
+      plugin: grid
+      version: ">=1.0"
+      grid_pts: [4,4]
+      output_file:  output
+      purpose:  Likelihood
+      files:
+        output_file: "weights ..."
+
+    square:
+      plugin: square_grid
+      grid_pts: 2
+      output_file:  output
+      purpose:  Likelihood
+      files:
+        output_file: "weights ..."
+
+    random:
+      plugin: random_sampler
+      point_number: 5
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
 
 ObsLikes:
 
-    # FlavBit likelihoods
-    - purpose:    LogLike
-      capability: b2ll_LL
 
     - purpose:    LogLike
-      capability: SL_LL
-
-    - purpose:    LogLike
-      capability: b2sll_LL
+      capability: LHC_Combined_LogLike
 
 Rules:
+
+  # Choose to get decays from DecayBit proper, not from an SLHA file.
+  - capability: decay_rates
+    function: all_decays
 
   # Choose to get the spectrum from SpecBit proper, not an SLHA file.
   - capability: unimproved_MSSM_spectrum
@@ -141,6 +142,32 @@ Rules:
   - capability: t_decay_rates
     function: FH_t_decays
 
+  - capability: AnalysisContainer
+    function: getAnalysisContainer
+    options:
+      analysisNames: ["ATLAS_0LEP_20invfb","CMS_1LEPDMTOP_20invfb"]
+
+  - capability: DetectorSim
+    function: getDelphes
+    options:
+      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+
+  - capability: SimpleSmearingSim
+    function: getBuckFast
+    options:
+      buckFastOption: "BuckFastSmear"
+
+  - capability: ReconstructedEvent
+    function: reconstructBuckFastEvent
+    dependencies:
+    - {capability: "ConvertedScatteringEvent", function: "convertPythia8ParticleEvent"}
+
+  - capability:  ColliderOperator
+    function: operateLHCLoop
+    options:
+      nEvents: 200000
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
+
   - options:
       gauge_mixing_tolerance: 0.5
       family_mixing_tolerance: 0.5
@@ -148,6 +175,28 @@ Rules:
       #gauge_mixing_tolerance_invalidates_point_only: false
       #family_mixing_tolerance_invalidates_point_only: false
       #off_diagonal_tolerance_invalidates_point_only: false
+
+  - capability:  HardScatteringSim
+    function:  getPythia
+    options:
+      # Change to absolute paths below when running outside of the gambit/modules directory
+      Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
+      Pythia_SUSY_LHC_8TeV:
+        pythiaOptions_1: ["Print:quiet = on",
+                          "PartonLevel:MPI = off",
+                          "PartonLevel:ISR = on",
+                          "PartonLevel:FSR = on",
+                          "HadronLevel:all = on",
+        "SUSY:all = on",
+        "TauDecays:mode = 0"]
+
+  - capability: LHC_Combined_LogLike
+    backends:
+    - {capability: lnlike_marg_poisson_lognormal_error}
+
+  - capability: AnalysisNumbers
+    dependencies:
+    - {capability: "ReconstructedEvent", function: "reconstructBuckFastEvent"}
 
 Logger:
 

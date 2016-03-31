@@ -22,6 +22,7 @@
 ///  *********************************************
 
 
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/funktions.hpp"
 #include "gambit/Utils/util_types.hpp"
 

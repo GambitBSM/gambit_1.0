@@ -46,6 +46,7 @@ namespace Gambit
    void SignalData::setjump()
    {
       havejumped = setjmp(env);
+      jumppoint_set = true;
    }
 
    /// Set cleanup function
@@ -65,7 +66,7 @@ namespace Gambit
    /// Add signal to record
    void SignalData::add_signal(int sig)
    {
-     std::cerr << " Adding signal " << sig << std::endl; // debugging
+     //std::cerr << " Adding signal " << sig << std::endl; // debugging
      if(N_signals<MAX_SIGNALS) {
         received_signals[N_signals] = sig;
         N_signals+=1;
@@ -534,8 +535,10 @@ namespace Gambit
       //std::cerr << " Saw signal " << sig << std::endl; // debugging
       if(signaldata().inside_multithreaded_region()) {
          sub_sighandler_emergency_omp(sig);
-      } else {
+      } else if (signaldata().jumppoint_set) {
          sub_sighandler_emergency_longjmp(sig);
+      } else { // Signal encountered before jump point set; use non-jump emergency shutdown
+         sub_sighandler_emergency(sig);
       }
    }
 

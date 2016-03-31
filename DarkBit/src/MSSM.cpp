@@ -49,6 +49,7 @@ namespace Gambit {
 
       // Read filename from yaml file
       std::vector<std::string> filenames = 
+      /// Option filename<std::string>: Input SLHA filename (required)
         runOptions->getValue<std::vector<std::string> >("filenames");
 
       std::string filename = filenames[counter];
@@ -97,6 +98,7 @@ namespace Gambit {
           "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
 
         std::vector<str> filenames =
+      /// Option debug_SLHA_filenames<std::vector<std::string>>: Optional override list of SLHA filenames used for backend initialization default
           runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
         const char * filename = filenames[counter].c_str();
         int len = filenames[counter].length();
@@ -112,6 +114,7 @@ namespace Gambit {
       // CMSSM with DS-internal ISASUGRA (should be avoided, only for
       // debugging)
       else if (ModelInUse("CMSSM") and
+      /// Option use_DS_isasugra<bool>: Use DS internal isasugra for parameter running (false)
           runOptions->getValueOrDef<bool>(false, "use_DS_isasugra")
           )
       {
@@ -161,6 +164,7 @@ namespace Gambit {
         SLHAstruct mySLHA = mySpec->getSLHAea();
 
         // Use an actual SLHA file.  DarkSUSY is on its own wrt (s)particle widths this way.
+      /// Option use_dsSLHAread<bool>: Use DS internal SLHA reader to initialize backend (false)
         if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
         {
           int rank = 0;
@@ -513,6 +517,7 @@ namespace Gambit {
         annFinalStates.insert(str_flav_to_mass(STRINGIFY(P2)));                                \
       }                                        
 
+      /// Option ignore_three_body<bool>: Ignore three-body final states (default false)
       if ( not runOptions->getValueOrDef<bool>(false, "ignore_three_body") )
       {
         // Set DarkSUSY DM mass parameter used in 3-body decays
@@ -560,6 +565,7 @@ namespace Gambit {
       // Set of imported decays - avoids double imports
       std::set<string> importedDecays;
 
+      // FIXME: Add getValue documentation
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 

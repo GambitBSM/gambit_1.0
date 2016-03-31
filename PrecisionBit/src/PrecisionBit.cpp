@@ -464,14 +464,14 @@ namespace Gambit
         for (int i = 0; i < 4; i++) cout << "h masses, high: " << HE->get(Par::Pole_Mass_1srd_high, higgses[i])<<endl;
       #endif
 
+      result = &improved_spec;
+
       if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
       {
         // Spit out the full spectrum as an SLHA file.
         str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
         result->getSLHA(filename);
       }
-
-      result = &improved_spec;
 
     }
 
