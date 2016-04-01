@@ -1,6 +1,16 @@
-OMP paralellization update: Try to remove shared variables, atomic statements, critical blocks, etc. 
+ColliderBit cleanup TODOs:
+==========================
+
+1.) Make a default value for the Pythia xml doc directory in the code.
+
+2.) Remove obsolete yaml files, and make one or two simple, highly annotated
+    example yaml files for the code release.
+
+3.) Test and cleanup the doxygen comments in the code.
+
+
+
+** I guess we're done with memory leak hunting, but just in case...
 
 How to valgrind to find ColliderBit memory issues:
 valgrind --tool=memcheck --memcheck:leak-check=full --show-reachable=yes --suppressions=valgrindColliderBit.supp ./gambit -f gambit_Collider.yaml
-
-
