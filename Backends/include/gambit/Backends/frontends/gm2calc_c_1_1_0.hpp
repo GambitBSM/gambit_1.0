@@ -41,6 +41,9 @@ BE_FUNCTION(gm2calc_mssmnofv_amuChi0Photonic, double, (const gm2calc_c::MSSMNoFV
 BE_FUNCTION(gm2calc_mssmnofv_amu2LaSferm, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amu2LaSferm", "gm2calc_mssmnofv_amu2LaSferm")
 BE_FUNCTION(gm2calc_mssmnofv_amu2LaCha, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amu2LaCha", "gm2calc_mssmnofv_amu2LaCha")
 
+// Functions from gm2_uncertainty.h
+BE_FUNCTION(gm2calc_mssmnofv_calculate_uncertainty_amu_2loop, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_uncertainty_amu_2loop", "gm2calc_mssmnofv_calculate_uncertainty_amu_2loop")
+
 // Functions from gm2calc_c::MSSMNoFV_onshell.h
 BE_FUNCTION(gm2calc_error_str, const char*, (gm2calc_c::gm2calc_error), "gm2calc_error_str", "gm2calc_error_str")
 BE_FUNCTION(gm2calc_mssmnofv_new, gm2calc_c::MSSMNoFV_onshell*, (), "gm2calc_mssmnofv_new", "gm2calc_mssmnofv_new")

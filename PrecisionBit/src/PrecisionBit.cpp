@@ -802,7 +802,7 @@ namespace Gambit
 
 
     /// Test function for the backend to the C version of gm2calc
-    void a_mu_SUSY_c(double &result)
+    void a_mu_SUSY_c(triplet<double> &result)
     {
       using namespace Pipes::a_mu_SUSY_c;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
@@ -889,6 +889,12 @@ namespace Gambit
 
       BEreq::gm2calc_mssmnofv_free.pointer()(model);
 
+      double uncertainty = BEreq::gm2calc_mssmnofv_calculate_uncertainty_amu_2loop.pointer()(model);
+      
+      result.central = amu;
+      result.upper = uncertainty;
+      result.lower = uncertainty;
+      
       result = amu;
       return;
     }
