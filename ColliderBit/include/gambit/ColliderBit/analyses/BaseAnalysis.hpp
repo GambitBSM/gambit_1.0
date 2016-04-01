@@ -69,7 +69,7 @@ namespace Gambit {
         void analyze(const EventT& e) { analyze(&e); }
         /// @brief Analyze the event (accessed by pointer)
         /// @note Needs to be called from Derived::analyze()
-        virtual void analyze(const HEPUtils::Event*) { _ntot += 1; }
+        virtual void analyze(const EventT*) { _ntot += 1; }
 
         /// @brief Return the total number of events seen so far
         double num_events() const { return _ntot; }

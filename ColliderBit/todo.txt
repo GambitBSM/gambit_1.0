@@ -8,6 +8,8 @@ ColliderBit cleanup TODOs:
 
 3.) Test and cleanup the doxygen comments in the code.
 
+4.) We don't really need setters for the SignalRegionData struct. Also, the 
+    documentation and paper will look better without them.
 
 
 ** I guess we're done with memory leak hunting, but just in case...
