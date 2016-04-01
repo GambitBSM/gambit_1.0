@@ -114,6 +114,11 @@ scanner_plugin(GreAT, version(1, 0, 0))
     // Show the scan statistics
     estimator->ShowStatistics();
 
+    // GAMBIT needs access to the GreAT point IDs
+    // Write function which is passed to GreAT and accepts a double
+    // This function will be called by GreAT when it accepts a point and returns the point ID.
+
+
     // Setup auxilliary stream. It is only needed by the master process
     static const int MPIrank = get_printer().get_stream()->getRank(); // MPI rank of this process
     if(MPIrank == 0)
@@ -133,8 +138,8 @@ scanner_plugin(GreAT, version(1, 0, 0))
 
       for(TGreatMCMCSample *sample = estimator->GetFirstIndSample(); sample != 0; sample = estimator->GetNextIndSample())
       {
-        ind_samples_printer->print(sample->GetPoint(), "Unit cube parameters", MPIrank, pointID);
-        ind_samples_printer->print(sample->GetLogProb(), "ln(Likelihood)", MPIrank, pointID);
+        ind_samples_printer->print(sample->GetPoint(), "Unit cube parameters", MPIrank, sample->GetID());
+        ind_samples_printer->print(sample->GetLogProb(), "ln(Likelihood)", MPIrank, sample->GetID());
         pointID++;
       }
     }

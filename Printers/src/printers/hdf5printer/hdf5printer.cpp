@@ -1936,16 +1936,3 @@ errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
 
 #undef DBUG
 #undef DEBUG_MODE
-(it->second,ppid,primary_printer->global_index_lookup);
-         }
-         i++;
-       }
-    }
-
-    /// @}
-
-  } // end namespace printers
-} // end namespace Gambit
-
-#undef DBUG
-#undef DEBUG_MODE
