@@ -115,7 +115,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_mssm_gm2_chi2
     START_FUNCTION(double)
-  DEPENDENCY(a_mu_SUSY, triplet<double>)
+  DEPENDENCY(a_mu_SUSY_c, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
   

@@ -626,11 +626,11 @@ namespace Gambit
     void lnL_mssm_gm2_chi2(double &result)
     {
       using namespace Pipes::lnL_mssm_gm2_chi2;
-      double amu_susy = Dep::a_mu_SUSY->central; 
+      double amu_susy = Dep::a_mu_SUSY_c->central; 
       /// and sets this as the error on the susy calculation
       /// change this to new capability so that can be independent of gm2calc 
-      double amu_mssm_error = std::max(Dep::a_mu_SUSY->upper,
-				       Dep::a_mu_SUSY->lower); 
+      double amu_mssm_error = std::max(Dep::a_mu_SUSY_c->upper,
+				       Dep::a_mu_SUSY_c->lower); 
       /// Value taken from prediction in arXiv:1010.4180 (Eq 22)
       double amu_sm  = 11659180.2e-10;
       double amu_sm_error = 4.9e-10;
@@ -895,7 +895,6 @@ namespace Gambit
       result.upper = uncertainty;
       result.lower = uncertainty;
       
-      result = amu;
       return;
     }
 
