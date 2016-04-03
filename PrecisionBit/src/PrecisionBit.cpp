@@ -641,27 +641,6 @@ namespace Gambit
       double amu_theory = amu_sm + amu_susy;
       double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
 				     + Gambit::Utils::sqr(amu_mssm_error) );
-
-      std::cout << "amu_susy = " << amu_susy << std::endl;
-      std::cout << "amu_mssm_error = "  << amu_mssm_error << std::endl;
-      std::cout << "amu_theory = "  << amu_theory << std::endl;
-      std::cout << "amu_theory_err = "  << amu_theory_err << std::endl;
-
-      std::cout << "amu_theory - amu_exp = "
-		<< amu_theory - amu_exp
-		<< std::endl;
-
-      std::cout << "number of deviations inc susy = "
-		<< (amu_theory - amu_exp) /
-	sqrt(Gambit::Utils::sqr(amu_theory_err)
-	  + Gambit::Utils::sqr(amu_exp_error) )
-		<< " sigma" << std::endl;
-
-      std::cout << "number of deviations exc susy = "
-		<< (amu_sm - amu_exp) /
-	sqrt(Gambit::Utils::sqr(amu_sm_error)
-	  + Gambit::Utils::sqr(amu_exp_error) )
-		<< " sigma" << std::endl;
       
       result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
       					     amu_theory_err, amu_exp_error);
@@ -786,11 +765,6 @@ namespace Gambit
       
       double amumssm = BEreq::calculate_amu_1loop(model) 
                + BEreq::calculate_amu_2loop(model);
-
-      std::cout << "gm2calc amu_1lp = "  << BEreq::calculate_amu_1loop(model) << std::endl;
-      std::cout << "gm2calc amu_2lp = "  << BEreq::calculate_amu_2loop(model) << std::endl;
-      
-      std::cout << "gm2calc: amu_susy = " << amumssm << std::endl;
       
       result.central = amumssm;
       result.upper = error;
@@ -881,11 +855,6 @@ namespace Gambit
       const double amu =
 	+ BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
       + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
-
-      std::cout << "gm2calc_c amu_1lp = "  << BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model) << std::endl;
-      std::cout << "gm2calc_c amu_2lp = "  << BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model) << std::endl;
-      
-      std::cout << "gm2calc_c: amu_susy = " << amu << std::endl;
 
       BEreq::gm2calc_mssmnofv_free.pointer()(model);
 
