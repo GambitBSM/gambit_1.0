@@ -220,14 +220,19 @@ Rules:
     options:  
       #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
       useATLAS: true
-      analysisNamesATLAS: ["ATLAS_0LEP_20invfb"]
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                                                    "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                           			    "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                           			    "ATLAS_3LEPEW_20invfb"]
 
   - capability: CMSAnalysisContainer
     function: getCMSAnalysisContainer
     options:  
       #useCMS defaults to true anyways. Set it to false to ignore all these analyses
       useCMS: true
-      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb"]
+      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+				                 "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
+
 
   - capability: ConvertedScatteringEvent
     function: convertPythia8ParticleEvent
@@ -240,7 +245,7 @@ Rules:
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
 
   - capability:  HardScatteringSim
-    function:  getPythia
+    function:  getPythiaFileReader
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
       Pythia_doc_path: "Backends/installed/Pythia/8.212.EM/share/Pythia8/xmldoc/"
@@ -252,6 +257,9 @@ Rules:
                              "SUSY:all = on",
                              "TauDecays:mode = 0",
                              "Main:timesAllowErrors = 100"]
+      SLHA_filenames:
+        - ColliderBit/data/sps1aWithDecays.spc
+
 
   - capability: LHC_Combined_LogLike
     backends:
