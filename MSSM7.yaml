@@ -157,8 +157,8 @@ ObsLikes:
     - capability: lnL_vesc
       purpose: LogLike
         
-    #- purpose:    Likelihood
-    #  capability: LHC_Combined_LogLike
+    - purpose:    Likelihood
+      capability: LHC_Combined_LogLike
 
     - purpose:    Observable
       capability: SLHA1_violation
@@ -209,11 +209,10 @@ ObsLikes:
       capability: OPAL_Neutralino_Hadronic_LLike
 
     - purpose:    LogLike
-      capability: HB_LEP_lnL
+      capability: LHC_Higgs_LogLike
 
     - purpose:    LogLike
-      capability: HS_LHC_lnL
-
+      capability: LEP_Higgs_LogLike
 
     - capability: RD_oh2
       purpose:    Observable
@@ -369,13 +368,38 @@ Rules:
       ms_central: 95.E-03
       ms_error: 5.E-03
 
-  - capability: ATLASAnalysisContainer
-    function: getATLASAnalysisContainer
+  - capability: SimpleSmearingSim
+    type: "Gambit::ColliderBit::BuckFastSmearATLAS"
+    function: getBuckFastATLAS
     options:
-      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb","ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb","ATLAS_3LEPEW_20invfb","CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb","CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]
+      partonOnly: false
+      antiktR: 0.4
 
   - capability: SimpleSmearingSim
-    function: getBuckFastATLAS
+    type: "Gambit::ColliderBit::BuckFastSmearCMS"
+    function: getBuckFastCMS
+    options:
+      partonOnly: false
+      antiktR: 0.5
+
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
+    options:  
+      #useATLAS defaults to true anyways. Set it to false to ignore all these analyses
+      useATLAS: true
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb","ATLAS_0LEPStop_20invfb",
+                           "ATLAS_1LEPStop_20invfb","ATLAS_2bStop_20invfb",
+                           "ATLAS_2LEPEW_20invfb","ATLAS_2LEPStop_20invfb",
+                           "ATLAS_3LEPEW_20invfb"]
+
+  - capability: CMSAnalysisContainer
+    function: getCMSAnalysisContainer
+    options:  
+      #useCMS defaults to true anyways. Set it to false to ignore all these analyses
+      useCMS: true
+      analysisNamesCMS: ["CMS_1LEPDMTOP_20invfb","CMS_2LEPDMTOP_20invfb",
+                         "CMS_3LEPEW_20invfb","CMS_MONOJET_20invfb"]     
+
 
   - capability: ConvertedScatteringEvent
     function: convertPythia8ParticleEvent
