@@ -3,12 +3,15 @@ ColliderBit cleanup TODOs:
 
 1.) Make a default value for the Pythia xml doc directory in the code.
 
-2.) Remove obsolete yaml files, and make one or two simple, highly annotated
-    example yaml files for the code release.
+2.) Remove obsolete yaml files.
 
-3.) Test and cleanup the doxygen comments in the code.
+3.) Add DELPHES instructions (commented out) to gambit_Collider_CMSSM.yaml.
 
-4.) We don't really need setters for the SignalRegionData struct. Also, the 
+4.) Fix the ColliderBit_standalone example (it needs to use the new capability structure).
+
+5.) Test and cleanup the doxygen comments in the code.
+
+6.) We don't really need setters for the SignalRegionData struct. Also, the 
     documentation and paper will look better without them.
 
 
