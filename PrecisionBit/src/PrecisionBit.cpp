@@ -682,7 +682,7 @@ namespace Gambit
 
       // const Eigen::Matrix<double,3,3> UnitMatrix = Eigen::Matrix<double,3,3>::Identity();
       
-      // fill pole masses
+      /// fill pole masses.
       /// note: that the indices start from 0 in gm2calc,
       /// gambit indices start from 1, hence the offsets here
       model.get_physical().MSvmL = mssm->get(Par::Pole_Mass, "~nu", 2); // 1L
@@ -739,7 +739,7 @@ namespace Gambit
       
       model.set_scale(mssm->GetScale());                   // 2L
      
-      // convert DR-bar parameters to on-shell
+      /// convert DR-bar parameters to on-shell
       model.convert_to_onshell();
 
       /// need to hook up errors properly
@@ -758,9 +758,6 @@ namespace Gambit
         /// may want to handle this in less harsh way
         invalid_point().raise(err.str());	
       }
-
-      // convert DR-bar parameters to on-shell
-      model.convert_to_onshell();
 
       double error = BEreq::calculate_uncertainty_amu_2loop(model);
       
@@ -782,9 +779,8 @@ namespace Gambit
       using namespace Pipes::a_mu_SUSY_c;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
 
-      // Example of how to use the C backend:
-      // Note the extra ".pointer()" for functions that take the pointer "model" as input.
-      // Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
+      /// Note for the C backend to gm2calc: An extra ".pointer()" is needed for functions that take the pointer "model" as input.
+      /// Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
 
       gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
 
@@ -839,10 +835,10 @@ namespace Gambit
 
       BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, mssm->GetScale());    
       
-      /* convert DR-bar parameters to on-shell */
+      /// convert DR-bar parameters to on-shell
       gm2calc_c::gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
 
-      /* check for error */
+      /// check for error
       if (error != gm2calc_c::gm2calc_NoError) 
       {
         std::ostringstream err;
