@@ -90,10 +90,10 @@ def moveFilesAround():
     move_files_list  = []
 
     # -- abstract class headers    
-    move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, cfg.abstr_header_prefix + '*') )
+    move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.abstr_header_prefix + '*') )
 
     # -- wrapper class headers
-    move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, cfg.wrapper_header_prefix + '*') )
+    move_files_list += glob.glob( os.path.join(cfg.extra_output_dir, gb.wrapper_header_prefix + '*') )
 
     # -- header with forward declarations for all abstract classes
     move_files_list += [ os.path.join(cfg.extra_output_dir, gb.frwd_decls_abs_fname + cfg.header_extension) ]
@@ -275,7 +275,7 @@ def copyFilesToSourceTree(verbose=False):
     # - Add factory source files
     for class_name in gb.classes_done:
 
-        factory_source_fname_short = cfg.factory_file_prefix + class_name['short'] + cfg.source_extension
+        factory_source_fname_short = gb.factory_file_prefix + class_name['short'] + cfg.source_extension
 
         cp_source = os.path.join(cfg.extra_output_dir, factory_source_fname_short)
         cp_target = os.path.join(cfg.src_files_to, factory_source_fname_short)
@@ -288,7 +288,7 @@ def copyFilesToSourceTree(verbose=False):
         source_file_path = gb.function_file_dict[func_name['long_templ_args']]
         source_file_name = os.path.basename(source_file_path)
 
-        # function_source_fname_short = cfg.function_files_prefix + func_name['short'] + gb.code_suffix + cfg.source_extension
+        # function_source_fname_short = gb.function_files_prefix + func_name['short'] + gb.code_suffix + cfg.source_extension
 
         # cp_source = os.path.join(cfg.extra_output_dir, function_source_fname_short)
         cp_source = os.path.join(source_file_path)
@@ -300,7 +300,7 @@ def copyFilesToSourceTree(verbose=False):
     # - Add 'extras' source files (containing implementations for the helper functions that BOSS adds to the original classes)
     for class_name in gb.classes_done:
 
-        extra_source_fname_short = class_name['short'] + '_extras' + gb.code_suffix + cfg.source_extension
+        extra_source_fname_short = gb.general_src_file_prefix + class_name['short'] + cfg.source_extension
 
         cp_source = os.path.join(cfg.extra_output_dir, extra_source_fname_short)
         cp_target = os.path.join(cfg.src_files_to, extra_source_fname_short)
@@ -340,10 +340,10 @@ def copyFilesToSourceTree(verbose=False):
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
-    # -- wrapperdeleter.hpp
+    # -- wrapperutils.hpp
     if len(gb.classes_done) > 0:
-        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.header_extension)
-        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_deleter_fname + cfg.header_extension)
+        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_utils_fname + cfg.header_extension)
+        cp_target = os.path.join(cfg.header_files_to, gb.gambit_backend_incl_dir, gb.wrapper_utils_fname + cfg.header_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
@@ -361,10 +361,10 @@ def copyFilesToSourceTree(verbose=False):
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
-    # -- wrapperdeleter.cpp
+    # -- wrapperutils.cpp
     if len(gb.classes_done) > 0:
-        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_deleter_fname + cfg.source_extension)
-        cp_target = os.path.join(cfg.src_files_to, gb.wrapper_deleter_fname + cfg.source_extension)
+        cp_source = os.path.join(cfg.extra_output_dir, gb.wrapper_utils_fname + cfg.source_extension)
+        cp_target = os.path.join(cfg.src_files_to, gb.wrapper_utils_fname + cfg.source_extension)
         source_target_tuples.append( (cp_source, cp_target) )
         new_files.append(cp_target)
 
@@ -536,7 +536,7 @@ def parseFunctionSourceFiles():
 
 
         # Construct file name for xml file produced by castxml
-        xml_output_path = os.path.join(gb.boss_temp_dir, function_source_path.replace('/','_').replace('.','_') + '.xml' )
+        xml_output_path = os.path.join(gb.boss_temp_dir, function_source_path.replace('../','').replace('/','_').replace('.','_') + '.xml' )
 
         # List all include paths
         # include_paths_list = [cfg.include_path] + cfg.additional_include_paths
@@ -798,7 +798,4 @@ def resetSourceCode(reset_info_file_name):
     print
 
 # ====== END: resetSourceCode ========
-
-
-
 

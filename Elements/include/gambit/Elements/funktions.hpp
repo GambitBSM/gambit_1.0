@@ -30,6 +30,13 @@
 //#define NDEBUG
 #include <assert.h>
 
+//#define GAMBIT_DIR
+
+#ifdef GAMBIT_DIR
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#endif
+
 #include "boost/shared_ptr.hpp"
 #include "boost/enable_shared_from_this.hpp"
 
@@ -911,7 +918,11 @@ namespace Funk
             {
                 std::string msg = "FunkBase::resolve() encountered internal problem when resolving " + *it1 + ".\n";
                             msg+= " --- Actual arguments of object: " + args_string(arguments);
-                throw std::runtime_error(msg);
+#ifdef GAMBIT_DIR
+                Gambit::utils_error().raise(LOCAL_INFO, msg);
+#else
+                throw std::invalid_argument(msg);
+#endif
             }
         }
 
@@ -995,7 +1006,11 @@ namespace Funk
             std::string msg = "FunkBase::bind() tries to resolve wrong arguments.\n";
                         msg+= " --- Arguments that are supposed to be bound: " + args_string(bound_arguments) + "\n";
                         msg+= " --- Actual arguments of object: " + args_string(arguments);
+#ifdef GAMBIT_DIR
+            Gambit::utils_error().raise(LOCAL_INFO, msg);
+#else
             throw std::invalid_argument(msg);
+#endif
         }
         this->resolve(datamap, datalen, bindID, argmap);
         return shared_ptr<FunkBound>(new FunkBound(shared_from_this(), datalen, bindID));
@@ -1339,13 +1354,40 @@ namespace Funk
             {
               (void)bindID;
               (void)data;
+#ifdef GAMBIT_DIR
+              Gambit::utils_error().raise(LOCAL_INFO, "Funk::ThrowError says: " + msg);
+#else
               throw std::invalid_argument("Funk::ThrowError says: " + msg);
+#endif
+              return 0;
             }
 
         private:
             std::string msg;  // Error message to throw when function is called
     };
     inline Funk throwError(std::string msg) { return Funk(new ThrowError(msg)); }
+
+#ifdef GAMBIT_DIR
+    class RaiseInvalidPoint: public FunkBase
+    {
+        public:
+            RaiseInvalidPoint(std::string msg) : msg(msg)
+            {
+            }
+            double value(const std::vector<double> & data, size_t bindID)
+            {
+              (void)bindID;
+              (void)data;
+              Gambit::utils_warning().raise(LOCAL_INFO, "Funk::RaiseInvalidPoint says: " + msg);
+              Gambit::invalid_point().raise("Funk::RaiseInvalidPoint says: " + msg);
+              return 0;
+            }
+
+        private:
+            std::string msg;  // Error message to throw when function is called
+    };
+    inline Funk raiseInvalidPoint(std::string msg) { return Funk(new RaiseInvalidPoint(msg)); }
+#endif
 
 
     //
@@ -1603,7 +1645,11 @@ namespace Funk
         {
             std::string msg = "augment_with_singularities(): takes only functions with one argument.\n";
                         msg+= "  --- Actual arguments are: " + args_string(f->getArgs());
+#ifdef GAMBIT_DIR
+            Gambit::utils_error().raise(LOCAL_INFO, msg);
+#else
             throw std::invalid_argument(msg);
+#endif
         }
 
         std::string arg = f->getArgs()[0];

@@ -141,7 +141,7 @@ namespace Gambit
       GET_COLLIDER_RUNOPTION(nEvents, int);
 
       // Nicely ask the entire loop to be quiet
-      std::cout.rdbuf(0); 
+      //std::cout.rdbuf(0); 
 
       // For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter)
@@ -932,7 +932,7 @@ namespace Gambit
       } // end ana loop
 
       // Set the single DLL to be returned (with conversion to more negative dll = more exclusion convention)
-      
+      std::cout << "COLLIDERBIT LIKELIHOOD " << -total_dll_obs << std::endl;
       result = -total_dll_obs;
     }
 

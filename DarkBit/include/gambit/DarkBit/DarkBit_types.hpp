@@ -57,10 +57,12 @@
 #include <map>
 #include <array>
 #include <cmath>
+#include <sstream>
 
 #include "gambit/DarkBit/decay_chain.hpp"
 #include "gambit/DarkBit/SimpleHist.hpp"
 #include "gambit/DarkBit/ProcessCatalog.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/funktions.hpp"
 
 #include <boost/enable_shared_from_this.hpp>
@@ -291,9 +293,10 @@ namespace Gambit
             dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) 
         {
 //#ifdef DARBIT_DEBUG
-            auto error = Funk::throwError(
-                "SimYieldChannel for "+p1+" "+p2+" final state(s): Requested center-of-mass energy out of range."
-                );
+            std::ostringstream msg;
+            msg << "SimYieldChannel for " << p1 << " " << p2 << " final state(s): Requested center-of-mass energy out of range (";
+            msg << Ecm_min << "-" << Ecm_max << " GeV).";
+            auto error = Funk::raiseInvalidPoint(msg.str());
             auto Ecm = Funk::var("Ecm");
             this->dNdE = Funk::ifelse(Ecm - Ecm_min, Funk::ifelse(Ecm_max - Ecm, dNdE, error), error);
 //#endif

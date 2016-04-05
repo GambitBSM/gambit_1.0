@@ -88,9 +88,15 @@ namespace Gambit
 
          /// Check if hdf5 file exists and can be opened in read/write mode
          bool checkFileReadable(const std::string& fname, std::string& msg);
+         /// Thin wrapper for the above to discard failure message
+         inline bool checkFileReadable(const std::string& fname) 
+         { std::string garbage; return checkFileReadable(fname, garbage); }
 
          /// Check if a group exists and can be accessed
          bool checkGroupReadable(hid_t location, const std::string& groupname, std::string& msg);   
+         /// Thin wrapper for the above to discard failure message
+         inline bool checkGroupReadable(hid_t location, const std::string& groupname)
+         { std::string garbage; return checkGroupReadable(location, groupname, garbage); }
 
          /// Create hdf5 file (always overwrite existing files)
          hid_t createFile(const std::string& fname);

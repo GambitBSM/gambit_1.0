@@ -12,7 +12,15 @@
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
+void set_delete_BEptr(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::SigmaTotal*, bool);
+
+
+// Forward declaration needed by the destructor pattern.
 void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::SigmaTotal*);
+
+
+// Forward declaration for wrapper_creator.
+CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::SigmaTotal* wrapper_creator(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Pythia8::Abstract_SigmaTotal*);
 
 
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
@@ -21,7 +29,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Abstract_SigmaTotal : virtual public AbstractBase
+        class Abstract_SigmaTotal : public virtual AbstractBase
         {
             public:
     
@@ -82,35 +90,65 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual double bMinSlopeXX() const =0;
     
             public:
-                virtual void pointerAssign__BOSS(Abstract_SigmaTotal*) =0;
-                virtual Abstract_SigmaTotal* pointerCopy__BOSS() =0;
+                virtual void pointer_assign__BOSS(Abstract_SigmaTotal*) =0;
+                virtual Abstract_SigmaTotal* pointer_copy__BOSS() =0;
     
             private:
-                mutable SigmaTotal* wptr;
+                SigmaTotal* wptr;
+                bool delete_wrapper;
+            public:
+                SigmaTotal* get_wptr() { return wptr; }
+                void set_wptr(SigmaTotal* wptr_in) { wptr = wptr_in; }
+                bool get_delete_wrapper() { return delete_wrapper; }
+                void set_delete_wrapper(bool del_wrp_in) { delete_wrapper = del_wrp_in; }
     
             public:
                 Abstract_SigmaTotal()
                 {
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                void wrapper__BOSS(SigmaTotal* wptr_in)
+                Abstract_SigmaTotal(const Abstract_SigmaTotal&)
                 {
-                    wptr = wptr_in;
-                    is_wrapped(true);
-                    can_delete_wrapper(true);
+                    wptr = 0;
+                    delete_wrapper = false;
                 }
     
-                SigmaTotal* wrapper__BOSS()
+                Abstract_SigmaTotal& operator=(const Abstract_SigmaTotal&) { return *this; }
+    
+                virtual void init_wrapper()
                 {
+                    if (wptr == 0)
+                    {
+                        wptr = wrapper_creator(this);
+                        delete_wrapper = true;
+                    }
+                }
+    
+                SigmaTotal* get_init_wptr()
+                {
+                    init_wrapper();
                     return wptr;
+                }
+    
+                SigmaTotal& get_init_wref()
+                {
+                    init_wrapper();
+                    return *wptr;
                 }
     
                 virtual ~Abstract_SigmaTotal()
                 {
-                    if (can_delete_wrapper())
+                    if (wptr != 0)
                     {
-                        can_delete_me(false);
-                        wrapper_deleter(wptr);
+                        set_delete_BEptr(wptr, false);
+                        if (delete_wrapper == true)
+                        {
+                            wrapper_deleter(wptr);
+                            wptr = 0;
+                            delete_wrapper = false;
+                        }
                     }
                 }
         };

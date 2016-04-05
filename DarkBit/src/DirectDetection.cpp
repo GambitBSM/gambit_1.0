@@ -88,6 +88,7 @@ namespace Gambit {
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
         double factor = 
+        /// Option rescale_couplings<double>: Rescaling factor for WIMP-nucleon couplings (default 1.)
           runOptions->getValueOrDef<double>(1., "rescale_couplings");
         result.gps *= factor;
         result.gns *= factor;

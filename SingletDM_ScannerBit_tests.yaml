@@ -148,9 +148,6 @@ Scanner:
       like:  LogLike
       nlive: 4000
       tol: 0.5
-      aux_printer_txt_options:
-      aux_printer_stats_options:
-      aux_printer_live_options:
 
     de:
       plugin: Diver

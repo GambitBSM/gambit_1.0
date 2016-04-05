@@ -157,8 +157,11 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_oh2_Simple;
       double oh2_theory = *Dep::RD_oh2;
+      // FIXME: Add getValue documentation
       double oh2_theoryerr = oh2_theory*runOptions->getValueOrDef<double>(0.05, "oh2_fractional_theory_err");
+      // FIXME: Add getValue documentation
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
+      // FIXME: Add getValue documentation
       double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
       result = Stats::gaussian_loglikelihood(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr);
       logger() << "lnL_oh2_Simple yields " << result << std::endl;
@@ -172,10 +175,14 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_oh2_upperlimit;
       double oh2_theory = *Dep::RD_oh2;
+      // FIXME: Add getValue documentation
       double oh2_theoryerr = oh2_theory*runOptions->getValueOrDef<double>(0.05, "oh2_fractional_theory_err");
+      // FIXME: Add getValue documentation
       double oh2_obs = runOptions->getValueOrDef<double>(0.1188, "oh2_obs");
+      // FIXME: Add getValue documentation
       double oh2_obserr  = runOptions->getValueOrDef<double>(0.001, "oh2_obserr");
       result = Stats::detection_as_upper_limit(oh2_theory, oh2_obs, oh2_theoryerr, oh2_obserr,
+      // FIXME: Add getValue documentation
                                                runOptions->getValueOrDef<str>("simple", "limit_method"));
       logger() << "lnL_oh2_upperlimit yields " << result << std::endl;
     }
@@ -193,9 +200,13 @@ namespace Gambit {
         using namespace Pipes::lnL_sigmas_sigmal;
         double sigmas = *Param["sigmas"];
         double sigmal = *Param["sigmal"];
+      // FIXME: Add getValue documentation
         double sigmas_central = runOptions->getValueOrDef<double>(43., "sigmas_central");
+      // FIXME: Add getValue documentation
         double sigmas_error = runOptions->getValueOrDef<double>(8., "sigmas_error");
+      // FIXME: Add getValue documentation
         double sigmal_central = runOptions->getValueOrDef<double>(58., "sigmal_central");
+      // FIXME: Add getValue documentation
         double sigmal_error = runOptions->getValueOrDef<double>(9., "sigmal_error");
 
         result = Stats::gaussian_loglikelihood(sigmas, sigmas_central, 0, sigmas_error)
@@ -212,7 +223,9 @@ namespace Gambit {
     {
         using namespace Pipes::lnL_rho0_lognormal;
         double rho0 = *Param["rho0"];
+      // FIXME: Add getValue documentation
         double rho0_obs = runOptions->getValueOrDef<double>(.4, "rho0_obs");
+      // FIXME: Add getValue documentation
         double rho0_obserror = runOptions->getValueOrDef<double>(.15, "rho0_obserr");
 
         result = Stats::lognormal_loglikelihood(rho0, rho0_obs, 0.,
@@ -224,7 +237,9 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_vrot_gaussian;
       double vrot = *Param["vrot"];
+      // FIXME: Add getValue documentation
       double vrot_obs = runOptions->getValueOrDef<double>(235, "vrot_obs");
+      // FIXME: Add getValue documentation
       double vrot_obserr  = runOptions->getValueOrDef<double>(20, "vrot_obserr");
       result = Stats::gaussian_loglikelihood(vrot, vrot_obs, 0., vrot_obserr);
       logger() << "lnL_vrot yields " << result << EOM;
@@ -234,7 +249,9 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_v0_gaussian;
       double v0 = *Param["v0"];
+      // FIXME: Add getValue documentation
       double v0_obs = runOptions->getValueOrDef<double>(235, "v0_obs");
+      // FIXME: Add getValue documentation
       double v0_obserr  = runOptions->getValueOrDef<double>(20, "v0_obserr");
       result = Stats::gaussian_loglikelihood(v0, v0_obs, 0., v0_obserr);
       logger() << "lnL_v0 yields " << result << EOM;
@@ -244,7 +261,9 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_vesc_gaussian;
       double vesc = *Param["vesc"];
+      // FIXME: Add getValue documentation
       double vesc_obs = runOptions->getValueOrDef<double>(550, "vesc_obs");
+      // FIXME: Add getValue documentation
       double vesc_obserr  = runOptions->getValueOrDef<double>(35, "vesc_obserr");
       result = Stats::gaussian_loglikelihood(vesc, vesc_obs, 0., vesc_obserr);
       logger() << "lnL_vesc yields " << result << EOM;
@@ -255,6 +274,7 @@ namespace Gambit {
     {
       using namespace Pipes::dump_GammaSpectrum;
       Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
+      // FIXME: Add getValue documentation
       std::string filename = runOptions->getValueOrDef<std::string>(
           "dNdE.dat", "filename");
       logger() << "FILENAME for gamma dump: " << filename << std::endl;
