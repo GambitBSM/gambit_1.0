@@ -27,15 +27,6 @@ namespace Gambit {
       double background_sys; ///< The absolute systematic error of n_background.
 
       SignalRegionData() {}
-
-      void set_analysis_name(std::string a) {analysis_name=a;}
-      void set_sr_label(std::string a) {sr_label=a;}
-      void set_observation(double a) {n_observed=a;}
-      void set_signal(double a) {n_signal=a;}
-      void set_signal_at_lumi(double a) {n_signal_at_lumi=a;}
-      void set_background(double a) {n_background=a;}
-      void set_signalsys(double a) {signal_sys=a;}
-      void set_backgroundsys(double a) {background_sys=a;}
     };
 
 
