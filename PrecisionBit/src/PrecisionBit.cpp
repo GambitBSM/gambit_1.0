@@ -673,14 +673,14 @@ namespace Gambit
     }
 
 
-    /// Test function for gm2calc backend (simple copy/paste from gm2calc manual.)
+    /// Calculate a_mu_SUSY using the gm2calc backend.
     void a_mu_SUSY(triplet<double> &result)
     {
       using namespace Pipes::a_mu_SUSY;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
       gm2calc::MSSMNoFV_onshell model;
 
-      const Eigen::Matrix<double,3,3> UnitMatrix = Eigen::Matrix<double,3,3>::Identity();
+      // const Eigen::Matrix<double,3,3> UnitMatrix = Eigen::Matrix<double,3,3>::Identity();
       
       // fill pole masses
       /// note: that the indices start from 0 in gm2calc,
@@ -711,50 +711,51 @@ namespace Gambit
       model.set_MassWB(mssm->get(Par::mass1, "M2"));
       model.set_MassG(mssm->get(Par::mass1, "M3"));
       for(int i = 1; i<=3; i++) {
-	for(int j = 1; j<=3; j++) {	
-	  model.set_mq2(i-1,j-1, mssm->get(Par::mass2, "mq2", i, j)); 
-	  model.set_ml2(i-1,j-1, mssm->get(Par::mass2, "ml2", i, j)); 
-	  model.set_md2(i-1,j-1, mssm->get(Par::mass2, "md2", i, j)); 
-	  model.set_mu2(i-1,j-1, mssm->get(Par::mass2, "mu2", i, j)); 
-	  model.set_me2(i-1,j-1, mssm->get(Par::mass2, "me2", i, j));
-	  double Au = 0.0, Ad = 0.0, Ae = 0.0;
-	  if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
-	    Au = mssm->get(Par::mass1, "TYu", i, j)
-	    / mssm->get(Par::dimensionless, "Yu", i, j);
-	  }
-	  if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
-	    Ae = mssm->get(Par::mass1, "TYe", i, j)
-	      / mssm->get(Par::dimensionless, "Ye", i, j);
-	  }
-	  if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
-	  Ad = mssm->get(Par::mass1, "TYd", i, j)
-	    / mssm->get(Par::dimensionless, "Yd", i, j);
-	  }
+        for(int j = 1; j<=3; j++) {	
+          model.set_mq2(i-1,j-1, mssm->get(Par::mass2, "mq2", i, j)); 
+          model.set_ml2(i-1,j-1, mssm->get(Par::mass2, "ml2", i, j)); 
+          model.set_md2(i-1,j-1, mssm->get(Par::mass2, "md2", i, j)); 
+          model.set_mu2(i-1,j-1, mssm->get(Par::mass2, "mu2", i, j)); 
+          model.set_me2(i-1,j-1, mssm->get(Par::mass2, "me2", i, j));
+          double Au = 0.0, Ad = 0.0, Ae = 0.0;
+          if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
+            Au = mssm->get(Par::mass1, "TYu", i, j)
+            / mssm->get(Par::dimensionless, "Yu", i, j);
+          }
+          if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
+            Ae = mssm->get(Par::mass1, "TYe", i, j)
+            / mssm->get(Par::dimensionless, "Ye", i, j);
+          }
+          if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
+            Ad = mssm->get(Par::mass1, "TYd", i, j)
+            / mssm->get(Par::dimensionless, "Yd", i, j);
+          }
      
-	  model.set_Au(i-1, j-1, Au);
-	  model.set_Ad(i-1, j-1, Ad);
-	  model.set_Ae(i-1, j-1, Ae);
-	}
+          model.set_Au(i-1, j-1, Au);
+          model.set_Ad(i-1, j-1, Ad);
+          model.set_Ae(i-1, j-1, Ae);
+        }
       }
       
       model.set_scale(mssm->GetScale());                   // 2L
      
       // convert DR-bar parameters to on-shell
       model.convert_to_onshell();
+
       /// need to hook up errors properly
       /// check for problems 
       if( model.get_problems().have_problem() == true) {
         std::ostringstream err;
         err << "gm2calc routine convert_to_onshell raised error: "
-	    << model.get_problems().get_problems() << ".";
+            << model.get_problems().get_problems() << ".";
         invalid_point().raise(err.str());
       }
       /// check for warnings
       if( model.get_problems().have_warning() == true) {
-	std::ostringstream err;
-	err << "gm2calc routine convert_to_onshell raised warning: "
-	    << model.get_problems().get_warnings() << ".";
-	/// may want to handle this in less harsh way
+        std::ostringstream err;
+        err << "gm2calc routine convert_to_onshell raised warning: "
+            << model.get_problems().get_warnings() << ".";
+        /// may want to handle this in less harsh way
         invalid_point().raise(err.str());	
       }
 
@@ -764,7 +765,7 @@ namespace Gambit
       double error = BEreq::calculate_uncertainty_amu_2loop(model);
       
       double amumssm = BEreq::calculate_amu_1loop(model) 
-               + BEreq::calculate_amu_2loop(model);
+                       + BEreq::calculate_amu_2loop(model);
       
       result.central = amumssm;
       result.upper = error;
@@ -775,7 +776,7 @@ namespace Gambit
 
 
 
-    /// Test function for the backend to the C version of gm2calc
+    /// Calculate a_mu_SUSY using the gm2calc_c backend (C version of gm2calc).
     void a_mu_SUSY_c(triplet<double> &result)
     {
       using namespace Pipes::a_mu_SUSY_c;
@@ -783,7 +784,7 @@ namespace Gambit
 
       // Example of how to use the C backend:
       // Note the extra ".pointer()" for functions that take the pointer "model" as input.
-      // Alsom, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
+      // Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
 
       gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
 
@@ -793,8 +794,7 @@ namespace Gambit
       // If we get a successful convergence to the pole mass scheme in the end it's OK  
       const static double tol = runOptions->getValueOrDef<double>(1e-1, "off_diagonal_tolerance");
       const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
-      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol,
-					LOCAL_INFO, pt_error);
+      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
       BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, msm1));   /* 1L */
       BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, msm2));   /* 1L */
       BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, "~chi0", 1));  /* 1L */
@@ -812,30 +812,29 @@ namespace Gambit
       BEreq::gm2calc_mssmnofv_set_MassG.pointer()(model, mssm->get(Par::mass1, "M3"));                   /* 2L */
 
       for(int i = 1; i<=3; i++) {
-	for(int j = 1; j<=3; j++) {
-	  BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "ml2", i,j));     /* 2L */
-	  BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, i-1, j-1,mssm->get(Par::mass2, "me2", i,j) );     /* 2L */
-	  BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mq2", i,j));     /* 2L */
-	  BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "md2", i,j));     /* 2L */
-	  BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mu2", i,j));     /* 2L */
-	  double Au = 0.0, Ad = 0.0, Ae = 0.0;
-	  if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
-	    Au = mssm->get(Par::mass1, "TYu", i, j)
-	      / mssm->get(Par::dimensionless, "Yu", i, j);
-	  }
-	  if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
-	    Ae = mssm->get(Par::mass1, "TYe", i, j)
-	      / mssm->get(Par::dimensionless, "Ye", i, j);
-	  }
-	  if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
-	    Ad = mssm->get(Par::mass1, "TYd", i, j)
-	      / mssm->get(Par::dimensionless, "Yd", i, j);
-	  }
-	  BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, i-1, j-1, Au);
-	  BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, i-1, j-1, Ad);
-	  BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, i-1, j-1, Ae);
-	  
-	}
+        for(int j = 1; j<=3; j++) {
+          BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "ml2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, i-1, j-1,mssm->get(Par::mass2, "me2", i,j) );     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mq2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "md2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mu2", i,j));     /* 2L */
+          double Au = 0.0, Ad = 0.0, Ae = 0.0;
+          if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
+            Au = mssm->get(Par::mass1, "TYu", i, j)
+            / mssm->get(Par::dimensionless, "Yu", i, j);
+          }
+          if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
+            Ae = mssm->get(Par::mass1, "TYe", i, j)
+            / mssm->get(Par::dimensionless, "Ye", i, j);
+          }
+          if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
+            Ad = mssm->get(Par::mass1, "TYd", i, j)
+            / mssm->get(Par::dimensionless, "Yd", i, j);
+          }
+          BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, i-1, j-1, Au);
+          BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, i-1, j-1, Ad);
+          BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, i-1, j-1, Ae);
+        }
       }
 
       BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, mssm->GetScale());    
@@ -846,15 +845,15 @@ namespace Gambit
       /* check for error */
       if (error != gm2calc_c::gm2calc_NoError) 
       {
-	std::ostringstream err;
+        std::ostringstream err;
         err << "gm2calc routine convert_to_onshell raised error: "
-	    << BEreq::gm2calc_error_str.pointer()(error) << ".";
+            << BEreq::gm2calc_error_str.pointer()(error) << ".";
         invalid_point().raise(err.str());
       }	
 
       const double amu =
-	+ BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
-      + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
+        + BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
+        + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
 
       BEreq::gm2calc_mssmnofv_free.pointer()(model);
 
