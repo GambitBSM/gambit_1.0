@@ -29,13 +29,17 @@ GamYields.cpp: 600	:        // FIXME: Update energy validty ranges
 GamYields.cpp: 643	:          // FIXME: Write interpolation routine
 GamYields.cpp: 662	:        // FIXME: Implemented PPPC4 tables
 SingletDM.cpp: 216	:      // FIXME: Double check expressions (taken from Cline et al. 2013)
-SingletDM.cpp: 369	:      // FIXME: Probably this can be speed up f_vs_mass
-DarkBit_rollcall.hpp: 184	:      // FIXME: Is model CMSSM here really necessary?  
-DarkBit_rollcall.hpp: 185	:      // FIXME: Is model MSSM30atQ enough?
-  -- Pat: Not sure I understand the question(s).  If the question is "Does MSSM30atQ automatically imply that this function also works for the CMSSM?" then the answer is 'No',
-     as the MSSM30atQ is not an ancestor of CMSSM.  MSSM63atQ is though -- so if this were able to do MSSM63atQ, then both of these could be replaced with MSSM63atQ, in principle.
-     Probably Jonathan has written it this way because this is what it can do, i.e. the current declarations are probably right.  Jonathan should comment more though.  (nothing changed)
-
+MISSING? SingletDM.cpp: 369	:      // FIXME: Probably this can be speed up f_vs_mass
+DONE DarkBit_rollcall.hpp: 184	:      // FIXME: Is model CMSSM here really necessary?  
+DONE DarkBit_rollcall.hpp: 185	:      // FIXME: Is model MSSM30atQ enough?
+  -- Pat: Not sure I understand the question(s).  If the question is "Does MSSM30atQ
+automatically imply that this function also works for the CMSSM?" then the answer is 'No',
+as the MSSM30atQ is not an ancestor of CMSSM.  MSSM63atQ is though -- so if this were able
+to do MSSM63atQ, then both of these could be replaced with MSSM63atQ, in principle. Probably
+Jonathan has written it this way because this is what it can do, i.e. the current
+declarations are probably right.  Jonathan should comment more though.  (nothing changed)
+  —- Jonathan: Since MicrOmegas is initialized via SLHA, any version of the MSSM should
+work here. I changed it to MSSM63atQ.
 
 Pat
 ---

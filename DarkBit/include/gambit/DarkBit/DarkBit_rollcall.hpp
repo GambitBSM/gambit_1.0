@@ -188,9 +188,7 @@ START_MODULE
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
       BACKEND_REQ(oh2, (MicrOmegas, MicrOmegasSingletDM), double, (double*,int,double))
-      // FIXME: Is model CMSSM here really necessary?
-      // FIXME: Is model MSSM30atQ enough?
-      ALLOW_MODELS(CMSSM,MSSM30atQ,SingletDM)  
+      ALLOW_MODELS(MSSM63atQ,SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
