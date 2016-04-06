@@ -26,7 +26,7 @@ LOAD_LIBRARY
 // BE_ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
 
 // Functions from gm2_1loop.h
-BE_FUNCTION(gm2calc_mssmnofv_calculate_amu_1loop, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_amu_1loop", "calculate_amu_1loop")
+BE_FUNCTION(gm2calc_mssmnofv_calculate_amu_1loop, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_amu_1loop", "gm2calc_mssmnofv_calculate_amu_1loop")
 BE_FUNCTION(gm2calc_mssmnofv_calculate_amu_1loop_non_tan_beta_resummed, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_amu_1loop_non_tan_beta_resummed", "gm2calc_mssmnofv_calculate_amu_1loop_non_tan_beta_resummed")
 BE_FUNCTION(gm2calc_mssmnofv_amuChi0, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amuChi0", "gm2calc_mssmnofv_amuChi0")
 BE_FUNCTION(gm2calc_mssmnofv_amuChipm, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amuChipm", "gm2calc_mssmnofv_amuChipm")
@@ -40,6 +40,9 @@ BE_FUNCTION(gm2calc_mssmnofv_amuChipmPhotonic, double, (const gm2calc_c::MSSMNoF
 BE_FUNCTION(gm2calc_mssmnofv_amuChi0Photonic, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amuChi0Photonic", "gm2calc_mssmnofv_amuChi0Photonic")
 BE_FUNCTION(gm2calc_mssmnofv_amu2LaSferm, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amu2LaSferm", "gm2calc_mssmnofv_amu2LaSferm")
 BE_FUNCTION(gm2calc_mssmnofv_amu2LaCha, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_amu2LaCha", "gm2calc_mssmnofv_amu2LaCha")
+
+// Functions from gm2_uncertainty.h
+BE_FUNCTION(gm2calc_mssmnofv_calculate_uncertainty_amu_2loop, double, (const gm2calc_c::MSSMNoFV_onshell*), "gm2calc_mssmnofv_calculate_uncertainty_amu_2loop", "gm2calc_mssmnofv_calculate_uncertainty_amu_2loop")
 
 // Functions from gm2calc_c::MSSMNoFV_onshell.h
 BE_FUNCTION(gm2calc_error_str, const char*, (gm2calc_c::gm2calc_error), "gm2calc_error_str", "gm2calc_error_str")

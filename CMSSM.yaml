@@ -56,7 +56,6 @@ Printer:
   options:
     output_file: "CMSSM.hdf5"
     group: "/CMSSM"
-    delete_file_if_exists: true
 
 Scanner:
 
@@ -68,6 +67,12 @@ Scanner:
       like:  LogLike
       nlive: 20000
       tol: 0.0001
+
+    de:
+      plugin: Diver
+      like: LogLike
+      NP: 2000
+      verbosity: 1
 
 ObsLikes:
 

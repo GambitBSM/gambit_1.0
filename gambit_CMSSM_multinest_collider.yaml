@@ -40,7 +40,7 @@ Printer:
     # name of output file
     output_file: "gambit_output.hdf5"
     group: "/"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 ##############################
 # Scanner setup

@@ -140,6 +140,7 @@ namespace Gambit
 
         // Scanner-friendly types to print
         void _print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void _print(bool const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
         void _print(triplet<double> const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);

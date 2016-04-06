@@ -222,7 +222,6 @@ endif()
 set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 
 # - Set local paths
-set(pythia_location "${GAMBIT_INTERNAL}/boss/bossed_pythia_source")
 set(pythia_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212")
 set(pythia_dl "pythia8212.tgz")
 # - Actual configure and compile commands
@@ -253,6 +252,7 @@ ExternalProject_Add_Step(pythia apply_hacks
 )
 BOSS_backend(pythia Pythia 8.212)
 add_extra_targets(pythia ${pythia_dir} ${backend_download}/${pythia_dl} distclean)
+
 
 # Pythia with external model (pythiaEM)
 set(pythiaEM_dir "${PROJECT_SOURCE_DIR}/Backends/installed/Pythia/8.212.EM/")
@@ -318,6 +318,7 @@ ExternalProject_Add(fastsim
   INSTALL_COMMAND ""
 )
 add_extra_targets(fastsim ${fastsim_dir} null distclean)
+
 
 # Nulike
 set(nulike_ver "1.0.2")
@@ -537,7 +538,6 @@ set_target_properties(darksusy
                       ddcalc
                       gamlike
                       nulike
-                      fastsim
                       gm2calc
                       gm2calc_c
                       PROPERTIES EXCLUDE_FROM_ALL 1)
@@ -558,7 +558,7 @@ add_custom_target(backends
                   gm2calc_c
                  )
 
-add_custom_target(backends-nonfree DEPENDS ddcalc gamlike) #fastsim
+add_custom_target(backends-nonfree DEPENDS ddcalc gamlike)
 
 add_custom_target(clean-backends
                   DEPENDS

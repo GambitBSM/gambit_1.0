@@ -41,7 +41,8 @@
 #define VERSION 5.1.1
 #define SAFE_VERSION 5_1_1
 
-#include "gambit/DarkBit/ProcessCatalogue.hpp"
+#include "gambit/DarkBit/ProcessCatalog.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 #include "gambit/Elements/funktions.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 #include <string>

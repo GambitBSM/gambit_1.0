@@ -60,7 +60,7 @@ Printer:
   options:
     output_file: "CMSSM.hdf5"
     group: "/CMSSM"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
   #printer: ascii
 

@@ -23,39 +23,12 @@
 namespace Gambit
 {
    /// Create a simple spectrum object from an SLHAea object
-   Spectrum singlet_spectrum_from_SLHAea(Models::SingletDMModel smod, SLHAstruct slhaea)
+   template <typename HE, typename HEmod>
+   Spectrum spectrum_from_SLHAea(HEmod hemod, SLHAstruct slhaea)
    {
      // Create HE simple SubSpectrum object from the SLHAea object
      // (interacts with MSSM blocks in MSSM case)
-     Models::ScalarSingletDMSimpleSpec he(smod);
-
-     // Create SMInputs object from the SLHAea object
-     SMInputs sminputs(slhaea);
-
-     // Create SMSimpleSpec SubSpectrum object from the SLHAea object
-     // (basically just interacts with SMINPUTS block)
-     SMSimpleSpec sm(slhaea);
-
-     // Create full Spectrum object from components above
-     // Note subtlety! There are TWO constructors for the Spectrum object:
-     // If pointers to SubSpectrum objects are passed, it is assumed that
-     // these objects are managed EXTERNALLY! So if we were to do this:
-     //   matched_spectra = Spectrum(&smskel,&mssmskel,sminputs);
-     // then the SubSpectrum objects would end up DELETED at the end of
-     // this scope, and we will get a segfault if we try to access them
-     // later. INSTEAD, we should just pass the objects themselves, and
-     // then they will be CLONED and the Spectrum object will take
-     // possession of them:
-     return Spectrum(sm,he,sminputs,NULL);
-   }
-
-   /// Create a simple spectrum object from an SLHAea object
-   template <typename HE>
-   Spectrum spectrum_from_SLHAea(SLHAstruct slhaea)
-   {
-     // Create HE simple SubSpectrum object from the SLHAea object
-     // (interacts with MSSM blocks in MSSM case)
-     HE he(slhaea);
+     HE he(hemod);
 
      // Create SMInputs object from the SLHAea object
      SMInputs sminputs(slhaea);
@@ -84,6 +57,6 @@ namespace Gambit
      // Read the SLHA file in to an SLHAea object
      SLHAstruct slhaea = read_SLHA(slha);      
      // Create the final object from the SLHAea object
-     return spectrum_from_SLHAea<HE>(slhaea);
+     return spectrum_from_SLHAea<HE, SLHAstruct>(slhaea, slhaea);
    }
 }

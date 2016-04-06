@@ -130,6 +130,8 @@ namespace Gambit
   /// Evaluate total likelihood function
   double Likelihood_Container::main (const std::vector<double> &in)
   {
+    double lnlike = 0;
+
     /// Unblock system signals (these are blocked to prevent external scanner 
     /// codes from getting interrupted while they are performing sensitive
     /// tasks, like writing to disk; i.e. we do not trust them to have 
@@ -139,7 +141,6 @@ namespace Gambit
     /// Check for signals to abort run
     signaldata().check_for_shutdown_signal();
 
-    double lnlike = 0;
     bool compute_aux = true;
     setParameters(in);
 
@@ -157,14 +158,15 @@ namespace Gambit
       logger() << LogTags::core << LogTags::debug <<  "Calculating likelihood vertex " << *it << "." << EOM;
       try
       {
+        if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
+                        << "::" << dependencyResolver.get_functor(*it)->name() << ": ";
         dependencyResolver.calcObsLike(*it,getPtID()); //pointID is passed through to the printer call for each functor
         // Switch depending on whether the functor returns floats or doubles and a single likelihood or a vector of them.
         str rtype = return_types[*it];
         if (rtype == "double")
         {
           double result = dependencyResolver.getObsLike<double>(*it);
-          if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
-                          << "::" << dependencyResolver.get_functor(*it)->name() << ": " << result << endl;
+          if (debug) cout << result << endl;
           lnlike += result;
         }
         else if (rtype == "std::vector<double>")
@@ -172,16 +174,15 @@ namespace Gambit
           std::vector<double> result = dependencyResolver.getObsLike<std::vector<double> >(*it);
           for (auto jt = result.begin(); jt != result.end(); ++jt)
           {
-            if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
-                            << "::" << dependencyResolver.get_functor(*it)->name() << ": " << *jt << endl;
+            if (debug) cout << *jt << " ";
             lnlike += *jt;
           }
+          if (debug) cout << endl;
         }
         else if (rtype == "float")
         {
           float result = dependencyResolver.getObsLike<float>(*it);
-          if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
-                          << "::" << dependencyResolver.get_functor(*it)->name() << ": " << result << endl;
+          if (debug) cout << result << endl;
           lnlike += result;
         }
         else if (rtype == "std::vector<float>")
@@ -189,10 +190,10 @@ namespace Gambit
           std::vector<float> result = dependencyResolver.getObsLike<std::vector<float> >(*it);
           for (auto jt = result.begin(); jt != result.end(); ++jt)
           {
-            if (debug) cout << "  Likelihood contribution from " << dependencyResolver.get_functor(*it)->origin()
-                            << "::" << dependencyResolver.get_functor(*it)->name() << ": " << *jt << endl;
+            if (debug) cout << *jt << " ";
             lnlike += *jt;
           }
+          if (debug) cout << endl;
         }
         else core_error().raise(LOCAL_INFO, "Unexpected target functor type.");
 
@@ -269,19 +270,6 @@ namespace Gambit
 
     if (debug) cout << "log-likelihood: " << lnlike << endl << endl;
     dependencyResolver.resetAll();
-
-    #ifdef WITH_MPI
-    /// Check for shutdown signals from other processes
-    if(errorComm.Iprobe(MPI_ANY_SOURCE, errorComm.mytag))
-    {
-      int tmp_buf;
-      MPI_Status msg_status;
-      errorComm.Recv(&tmp_buf, 1, MPI_ANY_SOURCE, errorComm.mytag, &msg_status);
-      // Set flag to begin emergency shutdown
-      signaldata().set_shutdown_begun(1);
-      logger() << LogTags::core << LogTags::info << "Received emergency shutdown signal from process with rank " << msg_status.MPI_SOURCE << EOM;
-    }
-    #endif
 
     /// Check once more for signals to abort run
     signaldata().check_for_shutdown_signal();

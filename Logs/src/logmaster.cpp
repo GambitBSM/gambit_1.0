@@ -228,19 +228,28 @@ namespace Gambit
 
        // Check options and inform user what they are
        std::cout << "Initialising logger...";
-       #ifdef WITH_MPI
-       std::cout << std::endl << "  separate_file_per_process = ";
-       if(separate_file_per_process){ std::cout << "true; log messages will be stored in separate files for each MPI process (filename will be appended with underscore + MPI rank)"; }
-       else{ std::cout << "false; log messages from separate MPI processes will be merged into one file (orchestrated by the OS; some mangling of concurrently written log messages may occur. Set this separate_file_per_process to 'True' if this mangling is a problem for you)";}
-       #endif
-       std::cout << std::endl << "  log_debug_messages = ";
-       if(log_debug_messages){ std::cout << "true; log messages tagged as 'Debug' WILL be logged. Warning! This may lead to very large log files!";}
+       // NOTE! Option to merge log files no longer exists. Concurrent write access is a nightmare. Log messages were
+       // being lost due to different processes overwriting each others data, and using the FileLock system doesn't
+       // help because the issue is the file pointer location. To fix that, files have to be closed and reopened
+       // constantly, which creates a lot of overhead. On top of this, it is very hard to overwrite old log files at the
+       // beginning of the run since we have to coordinate who creates the file at the beginning of the run, would have
+       // to add a bunch of message passing. Overall it just isn't worth it.
+       // #ifdef WITH_MPI
+       // std::cout << std::endl << "  separate_file_per_process = ";
+       // if(separate_file_per_process){ std::cout << "true; log messages will be stored in separate files for each MPI process (filename will be appended with underscore + MPI rank)"; }
+       // else{ std::cout << "false; log messages from separate MPI processes will be merged into one file (orchestrated by the OS; some mangling of concurrently written log messages may occur. Set this separate_file_per_process to 'True' if this mangling is a problem for you)";}
+       // #endif
+       std::ostringstream logmsg;
+       logmsg << "  log_debug_messages = ";
+       if(log_debug_messages){ logmsg << "true; log messages tagged as 'Debug' WILL be logged. Warning! This may lead to very large log files!";}
        else{ 
           // Add "Debug" tag to the global ignore list
           ignore.insert(LogTag::debug);
-          std::cout << "false; log messages tagged as 'Debug' will NOT be logged";
+          logmsg << "false; log messages tagged as 'Debug' will NOT be logged";
        }
-       std::cout << std::endl;
+ 
+       std::cout << logmsg.str() << std::endl;
+       *this << LogTag::logs << LogTag::debug << logmsg.str() << EOM;
 
        // Iterate through map and build the logger objects
        for(std::vector<std::pair< std::set<std::string>, std::string >>::iterator infopair = loggerinfo.begin();
@@ -597,7 +606,7 @@ namespace Gambit
     {
        init_memory();
        current_backend[omp_get_thread_num()] = i;
-       *this<<"setting current_backend="<<i;
+       *this<<"Setting current_backend="<<i;
        *this<<logs<<debug<<EOM;
        // TODO: Activate std::out and std::err redirection, if requested in inifile
     }
@@ -608,7 +617,7 @@ namespace Gambit
        cb_test = current_backend[omp_get_thread_num()];
        if (cb_test == -1) return;
        current_backend[omp_get_thread_num()] = -1;
-       *this<<"restoring current_backend="<<-1;
+       *this<<"Restoring current_backend="<<-1;
        *this<<logs<<debug<<EOM;
        // TODO: Restore std::out and std::err to normal
     }

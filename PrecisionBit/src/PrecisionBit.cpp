@@ -85,6 +85,20 @@ namespace Gambit
         //PrecisionBit_error().raise(LOCAL_INFO, err.str());
       }
 
+      // Just scrub this point now if sinW2 is negative in the MSSM,
+      // as negative sinW2 can cause instability in other routines
+      // (and this point should be excluded because this is waaay off
+      // the observed value).
+      if (SW2MSSM <= 0.0)
+      {
+        std::ostringstream err;
+        err << "Sin^2 thetaW_effective is less than zero." << endl
+            << "Value computed by FeynHiggs: " << SW2MSSM << endl
+            << "Invalidating immediately to prevent downstream instability.";
+        invalid_point().raise(err.str());
+        //PrecisionBit_error().raise(LOCAL_INFO, err.str());
+      }
+
       #ifdef PRECISIONBIT_DEBUG
         // Just die if any of the other observables look really suspicious.
         str nans;
@@ -454,6 +468,13 @@ namespace Gambit
 
       result = &improved_spec;
 
+      if (runOptions->getValueOrDef<bool>(false, "drop_SLHA_file"))
+      {
+        // Spit out the full spectrum as an SLHA file.
+        str filename = runOptions->getValueOrDef<str>("GAMBIT_spectrum.slha", "SLHA_output_filename");
+        result->getSLHA(filename);
+      }
+
     }
 
     /// Basic mass/coupling extractors for different types of spectra, for use with precision likelihoods below
@@ -605,11 +626,11 @@ namespace Gambit
     void lnL_mssm_gm2_chi2(double &result)
     {
       using namespace Pipes::lnL_mssm_gm2_chi2;
-      double amu_susy = Dep::a_mu_SUSY->central; 
+      double amu_susy = Dep::a_mu_SUSY_c->central; 
       /// and sets this as the error on the susy calculation
       /// change this to new capability so that can be independent of gm2calc 
-      double amu_mssm_error = std::max(Dep::a_mu_SUSY->upper,
-				       Dep::a_mu_SUSY->lower); 
+      double amu_mssm_error = std::max(Dep::a_mu_SUSY_c->upper,
+				       Dep::a_mu_SUSY_c->lower); 
       /// Value taken from prediction in arXiv:1010.4180 (Eq 22)
       double amu_sm  = 11659180.2e-10;
       double amu_sm_error = 4.9e-10;
@@ -620,27 +641,6 @@ namespace Gambit
       double amu_theory = amu_sm + amu_susy;
       double amu_theory_err =  sqrt( Gambit::Utils::sqr(amu_sm_error)
 				     + Gambit::Utils::sqr(amu_mssm_error) );
-
-      std::cout << "amu_susy = " << amu_susy << std::endl;
-      std::cout << "amu_mssm_error = "  << amu_mssm_error << std::endl;
-      std::cout << "amu_theory = "  << amu_theory << std::endl;
-      std::cout << "amu_theory_err = "  << amu_theory_err << std::endl;
-
-      std::cout << "amu_theory - amu_exp = "
-		<< amu_theory - amu_exp
-		<< std::endl;
-
-      std::cout << "number of deviations inc susy = "
-		<< (amu_theory - amu_exp) /
-	sqrt(Gambit::Utils::sqr(amu_theory_err)
-	  + Gambit::Utils::sqr(amu_exp_error) )
-		<< " sigma" << std::endl;
-
-      std::cout << "number of deviations exc susy = "
-		<< (amu_sm - amu_exp) /
-	sqrt(Gambit::Utils::sqr(amu_sm_error)
-	  + Gambit::Utils::sqr(amu_exp_error) )
-		<< " sigma" << std::endl;
       
       result = Stats::gaussian_loglikelihood(amu_theory, amu_exp,
       					     amu_theory_err, amu_exp_error);
@@ -673,16 +673,16 @@ namespace Gambit
     }
 
 
-    /// Test function for gm2calc backend (simple copy/paste from gm2calc manual.)
+    /// Calculate a_mu_SUSY using the gm2calc backend.
     void a_mu_SUSY(triplet<double> &result)
     {
       using namespace Pipes::a_mu_SUSY;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
       gm2calc::MSSMNoFV_onshell model;
 
-      const Eigen::Matrix<double,3,3> UnitMatrix = Eigen::Matrix<double,3,3>::Identity();
+      // const Eigen::Matrix<double,3,3> UnitMatrix = Eigen::Matrix<double,3,3>::Identity();
       
-      // fill pole masses
+      /// fill pole masses.
       /// note: that the indices start from 0 in gm2calc,
       /// gambit indices start from 1, hence the offsets here
       model.get_physical().MSvmL = mssm->get(Par::Pole_Mass, "~nu", 2); // 1L
@@ -705,62 +705,65 @@ namespace Gambit
       model.get_physical().MCha(1) =  mssm->get(Par::Pole_Mass, "~chi+", 2); // 1L
       model.get_physical().MAh(1)  = mssm->get(Par::Pole_Mass, "A0"); // 2L
       
-      // fill DR-bar parameters
-      double A_mu = mssm->get(Par::mass1, "TYe", 2, 2)
-	/ mssm->get(Par::dimensionless, "Ye", 2, 2);
-      double A_tau = mssm->get(Par::mass1, "TYe", 3, 3)
-	/ mssm->get(Par::dimensionless, "Ye", 3, 3);
-      double A_t = mssm->get(Par::mass1, "TYu", 3, 3)
-	/ mssm->get(Par::dimensionless, "Yu", 3, 3);
-      double A_b = mssm->get(Par::mass1, "TYd", 3, 3)
-	/ mssm->get(Par::dimensionless, "Yd", 3, 3);
       model.set_TB(mssm->get(Par::dimensionless,"tanbeta"));
       model.set_Mu(mssm->get(Par::mass1, "Mu"));
       model.set_MassB(mssm->get(Par::mass1, "M1"));
       model.set_MassWB(mssm->get(Par::mass1, "M2"));
       model.set_MassG(mssm->get(Par::mass1, "M3"));
       for(int i = 1; i<=3; i++) {
-	for(int j = 1; j<=3; j++) {	
-	  model.set_mq2(i-1,j-1, mssm->get(Par::mass2, "mq2", i, j)); 
-	  model.set_ml2(i-1,j-1, mssm->get(Par::mass2, "ml2", i, j)); 
-	  model.set_md2(i-1,j-1, mssm->get(Par::mass2, "md2", i, j)); 
-	  model.set_mu2(i-1,j-1, mssm->get(Par::mass2, "mu2", i, j)); 
-	  model.set_me2(i-1,j-1, mssm->get(Par::mass2, "me2", i, j)); 
-	}
+        for(int j = 1; j<=3; j++) {	
+          model.set_mq2(i-1,j-1, mssm->get(Par::mass2, "mq2", i, j)); 
+          model.set_ml2(i-1,j-1, mssm->get(Par::mass2, "ml2", i, j)); 
+          model.set_md2(i-1,j-1, mssm->get(Par::mass2, "md2", i, j)); 
+          model.set_mu2(i-1,j-1, mssm->get(Par::mass2, "mu2", i, j)); 
+          model.set_me2(i-1,j-1, mssm->get(Par::mass2, "me2", i, j));
+          double Au = 0.0, Ad = 0.0, Ae = 0.0;
+          if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
+            Au = mssm->get(Par::mass1, "TYu", i, j)
+            / mssm->get(Par::dimensionless, "Yu", i, j);
+          }
+          if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
+            Ae = mssm->get(Par::mass1, "TYe", i, j)
+            / mssm->get(Par::dimensionless, "Ye", i, j);
+          }
+          if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
+            Ad = mssm->get(Par::mass1, "TYd", i, j)
+            / mssm->get(Par::dimensionless, "Yd", i, j);
+          }
+     
+          model.set_Au(i-1, j-1, Au);
+          model.set_Ad(i-1, j-1, Ad);
+          model.set_Ae(i-1, j-1, Ae);
+        }
       }
-      model.set_Au(2, 2, A_t);                   // 2L
-      model.set_Ad(2, 2, A_b);                   // 2L
-      model.set_Ae(1,1, A_mu);
-      model.set_Ae(2, 2, A_tau);                   // 2L
+      
       model.set_scale(mssm->GetScale());                   // 2L
      
-      // convert DR-bar parameters to on-shell
+      /// convert DR-bar parameters to on-shell
       model.convert_to_onshell();
+
       /// need to hook up errors properly
       /// check for problems 
       if( model.get_problems().have_problem() == true) {
         std::ostringstream err;
         err << "gm2calc routine convert_to_onshell raised error: "
-	    << model.get_problems().get_problems() << ".";
+            << model.get_problems().get_problems() << ".";
         invalid_point().raise(err.str());
       }
       /// check for warnings
       if( model.get_problems().have_warning() == true) {
-	std::ostringstream err;
-	err << "gm2calc routine convert_to_onshell raised warning: "
-	    << model.get_problems().get_warnings() << ".";
-	/// may want to handle this in less harsh way
+        std::ostringstream err;
+        err << "gm2calc routine convert_to_onshell raised warning: "
+            << model.get_problems().get_warnings() << ".";
+        /// may want to handle this in less harsh way
         invalid_point().raise(err.str());	
       }
-
-      // convert DR-bar parameters to on-shell
-      model.convert_to_onshell();
 
       double error = BEreq::calculate_uncertainty_amu_2loop(model);
       
       double amumssm = BEreq::calculate_amu_1loop(model) 
-               + BEreq::calculate_amu_2loop(model);
-
+                       + BEreq::calculate_amu_2loop(model);
+      
       result.central = amumssm;
       result.upper = error;
       result.lower = error;
@@ -769,143 +772,93 @@ namespace Gambit
     }
 
 
-    /// // Test function for the backend to the C version of gm2calc
-    // void a_mu_SUSY_c(double &result)
-    // {
-    //   using namespace Pipes::a_mu_SUSY_c;
-    //   const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
 
-    //   // Example of how to use the C backend:
-    //   // Note the extra ".pointer()" for functions that take the pointer "model" as input.
-    //   // Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
-
-    //   gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
-
-    //   BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, 5.18860573e+02);    /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, 5.05095249e+02);   /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, 5.25187016e+02);   /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, 2.01611468e+02);  /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 1, 4.10040273e+02);  /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 2, -5.16529941e+02); /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 3, 5.45628749e+02);  /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 0, 4.09989890e+02);  /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 1, 5.46057190e+02);  /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_MAh_pole.pointer()(model, 1.50000000e+03);      /* 2L */
-      
-    //   /* fill DR-bar parameters */
-    //   BEreq::gm2calc_mssmnofv_set_TB.pointer()(model, 40);                        /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_Mu.pointer()(model, 500);                       /* initial guess */
-    //   BEreq::gm2calc_mssmnofv_set_MassB.pointer()(model, 200);                    /* initial guess */
-    //   BEreq::gm2calc_mssmnofv_set_MassWB.pointer()(model, 400);                   /* initial guess */
-    //   BEreq::gm2calc_mssmnofv_set_MassG.pointer()(model, 2000);                   /* 2L */
-    //   BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 0, 0, 500 * 500);          /* 2L */
-    //   BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 1, 1, 500 * 500);          /* irrelevant */
-    //   BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 2, 2, 500 * 500);          /* 2L */
-    //   BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 0, 0, 500 * 500);          /* 2L */
-    //   BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 1, 1, 500 * 500);          /* initial guess */
-    //   BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 2, 2, 500 * 500);          /* 2L */
-    //   for (unsigned i = 0; i < 3; i++) {
-    // 	BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
-    // 	BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
-    // 	BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
-    //   }
-    //   BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, 2, 2, 0);                   /* 2L */
-    //   BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, 2, 2, 0);                   /* 2L */
-    //   BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 1, 1, 0);                   /* 1L */
-    //   BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 2, 2, 0);                   /* 2L */
-    //   BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, 1000);                   /* 2L */
-      
-    //   /* convert DR-bar parameters to on-shell */
-    //   BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
-      
-    //   // const gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
-      
-    //   // if (error != gm2calc_NoError) {
-    //   // 	printf("Error: %s\n", BEreq::gm2calc_error_str(error));
-    //   // 	abort();
-    //   // }
-
-    //   const double amu =
-    //   + BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
-    //   + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
-
-
-  
-
-    //   BEreq::gm2calc_mssmnofv_free.pointer()(model);
-
-    //   // Dummy result
-    //   result = amu;
-    //   return;
-    // }
-
-
-
-    /// Test function for the backend to the C version of gm2calc
-    void a_mu_SUSY_c(double &result)
+    /// Calculate a_mu_SUSY using the gm2calc_c backend (C version of gm2calc).
+    void a_mu_SUSY_c(triplet<double> &result)
     {
       using namespace Pipes::a_mu_SUSY_c;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_HE();
 
-      // Example of how to use the C backend:
-      // Note the extra ".pointer()" for functions that take the pointer "model" as input.
-      // Alsom, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
+      /// Note for the C backend to gm2calc: An extra ".pointer()" is needed for functions that take the pointer "model" as input.
+      /// Also, the struct MSSMNoFV_onshell lives in a namespace gm2calc_c.
 
       gm2calc_c::MSSMNoFV_onshell* model = BEreq::gm2calc_mssmnofv_new();
 
       BEreq::gm2calc_mssmnofv_set_MSvmL_pole.pointer()(model, mssm->get(Par::Pole_Mass, "~nu", 2));
-      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, 5.05095249e+02);   /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, 5.25187016e+02);   /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, 2.01611468e+02);  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 1, 4.10040273e+02);  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 2, -5.16529941e+02); /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 3, 5.45628749e+02);  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 0, 4.09989890e+02);  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 1, 5.46057190e+02);  /* 1L */
-      BEreq::gm2calc_mssmnofv_set_MAh_pole.pointer()(model, 1.50000000e+03);      /* 2L */
+      str msm1, msm2;
+      // PA: todo: I think we shouldn't be too sensitive to mixing in this case.
+      // If we get a successful convergence to the pole mass scheme in the end it's OK  
+      const static double tol = runOptions->getValueOrDef<double>(1e-1, "off_diagonal_tolerance");
+      const static bool pt_error = runOptions->getValueOrDef<bool>(true, "off_diagonal_tolerance_invalidates_point_only");
+      slhahelp::family_state_mix_matrix("~e-", 2, msm1, msm2, mssm, tol, LOCAL_INFO, pt_error);
+      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, msm1));   /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MSm_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, msm2));   /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, "~chi0", 1));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, "~chi0", 2));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 2, mssm->get(Par::Pole_Mass, "~chi0", 3)); /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MChi_pole.pointer()(model, 3, mssm->get(Par::Pole_Mass, "~chi0", 3));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 0, mssm->get(Par::Pole_Mass, "~chi+", 1));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MCha_pole.pointer()(model, 1, mssm->get(Par::Pole_Mass, "~chi+", 2));  /* 1L */
+      BEreq::gm2calc_mssmnofv_set_MAh_pole.pointer()(model, mssm->get(Par::Pole_Mass, "A0"));      /* 2L */
       
-      BEreq::gm2calc_mssmnofv_set_TB.pointer()(model, 40);                        /* 1L */
-      BEreq::gm2calc_mssmnofv_set_Mu.pointer()(model, 500);                       /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassB.pointer()(model, 200);                    /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassWB.pointer()(model, 400);                   /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_MassG.pointer()(model, 2000);                   /* 2L */
-      BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 0, 0, 500 * 500);          /* 2L */
-      BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 1, 1, 500 * 500);          /* irrelevant */
-      BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, 2, 2, 500 * 500);          /* 2L */
-      BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 0, 0, 500 * 500);          /* 2L */
-      BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 1, 1, 500 * 500);          /* initial guess */
-      BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, 2, 2, 500 * 500);          /* 2L */
-      for (unsigned i = 0; i < 3; i++) {
-    	BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
-    	BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
-    	BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i, i, 7000 * 7000);     /* 2L */
+      BEreq::gm2calc_mssmnofv_set_TB.pointer()(model, mssm->get(Par::dimensionless,"tanbeta"));                        /* 1L */
+      BEreq::gm2calc_mssmnofv_set_Mu.pointer()(model, mssm->get(Par::mass1, "Mu"));                       /* initial guess */
+      BEreq::gm2calc_mssmnofv_set_MassB.pointer()(model, mssm->get(Par::mass1, "M1"));                    /* initial guess */
+      BEreq::gm2calc_mssmnofv_set_MassWB.pointer()(model, mssm->get(Par::mass1, "M2"));                   /* initial guess */
+      BEreq::gm2calc_mssmnofv_set_MassG.pointer()(model, mssm->get(Par::mass1, "M3"));                   /* 2L */
+
+      for(int i = 1; i<=3; i++) {
+        for(int j = 1; j<=3; j++) {
+          BEreq::gm2calc_mssmnofv_set_ml2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "ml2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_me2.pointer()(model, i-1, j-1,mssm->get(Par::mass2, "me2", i,j) );     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_mq2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mq2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_md2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "md2", i,j));     /* 2L */
+          BEreq::gm2calc_mssmnofv_set_mu2.pointer()(model, i-1, j-1, mssm->get(Par::mass2, "mu2", i,j));     /* 2L */
+          double Au = 0.0, Ad = 0.0, Ae = 0.0;
+          if(mssm->get(Par::dimensionless, "Yu", i, j) > 1e-14){
+            Au = mssm->get(Par::mass1, "TYu", i, j)
+            / mssm->get(Par::dimensionless, "Yu", i, j);
+          }
+          if(mssm->get(Par::dimensionless, "Ye", i, j) > 1e-14){
+            Ae = mssm->get(Par::mass1, "TYe", i, j)
+            / mssm->get(Par::dimensionless, "Ye", i, j);
+          }
+          if(mssm->get(Par::dimensionless, "Yd", i, j) > 1e-14){
+            Ad = mssm->get(Par::mass1, "TYd", i, j)
+            / mssm->get(Par::dimensionless, "Yd", i, j);
+          }
+          BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, i-1, j-1, Au);
+          BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, i-1, j-1, Ad);
+          BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, i-1, j-1, Ae);
+        }
       }
-      BEreq::gm2calc_mssmnofv_set_Au.pointer()(model, 2, 2, 0);                   /* 2L */
-      BEreq::gm2calc_mssmnofv_set_Ad.pointer()(model, 2, 2, 0);                   /* 2L */
-      BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 1, 1, 0);                   /* 1L */
-      BEreq::gm2calc_mssmnofv_set_Ae.pointer()(model, 2, 2, 0);
 
-      BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, 1000);    
+      BEreq::gm2calc_mssmnofv_set_scale.pointer()(model, mssm->GetScale());    
       
-     //  /* convert DR-bar parameters to on-shell */
-     //  BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
-      
-     // // const gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
-      
-     //  // if (error != gm2calc_NoError) {
-     //  // 	printf("Error: %s\n", BEreq::gm2calc_error_str(error));
-     //  // 	abort();
-     //  // }
+      /// convert DR-bar parameters to on-shell
+      gm2calc_c::gm2calc_error error = BEreq::gm2calc_mssmnofv_convert_to_onshell.pointer()(model);
 
-     //  const double amu =
-     //  + BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
-     //  + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
+      /// check for error
+      if (error != gm2calc_c::gm2calc_NoError) 
+      {
+        std::ostringstream err;
+        err << "gm2calc routine convert_to_onshell raised error: "
+            << BEreq::gm2calc_error_str.pointer()(error) << ".";
+        invalid_point().raise(err.str());
+      }	
 
-      
+      const double amu =
+        + BEreq::gm2calc_mssmnofv_calculate_amu_1loop.pointer()(model)
+        + BEreq::gm2calc_mssmnofv_calculate_amu_2loop.pointer()(model);
+
       BEreq::gm2calc_mssmnofv_free.pointer()(model);
-      /// result = amu;
-      // Dummy result
-      result = 1.234;
+
+      double uncertainty = BEreq::gm2calc_mssmnofv_calculate_uncertainty_amu_2loop.pointer()(model);
+      
+      result.central = amu;
+      result.upper = uncertainty;
+      result.lower = uncertainty;
+      
       return;
     }
 

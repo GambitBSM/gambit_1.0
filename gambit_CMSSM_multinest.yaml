@@ -16,8 +16,22 @@ Parameters:
         range: [100, 1000]
         prior_type: flat
       A0: 0
-      tanb: 10
-      signmu: 1
+      TanBeta: 10
+      SignMu: 1
+
+    LocalHalo:
+      rho0: # Local dark matter density
+        fixed_value: .4 # GeV/cm^3
+        #range: [.2, .8]
+        #prior_type: flat
+      vrot: # Local disk rotation speed
+        fixed_value: 235 # km/s
+      v0: # Maxwellian most-probable speed
+        fixed_value: 235 # km/s
+      vesc: # Local galactic escape speed
+        fixed_value: 550 # km/s
+      vearth: # Keplerian velocity of the earth around the sun
+        fixed_value: 29.78 # km/s
 
 
 
@@ -151,6 +165,13 @@ Rules:
 
   - capability: lnL_oh2
     function: lnL_oh2_Simple
+    
+# Choose to rescale signals in direct and indirect detection by the relic density fraction
+  - capability: RD_fraction
+    function: RD_fraction_from_oh2
+    options:
+      mode: leq_one
+
   - capability: unimproved_MSSM_spectrum
     function: get_CMSSM_spectrum  # Use this function to compute this capability
     options:

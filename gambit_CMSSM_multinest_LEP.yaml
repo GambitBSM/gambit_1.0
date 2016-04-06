@@ -35,7 +35,7 @@ Printer:
   options:
     output_file: "gambit_output.h5"
     group: "/gambit_data"
-    delete_file_if_exists: true
+    delete_file_on_restart: true
 
 ##############################
 # Scanner setup

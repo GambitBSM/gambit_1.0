@@ -115,7 +115,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_mssm_gm2_chi2
     START_FUNCTION(double)
-  DEPENDENCY(a_mu_SUSY, triplet<double>)
+  DEPENDENCY(a_mu_SUSY_c, triplet<double>)
     #undef FUNCTION
   #undef CAPABILITY
   
@@ -164,7 +164,7 @@ START_MODULE
   #define CAPABILITY a_mu_SUSY_c
   START_CAPABILITY
     #define FUNCTION a_mu_SUSY_c
-    START_FUNCTION(double)
+    START_FUNCTION(triplet<double>)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(gm2calc_mssmnofv_new, (libgm2calc), gm2calc_c::MSSMNoFV_onshell*, ())
     BACKEND_REQ(gm2calc_mssmnofv_set_MSvmL_pole, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
@@ -186,9 +186,13 @@ START_MODULE
     BACKEND_REQ(gm2calc_mssmnofv_set_Ad, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_Ae, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, unsigned, unsigned, double))
     BACKEND_REQ(gm2calc_mssmnofv_set_scale, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*, double))
-    // BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
-    // BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_1loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
-    // BACKEND_REQ(gm2calc_mssmnofv_convert_to_onshell, (libgm2calc), void, (const gm2calc_c::MSSMNoFV_onshell*))
+    // 
+    BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_mssmnofv_calculate_amu_1loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_mssmnofv_calculate_uncertainty_amu_2loop, (libgm2calc), double, (const gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_mssmnofv_convert_to_onshell, (libgm2calc), gm2calc_c::gm2calc_error, (gm2calc_c::MSSMNoFV_onshell*))
+    BACKEND_REQ(gm2calc_error_str, (libgm2calc), const char*, (gm2calc_c::gm2calc_error))
+    // 
     BACKEND_REQ(gm2calc_mssmnofv_free, (libgm2calc), void, (gm2calc_c::MSSMNoFV_onshell*))
     BACKEND_OPTION( (gm2calc_c), (libgm2calc) )
     ALLOW_MODELS(MSSM30atQ, MSSM30atMGUT)
