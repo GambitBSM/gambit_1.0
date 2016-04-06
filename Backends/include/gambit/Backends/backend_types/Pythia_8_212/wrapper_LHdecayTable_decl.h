@@ -17,12 +17,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class LHdecayTable : public WrapperBase<Pythia8::Abstract_LHdecayTable>
+        class LHdecayTable : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_LHdecayTable> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_LHdecayTable>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -46,7 +42,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void reset();
         
-                void addChannel(WrapperBase< Pythia8::Abstract_LHdecayChannel > channelIn);
+                void addChannel(Pythia8::LHdecayChannel channelIn);
         
                 void addChannel(double bratIn, int nDaIn, ::std::vector<int, std::allocator<int> > idDaIn, ::std::basic_string<char, std::char_traits<char>, std::allocator<char> > cIn);
         
@@ -69,7 +65,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 LHdecayTable(Pythia8::Abstract_LHdecayTable* in);
-                LHdecayTable(Pythia8::Abstract_LHdecayTable* const & in, bool);
         
                 // Copy constructor: 
                 LHdecayTable(const LHdecayTable& in);
@@ -80,9 +75,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~LHdecayTable();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_LHdecayTable* get_BEptr() const;
         
         };
     }

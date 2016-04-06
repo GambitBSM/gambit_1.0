@@ -311,6 +311,11 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                 functor_template_types = list([args+"*"])
 
         else:
+            #If function/variable type has qualifier, combine elements in splitline
+            cmd_i = command_index[splitline[0]]
+            if splitline[cmd_i].strip() in qualifier_list:
+                splitline[cmd_i:cmd_i+2] = [" ".join(splitline[cmd_i:cmd_i+2])]
+
             functor_template_types = list([strip_ws(splitline[command_index[splitline[0]]], qualifier_list)])
             functor_template_types[0] = first_simple_type_equivalent(functor_template_types[0],equiv_classes,be_typeset)
             if splitline[0].endswith("FUNCTION"):

@@ -18,12 +18,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     namespace Pythia8
     {
         
-        class Particle : public WrapperBase<Pythia8::Abstract_Particle>
+        class Particle : public WrapperBase
         {
-            public:
-                typedef WrapperBase<Pythia8::Abstract_Particle> wrapperbase;
-                using WrapperBase<Pythia8::Abstract_Particle>::BEptr;
-        
                 // Member variables: 
             public:
                 // -- Static factory pointers: 
@@ -52,9 +48,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
-                void setEvtPtr(WrapperBase< Pythia8::Abstract_Event >* evtPtrIn);
+                void setEvtPtr(Pythia8::Event* evtPtrIn);
         
-                void setPDEPtr(WrapperBase< Pythia8::Abstract_ParticleDataEntry >* pdePtrIn);
+                void setPDEPtr(Pythia8::ParticleDataEntry* pdePtrIn);
         
                 void setPDEPtr();
         
@@ -98,7 +94,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void cols();
         
-                void p(WrapperBase< Pythia8::Abstract_Vec4 > pIn);
+                void p(Pythia8::Vec4 pIn);
         
                 void p(double pxIn, double pyIn, double pzIn, double eIn);
         
@@ -116,7 +112,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void pol(double polIn);
         
-                void vProd(WrapperBase< Pythia8::Abstract_Vec4 > vProdIn);
+                void vProd(Pythia8::Vec4 vProdIn);
         
                 void vProd(double xProdIn, double yProdIn, double zProdIn, double tProdIn);
         
@@ -330,13 +326,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void bst(double betaX, double betaY, double betaZ, double gamma);
         
-                void bst(const WrapperBase< Pythia8::Abstract_Vec4 >& pBst);
+                void bst(const Pythia8::Vec4& pBst);
         
-                void bst(const WrapperBase< Pythia8::Abstract_Vec4 >& pBst, double mBst);
+                void bst(const Pythia8::Vec4& pBst, double mBst);
         
-                void bstback(const WrapperBase< Pythia8::Abstract_Vec4 >& pBst);
+                void bstback(const Pythia8::Vec4& pBst);
         
-                void bstback(const WrapperBase< Pythia8::Abstract_Vec4 >& pBst, double mBst);
+                void bstback(const Pythia8::Vec4& pBst, double mBst);
         
                 void offsetHistory(int minMother, int addMother, int minDaughter, int addDaughter);
         
@@ -368,7 +364,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Special pointer-based constructor: 
                 Particle(Pythia8::Abstract_Particle* in);
-                Particle(Pythia8::Abstract_Particle* const & in, bool);
         
                 // Copy constructor: 
                 Particle(const Particle& in);
@@ -379,9 +374,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~Particle();
         
-            private:
-                // Member variable initialiser: 
-                void _memberVariablesInit();
+                // Returns correctly casted pointer to Abstract class: 
+                Pythia8::Abstract_Particle* get_BEptr() const;
         
         };
     }

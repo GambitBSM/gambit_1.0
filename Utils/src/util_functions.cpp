@@ -18,13 +18,21 @@
 ///  \date 2013 May, June, July
 ///
 ///  *********************************************
-  
+
+/// Standard libraries  
 #include <cstring>
 #include <chrono>  // chrono::system_clock
 #include <ctime>   // localtime
 #include <sstream> // stringstream
 #include <string>  // string
 
+/// POSIX filesystem libraries
+#include <stdio.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <libgen.h>
+
+/// Gambit
 #include "gambit/Utils/util_functions.hpp"
 
 
@@ -150,6 +158,52 @@ namespace Gambit
        std::string prefix = path.substr(0,found);
        recursive_mkdir( prefix.c_str() );
        return path;
+    }
+
+    /// Return a vector of strings listing the contents of a directory (POSIX)
+    /// Based on http://www.gnu.org/software/libtool/manual/libc/Simple-Directory-Lister.html
+    std::vector<std::string> ls_dir(const std::string& dir) 
+    { 
+      std::vector<std::string> dir_contents;
+      DIR *dp;
+      struct dirent *ep;     
+      dp = opendir(dir.c_str());
+
+      if( dp != NULL )
+      {
+        while( (ep = readdir(dp)) )
+        {
+          dir_contents.push_back(ep->d_name);
+        }
+        (void) closedir(dp);
+      }
+      else
+      {
+        std::string msg = "Utils::ls_dir function failed to open the directory '"+dir+"'!";
+        std::cerr << msg << std::endl;
+        abort();
+      }
+      return dir_contents;
+    }
+
+    /// Get directory name from full path+filename (POSIX)
+    std::string dir_name(const std::string& path)
+    {
+       char buffer[1000]; // temporary buffer for dirname to work with (it is a C function)
+       path.copy(buffer, path.size()); //TODO: error if path.size()>1000
+       buffer[path.size()] = '\0';
+       std::string result = dirname(&buffer[0]); // should use the C function...
+       return result;  
+    }
+
+    /// Get file name from full path+filename (POSIX)
+    std::string base_name(const std::string& path)
+    {
+       char buffer[1000]; // temporary buffer for basename to work with (it is a C function)
+       path.copy(buffer, path.size()); //TODO: error if path.size()>1000
+       buffer[path.size()] = '\0';
+       std::string result = basename(&buffer[0]); // should use the C function...
+       return result;  
     }
 
     /// Get current system clock time
