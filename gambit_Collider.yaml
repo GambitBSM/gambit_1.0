@@ -119,8 +119,8 @@ Rules:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
 
-  - capability: unimproved_MSSM_spectrum 
-    function: get_MSSMatQ_spectrum  
+  - capability: unimproved_MSSM_spectrum
+    function: get_MSSMatQ_spectrum
     options:
       invalid_point_fatal: true
 
@@ -135,35 +135,17 @@ Rules:
 
   - capability: Hplus_decay_rates
     function: Hplus_decays
-      
+
   - capability: decay_rates
     function: all_decays
 
-  - capability: AnalysisContainer
-    function: getAnalysisContainer
-    options:  
-      analysisNames: ["ATLAS_0LEP_20invfb", "ATLAS_1LEPStop_20invfb"]
-
-  - capability: DetectorSim
-    function: getDelphes
+  - capability: ATLASAnalysisContainer
+    function: getATLASAnalysisContainer
     options:
-      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+      analysisNamesATLAS: ["ATLAS_0LEP_20invfb", "ATLAS_1LEPStop_20invfb"]
 
   - capability: SimpleSmearingSim
-    function: getBuckFast
-    options:
- 
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
-    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
-
-  - capability: ReconstructedEvent
-    function: reconstructBuckFastIdentityEvent
-    dependencies:
-    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
-    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
+    function: getBuckFastATLAS
 
   - capability:  ColliderOperator
     function: operateLHCLoop
@@ -171,49 +153,21 @@ Rules:
       nEvents: 5000
       pythiaNames: ["Pythia_SUSY_LHC_8TeV"]
       #pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
-      #Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
-      #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
 
   - capability:  HardScatteringSim
     function:  getPythia
     options:
       # Change to absolute paths below when running outside of the gambit/modules directory
       Pythia_doc_path: "Backends/installed/Pythia/8.212/share/Pythia8/xmldoc/"
-      Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["PartonLevel:MPI = off",
-                          "PartonLevel:ISR = on",
-                          "PartonLevel:FSR = off",
-                          "HadronLevel:all = off"]
-      #Pythia_glusq_LHC_8TeV:
-      #  pythiaOptions_1: ["PartonLevel:MPI = off",
-      #                    "PartonLevel:ISR = on",
-      #                    "PartonLevel:FSR = off",
-      #                    "HadronLevel:all = off"]
-      #Pythia_SUSY_LHC_8TeV:
-      #  pythiaOptions_1: ["PartonLevel:MPI = off",
-      #                    "PartonLevel:ISR = on",
-      #                    "PartonLevel:FSR = off",
-      #                    "HadronLevel:all = off",
-      #                    "SUSY:idA = 1000021",
-      #                    "SUSY:idB = 1000021"]
-      #  pythiaOptions_2: ["PartonLevel:MPI = off",
-      #                    "PartonLevel:ISR = on",
-      #                    "PartonLevel:FSR = off",
-      #                    "HadronLevel:all = off",
-      #                    "SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004",
-      #                    "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
-      debug_SLHA_filenames:
-        - ColliderBit/data/sps1aWithDecays.spc
+      Pythia_SUSY_LHC_8TeV: ["PartonLevel:MPI = off",
+                             "PartonLevel:ISR = on",
+                             "PartonLevel:FSR = on",
+                             "HadronLevel:all = on"]
 
   - capability: LHC_Combined_LogLike
     backends:
     - {capability: lnlike_marg_poisson_lognormal_error}
 
-  - capability: AnalysisNumbers
-    dependencies:
-    - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
-    #- {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastIdentityEvent"}
-    
 #########################
 # Logging setup
 #########################
