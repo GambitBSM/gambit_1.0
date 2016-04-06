@@ -334,7 +334,7 @@ namespace Gambit
                     // Send our "timeleft" data to processes waiting in this loop, if we haven't already done so
                     if(not sent_timeleft[source])
                     {
-                      ulong buf_timeleft;
+                      unsigned long buf_timeleft;
                       std::chrono::time_point<std::chrono::system_clock> current = std::chrono::system_clock::now();
                       std::chrono::duration<double> our_timeleft = timeout - (current - start);
                       buf_timeleft = std::chrono::duration_cast<std::chrono::milliseconds>(our_timeleft).count();
@@ -348,7 +348,7 @@ namespace Gambit
                     {
                        // Ok the source is trying to tell us how much time they have left in their Barrier, record this.
                        received_timeleft[source] = true;
-                       ulong buf_timeleft;
+                       unsigned long buf_timeleft;
                        Recv(&buf_timeleft, 1, source, tag_timeleft);
                        errorlog << "Received their_timeleft ("<<buf_timeleft<<" ms) from process "<<source<<std::endl;
                        //Update our own timeleft to reflect this
